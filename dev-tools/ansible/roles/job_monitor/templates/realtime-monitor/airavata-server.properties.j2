@@ -16,7 +16,7 @@
 # under the License.
 #
 
-zookeeper.server.connection={{ zookeeper_url }}
+zookeeper.server.connection={{ zookeeper_connection_url }}
 zookeeper.timeout=30000
 
 realtime.monitor.broker.url={{ realtime_monitor_broker_url }}
@@ -25,4 +25,4 @@ realtime.monitor.broker.topic={{ realtime_monitor_broker_topic }}
 
 job.monitor.broker.url={{ job_monitor_broker_url }}
 job.monitor.broker.topic={{ job_monitor_broker_topic }}
-job.monitor.broker.publisher.id={{ realtime_job_monitor_broker_publisher }}
+job.monitor.broker.publisher.id={{ realtime_monitor_broker_publisher }}

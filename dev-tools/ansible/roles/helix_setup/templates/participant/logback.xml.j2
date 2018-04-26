@@ -29,7 +29,7 @@
     </appender>
 
     <appender name="LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>.{{ helix_participant_log_dir }}/airavata.log</File>
+        <File>{{ helix_participant_log_dir }}/airavata.log</File>
         <Append>true</Append>
         <encoder>
             <pattern>%d [%t] %-5p %c{30} %X - %m%n</pattern>

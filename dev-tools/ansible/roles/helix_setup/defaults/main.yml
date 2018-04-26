@@ -39,8 +39,11 @@ helix_participant_log_dir: "{{ helix_dir }}/{{ helix_participant_version }}/logs
 helix_pre_wm_dist_log_dir: "{{ helix_dir }}/{{ helix_pre_wm_version }}/logs"
 helix_post_wm_dist_log_dir: "{{ helix_dir }}/{{ helix_post_wm_version }}/logs"
 
-job_status_publish_endpoint: "http://149.165.156.211:8082/topics/helix-airavata-mq"
+job_status_publish_endpoint: "http://{{ groups['kafka'][0] }}:{{ kafka_rest_proxy_listener_port }}/topics/{{ realtime_monitor_broker_topic }}"
 
 helix_log_max_history: 30
 helix_log_total_size_cap: "1GB"
+
+kafka_listener_port: 9092
+kafka_rest_proxy_listener_port: 8082
 ...
