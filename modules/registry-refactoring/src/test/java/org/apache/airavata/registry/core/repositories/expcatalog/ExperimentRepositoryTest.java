@@ -124,14 +124,15 @@ public class ExperimentRepositoryTest {
         assertEquals("oValueE", retrievedExpOutputList.get(0).getValue());
 
         ExperimentStatus experimentStatus = new ExperimentStatus(ExperimentState.CREATED);
-        assertEquals(experimentId, experimentRepository.addExperimentStatus(experimentStatus, experimentId));
+        String experimentStatusId = experimentRepository.addExperimentStatus(experimentStatus, experimentId);
+        assertTrue(experimentStatusId != null);
 
         experimentStatus.setState(ExperimentState.EXECUTING);
         experimentRepository.updateExperimentStatus(experimentStatus, experimentId);
 
         List<ExperimentStatus> retrievedExpStatusList = experimentRepository.getExperimentStatus(experimentId);
-//        assertTrue(retrievedExpStatusList.size() == 1);
-//        assertEquals(ExperimentState.EXECUTING, retrievedExpStatusList.get(0).getState());
+        assertTrue(retrievedExpStatusList.size() == 1);
+        assertEquals(ExperimentState.EXECUTING, retrievedExpStatusList.get(0).getState());
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");

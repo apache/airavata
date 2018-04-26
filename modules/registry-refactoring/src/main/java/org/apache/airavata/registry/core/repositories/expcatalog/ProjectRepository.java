@@ -45,7 +45,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
     }
 
     protected ProjectEntity saveProject(Project project, String gatewayId) throws RegistryException {
-        if (project.getProjectID() == null) {
+        if (project.getProjectID() == null || project.getProjectID().equals("DO_NOT_SET_AT_CLIENTS")) {
             logger.debug("Setting the Project's ProjectId");
             project.setProjectID(getProjectId(project.getName()));
         }

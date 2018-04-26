@@ -31,6 +31,7 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
   private static final org.apache.thrift.protocol.TField JOB_STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("jobState", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField TIME_OF_STATE_CHANGE_FIELD_DESC = new org.apache.thrift.protocol.TField("timeOfStateChange", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField REASON_FIELD_DESC = new org.apache.thrift.protocol.TField("reason", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField STATUS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("statusId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new JobStatusStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new JobStatusTupleSchemeFactory();
@@ -38,6 +39,7 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
   private JobState jobState; // required
   private long timeOfStateChange; // optional
   private java.lang.String reason; // optional
+  private java.lang.String statusId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -47,7 +49,8 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
      */
     JOB_STATE((short)1, "jobState"),
     TIME_OF_STATE_CHANGE((short)2, "timeOfStateChange"),
-    REASON((short)3, "reason");
+    REASON((short)3, "reason"),
+    STATUS_ID((short)4, "statusId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -68,6 +71,8 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
           return TIME_OF_STATE_CHANGE;
         case 3: // REASON
           return REASON;
+        case 4: // STATUS_ID
+          return STATUS_ID;
         default:
           return null;
       }
@@ -110,7 +115,7 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
   // isset id assignments
   private static final int __TIMEOFSTATECHANGE_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.TIME_OF_STATE_CHANGE,_Fields.REASON};
+  private static final _Fields optionals[] = {_Fields.TIME_OF_STATE_CHANGE,_Fields.REASON,_Fields.STATUS_ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -119,6 +124,8 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
     tmpMap.put(_Fields.TIME_OF_STATE_CHANGE, new org.apache.thrift.meta_data.FieldMetaData("timeOfStateChange", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.REASON, new org.apache.thrift.meta_data.FieldMetaData("reason", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.STATUS_ID, new org.apache.thrift.meta_data.FieldMetaData("statusId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(JobStatus.class, metaDataMap);
@@ -146,6 +153,9 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
     if (other.isSetReason()) {
       this.reason = other.reason;
     }
+    if (other.isSetStatusId()) {
+      this.statusId = other.statusId;
+    }
   }
 
   public JobStatus deepCopy() {
@@ -158,6 +168,7 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
     setTimeOfStateChangeIsSet(false);
     this.timeOfStateChange = 0;
     this.reason = null;
+    this.statusId = null;
   }
 
   /**
@@ -236,6 +247,29 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
     }
   }
 
+  public java.lang.String getStatusId() {
+    return this.statusId;
+  }
+
+  public void setStatusId(java.lang.String statusId) {
+    this.statusId = statusId;
+  }
+
+  public void unsetStatusId() {
+    this.statusId = null;
+  }
+
+  /** Returns true if field statusId is set (has been assigned a value) and false otherwise */
+  public boolean isSetStatusId() {
+    return this.statusId != null;
+  }
+
+  public void setStatusIdIsSet(boolean value) {
+    if (!value) {
+      this.statusId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case JOB_STATE:
@@ -262,6 +296,14 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
       }
       break;
 
+    case STATUS_ID:
+      if (value == null) {
+        unsetStatusId();
+      } else {
+        setStatusId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -275,6 +317,9 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
 
     case REASON:
       return getReason();
+
+    case STATUS_ID:
+      return getStatusId();
 
     }
     throw new java.lang.IllegalStateException();
@@ -293,6 +338,8 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
       return isSetTimeOfStateChange();
     case REASON:
       return isSetReason();
+    case STATUS_ID:
+      return isSetStatusId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -339,6 +386,15 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
         return false;
     }
 
+    boolean this_present_statusId = true && this.isSetStatusId();
+    boolean that_present_statusId = true && that.isSetStatusId();
+    if (this_present_statusId || that_present_statusId) {
+      if (!(this_present_statusId && that_present_statusId))
+        return false;
+      if (!this.statusId.equals(that.statusId))
+        return false;
+    }
+
     return true;
   }
 
@@ -357,6 +413,10 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
     hashCode = hashCode * 8191 + ((isSetReason()) ? 131071 : 524287);
     if (isSetReason())
       hashCode = hashCode * 8191 + reason.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetStatusId()) ? 131071 : 524287);
+    if (isSetStatusId())
+      hashCode = hashCode * 8191 + statusId.hashCode();
 
     return hashCode;
   }
@@ -395,6 +455,16 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
     }
     if (isSetReason()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reason, other.reason);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetStatusId()).compareTo(other.isSetStatusId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetStatusId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.statusId, other.statusId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -439,6 +509,16 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
         sb.append("null");
       } else {
         sb.append(this.reason);
+      }
+      first = false;
+    }
+    if (isSetStatusId()) {
+      if (!first) sb.append(", ");
+      sb.append("statusId:");
+      if (this.statusId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.statusId);
       }
       first = false;
     }
@@ -515,6 +595,14 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // STATUS_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.statusId = iprot.readString();
+              struct.setStatusIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -545,6 +633,13 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
           oprot.writeFieldEnd();
         }
       }
+      if (struct.statusId != null) {
+        if (struct.isSetStatusId()) {
+          oprot.writeFieldBegin(STATUS_ID_FIELD_DESC);
+          oprot.writeString(struct.statusId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -570,12 +665,18 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
       if (struct.isSetReason()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetStatusId()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetTimeOfStateChange()) {
         oprot.writeI64(struct.timeOfStateChange);
       }
       if (struct.isSetReason()) {
         oprot.writeString(struct.reason);
+      }
+      if (struct.isSetStatusId()) {
+        oprot.writeString(struct.statusId);
       }
     }
 
@@ -584,7 +685,7 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.jobState = org.apache.airavata.model.status.JobState.findByValue(iprot.readI32());
       struct.setJobStateIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(2);
+      java.util.BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.timeOfStateChange = iprot.readI64();
         struct.setTimeOfStateChangeIsSet(true);
@@ -592,6 +693,10 @@ public class JobStatus implements org.apache.thrift.TBase<JobStatus, JobStatus._
       if (incoming.get(1)) {
         struct.reason = iprot.readString();
         struct.setReasonIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.statusId = iprot.readString();
+        struct.setStatusIdIsSet(true);
       }
     }
   }

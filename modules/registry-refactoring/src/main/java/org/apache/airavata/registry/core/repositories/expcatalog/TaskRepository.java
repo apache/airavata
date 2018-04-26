@@ -39,11 +39,7 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
 
         if (taskEntity.getTaskStatuses() != null) {
             logger.debug("Populating the Primary Key of TaskStatus objects for the Task");
-            taskEntity.getTaskStatuses().forEach(taskStatusEntity -> { taskStatusEntity.setTaskId(taskId);
-                if (taskStatusEntity.getStatusId() == null) {
-                    taskStatusEntity.setStatusId(ExpCatalogUtils.getID("STATUS"));
-                }
-            });
+            taskEntity.getTaskStatuses().forEach(taskStatusEntity -> taskStatusEntity.setTaskId(taskId));
         }
 
         if (taskEntity.getTaskErrors() != null) {
@@ -71,12 +67,10 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
         ProcessRepository processRepository = new ProcessRepository();
         ProcessModel processModel = processRepository.getProcess(processId);
         List<TaskModel> taskModelList = processModel.getTasks();
-        System.out.println("*****"+taskModelList.size());
 
         if (taskModelList != null && !taskModelList.contains(task)) {
             logger.debug("Adding the Task to the list");
             taskModelList.add(task);
-            System.out.println("*****"+taskModelList.size());
             processModel.setTasks(taskModelList);
             processRepository.updateProcess(processModel, processId);
         }
@@ -97,23 +91,39 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
         TaskModel taskModel = getTask(taskId);
         List<TaskStatus> taskStatusList = taskModel.getTaskStatuses();
 
-        if (taskStatusList == null) {
-            logger.debug("Adding the first TaskStatus to the list");
-            taskModel.setTaskStatuses(Arrays.asList(taskStatus));
-        }
+        if (taskStatusList.size() == 0 || !taskStatusList.contains(taskStatus)) {
 
-        else if (!taskStatusList.contains(taskStatus)) {
+            if (taskStatus.getStatusId() == null) {
+                logger.debug("Set TaskStatus's StatusId");
+                taskStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
+            }
+
             logger.debug("Adding the TaskStatus to the list");
             taskStatusList.add(taskStatus);
-            taskModel.setTaskStatuses(taskStatusList);
         }
 
+        taskModel.setTaskStatuses(taskStatusList);
         updateTask(taskModel, taskId);
-        return taskId;
+        return taskStatus.getStatusId();
     }
 
-    public String updateTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
-        return addTaskStatus(taskStatus, taskId);
+    public String updateTaskStatus(TaskStatus updatedTaskStatus, String taskId) throws RegistryException {
+        TaskModel taskModel = getTask(taskId);
+        List<TaskStatus> taskStatusList = taskModel.getTaskStatuses();
+
+        for (TaskStatus retrievedTaskStatus : taskStatusList) {
+
+            if (retrievedTaskStatus.getStatusId().equals(updatedTaskStatus.getStatusId())) {
+                logger.debug("Updating the TaskStatus");
+                taskStatusList.remove(retrievedTaskStatus);
+                taskStatusList.add(updatedTaskStatus);
+            }
+
+        }
+
+        taskModel.setTaskStatuses(taskStatusList);
+        updateTask(taskModel, taskId);
+        return updatedTaskStatus.getStatusId();
     }
 
     public List<TaskStatus> getTaskStatus(String taskId) throws RegistryException {

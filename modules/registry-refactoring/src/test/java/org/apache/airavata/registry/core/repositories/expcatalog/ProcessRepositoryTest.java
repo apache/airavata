@@ -129,14 +129,15 @@ public class ProcessRepositoryTest {
         assertEquals("oValueP", retrievedProOutputList.get(0).getValue());
 
         ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
-        assertEquals(processId, processRepository.addProcessStatus(processStatus, processId));
+        String processStatusId = processRepository.addProcessStatus(processStatus, processId);
+        assertTrue(processStatusId != null);
 
         processStatus.setState(ProcessState.EXECUTING);
         processRepository.updateProcessStatus(processStatus, processId);
 
         List<ProcessStatus> retrievedStatusList = processRepository.getProcessStatus(processId);
-//        assertTrue(retrievedStatusList.size() == 1);
-//        assertEquals(ProcessState.EXECUTING, retrievedStatusList.get(0).getState());
+        assertTrue(retrievedStatusList.size() == 1);
+        assertEquals(ProcessState.EXECUTING, retrievedStatusList.get(0).getState());
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");

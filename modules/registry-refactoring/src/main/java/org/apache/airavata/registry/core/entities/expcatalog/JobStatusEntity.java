@@ -88,11 +88,11 @@ public class JobStatusEntity implements Serializable {
         this.taskId = taskId;
     }
 
-    public JobState getState() {
+    public JobState getJobState() {
         return jobState;
     }
 
-    public void setState(JobState jobState) {
+    public void setJobState(JobState jobState) {
         this.jobState = jobState;
     }
 
