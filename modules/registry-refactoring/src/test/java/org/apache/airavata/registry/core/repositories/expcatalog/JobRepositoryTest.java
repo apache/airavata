@@ -111,14 +111,15 @@ public class JobRepositoryTest {
         assertEquals("jobName", jobRepository.getJob(cis).getJobName());
 
         JobStatus jobStatus = new JobStatus(JobState.QUEUED);
-        assertEquals(jobId, jobRepository.addJobStatus(jobStatus, cis));
+        String jobStatusId = jobRepository.addJobStatus(jobStatus, cis);
+        assertTrue(jobStatusId != null);
 
         jobStatus.setJobState(JobState.ACTIVE);
         jobRepository.updateJobStatus(jobStatus, cis);
 
         List<JobStatus> retrievedJobStatusList = jobRepository.getJobStatus(cis);
-//        assertTrue(retrievedJobStatusList.size() == 1);
-//        assertEquals(JobState.ACTIVE, retrievedJobStatusList.get(0).getJobState());
+        assertTrue(retrievedJobStatusList.size() == 1);
+        assertEquals(JobState.ACTIVE, retrievedJobStatusList.get(0).getJobState());
 
         List<String> jobIdList = jobRepository.getJobIds(DBConstants.Job.TASK_ID, taskId);
         assertTrue(jobIdList.size() == 1);

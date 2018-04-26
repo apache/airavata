@@ -57,11 +57,7 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
 
         if (processEntity.getProcessStatuses() != null) {
             logger.debug("Populating the Primary Key of ProcessStatus objects for the Process");
-            processEntity.getProcessStatuses().forEach(processStatusEntity -> { processStatusEntity.setProcessId(processId);
-                if (processStatusEntity.getStatusId() == null) {
-                    processStatusEntity.setStatusId(ExpCatalogUtils.getID("STATUS"));
-                }
-            });
+            processEntity.getProcessStatuses().forEach(processStatusEntity -> processStatusEntity.setProcessId(processId));
         }
 
         if (processEntity.getProcessErrors() != null) {
@@ -183,23 +179,39 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
         ProcessModel processModel = getProcess(processId);
         List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
 
-        if (processStatusList == null) {
-            logger.debug("Adding the first ProcessStatus to the list");
-            processModel.setProcessStatuses(Arrays.asList(processStatus));
-        }
+        if (processStatusList.size() == 0 || !processStatusList.contains(processStatus)) {
 
-        else if (!processStatusList.contains(processStatus)) {
+            if (processStatus.getStatusId() == null) {
+                logger.debug("Set ProcessStatus's StatusId");
+                processStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
+            }
+
             logger.debug("Adding the ProcessStatus to the list");
             processStatusList.add(processStatus);
-            processModel.setProcessStatuses(processStatusList);
-            updateProcess(processModel, processId);
         }
 
-        return processId;
+        processModel.setProcessStatuses(processStatusList);
+        updateProcess(processModel, processId);
+        return processStatus.getStatusId();
     }
 
-    public String updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
-        return addProcessStatus(processStatus, processId);
+    public String updateProcessStatus(ProcessStatus updatedProcessStatus, String processId) throws RegistryException {
+        ProcessModel processModel = getProcess(processId);
+        List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
+
+        for (ProcessStatus retrievedProcessStatus : processStatusList) {
+
+            if (retrievedProcessStatus.getStatusId().equals(updatedProcessStatus.getStatusId())) {
+                logger.debug("Updating the ProcessStatus");
+                processStatusList.remove(retrievedProcessStatus);
+                processStatusList.add(updatedProcessStatus);
+            }
+
+        }
+
+        processModel.setProcessStatuses(processStatusList);
+        updateProcess(processModel, processId);
+        return updatedProcessStatus.getStatusId();
     }
 
     public List<ProcessStatus> getProcessStatus(String processId) throws RegistryException {

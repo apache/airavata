@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
     public List<ExperimentSummaryModel> searchAllAccessibleExperiments(List<String> accessibleExperimentIds, Map<String, String> filters, int limit,
                                                                        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        String query = "SELECT DISTINCT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
+        String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();
 
         if (filters != null && !filters.isEmpty()) {
@@ -84,11 +85,11 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         if (filters.get(DBConstants.ExperimentSummary.FROM_DATE) != null
                 && filters.get(DBConstants.ExperimentSummary.TO_DATE) != null) {
 
-            Timestamp fromDate = new Timestamp(Long.parseLong(filters.get(DBConstants.ExperimentSummary.FROM_DATE)));
-            Timestamp toDate = new Timestamp(Long.parseLong(filters.get(DBConstants.ExperimentSummary.TO_DATE)));
+            Timestamp fromDate = Timestamp.valueOf(filters.get(DBConstants.ExperimentSummary.FROM_DATE));
+            Timestamp toDate = Timestamp.valueOf(filters.get(DBConstants.ExperimentSummary.TO_DATE));
 
             if (toDate.after(fromDate)) {
-                logger.debug("Filter Experiments by Date");
+                logger.debug("Filter Experiments by CreationTime");
                 queryParameters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
                 queryParameters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
                 query += "ES.creationTime BETWEEN :" + DBConstants.ExperimentSummary.FROM_DATE + " AND :" + DBConstants.ExperimentSummary.TO_DATE + " AND ";
@@ -97,7 +98,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         }
 
         if (accessibleExperimentIds != null && !accessibleExperimentIds.isEmpty()) {
-            logger.debug("Filter Projects by Accessible Experiment IDs");
+            logger.debug("Filter Experiments by Accessible Experiment IDs");
             queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIds);
             query += " ES.experimentId IN :" + DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS;
         }
@@ -116,12 +117,46 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         try {
 
             ExperimentStatistics experimentStatistics = new ExperimentStatistics();
-            String gatewayId = filters.get(DBConstants.Experiment.GATEWAY_ID);
-            String userName = filters.get(DBConstants.Experiment.USER_NAME);
-            String applicationName = filters.get(DBConstants.Experiment.EXECUTION_ID);
-            String resourceHostName = filters.get(DBConstants.Experiment.RESOURCE_HOST_ID);
-            Timestamp fromDate = new Timestamp(Long.parseLong(filters.get(DBConstants.ExperimentSummary.FROM_DATE)));
-            Timestamp toDate = new Timestamp(Long.parseLong(filters.get(DBConstants.ExperimentSummary.TO_DATE)));
+            String gatewayId = null;
+            String userName = null;
+            String applicationName = null;
+            String resourceHostName = null;
+            Timestamp fromDate = null;
+            Timestamp toDate = null;
+
+            for (String field : filters.keySet()) {
+
+                if (field.equals(DBConstants.Experiment.GATEWAY_ID)) {
+                    logger.debug("Set the GatewayId");
+                    gatewayId = filters.get(field);
+                }
+
+                if (field.equals(DBConstants.Experiment.USER_NAME)) {
+                    logger.debug("Set the UserName");
+                    userName = filters.get(field);
+                }
+
+                if (field.equals(DBConstants.Experiment.EXECUTION_ID)) {
+                    logger.debug("Set the ApplicationName");
+                    applicationName = filters.get(field);
+                }
+
+                if (field.equals(DBConstants.Experiment.RESOURCE_HOST_ID)) {
+                    logger.debug("Set the ResourceHostName");
+                    resourceHostName = filters.get(field);
+                }
+
+                if (field.equals(DBConstants.ExperimentSummary.FROM_DATE)) {
+                    logger.debug("Set the FromDate");
+                    fromDate = Timestamp.valueOf(filters.get(field));
+                }
+
+                if (field.equals(DBConstants.ExperimentSummary.TO_DATE)) {
+                    logger.debug("Set the ToDate");
+                    toDate = Timestamp.valueOf(filters.get(field));
+                }
+
+            }
 
             List<ExperimentSummaryModel> allExperiments = getExperimentStatisticsForState(null, gatewayId,
                     fromDate, toDate, userName, applicationName, resourceHostName);
@@ -174,29 +209,56 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
     protected List<ExperimentSummaryModel> getExperimentStatisticsForState(ExperimentState experimentState, String gatewayId, Timestamp fromDate, Timestamp toDate,
                                                                            String userName, String applicationName, String resourceHostName) throws RegistryException {
 
-        String query = "SELECT DISTINCT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
+        String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
+        Map<String, Object> queryParameters = new HashMap<>();
 
         if (experimentState != null) {
-            query += "ES.state LIKE :" + experimentState.toString() + " AND ";
+            logger.debug("Filter Experiments by Experiment State");
+            queryParameters.put(DBConstants.Experiment.EXPERIMENT_STATE, experimentState);
+            query += "ES.state LIKE :" + DBConstants.Experiment.EXPERIMENT_STATE + " AND ";
         }
 
-        query += "ES.creationTime BETWEEN :" + fromDate + " AND :" + toDate + " AND " +
-                "ES.gatewayId LIKE :" + gatewayId + " ";
+        if (gatewayId != null) {
+            logger.debug("Filter Experiments by GatewayId");
+            queryParameters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
+            query += "ES.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID + " AND ";
+        }
+
+        if (fromDate != null && toDate != null) {
+
+            if (toDate.after(fromDate)) {
+                logger.debug("Filter Experiments by CreationTime");
+                queryParameters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
+                queryParameters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
+                query += "ES.creationTime BETWEEN :" + DBConstants.ExperimentSummary.FROM_DATE + " AND :" + DBConstants.ExperimentSummary.TO_DATE + " AND ";
+            }
+        }
 
         if (userName != null) {
-            query += "AND ES.userName LIKE :" + userName + " ";
+            logger.debug("Filter Experiments by UserName");
+            queryParameters.put(DBConstants.Experiment.USER_NAME, userName);
+            query += "ES.userName LIKE :" + DBConstants.Experiment.USER_NAME + " AND ";
         }
 
         if (applicationName != null) {
-            query += "AND ES.executionId LIKE :" + applicationName + " ";
+            logger.debug("Filter Experiments by ApplicationName");
+            queryParameters.put(DBConstants.Experiment.EXECUTION_ID, applicationName);
+            query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
         }
 
         if (resourceHostName != null) {
-            query += "AND ES.resourceHostId LIKE :" + resourceHostName + " ";
+            logger.debug("Filter Experiments by ResourceHostName");
+            queryParameters.put(DBConstants.Experiment.RESOURCE_HOST_ID, resourceHostName);
+            query += "ES.resourceHostId LIKE :" + DBConstants.Experiment.RESOURCE_HOST_ID + " ";
+        }
+
+        else {
+            logger.debug("Removing the last operator from the query");
+            query = query.substring(0, query.length() - 4);
         }
 
         query += "ORDER BY ES.creationTime DESC";
-        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, 0);
+        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, -1, 0, queryParameters);
         return experimentSummaryModelList;
     }
 

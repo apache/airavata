@@ -4,6 +4,7 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
@@ -36,7 +37,8 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
             jobModel.setJobId((String) cis.getSecondLevelIdentifier());
         }
 
-        String jobId = jobModel.getJobId();
+        String jobId = (String) cis.getSecondLevelIdentifier();
+        String taskId = (String) cis.getTopLevelIdentifier();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         JobEntity jobEntity = mapper.map(jobModel, JobEntity.class);
 
@@ -44,10 +46,7 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
             logger.debug("Populating the Primary Key of JobStatus objects for the Job");
             jobEntity.getJobStatuses().forEach(jobStatusEntity -> {
                 jobStatusEntity.setJobId(jobId);
-                jobStatusEntity.setTaskId((String) cis.getTopLevelIdentifier());
-                if (jobStatusEntity.getStatusId() == null) {
-                    jobStatusEntity.setStatusId(ExpCatalogUtils.getID("STATUS"));
-                }
+                jobStatusEntity.setTaskId(taskId);
             });
         }
 
@@ -61,9 +60,10 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
 
     public String addJob(JobModel job, String processId) throws RegistryException {
         CompositeIdentifier cis = new CompositeIdentifier(job.getTaskId(), job.getJobId());
-        job.setProcessId(processId);
         String jobId = saveJobModelData(job, cis);
         String taskId = (String) cis.getTopLevelIdentifier();
+        job.setProcessId(processId);
+        job.setTaskId(taskId);
         TaskRepository taskRepository = new TaskRepository();
         TaskModel taskModel = taskRepository.getTask(taskId);
         List<JobModel> jobModelList = taskModel.getJobs();
@@ -90,13 +90,42 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
     public String addJobStatus(JobStatus jobStatus, CompositeIdentifier cis) throws RegistryException {
         JobModel jobModel = getJob(cis);
         List<JobStatus> jobStatusList = jobModel.getJobStatuses();
-        jobStatusList.add(jobStatus);
+
+        if (jobStatusList.size() == 0 || !jobStatusList.contains(jobStatus)) {
+
+            if (jobStatus.getStatusId() == null) {
+                logger.debug("Set JobStatus's StatusId");
+                jobStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
+            }
+
+            logger.debug("Adding the JobStatus to the list");
+            jobStatusList.add(jobStatus);
+
+        }
+
         jobModel.setJobStatuses(jobStatusList);
-        return updateJob(jobModel, cis);
+        updateJob(jobModel, cis);
+        return jobStatus.getStatusId();
     }
 
-    public String updateJobStatus(JobStatus jobStatus, CompositeIdentifier cis) throws RegistryException {
-        return addJobStatus(jobStatus, cis);
+    public String updateJobStatus(JobStatus updatedJobStatus, CompositeIdentifier cis) throws RegistryException {
+        JobModel jobModel = getJob(cis);
+        List<JobStatus> jobStatusList = jobModel.getJobStatuses();
+
+        for (JobStatus retrievedJobStatus : jobStatusList) {
+
+            if (retrievedJobStatus.getStatusId().equals(updatedJobStatus.getStatusId())) {
+                logger.debug("Updating the JobStatus");
+                jobStatusList.remove(retrievedJobStatus);
+                jobStatusList.add(updatedJobStatus);
+            }
+
+        }
+
+        jobModel.setJobStatuses(jobStatusList);
+        updateJob(jobModel, cis);
+        return updatedJobStatus.getStatusId();
+
     }
 
     public List<JobStatus> getJobStatus(CompositeIdentifier cis) throws RegistryException {

@@ -95,14 +95,15 @@ public class TaskRepositoryTest {
         assertEquals(TaskTypes.MONITORING, taskRepository.getTask(taskId).getTaskType());
 
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
-        assertEquals(taskId, taskRepository.addTaskStatus(taskStatus, taskId));
+        String taskStatusId = taskRepository.addTaskStatus(taskStatus, taskId);
+        assertTrue(taskStatusId != null);
 
         taskStatus.setState(TaskState.CREATED);
         taskRepository.updateTaskStatus(taskStatus, taskId);
 
         List<TaskStatus> retrievedTaskStatusList = taskRepository.getTaskStatus(taskId);
-//        assertTrue(retrievedTaskStatusList.size() == 1);
-//        assertEquals(TaskState.CREATED, retrievedTaskStatusList.get(0).getState());
+        assertTrue(retrievedTaskStatusList.size() == 1);
+        assertEquals(TaskState.CREATED, retrievedTaskStatusList.get(0).getState());
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");

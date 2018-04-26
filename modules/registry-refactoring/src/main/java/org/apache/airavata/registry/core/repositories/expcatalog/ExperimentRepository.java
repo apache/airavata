@@ -78,11 +78,7 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
 
         if (experimentEntity.getExperimentStatus() != null) {
             logger.debug("Populating the Primary Key of ExperimentStatus objects for the Experiment");
-            experimentEntity.getExperimentStatus().forEach(experimentStatusEntity -> { experimentStatusEntity.setExperimentId(experimentId);
-                if (experimentStatusEntity.getStatusId() == null) {
-                    experimentStatusEntity.setStatusId(ExpCatalogUtils.getID("STATUS"));
-                }
-            });
+            experimentEntity.getExperimentStatus().forEach(experimentStatusEntity -> experimentStatusEntity.setExperimentId(experimentId));
         }
 
         if (experimentEntity.getErrors() != null) {
@@ -189,23 +185,39 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         ExperimentModel experimentModel = getExperiment(experimentId);
         List<ExperimentStatus> experimentStatusList = experimentModel.getExperimentStatus();
 
-        if (experimentStatusList == null) {
-            logger.debug("Adding the first ExperimentStatus to the list");
-            experimentModel.setExperimentStatus(Arrays.asList(experimentStatus));
-        }
+        if (experimentStatusList.size() == 0 || !experimentStatusList.contains(experimentStatus)) {
 
-        else if (!experimentStatusList.contains(experimentStatus)) {
+            if (experimentStatus.getStatusId() == null) {
+                logger.debug("Set ExperimentStatus's StatusId");
+                experimentStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
+            }
+
             logger.debug("Adding the ExperimentStatus to the list");
             experimentStatusList.add(experimentStatus);
-            experimentModel.setExperimentStatus(experimentStatusList);
         }
 
+        experimentModel.setExperimentStatus(experimentStatusList);
         updateExperiment(experimentModel, experimentId);
-        return experimentId;
+        return experimentStatus.getStatusId();
     }
 
     public String updateExperimentStatus(ExperimentStatus updatedExperimentStatus, String experimentId) throws RegistryException {
-        return addExperimentStatus(updatedExperimentStatus, experimentId);
+        ExperimentModel experimentModel = getExperiment(experimentId);
+        List<ExperimentStatus> experimentStatusList = experimentModel.getExperimentStatus();
+
+        for (ExperimentStatus retrievedExperimentStatus : experimentStatusList) {
+
+            if (retrievedExperimentStatus.getStatusId().equals(updatedExperimentStatus.getStatusId())) {
+                logger.debug("Updating the ExperimentStatus");
+                experimentStatusList.remove(retrievedExperimentStatus);
+                experimentStatusList.add(updatedExperimentStatus);
+            }
+
+        }
+
+        experimentModel.setExperimentStatus(experimentStatusList);
+        updateExperiment(experimentModel, experimentId);
+        return updatedExperimentStatus.getStatusId();
     }
 
     public List<ExperimentStatus> getExperimentStatus(String experimentId) throws RegistryException {
