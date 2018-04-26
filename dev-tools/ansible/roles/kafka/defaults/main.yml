@@ -21,12 +21,9 @@
 ---
 
 #Variables associated with this role
-
-scala_version: "2.11" #recommended scala version
-kafka_version: "1.1.0"
-kafka_package_name: "kafka_{{ scala_version }}-{{ kafka_version }}"
-kafka_tgz_url: "http://www-eu.apache.org/dist/kafka/{{ kafka_version }}/{{ kafka_package_name }}.tgz"
-kafka_dir: "{{ user_home }}/{{ kafka_package_name }}"
+kafka_package_name: "confluent-4.1.0"
+kafka_tgz_url: "http://packages.confluent.io/archive/4.1/confluent-oss-4.1.0-2.11.tar.gz"
+kafka_dir: "{{ deployment_dir }}/{{ kafka_package_name }}"
 
 # Kafka related variables
 broker_id: "0"
@@ -44,5 +41,7 @@ log_retention_hrs: "168"
 log_segment_bytes: "1073741824"
 log_retention_check_interval: "300000"
 grp_initial_rebalance_delay: "0"
+kafka_listener_port: 9092
+kafka_rest_proxy_listener_port: 8082
 
 ...
