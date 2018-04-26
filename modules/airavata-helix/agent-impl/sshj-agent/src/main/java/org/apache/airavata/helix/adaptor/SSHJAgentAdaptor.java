@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         am.add(new AuthKeyboardInteractive(new ChallengeResponseProvider() {
             @Override
             public List<String> getSubmethods() {
-                return null;
+                return new ArrayList<>();
             }
 
             @Override

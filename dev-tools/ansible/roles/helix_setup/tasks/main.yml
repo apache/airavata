@@ -22,7 +22,7 @@
 
 # Create the directory for Helix deployment
 - name: Create helix deployment directory
-  file: path="{{ helix_dir }}" state=directory owner={{ user }} group={{ group }}
+  file: path="{{ helix_dir }}" state=directory owner={{ user }} group={{ group }} recurse=yes
 
 # Setup Helix
 - name: Download and unarchive Helix
@@ -37,8 +37,9 @@
 - name: Create Helix Cluster
   command: "{{ item }} chdir={{ helix_dir }}/helix-core-{{ helix_version }}/"
   with_items:
-  - ./bin/helix-admin.sh --zkSvr localhost:{{ zookeeper_client_port }} --dropCluster {{ helix_cluster_name }}
-  - ./bin/helix-admin.sh --zkSvr localhost:{{ zookeeper_client_port }} --addCluster {{ helix_cluster_name }}
+  - ./bin/helix-admin.sh --zkSvr {{ zookeeper_connection_url }} --dropCluster {{ helix_cluster_name }}
+  - ./bin/helix-admin.sh --zkSvr {{ zookeeper_connection_url }} --addCluster {{ helix_cluster_name }}
+  ignore_errors: yes
 
 # Copy required distributions to the deployment directory
 - name: Copy distributions to airavata-helix deployment directory

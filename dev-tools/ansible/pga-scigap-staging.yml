@@ -19,21 +19,5 @@
 #
 
 ---
-# Kafka related handlers
-- name: start kafka
-  service: name=kafka state=started enabled=yes
-
-- name: stop kafka
-  service: name=kafka state=stopped enabled=yes
-
-- name: restart kafka
-  service: name=kafka state=restarted enabled=yes
-
-- name: start kafka-rest-proxy
-  service: name=kafka-rest-proxy state=started enabled=yes
-
-- name: stop kafka-rest-proxy
-  service: name=kafka-rest-proxy state=stopped enabled=yes
-
-- name: restart kafka-rest-proxy
-  service: name=kafka-rest-proxy state=restarted enabled=yes
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/ultrascan"
+...
