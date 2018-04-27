@@ -1,14 +1,10 @@
 
 export default class RegularExpressionValidator {
 
-    constructor(config=null) {
-        if (typeof config === 'string') {
-            this.regex = new RegExp(config);
-        } else if (typeof config === 'object') {
-            this.regex = new RegExp(config['value']);
-            if ('message' in config) {
-                this.customErrorMessage = config['message'];
-            }
+    constructor(config) {
+        this.regex = new RegExp(config['value']);
+        if ('message' in config) {
+            this.customErrorMessage = config['message'];
         }
     }
 

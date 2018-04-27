@@ -1,14 +1,10 @@
 
 export default class MinLengthValidator {
 
-    constructor(config=null) {
-        if (typeof config === 'number') {
-            this.minLength = config;
-        } else if (typeof config === 'object') {
-            this.minLength = config['value'];
-            if ('message' in config) {
-                this.customErrorMessage = config['message'];
-            }
+    constructor(config) {
+        this.minLength = config['value'];
+        if ('message' in config) {
+            this.customErrorMessage = config['message'];
         }
     }
 

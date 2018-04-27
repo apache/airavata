@@ -1,14 +1,10 @@
 
 export default class MaxLengthValidator {
 
-    constructor(config=null) {
-        if (typeof config === 'number') {
-            this.maxLength = config;
-        } else if (typeof config === 'object') {
-            this.maxLength = config['value'];
-            if ('message' in config) {
-                this.customErrorMessage = config['message'];
-            }
+    constructor(config) {
+        this.maxLength = config['value'];
+        if ('message' in config) {
+            this.customErrorMessage = config['message'];
         }
     }
 
