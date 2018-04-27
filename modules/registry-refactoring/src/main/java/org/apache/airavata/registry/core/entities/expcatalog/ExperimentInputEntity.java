@@ -56,7 +56,7 @@ public class ExperimentInputEntity implements Serializable {
     @Column(name = "USER_FRIENDLY_DESCRIPTION")
     private String userFriendlyDescription;
 
-    @Column(name = "METADATA")
+    @Column(name = "METADATA", length = 4096)
     private String metaData;
 
     @Column(name = "INPUT_ORDER")
