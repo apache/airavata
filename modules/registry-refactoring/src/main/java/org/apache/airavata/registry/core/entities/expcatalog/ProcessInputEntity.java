@@ -44,7 +44,7 @@ public class ProcessInputEntity implements Serializable {
     @Column(name = "INPUT_VALUE")
     private String value;
 
-    @Column(name = "INPUT_TYPE")
+    @Column(name = "DATA_TYPE")
     private String type;
 
     @Column(name = "APPLICATION_ARGUMENT")

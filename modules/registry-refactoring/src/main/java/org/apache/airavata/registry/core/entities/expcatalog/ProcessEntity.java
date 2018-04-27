@@ -67,12 +67,13 @@ public class ProcessEntity implements Serializable {
     @Column(name = "GATEWAY_EXECUTION_ID")
     private String gatewayExecutionId;
 
+    @Column(name = "GATEWAY_INSTANCE_ID")
+    private String gatewayInstanceId;
+
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     private boolean enableEmailNotification;
 
     @Lob
-    @ElementCollection
-    @CollectionTable(name="PROCESS_EMAIL", joinColumns = @JoinColumn(name="PROCESS_ID"))
     @Column(name = "EMAIL_ADDRESSES")
     private List<String> emailAddresses;
 
@@ -203,6 +204,14 @@ public class ProcessEntity implements Serializable {
 
     public void setGatewayExecutionId(String gatewayExecutionId) {
         this.gatewayExecutionId = gatewayExecutionId;
+    }
+
+    public String getGatewayInstanceId() {
+        return gatewayInstanceId;
+    }
+
+    public void setGatewayInstanceId(String gatewayInstanceId) {
+        this.gatewayInstanceId = gatewayInstanceId;
     }
 
     public boolean isEnableEmailNotification() {

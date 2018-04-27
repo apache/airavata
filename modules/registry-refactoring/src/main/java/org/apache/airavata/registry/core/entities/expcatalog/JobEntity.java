@@ -60,11 +60,11 @@ public class JobEntity implements Serializable {
     private String workingDir;
 
     @Lob
-    @Column(name = "STDOUT")
+    @Column(name = "STD_OUT")
     private String stdOut;
 
     @Lob
-    @Column(name = "STDERR")
+    @Column(name = "STD_ERR")
     private String stdErr;
 
     @Column(name = "EXIT_CODE")

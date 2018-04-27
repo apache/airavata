@@ -44,7 +44,7 @@ public class ExperimentInputEntity implements Serializable {
     @Column(name = "INPUT_VALUE")
     private String value;
 
-    @Column(name = "INPUT_TYPE")
+    @Column(name = "DATA_TYPE")
     private String type;
 
     @Column(name = "APPLICATION_ARGUMENT")
@@ -62,10 +62,10 @@ public class ExperimentInputEntity implements Serializable {
     @Column(name = "INPUT_ORDER")
     private int inputOrder;
 
-    @Column(name = "REQUIRED")
+    @Column(name = "IS_REQUIRED")
     private boolean isRequired;
 
-    @Column(name = "REQUIRED_TO_ADDED_TO_COMMANDLINE")
+    @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
     private boolean requiredToAddedToCommandLine;
 
     @Column(name = "DATA_STAGED")
