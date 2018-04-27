@@ -59,7 +59,7 @@ public class ApplicationInputEntity implements Serializable {
 	@Column(name = "IS_REQUIRED")
 	private boolean isRequired;
 
-	@Column(name = "METADATA")
+	@Column(name = "METADATA", length = 4096)
 	private String metaData;
 
 	@Column(name = "REQUIRED_TO_COMMANDLINE")
