@@ -524,6 +524,10 @@ class HomePage(Page):
         choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the secondary navbar to show on home page or no if you don't want to", default=True
     )
 
+    show_footer = models.CharField(
+        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the Footer to show on home page or no if you don't want to", default="yes"
+    )
+
     content_panels = Page.content_panels + [
         MultiFieldPanel([
             ImageChooserPanel('image'),
@@ -564,7 +568,8 @@ class HomePage(Page):
 
     customization_panels = [
         FieldPanel('show_navbar'),
-        FieldPanel('show_nav_extra')
+        FieldPanel('show_nav_extra'),
+        FieldPanel('show_footer')
     ]
 
     edit_handler = TabbedInterface([
@@ -617,6 +622,10 @@ class BlankPage(Page):
         choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the Footer to show on home page or no if you don't want to", default="yes"
     )
 
+    show_announcements = models.CharField(
+        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the Announcements to show up on home page or no if you don't want to", default="yes"
+    )
+
     content_panels = Page.content_panels + [
         InlinePanel("row", label="row")
     ]
@@ -624,7 +633,8 @@ class BlankPage(Page):
     customization_panels = [
         FieldPanel('show_navbar'),
         FieldPanel('show_nav_extra'),
-        FieldPanel('show_footer')
+        FieldPanel('show_footer'),
+        FieldPanel('show_announcements')
     ]
 
     edit_handler = TabbedInterface([
@@ -754,7 +764,7 @@ class CybergatewayHomePage(Page):
     customization_panels = [
         FieldPanel('show_navbar'),
         FieldPanel('show_nav_extra'),
-        FieldPanel('show_footer')
+        FieldPanel('show_footer'),
     ]
 
     edit_handler = TabbedInterface([

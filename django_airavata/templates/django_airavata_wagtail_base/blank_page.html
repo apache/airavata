@@ -20,6 +20,10 @@
   {% include "includes/messages.html" %}
 {% endblock messages %}
 
+{% if page.show_announcements == "yes" %}
+  {% get_announcements %}
+{% endif %}
+
 <div class="container-fluid">
   {% for item in page.row.all %}
   <div class="row">
