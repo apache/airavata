@@ -44,7 +44,7 @@ public class ProcessOutputEntity implements Serializable {
     @Column(name = "OUTPUT_VALUE")
     private String value;
 
-    @Column(name = "OUTPUT_TYPE")
+    @Column(name = "DATA_TYPE")
     private String type;
 
     @Column(name = "APPLICATION_ARGUMENT")

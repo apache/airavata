@@ -59,7 +59,7 @@ public class GatewayEntity implements Serializable {
     @Column(name = "GATEWAY_PUBLIC_ABSTRACT")
     private String gatewayPublicAbstract;
 
-    @Column(name = "REVIEW_PROPOSAL_DESCRIPTION")
+    @Column(name = "GATEWAY_REVIEW_PROPOSAL_DESCRIPTION")
     private String reviewProposalDescription;
 
     @Column(name = "GATEWAY_ADMIN_FIRST_NAME")

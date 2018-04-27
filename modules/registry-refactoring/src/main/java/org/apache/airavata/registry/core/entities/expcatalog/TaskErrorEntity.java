@@ -57,8 +57,7 @@ public class TaskErrorEntity implements Serializable {
     private boolean transientOrPersistent;
 
     @Lob
-    @ElementCollection
-    @CollectionTable(name="EXPCAT_EXPERIMENT_ERROR_ROOT_CAUSE_ERROR_ID", joinColumns = @JoinColumn(name="ERROR_ID"))
+    @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     private List<String> rootCauseErrorIdList;
 
     @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

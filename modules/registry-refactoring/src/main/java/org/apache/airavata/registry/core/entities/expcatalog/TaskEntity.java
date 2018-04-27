@@ -53,8 +53,8 @@ public class TaskEntity implements Serializable {
     @Column(name = "TASK_DETAIL")
     private String taskDetail;
 
-    @Column(name = "SUB_TASK_MODEL")
-    private ByteBuffer subTaskModel;
+    @Column(name = "TASK_INTERNAL_STORE")
+    private ByteBuffer taskInternalStore;
 
     @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL,
             mappedBy = "task", fetch = FetchType.EAGER)
@@ -123,12 +123,12 @@ public class TaskEntity implements Serializable {
         this.taskDetail = taskDetail;
     }
 
-    public ByteBuffer getSubTaskModel() {
-        return subTaskModel;
+    public ByteBuffer getTaskInternalStore() {
+        return taskInternalStore;
     }
 
-    public void setSubTaskModel(ByteBuffer subTaskModel) {
-        this.subTaskModel = subTaskModel;
+    public void setTaskInternalStore(ByteBuffer taskInternalStore) {
+        this.taskInternalStore = taskInternalStore;
     }
 
     public List<TaskStatusEntity> getTaskStatuses() {

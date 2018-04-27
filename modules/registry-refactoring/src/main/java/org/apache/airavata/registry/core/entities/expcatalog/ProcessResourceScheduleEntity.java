@@ -56,9 +56,6 @@ public class ProcessResourceScheduleEntity implements Serializable {
     @Column(name = "TOTAL_PHYSICAL_MEMORY")
     private int totalPhysicalMemory;
 
-    @Column(name = "STATIC_WORKING_DIRECTORY")
-    private String staticWorkingDir;
-
     @OneToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
     private ProcessEntity process;
@@ -128,14 +125,6 @@ public class ProcessResourceScheduleEntity implements Serializable {
 
     public void setTotalPhysicalMemory(int totalPhysicalMemory) {
         this.totalPhysicalMemory = totalPhysicalMemory;
-    }
-
-    public String getStaticWorkingDir() {
-        return staticWorkingDir;
-    }
-
-    public void setStaticWorkingDir(String staticWorkingDir) {
-        this.staticWorkingDir = staticWorkingDir;
     }
 
     public ProcessEntity getProcess() {

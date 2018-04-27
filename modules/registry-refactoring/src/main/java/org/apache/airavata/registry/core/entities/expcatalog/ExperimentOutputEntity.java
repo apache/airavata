@@ -44,16 +44,16 @@ public class ExperimentOutputEntity implements Serializable {
     @Column(name = "OUTPUT_VALUE")
     private String value;
 
-    @Column(name = "OUTPUT_TYPE")
+    @Column(name = "DATA_TYPE")
     private String type;
 
     @Column(name = "APPLICATION_ARGUMENT")
     private String applicationArgument;
 
-    @Column(name = "REQUIRED")
+    @Column(name = "IS_REQUIRED")
     private boolean isRequired;
 
-    @Column(name = "REQUIRED_TO_ADDED_TO_COMMANDLINE")
+    @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
     private boolean requiredToAddedToCommandLine;
 
     @Column(name = "DATA_MOVEMENT")
