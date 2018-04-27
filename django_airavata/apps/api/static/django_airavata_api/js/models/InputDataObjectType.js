@@ -50,7 +50,7 @@ export default class InputDataObjectType extends BaseModel {
         if (metadata && 'editor' in metadata && 'validations' in metadata['editor']) {
             return metadata['editor']['validations'];
         } else {
-            return {};
+            return [];
         }
     }
 
@@ -72,7 +72,7 @@ export default class InputDataObjectType extends BaseModel {
             valueErrorMessages.push('This field is required.');
         }
         // Run through any validations if configured
-        if (Object.keys(this.editorValidations).length > 0) {
+        if (this.editorValidations.length > 0) {
             const validatorFactory = new ValidatorFactory();
             valueErrorMessages = valueErrorMessages.concat(validatorFactory.validate(this.editorValidations, inputValue));
         }

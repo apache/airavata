@@ -11,16 +11,14 @@ export default class ValidatorFactory {
 
     validate(validationsConfig, value) {
         const errorMessages = [];
-        for (let validation in validationsConfig) {
-            if (validationsConfig.hasOwnProperty(validation)) {
-                let validatorClass = VALIDATOR_MAPPING[validation];
-                let validator = new validatorClass(validationsConfig[validation]);
-                let errorMessage = validator.validate(value);
-                if (errorMessage !== null) {
-                    errorMessages.push(errorMessage);
-                }
+        validationsConfig.forEach(validation => {
+            let validatorClass = VALIDATOR_MAPPING[validation.type];
+            let validator = new validatorClass(validation);
+            let errorMessage = validator.validate(value);
+            if (errorMessage !== null) {
+                errorMessages.push(errorMessage);
             }
-        }
+        })
         return errorMessages;
     }
 }
