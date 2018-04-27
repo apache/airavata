@@ -27,6 +27,18 @@ export default class InputDataObjectType extends BaseModel {
         super(FIELDS, data);
     }
 
+    /**
+     * Get the UI component id for the editor component to use for this input.
+     * Returns null if there is no editor UI component id.
+     *
+     * The expected JSON schema for the editor UI component id is the following:
+     * {
+     *   "editor": {
+     *     "ui-component-id": "input-editor-component-id",
+     *     ...
+     *   }
+     * }
+     */
     get editorUIComponentId() {
         const metadata = this._getMetadata();
         if (metadata && 'editor' in metadata && 'ui-component-id' in metadata['editor']) {
@@ -36,6 +48,21 @@ export default class InputDataObjectType extends BaseModel {
         }
     }
 
+    /**
+     * Get the configuration for the editor component, which will be available
+     * to the editor component for customizing its look and functionality.
+     * Returns empty object if there is no editor config.
+     *
+     * The expected JSON schema for the editor config is the following:
+     * {
+     *   "editor": {
+     *     "config": {
+     *       ... anything can go here ...
+     *     }
+     *     ...
+     *   }
+     * }
+     */
     get editorConfig() {
         const metadata = this._getMetadata();
         if (metadata && 'editor' in metadata && 'config' in metadata['editor']) {
@@ -45,6 +72,28 @@ export default class InputDataObjectType extends BaseModel {
         }
     }
 
+    /**
+     * Get the validations for the editor component. See ValidatorFactory for a
+     * list of available validations. Returns empty array if there are no
+     * validations.
+     *
+     * The expected JSON schema for the editor validations is the following:
+     * {
+     *   "editor": {
+     *     "validations": [
+     *       {
+     *         "type": "validation-name",
+     *         "value": "some value for configuring validation, passed to validator constructor",
+     *         "message": "(Optional) custom validation error message"
+     *       },
+     *       ... additional validations go here ...
+     *     ]
+     *     ...
+     *   }
+     * }
+     *
+     * Note: "message" is optional for all validations.
+     */
     get editorValidations() {
         const metadata = this._getMetadata();
         if (metadata && 'editor' in metadata && 'validations' in metadata['editor']) {
