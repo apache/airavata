@@ -99,7 +99,6 @@
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>
     </persistence-unit>
     <persistence-unit name="experiment_data_new">
-        <!--<class>org.apache.airavata.registry.core.entities.expcatalog.ComputeResourceSchedulingEntity</class>-->
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentErrorEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentInputEntity</class>
