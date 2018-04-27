@@ -47,10 +47,10 @@ export OAUTHLIB_INSECURE_TRANSPORT=1
 
 1. If you are building a site from scratch, the first page you create will be a child page of Root page and you should name it home page. Root page shouldn't have any other children. 
 2. All the other pages you create from now on will be children of the home page or children of children of home page etc. 
-3. If you want to create a page as a child page of Home page. Go to the dark side bar and find Pages Link. Click it.
-4. You will get a side pop up which will contain "**Welcome to your new Wagtail Site**" and a "**pencil**" icon and a "**right-arrow**" icon. 
-5. If you have a home page configured, then only you will find the "right-arrow" icon. Click on "right-arrow"
-6. You will get "**Home**" Link. This is the default page. If you want to modify it you can click on "**pencil**" icon. if you have any child pages to "Home". you will also get a "**right-arrow**" icon.
+3. If you want to create a page as a child page of Home page, Click on the Pages link on the left side-bar.
+4. You will get a side pop-up which will contain "**Welcome to your new Wagtail Site**" and a "**pencil**" icon and a "**right-arrow**" icon. 
+5. Unless the home page is created, you won't be able to find the "right-arrow" icon. Click on "right-arrow"
+6. You will get "**Home**" Link. This is the default page. If you want to modify it you can click on "**pencil**" icon. if you have any child pages to "Home". you will also be able to find a "**right-arrow**" icon.
 7. To create a new page as a child of "Home". you need to click on "Home" Link.
 8. Then Click on "**ADD CHILD PAGE**" link. 
 9. Choose a page template type. Currently, three of them are available. 
