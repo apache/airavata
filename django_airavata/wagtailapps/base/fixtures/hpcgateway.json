@@ -3,7 +3,7 @@
   "model": "auth.user",
   "fields": {
     "password": "pbkdf2_sha256$36000$M27MoSnp8k6b$3JqgCY45pRXJZdjOdJzUbXFF6Bg5Uda3g45vVGvUPGY=",
-    "last_login": "2018-04-12T15:49:48.524Z",
+    "last_login": "2018-04-27T18:04:51.267Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -448,9 +448,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-12T15:56:34.800Z",
-    "last_published_at": "2018-04-12T16:34:39.531Z",
-    "latest_revision_created_at": "2018-04-12T16:34:39.499Z",
-    "live_revision": 13
+    "last_published_at": "2018-04-27T18:05:19.919Z",
+    "latest_revision_created_at": "2018-04-27T18:05:19.890Z",
+    "live_revision": 251
   }
 },
 {
@@ -481,9 +481,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-12T16:49:37.773Z",
-    "last_published_at": "2018-04-12T17:01:39.391Z",
-    "latest_revision_created_at": "2018-04-12T17:01:39.368Z",
-    "live_revision": 16
+    "last_published_at": "2018-04-27T18:06:37.810Z",
+    "latest_revision_created_at": "2018-04-27T18:06:37.786Z",
+    "live_revision": 252
   }
 },
 {
@@ -908,6 +908,48 @@
   }
 },
 {
+  "model": "wagtailcore.pagerevision",
+  "pk": 250,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-27T18:05:09.633Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 4, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 209, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 6, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T15:56:34.800Z\", \"last_published_at\": \"2018-04-12T16:34:39.531Z\", \"latest_revision_created_at\": \"2018-04-12T16:34:39.499Z\", \"live_revision\": 13, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"no\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 mt-5\\\", \\\"body\\\": \\\"<p><b>Blue Cluster</b> (Originally known as Orion))</p>\\\"}, \\\"id\\\": \\\"56d07538-3b9f-4b3f-82af-e0f80053e180\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 mt-5\\\", \\\"body\\\": \\\"<p><b>CDER Cluster</b></p>\\\"}, \\\"id\\\": \\\"b0f8362b-8aaf-4bee-98e3-3bd41aab659d\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6 hero-graph\\\"}, \\\"id\\\": \\\"d6e6a54f-8cc6-4cb1-8a7b-95a18a90cff1\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 2, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6 hero-graph\\\"}, \\\"id\\\": \\\"001d29d1-c237-4095-a63b-46f2b8fc07d0\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6 mt-3\\\"}, \\\"id\\\": \\\"07da0963-245e-496e-b872-fee88fc4d851\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6 mt-3\\\"}, \\\"id\\\": \\\"46c9b5dc-1456-42bb-bf54-f5aa2739c473\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 mt-3\\\", \\\"body\\\": \\\"<p><b>Blue</b> cluster is comprised of six IBM System x3850 X5 Servers, two Dell PowerEdge R720, one Silicon Mechanics SuperServer 8027R-TRF, and two Silicon Mechanics R331.v6 servers. Schedule and process Linux jobs rapidly using LSF in batch mode as well as being able to use an interactive queue. Specifications are as follows:</p><ul><li>CentOS 7.2 64-bit</li><li>Slurm Workload Manager</li><li>6x IBM System x3850 x5<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E7-4850</li><li>4 CPUs (10 cores per CPU), 2.0 GHz processors</li><li>512 GB RAM</li><li>2 TB of scratch storage for jobs</li></ul></li><li>1x Silicon Mechanics SuperServer 8027R-TRF+<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E7-4850</li><li>4 CPUs (10 cores per CPU), 2.2 GHz processors</li><li>512 GB RAM</li><li>4 TB of scratch storage for jobs</li></ul></li><li>2x Silicon Mechanics R331.v6<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E5-2630v4</li><li>2 CPUs (10 cores per CPU), 2.2 GHz processors</li><li>256 GB RAM</li><li>4 TB of scratch storage for jobs</li></ul></li><li>1x Dell PowerEdge R720<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E5-2670</li><li>2 CPUs (10 cores per CPU), 2.5 GHz</li><li>128 GB RAM</li><li>2 TB of scratch storage for jobs</li></ul></li><li>1x Dell PowerEdge R720<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E5-2670</li><li>2 CPUs (10 cores per CPU), 2.5 GHz</li><li>128 GB RAM</li><li>2x NVidia Tesla K40m (2880 CUDA cores per each card)</li><li>2 TB of scratch storage for jobs</li></ul></li></ul>\\\"}, \\\"id\\\": \\\"2d07f0e3-c809-42f9-8ef8-c37ce358a057\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 mt-3\\\", \\\"body\\\": \\\"<p><b>CDER</b> cluster is an NSF funded cluster through Award CNS-1205650 &quot;Collaborative Research: CI-ADOO-NEW: Parallel and Distributed Computing Curriculum Development and Educational Resources. This heterogeneous 14 node cluster features 280 cores, 1 TB of RAM, and two GPUs that are able to sustain a mixed user workload that is facilitated by SLURM scheduler.</p><ul><li>CentOS 7.2 64-bit</li><li>SLURM Scheduler</li><li>InfiniBand QDR Interconnect</li><li>11x Compute Nodes<ul><li>20 core - 2x Intel Xeon E5-2650 v3</li><li>64 GB RAM</li></ul></li><li>Large Compute Node<ul><li>36 core - 2x Intel Xeon E5-2699 v3</li><li>128 GB RAM</li></ul></li><li>GPU Node<ul><li>12 core - 2x Intel Xeon E5-2620 v3</li><li>64 GB RAM</li><li>GeForce GTX 980</li></ul></li><li>GPU Node<ul><li>12 core - 2x Intel Xeon E5-2620 v3</li><li>64 GB RAM</li><li>GeForce GTX Titan X</li></ul></li></ul>\\\"}, \\\"id\\\": \\\"3d80d74a-8f33-4a36-bab7-759fdd2e073e\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 251,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-27T18:05:19.890Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 4, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 209, \"live\": true, \"has_unpublished_changes\": true, \"url_path\": \"/home/home/\", \"owner\": 6, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T15:56:34.800Z\", \"last_published_at\": \"2018-04-12T16:34:39.531Z\", \"latest_revision_created_at\": \"2018-04-27T18:05:09.633Z\", \"live_revision\": 13, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"no\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 mt-5\\\", \\\"body\\\": \\\"<p><b>Blue Cluster</b> (Originally known as Orion))</p>\\\"}, \\\"id\\\": \\\"56d07538-3b9f-4b3f-82af-e0f80053e180\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 mt-5\\\", \\\"body\\\": \\\"<p><b>CDER Cluster</b></p>\\\"}, \\\"id\\\": \\\"b0f8362b-8aaf-4bee-98e3-3bd41aab659d\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6 hero-graph\\\"}, \\\"id\\\": \\\"d6e6a54f-8cc6-4cb1-8a7b-95a18a90cff1\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 2, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6 hero-graph\\\"}, \\\"id\\\": \\\"001d29d1-c237-4095-a63b-46f2b8fc07d0\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6 mt-3\\\"}, \\\"id\\\": \\\"07da0963-245e-496e-b872-fee88fc4d851\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6 mt-3\\\"}, \\\"id\\\": \\\"46c9b5dc-1456-42bb-bf54-f5aa2739c473\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 mt-3\\\", \\\"body\\\": \\\"<p><b>Blue</b> cluster is comprised of six IBM System x3850 X5 Servers, two Dell PowerEdge R720, one Silicon Mechanics SuperServer 8027R-TRF, and two Silicon Mechanics R331.v6 servers. Schedule and process Linux jobs rapidly using LSF in batch mode as well as being able to use an interactive queue. Specifications are as follows:</p><ul><li>CentOS 7.2 64-bit</li><li>Slurm Workload Manager</li><li>6x IBM System x3850 x5<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E7-4850</li><li>4 CPUs (10 cores per CPU), 2.0 GHz processors</li><li>512 GB RAM</li><li>2 TB of scratch storage for jobs</li></ul></li><li>1x Silicon Mechanics SuperServer 8027R-TRF+<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E7-4850</li><li>4 CPUs (10 cores per CPU), 2.2 GHz processors</li><li>512 GB RAM</li><li>4 TB of scratch storage for jobs</li></ul></li><li>2x Silicon Mechanics R331.v6<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E5-2630v4</li><li>2 CPUs (10 cores per CPU), 2.2 GHz processors</li><li>256 GB RAM</li><li>4 TB of scratch storage for jobs</li></ul></li><li>1x Dell PowerEdge R720<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E5-2670</li><li>2 CPUs (10 cores per CPU), 2.5 GHz</li><li>128 GB RAM</li><li>2 TB of scratch storage for jobs</li></ul></li><li>1x Dell PowerEdge R720<ul><li>Intel\\\\u00ae Xeon\\\\u00ae Processor E5-2670</li><li>2 CPUs (10 cores per CPU), 2.5 GHz</li><li>128 GB RAM</li><li>2x NVidia Tesla K40m (2880 CUDA cores per each card)</li><li>2 TB of scratch storage for jobs</li></ul></li></ul>\\\"}, \\\"id\\\": \\\"2d07f0e3-c809-42f9-8ef8-c37ce358a057\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 mt-3\\\", \\\"body\\\": \\\"<p><b>CDER</b> cluster is an NSF funded cluster through Award CNS-1205650 &quot;Collaborative Research: CI-ADOO-NEW: Parallel and Distributed Computing Curriculum Development and Educational Resources. This heterogeneous 14 node cluster features 280 cores, 1 TB of RAM, and two GPUs that are able to sustain a mixed user workload that is facilitated by SLURM scheduler.</p><ul><li>CentOS 7.2 64-bit</li><li>SLURM Scheduler</li><li>InfiniBand QDR Interconnect</li><li>11x Compute Nodes<ul><li>20 core - 2x Intel Xeon E5-2650 v3</li><li>64 GB RAM</li></ul></li><li>Large Compute Node<ul><li>36 core - 2x Intel Xeon E5-2699 v3</li><li>128 GB RAM</li></ul></li><li>GPU Node<ul><li>12 core - 2x Intel Xeon E5-2620 v3</li><li>64 GB RAM</li><li>GeForce GTX 980</li></ul></li><li>GPU Node<ul><li>12 core - 2x Intel Xeon E5-2620 v3</li><li>64 GB RAM</li><li>GeForce GTX Titan X</li></ul></li></ul>\\\"}, \\\"id\\\": \\\"3d80d74a-8f33-4a36-bab7-759fdd2e073e\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 252,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-27T18:06:37.786Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 209, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 6, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T16:49:37.773Z\", \"last_published_at\": \"2018-04-12T17:01:39.391Z\", \"latest_revision_created_at\": \"2018-04-12T17:01:39.368Z\", \"live_revision\": 16, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"no\", \"row\": [{\"pk\": 5, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"About Page\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\"}, \\\"id\\\": \\\"93e3f4e6-09b7-4462-970d-e289a1c5f05e\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
   "model": "wagtailcore.collection",
   "pk": 1,
   "fields": {
@@ -1224,6 +1266,7 @@
     "nav_logo": null,
     "nav_logo_width": null,
     "nav_logo_height": null,
+    "nav_logo_link": "#",
     "nav_text1": "Create Account",
     "faicon1": "fa fa-user",
     "nav_link1": "https://hpcgateway.gsu.edu/create",
@@ -1240,7 +1283,7 @@
   "model": "django_airavata_wagtail_base.customcss",
   "pk": 1,
   "fields": {
-    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"----Main Navbar Styles----\"}, \"id\": \"cf43c520-3ac3-48bd-b125-1da93aa4e847\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #3967B7;\\r\\ncolor: #FFFFFF;\\r\\nborder: 1px solid #000000;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\n}\\r\\n.main-nav a {\\r\\nfont-size: 18px;\\r\\n}\", \"id\": \"e8197a51-9a6f-4108-a7ab-650c6dcb8314\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Secondary Navbar Styles-----\"}, \"id\": \"914d77a2-a65c-4151-b4b4-9104aa4dd6ac\"}, {\"type\": \"css_block\", \"value\": \".secondary-nav {\\r\\nbackground-color: #3967B7;\\r\\ncolor: #FFFFFF;\\r\\npadding: 10px;\\r\\n}\\r\\n.secondary-nav a{\\r\\ncolor: #EFEFEF;\\r\\n}\\r\\n.secondary-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\n}\", \"id\": \"494da83b-170e-4165-a6e6-ee98eb9d0a32\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Hero Graphs on Home Page-----\"}, \"id\": \"38afd87c-59bf-4b93-82de-0a6d827d0026\"}, {\"type\": \"css_block\", \"value\": \".hero-graph img {\\r\\ndisplay:block;\\r\\nmargin: 0px auto;\\r\\n}\", \"id\": \"67b1e4aa-bfea-4d36-9201-62a8641f438f\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Main Footer Styles-----\"}, \"id\": \"cb7b0edc-fcbc-4dd4-b564-1c2d584df7dc\"}, {\"type\": \"css_block\", \"value\": \".main-footer {\\r\\nbackground: #3967B7;\\r\\ncolor: #EFEFEF;\\r\\n}\", \"id\": \"20abefa5-f0f8-471b-826a-7244c9141c6d\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Custom Footer Column 1 Styles----\"}, \"id\": \"05c73330-a7de-4e29-be2e-45d26635bc02\"}, {\"type\": \"css_block\", \"value\": \".custom-footer a{\\r\\ncolor: #EFEFEF !important;\\r\\n}\", \"id\": \"3dd45183-7a14-4a18-8cd8-f0274ba69429\"}]"
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"---- Body styles to remove default row padding -----\"}, \"id\": \"6def9053-5e88-4a9e-a031-95f5404507f7\"}, {\"type\": \"css_block\", \"value\": \"body [class*=\\\"col-\\\"] { \\r\\n  padding-left:0;\\r\\n  padding-right:0\\r\\n}\\r\\nbody .row {\\r\\nmargin-left: 0;\\r\\nmargin-right: 0;\\r\\nmin-width: 100% !important;\\r\\n}\\r\\nbody .container {\\r\\nwidth:100%;\\r\\nmax-width:none;\\r\\npadding:0;\\r\\n}\\r\\nbody .container-fluid {\\r\\nwidth:100%;\\r\\nmax-width:none;\\r\\npadding:0;\\r\\n}\", \"id\": \"1d6b0080-408d-4a47-83e5-3425b97dad7f\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Main Navbar Styles----\"}, \"id\": \"cf43c520-3ac3-48bd-b125-1da93aa4e847\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #3967B7;\\r\\ncolor: #FFFFFF;\\r\\nborder: 1px solid #000000;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\n}\\r\\n.main-nav a {\\r\\nfont-size: 16px;\\r\\n}\", \"id\": \"e8197a51-9a6f-4108-a7ab-650c6dcb8314\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Secondary Navbar Styles-----\"}, \"id\": \"914d77a2-a65c-4151-b4b4-9104aa4dd6ac\"}, {\"type\": \"css_block\", \"value\": \".secondary-nav {\\r\\nbackground-color: #3967B7;\\r\\ncolor: #FFFFFF;\\r\\npadding: 10px;\\r\\n}\\r\\n.secondary-nav a{\\r\\ncolor: #EFEFEF;\\r\\nfont-size: 16px;\\r\\n}\\r\\n.secondary-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\n}\", \"id\": \"494da83b-170e-4165-a6e6-ee98eb9d0a32\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Hero Graphs on Home Page-----\"}, \"id\": \"38afd87c-59bf-4b93-82de-0a6d827d0026\"}, {\"type\": \"css_block\", \"value\": \".hero-graph img {\\r\\ndisplay:block;\\r\\nmargin: 0px auto;\\r\\n}\", \"id\": \"67b1e4aa-bfea-4d36-9201-62a8641f438f\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Main Footer Styles-----\"}, \"id\": \"cb7b0edc-fcbc-4dd4-b564-1c2d584df7dc\"}, {\"type\": \"css_block\", \"value\": \".main-footer {\\r\\nbackground: #3967B7;\\r\\ncolor: #EFEFEF;\\r\\n}\", \"id\": \"20abefa5-f0f8-471b-826a-7244c9141c6d\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Custom Footer Column 1 Styles----\"}, \"id\": \"05c73330-a7de-4e29-be2e-45d26635bc02\"}, {\"type\": \"css_block\", \"value\": \".custom-footer a{\\r\\ncolor: #EFEFEF !important;\\r\\nfont-size: 12px;\\r\\n}\", \"id\": \"3dd45183-7a14-4a18-8cd8-f0274ba69429\"}]"
   }
 },
 {
@@ -1256,6 +1299,7 @@
   "fields": {
     "logo": 7,
     "logo_redirect_link": "/",
+    "logo_with_text": "no",
     "logo_width": 144,
     "logo_height": 43,
     "logo_text": null,
@@ -1340,7 +1384,9 @@
   "pk": 3,
   "fields": {
     "show_navbar": "yes",
-    "show_nav_extra": "yes"
+    "show_nav_extra": "yes",
+    "show_footer": "yes",
+    "show_announcements": "no"
   }
 },
 {
@@ -1348,7 +1394,9 @@
   "pk": 4,
   "fields": {
     "show_navbar": "yes",
-    "show_nav_extra": "yes"
+    "show_nav_extra": "yes",
+    "show_footer": "yes",
+    "show_announcements": "no"
   }
 },
 {
@@ -1356,7 +1404,9 @@
   "pk": 5,
   "fields": {
     "show_navbar": "yes",
-    "show_nav_extra": "yes"
+    "show_nav_extra": "yes",
+    "show_footer": "yes",
+    "show_announcements": "yes"
   }
 },
 {
@@ -1364,7 +1414,9 @@
   "pk": 6,
   "fields": {
     "show_navbar": "yes",
-    "show_nav_extra": "yes"
+    "show_nav_extra": "yes",
+    "show_footer": "yes",
+    "show_announcements": "yes"
   }
 },
 {
@@ -1372,7 +1424,9 @@
   "pk": 7,
   "fields": {
     "show_navbar": "yes",
-    "show_nav_extra": "yes"
+    "show_nav_extra": "yes",
+    "show_footer": "yes",
+    "show_announcements": "yes"
   }
 }
 ]
