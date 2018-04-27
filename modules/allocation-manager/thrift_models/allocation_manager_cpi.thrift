@@ -53,7 +53,7 @@ service AllocationRegistryService{
 /**
     <p>API method to get all allocation requests for admin</p>
     */
-    list<allocation_manager_models.UserAllocationDetail> getAllRequestsForAdmin(1: required security_model.AuthzToken authzToken,2: required string userName) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
+    list<allocation_manager_models.UserAllocationDetail> getAllRequests(1: required security_model.AuthzToken authzToken,2: required string userName, 3: required string userRole) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
 
 /**
     <p>API method to assign reviewers</p>
@@ -122,5 +122,10 @@ service AllocationRegistryService{
         <p>API method to deduct the used allocation units</p>
         */
         bool deductAllocationUnits(1: required security_model.AuthzToken authzToken,2:required string specificResource,3:required i64 allocationUnits) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
+
+/**
+        <p>API method to check if the user can submit a new request</p>
+        */
+        bool canSubmitRequest(1: required security_model.AuthzToken authzToken, 2:required string userName) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
 
 }

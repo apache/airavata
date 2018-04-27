@@ -30,7 +30,11 @@ public class UserSpecificResourceDetailRespository
 		query += " WHERE ";
 		query += "p." + DBConstants.UserAllocationDetailTable.PROJECTID + " = " + projectId + " AND ";
 		query += "p.specificResource" + " = '" + specificResourceName  + "'";
-		return select(query, queryParameters, 0, -1).get(0);
+		List<UserSpecificResourceDetail> userSpecificResourceDetailList =  select(query, queryParameters, 0, -1);
+		if(userSpecificResourceDetailList.size()>=1)
+			return userSpecificResourceDetailList.get(0);
+		else
+			return null;
 	}
 	
 }

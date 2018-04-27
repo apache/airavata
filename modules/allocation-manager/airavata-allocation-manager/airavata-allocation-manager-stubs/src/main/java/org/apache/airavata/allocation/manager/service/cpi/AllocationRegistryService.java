@@ -83,8 +83,9 @@ public class AllocationRegistryService {
      * 
      * @param authzToken
      * @param userName
+     * @param userRole
      */
-    public java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> getAllRequestsForAdmin(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName) throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> getAllRequests(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, java.lang.String userRole) throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
     /**
      * <p>API method to assign reviewers</p>
@@ -203,6 +204,14 @@ public class AllocationRegistryService {
      */
     public boolean deductAllocationUnits(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String specificResource, long allocationUnits) throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
+    /**
+     * <p>API method to check if the user can submit a new request</p>
+     * 
+     * @param authzToken
+     * @param userName
+     */
+    public boolean canSubmitRequest(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName) throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+
   }
 
   public interface AsyncIface {
@@ -223,7 +232,7 @@ public class AllocationRegistryService {
 
     public void updateUserSpecificResource(org.apache.airavata.model.security.AuthzToken authzToken, long projectId, java.util.List<org.apache.airavata.allocation.manager.models.UserSpecificResourceDetail> listUserSpecificResource, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void getAllRequestsForAdmin(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> resultHandler) throws org.apache.thrift.TException;
+    public void getAllRequests(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, java.lang.String userRole, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> resultHandler) throws org.apache.thrift.TException;
 
     public void assignReviewers(org.apache.airavata.model.security.AuthzToken authzToken, long projectId, java.lang.String reviewerId, java.lang.String adminId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
@@ -250,6 +259,8 @@ public class AllocationRegistryService {
     public void getRemainingAllocationUnits(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String specificResource, org.apache.thrift.async.AsyncMethodCallback<java.lang.Long> resultHandler) throws org.apache.thrift.TException;
 
     public void deductAllocationUnits(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String specificResource, long allocationUnits, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+
+    public void canSubmitRequest(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -515,24 +526,25 @@ public class AllocationRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateUserSpecificResource failed: unknown result");
     }
 
-    public java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> getAllRequestsForAdmin(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName) throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> getAllRequests(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, java.lang.String userRole) throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_getAllRequestsForAdmin(authzToken, userName);
-      return recv_getAllRequestsForAdmin();
+      send_getAllRequests(authzToken, userName, userRole);
+      return recv_getAllRequests();
     }
 
-    public void send_getAllRequestsForAdmin(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName) throws org.apache.thrift.TException
+    public void send_getAllRequests(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, java.lang.String userRole) throws org.apache.thrift.TException
     {
-      getAllRequestsForAdmin_args args = new getAllRequestsForAdmin_args();
+      getAllRequests_args args = new getAllRequests_args();
       args.setAuthzToken(authzToken);
       args.setUserName(userName);
-      sendBase("getAllRequestsForAdmin", args);
+      args.setUserRole(userRole);
+      sendBase("getAllRequests", args);
     }
 
-    public java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> recv_getAllRequestsForAdmin() throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> recv_getAllRequests() throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      getAllRequestsForAdmin_result result = new getAllRequestsForAdmin_result();
-      receiveBase(result, "getAllRequestsForAdmin");
+      getAllRequests_result result = new getAllRequests_result();
+      receiveBase(result, "getAllRequests");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -542,7 +554,7 @@ public class AllocationRegistryService {
       if (result.ae != null) {
         throw result.ae;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllRequestsForAdmin failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllRequests failed: unknown result");
     }
 
     public boolean assignReviewers(org.apache.airavata.model.security.AuthzToken authzToken, long projectId, java.lang.String reviewerId, java.lang.String adminId) throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
@@ -948,6 +960,36 @@ public class AllocationRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "deductAllocationUnits failed: unknown result");
     }
 
+    public boolean canSubmitRequest(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName) throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      send_canSubmitRequest(authzToken, userName);
+      return recv_canSubmitRequest();
+    }
+
+    public void send_canSubmitRequest(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName) throws org.apache.thrift.TException
+    {
+      canSubmitRequest_args args = new canSubmitRequest_args();
+      args.setAuthzToken(authzToken);
+      args.setUserName(userName);
+      sendBase("canSubmitRequest", args);
+    }
+
+    public boolean recv_canSubmitRequest() throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      canSubmitRequest_result result = new canSubmitRequest_result();
+      receiveBase(result, "canSubmitRequest");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ame != null) {
+        throw result.ame;
+      }
+      if (result.ae != null) {
+        throw result.ae;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "canSubmitRequest failed: unknown result");
+    }
+
   }
   public static class AsyncClient extends org.apache.thrift.async.TAsyncClient implements AsyncIface {
     public static class Factory implements org.apache.thrift.async.TAsyncClientFactory<AsyncClient> {
@@ -1252,27 +1294,30 @@ public class AllocationRegistryService {
       }
     }
 
-    public void getAllRequestsForAdmin(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> resultHandler) throws org.apache.thrift.TException {
+    public void getAllRequests(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, java.lang.String userRole, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getAllRequestsForAdmin_call method_call = new getAllRequestsForAdmin_call(authzToken, userName, resultHandler, this, ___protocolFactory, ___transport);
+      getAllRequests_call method_call = new getAllRequests_call(authzToken, userName, userRole, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class getAllRequestsForAdmin_call extends org.apache.thrift.async.TAsyncMethodCall<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> {
+    public static class getAllRequests_call extends org.apache.thrift.async.TAsyncMethodCall<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> {
       private org.apache.airavata.model.security.AuthzToken authzToken;
       private java.lang.String userName;
-      public getAllRequestsForAdmin_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private java.lang.String userRole;
+      public getAllRequests_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, java.lang.String userRole, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
         this.userName = userName;
+        this.userRole = userRole;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getAllRequestsForAdmin", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        getAllRequestsForAdmin_args args = new getAllRequestsForAdmin_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getAllRequests", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getAllRequests_args args = new getAllRequests_args();
         args.setAuthzToken(authzToken);
         args.setUserName(userName);
+        args.setUserRole(userRole);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1283,7 +1328,7 @@ public class AllocationRegistryService {
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_getAllRequestsForAdmin();
+        return (new Client(prot)).recv_getAllRequests();
       }
     }
 
@@ -1781,6 +1826,41 @@ public class AllocationRegistryService {
       }
     }
 
+    public void canSubmitRequest(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      canSubmitRequest_call method_call = new canSubmitRequest_call(authzToken, userName, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class canSubmitRequest_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
+      private java.lang.String userName;
+      public canSubmitRequest_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
+        this.userName = userName;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("canSubmitRequest", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        canSubmitRequest_args args = new canSubmitRequest_args();
+        args.setAuthzToken(authzToken);
+        args.setUserName(userName);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public java.lang.Boolean getResult() throws org.apache.airavata.allocation.manager.models.AllocationManagerException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_canSubmitRequest();
+      }
+    }
+
   }
 
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
@@ -1802,7 +1882,7 @@ public class AllocationRegistryService {
       processMap.put("deleteUserSpecificResource", new deleteUserSpecificResource());
       processMap.put("getUserSpecificResource", new getUserSpecificResource());
       processMap.put("updateUserSpecificResource", new updateUserSpecificResource());
-      processMap.put("getAllRequestsForAdmin", new getAllRequestsForAdmin());
+      processMap.put("getAllRequests", new getAllRequests());
       processMap.put("assignReviewers", new assignReviewers());
       processMap.put("updateRequestByReviewer", new updateRequestByReviewer());
       processMap.put("getAllRequestsForReviewers", new getAllRequestsForReviewers());
@@ -1816,6 +1896,7 @@ public class AllocationRegistryService {
       processMap.put("rejectRequest", new rejectRequest());
       processMap.put("getRemainingAllocationUnits", new getRemainingAllocationUnits());
       processMap.put("deductAllocationUnits", new deductAllocationUnits());
+      processMap.put("canSubmitRequest", new canSubmitRequest());
       return processMap;
     }
 
@@ -2073,13 +2154,13 @@ public class AllocationRegistryService {
       }
     }
 
-    public static class getAllRequestsForAdmin<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getAllRequestsForAdmin_args> {
-      public getAllRequestsForAdmin() {
-        super("getAllRequestsForAdmin");
+    public static class getAllRequests<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getAllRequests_args> {
+      public getAllRequests() {
+        super("getAllRequests");
       }
 
-      public getAllRequestsForAdmin_args getEmptyArgsInstance() {
-        return new getAllRequestsForAdmin_args();
+      public getAllRequests_args getEmptyArgsInstance() {
+        return new getAllRequests_args();
       }
 
       protected boolean isOneway() {
@@ -2091,10 +2172,10 @@ public class AllocationRegistryService {
         return false;
       }
 
-      public getAllRequestsForAdmin_result getResult(I iface, getAllRequestsForAdmin_args args) throws org.apache.thrift.TException {
-        getAllRequestsForAdmin_result result = new getAllRequestsForAdmin_result();
+      public getAllRequests_result getResult(I iface, getAllRequests_args args) throws org.apache.thrift.TException {
+        getAllRequests_result result = new getAllRequests_result();
         try {
-          result.success = iface.getAllRequestsForAdmin(args.authzToken, args.userName);
+          result.success = iface.getAllRequests(args.authzToken, args.userName, args.userRole);
         } catch (org.apache.airavata.allocation.manager.models.AllocationManagerException ame) {
           result.ame = ame;
         } catch (org.apache.airavata.model.error.AuthorizationException ae) {
@@ -2516,6 +2597,38 @@ public class AllocationRegistryService {
       }
     }
 
+    public static class canSubmitRequest<I extends Iface> extends org.apache.thrift.ProcessFunction<I, canSubmitRequest_args> {
+      public canSubmitRequest() {
+        super("canSubmitRequest");
+      }
+
+      public canSubmitRequest_args getEmptyArgsInstance() {
+        return new canSubmitRequest_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      @Override
+      protected boolean handleRuntimeExceptions() {
+        return false;
+      }
+
+      public canSubmitRequest_result getResult(I iface, canSubmitRequest_args args) throws org.apache.thrift.TException {
+        canSubmitRequest_result result = new canSubmitRequest_result();
+        try {
+          result.success = iface.canSubmitRequest(args.authzToken, args.userName);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.allocation.manager.models.AllocationManagerException ame) {
+          result.ame = ame;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
+        }
+        return result;
+      }
+    }
+
   }
 
   public static class AsyncProcessor<I extends AsyncIface> extends org.apache.thrift.TBaseAsyncProcessor<I> {
@@ -2537,7 +2650,7 @@ public class AllocationRegistryService {
       processMap.put("deleteUserSpecificResource", new deleteUserSpecificResource());
       processMap.put("getUserSpecificResource", new getUserSpecificResource());
       processMap.put("updateUserSpecificResource", new updateUserSpecificResource());
-      processMap.put("getAllRequestsForAdmin", new getAllRequestsForAdmin());
+      processMap.put("getAllRequests", new getAllRequests());
       processMap.put("assignReviewers", new assignReviewers());
       processMap.put("updateRequestByReviewer", new updateRequestByReviewer());
       processMap.put("getAllRequestsForReviewers", new getAllRequestsForReviewers());
@@ -2551,6 +2664,7 @@ public class AllocationRegistryService {
       processMap.put("rejectRequest", new rejectRequest());
       processMap.put("getRemainingAllocationUnits", new getRemainingAllocationUnits());
       processMap.put("deductAllocationUnits", new deductAllocationUnits());
+      processMap.put("canSubmitRequest", new canSubmitRequest());
       return processMap;
     }
 
@@ -3112,20 +3226,20 @@ public class AllocationRegistryService {
       }
     }
 
-    public static class getAllRequestsForAdmin<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAllRequestsForAdmin_args, java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> {
-      public getAllRequestsForAdmin() {
-        super("getAllRequestsForAdmin");
+    public static class getAllRequests<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAllRequests_args, java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> {
+      public getAllRequests() {
+        super("getAllRequests");
       }
 
-      public getAllRequestsForAdmin_args getEmptyArgsInstance() {
-        return new getAllRequestsForAdmin_args();
+      public getAllRequests_args getEmptyArgsInstance() {
+        return new getAllRequests_args();
       }
 
       public org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>>() { 
           public void onComplete(java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> o) {
-            getAllRequestsForAdmin_result result = new getAllRequestsForAdmin_result();
+            getAllRequests_result result = new getAllRequests_result();
             result.success = o;
             try {
               fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -3140,7 +3254,7 @@ public class AllocationRegistryService {
           public void onError(java.lang.Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
-            getAllRequestsForAdmin_result result = new getAllRequestsForAdmin_result();
+            getAllRequests_result result = new getAllRequests_result();
             if (e instanceof org.apache.airavata.allocation.manager.models.AllocationManagerException) {
               result.ame = (org.apache.airavata.allocation.manager.models.AllocationManagerException) e;
               result.setAmeIsSet(true);
@@ -3176,8 +3290,8 @@ public class AllocationRegistryService {
         return false;
       }
 
-      public void start(I iface, getAllRequestsForAdmin_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> resultHandler) throws org.apache.thrift.TException {
-        iface.getAllRequestsForAdmin(args.authzToken, args.userName,resultHandler);
+      public void start(I iface, getAllRequests_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail>> resultHandler) throws org.apache.thrift.TException {
+        iface.getAllRequests(args.authzToken, args.userName, args.userRole,resultHandler);
       }
     }
 
@@ -4084,6 +4198,76 @@ public class AllocationRegistryService {
 
       public void start(I iface, deductAllocationUnits_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
         iface.deductAllocationUnits(args.authzToken, args.specificResource, args.allocationUnits,resultHandler);
+      }
+    }
+
+    public static class canSubmitRequest<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, canSubmitRequest_args, java.lang.Boolean> {
+      public canSubmitRequest() {
+        super("canSubmitRequest");
+      }
+
+      public canSubmitRequest_args getEmptyArgsInstance() {
+        return new canSubmitRequest_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean>() { 
+          public void onComplete(java.lang.Boolean o) {
+            canSubmitRequest_result result = new canSubmitRequest_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            canSubmitRequest_result result = new canSubmitRequest_result();
+            if (e instanceof org.apache.airavata.allocation.manager.models.AllocationManagerException) {
+              result.ame = (org.apache.airavata.allocation.manager.models.AllocationManagerException) e;
+              result.setAmeIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+              result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+              result.setAeIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, canSubmitRequest_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+        iface.canSubmitRequest(args.authzToken, args.userName,resultHandler);
       }
     }
 
@@ -12662,22 +12846,25 @@ public class AllocationRegistryService {
     }
   }
 
-  public static class getAllRequestsForAdmin_args implements org.apache.thrift.TBase<getAllRequestsForAdmin_args, getAllRequestsForAdmin_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAllRequestsForAdmin_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAllRequestsForAdmin_args");
+  public static class getAllRequests_args implements org.apache.thrift.TBase<getAllRequests_args, getAllRequests_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAllRequests_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAllRequests_args");
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField USER_ROLE_FIELD_DESC = new org.apache.thrift.protocol.TField("userRole", org.apache.thrift.protocol.TType.STRING, (short)3);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getAllRequestsForAdmin_argsStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getAllRequestsForAdmin_argsTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getAllRequests_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getAllRequests_argsTupleSchemeFactory();
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public java.lang.String userName; // required
+    public java.lang.String userRole; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      USER_NAME((short)2, "userName");
+      USER_NAME((short)2, "userName"),
+      USER_ROLE((short)3, "userRole");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -12696,6 +12883,8 @@ public class AllocationRegistryService {
             return AUTHZ_TOKEN;
           case 2: // USER_NAME
             return USER_NAME;
+          case 3: // USER_ROLE
+            return USER_ROLE;
           default:
             return null;
         }
@@ -12743,49 +12932,57 @@ public class AllocationRegistryService {
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.USER_ROLE, new org.apache.thrift.meta_data.FieldMetaData("userRole", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAllRequestsForAdmin_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAllRequests_args.class, metaDataMap);
     }
 
-    public getAllRequestsForAdmin_args() {
+    public getAllRequests_args() {
     }
 
-    public getAllRequestsForAdmin_args(
+    public getAllRequests_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      java.lang.String userName)
+      java.lang.String userName,
+      java.lang.String userRole)
     {
       this();
       this.authzToken = authzToken;
       this.userName = userName;
+      this.userRole = userRole;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getAllRequestsForAdmin_args(getAllRequestsForAdmin_args other) {
+    public getAllRequests_args(getAllRequests_args other) {
       if (other.isSetAuthzToken()) {
         this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
       }
       if (other.isSetUserName()) {
         this.userName = other.userName;
       }
+      if (other.isSetUserRole()) {
+        this.userRole = other.userRole;
+      }
     }
 
-    public getAllRequestsForAdmin_args deepCopy() {
-      return new getAllRequestsForAdmin_args(this);
+    public getAllRequests_args deepCopy() {
+      return new getAllRequests_args(this);
     }
 
     @Override
     public void clear() {
       this.authzToken = null;
       this.userName = null;
+      this.userRole = null;
     }
 
     public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
       return this.authzToken;
     }
 
-    public getAllRequestsForAdmin_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+    public getAllRequests_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
       this.authzToken = authzToken;
       return this;
     }
@@ -12809,7 +13006,7 @@ public class AllocationRegistryService {
       return this.userName;
     }
 
-    public getAllRequestsForAdmin_args setUserName(java.lang.String userName) {
+    public getAllRequests_args setUserName(java.lang.String userName) {
       this.userName = userName;
       return this;
     }
@@ -12826,6 +13023,30 @@ public class AllocationRegistryService {
     public void setUserNameIsSet(boolean value) {
       if (!value) {
         this.userName = null;
+      }
+    }
+
+    public java.lang.String getUserRole() {
+      return this.userRole;
+    }
+
+    public getAllRequests_args setUserRole(java.lang.String userRole) {
+      this.userRole = userRole;
+      return this;
+    }
+
+    public void unsetUserRole() {
+      this.userRole = null;
+    }
+
+    /** Returns true if field userRole is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserRole() {
+      return this.userRole != null;
+    }
+
+    public void setUserRoleIsSet(boolean value) {
+      if (!value) {
+        this.userRole = null;
       }
     }
 
@@ -12847,6 +13068,14 @@ public class AllocationRegistryService {
         }
         break;
 
+      case USER_ROLE:
+        if (value == null) {
+          unsetUserRole();
+        } else {
+          setUserRole((java.lang.String)value);
+        }
+        break;
+
       }
     }
 
@@ -12857,6 +13086,9 @@ public class AllocationRegistryService {
 
       case USER_NAME:
         return getUserName();
+
+      case USER_ROLE:
+        return getUserRole();
 
       }
       throw new java.lang.IllegalStateException();
@@ -12873,6 +13105,8 @@ public class AllocationRegistryService {
         return isSetAuthzToken();
       case USER_NAME:
         return isSetUserName();
+      case USER_ROLE:
+        return isSetUserRole();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -12881,12 +13115,12 @@ public class AllocationRegistryService {
     public boolean equals(java.lang.Object that) {
       if (that == null)
         return false;
-      if (that instanceof getAllRequestsForAdmin_args)
-        return this.equals((getAllRequestsForAdmin_args)that);
+      if (that instanceof getAllRequests_args)
+        return this.equals((getAllRequests_args)that);
       return false;
     }
 
-    public boolean equals(getAllRequestsForAdmin_args that) {
+    public boolean equals(getAllRequests_args that) {
       if (that == null)
         return false;
       if (this == that)
@@ -12910,6 +13144,15 @@ public class AllocationRegistryService {
           return false;
       }
 
+      boolean this_present_userRole = true && this.isSetUserRole();
+      boolean that_present_userRole = true && that.isSetUserRole();
+      if (this_present_userRole || that_present_userRole) {
+        if (!(this_present_userRole && that_present_userRole))
+          return false;
+        if (!this.userRole.equals(that.userRole))
+          return false;
+      }
+
       return true;
     }
 
@@ -12925,11 +13168,15 @@ public class AllocationRegistryService {
       if (isSetUserName())
         hashCode = hashCode * 8191 + userName.hashCode();
 
+      hashCode = hashCode * 8191 + ((isSetUserRole()) ? 131071 : 524287);
+      if (isSetUserRole())
+        hashCode = hashCode * 8191 + userRole.hashCode();
+
       return hashCode;
     }
 
     @Override
-    public int compareTo(getAllRequestsForAdmin_args other) {
+    public int compareTo(getAllRequests_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -12956,6 +13203,16 @@ public class AllocationRegistryService {
           return lastComparison;
         }
       }
+      lastComparison = java.lang.Boolean.valueOf(isSetUserRole()).compareTo(other.isSetUserRole());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserRole()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userRole, other.userRole);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -12973,7 +13230,7 @@ public class AllocationRegistryService {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("getAllRequestsForAdmin_args(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getAllRequests_args(");
       boolean first = true;
 
       sb.append("authzToken:");
@@ -12991,6 +13248,14 @@ public class AllocationRegistryService {
         sb.append(this.userName);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("userRole:");
+      if (this.userRole == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userRole);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -13002,6 +13267,9 @@ public class AllocationRegistryService {
       }
       if (userName == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' was not present! Struct: " + toString());
+      }
+      if (userRole == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'userRole' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
       if (authzToken != null) {
@@ -13025,15 +13293,15 @@ public class AllocationRegistryService {
       }
     }
 
-    private static class getAllRequestsForAdmin_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public getAllRequestsForAdmin_argsStandardScheme getScheme() {
-        return new getAllRequestsForAdmin_argsStandardScheme();
+    private static class getAllRequests_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAllRequests_argsStandardScheme getScheme() {
+        return new getAllRequests_argsStandardScheme();
       }
     }
 
-    private static class getAllRequestsForAdmin_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getAllRequestsForAdmin_args> {
+    private static class getAllRequests_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getAllRequests_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getAllRequestsForAdmin_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAllRequests_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -13060,6 +13328,14 @@ public class AllocationRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // USER_ROLE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userRole = iprot.readString();
+                struct.setUserRoleIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -13071,7 +13347,7 @@ public class AllocationRegistryService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getAllRequestsForAdmin_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAllRequests_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -13085,35 +13361,43 @@ public class AllocationRegistryService {
           oprot.writeString(struct.userName);
           oprot.writeFieldEnd();
         }
+        if (struct.userRole != null) {
+          oprot.writeFieldBegin(USER_ROLE_FIELD_DESC);
+          oprot.writeString(struct.userRole);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
 
     }
 
-    private static class getAllRequestsForAdmin_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public getAllRequestsForAdmin_argsTupleScheme getScheme() {
-        return new getAllRequestsForAdmin_argsTupleScheme();
+    private static class getAllRequests_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAllRequests_argsTupleScheme getScheme() {
+        return new getAllRequests_argsTupleScheme();
       }
     }
 
-    private static class getAllRequestsForAdmin_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getAllRequestsForAdmin_args> {
+    private static class getAllRequests_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getAllRequests_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getAllRequestsForAdmin_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAllRequests_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         struct.authzToken.write(oprot);
         oprot.writeString(struct.userName);
+        oprot.writeString(struct.userRole);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getAllRequestsForAdmin_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAllRequests_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
         struct.authzToken.read(iprot);
         struct.setAuthzTokenIsSet(true);
         struct.userName = iprot.readString();
         struct.setUserNameIsSet(true);
+        struct.userRole = iprot.readString();
+        struct.setUserRoleIsSet(true);
       }
     }
 
@@ -13122,15 +13406,15 @@ public class AllocationRegistryService {
     }
   }
 
-  public static class getAllRequestsForAdmin_result implements org.apache.thrift.TBase<getAllRequestsForAdmin_result, getAllRequestsForAdmin_result._Fields>, java.io.Serializable, Cloneable, Comparable<getAllRequestsForAdmin_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAllRequestsForAdmin_result");
+  public static class getAllRequests_result implements org.apache.thrift.TBase<getAllRequests_result, getAllRequests_result._Fields>, java.io.Serializable, Cloneable, Comparable<getAllRequests_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAllRequests_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
     private static final org.apache.thrift.protocol.TField AME_FIELD_DESC = new org.apache.thrift.protocol.TField("ame", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getAllRequestsForAdmin_resultStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getAllRequestsForAdmin_resultTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getAllRequests_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getAllRequests_resultTupleSchemeFactory();
 
     public java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> success; // required
     public org.apache.airavata.allocation.manager.models.AllocationManagerException ame; // required
@@ -13212,13 +13496,13 @@ public class AllocationRegistryService {
       tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.error.AuthorizationException.class)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAllRequestsForAdmin_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAllRequests_result.class, metaDataMap);
     }
 
-    public getAllRequestsForAdmin_result() {
+    public getAllRequests_result() {
     }
 
-    public getAllRequestsForAdmin_result(
+    public getAllRequests_result(
       java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> success,
       org.apache.airavata.allocation.manager.models.AllocationManagerException ame,
       org.apache.airavata.model.error.AuthorizationException ae)
@@ -13232,7 +13516,7 @@ public class AllocationRegistryService {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getAllRequestsForAdmin_result(getAllRequestsForAdmin_result other) {
+    public getAllRequests_result(getAllRequests_result other) {
       if (other.isSetSuccess()) {
         java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> __this__success = new java.util.ArrayList<org.apache.airavata.allocation.manager.models.UserAllocationDetail>(other.success.size());
         for (org.apache.airavata.allocation.manager.models.UserAllocationDetail other_element : other.success) {
@@ -13248,8 +13532,8 @@ public class AllocationRegistryService {
       }
     }
 
-    public getAllRequestsForAdmin_result deepCopy() {
-      return new getAllRequestsForAdmin_result(this);
+    public getAllRequests_result deepCopy() {
+      return new getAllRequests_result(this);
     }
 
     @Override
@@ -13278,7 +13562,7 @@ public class AllocationRegistryService {
       return this.success;
     }
 
-    public getAllRequestsForAdmin_result setSuccess(java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> success) {
+    public getAllRequests_result setSuccess(java.util.List<org.apache.airavata.allocation.manager.models.UserAllocationDetail> success) {
       this.success = success;
       return this;
     }
@@ -13302,7 +13586,7 @@ public class AllocationRegistryService {
       return this.ame;
     }
 
-    public getAllRequestsForAdmin_result setAme(org.apache.airavata.allocation.manager.models.AllocationManagerException ame) {
+    public getAllRequests_result setAme(org.apache.airavata.allocation.manager.models.AllocationManagerException ame) {
       this.ame = ame;
       return this;
     }
@@ -13326,7 +13610,7 @@ public class AllocationRegistryService {
       return this.ae;
     }
 
-    public getAllRequestsForAdmin_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+    public getAllRequests_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
       this.ae = ae;
       return this;
     }
@@ -13411,12 +13695,12 @@ public class AllocationRegistryService {
     public boolean equals(java.lang.Object that) {
       if (that == null)
         return false;
-      if (that instanceof getAllRequestsForAdmin_result)
-        return this.equals((getAllRequestsForAdmin_result)that);
+      if (that instanceof getAllRequests_result)
+        return this.equals((getAllRequests_result)that);
       return false;
     }
 
-    public boolean equals(getAllRequestsForAdmin_result that) {
+    public boolean equals(getAllRequests_result that) {
       if (that == null)
         return false;
       if (this == that)
@@ -13472,7 +13756,7 @@ public class AllocationRegistryService {
     }
 
     @Override
-    public int compareTo(getAllRequestsForAdmin_result other) {
+    public int compareTo(getAllRequests_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -13526,7 +13810,7 @@ public class AllocationRegistryService {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("getAllRequestsForAdmin_result(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getAllRequests_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -13577,15 +13861,15 @@ public class AllocationRegistryService {
       }
     }
 
-    private static class getAllRequestsForAdmin_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public getAllRequestsForAdmin_resultStandardScheme getScheme() {
-        return new getAllRequestsForAdmin_resultStandardScheme();
+    private static class getAllRequests_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAllRequests_resultStandardScheme getScheme() {
+        return new getAllRequests_resultStandardScheme();
       }
     }
 
-    private static class getAllRequestsForAdmin_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getAllRequestsForAdmin_result> {
+    private static class getAllRequests_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getAllRequests_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getAllRequestsForAdmin_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAllRequests_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -13643,7 +13927,7 @@ public class AllocationRegistryService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getAllRequestsForAdmin_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAllRequests_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -13675,16 +13959,16 @@ public class AllocationRegistryService {
 
     }
 
-    private static class getAllRequestsForAdmin_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public getAllRequestsForAdmin_resultTupleScheme getScheme() {
-        return new getAllRequestsForAdmin_resultTupleScheme();
+    private static class getAllRequests_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAllRequests_resultTupleScheme getScheme() {
+        return new getAllRequests_resultTupleScheme();
       }
     }
 
-    private static class getAllRequestsForAdmin_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getAllRequestsForAdmin_result> {
+    private static class getAllRequests_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getAllRequests_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getAllRequestsForAdmin_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAllRequests_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet optionals = new java.util.BitSet();
         if (struct.isSetSuccess()) {
@@ -13715,7 +13999,7 @@ public class AllocationRegistryService {
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getAllRequestsForAdmin_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAllRequests_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
@@ -28682,6 +28966,1038 @@ public class AllocationRegistryService {
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, deductAllocationUnits_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ame = new org.apache.airavata.allocation.manager.models.AllocationManagerException();
+          struct.ame.read(iprot);
+          struct.setAmeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class canSubmitRequest_args implements org.apache.thrift.TBase<canSubmitRequest_args, canSubmitRequest_args._Fields>, java.io.Serializable, Cloneable, Comparable<canSubmitRequest_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("canSubmitRequest_args");
+
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)2);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new canSubmitRequest_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new canSubmitRequest_argsTupleSchemeFactory();
+
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
+    public java.lang.String userName; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_NAME((short)2, "userName");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_NAME
+            return USER_NAME;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
+      tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(canSubmitRequest_args.class, metaDataMap);
+    }
+
+    public canSubmitRequest_args() {
+    }
+
+    public canSubmitRequest_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
+      java.lang.String userName)
+    {
+      this();
+      this.authzToken = authzToken;
+      this.userName = userName;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public canSubmitRequest_args(canSubmitRequest_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
+      if (other.isSetUserName()) {
+        this.userName = other.userName;
+      }
+    }
+
+    public canSubmitRequest_args deepCopy() {
+      return new canSubmitRequest_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.authzToken = null;
+      this.userName = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public canSubmitRequest_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
+    }
+
+    public java.lang.String getUserName() {
+      return this.userName;
+    }
+
+    public canSubmitRequest_args setUserName(java.lang.String userName) {
+      this.userName = userName;
+      return this;
+    }
+
+    public void unsetUserName() {
+      this.userName = null;
+    }
+
+    /** Returns true if field userName is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserName() {
+      return this.userName != null;
+    }
+
+    public void setUserNameIsSet(boolean value) {
+      if (!value) {
+        this.userName = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
+      case USER_NAME:
+        if (value == null) {
+          unsetUserName();
+        } else {
+          setUserName((java.lang.String)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
+      case USER_NAME:
+        return getUserName();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
+      case USER_NAME:
+        return isSetUserName();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof canSubmitRequest_args)
+        return this.equals((canSubmitRequest_args)that);
+      return false;
+    }
+
+    public boolean equals(canSubmitRequest_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
+
+      boolean this_present_userName = true && this.isSetUserName();
+      boolean that_present_userName = true && that.isSetUserName();
+      if (this_present_userName || that_present_userName) {
+        if (!(this_present_userName && that_present_userName))
+          return false;
+        if (!this.userName.equals(that.userName))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetAuthzToken()) ? 131071 : 524287);
+      if (isSetAuthzToken())
+        hashCode = hashCode * 8191 + authzToken.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetUserName()) ? 131071 : 524287);
+      if (isSetUserName())
+        hashCode = hashCode * 8191 + userName.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(canSubmitRequest_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetUserName()).compareTo(other.isSetUserName());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userName, other.userName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("canSubmitRequest_args(");
+      boolean first = true;
+
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("userName:");
+      if (this.userName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userName);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
+      if (userName == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class canSubmitRequest_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public canSubmitRequest_argsStandardScheme getScheme() {
+        return new canSubmitRequest_argsStandardScheme();
+      }
+    }
+
+    private static class canSubmitRequest_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<canSubmitRequest_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, canSubmitRequest_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_NAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userName = iprot.readString();
+                struct.setUserNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, canSubmitRequest_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.userName != null) {
+          oprot.writeFieldBegin(USER_NAME_FIELD_DESC);
+          oprot.writeString(struct.userName);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class canSubmitRequest_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public canSubmitRequest_argsTupleScheme getScheme() {
+        return new canSubmitRequest_argsTupleScheme();
+      }
+    }
+
+    private static class canSubmitRequest_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<canSubmitRequest_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, canSubmitRequest_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
+        oprot.writeString(struct.userName);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, canSubmitRequest_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
+        struct.userName = iprot.readString();
+        struct.setUserNameIsSet(true);
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class canSubmitRequest_result implements org.apache.thrift.TBase<canSubmitRequest_result, canSubmitRequest_result._Fields>, java.io.Serializable, Cloneable, Comparable<canSubmitRequest_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("canSubmitRequest_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField AME_FIELD_DESC = new org.apache.thrift.protocol.TField("ame", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new canSubmitRequest_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new canSubmitRequest_resultTupleSchemeFactory();
+
+    public boolean success; // required
+    public org.apache.airavata.allocation.manager.models.AllocationManagerException ame; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      AME((short)1, "ame"),
+      AE((short)2, "ae");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // AME
+            return AME;
+          case 2: // AE
+            return AE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.AME, new org.apache.thrift.meta_data.FieldMetaData("ame", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.allocation.manager.models.AllocationManagerException.class)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.error.AuthorizationException.class)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(canSubmitRequest_result.class, metaDataMap);
+    }
+
+    public canSubmitRequest_result() {
+    }
+
+    public canSubmitRequest_result(
+      boolean success,
+      org.apache.airavata.allocation.manager.models.AllocationManagerException ame,
+      org.apache.airavata.model.error.AuthorizationException ae)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.ame = ame;
+      this.ae = ae;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public canSubmitRequest_result(canSubmitRequest_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetAme()) {
+        this.ame = new org.apache.airavata.allocation.manager.models.AllocationManagerException(other.ame);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
+      }
+    }
+
+    public canSubmitRequest_result deepCopy() {
+      return new canSubmitRequest_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.ame = null;
+      this.ae = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public canSubmitRequest_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.allocation.manager.models.AllocationManagerException getAme() {
+      return this.ame;
+    }
+
+    public canSubmitRequest_result setAme(org.apache.airavata.allocation.manager.models.AllocationManagerException ame) {
+      this.ame = ame;
+      return this;
+    }
+
+    public void unsetAme() {
+      this.ame = null;
+    }
+
+    /** Returns true if field ame is set (has been assigned a value) and false otherwise */
+    public boolean isSetAme() {
+      return this.ame != null;
+    }
+
+    public void setAmeIsSet(boolean value) {
+      if (!value) {
+        this.ame = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public canSubmitRequest_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.lang.Boolean)value);
+        }
+        break;
+
+      case AME:
+        if (value == null) {
+          unsetAme();
+        } else {
+          setAme((org.apache.airavata.allocation.manager.models.AllocationManagerException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return isSuccess();
+
+      case AME:
+        return getAme();
+
+      case AE:
+        return getAe();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case AME:
+        return isSetAme();
+      case AE:
+        return isSetAe();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof canSubmitRequest_result)
+        return this.equals((canSubmitRequest_result)that);
+      return false;
+    }
+
+    public boolean equals(canSubmitRequest_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_ame = true && this.isSetAme();
+      boolean that_present_ame = true && that.isSetAme();
+      if (this_present_ame || that_present_ame) {
+        if (!(this_present_ame && that_present_ame))
+          return false;
+        if (!this.ame.equals(that.ame))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((success) ? 131071 : 524287);
+
+      hashCode = hashCode * 8191 + ((isSetAme()) ? 131071 : 524287);
+      if (isSetAme())
+        hashCode = hashCode * 8191 + ame.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetAe()) ? 131071 : 524287);
+      if (isSetAe())
+        hashCode = hashCode * 8191 + ae.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(canSubmitRequest_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetAme()).compareTo(other.isSetAme());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAme()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ame, other.ame);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("canSubmitRequest_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ame:");
+      if (this.ame == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ame);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class canSubmitRequest_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public canSubmitRequest_resultStandardScheme getScheme() {
+        return new canSubmitRequest_resultStandardScheme();
+      }
+    }
+
+    private static class canSubmitRequest_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<canSubmitRequest_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, canSubmitRequest_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // AME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ame = new org.apache.airavata.allocation.manager.models.AllocationManagerException();
+                struct.ame.read(iprot);
+                struct.setAmeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, canSubmitRequest_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ame != null) {
+          oprot.writeFieldBegin(AME_FIELD_DESC);
+          struct.ame.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class canSubmitRequest_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public canSubmitRequest_resultTupleScheme getScheme() {
+        return new canSubmitRequest_resultTupleScheme();
+      }
+    }
+
+    private static class canSubmitRequest_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<canSubmitRequest_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, canSubmitRequest_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetAme()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetAme()) {
+          struct.ame.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, canSubmitRequest_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {

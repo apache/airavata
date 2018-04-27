@@ -36,7 +36,7 @@ public class testClient {
             AuthzToken token = new AuthzToken("empty_token");
             
             System.out.println("######################");
-            System.out.println("Testing createAllocationRequest() 1");
+           /* System.out.println("Testing createAllocationRequest() 1");
             UserAllocationDetail requestDetails = new UserAllocationDetail();
             requestDetails.setUsername("harsha");
             requestDetails.setRequestedDate(101L);
@@ -215,8 +215,8 @@ public class testClient {
             
             System.out.println("######################");
             System.out.println("Testing deductAllocationUnits");
-            System.out.println(client.deductAllocationUnits(token, "large gpu", 10));
-            
+            System.out.println(client.deductAllocationUnits(token, "large gpu", 10));*/
+            boolean userDetailList = client.canSubmitRequest(token, "mthapa");
             System.out.println("End of testing!!!!");
 
             transport.close();

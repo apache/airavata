@@ -13,6 +13,7 @@
 <ul>
 <li><a href="#Fn_AllocationRegistryService_approveRequest">approveRequest</a></li>
 <li><a href="#Fn_AllocationRegistryService_assignReviewers">assignReviewers</a></li>
+<li><a href="#Fn_AllocationRegistryService_canSubmitRequest">canSubmitRequest</a></li>
 <li><a href="#Fn_AllocationRegistryService_createAllocationRequest">createAllocationRequest</a></li>
 <li><a href="#Fn_AllocationRegistryService_createReviewerSpecificResource">createReviewerSpecificResource</a></li>
 <li><a href="#Fn_AllocationRegistryService_createUserSpecificResource">createUserSpecificResource</a></li>
@@ -21,7 +22,7 @@
 <li><a href="#Fn_AllocationRegistryService_deleteReviewerSpecificResource">deleteReviewerSpecificResource</a></li>
 <li><a href="#Fn_AllocationRegistryService_deleteUserSpecificResource">deleteUserSpecificResource</a></li>
 <li><a href="#Fn_AllocationRegistryService_getAllAssignedReviewersForRequest">getAllAssignedReviewersForRequest</a></li>
-<li><a href="#Fn_AllocationRegistryService_getAllRequestsForAdmin">getAllRequestsForAdmin</a></li>
+<li><a href="#Fn_AllocationRegistryService_getAllRequests">getAllRequests</a></li>
 <li><a href="#Fn_AllocationRegistryService_getAllRequestsForReviewers">getAllRequestsForReviewers</a></li>
 <li><a href="#Fn_AllocationRegistryService_getAllReviewsForARequest">getAllReviewsForARequest</a></li>
 <li><a href="#Fn_AllocationRegistryService_getAllocationRequest">getAllocationRequest</a></li>
@@ -82,9 +83,10 @@
                                 <code>list&lt;<code><a href="allocation_manager_models.html#Struct_UserSpecificResourceDetail">allocation_manager_models.UserSpecificResourceDetail</a></code>&gt;</code> listUserSpecificResource)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
 </pre><pre><p>API method to update specific resource requests</p>
-</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllRequestsForAdmin">Function: AllocationRegistryService.getAllRequestsForAdmin</h4>
-<pre><code>list&lt;<code><a href="allocation_manager_models.html#Struct_UserAllocationDetail">allocation_manager_models.UserAllocationDetail</a></code>&gt;</code> getAllRequestsForAdmin(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
-                                                                            <code>string</code> userName)
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllRequests">Function: AllocationRegistryService.getAllRequests</h4>
+<pre><code>list&lt;<code><a href="allocation_manager_models.html#Struct_UserAllocationDetail">allocation_manager_models.UserAllocationDetail</a></code>&gt;</code> getAllRequests(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
+                                                                    <code>string</code> userName,
+                                                                    <code>string</code> userRole)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
 </pre><pre><p>API method to get all allocation requests for admin</p>
 </pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_assignReviewers">Function: AllocationRegistryService.assignReviewers</h4>
@@ -165,4 +167,9 @@
                            <code>i64</code> allocationUnits)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
 </pre><pre><p>API method to deduct the used allocation units</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_canSubmitRequest">Function: AllocationRegistryService.canSubmitRequest</h4>
+<pre><code>bool</code> canSubmitRequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
+                      <code>string</code> userName)
+    throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
+</pre><pre><p>API method to check if the user can submit a new request</p>
 </pre><br/></div></div></body></html>

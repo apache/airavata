@@ -20,6 +20,7 @@
 package org.apache.airavata.allocation.manager.server;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.apache.airavata.allocation.manager.db.repositories.ProjectReviewerRepository;
 //import org.apache.airavata.allocation.manager.db.repositories.Projec
@@ -92,7 +93,6 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
         }
     }
 
-    
     @Override
     @SecurityCheck
     public UserAllocationDetail getAllocationRequest(AuthzToken authzToken, long projectId)
@@ -186,11 +186,11 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
     
     @Override
     @SecurityCheck
-    public List<UserAllocationDetail> getAllRequestsForAdmin(AuthzToken authzToken, String userName)
+    public List<UserAllocationDetail> getAllRequests(AuthzToken authzToken, String userName, String userRole)
             throws AllocationManagerException, AuthorizationException, TException {
         List<UserAllocationDetail> userAllocationDetailList = new ArrayList<UserAllocationDetail>();
         try {
-            userAllocationDetailList = new UserAllocationDetailRepository().getAllUserRequests();
+            userAllocationDetailList = new UserAllocationDetailRepository().getAllUserRequests(userName, userRole);
         } catch (Exception ex) {
             throw new AllocationManagerException()
                     .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
@@ -198,7 +198,6 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
         return userAllocationDetailList;
     }
 
-    
     @Override
     @SecurityCheck
     public boolean assignReviewers(AuthzToken authzToken, long projectId, String reviewerId, String adminId)
@@ -367,29 +366,32 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
             UserSpecificResourceDetail userSpecificResourceDetail = new UserSpecificResourceDetail();
             userAllocDetail = new UserAllocationDetailRepository().get(projectId + "");
             userSpecificResourceDetail = new UserSpecificResourceDetailRespository().getSpecificResource(projectId, specificResourceName);
-            userSpecificResourceDetail.setStartDate(startDate);
-            userSpecificResourceDetail.setEndDate(endDate);
-            userSpecificResourceDetail.setAllocatedServiceUnits(awardAllocation);
-            userSpecificResourceDetail.setSubStatus(DBConstants.RequestStatus.APPROVED);
-
-            (new UserSpecificResourceDetailRespository()).update(userSpecificResourceDetail);
-
-            List<UserSpecificResourceDetail> userSpecificResourceDetailList = getUserSpecificResource(authzToken, projectId);
-            boolean check = true;
-            for (UserSpecificResourceDetail userSpecificResourceDetail1 : userSpecificResourceDetailList) {
-                if (!userSpecificResourceDetail1.getSubStatus().equals(DBConstants.RequestStatus.APPROVED)) {
-                    check = false;
-                    break;
-                }
+            if (userSpecificResourceDetail != null) {
+	            userSpecificResourceDetail.setStartDate(startDate);
+	            userSpecificResourceDetail.setEndDate(endDate);
+	            userSpecificResourceDetail.setAllocatedServiceUnits(awardAllocation);
+	            userSpecificResourceDetail.setSubStatus(DBConstants.RequestStatus.APPROVED);
+	
+	            (new UserSpecificResourceDetailRespository()).update(userSpecificResourceDetail);
+	
+	            List<UserSpecificResourceDetail> userSpecificResourceDetailList = getUserSpecificResource(authzToken, projectId);
+	            boolean check = true;
+	            for (UserSpecificResourceDetail userSpecificResourceDetail1 : userSpecificResourceDetailList) {
+	                if (!userSpecificResourceDetail1.getSubStatus().equals(DBConstants.RequestStatus.APPROVED)) {
+	                    check = false;
+	                    break;
+	                }
+	            }
+	            if (check) {
+	                userAllocDetail.setAllocationStatus(DBConstants.RequestStatus.APPROVED);
+	            } else {
+	                userAllocDetail.setAllocationStatus(DBConstants.RequestStatus.PARTIALLYAPPROVED);
+	            }
+	            // updates the request
+	            (new UserAllocationDetailRepository()).update(userAllocDetail);
+	            return true;
             }
-            if (check) {
-                userAllocDetail.setAllocationStatus(DBConstants.RequestStatus.APPROVED);
-            } else {
-                userAllocDetail.setAllocationStatus(DBConstants.RequestStatus.PARTIALLYAPPROVED);
-            }
-            // updates the request
-            (new UserAllocationDetailRepository()).update(userAllocDetail);
-            return true;
+            return false;
         } catch (Exception ex) {
             throw new AllocationManagerException()
                     .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
@@ -458,7 +460,6 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
 	public boolean deductAllocationUnits(AuthzToken authzToken, String specificResource, long allocationUnits)
 			throws AllocationManagerException, AuthorizationException, TException {
 			try {
-				//String username = authzToken.getClaimsMap().get("userName");
 				String username="madrina";
 		        long projectId = (new UserAllocationDetailRepository()).getProjectId(username);
 		        UserSpecificResourceDetail userSpecificResourceDetail = (new UserSpecificResourceDetailRespository()).getSpecificResource(projectId,specificResource);
@@ -470,5 +471,30 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
 	       	 throw new AllocationManagerException()
 	            .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
 			}
+	}
+
+	@Override
+    @SecurityCheck
+	public boolean canSubmitRequest(AuthzToken authzToken, String userName)
+			throws AllocationManagerException, AuthorizationException, TException {
+		
+		boolean canSubmit = true;
+		try {
+			List<UserAllocationDetail> requestList = getAllRequests(authzToken, userName, "user");
+			if(!requestList.isEmpty()) {
+				Date requestedDate = new Date (requestList.get(0).getRequestedDate());
+				long currentDate = System.currentTimeMillis();
+				long diff = currentDate - requestList.get(0).getRequestedDate();
+				long diffDays = diff / (24 * 60 * 60 * 1000);
+				
+				if(diffDays < 365) {
+					canSubmit = false;
+				}
+			}
+		}catch (Exception ex) {
+	       	 throw new AllocationManagerException()
+	            .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+			}
+		return canSubmit;
 	}
 }
