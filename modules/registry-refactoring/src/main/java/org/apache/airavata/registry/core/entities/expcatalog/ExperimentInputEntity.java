@@ -107,8 +107,7 @@ public class ExperimentInputEntity {
         this.userFriendlyDescription = userFriendlyDescription;
     }
 
-    @Lob
-    @Column(name = "METADATA")
+    @Column(name = "METADATA", length = 4096)
     public String getMetaData() {
         return metaData;
     }
