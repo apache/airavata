@@ -26,7 +26,7 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 
 /**
- * The primary key class for the queue_status database table.
+ * The persistent class for the queue_status database table.
  */
 @Entity
 @Table(name = "QUEUE_STATUS")

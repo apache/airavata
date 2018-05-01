@@ -23,25 +23,16 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import java.io.Serializable;
 
 /**
- * The primary key class for the job_status database table.
+ * The primary key class for the job database table.
  */
-public class JobStatusPK implements Serializable {
+public class JobPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String statusId;
     private String jobId;
     private String taskId;
 
-    public JobStatusPK() {
-    }
-
-    public String getStatusId() {
-        return statusId;
-    }
-
-    public void setStatusId(String statusId) {
-        this.statusId = statusId;
+    public JobPK() {
     }
 
     public String getJobId() {
@@ -64,20 +55,18 @@ public class JobStatusPK implements Serializable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof JobStatusPK)) {
+        if (!(other instanceof JobPK)) {
             return false;
         }
-        JobStatusPK castOther = (JobStatusPK) other;
+        JobPK castOther = (JobPK) other;
         return
-                this.statusId.equals(castOther.statusId)
-                        && this.jobId.equals(castOther.jobId)
-                                && this.taskId.equals(castOther.taskId);
+                this.jobId.equals(castOther.jobId)
+                        && this.taskId.equals(castOther.taskId);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.statusId.hashCode();
         hash = hash * prime + this.jobId.hashCode();
         hash = hash * prime + this.taskId.hashCode();
 

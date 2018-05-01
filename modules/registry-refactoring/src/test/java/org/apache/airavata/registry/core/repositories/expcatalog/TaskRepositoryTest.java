@@ -101,9 +101,8 @@ public class TaskRepositoryTest {
         taskStatus.setState(TaskState.CREATED);
         taskRepository.updateTaskStatus(taskStatus, taskId);
 
-        List<TaskStatus> retrievedTaskStatusList = taskRepository.getTaskStatus(taskId);
-        assertTrue(retrievedTaskStatusList.size() == 1);
-        assertEquals(TaskState.CREATED, retrievedTaskStatusList.get(0).getState());
+        TaskStatus retrievedTaskStatus = taskRepository.getTaskStatus(taskId);
+        assertEquals(TaskState.CREATED, retrievedTaskStatus.getState());
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");

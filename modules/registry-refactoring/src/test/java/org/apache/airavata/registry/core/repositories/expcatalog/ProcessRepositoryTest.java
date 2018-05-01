@@ -135,9 +135,8 @@ public class ProcessRepositoryTest {
         processStatus.setState(ProcessState.EXECUTING);
         processRepository.updateProcessStatus(processStatus, processId);
 
-        List<ProcessStatus> retrievedStatusList = processRepository.getProcessStatus(processId);
-        assertTrue(retrievedStatusList.size() == 1);
-        assertEquals(ProcessState.EXECUTING, retrievedStatusList.get(0).getState());
+        ProcessStatus retrievedStatus = processRepository.getProcessStatus(processId);
+        assertEquals(ProcessState.EXECUTING, retrievedStatus.getState());
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");

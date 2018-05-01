@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -45,7 +46,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
     }
 
     protected ProjectEntity saveProject(Project project, String gatewayId) throws RegistryException {
-        if (project.getProjectID() == null || project.getProjectID().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (project.getProjectID() == null || project.getProjectID().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Project's ProjectId");
             project.setProjectID(getProjectId(project.getName()));
         }
@@ -55,7 +56,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
 
         if (project.getGatewayId() == null) {
             logger.debug("Setting the Project's GatewayId");
-            projectEntity.setGatewayId(project.getGatewayId());
+            projectEntity.setGatewayId(gatewayId);
         }
 
         if (!isProjectExist(projectEntity.getProjectID())) {
@@ -84,14 +85,17 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
     }
 
     public List<Project> getProjectList(String fieldName, Object value) throws RegistryException {
-        return getProjectList(fieldName, value, -1, -1, null, null);
+        return getProjectList(fieldName, value, -1, 0, null, null);
     }
 
     public List<Project> getProjectList(String fieldName, Object value, int limit, int offset,
                                          Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException{
+        Map<String, Object> queryParameters = new HashMap<>();
+
         if (fieldName.equals(DBConstants.Project.OWNER)) {
             logger.debug("Checking if the field name is owner");
-            List<Project> projectList = select(QueryConstants.GET_ALL_PROJECTS, 0);
+            queryParameters.put(DBConstants.Project.OWNER, value);
+            List<Project> projectList = select(QueryConstants.GET_ALL_PROJECTS_FOR_OWNER, limit, offset, queryParameters);
 
             if (projectList != null && !projectList.isEmpty()) {
                 logger.debug("The retrieved list is not empty or null");
@@ -132,39 +136,40 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
         String query = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();
 
-        if (filters != null && !filters.isEmpty()) {
+        if (filters == null || !filters.containsKey(DBConstants.Project.GATEWAY_ID)) {
+            logger.error("GatewayId is required");
+            throw new RegistryException("GatewayId is required");
+        }
 
-            for (String field : filters.keySet()) {
+        for (String field : filters.keySet()) {
 
-                if (field.equals(DBConstants.Project.GATEWAY_ID)) {
-                    logger.debug("Filter Projects by Gateway ID");
-                    queryParameters.put(DBConstants.Project.GATEWAY_ID, filters.get(field));
-                    query += "P.gatewayId LIKE :" + DBConstants.Project.GATEWAY_ID + " AND ";
-                }
+            if (field.equals(DBConstants.Project.GATEWAY_ID)) {
+                logger.debug("Filter Projects by Gateway ID");
+                queryParameters.put(DBConstants.Project.GATEWAY_ID, filters.get(field));
+                query += "P.gatewayId LIKE :" + DBConstants.Project.GATEWAY_ID + " AND ";
+            }
 
-                else if (field.equals(DBConstants.Project.OWNER)) {
-                    logger.debug("Filter Projects by Owner");
-                    queryParameters.put(DBConstants.Project.OWNER, filters.get(field));
-                    query += "P.owner LIKE :" + DBConstants.Project.OWNER + " AND ";
-                }
+            else if (field.equals(DBConstants.Project.OWNER)) {
+                logger.debug("Filter Projects by Owner");
+                queryParameters.put(DBConstants.Project.OWNER, filters.get(field));
+                query += "P.owner LIKE :" + DBConstants.Project.OWNER + " AND ";
+            }
 
-                else if (field.equals(DBConstants.Project.PROJECT_NAME)) {
-                    logger.debug("Filter Projects by Project Name");
-                    queryParameters.put(DBConstants.Project.PROJECT_NAME, filters.get(field));
-                    query += "P.name LIKE :" + DBConstants.Project.PROJECT_NAME + " AND ";
-                }
+            else if (field.equals(DBConstants.Project.PROJECT_NAME)) {
+                logger.debug("Filter Projects by Project Name");
+                queryParameters.put(DBConstants.Project.PROJECT_NAME, filters.get(field));
+                query += "P.name LIKE :" + DBConstants.Project.PROJECT_NAME + " AND ";
+            }
 
-                else if (field.equals(DBConstants.Project.DESCRIPTION)) {
-                    logger.debug("Filter Projects by Description");
-                    queryParameters.put(DBConstants.Project.DESCRIPTION, filters.get(field));
-                    query += "P.description LIKE :" + DBConstants.Project.DESCRIPTION + " AND ";
-                }
+            else if (field.equals(DBConstants.Project.DESCRIPTION)) {
+                logger.debug("Filter Projects by Description");
+                queryParameters.put(DBConstants.Project.DESCRIPTION, filters.get(field));
+                query += "P.description LIKE :" + DBConstants.Project.DESCRIPTION + " AND ";
+            }
 
-                else {
-                    logger.error("Unsupported field name for Project module.");
-                    throw new IllegalArgumentException("Unsupported field name for Project module.");
-                }
-
+            else {
+                logger.error("Unsupported field name for Project module.");
+                throw new IllegalArgumentException("Unsupported field name for Project module.");
             }
 
         }
@@ -178,6 +183,11 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
         else {
             logger.debug("Removing the last operator from the query");
             query = query.substring(0, query.length() - 5);
+        }
+
+        if (orderByIdentifier != null && resultOrderType != null && orderByIdentifier.equals(DBConstants.Project.CREATION_TIME)) {
+            String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+            query += " ORDER BY P." + DBConstants.Project.CREATION_TIME + " " + order;
         }
 
         List<Project> projectList = select(query, limit, offset, queryParameters);

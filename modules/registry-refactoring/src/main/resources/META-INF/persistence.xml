@@ -81,13 +81,6 @@
         <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    <persistence-unit name="workspacecatalog_data">
-        <class>org.apache.airavata.registry.core.entities.expcatalog.GatewayEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workspacecatalog.UserProfileEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workspacecatalog.NSFDemographicsEntity</class>
-        <class>org.apache.airavata.registry.core.entities.expcatalog.NotificationEntity</class>
-        <class>org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity</class>
-    </persistence-unit>
     <persistence-unit name="workflowcatalog_data">
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgeEntity</class>

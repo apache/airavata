@@ -28,6 +28,7 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.core.entities.expcatalog.*;
 import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
@@ -52,7 +53,7 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
     }
 
     protected ExperimentEntity saveExperiment(ExperimentModel experimentModel) throws RegistryException {
-        if (experimentModel.getExperimentId() == null || experimentModel.getExperimentId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (experimentModel.getExperimentId() == null || experimentModel.getExperimentId().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Experiment's ExperimentId");
             experimentModel.setExperimentId(ExpCatalogUtils.getID(experimentModel.getExperimentName()));
         }
@@ -137,11 +138,11 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
                 logger.debug("Adding the ExperimentInput to the list");
                 inputDataObjectTypeList.add(input);
                 experimentModel.setExperimentInputs(inputDataObjectTypeList);
-                updateExperiment(experimentModel, experimentId);
             }
 
         }
 
+        updateExperiment(experimentModel, experimentId);
         return experimentId;
     }
 
@@ -164,11 +165,11 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
                 logger.debug("Adding the ExperimentOutput to the list");
                 outputDataObjectTypeList.add(output);
                 experimentModel.setExperimentOutputs(outputDataObjectTypeList);
-                updateExperiment(experimentModel, experimentId);
             }
 
         }
 
+        updateExperiment(experimentModel, experimentId);
         return experimentId;
     }
 
@@ -220,9 +221,36 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         return updatedExperimentStatus.getStatusId();
     }
 
-    public List<ExperimentStatus> getExperimentStatus(String experimentId) throws RegistryException {
+    public ExperimentStatus getExperimentStatus(String experimentId) throws RegistryException {
         ExperimentModel experimentModel = getExperiment(experimentId);
-        return experimentModel.getExperimentStatus();
+        List<ExperimentStatus> experimentStatusList = experimentModel.getExperimentStatus();
+
+        if(experimentStatusList.size() == 0) {
+            logger.debug("ExperimentStatus list is empty");
+            return null;
+        }
+
+        else {
+            ExperimentStatus latestExperimentStatus = experimentStatusList.get(0);
+
+            for (int i = 1; i < experimentStatusList.size(); i++) {
+                Timestamp timeOfStateChange = new Timestamp(experimentStatusList.get(i).getTimeOfStateChange());
+
+                if (timeOfStateChange != null) {
+
+                    if (timeOfStateChange.after(new Timestamp(latestExperimentStatus.getTimeOfStateChange()))
+                            || (timeOfStateChange.equals(latestExperimentStatus.getTimeOfStateChange()) && experimentStatusList.get(i).getState().equals(ExperimentState.COMPLETED.toString()))
+                            || (timeOfStateChange.equals(latestExperimentStatus.getTimeOfStateChange()) && experimentStatusList.get(i).getState().equals(ExperimentState.FAILED.toString()))
+                            || (timeOfStateChange.equals(latestExperimentStatus.getTimeOfStateChange()) && experimentStatusList.get(i).getState().equals(ExperimentState.CANCELED.toString()))){
+                        latestExperimentStatus = experimentStatusList.get(i);
+                    }
+
+                }
+
+            }
+
+            return latestExperimentStatus;
+        }
     }
 
     public String addExperimentError(ErrorModel experimentError, String experimentId) throws RegistryException {
@@ -252,18 +280,6 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         ExperimentModel experimentModel = getExperiment(experimentId);
         return experimentModel.getErrors();
     }
-
-    /*public void updateExperimentField(String experimentId, String fieldName, Object value) throws RegistryException {
-
-    }*/
-
-    /*public void updateUserConfigurationDataField(String experimentId, String fieldName, Object value) throws RegistryException {
-
-    }*/
-
-    /*public void updateComputeResourceScheduling(ComputationalResourceSchedulingModel value, String experimentId) throws RegistryException {
-
-    }*/
 
     public List<ExperimentModel> getExperimentList(String fieldName, Object value) throws RegistryException {
         return getExperimentList(fieldName, value, -1, 0, null, null);
@@ -317,116 +333,6 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
 
     public void removeExperiment(String experimentId) throws RegistryException {
         delete(experimentId);
-    }
-
-    public boolean isValidStatusTransition(Object object1, Object object2) {
-
-        if (object1 instanceof ExperimentState && object2 instanceof ExperimentState) {
-            ExperimentState oldState = (ExperimentState) object1;
-            ExperimentState nextState = (ExperimentState) object2;
-
-            if (nextState == null) {
-                return false;
-            }
-
-            switch (oldState) {
-                case CREATED:
-                    return true;
-                case VALIDATED:
-                    return nextState != ExperimentState.CREATED;
-                case SCHEDULED:
-                    return nextState != ExperimentState.CREATED
-                            || nextState != ExperimentState.VALIDATED;
-                case LAUNCHED:
-                    return nextState != ExperimentState.CREATED
-                            || nextState != ExperimentState.VALIDATED
-                            || nextState != ExperimentState.SCHEDULED;
-                case EXECUTING:
-                    return nextState != ExperimentState.CREATED
-                            || nextState != ExperimentState.VALIDATED
-                            || nextState != ExperimentState.SCHEDULED
-                            || nextState != ExperimentState.LAUNCHED;
-
-                case CANCELING:
-                    return nextState == ExperimentState.CANCELING
-                            || nextState == ExperimentState.CANCELED
-                            || nextState == ExperimentState.COMPLETED
-                            || nextState == ExperimentState.FAILED;
-                case CANCELED:
-                    return nextState == ExperimentState.CANCELED;
-                case COMPLETED:
-                    return nextState == ExperimentState.COMPLETED;
-                case FAILED:
-                    return nextState == ExperimentState.FAILED;
-                default:
-                    return false;
-            }
-
-        }
-
-        else if (object1 instanceof ProcessState && object2 instanceof ProcessState) {
-            ProcessState oldState = (ProcessState) object1;
-            ProcessState nextState = (ProcessState) object2;
-
-            if (nextState == null) {
-                return false;
-            }
-
-            return true;
-//            TODO - need the state machine to complete these data
-//            switch (oldState) {
-//                case CREATED:
-//                    return true;
-//                default:
-//                    return false;
-//            }
-        }
-
-        else if (object1 instanceof TaskState && object2 instanceof TaskState) {
-            TaskState oldState = (TaskState) object1;
-            TaskState nextState = (TaskState) object2;
-
-            if (nextState == null) {
-                return false;
-            }
-
-            return true;
-//            TODO - need the state machine to complete these data
-//            switch (oldState) {
-//                case CREATED:
-//                    return true;
-//                default:
-//                    return false;
-//            }
-        }
-
-        else if (object1 instanceof JobState && object2 instanceof JobState) {
-            JobState oldState = (JobState) object1;
-            JobState nextState = (JobState) object2;
-
-            if (nextState == null) {
-                return false;
-            }
-
-            return true;
-//            TODO - need the state machine to complete these data
-//            switch (oldState) {
-//                default:
-//                    return false;
-//            }
-        }
-
-        return false;
-    }
-
-    public String getStatusID(String parentId) {
-        String status = parentId.replaceAll("\\s", "");
-        return status + "_" + UUID.randomUUID();
-    }
-
-    public String getErrorID(String parentId) {
-        String error = parentId.replaceAll("\\s", "");
-        return error + "_" + UUID.randomUUID();
     }
 
 }

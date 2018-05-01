@@ -98,10 +98,6 @@ public class UserConfigurationDataEntity implements Serializable {
     @Column(name = "IS_USE_USER_CR_PREF")
     private boolean useUserCRPref;
 
-    /*@OneToOne(targetEntity = ComputeResourceScheduleEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "userConfiguration")
-    private ComputeResourceScheduleEntity computationalResourceSchedule;*/
-
     @OneToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     private ExperimentEntity experiment;
@@ -284,14 +280,6 @@ public class UserConfigurationDataEntity implements Serializable {
     public void setUseUserCRPref(boolean useUserCRPref) {
         this.useUserCRPref = useUserCRPref;
     }
-
-    /*public ComputeResourceScheduleEntity getComputationalResourceSchedule() {
-        return computationalResourceSchedule;
-    }
-
-    public void setComputationalResourceSchedule(ComputeResourceScheduleEntity computationalResourceSchedule) {
-        this.computationalResourceSchedule = computationalResourceSchedule;
-    }*/
 
     public ExperimentEntity getExperiment() {
         return experiment;

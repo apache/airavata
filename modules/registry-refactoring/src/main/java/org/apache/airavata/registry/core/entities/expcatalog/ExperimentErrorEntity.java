@@ -58,7 +58,7 @@ public class ExperimentErrorEntity implements Serializable {
 
     @Lob
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
-    private List<String> rootCauseErrorIdList;
+    private String rootCauseErrorIdList;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
@@ -116,11 +116,11 @@ public class ExperimentErrorEntity implements Serializable {
         this.transientOrPersistent = transientOrPersistent;
     }
 
-    public List<String> getRootCauseErrorIdList() {
+    public String getRootCauseErrorIdList() {
         return rootCauseErrorIdList;
     }
 
-    public void setRootCauseErrorIdList(List<String> rootCauseErrorIdList) {
+    public void setRootCauseErrorIdList(String rootCauseErrorIdList) {
         this.rootCauseErrorIdList = rootCauseErrorIdList;
     }
 

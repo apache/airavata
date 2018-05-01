@@ -97,6 +97,7 @@ public class DBConstants {
         public static final String PROJECT_NAME = "name";
         public static final String DESCRIPTION = "description";
         public static final String ACCESSIBLE_PROJECT_IDS = "accessibleProjectIds";
+        public static final String CREATION_TIME = "creationTime";
     }
 
     public static class Experiment {

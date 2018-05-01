@@ -11,6 +11,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -132,7 +133,7 @@ public class ExperimentSummaryRepositoryTest {
         filters.put(DBConstants.Experiment.EXECUTION_ID, "executionIdOne");
 
         experimentSummaryModelList = experimentSummaryRepository.
-                searchAllAccessibleExperiments(accessibleExperimentIds, filters, -1, 0, null, null);
+                searchAllAccessibleExperiments(accessibleExperimentIds, filters, -1, 0, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
         assertTrue(experimentSummaryModelList.size() == 1);
         assertEquals(experimentIdOne, experimentSummaryModelList.get(0).getExperimentId());
 

@@ -27,52 +27,49 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
     }
 
     public List<ExperimentSummaryModel> searchAllAccessibleExperiments(List<String> accessibleExperimentIds, Map<String, String> filters, int limit,
-                                                                       int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+                                                                       int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException, IllegalArgumentException {
         String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();
 
-        if (filters != null && !filters.isEmpty()) {
+        if (filters == null || !filters.containsKey(DBConstants.Experiment.GATEWAY_ID)) {
+            logger.error("GatewayId is required");
+            throw new RegistryException("GatewayId is required");
+        }
 
-            for (String field : filters.keySet()) {
+        if (filters.get(DBConstants.Experiment.USER_NAME) != null) {
+            logger.debug("Filter Experiments by User");
+            queryParameters.put(DBConstants.Experiment.USER_NAME, filters.get(DBConstants.Experiment.USER_NAME));
+            query += "ES.userName LIKE :" + DBConstants.Experiment.USER_NAME + " AND ";
+        }
 
-                if (field.equals(DBConstants.Experiment.USER_NAME)) {
-                    logger.debug("Filter Experiments by User");
-                    queryParameters.put(DBConstants.Experiment.USER_NAME, filters.get(field));
-                    query += "ES.userName LIKE :" + DBConstants.Experiment.USER_NAME + " AND ";
-                }
+        if (filters.get(DBConstants.Experiment.GATEWAY_ID) != null) {
+            logger.debug("Filter Experiments by Gateway ID");
+            queryParameters.put(DBConstants.Experiment.GATEWAY_ID, filters.get(DBConstants.Experiment.GATEWAY_ID));
+            query += "ES.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID + " AND ";
+        }
 
-                else if (field.equals(DBConstants.Experiment.GATEWAY_ID)) {
-                    logger.debug("Filter Experiments by Gateway ID");
-                    queryParameters.put(DBConstants.Experiment.GATEWAY_ID, filters.get(field));
-                    query += "ES.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID + " AND ";
-                }
+        if (filters.get(DBConstants.Experiment.PROJECT_ID) != null) {
+            logger.debug("Filter Experiments by Project ID");
+            queryParameters.put(DBConstants.Experiment.PROJECT_ID, filters.get(DBConstants.Experiment.PROJECT_ID));
+            query += "ES.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID + " AND ";
+        }
 
-                else if (field.equals(DBConstants.Experiment.PROJECT_ID)) {
-                    logger.debug("Filter Experiments by Project ID");
-                    queryParameters.put(DBConstants.Experiment.PROJECT_ID, filters.get(field));
-                    query += "ES.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID + " AND ";
-                }
+        if (filters.get(DBConstants.Experiment.EXPERIMENT_NAME) != null) {
+            logger.debug("Filter Experiments by Name");
+            queryParameters.put(DBConstants.Experiment.EXPERIMENT_NAME, filters.get(DBConstants.Experiment.EXPERIMENT_NAME));
+            query += "ES.name LIKE :" + DBConstants.Experiment.EXPERIMENT_NAME + " AND ";
+        }
 
-                else if (field.equals(DBConstants.Experiment.EXPERIMENT_NAME)) {
-                    logger.debug("Filter Experiments by Name");
-                    queryParameters.put(DBConstants.Experiment.EXPERIMENT_NAME, filters.get(field));
-                    query += "ES.name LIKE :" + DBConstants.Experiment.EXPERIMENT_NAME + " AND ";
-                }
+        if (filters.get(DBConstants.Experiment.DESCRIPTION) != null) {
+            logger.debug("Filter Experiments by Description");
+            queryParameters.put(DBConstants.Experiment.DESCRIPTION, filters.get(DBConstants.Experiment.DESCRIPTION));
+            query += "ES.description LIKE :" + DBConstants.Experiment.DESCRIPTION + " AND ";
+        }
 
-                else if (field.equals(DBConstants.Experiment.DESCRIPTION)) {
-                    logger.debug("Filter Experiments by Description");
-                    queryParameters.put(DBConstants.Experiment.DESCRIPTION, filters.get(field));
-                    query += "ES.description LIKE :" + DBConstants.Experiment.DESCRIPTION + " AND ";
-                }
-
-                else if (field.equals(DBConstants.Experiment.EXECUTION_ID)) {
-                    logger.debug("Filter Experiments by Execution ID");
-                    queryParameters.put(DBConstants.Experiment.EXECUTION_ID, filters.get(field));
-                    query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
-                }
-
-            }
-
+        if (filters.get(DBConstants.Experiment.EXECUTION_ID) != null) {
+            logger.debug("Filter Experiments by Execution ID");
+            queryParameters.put(DBConstants.Experiment.EXECUTION_ID, filters.get(DBConstants.Experiment.EXECUTION_ID));
+            query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
         }
 
         if (filters.get(DBConstants.ExperimentStatus.STATE) != null) {
@@ -108,6 +105,11 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             query = query.substring(0, query.length() - 5);
         }
 
+        if (orderByIdentifier != null && resultOrderType != null && orderByIdentifier.equals(DBConstants.Experiment.CREATION_TIME)) {
+            String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+            query += " ORDER BY ES." + DBConstants.Experiment.CREATION_TIME + " " + order;
+        }
+
         List<ExperimentSummaryModel> experimentSummaryModelList = select(query, limit, offset, queryParameters);
         return experimentSummaryModelList;
     }
@@ -123,6 +125,11 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             String resourceHostName = null;
             Timestamp fromDate = null;
             Timestamp toDate = null;
+
+            if (filters == null || !filters.containsKey(DBConstants.Experiment.GATEWAY_ID)) {
+                logger.error("GatewayId is required");
+                throw new RegistryException("GatewayId is required");
+            }
 
             for (String field : filters.keySet()) {
 
@@ -207,7 +214,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
     }
 
     protected List<ExperimentSummaryModel> getExperimentStatisticsForState(ExperimentState experimentState, String gatewayId, Timestamp fromDate, Timestamp toDate,
-                                                                           String userName, String applicationName, String resourceHostName) throws RegistryException {
+                                                                           String userName, String applicationName, String resourceHostName) throws RegistryException, IllegalArgumentException {
 
         String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();

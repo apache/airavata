@@ -1,9 +1,11 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
@@ -21,24 +23,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity, String> {
+public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity, JobPK> {
     private final static Logger logger = LoggerFactory.getLogger(JobRepository.class);
 
     public JobRepository() { super(JobModel.class, JobEntity.class); }
 
-    protected String saveJobModelData(JobModel jobModel, CompositeIdentifier cis) throws RegistryException {
-        JobEntity jobEntity = saveJob(jobModel, cis);
+    protected String saveJobModelData(JobModel jobModel, JobPK jobPK) throws RegistryException {
+        JobEntity jobEntity = saveJob(jobModel, jobPK);
         return jobEntity.getJobId();
     }
 
-    protected JobEntity saveJob(JobModel jobModel, CompositeIdentifier cis) throws RegistryException {
-        if (jobModel.getJobId() == null || jobModel.getJobId().equals("DO_NOT_SET_AT_CLIENTS")) {
+    protected JobEntity saveJob(JobModel jobModel, JobPK jobPK) throws RegistryException {
+        if (jobModel.getJobId() == null || jobModel.getJobId().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Job's JobId");
-            jobModel.setJobId((String) cis.getSecondLevelIdentifier());
+            jobModel.setJobId(jobPK.getJobId());
         }
 
-        String jobId = (String) cis.getSecondLevelIdentifier();
-        String taskId = (String) cis.getTopLevelIdentifier();
+        String jobId = jobPK.getJobId();
+        String taskId = jobPK.getTaskId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         JobEntity jobEntity = mapper.map(jobModel, JobEntity.class);
 
@@ -50,7 +52,7 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
             });
         }
 
-        if (!isJobExist(cis)) {
+        if (!isJobExist(jobPK)) {
             logger.debug("Checking if the Job already exists");
             jobEntity.setCreationTime(new Timestamp((System.currentTimeMillis())));
         }
@@ -59,36 +61,23 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
     }
 
     public String addJob(JobModel job, String processId) throws RegistryException {
-        CompositeIdentifier cis = new CompositeIdentifier(job.getTaskId(), job.getJobId());
-        String jobId = saveJobModelData(job, cis);
-        String taskId = (String) cis.getTopLevelIdentifier();
-        job.setProcessId(processId);
-        job.setTaskId(taskId);
-        TaskRepository taskRepository = new TaskRepository();
-        TaskModel taskModel = taskRepository.getTask(taskId);
-        List<JobModel> jobModelList = taskModel.getJobs();
-
-        if (jobModelList != null && !jobModelList.contains(job)) {
-            logger.debug("Adding the Job to the list");
-            jobModelList.add(job);
-            taskModel.setJobs(jobModelList);
-            taskRepository.updateTask(taskModel, taskId);
-        }
-
+        JobPK jobPK = new JobPK();
+        jobPK.setJobId(job.getJobId());
+        jobPK.setTaskId(job.getTaskId());
+        String jobId = saveJobModelData(job, jobPK);
         return jobId;
     }
 
-    public String updateJob(JobModel job, CompositeIdentifier cis) throws RegistryException {
-        return saveJobModelData(job, cis);
+    public String updateJob(JobModel job, JobPK jobPK) throws RegistryException {
+        return saveJobModelData(job, jobPK);
     }
 
-    public JobModel getJob(CompositeIdentifier cis) throws RegistryException {
-        JobRepository jobRepository = new JobRepository();
-        return jobRepository.get((String) cis.getSecondLevelIdentifier());
+    public JobModel getJob(JobPK jobPK) throws RegistryException {
+        return get(jobPK);
     }
 
-    public String addJobStatus(JobStatus jobStatus, CompositeIdentifier cis) throws RegistryException {
-        JobModel jobModel = getJob(cis);
+    public String addJobStatus(JobStatus jobStatus, JobPK jobPK) throws RegistryException {
+        JobModel jobModel = getJob(jobPK);
         List<JobStatus> jobStatusList = jobModel.getJobStatuses();
 
         if (jobStatusList.size() == 0 || !jobStatusList.contains(jobStatus)) {
@@ -104,12 +93,12 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
         }
 
         jobModel.setJobStatuses(jobStatusList);
-        updateJob(jobModel, cis);
+        updateJob(jobModel, jobPK);
         return jobStatus.getStatusId();
     }
 
-    public String updateJobStatus(JobStatus updatedJobStatus, CompositeIdentifier cis) throws RegistryException {
-        JobModel jobModel = getJob(cis);
+    public String updateJobStatus(JobStatus updatedJobStatus, JobPK jobPK) throws RegistryException {
+        JobModel jobModel = getJob(jobPK);
         List<JobStatus> jobStatusList = jobModel.getJobStatuses();
 
         for (JobStatus retrievedJobStatus : jobStatusList) {
@@ -123,13 +112,13 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
         }
 
         jobModel.setJobStatuses(jobStatusList);
-        updateJob(jobModel, cis);
+        updateJob(jobModel, jobPK);
         return updatedJobStatus.getStatusId();
 
     }
 
-    public List<JobStatus> getJobStatus(CompositeIdentifier cis) throws RegistryException {
-        JobModel jobModel = getJob(cis);
+    public List<JobStatus> getJobStatus(JobPK jobPK) throws RegistryException {
+        JobModel jobModel = getJob(jobPK);
         return jobModel.getJobStatuses();
     }
 
@@ -168,14 +157,12 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
         return jobIds;
     }
 
-    public boolean isJobExist(CompositeIdentifier cis) throws RegistryException {
-        String jobId = (String) cis.getSecondLevelIdentifier();
-        return isExists(jobId);
+    public boolean isJobExist(JobPK jobPK) throws RegistryException {
+        return isExists(jobPK);
     }
 
-    public void removeJob(CompositeIdentifier cis) throws RegistryException {
-        String jobId = (String) cis.getSecondLevelIdentifier();
-        delete(jobId);
+    public void removeJob(JobPK jobPK) throws RegistryException {
+        delete(jobPK);
     }
 
 }

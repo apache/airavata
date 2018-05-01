@@ -30,6 +30,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "JOB")
+@IdClass(JobPK.class)
 public class JobEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -37,6 +38,7 @@ public class JobEntity implements Serializable {
     @Column(name = "JOB_ID")
     private String jobId;
 
+    @Id
     @Column(name = "TASK_ID")
     private String taskId;
 

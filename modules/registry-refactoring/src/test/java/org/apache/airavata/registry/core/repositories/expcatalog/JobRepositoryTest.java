@@ -10,6 +10,7 @@ import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
@@ -104,20 +105,22 @@ public class JobRepositoryTest {
         assertTrue(jobId != null);
         assertTrue(taskRepository.getTask(taskId).getJobs().size() == 1);
 
-        CompositeIdentifier cis = new CompositeIdentifier(taskId, jobId);
+        JobPK jobPK = new JobPK();
+        jobPK.setJobId(jobId);
+        jobPK.setTaskId(taskId);
 
         jobModel.setJobName("jobName");
-        jobRepository.updateJob(jobModel, cis);
-        assertEquals("jobName", jobRepository.getJob(cis).getJobName());
+        jobRepository.updateJob(jobModel, jobPK);
+        assertEquals("jobName", jobRepository.getJob(jobPK).getJobName());
 
         JobStatus jobStatus = new JobStatus(JobState.QUEUED);
-        String jobStatusId = jobRepository.addJobStatus(jobStatus, cis);
+        String jobStatusId = jobRepository.addJobStatus(jobStatus, jobPK);
         assertTrue(jobStatusId != null);
 
         jobStatus.setJobState(JobState.ACTIVE);
-        jobRepository.updateJobStatus(jobStatus, cis);
+        jobRepository.updateJobStatus(jobStatus, jobPK);
 
-        List<JobStatus> retrievedJobStatusList = jobRepository.getJobStatus(cis);
+        List<JobStatus> retrievedJobStatusList = jobRepository.getJobStatus(jobPK);
         assertTrue(retrievedJobStatusList.size() == 1);
         assertEquals(JobState.ACTIVE, retrievedJobStatusList.get(0).getJobState());
 
@@ -128,8 +131,8 @@ public class JobRepositoryTest {
         experimentRepository.removeExperiment(experimentId);
         processRepository.removeProcess(processId);
         taskRepository.removeTask(taskId);
-        jobRepository.removeJob(cis);
-        assertFalse(jobRepository.isJobExist(cis));
+        jobRepository.removeJob(jobPK);
+        assertFalse(jobRepository.isJobExist(jobPK));
 
         gatewayRepository.removeGateway(gatewayId);
         projectRepository.removeProject(projectId);
