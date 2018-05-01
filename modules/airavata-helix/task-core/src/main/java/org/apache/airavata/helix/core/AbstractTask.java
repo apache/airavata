@@ -69,6 +69,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
         if (participant != null) {
             participant.registerRunningTask(this);
+        } else {
+            logger.warn("Task with id: " + taskId + " is not registered since the participant is not set");
         }
         super.init(manager, workflowName, jobName, taskName);
         try {
@@ -80,25 +82,33 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     @Override
     public final TaskResult run() {
-        boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null ||
-                this.callbackContext.getJobConfig().getJobId()
-                        .equals(this.callbackContext.getJobConfig().getWorkflow() + "_" + getUserContent(NEXT_JOB, Scope.WORKFLOW));
+        try {
+            boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null ||
+                    this.callbackContext.getJobConfig().getJobId()
+                            .equals(this.callbackContext.getJobConfig().getWorkflow() + "_" + getUserContent(NEXT_JOB, Scope.WORKFLOW));
 
-        TaskResult result = isThisNextJob ? onRun(this.taskHelper) : new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
-
-        if (participant != null) {
-            participant.unregisterRunningTask(this);
+            return isThisNextJob ? onRun(this.taskHelper) : new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
+        } finally {
+            if (participant != null) {
+                participant.unregisterRunningTask(this);
+            } else {
+                logger.warn("Task with id: " + taskId + " is not unregistered since the participant is not set");
+            }
         }
-        return result;
     }
 
     @Override
     public final void cancel() {
-        logger.info("Cancelling task " + taskId);
-        if (participant != null) {
-            participant.unregisterRunningTask(this);
+        try {
+            logger.info("Cancelling task " + taskId);
+            onCancel();
+        } finally {
+            if (participant != null) {
+                participant.unregisterRunningTask(this);
+            } else {
+                logger.warn("Task with id: " + taskId + " is not unregistered since the participant is not set");
+            }
         }
-        onCancel();
     }
 
     public abstract TaskResult onRun(TaskHelper helper);
@@ -195,7 +205,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         return curatorClient;
     }
 
-    public void setParticipant(HelixParticipant participant) {
+    public AbstractTask setParticipant(HelixParticipant participant) {
         this.participant = participant;
+        return this;
     }
 }
