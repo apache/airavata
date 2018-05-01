@@ -21,7 +21,6 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.registry.core.entities.expcatalog.GatewayEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.NotificationEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
@@ -56,6 +55,11 @@ public class NotificationRepository extends ExpCatAbstractRepository<Notificatio
             notificationEntity.setCreationTime(new Timestamp(notification.getCreationTime()));
         }
 
+        else {
+            logger.debug("Setting the Notification's creation time to current time");
+            notificationEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        }
+
         if (notificationEntity.getPublishedTime() != null) {
             logger.debug("Setting the Notification's published time");
             notificationEntity.setPublishedTime(new Timestamp(notification.getPublishedTime()));
@@ -66,15 +70,11 @@ public class NotificationRepository extends ExpCatAbstractRepository<Notificatio
             notificationEntity.setExpirationTime(new Timestamp(notification.getExpirationTime()));
         }
 
-        else {
-            logger.debug("Setting the Notification's creation time");
-            notificationEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
-        }
-
         return execute(entityManager -> entityManager.merge(notificationEntity));
     }
 
     public String createNotification(Notification notification) throws RegistryException {
+        notification.setNotificationId(getNotificationId());
         return saveNotificationData(notification);
     }
 

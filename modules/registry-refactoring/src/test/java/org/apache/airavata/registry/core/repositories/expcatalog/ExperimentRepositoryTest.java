@@ -130,9 +130,8 @@ public class ExperimentRepositoryTest {
         experimentStatus.setState(ExperimentState.EXECUTING);
         experimentRepository.updateExperimentStatus(experimentStatus, experimentId);
 
-        List<ExperimentStatus> retrievedExpStatusList = experimentRepository.getExperimentStatus(experimentId);
-        assertTrue(retrievedExpStatusList.size() == 1);
-        assertEquals(ExperimentState.EXECUTING, retrievedExpStatusList.get(0).getState());
+        ExperimentStatus retrievedExpStatus = experimentRepository.getExperimentStatus(experimentId);
+        assertEquals(ExperimentState.EXECUTING, retrievedExpStatus.getState());
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");

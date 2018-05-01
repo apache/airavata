@@ -3,9 +3,11 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -31,7 +33,7 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     }
 
     protected ProcessEntity saveProcess(ProcessModel processModel) throws RegistryException {
-        if (processModel.getProcessId() == null || processModel.getProcessId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (processModel.getProcessId() == null || processModel.getProcessId().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Process's ProcessId");
             processModel.setProcessId(ExpCatalogUtils.getID("PROCESS"));
         }
@@ -82,17 +84,6 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     public String addProcess(ProcessModel process, String experimentId) throws RegistryException {
         process.setExperimentId(experimentId);
         String processId = saveProcessModelData(process);
-        ExperimentRepository experimentRepository = new ExperimentRepository();
-        ExperimentModel experimentModel = experimentRepository.getExperiment(experimentId);
-        List<ProcessModel> processModelList = experimentModel.getProcesses();
-
-        if (processModelList != null && !processModelList.contains(process)) {
-            logger.debug("Adding the Process to the list");
-            processModelList.add(process);
-            experimentModel.setProcesses(processModelList);
-            experimentRepository.updateExperiment(experimentModel, experimentId);
-        }
-
         return processId;
     }
 
@@ -131,11 +122,11 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
                 logger.debug("Adding the ProcessInput to the list");
                 inputDataObjectTypeList.add(input);
                 processModel.setProcessInputs(inputDataObjectTypeList);
-                updateProcess(processModel, processId);
             }
 
         }
 
+        updateProcess(processModel, processId);
         return processId;
     }
 
@@ -158,11 +149,11 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
                 logger.debug("Adding the ProcessOutput to the list");
                 outputDataObjectTypeList.add(output);
                 processModel.setProcessOutputs(outputDataObjectTypeList);
-                updateProcess(processModel, processId);
             }
 
         }
 
+        updateProcess(processModel, processId);
         return processId;
     }
 
@@ -214,9 +205,35 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
         return updatedProcessStatus.getStatusId();
     }
 
-    public List<ProcessStatus> getProcessStatus(String processId) throws RegistryException {
+    public ProcessStatus getProcessStatus(String processId) throws RegistryException {
         ProcessModel processModel = getProcess(processId);
-        return processModel.getProcessStatuses();
+        List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
+
+        if(processStatusList.size() == 0) {
+            logger.debug("ProcessStatus list is empty");
+            return null;
+        }
+
+        else {
+            ProcessStatus latestProcessStatus = processStatusList.get(0);
+
+            for(int i = 1; i < processStatusList.size(); i++){
+                Timestamp timeOfStateChange = new Timestamp(processStatusList.get(i).getTimeOfStateChange());
+
+                if (timeOfStateChange != null) {
+
+                    if (timeOfStateChange.after(new Timestamp(latestProcessStatus.getTimeOfStateChange()))
+                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.COMPLETED.toString()))
+                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.FAILED.toString()))
+                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.CANCELED.toString()))) {
+                        latestProcessStatus = processStatusList.get(i);
+                    }
+
+                }
+
+            }
+            return latestProcessStatus;
+        }
     }
 
     public String addProcessError(ErrorModel processError, String processId) throws RegistryException {

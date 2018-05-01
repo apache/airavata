@@ -96,6 +96,7 @@ import org.apache.airavata.registry.core.app.catalog.resources.SshJobSubmissionR
 import org.apache.airavata.registry.core.app.catalog.resources.UnicoreDataMovementResource;
 import org.apache.airavata.registry.core.app.catalog.resources.UnicoreJobSubmissionResource;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
+import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
@@ -881,8 +882,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void addJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException, TException {
         try {
-            CompositeIdentifier ids = new CompositeIdentifier(taskId, jobId);
-            jobRepository.addJobStatus(jobStatus, ids);
+            JobPK jobPK = new JobPK();
+            jobPK.setJobId(jobId);
+            jobPK.setTaskId(taskId);
+            jobRepository.addJobStatus(jobStatus, jobPK);
         } catch (Exception e) {
             logger.error(jobId, "Error while adding job status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -989,7 +992,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException, TException {
         try {
-            return (ProcessStatus) processRepository.getProcessStatus(processId);
+            return processRepository.getProcessStatus(processId);
         } catch (Exception e) {
             logger.error(processId, "Error while retrieving process status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -4185,7 +4188,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId +
                         " does not exist in the system..");
             }
-            return (ExperimentStatus) experimentRepository.getExperimentStatus(airavataExperimentId);
+            return experimentRepository.getExperimentStatus(airavataExperimentId);
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the experiment status", e);
             AiravataSystemException exception = new AiravataSystemException();

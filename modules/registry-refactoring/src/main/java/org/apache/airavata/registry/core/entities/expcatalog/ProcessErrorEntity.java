@@ -58,7 +58,7 @@ public class ProcessErrorEntity implements Serializable {
 
     @Lob
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
-    private List<String> rootCauseErrorIdList;
+    private String rootCauseErrorIdList;
 
     @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
@@ -115,11 +115,11 @@ public class ProcessErrorEntity implements Serializable {
         this.transientOrPersistent = transientOrPersistent;
     }
 
-    public List<String> getRootCauseErrorIdList() {
+    public String getRootCauseErrorIdList() {
         return rootCauseErrorIdList;
     }
 
-    public void setRootCauseErrorIdList(List<String> rootCauseErrorIdList) {
+    public void setRootCauseErrorIdList(String rootCauseErrorIdList) {
         this.rootCauseErrorIdList = rootCauseErrorIdList;
     }
 

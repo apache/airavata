@@ -113,7 +113,8 @@ public interface QueryConstants {
     String GET_ALL_GATEWAY_NOTIFICATIONS = "SELECT N FROM " + NotificationEntity.class.getSimpleName() + " N " +
             "WHERE N.gatewayId LIKE :" + DBConstants.Notification.GATEWAY_ID;
 
-    String GET_ALL_PROJECTS = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P";
+    String GET_ALL_PROJECTS_FOR_OWNER = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P " +
+            "WHERE P.owner LIKE :" + DBConstants.Project.OWNER;
 
     String GET_EXPERIMENTS_FOR_USER = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
             "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME;

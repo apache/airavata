@@ -52,14 +52,6 @@ public class ProjectEntity implements Serializable {
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="SHARING_USER", joinColumns = @JoinColumn(name="USER_ID"))
-    private List<String> sharedUsers;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="USER_GROUP", joinColumns = @JoinColumn(name="GROUP_ID"))
-    private List<String> sharedGroups;
-
     public ProjectEntity() {
     }
 
@@ -109,22 +101,6 @@ public class ProjectEntity implements Serializable {
 
     public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
-    }
-
-    public List<String> getSharedUsers() {
-        return sharedUsers;
-    }
-
-    public void setSharedUsers(List<String> sharedUsers) {
-        this.sharedUsers = sharedUsers;
-    }
-
-    public List<String> getSharedGroups() {
-        return sharedGroups;
-    }
-
-    public void setSharedGroups(List<String> sharedGroups) {
-        this.sharedGroups = sharedGroups;
     }
 
 }

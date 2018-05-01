@@ -95,6 +95,9 @@ public class ProcessEntity implements Serializable {
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
+    @Column(name = "IS_USE_USER_CR_PREF")
+    private boolean useUserCRPref;
+
     @OneToMany(targetEntity = ProcessStatusEntity.class, cascade = CascadeType.ALL,
             mappedBy = "process", fetch = FetchType.EAGER)
     private List<ProcessStatusEntity> processStatuses;
@@ -276,6 +279,14 @@ public class ProcessEntity implements Serializable {
 
     public void setGroupResourceProfileId(String groupResourceProfileId) {
         this.groupResourceProfileId = groupResourceProfileId;
+    }
+
+    public boolean isUseUserCRPref() {
+        return useUserCRPref;
+    }
+
+    public void setUseUserCRPref(boolean useUserCRPref) {
+        this.useUserCRPref = useUserCRPref;
     }
 
     public List<ProcessStatusEntity> getProcessStatuses() {
