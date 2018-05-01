@@ -72,13 +72,9 @@
           <div class="sub-section-1">
             <h4>Compute Resource Policies</h4>
             <tab-sub-section v-for="computeResourcePolicy,index in data.computeResourcePolicies" v-bind:key="index"
-                             v-bind:sectionName="'Compute Resource Policy'">
-                <compute-resource-policy v-model="data.computeResourcePolicies[index]"></compute-resource-policy>
+                             v-bind:enableDeletion="false" v-bind:section-name="'Compute Resource Policy'">
+              <compute-resource-policy v-model="data.computeResourcePolicies[index]"></compute-resource-policy>
             </tab-sub-section>
-            <div class="deployment-entry">
-              <input type="button" class="deployment btn" value="Add Compute Resource Policy"
-                     v-on:click.stop="createComputeResourcePolicy()"/>
-            </div>
           </div>
         </div>
       </div>
@@ -102,8 +98,13 @@
       TabSubSection,
     },
     data: function () {
+      let data = this.value;
+      if (!data.computeResourcePolicies || data.computeResourcePolicies.length ==0) {
+        data.computeResourcePolicies = [];
+        data.computeResourcePolicies.push(this.createComputeResourcePolicy());
+      }
       return {
-        data: {},
+        data: data,
         selected: null
       }
     },
@@ -113,13 +114,13 @@
         this.data.overridebyAiravata = value
       },
       createComputeResourcePolicy: function () {
-        this.data.computeResourcePolicies.push({
+        return {
           allowedBatchQueues: [],
           batchQueueResourcePolicies: [],
           computeResourceId: null,
           groupResourceProfileId: null,
           resourcePolicyId: null
-        })
+        }
       }
     }
   }

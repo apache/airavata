@@ -1,28 +1,15 @@
 <template>
   <transition name="fade">
     <div>
-      <div class="new-application-tab-main">
-      <h5>Allowed Batch Queues</h5>
       <div class="entry">
         <div class="heading">Batch Queues</div>
-        <div class="entry" v-for="batchQueue,index in data.allowedBatchQueues">
-          <input type="text" v-model="data.allowedBatchQueues[index]"/>
+        <div v-for="batchQueue,index in batchQueues" v-bind:key="index">
+          <input type="checkbox" v-model="batchQueues[index].selected"/>
+          <label>{{batchQueue.name}}</label>
+          <batch-queue-resource-policy v-if="resourcePolicies[index]"
+                                       v-model="resourcePolicies[index]"></batch-queue-resource-policy>
         </div>
       </div>
-      <div class="deployment-entry">
-        <input type="button" class="deployment btn" value="Add Batch Queue"
-               v-on:click="data.allowedBatchQueues.push('')"/>
-      </div>
-    </div>
-    <div class="entry">
-      <div class="heading">Batch Queues</div>
-      <div v-for="batchQueue,index in batchQueues" v-bind:key="index">
-        <input type="checkbox" v-model="batchQueues[index].selected"/>
-        <label>{{batchQueue.name}}</label>
-        <batch-queue-resource-policy v-if="resourcePolicies[index]"
-                                     v-model="resourcePolicies[index]"></batch-queue-resource-policy>
-      </div>
-    </div>
     </div>
   </transition>
 </template>
@@ -33,6 +20,7 @@
   import BatchQueueResourcePolicy from './BatchQueueResourcePolicy'
   import VModelMixin from '../../commons/vmodel_mixin'
   import Vue from 'vue'
+
   export default {
     name: "compute-resource-policy",
     components: {
@@ -92,15 +80,19 @@
             if (data.batchQueueResourcePolicies && !this.resourcePolicies[index]) {
               for (let val of data.batchQueueResourcePolicies) {
                 if (val.queuename == batchQueue.name) {
-                  Vue.set(this.resourcePolicies,index,val);
+                  Vue.set(this.resourcePolicies, index, val);
                 }
               }
             }
             if (!this.resourcePolicies[index]) {
-              Vue.set(this.resourcePolicies,index,this.createBatchQueue(batchQueue.name));
+              Vue.set(this.resourcePolicies, index, this.createBatchQueue(batchQueue.name));
+            }
+            if (this.data.allowedBatchQueues.indexOf(batchQueue.name) < 0) {
+              this.data.allowedBatchQueues.push(batchQueue.name)
             }
           } else if (this.resourcePolicies[index]) {
-            Vue.delete(this.resourcePolicies,index);
+            Vue.delete(this.resourcePolicies, index);
+            this.data.allowedBatchQueues = this.data.allowedBatchQueues.filter((batchQueueName) => batchQueueName != batchQueue.name);
           }
         }
       }
@@ -108,22 +100,19 @@
     watch: {
       batchQueues: {
         handler: function (newValue) {
-          console.log("watch", newValue);
           this.updateBatchQueues(newValue);
         },
         deep: true
       },
-      resourcePolicies:{
-        handler:function (newValue) {
-          console.log("Resource policies",newValue);
-          let resourcePolicies=[];
-          for(let prop in newValue){
+      resourcePolicies: {
+        handler: function (newValue) {
+          let resourcePolicies = [];
+          for (let prop in newValue) {
             resourcePolicies.push(this.resourcePolicies[prop]);
-            console.log(prop);
           }
-          this.data.batchQueueResourcePolicies=resourcePolicies;
+          this.data.batchQueueResourcePolicies = resourcePolicies;
         },
-        deep:true
+        deep: true
       }
     }
   }
