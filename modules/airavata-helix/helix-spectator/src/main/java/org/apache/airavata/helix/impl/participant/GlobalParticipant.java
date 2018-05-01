@@ -55,9 +55,10 @@ public class GlobalParticipant extends HelixParticipant {
         for (String taskClass : taskClasses) {
             TaskFactory taskFac = context -> {
                 try {
-                    AbstractTask task = AbstractTask.class.cast(Class.forName(taskClass).newInstance());
-                    task.setParticipant(GlobalParticipant.this);
-                    return task.setCallbackContext(context).setTaskHelper(new TaskHelperImpl());
+                    return AbstractTask.class.cast(Class.forName(taskClass).newInstance())
+                            .setParticipant(GlobalParticipant.this)
+                            .setCallbackContext(context)
+                            .setTaskHelper(new TaskHelperImpl());
                 } catch (InstantiationException | IllegalAccessException e) {
                     logger.error("Failed to initialize the task", e);
                     return null;

@@ -53,8 +53,8 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(HelixParticipant.class);
 
-    private final static int PARTICIPANT_SHUTDOWN_GRACE_PERIOD = 30000;
-    private final static int PARTICIPANT_SHUTDOWN_GRACE_RETRIES = 2;
+    private int shutdownGracePeriod = 30000;
+    private int shutdownGraceRetries = 2;
 
     private String zkAddress;
     private String clusterName;
@@ -84,6 +84,14 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         }
     }
 
+    public void setShutdownGracePeriod(int shutdownGracePeriod) {
+        this.shutdownGracePeriod = shutdownGracePeriod;
+    }
+
+    public void setShutdownGraceRetries(int shutdownGraceRetries) {
+        this.shutdownGraceRetries = shutdownGraceRetries;
+    }
+
     public void registerRunningTask(AbstractTask task) {
         runningTasks.add(task);
     }
@@ -98,9 +106,9 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         TaskFactory taskFac = new TaskFactory() {
             public Task createNewTask(TaskCallbackContext context) {
                 try {
-                    T task = taskClass.newInstance();
-                    task.setParticipant(HelixParticipant.this);
-                    return task.setCallbackContext(context)
+                    return taskClass.newInstance()
+                            .setParticipant(HelixParticipant.this)
+                            .setCallbackContext(context)
                             .setTaskHelper(new TaskHelperImpl());
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
@@ -190,22 +198,15 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     private void disconnect() {
         if (zkHelixManager != null) {
             if (runningTasks.size() > 0) {
-                for (int i = 0; i <= PARTICIPANT_SHUTDOWN_GRACE_RETRIES; i++) {
+                for (int i = 0; i <= shutdownGraceRetries; i++) {
                     logger.info("Shutting down gracefully [RETRY " + i + "]");
                     try {
-                        Thread.sleep(PARTICIPANT_SHUTDOWN_GRACE_PERIOD);
+                        Thread.sleep(shutdownGracePeriod);
                     } catch (InterruptedException e) {
                         logger.warn("Waiting for running tasks failed [RETRY " + i + "]", e);
                     }
                     if (runningTasks.size() == 0) {
                         break;
-                    }
-                }
-
-                synchronized (runningTasks) {
-                    for (AbstractTask runningTask : runningTasks) {
-                        logger.warn("Cancelling task with id: " + runningTask.getTaskId() + " forcefully");
-                        runningTask.cancel();
                     }
                 }
             }
