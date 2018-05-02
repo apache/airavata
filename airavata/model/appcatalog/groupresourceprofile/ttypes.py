@@ -9,6 +9,7 @@
 from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
 from thrift.protocol.TProtocol import TProtocolException
 import sys
+import airavata.model.commons.ttypes
 import airavata.model.appcatalog.computeresource.ttypes
 import airavata.model.data.movement.ttypes
 
@@ -677,7 +678,7 @@ class GroupResourceProfile(object):
 
     thrift_spec = (
         None,  # 0
-        (1, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 1
+        (1, TType.STRING, 'gatewayId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
         (2, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 2
         (3, TType.STRING, 'groupResourceProfileName', 'UTF8', None, ),  # 3
         (4, TType.LIST, 'computePreferences', (TType.STRUCT, (GroupComputeResourcePreference, GroupComputeResourcePreference.thrift_spec), False), None, ),  # 4
@@ -687,7 +688,7 @@ class GroupResourceProfile(object):
         (8, TType.I64, 'updatedTime', None, None, ),  # 8
     )
 
-    def __init__(self, gatewayId=None, groupResourceProfileId=None, groupResourceProfileName=None, computePreferences=None, computeResourcePolicies=None, batchQueueResourcePolicies=None, creationTime=None, updatedTime=None,):
+    def __init__(self, gatewayId=thrift_spec[1][4], groupResourceProfileId=None, groupResourceProfileName=None, computePreferences=None, computeResourcePolicies=None, batchQueueResourcePolicies=None, creationTime=None, updatedTime=None,):
         self.gatewayId = gatewayId
         self.groupResourceProfileId = groupResourceProfileId
         self.groupResourceProfileName = groupResourceProfileName

@@ -193,7 +193,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
     print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
     print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType, ResourcePermissionType permissionType)')
-    print('  void createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
+    print('  string createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
     print('  void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
     print('  GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, string groupResourceProfileId)')
     print('  bool removeGroupResourceProfile(AuthzToken authzToken, string groupResourceProfileId)')
