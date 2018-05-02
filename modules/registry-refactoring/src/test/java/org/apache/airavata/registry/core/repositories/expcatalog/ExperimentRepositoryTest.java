@@ -1,13 +1,28 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
@@ -19,7 +34,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -92,58 +106,6 @@ public class ExperimentRepositoryTest {
         experimentRepository.updateUserConfigurationData(userConfigurationDataModel, experimentId);
 
         assertEquals("storage2", experimentRepository.getUserConfigurationData(experimentId).getStorageId());
-
-        InputDataObjectType inputDataObjectTypeExp = new InputDataObjectType();
-        inputDataObjectTypeExp.setName("inputE");
-
-        List<InputDataObjectType> inputDataObjectTypeExpList = new ArrayList<>();
-        inputDataObjectTypeExpList.add(inputDataObjectTypeExp);
-
-        OutputDataObjectType outputDataObjectTypeExp = new OutputDataObjectType();
-        outputDataObjectTypeExp.setName("outputE");
-
-        List<OutputDataObjectType> outputDataObjectTypeExpList = new ArrayList<>();
-        outputDataObjectTypeExpList.add(outputDataObjectTypeExp);
-
-        assertEquals(experimentId, experimentRepository.addExperimentInputs(inputDataObjectTypeExpList, experimentId));
-
-        inputDataObjectTypeExp.setValue("iValueE");
-        experimentRepository.updateExperimentInputs(inputDataObjectTypeExpList, experimentId);
-
-        List<InputDataObjectType> retrievedExpInputsList = experimentRepository.getExperimentInputs(experimentId);
-        assertTrue(retrievedExpInputsList.size() == 1);
-        assertEquals("iValueE", retrievedExpInputsList.get(0).getValue());
-
-        assertEquals(experimentId, experimentRepository.addExperimentOutputs(outputDataObjectTypeExpList, experimentId));
-
-        outputDataObjectTypeExp.setValue("oValueE");
-        experimentRepository.updateExperimentOutputs(outputDataObjectTypeExpList, experimentId);
-
-        List<OutputDataObjectType> retrievedExpOutputList = experimentRepository.getExperimentOutputs(experimentId);
-        assertTrue(retrievedExpOutputList.size() == 1);
-        assertEquals("oValueE", retrievedExpOutputList.get(0).getValue());
-
-        ExperimentStatus experimentStatus = new ExperimentStatus(ExperimentState.CREATED);
-        String experimentStatusId = experimentRepository.addExperimentStatus(experimentStatus, experimentId);
-        assertTrue(experimentStatusId != null);
-
-        experimentStatus.setState(ExperimentState.EXECUTING);
-        experimentRepository.updateExperimentStatus(experimentStatus, experimentId);
-
-        ExperimentStatus retrievedExpStatus = experimentRepository.getExperimentStatus(experimentId);
-        assertEquals(ExperimentState.EXECUTING, retrievedExpStatus.getState());
-
-        ErrorModel errorModel = new ErrorModel();
-        errorModel.setErrorId("error");
-
-        assertEquals(experimentId, experimentRepository.addExperimentError(errorModel, experimentId));
-
-        errorModel.setActualErrorMessage("message");
-        experimentRepository.updateExperimentError(errorModel, experimentId);
-
-        List<ErrorModel> retrievedErrorList = experimentRepository.getExperimentErrors(experimentId);
-        assertTrue(retrievedErrorList.size() == 1);
-        assertEquals("message", retrievedErrorList.get(0).getActualErrorMessage());
 
         List<String> experimentIdList = experimentRepository.getExperimentIDs(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         assertTrue(experimentIdList.size() == 1);

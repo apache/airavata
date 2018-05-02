@@ -2,7 +2,6 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
