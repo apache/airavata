@@ -303,8 +303,8 @@ class ApplicationModuleViewSet(APIBackedViewSet):
             if app_module_id in app_interface.applicationModules:
                 app_interfaces.append(app_interface)
         if len(app_interfaces) == 1:
-            serializer = thrift_utils.create_serializer(
-                ApplicationInterfaceDescription, instance=app_interfaces[0], context={'request': request})
+            serializer = serializers.ApplicationInterfaceDescriptionSerializer(
+                app_interfaces[0], context={'request': request})
             return Response(serializer.data)
         elif len(app_interfaces) > 1:
             log.error(

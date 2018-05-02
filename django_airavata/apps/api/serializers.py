@@ -1,6 +1,7 @@
 
 import copy
 import datetime
+import json
 import logging
 from urllib.parse import quote, urlencode
 
@@ -113,6 +114,20 @@ class GatewayIdDefaultField(serializers.CharField):
         self.default = settings.GATEWAY_ID
 
 
+class StoredJSONField(serializers.JSONField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def to_representation(self, value):
+        try:
+            if value:
+                return json.loads(value)
+            else:
+                return value
+        except Exception:
+            return value
+
+
 class GroupSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
     id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
@@ -198,7 +213,7 @@ class InputDataObjectTypeSerializer(serializers.Serializer):
     type = serializers.IntegerField(required=False)
     applicationArgument = serializers.CharField(required=False)
     standardInput = serializers.BooleanField(required=False)
-    metaData = serializers.CharField(required=False)
+    metaData = StoredJSONField(required=False)
     inputOrder = serializers.IntegerField(required=False)
     isRequired = serializers.BooleanField(required=False)
     requiredToAddedToCommandLine = serializers.BooleanField(required=False)

@@ -12797,7 +12797,7 @@ class Client(Iface):
          - groupResourceProfile
         """
         self.send_createGroupResourceProfile(authzToken, groupResourceProfile)
-        self.recv_createGroupResourceProfile()
+        return self.recv_createGroupResourceProfile()
 
     def send_createGroupResourceProfile(self, authzToken, groupResourceProfile):
         self._oprot.writeMessageBegin('createGroupResourceProfile', TMessageType.CALL, self._seqid)
@@ -12819,6 +12819,8 @@ class Client(Iface):
         result = createGroupResourceProfile_result()
         result.read(iprot)
         iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
         if result.ire is not None:
             raise result.ire
         if result.ace is not None:
@@ -12827,7 +12829,7 @@ class Client(Iface):
             raise result.ase
         if result.ae is not None:
             raise result.ae
-        return
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "createGroupResourceProfile failed: unknown result")
 
     def updateGroupResourceProfile(self, authzToken, groupResourceProfile):
         """
@@ -18828,7 +18830,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = createGroupResourceProfile_result()
         try:
-            self._handler.createGroupResourceProfile(args.authzToken, args.groupResourceProfile)
+            result.success = self._handler.createGroupResourceProfile(args.authzToken, args.groupResourceProfile)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -53525,6 +53527,7 @@ class createGroupResourceProfile_args(object):
 class createGroupResourceProfile_result(object):
     """
     Attributes:
+     - success
      - ire
      - ace
      - ase
@@ -53532,14 +53535,15 @@ class createGroupResourceProfile_result(object):
     """
 
     thrift_spec = (
-        None,  # 0
+        (0, TType.STRING, 'success', 'UTF8', None, ),  # 0
         (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
         (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
         (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
         (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
     )
 
-    def __init__(self, ire=None, ace=None, ase=None, ae=None,):
+    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+        self.success = success
         self.ire = ire
         self.ace = ace
         self.ase = ase
@@ -53554,7 +53558,12 @@ class createGroupResourceProfile_result(object):
             (fname, ftype, fid) = iprot.readFieldBegin()
             if ftype == TType.STOP:
                 break
-            if fid == 1:
+            if fid == 0:
+                if ftype == TType.STRING:
+                    self.success = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
                 if ftype == TType.STRUCT:
                     self.ire = airavata.api.error.ttypes.InvalidRequestException()
                     self.ire.read(iprot)
@@ -53588,6 +53597,10 @@ class createGroupResourceProfile_result(object):
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
         oprot.writeStructBegin('createGroupResourceProfile_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.STRING, 0)
+            oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
+            oprot.writeFieldEnd()
         if self.ire is not None:
             oprot.writeFieldBegin('ire', TType.STRUCT, 1)
             self.ire.write(oprot)

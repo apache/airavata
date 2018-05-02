@@ -99,8 +99,10 @@
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
 import GroupResourceProfileSelector from './GroupResourceProfileSelector.vue'
+import RadioButtonInputEditor from './input-editors/RadioButtonInputEditor.vue'
 import StringInputEditor from './input-editors/StringInputEditor.vue'
 import FileInputEditor from './input-editors/FileInputEditor.vue'
+import TextareaInputEditor from './input-editors/TextareaInputEditor.vue'
 import {models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
@@ -130,8 +132,10 @@ export default {
     components: {
         ComputationalResourceSchedulingEditor,
         GroupResourceProfileSelector,
-        StringInputEditor,
         FileInputEditor,
+        RadioButtonInputEditor,
+        StringInputEditor,
+        TextareaInputEditor,
     },
     mounted: function () {
         services.ProjectService.listAll()
@@ -205,6 +209,11 @@ export default {
             return this.getValidationFeedback(properties) ? 'invalid' : null;
         },
         getInputEditorComponentName: function(experimentInput) {
+            // If input specifices an editor UI component, use that
+            if (experimentInput.editorUIComponentId) {
+                return experimentInput.editorUIComponentId;
+            }
+            // Default UI components based on input type
             if (experimentInput.type === models.DataType.STRING) {
                 return 'string-input-editor';
             } else if (experimentInput.type === models.DataType.URI) {
