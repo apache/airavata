@@ -144,6 +144,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private NotificationRepository notificationRepository = new NotificationRepository();
     private ExperimentSummaryRepository experimentSummaryRepository = new ExperimentSummaryRepository();
     private ExperimentRepository experimentRepository = new ExperimentRepository();
+    private ExperimentOutputRepository experimentOutputRepository = new ExperimentOutputRepository();
+    private ExperimentStatusRepository experimentStatusRepository = new ExperimentStatusRepository();
+    private ExperimentErrorRepository experimentErrorRepository = new ExperimentErrorRepository();
     private ProcessRepository processRepository = new ProcessRepository();
     private TaskRepository taskRepository = new TaskRepository();
     private JobRepository jobRepository = new JobRepository();
@@ -717,7 +720,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             logger.debug("Airavata retrieved experiment outputs for experiment id : " + airavataExperimentId);
-            return experimentRepository.getExperimentOutputs(airavataExperimentId);
+            return experimentOutputRepository.getExperimentOutputs(airavataExperimentId);
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the experiment outputs", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -794,7 +797,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 processRepository.addProcessOutputs(outputs, id);
             }
             else if(ExpCatChildDataType.EXPERIMENT_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
-                experimentRepository.addExperimentOutputs(outputs, id);
+                experimentOutputRepository.addExperimentOutputs(outputs, id);
             }
         } catch (Exception e) {
             logger.error(id, "Error while adding outputs", e);
@@ -810,7 +813,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
         try {
             if (ExpCatChildDataType.EXPERIMENT_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                experimentRepository.addExperimentError(errorModel, id);
+                experimentErrorRepository.addExperimentError(errorModel, id);
             }
             else if (ExpCatChildDataType.TASK_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
                 taskRepository.addTaskError(errorModel, id);
@@ -869,7 +872,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryServiceException, TException {
         try {
-            experimentRepository.updateExperimentStatus(experimentStatus, experimentId);
+            experimentStatusRepository.updateExperimentStatus(experimentStatus, experimentId);
         } catch (Exception e) {
             logger.error(experimentId, "Error while updating experiment status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -4188,7 +4191,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId +
                         " does not exist in the system..");
             }
-            return experimentRepository.getExperimentStatus(airavataExperimentId);
+            return experimentStatusRepository.getExperimentStatus(airavataExperimentId);
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the experiment status", e);
             AiravataSystemException exception = new AiravataSystemException();

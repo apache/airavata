@@ -1,3 +1,23 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -23,7 +43,6 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 public class ExperimentSummaryRepositoryTest {
 
@@ -31,6 +50,7 @@ public class ExperimentSummaryRepositoryTest {
     GatewayRepository gatewayRepository;
     ProjectRepository projectRepository;
     ExperimentRepository experimentRepository;
+    ExperimentStatusRepository experimentStatusRepository;
     ExperimentSummaryRepository experimentSummaryRepository;
     private static final Logger logger = LoggerFactory.getLogger(ExperimentSummaryRepositoryTest.class);
 
@@ -42,6 +62,7 @@ public class ExperimentSummaryRepositoryTest {
             gatewayRepository = new GatewayRepository();
             projectRepository = new ProjectRepository();
             experimentRepository = new ExperimentRepository();
+            experimentStatusRepository = new ExperimentStatusRepository();
             experimentSummaryRepository = new ExperimentSummaryRepository();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -158,11 +179,11 @@ public class ExperimentSummaryRepositoryTest {
         filters.remove(DBConstants.Experiment.EXECUTION_ID);
 
         ExperimentStatus experimentStatusOne = new ExperimentStatus(ExperimentState.CREATED);
-        String statusIdOne = experimentRepository.addExperimentStatus(experimentStatusOne, experimentIdOne);
+        String statusIdOne = experimentStatusRepository.addExperimentStatus(experimentStatusOne, experimentIdOne);
         assertTrue(statusIdOne != null);
 
         ExperimentStatus experimentStatusTwo = new ExperimentStatus(ExperimentState.EXECUTING);
-        String statusIdTwo = experimentRepository.addExperimentStatus(experimentStatusTwo, expertimentIdTwo);
+        String statusIdTwo = experimentStatusRepository.addExperimentStatus(experimentStatusTwo, expertimentIdTwo);
         assertTrue(statusIdTwo != null);
 
         experimentStatistics = experimentSummaryRepository.getExperimentStatistics(filters);
