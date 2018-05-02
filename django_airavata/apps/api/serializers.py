@@ -405,5 +405,5 @@ class UserProfileSerializer(
 
 class GroupResourceProfileSerializer(
         thrift_utils.create_serializer_class(GroupResourceProfile)):
-    creationTime = UTCPosixTimestampDateTimeField()
-    updatedTime = UTCPosixTimestampDateTimeField()
+    creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
+    updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)

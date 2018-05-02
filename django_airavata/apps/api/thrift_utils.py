@@ -1,11 +1,13 @@
 """
 Used to create Django Rest Framework serializers for Apache Thrift Data Types
 """
-from thrift.Thrift import TType
-from rest_framework.serializers import CharField, BooleanField, DecimalField, IntegerField, Serializer, \
-    DictField, SerializerMetaclass, ListField
-from django.utils import six
 import copy
+import datetime
+
+from django.utils import six
+from rest_framework.serializers import CharField, BooleanField, DecimalField, IntegerField, Serializer, \
+    DictField, SerializerMetaclass, ListField, DateTimeField
+from thrift.Thrift import TType
 
 # used to map apache thrift data types to django serializer fields
 mapping = {
@@ -20,16 +22,43 @@ mapping = {
 }
 
 
-def create_serializer(thrift_data_type, **kwargs):
+class UTCPosixTimestampDateTimeField(DateTimeField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default = self.current_time_ms
+        self.initial = self.initial_value
+        self.required = False
+
+    def to_representation(self, obj):
+        # Create datetime instance from milliseconds that is aware of timezon
+        dt = datetime.datetime.fromtimestamp(obj / 1000, datetime.timezone.utc)
+        return super().to_representation(dt)
+
+    def to_internal_value(self, data):
+        dt = super().to_internal_value(data)
+        return int(dt.timestamp() * 1000)
+
+    def initial_value(self):
+        return self.to_representation(self.current_time_ms())
+
+    def current_time_ms(self):
+        return int(datetime.datetime.utcnow().timestamp() * 1000)
+
+
+def create_serializer(thrift_data_type, enable_date_time_conversion=False, **kwargs):
     """
     Create django rest framework serializer based on the thrift data type
     :param thrift_data_type: Thrift data type
     :param kwargs: Other Django Framework Serializer initialization parameters
+    :param enable_date_time_conversion: enable conversion of field with name ending with time to
+            UTCPosixTimestampDateTimeField instead of IntegerField
     :return: instance of custom serializer for the given thrift data type
     """
-    return create_serializer_class(thrift_data_type)(**kwargs)
+    return create_serializer_class(thrift_data_type, enable_date_time_conversion)(**kwargs)
 
-def create_serializer_class(thrift_data_type):
+
+def create_serializer_class(thrift_data_type, enable_date_time_conversion=False):
     class CustomSerializerMeta(SerializerMetaclass):
 
         def __new__(cls, name, bases, attrs):
@@ -42,7 +71,7 @@ def create_serializer_class(thrift_data_type):
                     read_only = field[2] in meta.read_only if meta else False
                     allow_null = not required
                     field_serializer = process_field(
-                        field, required=required, read_only=read_only,
+                        field, enable_date_time_conversion, required=required, read_only=read_only,
                         allow_null=allow_null)
                     attrs[field[2]] = field_serializer
             return super().__new__(cls, name, bases, attrs)
@@ -77,7 +106,7 @@ def create_serializer_class(thrift_data_type):
     return CustomSerializer
 
 
-def process_field(field, required=False, read_only=False, allow_null=False):
+def process_field(field, enable_date_time_conversion, required=False, read_only=False, allow_null=False):
     """
     Used to process a thrift data type field
     :param field:
@@ -97,7 +126,10 @@ def process_field(field, required=False, read_only=False, allow_null=False):
         # allow_null CharField are also allowed to be blank
         if field_class == CharField:
             kwargs['allow_blank'] = allow_null
-        return mapping[field[1]](**kwargs)
+        thrift_model_class = mapping[field[1]]
+        if thrift_model_class == IntegerField and field[2].lower().endswith("time"):
+            thrift_model_class = UTCPosixTimestampDateTimeField
+        return thrift_model_class(**kwargs)
     elif field[1] == TType.LIST:
         # handling scenario when the thrift field type is list
         list_field_serializer = process_list_field(field)

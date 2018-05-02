@@ -20,181 +20,37 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse, Http404, JsonResponse
+from rest_framework import mixins
+from rest_framework import status
+from rest_framework.decorators import detail_route
+from rest_framework.decorators import list_route
+from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
 from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
 from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription, LOCALSubmission, \
     CloudJobSubmission, SSHJobSubmission, GlobusJobSubmission, UnicoreJobSubmission
+from airavata.model.application.io.ttypes import DataType
 from airavata.model.credential.store.ttypes import CredentialOwnerType, SummaryType, CredentialSummary
 from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMovement, SCPDataMovement, \
     UnicoreDataMovement
 from airavata.model.application.io.ttypes import DataType
-
 from collections import OrderedDict
 import json
 import logging
 import os
 
+from airavata.model.sharing.ttypes import Entity
+from django_airavata.apps.api.view_utils import GenericAPIBackedViewSet, APIBackedViewSet, APIResultIterator, \
+    APIResultPagination
+from . import datastore
+from . import serializers
+from . import thrift_utils
+
 log = logging.getLogger(__name__)
-
-
-class GenericAPIBackedViewSet(GenericViewSet):
-
-    def get_list(self):
-        """
-        Subclasses must implement.
-        """
-        raise NotImplementedError()
-
-    def get_instance(self, lookup_value):
-        """
-        Subclasses must implement.
-        """
-        raise NotImplementedError()
-
-    def get_queryset(self):
-        return self.get_list()
-
-    def get_object(self):
-        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        lookup_value = self.kwargs[lookup_url_kwarg]
-        inst = self.get_instance(lookup_value)
-        if inst is None:
-            raise Http404
-        self.check_object_permissions(self.request, inst)
-        return inst
-
-    @property
-    def username(self):
-        return self.request.user.username
-
-    @property
-    def gateway_id(self):
-        return settings.GATEWAY_ID
-
-    @property
-    def authz_token(self):
-        return self.request.authz_token
-
-
-class ReadOnlyAPIBackedViewSet(mixins.RetrieveModelMixin,
-                               mixins.ListModelMixin,
-                               GenericAPIBackedViewSet):
-    """
-    A viewset that provides default `retrieve()` and `list()` actions.
-
-    Subclasses must implement the following:
-    * get_list(self)
-    * get_instance(self, lookup_value)
-    """
-    pass
-
-
-class APIBackedViewSet(mixins.CreateModelMixin,
-                       mixins.RetrieveModelMixin,
-                       mixins.UpdateModelMixin,
-                       mixins.DestroyModelMixin,
-                       mixins.ListModelMixin,
-                       GenericAPIBackedViewSet):
-    """
-    A viewset that provides default `create()`, `retrieve()`, `update()`,
-    `partial_update()`, `destroy()` and `list()` actions.
-
-    Subclasses must implement the following:
-    * get_list(self)
-    * get_instance(self, lookup_value)
-    * perform_create(self, serializer) - should return instance with id populated
-    * perform_update(self, serializer)
-    * perform_destroy(self, instance)
-    """
-    pass
-
-
-class APIResultIterator(object):
-    """
-    Iterable container over API results which allow limit/offset style slicing.
-    """
-
-    limit = -1
-    offset = 0
-
-    def get_results(self, limit=-1, offset=0):
-        raise NotImplementedError("Subclasses must implement get_results")
-
-    def __iter__(self):
-        results = self.get_results(self.limit, self.offset)
-        for result in results:
-            yield result
-
-    def __getitem__(self, key):
-        if isinstance(key, slice):
-            self.limit = key.stop - key.start
-            self.offset = key.start
-            return iter(self)
-        else:
-            return self.get_results(1, key)
-
-
-class APIResultPagination(pagination.LimitOffsetPagination):
-    """
-    Based on DRF's LimitOffsetPagination; Airavata API pagination results don't
-    have a known count, so it isn't always possible to know how many pages there
-    are.
-    """
-    default_limit = 10
-
-    def paginate_queryset(self, queryset, request, view=None):
-        assert isinstance(queryset, APIResultIterator), "queryset is not an APIResultIterator: {}".format(queryset)
-        self.limit = self.get_limit(request)
-        if self.limit is None:
-            return None
-
-        self.offset = self.get_offset(request)
-        self.request = request
-
-        # When a paged view is called from another view (for example, to get the
-        # initial data to display), this pagination class needs to know the name
-        # of the view being paginated.
-        if view and hasattr(view, 'pagination_viewname'):
-            self.viewname = view.pagination_viewname
-
-        return list(queryset[self.offset:self.offset + self.limit])
-
-    def get_paginated_response(self, data):
-        has_next_link = len(data) >= self.limit
-        return Response(OrderedDict([
-            ('next', self.get_next_link() if has_next_link else None),
-            ('previous', self.get_previous_link()),
-            ('results', data),
-            ('limit', self.limit),
-            ('offset', self.offset)
-        ]))
-
-    def get_next_link(self):
-        url = self.get_base_url()
-        url = replace_query_param(url, self.limit_query_param, self.limit)
-
-        offset = self.offset + self.limit
-        return replace_query_param(url, self.offset_query_param, offset)
-
-    def get_previous_link(self):
-        if self.offset <= 0:
-            return None
-
-        url = self.get_base_url()
-        url = replace_query_param(url, self.limit_query_param, self.limit)
-
-        if self.offset - self.limit <= 0:
-            return remove_query_param(url, self.offset_query_param)
-
-        offset = self.offset - self.limit
-        return replace_query_param(url, self.offset_query_param, offset)
-
-    def get_base_url(self):
-        if hasattr(self, 'viewname'):
-            return self.request.build_absolute_uri(reverse(self.viewname))
-        else:
-            return self.request.build_absolute_uri()
 
 
 class GroupViewSet(APIBackedViewSet):
@@ -205,10 +61,12 @@ class GroupViewSet(APIBackedViewSet):
 
     def get_list(self):
         view = self
+
         class GroupResultsIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
                 groups = view.request.profile_service['group_manager'].getGroups(view.authz_token)
-                return groups[offset:offset+limit] if groups else []
+                return groups[offset:offset + limit] if groups else []
+
         return GroupResultsIterator()
 
     def get_instance(self, lookup_value):
@@ -305,7 +163,7 @@ class ExperimentViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         experiment = serializer.save()
-        experiment.userConfigurationData.storageId =\
+        experiment.userConfigurationData.storageId = \
             settings.GATEWAY_DATA_STORE_RESOURCE_ID
         # Set the experimentDataDir
         project = self.request.airavata_client.getProject(
@@ -840,7 +698,6 @@ def download_file(request):
 
 
 class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
-
     serializer_class = serializers.UserProfileSerializer
 
     def get_list(self):
@@ -849,7 +706,7 @@ class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
             self.authz_token, self.gateway_id, 0, -1)
 
 
-class GroupResourceProfileViewSet(APIBackedViewSet ):
+class GroupResourceProfileViewSet(APIBackedViewSet):
     serializer_class = serializers.GroupResourceProfileSerializer
 
     def get_list(self):
@@ -861,7 +718,28 @@ class GroupResourceProfileViewSet(APIBackedViewSet ):
             self.authz_token, lookup_value)
 
     def perform_create(self, serializer):
-        return self.request.airavata_client.createGroupResourceProfile(self, self.authz_token, serializer.save())
+        group_resource_profile = serializer.save()
+        group_resource_profile.gatewayId=self.gateway_id
+        ret=self.request.airavata_client.createGroupResourceProfile( authzToken=self.authz_token, groupResourceProfile=group_resource_profile)
+        ret2= self.request.sharing_client.createEntity(Entity(entityId=group_resource_profile.groupResourceProfileId,domainId=settings.GATEWAY_ID))
+        return ret
 
-    def perform_update(self, serializer):
-        return self.request.airavata_client.updateGroupResourceProfile(self, self.authz_token, serializer.save())
+
+def perform_update(self, serializer):
+    return self.request.airavata_client.updateGroupResourceProfile(self, self.authz_token, serializer.save())
+
+
+class EntityViewSet(GenericAPIBackedViewSet, mixins.CreateModelMixin):
+    serializer_class = thrift_utils.create_serializer_class(Entity, enable_date_time_conversion=True)
+
+    def perform_create(self, serializer):
+        return self.request.sharing_client.createEntity(serializer.save())
+
+
+class ShareEntityWithGroup(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def post(self, request, format=None):
+        params=request.data
+        params["domainId"]=settings.GATEWAY_ID
+        return request.sharing_client.shareEntityWithGroups(self, **params)

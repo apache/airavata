@@ -21,6 +21,7 @@ router.register(r'user-profiles', views.UserProfileViewSet,
                 base_name='user-profile')
 router.register(r'group-resource-profiles', views.GroupResourceProfileViewSet,
                 base_name='group-resource-profile')
+router.register(r'entities',views.EntityViewSet,base_name="entities")
 
 app_name = 'django_airavata_api'
 urlpatterns = [
@@ -53,6 +54,7 @@ urlpatterns = [
     url(r'^data/movement/local', views.LocalDataMovementView.as_view(), name="local_ftp_data_movement"),
     url(r'^data/movement/unicore', views.UnicoreDataMovementView.as_view(), name="unicore_ftp_data_movement"),
     url(r'^data/movement/scp', views.ScpDataMovementView.as_view(), name="scp_ftp_data_movement"),
+    url(r'share/entity/groups',views.ShareEntityWithGroup.as_view(),name="sharing_entity_groups")
 
 ]
 
