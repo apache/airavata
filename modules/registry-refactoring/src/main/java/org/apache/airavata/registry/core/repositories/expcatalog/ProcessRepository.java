@@ -1,13 +1,28 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
@@ -22,7 +37,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, ProcessEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentRepository.class);
+    private final static Logger logger = LoggerFactory.getLogger(ProcessRepository.class);
 
     public ProcessRepository() { super(ProcessModel.class, ProcessEntity.class); }
 
@@ -109,158 +124,6 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     public ComputationalResourceSchedulingModel getProcessResourceSchedule(String processId) throws RegistryException {
         ProcessModel processModel = getProcess(processId);
         return processModel.getProcessResourceSchedule();
-    }
-
-    public String addProcessInputs(List<InputDataObjectType> processInputs, String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        List<InputDataObjectType> inputDataObjectTypeList = processModel.getProcessInputs();
-
-        for (InputDataObjectType input : processInputs) {
-
-            if (inputDataObjectTypeList != null && !inputDataObjectTypeList.contains(input)) {
-                logger.debug("Adding the ProcessInput to the list");
-                inputDataObjectTypeList.add(input);
-                processModel.setProcessInputs(inputDataObjectTypeList);
-            }
-
-        }
-
-        updateProcess(processModel, processId);
-        return processId;
-    }
-
-    public void updateProcessInputs(List<InputDataObjectType> processInputs, String processId) throws RegistryException {
-        addProcessInputs(processInputs, processId);
-    }
-
-    public List<InputDataObjectType> getProcessInputs(String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        return processModel.getProcessInputs();
-    }
-
-    public String addProcessOutputs(List<OutputDataObjectType> processOutputs, String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        List<OutputDataObjectType> outputDataObjectTypeList = processModel.getProcessOutputs();
-
-        for (OutputDataObjectType output : processOutputs) {
-
-            if (outputDataObjectTypeList != null && !outputDataObjectTypeList.contains(output)) {
-                logger.debug("Adding the ProcessOutput to the list");
-                outputDataObjectTypeList.add(output);
-                processModel.setProcessOutputs(outputDataObjectTypeList);
-            }
-
-        }
-
-        updateProcess(processModel, processId);
-        return processId;
-    }
-
-    public void updateProcessOutputs(List<OutputDataObjectType> processOutputs, String processId) throws RegistryException {
-        addProcessOutputs(processOutputs, processId);
-    }
-
-    public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        return processModel.getProcessOutputs();
-    }
-
-    public String addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
-
-        if (processStatusList.size() == 0 || !processStatusList.contains(processStatus)) {
-
-            if (processStatus.getStatusId() == null) {
-                logger.debug("Set ProcessStatus's StatusId");
-                processStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
-            }
-
-            logger.debug("Adding the ProcessStatus to the list");
-            processStatusList.add(processStatus);
-        }
-
-        processModel.setProcessStatuses(processStatusList);
-        updateProcess(processModel, processId);
-        return processStatus.getStatusId();
-    }
-
-    public String updateProcessStatus(ProcessStatus updatedProcessStatus, String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
-
-        for (ProcessStatus retrievedProcessStatus : processStatusList) {
-
-            if (retrievedProcessStatus.getStatusId().equals(updatedProcessStatus.getStatusId())) {
-                logger.debug("Updating the ProcessStatus");
-                processStatusList.remove(retrievedProcessStatus);
-                processStatusList.add(updatedProcessStatus);
-            }
-
-        }
-
-        processModel.setProcessStatuses(processStatusList);
-        updateProcess(processModel, processId);
-        return updatedProcessStatus.getStatusId();
-    }
-
-    public ProcessStatus getProcessStatus(String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
-
-        if(processStatusList.size() == 0) {
-            logger.debug("ProcessStatus list is empty");
-            return null;
-        }
-
-        else {
-            ProcessStatus latestProcessStatus = processStatusList.get(0);
-
-            for(int i = 1; i < processStatusList.size(); i++){
-                Timestamp timeOfStateChange = new Timestamp(processStatusList.get(i).getTimeOfStateChange());
-
-                if (timeOfStateChange != null) {
-
-                    if (timeOfStateChange.after(new Timestamp(latestProcessStatus.getTimeOfStateChange()))
-                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.COMPLETED.toString()))
-                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.FAILED.toString()))
-                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.CANCELED.toString()))) {
-                        latestProcessStatus = processStatusList.get(i);
-                    }
-
-                }
-
-            }
-            return latestProcessStatus;
-        }
-    }
-
-    public String addProcessError(ErrorModel processError, String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        List<ErrorModel> errorModelList = processModel.getProcessErrors();
-
-        if (errorModelList == null) {
-            logger.debug("Adding the first ProcessError to the list");
-            processModel.setProcessErrors(Arrays.asList(processError));
-        }
-
-        else if (!errorModelList.contains(processError)) {
-            logger.debug("Adding the ProcessError to the list");
-            errorModelList.add(processError);
-            processModel.setProcessErrors(errorModelList);
-        }
-
-        updateProcess(processModel, processId);
-        return processId;
-    }
-
-    public String updateProcessError(ErrorModel processError, String processId) throws RegistryException {
-        return addProcessError(processError, processId);
-    }
-
-    public List<ErrorModel> getProcessError(String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
-        return processModel.getProcessErrors();
     }
 
     public List<ProcessModel> getProcessList(String fieldName, Object value) throws RegistryException {

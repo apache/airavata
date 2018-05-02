@@ -20,15 +20,10 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -40,7 +35,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -117,58 +111,6 @@ public class ProcessRepositoryTest {
         computationalResourceSchedulingModel.setQueueName("queue");
         processRepository.updateProcessResourceSchedule(computationalResourceSchedulingModel, processId);
         assertEquals("queue", processRepository.getProcessResourceSchedule(processId).getQueueName());
-
-        InputDataObjectType inputDataObjectProType = new InputDataObjectType();
-        inputDataObjectProType.setName("inputP");
-
-        List<InputDataObjectType> inputDataObjectTypeProList = new ArrayList<>();
-        inputDataObjectTypeProList.add(inputDataObjectProType);
-
-        OutputDataObjectType outputDataObjectProType = new OutputDataObjectType();
-        outputDataObjectProType.setName("outputP");
-
-        List<OutputDataObjectType> outputDataObjectTypeProList = new ArrayList<>();
-        outputDataObjectTypeProList.add(outputDataObjectProType);
-
-        assertEquals(processId, processRepository.addProcessInputs(inputDataObjectTypeProList, processId));
-
-        inputDataObjectProType.setValue("iValueP");
-        processRepository.updateProcessInputs(inputDataObjectTypeProList, processId);
-
-        List<InputDataObjectType> retrievedProInputsList = processRepository.getProcessInputs(processId);
-        assertTrue(retrievedProInputsList.size() == 1);
-        assertEquals("iValueP", retrievedProInputsList.get(0).getValue());
-
-        assertEquals(processId, processRepository.addProcessOutputs(outputDataObjectTypeProList, processId));
-
-        outputDataObjectProType.setValue("oValueP");
-        processRepository.updateProcessOutputs(outputDataObjectTypeProList, processId);
-
-        List<OutputDataObjectType> retrievedProOutputList = processRepository.getProcessOutputs(processId);
-        assertTrue(retrievedProOutputList.size() == 1);
-        assertEquals("oValueP", retrievedProOutputList.get(0).getValue());
-
-        ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
-        String processStatusId = processRepository.addProcessStatus(processStatus, processId);
-        assertTrue(processStatusId != null);
-
-        processStatus.setState(ProcessState.EXECUTING);
-        processRepository.updateProcessStatus(processStatus, processId);
-
-        ProcessStatus retrievedStatus = processRepository.getProcessStatus(processId);
-        assertEquals(ProcessState.EXECUTING, retrievedStatus.getState());
-
-        ErrorModel errorModel = new ErrorModel();
-        errorModel.setErrorId("error");
-
-        assertEquals(processId, processRepository.addProcessError(errorModel, processId));
-
-        errorModel.setActualErrorMessage("message");
-        processRepository.updateProcessError(errorModel, processId);
-
-        List<ErrorModel> retrievedErrorList = processRepository.getProcessError(processId);
-        assertTrue(retrievedErrorList.size() == 1);
-        assertEquals("message", retrievedErrorList.get(0).getActualErrorMessage());
 
         List<String> processIdList = processRepository.getProcessIds(DBConstants.Process.EXPERIMENT_ID, experimentId);
         assertTrue(processIdList.size() == 1);
