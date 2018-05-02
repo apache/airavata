@@ -53,6 +53,7 @@ class ProcessModel(object):
      - experimentDataDir
      - userName
      - useUserCRPref
+     - groupResourceProfileId
     """
 
     thrift_spec = (
@@ -81,9 +82,10 @@ class ProcessModel(object):
         (22, TType.STRING, 'experimentDataDir', 'UTF8', None, ),  # 22
         (23, TType.STRING, 'userName', 'UTF8', None, ),  # 23
         (24, TType.BOOL, 'useUserCRPref', None, None, ),  # 24
+        (25, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 25
     )
 
-    def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatuses=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, processResourceSchedule=None, tasks=None, taskDag=None, processErrors=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, userName=None, useUserCRPref=None,):
+    def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatuses=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, processResourceSchedule=None, tasks=None, taskDag=None, processErrors=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, userName=None, useUserCRPref=None, groupResourceProfileId=None,):
         self.processId = processId
         self.experimentId = experimentId
         self.creationTime = creationTime
@@ -108,6 +110,7 @@ class ProcessModel(object):
         self.experimentDataDir = experimentDataDir
         self.userName = userName
         self.useUserCRPref = useUserCRPref
+        self.groupResourceProfileId = groupResourceProfileId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -274,6 +277,11 @@ class ProcessModel(object):
                     self.useUserCRPref = iprot.readBool()
                 else:
                     iprot.skip(ftype)
+            elif fid == 25:
+                if ftype == TType.STRING:
+                    self.groupResourceProfileId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -397,6 +405,10 @@ class ProcessModel(object):
         if self.useUserCRPref is not None:
             oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 24)
             oprot.writeBool(self.useUserCRPref)
+            oprot.writeFieldEnd()
+        if self.groupResourceProfileId is not None:
+            oprot.writeFieldBegin('groupResourceProfileId', TType.STRING, 25)
+            oprot.writeString(self.groupResourceProfileId.encode('utf-8') if sys.version_info[0] == 2 else self.groupResourceProfileId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
