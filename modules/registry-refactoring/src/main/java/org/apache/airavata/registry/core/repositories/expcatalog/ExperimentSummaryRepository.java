@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ExperimentSummaryRepository extends ExpCatAbstractRepository<ExperimentSummaryModel, ExperimentSummaryEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentRepository.class);
+    private final static Logger logger = LoggerFactory.getLogger(ExperimentSummaryRepository.class);
 
     public ExperimentSummaryRepository() { super(ExperimentSummaryModel.class, ExperimentSummaryEntity.class); }
 

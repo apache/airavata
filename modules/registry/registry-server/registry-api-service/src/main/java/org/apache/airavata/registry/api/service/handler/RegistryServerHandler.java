@@ -148,6 +148,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ExperimentStatusRepository experimentStatusRepository = new ExperimentStatusRepository();
     private ExperimentErrorRepository experimentErrorRepository = new ExperimentErrorRepository();
     private ProcessRepository processRepository = new ProcessRepository();
+    private ProcessOutputRepository processOutputRepository = new ProcessOutputRepository();
+    private ProcessStatusRepository processStatusRepository = new ProcessStatusRepository();
+    private ProcessErrorRepository processErrorRepository = new ProcessErrorRepository();
     private TaskRepository taskRepository = new TaskRepository();
     private JobRepository jobRepository = new JobRepository();
     private QueueStatusRepository queueStatusRepository = new QueueStatusRepository();
@@ -794,7 +797,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
         try {
             if (ExpCatChildDataType.PROCESS_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
-                processRepository.addProcessOutputs(outputs, id);
+                processOutputRepository.addProcessOutputs(outputs, id);
             }
             else if(ExpCatChildDataType.EXPERIMENT_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
                 experimentOutputRepository.addExperimentOutputs(outputs, id);
@@ -819,7 +822,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 taskRepository.addTaskError(errorModel, id);
             }
             else if (ExpCatChildDataType.PROCESS_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                processRepository.addProcessError(errorModel, id);
+                processErrorRepository.addProcessError(errorModel, id);
             }
         } catch (Exception e) {
             logger.error(id, "Error while adding error", e);
@@ -846,7 +849,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException, TException {
         try {
-            processRepository.addProcessStatus(processStatus, processId);
+            processStatusRepository.addProcessStatus(processStatus, processId);
         } catch (Exception e) {
             logger.error(processId, "Error while adding process status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -859,7 +862,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException, TException {
         try {
-            processRepository.updateProcessStatus(processStatus, processId);
+            processStatusRepository.updateProcessStatus(processStatus, processId);
         } catch (Exception e) {
             logger.error(processId, "Error while updating process status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -995,7 +998,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException, TException {
         try {
-            return processRepository.getProcessStatus(processId);
+            return processStatusRepository.getProcessStatus(processId);
         } catch (Exception e) {
             logger.error(processId, "Error while retrieving process status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1069,7 +1072,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException, TException {
         try {
-            return processRepository.getProcessOutputs(processId);
+            return processOutputRepository.getProcessOutputs(processId);
         } catch (Exception e) {
             logger.error(processId, "Error while retrieving process outputs", e);
             AiravataSystemException exception = new AiravataSystemException();
