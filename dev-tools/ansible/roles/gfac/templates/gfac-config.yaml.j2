@@ -88,6 +88,7 @@ resources:
       - smic3 <smic@mail.hpc.lsu.edu> # philip.hpc.lsu
       - adm@jetstream-cloud.org
       - adm <adm@smic3.hpc.lsu.edu> #supermic
+      - root <adm@alamo.uthscsa.edu> #alamo
 
   - jobManagerType: SLURM
     commandOutputParser: org.apache.airavata.gfac.impl.job.SlurmOutputParser
@@ -112,6 +113,8 @@ resources:
       - slurm@sra-master.jetstreamlocal #Searching SRA
       - Slurm Admin <slurmadmin@hpclogin01.rs.gsu.edu> #GSU cluster
       - slurm@head.cluster #USD cluster
+      - slurm@js-169-158.jetstream-cloud.org
+      - slurm@joker.nmsu.edu
 
   - jobManagerType: UGE
     commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
