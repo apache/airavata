@@ -10,7 +10,7 @@
         <div class="entry">
           <div class="heading">Groups</div>
           <auto-complete v-model="selectedGroups"
-                         v-bind:suggestions="[{name:'hello',id:0},{name:'hi',id:1}]"></auto-complete>
+                         v-bind:suggestions="groups"></auto-complete>
         </div>
       </div>
       <div class="new-application-tab-main">
@@ -29,16 +29,18 @@
           </a>
         </div>
         <div class="entry">
-          <button class="interface-btn" v-on:click="createComputePreferenceClickHandler()">Add Compute <span>Preference</span>
+          <button class="interface-btn" v-on:click="createComputePreferenceClickHandler()">Add Compute
+            <span>Preference</span>
           </button>
         </div>
-        <tab-action-console v-bind:save="saveGroupResourceProfile" v-bind:enableCancel="false"></tab-action-console>
+        <tab-action-console v-bind:sectionName="'Group Resource Profile'" v-bind:save="saveGroupResourceProfile"
+                            v-bind:enableCancel="false"></tab-action-console>
       </div>
     </div>
   </div>
 </template>
 <script>
-  const ComputePreference= ()=>import('./ComputePreference') ;
+  const ComputePreference = () => import('./ComputePreference');
   import TabActionConsole from '../TabActionConsole'
   import {components as comps} from 'django-airavata-common-ui'
   import DjangoAiravataAPI from 'django-airavata-api'
@@ -58,13 +60,25 @@
             updatedTime: null,
           }
         }
+      },
+      newCreation: {
+        type: Boolean,
+        default: false
       }
     },
+    mounted: function () {
+      this.fetchGroups().then((value => {
+        this.groups = value.results;
+      }));
+    },
     data: function () {
+
       return {
         selectedGroups: [],
-        data:this.value,
-        service:DjangoAiravataAPI.services.ServiceFactory.service("GroupResourcePreference")
+        data: this.value,
+        service: DjangoAiravataAPI.services.ServiceFactory.service("GroupResourcePreference"),
+        groups: [],
+
       }
     },
 
@@ -99,18 +113,19 @@
         this.data.computePreferences.push(computeResourcePreference);
       }
       ,
-      createComputePreferenceClickHandler:function () {
+      createComputePreferenceClickHandler: function () {
         this.createComputePreferences();
-        this.computePreferenceClickHandler(this.data.computePreferences.length-1);
+        this.computePreferenceClickHandler(this.data.computePreferences.length - 1);
       },
-      saveGroupResourceProfile: function () {
-        let groupResourceProfile=Object.assign({},this.data);
-        let computePreferences=groupResourceProfile.computePreferences;
-        let batchQueueResourcePolicies=[];
-        let computeResourcePolicies=[];
-        for(let computePreference of computePreferences){
-          for(let computeResourcePolicy of computePreferences.computeResourcePolicies){
-            for(let batchQueueResourcePolicy of computeResourcePolicy.batchQueueResourcePolicies){
+      saveGroupResourceProfile: function (callback) {
+        let groupResourceProfile = Object.assign({}, this.data);
+        let computePreferences = groupResourceProfile.computePreferences;
+        let batchQueueResourcePolicies = [];
+        let computeResourcePolicies = [];
+        for (let computePreference of computePreferences) {
+          computePreferences.groupResourceProfileId = groupResourceProfile.groupResourceProfileId;
+          for (let computeResourcePolicy of computePreferences.computeResourcePolicies) {
+            for (let batchQueueResourcePolicy of computeResourcePolicy.batchQueueResourcePolicies) {
               batchQueueResourcePolicies.push(batchQueueResourcePolicy);
             }
             delete computeResourcePolicy.batchQueueResourcePolicies;
@@ -119,25 +134,53 @@
           delete computePreference.computeResourcePolicies;
           delete computePreference.batchQueueResourcePolicies;
         }
-        groupResourceProfile.computeResourcePolicies=computeResourcePolicies;
-        groupResourceProfile.batchQueueResourcePolicies=batchQueueResourcePolicies;
-        if(computePreferences.groupResourceProfileId){
-          this.services.update({groupResourceProfile:groupResourceProfile});
-        }else{
-          this.services.create(groupResourceProfile);
+        groupResourceProfile.computeResourcePolicies = computeResourcePolicies;
+        groupResourceProfile.batchQueueResourcePolicies = batchQueueResourcePolicies;
+
+        console.log("Saving..", groupResourceProfile);
+        if (computePreferences.groupResourceProfileId) {
+          this.service.update({data: groupResourceProfile});
+        } else {
+          this.service.create({data: groupResourceProfile}).then(callback.success, callback.failure).then((value) => data.groupResourceProfileId = value);
         }
       },
+      fetchGroups: function () {
+        return DjangoAiravataAPI.services.GroupService.list()
+      },
+
       computePreferenceClickHandler: function (index) {
         this.$router.push({
           name: 'compute_preferences', params: {
             value: this.data,
-            index: index
+            index: index,
+            newCreation: this.newCreation
           }
         });
       },
       getComputeResourceName: function (computeResourceId) {
         // TODO: load compute resources to get the real name
         return (computeResourceId && computeResourceId.indexOf("_") > 0) ? computeResourceId.split("_")[0] : computeResourceId;
+      },
+      allowGroups: function (selectedGroups) {
+        return DjangoAiravataAPI.utils.FetchUtils.post("/api/groups", {
+          entityId: this.data.groupResourceProfileId,
+          groupList: selectedGroups
+        });
+      }
+    },
+    watch: {
+      selectedGroups: {
+        handler: function (newValue) {
+          this.allowGroups(newValue);
+        },
+        deep: true
+      },
+      'data.groupResourceProfileId': function (newValue) {
+        let computePreferences = groupResourceProfile.computePreferences;
+        for (let computePreference of computePreferences) {
+          computePreference.groupResourceProfileId = newValue;
+        }
+
       }
     }
   }
@@ -178,11 +221,12 @@
     background-color: #007BFF;
     cursor: pointer;
   }
-  .list-item:hover span{
+
+  .list-item:hover span {
     color: white;
   }
 
-  .un-saved{
+  .un-saved {
     color: red;
   }
 

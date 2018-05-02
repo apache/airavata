@@ -8,8 +8,10 @@
       <h6 style="color: #666666;">Group Resource Profile</h6>
       <div class="container-fluid">
         <div class="row">
-          <application-card v-for="groupResourceProfile in groupResourceProfiles" v-bind:app-module="transform(groupResourceProfile)"
-                            v-bind:key="groupResourceProfile.groupResourceProfileId" v-on:app-selected="clickHandler(groupResourceProfile)">
+          <application-card v-for="groupResourceProfile in groupResourceProfiles"
+                            v-bind:app-module="transform(groupResourceProfile)"
+                            v-bind:key="groupResourceProfile.groupResourceProfileId"
+                            v-on:app-selected="clickHandler(groupResourceProfile)">
           </application-card>
         </div>
       </div>
@@ -19,7 +21,7 @@
 
 <script>
   import {components as comps} from 'django-airavata-common-ui'
-  import {models, services} from 'django-airavata-api'
+  import {services} from 'django-airavata-api'
 
   export default {
     name: "compute-resource-preference",
@@ -36,25 +38,25 @@
         for (let computePreference of preference.computePreferences) {
           let groupResourceProfileId = computePreference.groupResourceProfileId;
           let computeResourceId = computePreference.computeResourceId;
-          let computeResourcePolicies=[]
-          console.log("Group Resource Profile ID, Compute Resource ID",groupResourceProfileId,computeResourceId)
+          let computeResourcePolicies = []
+          console.log("Group Resource Profile ID, Compute Resource ID", groupResourceProfileId, computeResourceId)
           for (let computeResourcePolicy of preference.computeResourcePolicies) {
             let resourcePolicyId = computeResourcePolicy.resourcePolicyId;
-            console.log("policy Group Resource Profile ID, Compute Resource ID Resource Policy",computeResourcePolicy.groupResourceProfileId,computeResourcePolicy.computeResourceId, resourcePolicyId)
+            console.log("policy Group Resource Profile ID, Compute Resource ID Resource Policy", computeResourcePolicy.groupResourceProfileId, computeResourcePolicy.computeResourceId, resourcePolicyId)
             if (groupResourceProfileId == computeResourcePolicy.groupResourceProfileId && computeResourceId == computeResourcePolicy.computeResourceId) {
-              let computeResourcePolicyTemp=computeResourcePolicy;
+              let computeResourcePolicyTemp = computeResourcePolicy;
               let batchQueueResourcePolicies = [];
               for (let batchQueueResourcePolicy of preference.batchQueueResourcePolicies) {
-                console.log("batch policy Group Resource Profile ID, Compute Resource ID Resource Policy",batchQueueResourcePolicy.groupResourceProfileId,batchQueueResourcePolicy.computeResourceId, batchQueueResourcePolicy.resourcePolicyId)
+                console.log("batch policy Group Resource Profile ID, Compute Resource ID Resource Policy", batchQueueResourcePolicy.groupResourceProfileId, batchQueueResourcePolicy.computeResourceId, batchQueueResourcePolicy.resourcePolicyId)
                 if (groupResourceProfileId == batchQueueResourcePolicy.groupResourceProfileId && resourcePolicyId == batchQueueResourcePolicy.resourcePolicyId && computeResourceId == batchQueueResourcePolicy.computeResourceId) {
                   batchQueueResourcePolicies.push(batchQueueResourcePolicy);
                 }
               }
-              computeResourcePolicyTemp.batchQueueResourcePolicies=batchQueueResourcePolicies;
+              computeResourcePolicyTemp.batchQueueResourcePolicies = batchQueueResourcePolicies;
               computeResourcePolicies.push(computeResourcePolicyTemp);
             }
           }
-          computePreference.computeResourcePolicies=computeResourcePolicies;
+          computePreference.computeResourcePolicies = computeResourcePolicies;
         }
         this.$router.push({
           name: 'group_resource_preference', params: {
@@ -63,7 +65,11 @@
         });
       },
       newGroupResourcePreference: function () {
-        this.$router.push({name: 'group_resource_preference'})
+        this.$router.push({
+          name: 'group_resource_preference', params: {
+            newCreation: true
+          }
+        })
       },
       transform: function (preference) {
         return {
@@ -73,14 +79,14 @@
           appModuleDescription: null
         }
       },
-      loadGroupResourceProfiles: function() {
+      loadGroupResourceProfiles: function () {
         services.GroupResourceProfileService.list()
           .then(groupResourceProfiles => {
             this.groupResourceProfiles = groupResourceProfiles;
           });
       },
     },
-    mounted: function() {
+    mounted: function () {
       this.loadGroupResourceProfiles();
     }
   }
@@ -98,7 +104,7 @@
     display: inline;
   }
 
-  .new_app_header label {
+  .new_app_header > label {
     background-color: #2e73bc;
     color: white;
     border: solid #2e73bc 1px;

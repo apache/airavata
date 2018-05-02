@@ -19,7 +19,9 @@
   import ComputeResourcePolicy from './ComputeResourcePolicy'
   import BatchQueueResourcePolicy from './BatchQueueResourcePolicy'
   import VModelMixin from '../../commons/vmodel_mixin'
-  import Vue from 'vue'
+  import DjangoAiravataAPI from 'django-airavata-api'
+
+  import Vue from 'vue';
 
   export default {
     name: "compute-resource-policy",
@@ -28,41 +30,38 @@
       ComputeResourcePolicy,
       BatchQueueResourcePolicy
     },
-    data: function () {
-      let batchQueues = this.fetchBatchQueues(this.value);
-      return {
-        batchQueues: batchQueues.queues,
-        resourcePolicies: batchQueues.resourcePolicies,
-        data: this.value
+    data:function(){
+      return{
+        resourcePolicies:[],
+        batchQueues:[],
+        data:this.value
       }
+    },
+    mounted:function () {
+      this.fetchBatchQueues(this.data.computeResourceId);
     },
     mixins: [VModelMixin],
     methods: {
-      fetchBatchQueues: function (data) {
-        let queues = [{
-          name: "cpu",
-          selected: false,
-          batchQueueResourcePolicy: null
-        }, {
-          name: "gpu",
-          selected: false,
-          batchQueueResourcePolicy: null
-        }];
-        let resourcePolicies = {}
-        data.batchQueueResourcePolicies.forEach(value => {
-          for (let index in queues) {
-            let queue = queues[index];
-            if (queue.name == value.queuename) {
-              queue.selected = true;
-              resourcePolicies[index] = value;
-              break;
+      fetchBatchQueues: function (computeResourceId) {
+        DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: computeResourceId}).then((computeResource) => {
+          this.batchQueues = computeResource.batchQueues.map((batchQueue) => {
+            return {
+              name: batchQueue.queueName,
+              selected: false,
+              batchQueueResourcePolicy: null
             }
-          }
-        })
-        return {
-          queues: queues,
-          resourcePolicies: resourcePolicies
-        };
+          });
+          this.data.batchQueueResourcePolicies.forEach(value => {
+            for (let index in queues) {
+              let queue = queues[index];
+              if (queue.name == value.queuename) {
+                queue.selected = true;
+                this.resourcePolicies[index] = value;
+                break;
+              }
+            }
+          });
+        });
       },
       createBatchQueue: function (queueName) {
         let batchQueuePreference = {
@@ -113,6 +112,9 @@
           this.data.batchQueueResourcePolicies = resourcePolicies;
         },
         deep: true
+      },
+      'data.computeResourceId': function (newValue) {
+        this.fetchBatchQueues(newValue);
       }
     }
   }
