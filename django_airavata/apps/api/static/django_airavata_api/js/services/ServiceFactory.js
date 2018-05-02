@@ -38,7 +38,13 @@ const parseServiceMapping = function (serviceConfiguration) {
         delete serviceConfiguration.viewSet;
         delete serviceConfiguration.url;
         for (let supportedFunction of supportedFunctions) {
-            switch (supportedFunction) {
+            let supportedFunctionName = supportedFunction
+            let pagination = false
+            if (typeof(supportedFunctionName) !== "string") {
+                supportedFunctionName = supportedFunction.name
+                pagination = supportedFunction.pagination
+            }
+            switch (supportedFunctionName) {
                 case "list":
                     serviceConfiguration["list"] = {
                         url: url,
@@ -75,6 +81,7 @@ const parseServiceMapping = function (serviceConfiguration) {
                         requestType: delKey,
                     }
             }
+            serviceConfiguration[supportedFunctionName].pagination = pagination
         }
     }
 }
@@ -96,7 +103,7 @@ const parseQueryMapping = function (queryParamsMapping) {
 
 class ServiceFactory {
     constructor(serviceConfigurations) {
-        for(let serviceName of Object.keys(serviceConfigurations)){
+        for (let serviceName of Object.keys(serviceConfigurations)) {
             parseServiceMapping(serviceConfigurations[serviceName]);
         }
         console.log(serviceConfigurations);
@@ -128,7 +135,7 @@ class ServiceFactory {
             }
             let pathParamsMapping = parsePathParams(config.url);
             let queryParamsMapping = parseQueryMapping(config.queryParams);
-            serviceObj[functionName] = function (params = {}) {
+            serviceObj[functionName] =  function (params = {}) {
                 let url = config.url;
                 let paramKeys = Object.keys(params);
                 let queryParams = {};
@@ -162,13 +169,13 @@ class ServiceFactory {
                 };
                 switch (config.requestType.toLowerCase()) {
                     case postKey:
-                        return FetchUtils.post(url, bodyParams, queryParams).then(paginationHandler);
+                        return  FetchUtils.post(url, bodyParams, queryParams).then(paginationHandler);
                     case getKey:
-                        return FetchUtils.get(url, queryParams).then(paginationHandler);
+                        return  FetchUtils.get(url, queryParams).then(paginationHandler);
                     case putKey:
-                        return FetchUtils.put(url, bodyParams);
+                        return  FetchUtils.put(url, bodyParams);
                     case delKey:
-                        return FetchUtils.delete(url);
+                        return  FetchUtils.delete(url);
                 }
             }
         }

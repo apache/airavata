@@ -29,7 +29,14 @@ queryParams:[] # list query param names/ query param name to param name mapping
 
 export default {
     "GroupResourcePreference": {
-        url: "/api/group-resource-profiles",
+        url: "/api/group-resource-profiles/",
         viewSet: true
+    },
+    "Entities": {
+        url: "/api/entities",
+        viewSet: [{
+            name:"create",
+            pagination:true
+        }]
     }
 }

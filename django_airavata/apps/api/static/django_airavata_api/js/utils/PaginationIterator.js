@@ -42,4 +42,13 @@ export default class PaginationIterator {
         this.limit = pagedResponse.limit;
         return this;
     }
+
+    toArray(){
+        let results=[].concat(this.results);
+        while (this.hasNext()){
+            console.log(this._next);
+            results=results.concat(this.next().results);
+        }
+        return results;
+    }
 }

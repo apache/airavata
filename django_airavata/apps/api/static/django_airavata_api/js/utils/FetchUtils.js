@@ -38,7 +38,7 @@ export default {
         url=parseQueryParams(url,queryParams)
         return fetch(url, {
             method: 'post',
-            body: body,
+            body: JSON.stringify(body),
             headers: headers,
             credentials: "same-origin"
         }).then((response) => {
