@@ -112,10 +112,8 @@ import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplica
 import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.ComputeResource;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
@@ -155,6 +153,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private TaskStatusRepository taskStatusRepository = new TaskStatusRepository();
     private TaskErrorRepository taskErrorRepository = new TaskErrorRepository();
     private JobRepository jobRepository = new JobRepository();
+    private JobStatusRepository jobStatusRepository = new JobStatusRepository();
     private QueueStatusRepository queueStatusRepository = new QueueStatusRepository();
     private DataProductRepository dataProductRepository = new DataProductRepository();
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
@@ -893,7 +892,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             JobPK jobPK = new JobPK();
             jobPK.setJobId(jobId);
             jobPK.setTaskId(taskId);
-            jobRepository.addJobStatus(jobStatus, jobPK);
+            jobStatusRepository.addJobStatus(jobStatus, jobPK);
         } catch (Exception e) {
             logger.error(jobId, "Error while adding job status", e);
             AiravataSystemException exception = new AiravataSystemException();
