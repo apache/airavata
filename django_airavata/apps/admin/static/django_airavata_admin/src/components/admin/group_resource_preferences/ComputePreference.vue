@@ -107,6 +107,9 @@
     },
     data: function () {
       let data = this.value;
+      if(data.computeResourceId){
+        this.fetchComputeResource(data.computeResourceId);
+      }
       if (!data.computeResourcePolicies || data.computeResourcePolicies.length == 0) {
         data.computeResourcePolicies = [];
         data.computeResourcePolicies.push(this.createComputeResourcePolicy());
@@ -182,12 +185,10 @@
           groupResourceProfileId: null,
           resourcePolicyId: null
         }
-      }
-    },
-    watch: {
-      selectedComputeResourceIndex: function (newValue) {
-        if (newValue && this.computeResources && this.computeResources.length > 0) {
-          DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: this.computeResources[newValue].host_id}).then((value) => {
+      },
+      fetchComputeResource:function (id) {
+        if (id && this.computeResources && this.computeResources.length > 0) {
+          DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: id}).then((value) => {
             this.computeResource = value;
             this.computeResource.jobSubmissionInterfaces.forEach((jobSubmissionInterface)=>{
               this.jobSubmissionProtocols[jobSubmissionInterface.jobSubmissionProtocol].enabled=true;
@@ -201,6 +202,13 @@
             })
           });
         }
+      }
+    },
+    watch: {
+      selectedComputeResourceIndex: function (newValue) {
+       if(newValue){
+          this.fetchComputeResource(this.computeResources[index].host_id);
+       }
       }
     }
   }
