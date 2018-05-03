@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -95,101 +92,6 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
     public TaskModel getTask(String taskId) throws RegistryException {
         TaskRepository taskRepository = new TaskRepository();
         return taskRepository.get(taskId);
-    }
-
-    public String addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
-        TaskModel taskModel = getTask(taskId);
-        List<TaskStatus> taskStatusList = taskModel.getTaskStatuses();
-
-        if (taskStatusList.size() == 0 || !taskStatusList.contains(taskStatus)) {
-
-            if (taskStatus.getStatusId() == null) {
-                logger.debug("Set TaskStatus's StatusId");
-                taskStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
-            }
-
-            logger.debug("Adding the TaskStatus to the list");
-            taskStatusList.add(taskStatus);
-        }
-
-        taskModel.setTaskStatuses(taskStatusList);
-        updateTask(taskModel, taskId);
-        return taskStatus.getStatusId();
-    }
-
-    public String updateTaskStatus(TaskStatus updatedTaskStatus, String taskId) throws RegistryException {
-        TaskModel taskModel = getTask(taskId);
-        List<TaskStatus> taskStatusList = taskModel.getTaskStatuses();
-
-        for (TaskStatus retrievedTaskStatus : taskStatusList) {
-
-            if (retrievedTaskStatus.getStatusId().equals(updatedTaskStatus.getStatusId())) {
-                logger.debug("Updating the TaskStatus");
-                taskStatusList.remove(retrievedTaskStatus);
-                taskStatusList.add(updatedTaskStatus);
-            }
-
-        }
-
-        taskModel.setTaskStatuses(taskStatusList);
-        updateTask(taskModel, taskId);
-        return updatedTaskStatus.getStatusId();
-    }
-
-    public TaskStatus getTaskStatus(String taskId) throws RegistryException {
-        TaskModel taskModel = getTask(taskId);
-        List<TaskStatus> taskStatusList = taskModel.getTaskStatuses();
-
-        if(taskStatusList.size() == 0) {
-            logger.debug("TaskStatus list is empty");
-            return null;
-        }
-
-        else {
-            TaskStatus latestTaskStatus = taskStatusList.get(0);
-
-            for(int i = 1; i < taskStatusList.size(); i++) {
-                Timestamp timeOfStateChange = new Timestamp(taskStatusList.get(i).getTimeOfStateChange());
-
-                if (timeOfStateChange.after(new Timestamp(latestTaskStatus.getTimeOfStateChange()))
-                        || (timeOfStateChange.equals(latestTaskStatus.getTimeOfStateChange()) && taskStatusList.get(i).getState().equals(TaskState.COMPLETED.toString()))
-                        || (timeOfStateChange.equals(latestTaskStatus.getTimeOfStateChange()) && taskStatusList.get(i).getState().equals(TaskState.FAILED.toString()))
-                        || (timeOfStateChange.equals(latestTaskStatus.getTimeOfStateChange()) && taskStatusList.get(i).getState().equals(TaskState.CANCELED.toString()))) {
-                    latestTaskStatus = taskStatusList.get(i);
-                }
-
-            }
-
-            return latestTaskStatus;
-        }
-    }
-
-    public String addTaskError(ErrorModel taskError, String taskId) throws RegistryException {
-        TaskModel taskModel = getTask(taskId);
-        List<ErrorModel> errorModelList = taskModel.getTaskErrors();
-
-        if (errorModelList == null) {
-            logger.debug("Adding the first TaskError to the list");
-            taskModel.setTaskErrors(Arrays.asList(taskError));
-        }
-
-        else if (!errorModelList.contains(taskError)) {
-            logger.debug("Adding the TaskError to the list");
-            errorModelList.add(taskError);
-            taskModel.setTaskErrors(errorModelList);
-        }
-
-        updateTask(taskModel, taskId);
-        return taskId;
-    }
-
-    public String updateTaskError(ErrorModel taskError, String taskId) throws RegistryException {
-        return addTaskError(taskError, taskId);
-    }
-
-    public List<ErrorModel> getTaskError(String taskId) throws RegistryException {
-        TaskModel taskModel = getTask(taskId);
-        return taskModel.getTaskErrors();
     }
 
     public List<TaskModel> getTaskList(String fieldName, Object value) throws RegistryException {

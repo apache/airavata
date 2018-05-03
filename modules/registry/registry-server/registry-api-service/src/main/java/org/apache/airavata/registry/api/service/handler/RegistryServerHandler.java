@@ -152,6 +152,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ProcessStatusRepository processStatusRepository = new ProcessStatusRepository();
     private ProcessErrorRepository processErrorRepository = new ProcessErrorRepository();
     private TaskRepository taskRepository = new TaskRepository();
+    private TaskStatusRepository taskStatusRepository = new TaskStatusRepository();
+    private TaskErrorRepository taskErrorRepository = new TaskErrorRepository();
     private JobRepository jobRepository = new JobRepository();
     private QueueStatusRepository queueStatusRepository = new QueueStatusRepository();
     private DataProductRepository dataProductRepository = new DataProductRepository();
@@ -819,7 +821,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 experimentErrorRepository.addExperimentError(errorModel, id);
             }
             else if (ExpCatChildDataType.TASK_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                taskRepository.addTaskError(errorModel, id);
+                taskErrorRepository.addTaskError(errorModel, id);
             }
             else if (ExpCatChildDataType.PROCESS_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
                 processErrorRepository.addProcessError(errorModel, id);
@@ -836,7 +838,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException, TException {
         try {
-            taskRepository.addTaskStatus(taskStatus, taskId);
+            taskStatusRepository.addTaskStatus(taskStatus, taskId);
         } catch (Exception e) {
             logger.error(taskId, "Error while adding task status", e);
             AiravataSystemException exception = new AiravataSystemException();
