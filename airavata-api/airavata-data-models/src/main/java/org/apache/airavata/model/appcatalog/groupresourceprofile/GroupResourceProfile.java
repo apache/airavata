@@ -179,6 +179,8 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
   }
 
   public GroupResourceProfile() {
+    this.gatewayId = "DO_NOT_SET_AT_CLIENTS";
+
   }
 
   public GroupResourceProfile(
@@ -235,7 +237,8 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
 
   @Override
   public void clear() {
-    this.gatewayId = null;
+    this.gatewayId = "DO_NOT_SET_AT_CLIENTS";
+
     this.groupResourceProfileId = null;
     this.groupResourceProfileName = null;
     this.computePreferences = null;

@@ -23,6 +23,7 @@ namespace php Airavata.Model.AppCatalog.GroupResourceProfile
 namespace cpp apache.airavata.model.appcatalog.groupresourceprofile
 namespace py airavata.model.appcatalog.groupresourceprofile
 
+include "../../airavata-apis/airavata_commons.thrift"
 include "compute_resource_model.thrift"
 include "data_movement_models.thrift"
 
@@ -92,7 +93,7 @@ struct BatchQueueResourcePolicy {
 */
 
 struct GroupResourceProfile {
-    1: required string gatewayId,
+    1: required string gatewayId = airavata_commons.DEFAULT_ID,
     2: required string groupResourceProfileId,
     3: optional string groupResourceProfileName,
     4: optional list<GroupComputeResourcePreference> computePreferences,
