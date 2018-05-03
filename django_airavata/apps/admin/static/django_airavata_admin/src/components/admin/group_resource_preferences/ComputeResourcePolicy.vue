@@ -30,40 +30,54 @@
       ComputeResourcePolicy,
       BatchQueueResourcePolicy
     },
-    data:function(){
-      return{
-        resourcePolicies:[],
-        batchQueues:[],
-        data:this.value
+    data: function () {
+      return {
+        resourcePolicies: [],
+        batchQueues: [],
+        defaultBatchQueueValues:[],
+        data: this.value
       }
     },
-    mounted:function () {
+    mounted: function () {
       this.fetchBatchQueues(this.data.computeResourceId);
     },
     mixins: [VModelMixin],
     methods: {
       fetchBatchQueues: function (computeResourceId) {
-        DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: computeResourceId}).then((computeResource) => {
-          this.batchQueues = computeResource.batchQueues.map((batchQueue) => {
-            return {
-              name: batchQueue.queueName,
-              selected: false,
-              batchQueueResourcePolicy: null
-            }
-          });
-          this.data.batchQueueResourcePolicies.forEach(value => {
-            for (let index in queues) {
-              let queue = queues[index];
-              if (queue.name == value.queuename) {
-                queue.selected = true;
-                this.resourcePolicies[index] = value;
-                break;
+        if (computeResourceId !== null) {
+          DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: computeResourceId}).then((computeResource) => {
+            let defaultBatchQueueValues=[];
+            this.batchQueues = computeResource.batchQueues.map((batchQueue) => {
+              defaultBatchQueueValues.push({
+                maxAllowedCores:batchQueue.defaultCPUCount,
+                maxAllowedNodes:batchQueue.defaultNodeCount,
+                maxAllowedWalltime:batchQueue.defaultWalltime,
+                queuename:batchQueue.queueName
+              });
+              this.defaultBatchQueueValues=defaultBatchQueueValues;
+              return {
+                name: batchQueue.queueName,
+                selected: false,
+                batchQueueResourcePolicy: null
               }
-            }
+            });
+            this.data.batchQueueResourcePolicies.forEach(value => {
+              for (let index in queues) {
+                let queue = queues[index];
+                if (queue.name == value.queuename) {
+                  queue.selected = true;
+                  this.resourcePolicies[index] = value;
+                  break;
+                }
+              }
+            });
           });
-        });
+        }
       },
-      createBatchQueue: function (queueName) {
+      createBatchQueue: function (index) {
+        if(index >=0){
+          return this.defaultBatchQueueValues[index];
+        }
         let batchQueuePreference = {
           maxAllowedNodes: null,
           maxAllowedCores: null,
@@ -84,7 +98,7 @@
               }
             }
             if (!this.resourcePolicies[index]) {
-              Vue.set(this.resourcePolicies, index, this.createBatchQueue(batchQueue.name));
+              Vue.set(this.resourcePolicies, index, this.createBatchQueue(index));
             }
             if (this.data.allowedBatchQueues.indexOf(batchQueue.name) < 0) {
               this.data.allowedBatchQueues.push(batchQueue.name)

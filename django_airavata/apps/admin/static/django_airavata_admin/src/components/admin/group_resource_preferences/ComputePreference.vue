@@ -17,7 +17,11 @@
           </div>
           <div class="entry">
             <div class="heading">Preferred Batch Queue</div>
-            <input v-model="data.preferredBatchQueue" type="text"/>
+            <select v-model="data.preferredBatchQueue">
+              <option v-bind:value="batchQueue.queueName" v-for="batchQueue,index in computeResource.batchQueues"
+                      v-bind:key="index">{{batchQueue.queueName}}
+              </option>
+            </select>
           </div>
           <div class="entry">
             <div class="heading">Scratch Location</div>
@@ -52,22 +56,15 @@
             <input v-model="data.sshAccountProvisionerAdditionalInfo" type="text"/>
           </div>
           <div class="entry">
-            <div class="heading">Preferred Job Submission Protocol</div>
+            <div class="heading">Preferred Data Movement Protocol</div>
             <select v-model="data.preferredDataMovementProtocol">
-              <option value="0">LOCAL</option>
-              <option value="1">SCP</option>
-              <option value="3">GridFTP</option>
-              <option value="4">UNICORE_STORAGE_SERVICE</option>
+              <option v-bind:value="dataMovementProtocol.value" v-for="dataMovementProtocol in dataMovementProtocols" v-if="dataMovementProtocol.enabled" v-bind:key="index">{{dataMovementProtocol.name}}</option>
             </select>
           </div>
           <div class="entry">
             <div class="heading">Preferred Job Submission Protocol</div>
             <select v-model="data.preferredJobSubmissionProtocol">
-              <option value="0">Local</option>
-              <option value="1">SSH</option>
-              <option value="2">GLOBUS</option>
-              <option value="3">UNICORE</option>
-              <option value="4">Cloud</option>
+              <option v-bind:value="jobSubmissionProtocol.value" v-for="jobSubmissionProtocol in jobSubmissionProtocols" v-if="jobSubmissionProtocol.enabled" v-bind:key="index">{{jobSubmissionProtocol.name}}</option>
             </select>
           </div>
           <div class="sub-section-1">
@@ -119,7 +116,54 @@
         selected: null,
         computeResources: [],
         selectedComputeResourceIndex: null,
-        computeResource: null
+        dataMovementProtocols:[  {
+            name:"LOCAL",
+            enabled:false,
+            value:0
+          },  {
+            name:"SCP",
+            enabled:false,
+            value:1
+          },  {
+            name:"GridFTP",
+            enabled:false,
+            value:2
+          },  {
+            name:"UNICORE_STORAGE_SERVICE",
+            enabled:false,
+            value:3
+          },],
+        jobSubmissionProtocols:[
+          {
+            name:"Local",
+            enabled:false,
+            value:0
+          },
+          {
+            name:"SSH",
+            enabled:false,
+            value:1
+          },
+          {
+            name:"GLOBUS",
+            enabled:false,
+            value:2
+          },
+          {
+            name:"UNICORE",
+            enabled:false,
+            value:3
+          },
+          {
+            name:"Cloud",
+            enabled:false,
+            value:4
+          },
+        ],
+        computeResource: {
+          batchQueues: [],
+          jobSubmissionInterfaces: []
+        }
       }
     },
     mixins: [VModelMixin],
@@ -142,13 +186,21 @@
     },
     watch: {
       selectedComputeResourceIndex: function (newValue) {
-        DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: this.computeResources[newValue].host_id}).then((value)=>{
-          this.computeResource =value;
-          this.data.computeResourceId=value.computeResourceId;
-          this.data.computeResourcePolicies.forEach((value)=>{
-            value.computeResourceId=this.data.computeResourceId;
-          })
-        });
+        if (newValue && this.computeResources && this.computeResources.length > 0) {
+          DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: this.computeResources[newValue].host_id}).then((value) => {
+            this.computeResource = value;
+            this.computeResource.jobSubmissionInterfaces.forEach((jobSubmissionInterface)=>{
+              this.jobSubmissionProtocols[jobSubmissionInterface.jobSubmissionProtocol].enabled=true;
+            });
+            this.computeResource.dataMovementInterfaces.forEach((dataMovementInterface)=>{
+              this.dataMovementProtocols[dataMovementInterface.dataMovementProtocol].enabled=true;
+            });
+            this.data.computeResourceId = value.computeResourceId;
+            this.data.computeResourcePolicies.forEach((value) => {
+              value.computeResourceId = this.data.computeResourceId;
+            })
+          });
+        }
       }
     }
   }

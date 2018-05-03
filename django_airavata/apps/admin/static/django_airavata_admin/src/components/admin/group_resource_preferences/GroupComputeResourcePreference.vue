@@ -122,9 +122,10 @@
         let computePreferences = groupResourceProfile.computePreferences;
         let batchQueueResourcePolicies = [];
         let computeResourcePolicies = [];
-        for (let computePreference of computePreferences) {
-          computePreferences.groupResourceProfileId = groupResourceProfile.groupResourceProfileId;
-          for (let computeResourcePolicy of computePreferences.computeResourcePolicies) {
+        if(computePreferences){
+          for (let computePreference of computePreferences) {
+          computePreference.groupResourceProfileId = groupResourceProfile.groupResourceProfileId;
+          for (let computeResourcePolicy of computePreference.computeResourcePolicies) {
             for (let batchQueueResourcePolicy of computeResourcePolicy.batchQueueResourcePolicies) {
               batchQueueResourcePolicies.push(batchQueueResourcePolicy);
             }
@@ -133,6 +134,9 @@
           }
           delete computePreference.computeResourcePolicies;
           delete computePreference.batchQueueResourcePolicies;
+        }
+        }else{
+          groupResourceProfile.computePreferences=[];
         }
         groupResourceProfile.computeResourcePolicies = computeResourcePolicies;
         groupResourceProfile.batchQueueResourcePolicies = batchQueueResourcePolicies;
