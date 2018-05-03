@@ -24,13 +24,14 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
-import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.junit.After;
 import org.junit.Before;
@@ -38,12 +39,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
-public class JobRepositoryTest {
+public class JobStatusRepositoryTest {
 
     private static Initialize initialize;
     GatewayRepository gatewayRepository;
@@ -52,7 +51,8 @@ public class JobRepositoryTest {
     ProcessRepository processRepository;
     TaskRepository taskRepository;
     JobRepository jobRepository;
-    private static final Logger logger = LoggerFactory.getLogger(JobRepositoryTest.class);
+    JobStatusRepository jobStatusRepository;
+    private static final Logger logger = LoggerFactory.getLogger(JobStatusRepositoryTest.class);
 
     @Before
     public void setUp() {
@@ -65,6 +65,7 @@ public class JobRepositoryTest {
             processRepository = new ProcessRepository();
             taskRepository = new TaskRepository();
             jobRepository = new JobRepository();
+            jobStatusRepository = new JobStatusRepository();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -77,7 +78,7 @@ public class JobRepositoryTest {
     }
 
     @Test
-    public void JobRepositoryTest() throws RegistryException {
+    public void JobStatusRepositoryTest() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
@@ -113,33 +114,33 @@ public class JobRepositoryTest {
         taskModel.setTaskType(TaskTypes.MONITORING);
         taskRepository.updateTask(taskModel, taskId);
 
+        JobPK jobPK = new JobPK();
+        jobPK.setJobId("job");
+        jobPK.setTaskId(taskId);
+
         JobModel jobModel = new JobModel();
-        jobModel.setJobId("job");
-        jobModel.setTaskId(taskId);
+        jobModel.setJobId(jobPK.getJobId());
+        jobModel.setTaskId(jobPK.getTaskId());
         jobModel.setJobDescription("jobDescription");
 
         String jobId = jobRepository.addJob(jobModel, processId);
         assertTrue(jobId != null);
-        assertTrue(taskRepository.getTask(taskId).getJobs().size() == 1);
 
-        JobPK jobPK = new JobPK();
-        jobPK.setJobId(jobId);
-        jobPK.setTaskId(taskId);
+        JobStatus jobStatus = new JobStatus(JobState.QUEUED);
+        String jobStatusId = jobStatusRepository.addJobStatus(jobStatus, jobPK);
+        assertTrue(jobStatusId != null);
+        assertTrue(jobRepository.getJob(jobPK).getJobStatuses().size() == 1);
 
-        jobModel.setJobName("jobName");
-        jobRepository.updateJob(jobModel, jobPK);
-        assertEquals("jobName", jobRepository.getJob(jobPK).getJobName());
+        jobStatus.setJobState(JobState.ACTIVE);
+        jobStatusRepository.updateJobStatus(jobStatus, jobPK);
 
-        List<String> jobIdList = jobRepository.getJobIds(DBConstants.Job.TASK_ID, taskId);
-        assertTrue(jobIdList.size() == 1);
-        assertTrue(jobIdList.get(0).equals(jobId));
+        JobStatus retrievedJobStatus = jobStatusRepository.getJobStatus(jobPK);
+        assertEquals(JobState.ACTIVE, retrievedJobStatus.getJobState());
 
         experimentRepository.removeExperiment(experimentId);
         processRepository.removeProcess(processId);
         taskRepository.removeTask(taskId);
         jobRepository.removeJob(jobPK);
-        assertFalse(jobRepository.isJobExist(jobPK));
-
         gatewayRepository.removeGateway(gatewayId);
         projectRepository.removeProject(projectId);
     }

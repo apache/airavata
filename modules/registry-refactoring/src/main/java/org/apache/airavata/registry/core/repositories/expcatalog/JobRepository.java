@@ -22,11 +22,9 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -91,52 +89,6 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
 
     public JobModel getJob(JobPK jobPK) throws RegistryException {
         return get(jobPK);
-    }
-
-    public String addJobStatus(JobStatus jobStatus, JobPK jobPK) throws RegistryException {
-        JobModel jobModel = getJob(jobPK);
-        List<JobStatus> jobStatusList = jobModel.getJobStatuses();
-
-        if (jobStatusList.size() == 0 || !jobStatusList.contains(jobStatus)) {
-
-            if (jobStatus.getStatusId() == null) {
-                logger.debug("Set JobStatus's StatusId");
-                jobStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
-            }
-
-            logger.debug("Adding the JobStatus to the list");
-            jobStatusList.add(jobStatus);
-
-        }
-
-        jobModel.setJobStatuses(jobStatusList);
-        updateJob(jobModel, jobPK);
-        return jobStatus.getStatusId();
-    }
-
-    public String updateJobStatus(JobStatus updatedJobStatus, JobPK jobPK) throws RegistryException {
-        JobModel jobModel = getJob(jobPK);
-        List<JobStatus> jobStatusList = jobModel.getJobStatuses();
-
-        for (JobStatus retrievedJobStatus : jobStatusList) {
-
-            if (retrievedJobStatus.getStatusId().equals(updatedJobStatus.getStatusId())) {
-                logger.debug("Updating the JobStatus");
-                jobStatusList.remove(retrievedJobStatus);
-                jobStatusList.add(updatedJobStatus);
-            }
-
-        }
-
-        jobModel.setJobStatuses(jobStatusList);
-        updateJob(jobModel, jobPK);
-        return updatedJobStatus.getStatusId();
-
-    }
-
-    public List<JobStatus> getJobStatus(JobPK jobPK) throws RegistryException {
-        JobModel jobModel = getJob(jobPK);
-        return jobModel.getJobStatuses();
     }
 
     public List<JobModel> getJobList(String fieldName, Object value) throws RegistryException {
