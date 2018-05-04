@@ -67,6 +67,18 @@
               <option v-bind:value="jobSubmissionProtocol.value" v-for="jobSubmissionProtocol in jobSubmissionProtocols" v-if="jobSubmissionProtocol.enabled" v-bind:key="index">{{jobSubmissionProtocol.name}}</option>
             </select>
           </div>
+          <div class="new-application-tab-main">
+        <div class="deployment-entry">
+          <div class="heading">Group SSH Account Provisioner Configs</div>
+          <div class="name_value"
+               v-for="groupSSHAccountProvisionerConfig,index in data.groupSSHAccountProvisionerConfigs"
+               v-bind:key="index">
+            <input type="text" placeholder="Name" v-model="data.groupSSHAccountProvisionerConfigs[index].configName"/>
+            <input type="text" placeholder="Value" v-model="data.groupSSHAccountProvisionerConfigs[index].configValue"/>
+          </div>
+          <input type="button" class="deployment btn" value="Add Config" v-on:click="createGroupSSHAccountProvisionerConfigs()"/>
+        </div>
+      </div>
           <div class="sub-section-1">
             <h4>Compute Resource Policies</h4>
             <tab-sub-section v-for="computeResourcePolicy,index in data.computeResourcePolicies" v-bind:key="index"
@@ -186,6 +198,14 @@
           resourcePolicyId: null
         }
       },
+      createGroupSSHAccountProvisionerConfigs: function () {
+        this.data.groupSSHAccountProvisionerConfigs.push({
+          resourceId: this.data.computeResourceId,
+          groupResourceProfileId: this.data.groupResourceProfileId,
+          configName: null,
+          configValue: null
+        });
+      },
       fetchComputeResource:function (id) {
         if (id && this.computeResources && this.computeResources.length > 0) {
           DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: id}).then((value) => {
@@ -207,7 +227,7 @@
     watch: {
       selectedComputeResourceIndex: function (newValue) {
        if(newValue){
-          this.fetchComputeResource(this.computeResources[index].host_id);
+          this.fetchComputeResource(this.computeResources[newValue].host_id);
        }
       }
     }

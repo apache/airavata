@@ -93,7 +93,7 @@
         let computeResourcePreference = {
           computeResourceId: null,
           groupResourceProfileId: null,
-          overridebyAiravata: null,
+          overridebyAiravata: true,
           loginUserName: null,
           preferredJobSubmissionProtocol: null,
           preferredDataMovementProtocol: null,
@@ -108,6 +108,7 @@
           reservationEndTime: null,
           sshAccountProvisiogroupSSHAccountProvisionerConfigsner: null,
           sshAccountProvisionerAdditionalInfo: null,
+          groupSSHAccountProvisionerConfigs: [],
           computeResourcePolicies: []
         };
         this.data.computePreferences.push(computeResourcePreference);
@@ -122,21 +123,21 @@
         let computePreferences = groupResourceProfile.computePreferences;
         let batchQueueResourcePolicies = [];
         let computeResourcePolicies = [];
-        if(computePreferences){
+        if (computePreferences) {
           for (let computePreference of computePreferences) {
-          computePreference.groupResourceProfileId = groupResourceProfile.groupResourceProfileId;
-          for (let computeResourcePolicy of computePreference.computeResourcePolicies) {
-            for (let batchQueueResourcePolicy of computeResourcePolicy.batchQueueResourcePolicies) {
-              batchQueueResourcePolicies.push(batchQueueResourcePolicy);
+            computePreference.groupResourceProfileId = groupResourceProfile.groupResourceProfileId;
+            for (let computeResourcePolicy of computePreference.computeResourcePolicies) {
+              for (let batchQueueResourcePolicy of computeResourcePolicy.batchQueueResourcePolicies) {
+                batchQueueResourcePolicies.push(batchQueueResourcePolicy);
+              }
+              delete computeResourcePolicy.batchQueueResourcePolicies;
+              computeResourcePolicies.push(computeResourcePolicy);
             }
-            delete computeResourcePolicy.batchQueueResourcePolicies;
-            computeResourcePolicies.push(computeResourcePolicy);
+            delete computePreference.computeResourcePolicies;
+            delete computePreference.batchQueueResourcePolicies;
           }
-          delete computePreference.computeResourcePolicies;
-          delete computePreference.batchQueueResourcePolicies;
-        }
-        }else{
-          groupResourceProfile.computePreferences=[];
+        } else {
+          groupResourceProfile.computePreferences = [];
         }
         groupResourceProfile.computeResourcePolicies = computeResourcePolicies;
         groupResourceProfile.batchQueueResourcePolicies = batchQueueResourcePolicies;
@@ -183,6 +184,9 @@
         let computePreferences = groupResourceProfile.computePreferences;
         for (let computePreference of computePreferences) {
           computePreference.groupResourceProfileId = newValue;
+          for (let groupSSHAccountProvisionerConfig of computePreference.groupSSHAccountProvisionerConfigs) {
+            groupSSHAccountProvisionerConfig.groupResourceProfileId = newValue;
+          }
         }
 
       }
