@@ -23,11 +23,18 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResou
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.registry.core.entities.appcatalog.BatchQueueResourcePolicyPK;
+import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefPK;
+import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfilePK;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by skariyat on 2/8/18.
@@ -43,6 +50,11 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         final String groupResourceProfileId = UUID.randomUUID().toString();
         groupResourceProfile.setGroupResourceProfileId(groupResourceProfileId);
         groupResourceProfile.setCreationTime(System.currentTimeMillis());
+        updateChildren(groupResourceProfile, groupResourceProfileId);
+        return updateGroupResourceProfile(groupResourceProfile);
+    }
+
+    private void updateChildren(GroupResourceProfile groupResourceProfile, String groupResourceProfileId) {
         if (groupResourceProfile.getComputePreferences() != null) {
             for (GroupComputeResourcePreference groupComputeResourcePreference: groupResourceProfile.getComputePreferences()) {
                 groupComputeResourcePreference.setGroupResourceProfileId(groupResourceProfileId);
@@ -52,17 +64,27 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
             }
         }
         if (groupResourceProfile.getBatchQueueResourcePolicies() != null) {
-            groupResourceProfile.getBatchQueueResourcePolicies().forEach(bq -> bq.setGroupResourceProfileId(groupResourceProfileId));
+            groupResourceProfile.getBatchQueueResourcePolicies().forEach(bq -> {
+                if (bq.getResourcePolicyId().trim().isEmpty() || bq.getResourcePolicyId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                    bq.setResourcePolicyId(UUID.randomUUID().toString());
+                }
+                bq.setGroupResourceProfileId(groupResourceProfileId);
+            });
         }
         if (groupResourceProfile.getComputeResourcePolicies() != null) {
-            groupResourceProfile.getComputeResourcePolicies().forEach(cr -> cr.setGroupResourceProfileId(groupResourceProfileId));
+            groupResourceProfile.getComputeResourcePolicies().forEach(cr -> {
+                if (cr.getResourcePolicyId().trim().isEmpty() || cr.getResourcePolicyId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                    cr.setResourcePolicyId(UUID.randomUUID().toString());
+                }
+                cr.setGroupResourceProfileId(groupResourceProfileId);
+            });
         }
-        return updateGroupResourceProfile(groupResourceProfile);
     }
 
     public String updateGroupResourceProfile(GroupResourceProfile updatedGroupResourceProfile) {
 
         updatedGroupResourceProfile.setUpdatedTime(System.currentTimeMillis());
+        updateChildren(updatedGroupResourceProfile, updatedGroupResourceProfile.getGroupResourceProfileId());
         GroupResourceProfile groupResourceProfile = update(updatedGroupResourceProfile);
         return groupResourceProfile.getGroupResourceProfileId();
     }

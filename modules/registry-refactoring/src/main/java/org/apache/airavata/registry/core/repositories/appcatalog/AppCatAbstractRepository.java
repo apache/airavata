@@ -119,6 +119,9 @@ public abstract class AppCatAbstractRepository<T, E, Id> {
             R r = committer.commit(entityManager);
             entityManager.getTransaction().commit();
             return  r;
+        } catch(Exception e) {
+            logger.error("Failed to execute App Catalog transaction", e);
+            throw e;
         }finally {
             if (entityManager != null && entityManager.isOpen()) {
                 if (entityManager.getTransaction().isActive()) {
