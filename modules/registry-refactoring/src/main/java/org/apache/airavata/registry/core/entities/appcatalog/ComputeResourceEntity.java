@@ -20,20 +20,11 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The persistent class for the compute_resource database table.
@@ -48,7 +39,7 @@ public class ComputeResourceEntity implements Serializable {
     private String computeResourceId;
 
     @Column(name = "CREATION_TIME")
-    private Timestamp creationTime = Timestamp.from(Instant.now());
+    private Timestamp creationTime;
 
     @Column(name = "ENABLED")
     private short enabled;
@@ -72,19 +63,19 @@ public class ComputeResourceEntity implements Serializable {
     private String resourceDescription;
 
     @Column(name = "UPDATE_TIME")
-    private Timestamp updateTime = Timestamp.from(Instant.now());
+    private Timestamp updateTime;
 
     @Column(name = "CPUS_PER_NODE")
-    private Integer cpusPerNode = 0;
+    private Integer cpusPerNode;
 
     @Column(name = "DEFAULT_NODE_COUNT")
-    private Integer defaultNodeCount = 0;
+    private Integer defaultNodeCount;
 
     @Column(name = "DEFAULT_CPU_COUNT")
-    private Integer defaultCPUCount = 0;
+    private Integer defaultCPUCount;
 
     @Column(name = "DEFAULT_WALLTIME")
-    private Integer defaultWalltime = 0;
+    private Integer defaultWalltime;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="HOST_ALIAS", joinColumns = @JoinColumn(name="RESOURCE_ID"))
