@@ -56,14 +56,14 @@ struct GroupComputeResourcePreference {
 }
 
 struct ComputeResourcePolicy {
-    1: required string resourcePolicyId,
+    1: required string resourcePolicyId = airavata_commons.DEFAULT_ID,
     2: required string computeResourceId,
     3: required string groupResourceProfileId,
     4: optional list<string> allowedBatchQueues
 }
 
 struct BatchQueueResourcePolicy {
-    1: required string resourcePolicyId,
+    1: required string resourcePolicyId = airavata_commons.DEFAULT_ID,
     2: required string computeResourceId,
     3: required string groupResourceProfileId,
     4: optional string queuename,
@@ -93,8 +93,8 @@ struct BatchQueueResourcePolicy {
 */
 
 struct GroupResourceProfile {
-    1: required string gatewayId = airavata_commons.DEFAULT_ID,
-    2: required string groupResourceProfileId,
+    1: required string gatewayId,
+    2: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
     3: optional string groupResourceProfileName,
     4: optional list<GroupComputeResourcePreference> computePreferences,
     5: optional list<ComputeResourcePolicy> computeResourcePolicies,
