@@ -129,6 +129,8 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
   public ComputeResourcePolicy() {
     this.resourcePolicyId = "DO_NOT_SET_AT_CLIENTS";
 
+    this.groupResourceProfileId = "DO_NOT_SET_AT_CLIENTS";
+
   }
 
   public ComputeResourcePolicy(
@@ -170,7 +172,8 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
     this.resourcePolicyId = "DO_NOT_SET_AT_CLIENTS";
 
     this.computeResourceId = null;
-    this.groupResourceProfileId = null;
+    this.groupResourceProfileId = "DO_NOT_SET_AT_CLIENTS";
+
     this.allowedBatchQueues = null;
   }
 

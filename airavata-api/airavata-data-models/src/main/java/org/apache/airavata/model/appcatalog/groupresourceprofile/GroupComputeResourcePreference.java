@@ -237,6 +237,8 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   }
 
   public GroupComputeResourcePreference() {
+    this.groupResourceProfileId = "DO_NOT_SET_AT_CLIENTS";
+
     this.overridebyAiravata = true;
 
   }
@@ -319,7 +321,8 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   @Override
   public void clear() {
     this.computeResourceId = null;
-    this.groupResourceProfileId = null;
+    this.groupResourceProfileId = "DO_NOT_SET_AT_CLIENTS";
+
     this.overridebyAiravata = true;
 
     this.loginUserName = null;
