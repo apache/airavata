@@ -20,3 +20,12 @@
 
 -- AIRAVATA-2768
 alter table APPLICATION_INPUT modify METADATA VARCHAR(4096);
+
+-- AIRAVATA-2758
+-- Note: this doesn't really represent a schema change, rather some legacy database instances improperly had created these columns as NOT NULL
+alter table COMPUTE_RESOURCE modify column CREATION_TIME TIMESTAMP DEFAULT NOW() null;
+alter table COMPUTE_RESOURCE modify column CPUS_PER_NODE int default 0 null;
+alter table COMPUTE_RESOURCE modify column DEFAULT_NODE_COUNT int default 0 null;
+alter table COMPUTE_RESOURCE modify column DEFAULT_CPU_COUNT int default 0 null;
+alter table COMPUTE_RESOURCE modify column DEFAULT_WALLTIME int default 0 null;
+alter table COMPUTE_RESOURCE modify column UPDATE_TIME timestamp default '0000-00-00 00:00:00' null;
