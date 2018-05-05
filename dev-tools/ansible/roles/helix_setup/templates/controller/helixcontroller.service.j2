@@ -1,0 +1,14 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=helixcontroller
+Before=
+After=network.target
+
+[Service]
+LOG_DIR={{ helix_controller_log_dir }}
+ExecStart={{ helix_dir }}/{{ helix_controller_version }}/bin/controller-daemon.sh {{ helix_dir }}/{{ helix_controller_version }}/conf/airavata-server.properties
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
