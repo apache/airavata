@@ -36,35 +36,35 @@
 <table class="table-bordered table-striped table-condensed"><thead><th>Constant</th><th>Type</th><th>Value</th></thead>
 <tr id="Const_DO_NOT_SET_AT_CLIENTS_ID"><td><code>DO_NOT_SET_AT_CLIENTS_ID</code></td><td><code>string</code></td><td><code>"DO_NOT_SET_AT_CLIENTS_ID"</code></td></tr></table><hr/><h2 id="Enumerations">Enumerations</h2>
 <div class="definition"><h3 id="Enum_GroupCardinality">Enumeration: GroupCardinality</h3>
-<pre><p>This is an system internal enum used to define single user groups and multi users groups. Every user is also
+<p>This is an system internal enum used to define single user groups and multi users groups. Every user is also
 considered as a group in it's own right for implementation ease</p>
 
-</pre><br/><br/><table class="table-bordered table-striped table-condensed">
+<br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>SINGLE_USER</code></td><td><code>0</code></td><td>
 </td></tr>
 <tr><td><code>MULTI_USER</code></td><td><code>1</code></td><td>
 </td></tr>
 </table></div>
 <div class="definition"><h3 id="Enum_GroupType">Enumeration: GroupType</h3>
-<pre><p>Group types can be either user level or domain level groups.</p>
+<p>Group types can be either user level or domain level groups.</p>
 
-</pre><br/><br/><table class="table-bordered table-striped table-condensed">
+<br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>DOMAIN_LEVEL_GROUP</code></td><td><code>0</code></td><td>
 </td></tr>
 <tr><td><code>USER_LEVEL_GROUP</code></td><td><code>1</code></td><td>
 </td></tr>
 </table></div>
 <div class="definition"><h3 id="Enum_GroupChildType">Enumeration: GroupChildType</h3>
-<pre><p>System internal data type to match group child types</p>
+<p>System internal data type to match group child types</p>
 
-</pre><br/><br/><table class="table-bordered table-striped table-condensed">
+<br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>USER</code></td><td><code>0</code></td><td>
 </td></tr>
 <tr><td><code>GROUP</code></td><td><code>1</code></td><td>
 </td></tr>
 </table></div>
 <div class="definition"><h3 id="Enum_EntitySearchField">Enumeration: EntitySearchField</h3>
-<pre><p>This list of fields that can be used to search entities</p>
+<p>This list of fields that can be used to search entities</p>
 <li>NAME : Name of the entity</li>
 <li>DESCRIPTION : Description of the entity</li>
 <li>FULL_TEXT : Full text field of the entity</li>
@@ -74,7 +74,7 @@ considered as a group in it's own right for implementation ease</p>
 <li>UPDATED_TIME : Updated time of the entity</li>
 <li>SHARED_COUNT : Number of directly shared users and groups</li>
 
-</pre><br/><br/><table class="table-bordered table-striped table-condensed">
+<br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>NAME</code></td><td><code>0</code></td><td>
 </td></tr>
 <tr><td><code>DESCRIPTION</code></td><td><code>1</code></td><td>
@@ -97,14 +97,14 @@ considered as a group in it's own right for implementation ease</p>
 </td></tr>
 </table></div>
 <div class="definition"><h3 id="Enum_SearchCondition">Enumeration: SearchCondition</h3>
-<pre><p>Different search operators that can be used with the entity search fields</p>
+<p>Different search operators that can be used with the entity search fields</p>
 <li>EQUAL : Simply matches for equality. Applicable for name, and parent entity id</li>
 <li>LIKE : Check for the condition %$FIELD% condition. Applicable for name, and description</li>
 <li>FULL_TEXT : Does a full text search. Only applicable for the FULL_TEXT field.</li>
 <li>GTE : Greater than or equal. Only applicable for created time, updated time and shared count.</li>
 <li>LTE : Less than or equal. Only applicable for created time, updated time and shared count.</li>
 
-</pre><br/><br/><table class="table-bordered table-striped table-condensed">
+<br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>EQUAL</code></td><td><code>0</code></td><td>
 </td></tr>
 <tr><td><code>LIKE</code></td><td><code>1</code></td><td>
@@ -119,9 +119,9 @@ considered as a group in it's own right for implementation ease</p>
 </td></tr>
 </table></div>
 <div class="definition"><h3 id="Enum_SharingType">Enumeration: SharingType</h3>
-<pre><p>This is an internal enum type for managing sharings</p>
+<p>This is an internal enum type for managing sharings</p>
 
-</pre><br/><br/><table class="table-bordered table-striped table-condensed">
+<br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>DIRECT_NON_CASCADING</code></td><td><code>0</code></td><td>
 </td></tr>
 <tr><td><code>DIRECT_CASCADING</code></td><td><code>1</code></td><td>
@@ -137,7 +137,7 @@ considered as a group in it's own right for implementation ease</p>
 <tr><td>3</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>4</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>5</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>Domain is the entity that enables multi-tenency in this componenet. Every tenant will be
+</table><br/><p>Domain is the entity that enables multi-tenency in this componenet. Every tenant will be
 operating separately it's own silo which is identified by the domain id. In the current implementation domain id
 will be same as the domain name</p>
 <li>domainId : Will be generated by the server based on the domain name</li>
@@ -146,7 +146,7 @@ will be same as the domain name</p>
 <li>createdTime : Will be set by the system</li>
 <li>updatedTime : Will be set by the system</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_User">Struct: User</h3>
+<br/></div><div class="definition"><h3 id="Struct_User">Struct: User</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>userId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -157,7 +157,7 @@ will be same as the domain name</p>
 <tr><td>7</td><td>icon</td><td><code>binary</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>8</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>9</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>User is the model used to register a user in the system. Minimal user information will be required to provide
+</table><br/><p>User is the model used to register a user in the system. Minimal user information will be required to provide
 regarding the user.</p>
 <li><b>userId</b> : User id provided by the client</li>
 <li><b>domainId</b> : Domain id for that user</li>
@@ -169,7 +169,7 @@ regarding the user.</p>
 <li>createdTime : If client provides this value then the system will use it if not the current time will be set</li>
 <li>updatedTime : If client provides this value then the system will use it if not the current time will be set</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_GroupAdmin">Struct: GroupAdmin</h3>
+<br/></div><div class="definition"><h3 id="Struct_GroupAdmin">Struct: GroupAdmin</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>groupId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -185,7 +185,8 @@ regarding the user.</p>
 <tr><td>7</td><td>groupCardinality</td><td><code><a href="#Enum_GroupCardinality">GroupCardinality</a></code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>8</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>9</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>User group is a collection of users.</p>
+<tr><td>10</td><td>groupAdmins</td><td><code>list&lt;<code><a href="#Struct_GroupAdmin">GroupAdmin</a></code>&gt;</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/><p>User group is a collection of users.</p>
  <li><b>groupId</b> : Group id provided by the client</li>
  <li><b>domainId</b> : Domain id for this user group</li>
  <li><b>name</b> : Name for the user group. should be one word</li>
@@ -195,8 +196,9 @@ regarding the user.</p>
  <li><b>groupCardinality</b> : Group cardinality (SINGLE_USER, MULTI_USER)</li>
  <li>createdTime : Will be set by the system</li>
  <li>updatedTime : Will be set by the system</li>
+ <li>groupAdmins : Admins for the group</li>
  
-</pre><br/></div><div class="definition"><h3 id="Struct_GroupMembership">Struct: GroupMembership</h3>
+<br/></div><div class="definition"><h3 id="Struct_GroupMembership">Struct: GroupMembership</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>parentId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>childId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -204,9 +206,9 @@ regarding the user.</p>
 <tr><td>4</td><td>childType</td><td><code><a href="#Enum_GroupChildType">GroupChildType</a></code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>5</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>6</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>System internal data type to map group memberships</p>
+</table><br/><p>System internal data type to map group memberships</p>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_EntityType">Struct: EntityType</h3>
+<br/></div><div class="definition"><h3 id="Struct_EntityType">Struct: EntityType</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>entityTypeId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -214,7 +216,7 @@ regarding the user.</p>
 <tr><td>4</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>5</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>6</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>client defined entity types</p>
+</table><br/><p>client defined entity types</p>
 <li><b>entityTypeId</b> : Entity type id provided by the client</li>
 <li><b>domainId</b> : Domain id of the domain.</li>
 <li><b>name</b> : Name for the entity type. Should be a single word.</li>
@@ -222,17 +224,17 @@ regarding the user.</p>
 <li>createdTime : Will be set by the system</li>
 <li>updatedTime : Will be set by the system</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_SearchCriteria">Struct: SearchCriteria</h3>
+<br/></div><div class="definition"><h3 id="Struct_SearchCriteria">Struct: SearchCriteria</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>searchField</td><td><code><a href="#Enum_EntitySearchField">EntitySearchField</a></code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>value</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>3</td><td>searchCondition</td><td><code><a href="#Enum_SearchCondition">SearchCondition</a></code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>Container object for search criteria</p>
+</table><br/><p>Container object for search criteria</p>
 <li><b>searchField</b> : Entity search field</li>
 <li><b>value</b> : Search value</li>
 <li><b>searchCondition</b> : EQUAL, LIKE etc..</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_Entity">Struct: Entity</h3>
+<br/></div><div class="definition"><h3 id="Struct_Entity">Struct: Entity</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>entityId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -247,7 +249,7 @@ regarding the user.</p>
 <tr><td>11</td><td>originalEntityCreationTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>12</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>13</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>Entity object which is used to register an entity in the system.</p>
+</table><br/><p>Entity object which is used to register an entity in the system.</p>
 <li><b>entityId</b> : Entity id provided by the client</li>
 <li><b>domainId</b> : Domain id</li>
 <li><b>entityTypeId</b> : Entity type id</li>
@@ -262,7 +264,7 @@ set will be default to current time</li>
 <li>createdTime : Will be set by the system</li>
 <li>updatedTime : Will be set by the system</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_PermissionType">Struct: PermissionType</h3>
+<br/></div><div class="definition"><h3 id="Struct_PermissionType">Struct: PermissionType</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>permissionTypeId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>domainId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -270,7 +272,7 @@ set will be default to current time</li>
 <tr><td>4</td><td>description</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>5</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>6</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>Object for creating client defined permission type</p>
+</table><br/><p>Object for creating client defined permission type</p>
 <li><b>permissionTypeId</b> : Permission type id provided by the client</li>
 <li><b>domainId</b> : Domain id</li>
 <li><b>name</b> : Single word name for the permission</li>
@@ -278,7 +280,7 @@ set will be default to current time</li>
 <li>createdTime : Will be set by the system</li>
 <li>updatedTime : Will be set by the system</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_Sharing">Struct: Sharing</h3>
+<br/></div><div class="definition"><h3 id="Struct_Sharing">Struct: Sharing</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>permissionTypeId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>entityId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -288,19 +290,19 @@ set will be default to current time</li>
 <tr><td>6</td><td>inheritedParentId</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>7</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>8</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>This is an internal enum type for managing sharings</p>
+</table><br/><p>This is an internal enum type for managing sharings</p>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_SharingRegistryException">Exception: SharingRegistryException</h3>
+<br/></div><div class="definition"><h3 id="Struct_SharingRegistryException">Exception: SharingRegistryException</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>message</td><td><code>string</code></td><td></td><td>required</td><td></td></tr>
-</table><br/><pre><p>Exception model used in the sharing registry service</p>
+</table><br/><p>Exception model used in the sharing registry service</p>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_DuplicateEntryException">Exception: DuplicateEntryException</h3>
+<br/></div><div class="definition"><h3 id="Struct_DuplicateEntryException">Exception: DuplicateEntryException</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>message</td><td><code>string</code></td><td></td><td>required</td><td></td></tr>
-</table><br/><pre>This exception is thrown when you try to save a duplicate entity that already exists
+</table><br/>This exception is thrown when you try to save a duplicate entity that already exists
   in the database.
 
   message: contains the associated error message
 
-</pre><br/></div></div></body></html>
+<br/></div></div></body></html>
