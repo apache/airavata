@@ -139,6 +139,25 @@ public class SharingRegistryServiceTest {
 
         sharingServiceClient.createUser(user3);
 
+        User user7 = new User();
+        //required
+        user7.setUserId("test-user-7");
+        //required
+        user7.setUserName("test-user-7");
+        //required
+        user7.setDomainId(domainId);
+        //required
+        user7.setFirstName("John");
+        //required
+        user7.setLastName("Doe");
+        //required
+        user7.setEmail("john.doe@abc.com");
+        //optional - this should be bytes of the users image icon
+        //byte[] icon3 = new byte[10];
+        //user3.setIcon(icon3);
+
+        sharingServiceClient.createUser(user7);
+
         UserGroup userGroup1 = new UserGroup();
         //required
         userGroup1.setGroupId("test-group-1");
@@ -177,16 +196,22 @@ public class SharingRegistryServiceTest {
 
         sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-3"), "test-group-2");
 
+        sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-7"), "test-group-1");
+
         sharingServiceClient.addChildGroupsToParentGroup(domainId, Arrays.asList("test-group-2"), "test-group-1");
 
         //Group roles
         Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-1"));
 
         // user has admin access
-        Assert.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-2")));
-        Assert.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
-        Assert.assertTrue(sharingServiceClient.removeGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-2")));
-        Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
+        Assert.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
+        Assert.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
+
+        UserGroup getGroup = sharingServiceClient.getGroup(domainId, "test-group-1");
+        Assert.assertTrue(getGroup.getGroupAdmins().size() == 1);
+
+        Assert.assertTrue(sharingServiceClient.removeGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
+        Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
 
         // transfer group ownership
         sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-2"), "test-group-1");
