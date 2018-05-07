@@ -54,6 +54,7 @@ import org.slf4j.MDC;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class AiravataTask extends AbstractTask {
@@ -183,9 +184,12 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
 
-    public void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
+    public void saveAndPublishJobStatus(String jobId, String processId, String experimentId, String gateway,
                                          JobState jobState) throws Exception {
         try {
+
+            String taskId = Optional.ofNullable(MonitoringUtil.getTaskIdByJobId(getCuratorClient(), jobId))
+                    .orElseThrow(() -> new Exception("Can not find the task for job id " + jobId));
 
             JobStatus jobStatus = new JobStatus();
             jobStatus.setReason(jobState.name());
