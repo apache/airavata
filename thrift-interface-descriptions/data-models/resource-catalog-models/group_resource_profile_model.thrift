@@ -29,14 +29,14 @@ include "data_movement_models.thrift"
 
 struct GroupAccountSSHProvisionerConfig {
     1: required string resourceId,
-    2: required string groupResourceProfileId,
+    2: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
     3: required string configName,
     4: optional string configValue
 }
 
 struct GroupComputeResourcePreference {
     1: required string computeResourceId,
-    2: required string groupResourceProfileId,
+    2: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
     3: required bool overridebyAiravata = 1,
     4: optional string loginUserName,
     5: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
@@ -56,16 +56,16 @@ struct GroupComputeResourcePreference {
 }
 
 struct ComputeResourcePolicy {
-    1: required string resourcePolicyId,
+    1: required string resourcePolicyId = airavata_commons.DEFAULT_ID,
     2: required string computeResourceId,
-    3: required string groupResourceProfileId,
+    3: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
     4: optional list<string> allowedBatchQueues
 }
 
 struct BatchQueueResourcePolicy {
-    1: required string resourcePolicyId,
+    1: required string resourcePolicyId = airavata_commons.DEFAULT_ID,
     2: required string computeResourceId,
-    3: required string groupResourceProfileId,
+    3: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
     4: optional string queuename,
     5: optional i32 maxAllowedNodes,
     6: optional i32 maxAllowedCores,
@@ -93,8 +93,8 @@ struct BatchQueueResourcePolicy {
 */
 
 struct GroupResourceProfile {
-    1: required string gatewayId = airavata_commons.DEFAULT_ID,
-    2: required string groupResourceProfileId,
+    1: required string gatewayId,
+    2: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
     3: optional string groupResourceProfileName,
     4: optional list<GroupComputeResourcePreference> computePreferences,
     5: optional list<ComputeResourcePolicy> computeResourcePolicies,

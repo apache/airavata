@@ -126,6 +126,8 @@ public class GroupAccountSSHProvisionerConfig implements org.apache.thrift.TBase
   }
 
   public GroupAccountSSHProvisionerConfig() {
+    this.groupResourceProfileId = "DO_NOT_SET_AT_CLIENTS";
+
   }
 
   public GroupAccountSSHProvisionerConfig(
@@ -164,7 +166,8 @@ public class GroupAccountSSHProvisionerConfig implements org.apache.thrift.TBase
   @Override
   public void clear() {
     this.resourceId = null;
-    this.groupResourceProfileId = null;
+    this.groupResourceProfileId = "DO_NOT_SET_AT_CLIENTS";
+
     this.configName = null;
     this.configValue = null;
   }
