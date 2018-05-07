@@ -101,4 +101,28 @@
   - { command: ./bin/participant-daemon.sh start, dir: "{{ helix_participant_version }}" }
   - { command: ./bin/pre-wm-daemon.sh start, dir: "{{ helix_pre_wm_version }}" }
   - { command: ./bin/post-wm-daemon.sh start, dir: "{{ helix_post_wm_version }}" }
+
+- name: systemd install helix setup service scripts
+  template: src={{ item.template }}
+            dest=/usr/lib/systemd/system/{{ item.service }}
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+  notify: start {{ item.name }}
+  with_items:
+  - { template : controller/helixcontroller.service.j2, service: helixcontroller.service, name: helixcontroller }
+  - { template : participant/helixparticipant.service.j2, service: helixparticipant.service, name: helixparticipant }
+  - { template : pre-wm/prewm.service.j2, service: prewm.service, name: prewm }
+  - { template : post-wm/postwm.service.j2, service: postwm.service, name: postwm }
+  become: sudo
+
+- name: Reload systemd daemons
+  command: systemctl daemon-reload
+  notify: restart {{ item }}
+  with_items:
+  - helixcontroller
+  - helixparticipant
+  - prewm
+  - postwm
+  become: sudo
 ...
