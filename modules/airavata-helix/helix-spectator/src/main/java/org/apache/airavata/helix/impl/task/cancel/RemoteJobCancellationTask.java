@@ -118,7 +118,7 @@ public class RemoteJobCancellationTask extends AiravataTask {
 
                 // TODO this is temporary fix. Remove this line when the schedulers are configured to notify when an job is externally cancelled
                 // forcefully make the job state as cancelled as some schedulers do not notify when the job is cancelled.
-                saveAndPublishJobStatus(jobId, getTaskId(), getProcessId(), getExperimentId(), getGatewayId(), JobState.CANCELED);
+                saveAndPublishJobStatus(jobId, getProcessId(), getExperimentId(), getGatewayId(), JobState.CANCELED);
             }
 
             logger.info("Successfully completed job cancellation task");
