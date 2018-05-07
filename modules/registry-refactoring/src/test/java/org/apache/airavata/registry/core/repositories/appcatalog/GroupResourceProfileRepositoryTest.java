@@ -41,7 +41,7 @@ public class GroupResourceProfileRepositoryTest {
     private ComputeResourceRepository computeResourceRepository;
     private GroupResourceProfileRepository groupResourceProfileRepository;
     private String gatewayId = "TEST_GATEWAY";
-    private String groupResourceProfileId = "";
+    private String groupResourceProfileId = null;
     private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepository.class);
 
     @Before
@@ -124,7 +124,6 @@ public class GroupResourceProfileRepositoryTest {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
-        groupResourceProfile.setGroupResourceProfileId(groupResourceProfileId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
 
         GroupAccountSSHProvisionerConfig groupAccountSSHProvisionerConfig = new GroupAccountSSHProvisionerConfig();
@@ -147,12 +146,10 @@ public class GroupResourceProfileRepositoryTest {
 
         ComputeResourcePolicy computeResourcePolicy = new ComputeResourcePolicy();
         computeResourcePolicy.setComputeResourceId(resourceId1);
-        computeResourcePolicy.setResourcePolicyId("TEST_COM_RESOURCE_POLICY_ID1");
         computeResourcePolicy.addToAllowedBatchQueues("queue1");
 
         ComputeResourcePolicy computeResourcePolicy2 = new ComputeResourcePolicy();
         computeResourcePolicy2.setComputeResourceId(resourceId2);
-        computeResourcePolicy2.setResourcePolicyId("TEST_COM_RESOURCE_POLICY_ID2");
         computeResourcePolicy2.addToAllowedBatchQueues("cmqueue1");
 
         List<ComputeResourcePolicy> computeResourcePolicyList =  new ArrayList<>();
@@ -163,14 +160,12 @@ public class GroupResourceProfileRepositoryTest {
 
         BatchQueueResourcePolicy batchQueueResourcePolicy = new BatchQueueResourcePolicy();
         batchQueueResourcePolicy.setComputeResourceId(resourceId1);
-        batchQueueResourcePolicy.setResourcePolicyId("TEST_BQ_RESOURCE_POLICY_ID1");
         batchQueueResourcePolicy.setQueuename("queue1");
         batchQueueResourcePolicy.setMaxAllowedCores(2);
         batchQueueResourcePolicy.setMaxAllowedWalltime(10);
 
         BatchQueueResourcePolicy batchQueueResourcePolicy2 = new BatchQueueResourcePolicy();
         batchQueueResourcePolicy2.setComputeResourceId(resourceId2);
-        batchQueueResourcePolicy2.setResourcePolicyId("TEST_BQ_RESOURCE_POLICY_ID2");
         batchQueueResourcePolicy2.setQueuename("cmqueue1");
         batchQueueResourcePolicy2.setMaxAllowedCores(3);
         batchQueueResourcePolicy2.setMaxAllowedWalltime(12);
@@ -183,6 +178,8 @@ public class GroupResourceProfileRepositoryTest {
 
         groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
 
+        String computeResourcePolicyId1 = null;
+        String batchQueueResourcePolicyId2 = null;
         if (groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
             GroupResourceProfile getGroupResourceProfile = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
 
@@ -192,15 +189,27 @@ public class GroupResourceProfileRepositoryTest {
             assertTrue(getGroupResourceProfile.getComputePreferences().size() == 2);
             assertTrue(getGroupResourceProfile.getComputeResourcePolicies().size() == 2);
             assertTrue(getGroupResourceProfile.getBatchQueueResourcePolicies().size() == 2);
+            computeResourcePolicyId1 = getGroupResourceProfile.getComputeResourcePolicies()
+                    .stream()
+                    .filter(crp -> crp.getComputeResourceId().equals(resourceId1))
+                    .map(crp -> crp.getResourcePolicyId())
+                    .findFirst()
+                    .get();
+            batchQueueResourcePolicyId2 = getGroupResourceProfile.getBatchQueueResourcePolicies()
+                    .stream()
+                    .filter(bqrp -> bqrp.getComputeResourceId().equals(resourceId2))
+                    .map(bqrp -> bqrp.getResourcePolicyId())
+                    .findFirst()
+                    .get();
         }
 
         assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId) != null);
         assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId).getGroupSSHAccountProvisionerConfigs().size() == 1);
 
-        ComputeResourcePolicy getComputeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy( "TEST_COM_RESOURCE_POLICY_ID1");
+        ComputeResourcePolicy getComputeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy(computeResourcePolicyId1);
         assertTrue(getComputeResourcePolicy.getAllowedBatchQueues().get(0).equals("queue1"));
 
-        BatchQueueResourcePolicy getBatchQueuePolicy = groupResourceProfileRepository.getBatchQueueResourcePolicy("TEST_BQ_RESOURCE_POLICY_ID2");
+        BatchQueueResourcePolicy getBatchQueuePolicy = groupResourceProfileRepository.getBatchQueueResourcePolicy(batchQueueResourcePolicyId2);
         assertTrue(getBatchQueuePolicy != null);
         assertTrue(getBatchQueuePolicy.getMaxAllowedCores() == 3);
         assertTrue(getBatchQueuePolicy.getMaxAllowedWalltime() == 12);

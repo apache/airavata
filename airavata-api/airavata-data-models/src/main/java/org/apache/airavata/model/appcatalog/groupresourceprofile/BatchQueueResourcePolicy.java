@@ -151,6 +151,10 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
   }
 
   public BatchQueueResourcePolicy() {
+    this.resourcePolicyId = "DO_NOT_SET_AT_CLIENTS";
+
+    this.groupResourceProfileId = "DO_NOT_SET_AT_CLIENTS";
+
   }
 
   public BatchQueueResourcePolicy(
@@ -192,9 +196,11 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
 
   @Override
   public void clear() {
-    this.resourcePolicyId = null;
+    this.resourcePolicyId = "DO_NOT_SET_AT_CLIENTS";
+
     this.computeResourceId = null;
-    this.groupResourceProfileId = null;
+    this.groupResourceProfileId = "DO_NOT_SET_AT_CLIENTS";
+
     this.queuename = null;
     setMaxAllowedNodesIsSet(false);
     this.maxAllowedNodes = 0;
