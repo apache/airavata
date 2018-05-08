@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SSHJAgentAdaptor implements AgentAdaptor {
@@ -120,11 +121,17 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     @Override
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
         try (Session session = sshjClient.startSessionWrapper()) {
+
             Session.Command exec = session.exec((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
             StandardOutReader standardOutReader = new StandardOutReader();
-            standardOutReader.readStdOutFromStream(exec.getInputStream());
-            standardOutReader.readStdErrFromStream(exec.getErrorStream());
-            standardOutReader.setExitCode(exec.getExitStatus());
+
+            try {
+                standardOutReader.readStdOutFromStream(exec.getInputStream());
+                standardOutReader.readStdErrFromStream(exec.getErrorStream());
+            } finally {
+                exec.close(); // closing the channel before getting the exit status
+                standardOutReader.setExitCode(Optional.ofNullable(exec.getExitStatus()).orElseThrow(() -> new Exception("Exit status received as null")));
+            }
             return standardOutReader;
         } catch (Exception e) {
             throw new AgentException(e);
