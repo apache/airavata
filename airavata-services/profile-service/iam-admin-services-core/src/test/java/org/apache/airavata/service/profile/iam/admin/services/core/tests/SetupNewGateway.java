@@ -18,6 +18,8 @@ public class SetupNewGateway {
 
     public static void main(String[] args) {
         findUser();
+//        final PasswordCredential tenantAdminCreds = createTenantAdminCreds("tenant", "admin", "admin-password");
+//        getUserRoles(tenantAdminCreds, "username");
     }
 
     public static void setUpGateway(){
@@ -114,4 +116,23 @@ public class SetupNewGateway {
              e.printStackTrace();
          }
      }
+
+     public static void getUserRoles(PasswordCredential tenantAdminCreds, String username) {
+         TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
+
+         try {
+             List<String> roleNames = keycloakClient.getUserRoles(tenantAdminCreds, tenantAdminCreds.getGatewayId(), username);
+             System.out.println("Roles=" + roleNames);
+         } catch (IamAdminServicesException e) {
+             e.printStackTrace();
+         }
+     }
+
+    private static PasswordCredential createTenantAdminCreds(String tenantId, String username, String password) {
+        PasswordCredential tenantAdminCreds = new PasswordCredential();
+        tenantAdminCreds.setGatewayId(tenantId);
+        tenantAdminCreds.setLoginUserName(username);
+        tenantAdminCreds.setPassword(password);
+        return tenantAdminCreds;
+    }
 }

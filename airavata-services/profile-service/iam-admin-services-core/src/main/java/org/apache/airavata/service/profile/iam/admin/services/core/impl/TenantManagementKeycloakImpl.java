@@ -35,7 +35,12 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RoleResource;
 import org.keycloak.admin.client.resource.UserResource;
-import org.keycloak.representations.idm.*;
+import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RealmRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.RolesRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +51,7 @@ import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
@@ -579,6 +585,38 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 logger.debug("getUsersWithRole: closing client...");
                 client.close();
                 logger.debug("getUsersWithRole: client closed");
+            }
+        }
+    }
+
+    public List<String> getUserRoles(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException {
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            List<UserRepresentation> userRepresentationList = client.realm(tenantId).users().search(username,
+                    null,
+                    null,
+                    null,
+                    0, 1);
+            if (userRepresentationList.isEmpty()) {
+                logger.warn("No Keycloak user found for username [" + username + "] in tenant [" + tenantId + "].");
+                return null;
+            }
+            UserResource retrievedUser = client.realm(tenantId).users().get(userRepresentationList.get(0).getId());
+            return retrievedUser.roles().realmLevel().listAll()
+                    .stream()
+                    .map(roleRepresentation -> roleRepresentation.getName())
+                    .collect(Collectors.toList());
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                logger.debug("getUserRoles: closing client...");
+                client.close();
+                logger.debug("getUserRoles: client closed");
             }
         }
     }
