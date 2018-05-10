@@ -20,27 +20,42 @@
 package org.apache.airavata.sharing.registry.migrator.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.group.ResourcePermissionType;
-import org.apache.airavata.model.group.ResourceType;
-import org.apache.airavata.sharing.registry.models.*;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
-import org.apache.thrift.TException;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.group.ResourcePermissionType;
+import org.apache.airavata.model.group.ResourceType;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.sharing.registry.models.Domain;
+import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntityType;
+import org.apache.airavata.sharing.registry.models.GroupCardinality;
+import org.apache.airavata.sharing.registry.models.GroupType;
+import org.apache.airavata.sharing.registry.models.PermissionType;
+import org.apache.airavata.sharing.registry.models.User;
+import org.apache.airavata.sharing.registry.models.UserGroup;
+import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.thrift.TException;
 
-import java.util.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AiravataDataMigrator {
 
@@ -219,19 +234,20 @@ public class AiravataDataMigrator {
 
         //Map to reuse the domain ID and owner for creating application-deployment entities
         Map<String, String> domainOwnerMap = new HashMap<>();
+        Map<String, Map<String, String>> gatewayGroupsMap = new HashMap<>();
 
-        //Creating the everyone group
+        //Creating the gateway groups
         List<Domain> domainList = sharingRegistryServerHandler.getDomains(0, -1);
         for (Domain domain : domainList) {
             GatewayResourceProfile gatewayResourceProfile = null;
             try {
                 gatewayResourceProfile = getRegistryServiceClient().getGatewayResourceProfile(domain.domainId);
             } catch (Exception e) {
-                System.out.println("Skipping creating everyone group for " + domain.domainId + " because it doesn't have a GatewayResourceProfile");
+                System.out.println("Skipping creating groups for " + domain.domainId + " because it doesn't have a GatewayResourceProfile");
                 continue;
             }
             if (gatewayResourceProfile.getIdentityServerPwdCredToken() == null) {
-                System.out.println("Skipping creating everyone group for " + domain.domainId + " because it doesn't have an identity server pwd credential token");
+                System.out.println("Skipping creating groups for " + domain.domainId + " because it doesn't have an identity server pwd credential token");
                 continue;
             }
             String groupOwner = null;
@@ -240,37 +256,47 @@ public class AiravataDataMigrator {
                         gatewayResourceProfile.getIdentityServerPwdCredToken(), gatewayResourceProfile.getGatewayID());
                 groupOwner = credential.getLoginUserName();
             } catch (Exception e) {
-                System.out.println("Skipping creating everyone group for " + domain.domainId + " because the identity server pwd credential could not be retrieved.");
+                System.out.println("Skipping creating groups for " + domain.domainId + " because the identity server pwd credential could not be retrieved.");
                 continue;
             }
 
             domainOwnerMap.put(domain.domainId, groupOwner);
-            String groupId = "everyone@" + domain.domainId;
+
             String ownerId = groupOwner + "@" + domain.domainId;
             if (!sharingRegistryServerHandler.isUserExists(domain.domainId, ownerId)) {
-                System.out.println("Skipping creating everyone group for " + domain.domainId + " because admin user doesn't exist in sharing registry.");
+                System.out.println("Skipping creating groups for " + domain.domainId + " because admin user doesn't exist in sharing registry.");
                 continue;
             }
-            if (!sharingRegistryServerHandler.isGroupExists(domain.domainId, groupId)) {
-                UserGroup userGroup = new UserGroup();
-                userGroup.setGroupId(groupId);
-                userGroup.setDomainId(domain.domainId);
-                userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
-                userGroup.setCreatedTime(System.currentTimeMillis());
-                userGroup.setUpdatedTime(System.currentTimeMillis());
-                userGroup.setName("everyone");
-                userGroup.setDescription("Default Group");
-                userGroup.setOwnerId(ownerId);
-                userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
-                sharingRegistryServerHandler.createGroup(userGroup);
 
-                List<User> userList = sharingRegistryServerHandler.getUsers(domain.domainId, 0, -1);
-                List<String> users = new ArrayList<>();
-                for (User user : userList) {
-                    users.add(user.getUserId());
-                }
-                sharingRegistryServerHandler.addUsersToGroup(domain.domainId, users, groupId);
+            List<String> usernames = sharingRegistryServerHandler.getUsers(domain.domainId, 0, -1)
+                    .stream()
+                    // Filter out bad ids that don't have an "@" in them
+                    .filter(user -> user.getUserId().lastIndexOf("@") > 0)
+                    .map(user -> user.getUserId().substring(0, user.getUserId().lastIndexOf("@")))
+                    .collect(Collectors.toList());
+            Map<String,List<String>> roleMap = loadRolesForUsers(domain.domainId, usernames);
+
+            Map<String, String> gatewayGroupIds = new HashMap<>();
+            if (roleMap.containsKey("gateway-user")) {
+                UserGroup gatewayUsersGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
+                        "Gateway Users",
+                        "Default group for users of the gateway.", roleMap.get("gateway-user"));
+                gatewayGroupIds.put("gateway-users", gatewayUsersGroup.groupId);
             }
+            if (roleMap.containsKey("admin")) {
+                UserGroup adminUsersGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
+                        "Admin Users",
+                        "Admin users group.", roleMap.get("admin"));
+                gatewayGroupIds.put("admins", adminUsersGroup.groupId);
+            }
+            if (roleMap.containsKey("admin-read-only")) {
+                UserGroup adminUsersGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
+                        "Read Only Admin Users",
+                        "Group of admin users with read-only access.", roleMap.get("admin-read-only"));
+                gatewayGroupIds.put("read-only-admins", adminUsersGroup.groupId);
+            }
+            gatewayGroupsMap.put(domain.domainId, gatewayGroupIds);
+
         }
 
         //Creating application deployment entries
@@ -291,15 +317,71 @@ public class AiravataDataMigrator {
 
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);
-                String groupID = "everyone@" + entity.domainId;
+                String groupID = gatewayGroupsMap.get(domainID).get("gateway-users");
                 sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId, Arrays.asList(groupID),
-                        entity.domainId + ":" + ResourcePermissionType.EXEC, true);
+                        entity.domainId + ":" + ResourcePermissionType.READ, true);
             }
         }
 
         expCatConnection.close();
         System.out.println("Completed!");
 
+    }
+
+    private static Map<String,List<String>> loadRolesForUsers(String gatewayId, List<String> usernames) throws TException, ApplicationSettingsException {
+
+        TenantManagementKeycloakImpl tenantManagementKeycloak = new TenantManagementKeycloakImpl();
+        PasswordCredential tenantAdminPasswordCredential = getTenantAdminPasswordCredential(gatewayId);
+        Map<String, List<String>> roleMap = new HashMap<>();
+        for (String username : usernames) {
+            try {
+                List<String> roles = tenantManagementKeycloak.getUserRoles(tenantAdminPasswordCredential, gatewayId, username);
+                if (roles != null) {
+                    for (String role : roles) {
+                        if (!roleMap.containsKey(role)) {
+                            roleMap.put(role, new ArrayList<>());
+                        }
+                        roleMap.get(role).add(username);
+                    }
+                } else {
+                    System.err.println("Warning: user [" + username + "] in tenant [" + gatewayId + "] has no roles.");
+                }
+            } catch (IamAdminServicesException e) {
+                System.err.println("Error: unable to load roles for user [" + username + "] in tenant [" + gatewayId + "].");
+                e.printStackTrace();
+            }
+        }
+        return roleMap;
+    }
+
+    private static PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
+
+        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
+
+        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+        return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+    }
+
+    private static UserGroup createGroup(SharingRegistryServerHandler sharingRegistryServerHandler, Domain domain, String ownerId, String groupName, String groupDescription, List<String> usernames) throws TException {
+
+        UserGroup userGroup = new UserGroup();
+        userGroup.setGroupId(AiravataUtils.getId(groupName));
+        userGroup.setDomainId(domain.domainId);
+        userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
+        userGroup.setCreatedTime(System.currentTimeMillis());
+        userGroup.setUpdatedTime(System.currentTimeMillis());
+        userGroup.setName(groupName);
+        userGroup.setDescription(groupDescription);
+        userGroup.setOwnerId(ownerId);
+        userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
+        sharingRegistryServerHandler.createGroup(userGroup);
+
+        List<String> userIds = usernames.stream()
+                .map(username -> username + "@" + domain.domainId)
+                .collect(Collectors.toList());
+
+        sharingRegistryServerHandler.addUsersToGroup(domain.domainId, userIds, userGroup.getGroupId());
+        return userGroup;
     }
 
     private static CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
