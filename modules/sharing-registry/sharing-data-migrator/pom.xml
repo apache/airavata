@@ -73,6 +73,12 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>services-security</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents.wso2</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.thrift</groupId>
@@ -83,6 +89,11 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-commons</artifactId>
             <version>0.17-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>iam-admin-services-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
