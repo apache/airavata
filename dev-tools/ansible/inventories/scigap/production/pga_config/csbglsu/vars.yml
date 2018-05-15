@@ -24,12 +24,13 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "csbglsu.scigap.org"
-vhost_ssl: false
+vhost_servername: "sciencegateway.brylinski.org"
+vhost_server_redirect: "www.sciencegateway.brylinski.org"
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/csbglsu.scigap.org/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/csbglsu.scigap.org/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/csbglsu.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
