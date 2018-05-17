@@ -1,0 +1,14 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=prewm
+Before=
+After=network.target
+
+[Service]
+LOG_DIR={{ helix_pre_wm_dist_log_dir }}
+ExecStart={{ helix_dir }}/{{ helix_pre_wm_version }}/bin/pre-wm-daemon.sh {{ helix_dir }}/{{ helix_pre_wm_version }}/conf/airavata-server.properties
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

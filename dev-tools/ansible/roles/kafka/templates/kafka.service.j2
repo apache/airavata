@@ -1,0 +1,14 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=Kafka
+Before=
+After=network.target
+
+[Service]
+LOG_DIR={{ kafka_dir }}/logs
+ExecStart={{ kafka_dir }}/bin/kafka-server-start {{ kafka_dir }}/etc/kafka/server.properties
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
