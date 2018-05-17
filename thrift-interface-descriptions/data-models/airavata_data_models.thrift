@@ -36,6 +36,7 @@ include "user-tenant-group-models/user_profile_model.thrift"
 include "user-tenant-group-models/group_manager_model.thrift"
 include "user-tenant-group-models/tenant_profile_model.thrift"
 include "credential-store-models/credential_store_data_models.thrift"
+include "resource-catalog-models/gateway_groups_model.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model

@@ -28,6 +28,7 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationDeploymentEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInterfaceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GatewayGroupsEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.StorageResourceEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ScpDataMovementEntity</class>
