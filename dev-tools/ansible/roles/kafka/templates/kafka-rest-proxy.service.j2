@@ -1,0 +1,14 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=Kafka-Rest-Proxy
+Before=
+After=network.target
+
+[Service]
+LOG_DIR={{ kafka_dir }}/logs
+ExecStart={{ kafka_dir }}/bin/kafka-rest-start {{ kafka_dir }}/etc/kafka-rest/kafka-rest.properties
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

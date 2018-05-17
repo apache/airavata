@@ -19,6 +19,9 @@
 #
 
 ---
+- hosts: database
+  gather_facts: True
+
 - hosts: zookeeper
   tags: zookeeper, airavata
   roles:
@@ -31,18 +34,6 @@
   roles:
     - env_setup
     - rabbitmq
-
-- hosts: gfac
-  tags: gfac, airavata
-  roles:
-    - env_setup
-    - java
-    - role: common
-      become: yes
-      become_user: "{{user}}"
-    - role: gfac
-      become: yes
-      become_user: "{{user}}"
 
 - hosts: api-orch
   tags: api-orch, airavata

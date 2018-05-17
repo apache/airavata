@@ -1,6 +1,5 @@
 # Setup default virtual host as a catchall to prevent resolving to the first defined virtual host
 # This will show the welcome page when requesting on the ip address or server default hostname
-Listen {{ pga_default_http_port }}
 <VirtualHost _default_:{{ pga_default_http_port }}>
     DocumentRoot "/www/default"
 </VirtualHost>
