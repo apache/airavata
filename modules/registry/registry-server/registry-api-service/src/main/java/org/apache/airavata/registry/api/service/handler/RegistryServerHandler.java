@@ -34,6 +34,7 @@ import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -103,6 +104,7 @@ import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractEx
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.GatewayGroupsRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.StorageResourceRepository;
@@ -145,6 +147,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
     private WorkflowRepository workflowRepository = new WorkflowRepository();
     private StorageResourceRepository storageResourceRepository = new StorageResourceRepository();
+    private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -4897,5 +4900,78 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+    @Override
+    public void createGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException, DuplicateEntryException, TException {
+        try {
+            if (gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
+                logger.error("GatewayGroups already exists for " + gatewayGroups.getGatewayId());
+                throw new DuplicateEntryException("GatewayGroups for gatewayId: " + gatewayGroups.getGatewayId() + " already exists.");
+            }
+            gatewayGroupsRepository.create(gatewayGroups);
+        } catch (DuplicateEntryException e) {
+            throw e; // re-throw
+        } catch (Exception e) {
 
+            final String message = "Error while creating a GatewayGroups entry for gateway " + gatewayGroups.getGatewayId() + ".";
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public void updateGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException, TException {
+        try {
+            if (!gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
+                final String message = "No GatewayGroups entry exists for " + gatewayGroups.getGatewayId();
+                logger.error(message);
+                throw new RegistryServiceException(message);
+            }
+            gatewayGroupsRepository.update(gatewayGroups);
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+        } catch (Exception e) {
+
+            final String message = "Error while updating the GatewayGroups entry for gateway " + gatewayGroups.getGatewayId() + ".";
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public boolean isGatewayGroupsExists(String gatewayId) throws RegistryServiceException, TException {
+        try {
+            return gatewayGroupsRepository.isExists(gatewayId);
+        } catch (Exception e) {
+            final String message = "Error checking existence of the GatewayGroups entry for gateway " + gatewayId + ".";
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryServiceException, TException {
+        try {
+            if (!gatewayGroupsRepository.isExists(gatewayId)) {
+                final String message = "No GatewayGroups entry exists for " + gatewayId;
+                logger.error(message);
+                throw new RegistryServiceException(message);
+            }
+            return gatewayGroupsRepository.get(gatewayId);
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+        } catch (Exception e) {
+
+            final String message = "Error while retrieving the GatewayGroups entry for gateway " + gatewayId + ".";
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
 }

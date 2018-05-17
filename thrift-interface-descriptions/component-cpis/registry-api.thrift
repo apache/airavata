@@ -39,6 +39,7 @@ include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
+include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
@@ -2613,4 +2614,15 @@ service RegistryService {
                list<group_resource_profile_model.ComputeResourcePolicy> getGroupComputeResourcePolicyList(1: required string groupResourceProfileId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
+    /*
+     * Gateway Groups API methods
+     */
+    void createGatewayGroups(1: required gateway_groups_model.GatewayGroups gatewayGroups)
+            throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
+    void updateGatewayGroups(1: required gateway_groups_model.GatewayGroups gatewayGroups)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    bool isGatewayGroupsExists(1: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    gateway_groups_model.GatewayGroups getGatewayGroups(1: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse)
 }
