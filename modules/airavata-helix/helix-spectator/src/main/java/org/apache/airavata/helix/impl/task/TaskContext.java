@@ -763,7 +763,14 @@ public class TaskContext {
             ctx.setApplicationInterfaceDescription(registryClient.getApplicationInterface(processModel.getApplicationInterfaceId()));
             ctx.setComputeResourceDescription(registryClient.getComputeResource(ctx.getComputeResourceId()));
             ctx.setStorageResource(registryClient.getStorageResource(ctx.getStorageResourceId()));
-            ctx.setUserResourceProfile(registryClient.getUserResourceProfile(processModel.getUserName(), gatewayId));
+
+            if (processModel.isUseUserCRPref()) {
+                ctx.setUserResourceProfile(registryClient.getUserResourceProfile(processModel.getUserName(), gatewayId));
+                ctx.setUserComputeResourcePreference(registryClient.getUserComputeResourcePreference(
+                                processModel.getUserName(),
+                                gatewayId,
+                                processModel.getComputeResourceId()));
+            }
 
             List<OutputDataObjectType> applicationOutputs = ctx.getApplicationInterfaceDescription().getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
