@@ -763,6 +763,7 @@ public class TaskContext {
             ctx.setApplicationInterfaceDescription(registryClient.getApplicationInterface(processModel.getApplicationInterfaceId()));
             ctx.setComputeResourceDescription(registryClient.getComputeResource(ctx.getComputeResourceId()));
             ctx.setStorageResource(registryClient.getStorageResource(ctx.getStorageResourceId()));
+            ctx.setUserResourceProfile(registryClient.getUserResourceProfile(processModel.getUserName(), gatewayId));
 
             List<OutputDataObjectType> applicationOutputs = ctx.getApplicationInterfaceDescription().getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
