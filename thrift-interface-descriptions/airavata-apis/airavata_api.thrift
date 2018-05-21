@@ -3491,8 +3491,22 @@ service Airavata {
                                                 3: airavata_errors.AiravataSystemException ase,
                                                 4: airavata_errors.AuthorizationException ae)
 
+  bool shareResourceWithGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+                                4: map<string, group_manager_model.ResourcePermissionType> groupPermissionList)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                                                2: airavata_errors.AiravataClientException ace,
+                                                3: airavata_errors.AiravataSystemException ase,
+                                                4: airavata_errors.AuthorizationException ae)
+
  bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
                                  4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ bool revokeSharingOfResourceFromGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+                                 4: map<string, group_manager_model.ResourcePermissionType> groupPermissionList)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,

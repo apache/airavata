@@ -25,15 +25,13 @@ import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
-import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
@@ -45,12 +43,8 @@ import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvis
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -65,16 +59,9 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePrefe
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.credential.store.CredentialOwnerType;
-import org.apache.airavata.model.credential.store.CredentialSummary;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.credential.store.SummaryType;
+import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.movement.GridFTPDataMovement;
-import org.apache.airavata.model.data.movement.LOCALDataMovement;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.model.data.movement.UnicoreDataMovement;
+import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.error.*;
@@ -95,35 +82,16 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
-import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
-import org.apache.airavata.sharing.registry.models.Domain;
-import org.apache.airavata.sharing.registry.models.Entity;
-import org.apache.airavata.sharing.registry.models.EntitySearchField;
-import org.apache.airavata.sharing.registry.models.EntityType;
-import org.apache.airavata.sharing.registry.models.GroupCardinality;
-import org.apache.airavata.sharing.registry.models.GroupType;
-import org.apache.airavata.sharing.registry.models.PermissionType;
-import org.apache.airavata.sharing.registry.models.SearchCondition;
-import org.apache.airavata.sharing.registry.models.SearchCriteria;
-import org.apache.airavata.sharing.registry.models.SharingRegistryException;
-import org.apache.airavata.sharing.registry.models.User;
-import org.apache.airavata.sharing.registry.models.UserGroup;
+import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
@@ -892,6 +860,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public String createProject(AuthzToken authzToken, String gatewayId, Project project) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        // TODO: verify that gatewayId and project.gatewayId match authzToken
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -900,12 +869,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     Entity entity = new Entity();
                     entity.setEntityId(projectId);
-                    entity.setDomainId(project.getGatewayId());
-                    entity.setEntityTypeId(project.getGatewayId() + ":" + "PROJECT");
-                    entity.setOwnerId(project.getOwner() + "@" + project.getGatewayId());
+                    final String domainId = project.getGatewayId();
+                    entity.setDomainId(domainId);
+                    entity.setEntityTypeId(domainId + ":" + "PROJECT");
+                    entity.setOwnerId(project.getOwner() + "@" + domainId);
                     entity.setName(project.getName());
                     entity.setDescription(project.getDescription());
                     sharingClient.createEntity(entity);
+                    GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
+                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
+                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
                 } catch (Exception ex) {
                     logger.error(ex.getMessage(), ex);
                     logger.error("Rolling back project creation Proj ID : " + projectId);
@@ -1371,6 +1344,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public String createExperiment(AuthzToken authzToken, String gatewayId, ExperimentModel experiment) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        // TODO: verify that gatewayId and experiment.gatewayId match authzToken
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -1380,14 +1354,18 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     Entity entity = new Entity();
                     entity.setEntityId(experimentId);
-                    entity.setDomainId(experiment.getGatewayId());
-                    entity.setEntityTypeId(experiment.getGatewayId() + ":" + "EXPERIMENT");
-                    entity.setOwnerId(experiment.getUserName() + "@" + experiment.getGatewayId());
+                    final String domainId = experiment.getGatewayId();
+                    entity.setDomainId(domainId);
+                    entity.setEntityTypeId(domainId + ":" + "EXPERIMENT");
+                    entity.setOwnerId(experiment.getUserName() + "@" + domainId);
                     entity.setName(experiment.getExperimentName());
                     entity.setDescription(experiment.getDescription());
                     entity.setParentEntityId(experiment.getProjectId());
 
                     sharingClient.createEntity(entity);
+                    GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
+                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
+                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
                 } catch (Exception ex) {
                     logger.error(ex.getMessage(), ex);
                     logger.error("Rolling back experiment creation Exp ID : " + experimentId);
@@ -2084,12 +2062,16 @@ public class AiravataServerHandler implements Airavata.Iface {
             try {
                 Entity entity = new Entity();
                 entity.setEntityId(expId);
-                entity.setDomainId(existingExperiment.getGatewayId());
-                entity.setEntityTypeId(existingExperiment.getGatewayId() + ":" + "EXPERIMENT");
-                entity.setOwnerId(existingExperiment.getUserName() + "@" + existingExperiment.getGatewayId());
+                final String domainId = existingExperiment.getGatewayId();
+                entity.setDomainId(domainId);
+                entity.setEntityTypeId(domainId + ":" + "EXPERIMENT");
+                entity.setOwnerId(existingExperiment.getUserName() + "@" + domainId);
                 entity.setName(existingExperiment.getExperimentName());
                 entity.setDescription(existingExperiment.getDescription());
                 sharingClient.createEntity(entity);
+                GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
+                sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
+                sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
                 logger.error("rolling back experiment creation Exp ID : " + expId);
@@ -2349,10 +2331,26 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public String registerApplicationDeployment(AuthzToken authzToken, String gatewayId, ApplicationDeploymentDescription applicationDeployment)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        // TODO: verify that gatewayId matches authzToken gatewayId
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             String result = regClient.registerApplicationDeployment(gatewayId, applicationDeployment);
+            Entity entity = new Entity();
+            entity.setEntityId(result);
+            final String domainId = gatewayId;
+            entity.setDomainId(domainId);
+            entity.setEntityTypeId(domainId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            entity.setOwnerId(userName + "@" + domainId);
+            entity.setName(result);
+            entity.setDescription(applicationDeployment.getAppDeploymentDescription());
+            sharingClient.createEntity(entity);
+            GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
+            sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
+            sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             logger.error("Error while adding application deployment...", e);
@@ -2360,6 +2358,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding application deployment. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -4953,6 +4952,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean shareResourceWithUsers(AuthzToken authzToken, String resourceId, ResourceType resourceType,
                                           Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        // TODO: first verify that authenticating user is OWNER of the resource
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -4987,9 +4987,48 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    public boolean shareResourceWithGroups(AuthzToken authzToken, String resourceId, ResourceType resourceType,
+                                           Map<String, ResourcePermissionType> groupPermissionList)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        // TODO: first verify that authenticating user is OWNER of the resource
+        RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        try {
+            for(Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()){
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                if(groupPermission.getValue().equals(ResourcePermissionType.WRITE))
+                    sharingClient.shareEntityWithGroups(gatewayId, resourceId,
+                            Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE", true);
+                else if(groupPermission.getValue().equals(ResourcePermissionType.READ))
+                    sharingClient.shareEntityWithGroups(gatewayId, resourceId,
+                            Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
+                else if(groupPermission.getValue().equals(ResourcePermissionType.EXEC))
+                    sharingClient.shareEntityWithGroups(gatewayId, resourceId,
+                            Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC", true);
+                else {
+                    logger.error("Invalid ResourcePermissionType : " + groupPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
+            }
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            return true;
+        } catch (Exception e) {
+            String msg = "Error in sharing resource with groups. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            sharingClientPool.returnBrokenResource(sharingClient);
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
     @SecurityCheck
     public boolean revokeSharingOfResourceFromUsers(AuthzToken authzToken, String resourceId, ResourceType resourceType,
                                                     Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        // TODO: first verify that authenticating user is OWNER of the resource
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -5013,7 +5052,55 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return true;
         } catch (Exception e) {
-            String msg = "Error in revoking access to resouce from users. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            String msg = "Error in revoking access to resource from users. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            sharingClientPool.returnBrokenResource(sharingClient);
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean revokeSharingOfResourceFromGroups(AuthzToken authzToken, String resourceId, ResourceType resourceType,
+                                                     Map<String, ResourcePermissionType> groupPermissionList) 
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        // TODO: first verify that authenticating user is OWNER of the resource
+        RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        final String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+            // Prevent removing Admins WRITE access and Read Only Admins READ access
+            GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
+            if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
+                    && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.WRITE)) {
+                throw new Exception("Not allowed to remove Admins group's WRITE access.");
+            }
+            if (groupPermissionList.containsKey(gatewayGroups.getReadOnlyAdminsGroupId())
+                    && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.READ)) {
+                throw new Exception("Not allowed to remove Read Only Admins group's READ access.");
+            }
+            for(Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()){
+                if(groupPermission.getValue().equals(ResourcePermissionType.WRITE))
+                    sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                            Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "WRITE");
+                else if(groupPermission.getValue().equals(ResourcePermissionType.READ))
+                    sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                            Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "READ");
+                else if(groupPermission.getValue().equals(ResourcePermissionType.EXEC))
+                    sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                            Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "EXEC");
+                else {
+                    logger.error("Invalid ResourcePermissionType : " + groupPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
+            }
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            return true;
+        } catch (Exception e) {
+            String msg = "Error in revoking access to resource from groups. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + " More info : " + e.getMessage());
@@ -5066,6 +5153,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public String createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        // TODO: verify that gatewayId in groupResourceProfile matches authzToken gatewayId
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -5075,12 +5163,17 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     Entity entity = new Entity();
                     entity.setEntityId(groupResourceProfileId);
+                    final String domainId = groupResourceProfile.getGatewayId();
                     entity.setDomainId(groupResourceProfile.getGatewayId());
                     entity.setEntityTypeId(groupResourceProfile.getGatewayId() + ":" + "GROUP_RESOURCE_PROFILE");
                     entity.setOwnerId(userName + "@" + groupResourceProfile.getGatewayId());
                     entity.setName(groupResourceProfile.getGroupResourceProfileName());
 
                     sharingClient.createEntity(entity);
+
+                    GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, groupResourceProfile.getGatewayId());
+                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
+                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
                 } catch (Exception ex) {
                     logger.error(ex.getMessage(), ex);
                     logger.error("Rolling back group resource profile creation Group Resource Profile ID : " + groupResourceProfileId);
@@ -5540,34 +5633,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         experimentPublisher.publish(messageContext);
     }
 
-    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-        try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
-        }
-    }
+    private GatewayGroups retrieveGatewayGroups(RegistryService.Client regClient, String gatewayId) throws TException {
 
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
-        }
+        return regClient.getGatewayGroups(gatewayId);
     }
-
-    private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
-        final String serverHost = ServerSettings.getSharingRegistryHost();
-        try {
-            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
-        } catch (SharingRegistryException e) {
-            throw new TException("Unable to create sharing registry client...", e);
-        }
-    }
-
 }
