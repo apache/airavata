@@ -43,6 +43,7 @@ include "../data-models/resource-catalog-models/gateway_resource_profile_model.t
 include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
+include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../data-models/user-tenant-group-models/group_manager_model.thrift"
@@ -3603,6 +3604,14 @@ service Airavata {
                                                                                          2: airavata_errors.AiravataClientException ace,
                                                                                          3: airavata_errors.AiravataSystemException ase,
                                                                                          4: airavata_errors.AuthorizationException ae)
+  /**
+   * GatewayGroups API methods
+   */
+  gateway_groups_model.GatewayGroups getGatewayGroups(1: required security_model.AuthzToken authzToken)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
  //
  //End of API
  }
