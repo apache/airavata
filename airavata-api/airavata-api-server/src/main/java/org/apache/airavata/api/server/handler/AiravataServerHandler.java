@@ -5621,7 +5621,26 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private void submitExperiment(String gatewayId,String experimentId) throws AiravataException {
+    @Override
+    public GatewayGroups getGatewayGroups(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
+            registryClientPool.returnResource(regClient);
+            return gatewayGroups;
+        } catch (Exception e) {
+            String msg = "Error retrieving GatewayGroups for gateway: " + gatewayId;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    private void submitExperiment(String gatewayId, String experimentId) throws AiravataException {
         ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
