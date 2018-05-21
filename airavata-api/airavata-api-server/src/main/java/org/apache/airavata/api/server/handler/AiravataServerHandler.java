@@ -4987,6 +4987,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean shareResourceWithGroups(AuthzToken authzToken, String resourceId, ResourceType resourceType,
                                            Map<String, ResourcePermissionType> groupPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
@@ -5063,6 +5064,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean revokeSharingOfResourceFromGroups(AuthzToken authzToken, String resourceId, ResourceType resourceType,
                                                      Map<String, ResourcePermissionType> groupPermissionList) 
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
