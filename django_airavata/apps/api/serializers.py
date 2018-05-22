@@ -138,6 +138,9 @@ class GroupSerializer(serializers.Serializer):
     isAdmin = serializers.SerializerMethodField()
     isOwner = serializers.SerializerMethodField()
     isMember = serializers.SerializerMethodField()
+    isGatewayAdminsGroup = serializers.SerializerMethodField()
+    isReadOnlyGatewayAdminsGroup = serializers.SerializerMethodField()
+    isDefaultGatewayUsersGroup = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         validated_data['ownerId'] = self.context['request'].user.username + "@" + settings.GATEWAY_ID
@@ -169,6 +172,27 @@ class GroupSerializer(serializers.Serializer):
         request = self.context['request']
         username = request.user.username + "@" + settings.GATEWAY_ID
         return group.members and username in group.members
+
+    def get_isGatewayAdminsGroup(self, group):
+        request = self.context['request']
+        return group.id == self._gateway_groups()['adminsGroupId']
+
+    def get_isReadOnlyGatewayAdminsGroup(self, group):
+        request = self.context['request']
+        return group.id == self._gateway_groups()['readOnlyAdminsGroupId']
+
+    def get_isDefaultGatewayUsersGroup(self, group):
+        return group.id == self._gateway_groups()['defaultGatewayUsersGroupId']
+
+    def _gateway_groups(self):
+        request = self.context['request']
+        # gateway_groups_middleware sets this session variable
+        if 'GATEWAY_GROUPS' in request.session:
+            return request.session['GATEWAY_GROUPS']
+        else:
+            gateway_groups = request.airavata_client.getGatewayGroups(
+                request.authz_token)
+            return copy.deepcopy(gateway_groups.__dict__)
 
 
 class ProjectSerializer(serializers.Serializer):
