@@ -90,23 +90,22 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
 
                             case CREATE:
-                                log.info("Creating user. User Id : " + user.getUserId());
+                            case UPDATE:
 
-                                sharingRegistryClient.createUser(user);
-                                log.debug("User created. User Id : " + user.getUserId());
+                                if (!sharingRegistryClient.isUserExists(user.getDomainId(), user.getUserId())) {
+                                    log.info("Creating user. User Id : " + user.getUserId());
+                                    sharingRegistryClient.createUser(user);
+                                    log.debug("User created. User Id : " + user.getUserId());
+                                } else {
+                                    log.info("Updating user. User Id : " + user.getUserId());
+                                    sharingRegistryClient.updatedUser(user);
+                                    log.debug("User updated. User Id : " + user.getUserId());
+                                }
 
                                 break;
 
                             case READ:
                                 //FIXME: Remove if not required
-                                break;
-
-                            case UPDATE:
-                                log.info("Updating user. User Id : " + user.getUserId());
-
-                                sharingRegistryClient.updatedUser(user);
-                                log.debug("User updated. User Id : " + user.getUserId());
-
                                 break;
 
                             case DELETE:

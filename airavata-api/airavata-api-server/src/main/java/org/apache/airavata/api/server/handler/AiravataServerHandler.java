@@ -25,6 +25,7 @@ import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
+import org.apache.airavata.api.server.util.GatewayGroupsInitializer;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -5656,6 +5657,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     private GatewayGroups retrieveGatewayGroups(RegistryService.Client regClient, String gatewayId) throws TException {
 
-        return regClient.getGatewayGroups(gatewayId);
+        if (regClient.isGatewayGroupsExists(gatewayId)) {
+            return regClient.getGatewayGroups(gatewayId);
+        } else {
+            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
+        }
     }
 }
