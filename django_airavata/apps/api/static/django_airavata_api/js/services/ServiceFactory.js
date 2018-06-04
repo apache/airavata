@@ -35,6 +35,9 @@ const parseServiceMapping = function (serviceConfiguration) {
     }
     if (supportedFunctions) {
         let url = serviceConfiguration.url;
+        if (!url.endsWith("/")) {
+            url = url + "/";
+        }
         delete serviceConfiguration.viewSet;
         delete serviceConfiguration.url;
         for (let supportedFunction of supportedFunctions) {
@@ -62,7 +65,7 @@ const parseServiceMapping = function (serviceConfiguration) {
                     break;
                 case "update":
                     serviceConfiguration["update"] = {
-                        url: url + "/" + "<lookup>/",
+                        url: url + "<lookup>/",
                         requestType: putKey,
                         bodyParams: {
                             name: "data"
@@ -71,13 +74,13 @@ const parseServiceMapping = function (serviceConfiguration) {
                     break;
                 case  "retrieve":
                     serviceConfiguration["retrieve"] = {
-                        url: url + "/" + "<lookup>/",
+                        url: url + "<lookup>/",
                         requestType: getKey,
                     }
                     break;
                 case "delete":
                     serviceConfiguration["delete"] = {
-                        url: url + "/" + "<lookup>/",
+                        url: url + "<lookup>/",
                         requestType: delKey,
                     }
             }
@@ -135,7 +138,7 @@ class ServiceFactory {
             }
             let pathParamsMapping = parsePathParams(config.url);
             let queryParamsMapping = parseQueryMapping(config.queryParams);
-            serviceObj[functionName] =  function (params = {}) {
+            serviceObj[functionName] = function (params = {}) {
                 let url = config.url;
                 let paramKeys = Object.keys(params);
                 let queryParams = {};
@@ -169,13 +172,13 @@ class ServiceFactory {
                 };
                 switch (config.requestType.toLowerCase()) {
                     case postKey:
-                        return  FetchUtils.post(url, bodyParams, queryParams).then(paginationHandler);
+                        return FetchUtils.post(url, bodyParams, queryParams).then(paginationHandler);
                     case getKey:
-                        return  FetchUtils.get(url, queryParams).then(paginationHandler);
+                        return FetchUtils.get(url, queryParams).then(paginationHandler);
                     case putKey:
-                        return  FetchUtils.put(url, bodyParams);
+                        return FetchUtils.put(url, bodyParams);
                     case delKey:
-                        return  FetchUtils.delete(url);
+                        return FetchUtils.delete(url);
                 }
             }
         }

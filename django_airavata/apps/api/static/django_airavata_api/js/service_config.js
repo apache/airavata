@@ -32,6 +32,10 @@ export default {
         url: "/api/group-resource-profiles/",
         viewSet: true
     },
+    "SharedEntitiesGroups": {
+        url: "/api/shared/group/entities",
+        viewSet: true
+    },
     "Entities": {
         url: "/api/entities",
         viewSet: [{

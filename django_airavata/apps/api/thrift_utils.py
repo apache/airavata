@@ -101,7 +101,7 @@ def create_serializer_class(thrift_data_type, enable_date_time_conversion=False)
             return thrift_data_type(**params)
 
         def update(self, instance, validated_data):
-            raise Exception("Not implemented")
+            return self.create(validated_data)
 
     return CustomSerializer
 
@@ -127,7 +127,7 @@ def process_field(field, enable_date_time_conversion, required=False, read_only=
         if field_class == CharField:
             kwargs['allow_blank'] = allow_null
         thrift_model_class = mapping[field[1]]
-        if thrift_model_class == IntegerField and field[2].lower().endswith("time"):
+        if enable_date_time_conversion and thrift_model_class == IntegerField and field[2].lower().endswith("time"):
             thrift_model_class = UTCPosixTimestampDateTimeField
         return thrift_model_class(**kwargs)
     elif field[1] == TType.LIST:

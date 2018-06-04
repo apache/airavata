@@ -422,3 +422,11 @@ class GroupResourceProfileSerializer(
         thrift_utils.create_serializer_class(GroupResourceProfile)):
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)
+
+class SharedGroups(serializers.Serializer):
+    groupList=serializers.ListField(child=serializers.CharField())
+    entityId=serializers.CharField()
+
+    def update(self, instance, validated_data):
+        instance["groupList"]=validated_data["groupList"]
+        return instance

@@ -1,24 +1,8 @@
-from . import datastore
-from . import serializers
-from . import thrift_utils
-
-from rest_framework import status, mixins, pagination
-from rest_framework.decorators import api_view
-from rest_framework.decorators import detail_route
-from rest_framework.decorators import list_route
-from rest_framework.views import APIView
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from rest_framework.parsers import JSONParser
-from rest_framework.renderers import JSONRenderer
-from rest_framework.utils.urls import replace_query_param, remove_query_param
-from rest_framework import status
+import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse, Http404, JsonResponse
 from rest_framework import mixins
 from rest_framework import status
@@ -37,18 +21,14 @@ from airavata.model.application.io.ttypes import DataType
 from airavata.model.credential.store.ttypes import CredentialOwnerType, SummaryType, CredentialSummary
 from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMovement, SCPDataMovement, \
     UnicoreDataMovement
-from airavata.model.application.io.ttypes import DataType
-from collections import OrderedDict
-import json
-import logging
-import os
-
 from airavata.model.sharing.ttypes import Entity
 from django_airavata.apps.api.view_utils import GenericAPIBackedViewSet, APIBackedViewSet, APIResultIterator, \
     APIResultPagination
 from . import datastore
 from . import serializers
 from . import thrift_utils
+
+READ_PERMISSION_TYPE = '{}:READ'
 
 log = logging.getLogger(__name__)
 
@@ -719,14 +699,15 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         group_resource_profile = serializer.save()
-        group_resource_profile.gatewayId=self.gateway_id
-        ret=self.request.airavata_client.createGroupResourceProfile( authzToken=self.authz_token, groupResourceProfile=group_resource_profile)
-        ret2= self.request.sharing_client.createEntity(Entity(entityId=group_resource_profile.groupResourceProfileId,domainId=settings.GATEWAY_ID))
-        return ret
+        group_resource_profile.gatewayId = self.gateway_id
+        group_resource_profile_id = self.request.airavata_client.createGroupResourceProfile(authzToken=self.authz_token,
+                                                                                            groupResourceProfile=group_resource_profile)
+        group_resource_profile = self.request.airavata_client.getGroupResourceProfile(
+            self.authz_token, group_resource_profile_id)
+        serializer.instance = group_resource_profile
 
-
-def perform_update(self, serializer):
-    return self.request.airavata_client.updateGroupResourceProfile(self, self.authz_token, serializer.save())
+    def perform_update(self, serializer):
+        return self.request.airavata_client.updateGroupResourceProfile(self.authz_token, serializer.save())
 
 
 class EntityViewSet(GenericAPIBackedViewSet, mixins.CreateModelMixin):
@@ -736,10 +717,55 @@ class EntityViewSet(GenericAPIBackedViewSet, mixins.CreateModelMixin):
         return self.request.sharing_client.createEntity(serializer.save())
 
 
+class ShareEntity(APIBackedViewSet):
+
+    def perform_update(self, serializer):
+        pass
+
+
 class ShareEntityWithGroup(APIView):
     renderer_classes = (JSONRenderer,)
 
-    def post(self, request, format=None):
-        params=request.data
-        params["domainId"]=settings.GATEWAY_ID
+    def post(self, request, entity_id=None, format=None):
+        params = request.data
+        params["domainId"] = settings.GATEWAY_ID
+        params["entityId"] = entity_id
         return request.sharing_client.shareEntityWithGroups(self, **params)
+
+    def get(self, request, entity_id=None, format=None):
+        groups = self.request.sharing_client.getListOfSharedGroups(domainId=settings.GATEWAY_ID, entityId=entity_id,
+                                                                   permissionTypeId=None)
+        if groups:
+            groups = map(lambda val: val.groupId, groups)
+        return groups
+
+
+class SharedEntityGroups(APIBackedViewSet):
+    serializer_class = serializers.SharedGroups
+
+    def perform_update(self, serializer):
+        before = serializer.data
+        after= serializer.initial_data
+        del serializer._data
+        remaining = [item for item in before["groupList"] if item not in after["groupList"]]
+        params = dict(after)
+        params["domainId"] = settings.GATEWAY_ID
+        params["perssionTypeId"] = READ_PERMISSION_TYPE.format(settings.GATEWAY_ID)
+        params["cascadePermission"] = True
+        ret = self.request.sharing_client.shareEntityWithGroups(**params)
+        if remaining:
+            self.request.sharing_client.revokeEntitySharingFromGroups(domainId=settings.GATEWAY_ID, entityId=before["entityId"], groupList=remaining, perssionTypeId=READ_PERMISSION_TYPE.format(settings.GATEWAY_ID))
+        serializer.save()
+        print("Success shared groups {} {}".format(ret, params))
+
+    def get_instance(self, entity_id):
+        groups = {
+            'entityId': entity_id
+        }
+        group_list = self.request.sharing_client.getListOfSharedGroups(domainId=settings.GATEWAY_ID, entityId=entity_id,
+                                                                       permissionTypeId=READ_PERMISSION_TYPE.format(
+                                                                           settings.GATEWAY_ID))
+        if group_list:
+            group_list = map(lambda val: val.groupId, group_list)
+        groups['groupList'] = group_list
+        return groups
