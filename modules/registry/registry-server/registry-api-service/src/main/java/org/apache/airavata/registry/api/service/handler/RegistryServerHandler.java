@@ -19,7 +19,6 @@
  */
 package org.apache.airavata.registry.api.service.handler;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.WorkflowModel;
@@ -98,8 +97,8 @@ import org.apache.airavata.registry.core.app.catalog.resources.SshJobSubmissionR
 import org.apache.airavata.registry.core.app.catalog.resources.UnicoreDataMovementResource;
 import org.apache.airavata.registry.core.app.catalog.resources.UnicoreJobSubmissionResource;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
+import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
@@ -109,18 +108,15 @@ import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourcePr
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.StorageResourceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.*;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.ComputeResource;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExpCatParentDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogException;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
@@ -139,14 +135,31 @@ import java.util.Map;
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
 
-    private ExperimentCatalog experimentCatalog;
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
+    private StorageResourceRepository storageResourceRepository = new StorageResourceRepository();
     private UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
+    private GatewayRepository gatewayRepository = new GatewayRepository();
+    private ProjectRepository projectRepository = new ProjectRepository();
+    private NotificationRepository notificationRepository = new NotificationRepository();
+    private ExperimentSummaryRepository experimentSummaryRepository = new ExperimentSummaryRepository();
+    private ExperimentRepository experimentRepository = new ExperimentRepository();
+    private ExperimentOutputRepository experimentOutputRepository = new ExperimentOutputRepository();
+    private ExperimentStatusRepository experimentStatusRepository = new ExperimentStatusRepository();
+    private ExperimentErrorRepository experimentErrorRepository = new ExperimentErrorRepository();
+    private ProcessRepository processRepository = new ProcessRepository();
+    private ProcessOutputRepository processOutputRepository = new ProcessOutputRepository();
+    private ProcessStatusRepository processStatusRepository = new ProcessStatusRepository();
+    private ProcessErrorRepository processErrorRepository = new ProcessErrorRepository();
+    private TaskRepository taskRepository = new TaskRepository();
+    private TaskStatusRepository taskStatusRepository = new TaskStatusRepository();
+    private TaskErrorRepository taskErrorRepository = new TaskErrorRepository();
+    private JobRepository jobRepository = new JobRepository();
+    private JobStatusRepository jobStatusRepository = new JobStatusRepository();
+    private QueueStatusRepository queueStatusRepository = new QueueStatusRepository();
     private DataProductRepository dataProductRepository = new DataProductRepository();
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
     private WorkflowRepository workflowRepository = new WorkflowRepository();
-    private StorageResourceRepository storageResourceRepository = new StorageResourceRepository();
     private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
 
     /**
@@ -205,14 +218,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Gateway getGateway(String gatewayId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
+            if (!gatewayRepository.isGatewayExist(gatewayId)){
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 throw exception;
             }
-            Gateway gateway = (Gateway) experimentCatalog.get(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            Gateway gateway = gatewayRepository.getGateway(gatewayId);
             logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
             return gateway;
         } catch (RegistryException e) {
@@ -233,14 +245,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteGateway(String gatewayId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
+            if (!gatewayRepository.isGatewayExist(gatewayId)){
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 throw exception;
             }
-            experimentCatalog.remove(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            gatewayRepository.removeGateway(gatewayId);
             logger.debug("Airavata deleted gateway with gateway id : " + gatewayId);
             return true;
         } catch (RegistryException e) {
@@ -257,12 +268,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<Gateway> getAllGateways() throws RegistryServiceException, TException {
         try {
-            List<Gateway> gateways = new ArrayList<Gateway>();
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.GATEWAY, null, null);
-            for (Object gateway : list){
-                gateways.add((Gateway)gateway);
-            }
+            List<Gateway> gateways = gatewayRepository.getAllGateways();
             logger.debug("Airavata retrieved all available gateways...");
             return gateways;
         } catch (RegistryException e) {
@@ -283,8 +289,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean isGatewayExist(String gatewayId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            return experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            return gatewayRepository.isGatewayExist(gatewayId);
         } catch (RegistryException e) {
             logger.error("Error while getting gateway", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -296,8 +301,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteNotification(String gatewayId, String notificationId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            experimentCatalog.remove(ExperimentCatalogModelType.NOTIFICATION, notificationId);
+            notificationRepository.deleteNotification(notificationId);
             return true;
         } catch (RegistryException e) {
             logger.error("Error while deleting notification", e);
@@ -310,8 +314,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Notification getNotification(String gatewayId, String notificationId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            return (Notification)experimentCatalog.get(ExperimentCatalogModelType.NOTIFICATION, notificationId);
+            return notificationRepository.getNotification(notificationId);
         } catch (RegistryException e) {
             logger.error("Error while retrieving notification", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -323,11 +326,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<Notification> getAllNotifications(String gatewayId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            List<Object> objectList = experimentCatalog.get(ExperimentCatalogModelType.NOTIFICATION, null, gatewayId);
-            List<Notification> notifications = new ArrayList<>();
-            for(Object o : objectList)
-                notifications.add((Notification) o);
+            List<Notification> notifications = notificationRepository.getAllGatewayNotifications(gatewayId);
             return notifications;
         } catch (RegistryException e) {
             logger.error("Error while getting all notifications", e);
@@ -348,8 +347,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Project getProject(String projectId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)){
+            if (!projectRepository.isProjectExist(projectId)){
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
                 ProjectNotFoundException exception = new ProjectNotFoundException();
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
@@ -357,7 +355,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             logger.debug("Airavata retrieved project with project Id : " + projectId );
 
-            Project project = (Project) experimentCatalog.get(ExperimentCatalogModelType.PROJECT, projectId);
+            Project project = projectRepository.getProject(projectId);
             return project;
         } catch (RegistryException e) {
             logger.error("Error while retrieving the project", e);
@@ -380,15 +378,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteProject(String projectId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)) {
+            if (!projectRepository.isProjectExist(projectId)) {
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
                 ProjectNotFoundException exception = new ProjectNotFoundException();
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
 
-            experimentCatalog.remove(ExperimentCatalogModelType.PROJECT, projectId);
+            projectRepository.removeProject(projectId);
             logger.debug("Airavata deleted project with project Id : " + projectId );
             return true;
         } catch (RegistryException e) {
@@ -420,23 +417,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
-        List<Project> projects = new ArrayList<Project>();
+        List<Project> projects = new ArrayList<>();
         try {
             if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.warn("User does not exist in the system. Please provide a valid user..");
                 return projects;
             }
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            Map<String, String> filters = new HashMap<String, String>();
+            Map<String, String> filters = new HashMap<>();
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-            List<Object> list = experimentCatalog.search(ExperimentCatalogModelType.PROJECT, filters, limit, offset,
+            projects = projectRepository.searchProjects(filters, limit, offset,
                     Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
-            if (list != null && !list.isEmpty()){
-                for (Object o : list){
-                    projects.add((Project) o);
-                }
-            }
             logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId );
             return projects;
         } catch (RegistryException e) {
@@ -476,9 +467,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 filters.put(Constants.FieldConstants.ExperimentConstants.RESOURCE_HOST_ID, resourceHostName);
             }
 
-            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT_STATISTICS, filters);
+            ExperimentStatistics result = experimentSummaryRepository.getExperimentStatistics(filters);
             logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : " + AiravataUtils.getTime(fromTime) + " and " + AiravataUtils.getTime(toTime));
-            return (ExperimentStatistics) results.get(0);
+            return result;
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -504,23 +495,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw exception;
         }
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)){
+            if (!projectRepository.isProjectExist(projectId)){
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
                 ProjectNotFoundException exception = new ProjectNotFoundException();
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
 
-            List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
-            List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
+            List<ExperimentModel> experiments = experimentRepository.getExperimentList(
                     Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId, limit, offset,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-            if (list != null && !list.isEmpty()) {
-                for (Object o : list) {
-                    experiments.add((ExperimentModel) o);
-                }
-            }
             logger.debug("Airavata retrieved experiments for project : " + projectId);
             return experiments;
         } catch (Exception e) {
@@ -559,15 +543,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.warn("User does not exist in the system. Please provide a valid user..");
                 return experiments;
             }
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
+            experiments = experimentRepository.getExperimentList(
                     Constants.FieldConstants.ExperimentConstants.USER_NAME, userName, limit, offset,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-            if (list != null && !list.isEmpty()){
-                for (Object o : list){
-                    experiments.add((ExperimentModel)o);
-                }
-            }
             logger.debug("Airavata retrieved experiments for user : " + userName);
             return experiments;
         } catch (Exception e) {
@@ -588,17 +566,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteExperiment(String experimentId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, experimentId)){
+            if (!experimentRepository.isExperimentExist(experimentId)){
                 throw new ExperimentNotFoundException("Requested experiment id " + experimentId + " does not exist in the system..");
             }
-            ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            ExperimentModel experimentModel = experimentRepository.getExperiment(experimentId);
 
             if(!(experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED)){
                 logger.error("Error while deleting the experiment");
                 throw new ExperimentCatalogException("Experiment is not in CREATED state. Hence cannot deleted. ID:"+ experimentId);
             }
-            experimentCatalog.remove(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            experimentRepository.removeExperiment(experimentId);
             logger.debug("Airavata removed experiment with experiment id : " + experimentId);
             return true;
         } catch (Exception e) {
@@ -682,20 +659,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) throws RegistryServiceException, TException {
         try {
             ExperimentModel experimentModel =  getExperimentInternal(airavataExperimentId);
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            List<Object> processObjects  = experimentCatalog.get(ExperimentCatalogModelType.PROCESS,
+            List<ProcessModel> processList  = processRepository.getProcessList(
                     Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentModel.getExperimentId());
-            List<ProcessModel> processList = new ArrayList<>();
-            if(processObjects != null){
-                processObjects.stream().forEach(p -> {
+            if(processList != null){
+                processList.stream().forEach(p -> {
                     //Process already has the task object
-                    ((ProcessModel)p).getTasks().stream().forEach(t->{
+                    (p).getTasks().stream().forEach(t->{
                         try {
-                            List<Object> jobObjects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
+                            List<JobModel> jobList = jobRepository.getJobList(
                                     Constants.FieldConstants.JobConstants.TASK_ID, ((TaskModel)t).getTaskId());
-                            List<JobModel> jobList  = new ArrayList<JobModel>();
-                            if(jobObjects != null){
-                                jobObjects.stream().forEach(j -> jobList.add((JobModel)j));
+                            if(jobList != null){
                                 Collections.sort(jobList, new Comparator<JobModel>() {
                                     @Override
                                     public int compare(JobModel o1, JobModel o2) {
@@ -708,7 +681,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
                             logger.error(e.getMessage(), e);
                         }
                     });
-                    processList.add((ProcessModel)p);
                 });
                 experimentModel.setProcesses(processList);
             }
@@ -749,13 +721,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)){
                 logger.error(airavataExperimentId, "Get experiment outputs failed, experiment {} doesn't exit.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             logger.debug("Airavata retrieved experiment outputs for experiment id : " + airavataExperimentId);
-            return (List<OutputDataObjectType>) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
+            return experimentOutputRepository.getExperimentOutputs(airavataExperimentId);
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the experiment outputs", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -787,24 +758,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)){
                 logger.error(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            List<Object> processModels = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
+            List<ProcessModel> processModels = processRepository.getProcessList(Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
             Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
             if (processModels != null && !processModels.isEmpty()){
-                for (Object process : processModels) {
-                    ProcessModel processModel = (ProcessModel) process;
+                for (ProcessModel processModel : processModels) {
                     List<TaskModel> tasks = processModel.getTasks();
                     if (tasks != null && !tasks.isEmpty()){
                         for (TaskModel task : tasks){
                             String taskId =  task.getTaskId();
-                            List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                            List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
                             if (jobs != null && !jobs.isEmpty()){
-                                for (Object jobObject : jobs) {
-                                    JobModel jobModel = (JobModel) jobObject;
+                                for (JobModel jobModel : jobs) {
                                     String jobID = jobModel.getJobId();
                                     List<JobStatus> status = jobModel.getJobStatuses();
                                     if (status != null && status.size()>0){
@@ -831,12 +799,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void addExperimentProcessOutputs(String outputType, List<OutputDataObjectType> outputs, String id) throws RegistryServiceException, TException {
 
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (ExpCatChildDataType.PROCESS_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
-                experimentCatalog.add(ExpCatChildDataType.PROCESS_OUTPUT, outputs, id);
+                processOutputRepository.addProcessOutputs(outputs, id);
             }
             else if(ExpCatChildDataType.EXPERIMENT_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
-                experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, outputs, id);
+                experimentOutputRepository.addExperimentOutputs(outputs, id);
             }
         } catch (Exception e) {
             logger.error(id, "Error while adding outputs", e);
@@ -851,15 +818,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryServiceException, TException {
 
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (ExpCatChildDataType.EXPERIMENT_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, id);
+                experimentErrorRepository.addExperimentError(errorModel, id);
             }
             else if (ExpCatChildDataType.TASK_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                experimentCatalog.add(ExpCatChildDataType.TASK_ERROR, errorModel, id);
+                taskErrorRepository.addTaskError(errorModel, id);
             }
             else if (ExpCatChildDataType.PROCESS_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, id);
+                processErrorRepository.addProcessError(errorModel, id);
             }
         } catch (Exception e) {
             logger.error(id, "Error while adding error", e);
@@ -873,8 +839,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, taskStatus, taskId);
+            taskStatusRepository.addTaskStatus(taskStatus, taskId);
         } catch (Exception e) {
             logger.error(taskId, "Error while adding task status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -887,8 +852,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            experimentCatalog.add(ExpCatChildDataType.PROCESS_STATUS, processStatus, processId);
+            processStatusRepository.addProcessStatus(processStatus, processId);
         } catch (Exception e) {
             logger.error(processId, "Error while adding process status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -901,8 +865,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            experimentCatalog.update(ExperimentCatalogModelType.PROCESS_STATUS, processStatus, processId);
+            processStatusRepository.updateProcessStatus(processStatus, processId);
         } catch (Exception e) {
             logger.error(processId, "Error while updating process status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -915,8 +878,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, experimentStatus, experimentId);
+            experimentStatusRepository.updateExperimentStatus(experimentStatus, experimentId);
         } catch (Exception e) {
             logger.error(experimentId, "Error while updating experiment status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -929,9 +891,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void addJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            CompositeIdentifier ids = new CompositeIdentifier(taskId, jobId);
-            experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+            JobPK jobPK = new JobPK();
+            jobPK.setJobId(jobId);
+            jobPK.setTaskId(taskId);
+            jobStatusRepository.addJobStatus(jobStatus, jobPK);
         } catch (Exception e) {
             logger.error(jobId, "Error while adding job status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -944,8 +907,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void addJob(JobModel jobModel, String processId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            experimentCatalog.add(ExpCatChildDataType.JOB, jobModel, processId);
+            jobRepository.addJob(jobModel, processId);
         } catch (Exception e) {
             logger.error(processId, "Error while adding job ", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -958,8 +920,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addProcess(ProcessModel processModel, String experimentId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            return (String)experimentCatalog.add(ExpCatChildDataType.PROCESS, processModel, experimentId);
+            return processRepository.addProcess(processModel, experimentId);
         } catch (Exception e) {
             logger.error(experimentId, "Error while adding process ", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -972,8 +933,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+            processRepository.updateProcess(processModel, processId);
         } catch (Exception e) {
             logger.error(processId, "Error while updating process ", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -986,8 +946,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addTask(TaskModel taskModel, String processId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            return (String)experimentCatalog.add(ExpCatChildDataType.TASK, taskModel, processId);
+            return taskRepository.addTask(taskModel, processId);
         } catch (Exception e) {
             logger.error(processId, "Error while adding task ", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1000,8 +959,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            return (UserConfigurationDataModel) experimentCatalog.get(ExperimentCatalogModelType.USER_CONFIGURATION_DATA, experimentId);
+            return experimentRepository.getUserConfigurationData(experimentId);
         }
         catch (Exception e) {
             logger.error(experimentId, "Error while getting user configuration ", e);
@@ -1015,8 +973,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ProcessModel getProcess(String processId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            return (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
+            return processRepository.getProcess(processId);
         } catch (Exception e) {
             logger.error(processId, "Error while retrieving user configuration ", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1029,16 +986,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException, TException {
         try {
-            List<ProcessModel> processModels = new ArrayList<ProcessModel>();
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            List<Object> processList = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
-
-            if (processList != null && !processList.isEmpty()) {
-                for (Object processObject : processList) {
-                    ProcessModel processModel = (ProcessModel)processObject;
-                    processModels.add(processModel);
-                }
-            }
+            List<ProcessModel> processModels = processRepository.getProcessList(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
             return processModels;
 
         } catch (Exception e) {
@@ -1053,8 +1001,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            return (ProcessStatus) experimentCatalog.get(ExperimentCatalogModelType.PROCESS_STATUS, processId);
+            return processStatusRepository.getProcessStatus(processId);
         } catch (Exception e) {
             logger.error(processId, "Error while retrieving process status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1102,13 +1049,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     private JobModel fetchJobModel(String queryType, String id) throws RegistryException {
-        experimentCatalog = RegistryFactory.getDefaultExpCatalog();
         if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
-            List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, id);
-            JobModel jobModel = null;
+            List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
             if (jobs != null) {
-                for (Object object : jobs) {
-                    jobModel = ((JobModel) object);
+                for (JobModel jobModel : jobs) {
                     if (jobModel.getJobId() != null || !jobModel.equals("")) {
                         return jobModel;
                     }
@@ -1116,12 +1060,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
         }
         else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
-            List<Object> objects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
-                    Constants.FieldConstants.JobConstants.PROCESS_ID, id);
-            JobModel jobModel = null;
-            if (objects != null) {
-                for (Object object : objects) {
-                    jobModel = ((JobModel) object);
+            List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+            if (jobs != null) {
+                for (JobModel jobModel : jobs) {
                     if (jobModel.getJobId() != null || !jobModel.equals("")) {
                         return jobModel;
                     }
@@ -1134,8 +1075,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            return (List<OutputDataObjectType> )experimentCatalog.get(ExperimentCatalogModelType.PROCESS_OUTPUT, processId);
+            return processOutputRepository.getProcessOutputs(processId);
         } catch (Exception e) {
             logger.error(processId, "Error while retrieving process outputs", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1148,8 +1088,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<String> getProcessIds(String experimentId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            return experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS, AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
+            return processRepository.getProcessIds(AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
         } catch (Exception e) {
             logger.error(experimentId, "Error while retrieving process ids", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1169,24 +1108,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)){
                 logger.error(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            List<Object> processModels = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
+            List<ProcessModel> processModels = processRepository.getProcessList(Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
             List<JobModel> jobList = new ArrayList<>();
             if (processModels != null && !processModels.isEmpty()){
-                for (Object process : processModels) {
-                    ProcessModel processModel = (ProcessModel) process;
+                for (ProcessModel processModel : processModels) {
                     List<TaskModel> tasks = processModel.getTasks();
                     if (tasks != null && !tasks.isEmpty()){
                         for (TaskModel taskModel : tasks){
                             String taskId =  taskModel.getTaskId();
-                            List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, taskId);
-                            for (Object jobObject : jobs) {
-                                jobList.add ((JobModel)jobObject);
-                            }
+                            jobList = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
                         }
                     }
                 }
@@ -3653,8 +3587,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)){
                 logger.debug(airavataExperimentId, "Update resource scheduling failed, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
@@ -3663,7 +3596,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
                     case CREATED: case VALIDATED: case CANCELED: case FAILED:
-                        experimentCatalog.add(ExpCatChildDataType.PROCESS_RESOURCE_SCHEDULE, resourceScheduling, airavataExperimentId);
+                        processRepository.addProcessResourceSchedule(resourceScheduling, airavataExperimentId);
                         logger.debug(airavataExperimentId, "Successfully updated resource scheduling for the experiment {}.", airavataExperimentId);
                         break;
                     default:
@@ -3692,8 +3625,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)){
                 logger.error(airavataExperimentId, "Update experiment configuration failed, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
@@ -3702,7 +3634,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
                     case CREATED: case VALIDATED: case CANCELED: case FAILED:
-                        experimentCatalog.add(ExpCatChildDataType.USER_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+                        experimentRepository.addUserConfigurationData(userConfiguration, airavataExperimentId);
                         logger.debug(airavataExperimentId, "Successfully updated experiment configuration for experiment {}.", airavataExperimentId);
                         break;
                     default:
@@ -3755,8 +3687,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
                 logger.error(airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
                 throw new RegistryServiceException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
@@ -3780,7 +3711,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                                 throw exception;
                             }
                         }
-                        experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, airavataExperimentId);
+                        experimentRepository.updateExperiment(experiment, airavataExperimentId);
                         logger.debug(airavataExperimentId, "Successfully updated experiment {} ", experiment.getExperimentName());
                         break;
                     default:
@@ -3855,7 +3786,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String createExperiment(String gatewayId, ExperimentModel experiment) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             if (!validateString(experiment.getExperimentName())){
                 logger.error("Cannot create experiments with empty experiment name");
                 AiravataSystemException exception = new AiravataSystemException();
@@ -3884,7 +3814,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 }
             }
 
-            String experimentId = (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, experiment, gatewayId);
+            experiment.setGatewayId(gatewayId);
+            String experimentId = experimentRepository.addExperiment(experiment);
             logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
             return experimentId;
         } catch (Exception e) {
@@ -3930,7 +3861,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw exception;
             }
             List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> regFilters = new HashMap();
             regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             for(Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet())
@@ -3957,12 +3887,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
                     regFilters.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, userName);
                 }
             }
-            List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.EXPERIMENT,
+            summaries = experimentSummaryRepository.searchAllAccessibleExperiments(
                     accessibleExpIds, regFilters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-            for (Object object : results) {
-                summaries.add((ExperimentSummaryModel) object);
-            }
             logger.debug("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId );
             return summaries;
         }catch (Exception e) {
@@ -4006,9 +3933,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            List<Project> projects = new ArrayList<Project>();
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            Map<String, String> regFilters = new HashMap<String, String>();
+            List<Project> projects = new ArrayList<>();
+            Map<String, String> regFilters = new HashMap<>();
             regFilters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             for(Map.Entry<ProjectSearchFields, String> entry : filters.entrySet())
             {
@@ -4025,11 +3951,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 }
             }
 
-            List<Object> results = experimentCatalog.searchAllAccessible(ExperimentCatalogModelType.PROJECT, accessibleProjIds,
+            projects = projectRepository.searchAllAccessibleProjects(accessibleProjIds,
                     regFilters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
-            for (Object object : results) {
-                projects.add((Project)object);
-            }
             logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
             return projects;
         }catch (Exception e) {
@@ -4058,15 +3981,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw exception;
         }
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(updatedProject.getGatewayId());
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)){
+            if (!projectRepository.isProjectExist(projectId)){
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
                 ProjectNotFoundException exception = new ProjectNotFoundException();
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
 
-            experimentCatalog.update(ExperimentCatalogModelType.PROJECT, updatedProject, projectId);
+            projectRepository.updateProject(updatedProject, projectId);
             logger.debug("Airavata updated project with project Id : " + projectId );
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
@@ -4086,7 +4008,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String createProject(String gatewayId, Project project) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             if (!validateString(project.getName()) || !validateString(project.getOwner())){
                 logger.error("Project name and owner cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4099,7 +4020,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
-            String projectId = (String) experimentCatalog.add(ExpCatParentDataType.PROJECT, project, gatewayId);
+            String projectId = projectRepository.addProject(project, gatewayId);
             return projectId;
         } catch (Exception e) {
             logger.error("Error while creating the project", e);
@@ -4112,8 +4033,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateNotification(Notification notification) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(notification.getGatewayId());
-            experimentCatalog.update(ExperimentCatalogModelType.NOTIFICATION, notification, notification.getGatewayId());
+            notificationRepository.updateNotification(notification);
             return true;
         } catch (RegistryException e) {
             logger.error("Error while updating notification", e);
@@ -4132,8 +4052,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String createNotification(Notification notification) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(notification.getGatewayId());
-            return (String) experimentCatalog.add(ExpCatParentDataType.NOTIFICATION, notification, notification.getGatewayId());
+            return notificationRepository.createNotification(notification);
         } catch (RegistryException e) {
             logger.error("Error while creating notification", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -4154,14 +4073,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
+            if (!gatewayRepository.isGatewayExist(gatewayId)){
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 throw exception;
             }
-            experimentCatalog.update(ExperimentCatalogModelType.GATEWAY, updatedGateway, gatewayId);
+            gatewayRepository.updateGateway(gatewayId, updatedGateway);
 
             // check if gatewayprofile exists and check if the identity server password token equals the admin password token, if not update
             GatewayResourceProfile existingGwyResourceProfile = new GwyResourceProfileRepository().getGatewayProfile(gatewayId);
@@ -4195,7 +4113,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addGateway(Gateway gateway) throws RegistryServiceException, DuplicateEntryException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!validateString(gateway.getGatewayId())){
                 logger.error("Gateway id cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -4209,8 +4126,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new DuplicateEntryException("GatewayResourceProfile with gatewayId: " + gateway.getGatewayId() + ", already exists in AppCatalog.");
             }
 
-            // add gateway in experimentCatalog
-            String gatewayId = (String) experimentCatalog.add(ExpCatParentDataType.GATEWAY, gateway, gateway.getGatewayId());
+            // add gateway in experiment catalog
+            String gatewayId = gatewayRepository.addGateway(gateway);
 
             // add gatewayresourceprofile in appCatalog
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
@@ -4245,8 +4162,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private boolean isGatewayExistInternal(String gatewayId) throws InvalidRequestException, AiravataClientException,
             AiravataSystemException, AuthorizationException, TException{
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            return experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId);
+            return gatewayRepository.isGatewayExist(gatewayId);
         } catch (RegistryException e) {
             logger.error("Error while getting gateway", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -4260,11 +4176,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ExperimentModel getExperimentInternal(String airavataExperimentId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)){
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            return (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId);
+            return experimentRepository.getExperiment(airavataExperimentId);
         } catch (RegistryException e) {
             logger.error("Error while retrieving the experiment", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -4277,13 +4192,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ExperimentStatus getExperimentStatusInternal(String airavataExperimentId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)){
                 logger.error(airavataExperimentId, "Error while retrieving experiment status, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId +
                         " does not exist in the system..");
             }
-            return (ExperimentStatus) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_STATUS, airavataExperimentId);
+            return experimentStatusRepository.getExperimentStatus(airavataExperimentId);
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while retrieving the experiment status", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -4824,14 +4738,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(ServerSettings.getDefaultUserGateway());
-            List<Object> temp = experimentCatalog.get(ExperimentCatalogModelType.QUEUE_STATUS, null, null, -1, 0, null, null);
-            List<QueueStatusModel> queueStatusModels = new ArrayList<>();
-            temp.stream().forEach(t->{
-                queueStatusModels.add((QueueStatusModel)t);
-            });
+            List<QueueStatusModel> queueStatusModels = queueStatusRepository.getLatestQueueStatuses();
             return queueStatusModels;
-        } catch (RegistryException | ApplicationSettingsException e) {
+        } catch (RegistryException e) {
             logger.error("Error while reading queue status models....", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while reading queue status models.... : " + e.getMessage());
@@ -4842,9 +4751,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getExperimentCatalog(ServerSettings.getDefaultUserGateway());
-            experimentCatalog.add(ExpCatParentDataType.QUEUE_STATUS, queueStatuses, null);
-        } catch (RegistryException | ApplicationSettingsException e) {
+            queueStatusRepository.createQueueStatuses(queueStatuses);
+        } catch (RegistryException e) {
             logger.error("Error while storing queue status models....", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while storing queue status models.... : " + e.getMessage());

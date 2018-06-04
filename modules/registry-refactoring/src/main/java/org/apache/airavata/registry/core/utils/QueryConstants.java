@@ -19,10 +19,13 @@
  */
 package org.apache.airavata.registry.core.utils;
 
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.registry.core.entities.expcatalog.*;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity;
+import org.apache.openjpa.kernel.exps.Exp;
 
 public interface QueryConstants {
 
@@ -102,6 +105,36 @@ public interface QueryConstants {
     String GET_ALL_USER_RESOURCE_PROFILE = "SELECT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP";
     String GET_ALL_GATEWAY_ID = "SELECT DISTINCT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP " +
             "WHERE URP.gatewayId LIKE :" + DBConstants.UserResourceProfile.GATEWAY_ID;
+
+    String GET_ALL_GATEWAYS = "SELECT G FROM " + GatewayEntity.class.getSimpleName() + " G";
+    String GET_GATEWAY_FROM_GATEWAY_NAME = "SELECT G FROM " + GatewayEntity.class.getSimpleName() + " G " +
+            "WHERE G.gatewayName LIKE :" + DBConstants.Gateway.GATEWAY_NAME;
+
+    String GET_ALL_GATEWAY_NOTIFICATIONS = "SELECT N FROM " + NotificationEntity.class.getSimpleName() + " N " +
+            "WHERE N.gatewayId LIKE :" + DBConstants.Notification.GATEWAY_ID;
+
+    String GET_ALL_PROJECTS_FOR_OWNER = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P " +
+            "WHERE P.owner LIKE :" + DBConstants.Project.OWNER;
+
+    String GET_EXPERIMENTS_FOR_USER = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
+            "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME;
+    String GET_EXPERIMENTS_FOR_PROJECT_ID = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
+            "WHERE E.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID;
+    String GET_EXPERIMENTS_FOR_GATEWAY_ID = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
+            "WHERE E.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID;
+
+    String GET_PROCESS_FOR_EXPERIMENT_ID = "SELECT P FROM " + ProcessEntity.class.getSimpleName() + " P " +
+            "WHERE P.experimentId LIKE :" + DBConstants.Process.EXPERIMENT_ID;
+
+    String GET_TASK_FOR_PARENT_PROCESS_ID = "SELECT T FROM " + TaskEntity.class.getSimpleName() + " T " +
+            "WHERE T.parentProcessId LIKE :" + DBConstants.Task.PARENT_PROCESS_ID;
+
+    String GET_JOB_FOR_PROCESS_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
+            "WHERE J.processId LIKE :" + DBConstants.Job.PROCESS_ID;
+    String GET_JOB_FOR_TASK_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
+            "WHERE J.taskId LIKE :" + DBConstants.Job.TASK_ID;
+
+    String GET_ALL_QUEUE_STATUS_MODELS = "SELECT QSM FROM " + QueueStatusEntity.class.getSimpleName() + " QSM";
 
     String GET_ALL_USER_COMPUTE_RESOURCE_PREFERENCE = "SELECT UCRP FROM " + UserComputeResourcePreferenceEntity.class.getSimpleName() + " UCRP " +
             "WHERE UCRP.userId LIKE :" + DBConstants.UserComputeResourcePreference.USER_ID + " AND UCRP.gatewayId LIKE :" +
