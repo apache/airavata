@@ -129,7 +129,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 * handler to the experiment, during the launchProcess * We just have to
 	 * give the experimentID * * @param experimentID * @return sucess/failure *
 	 * *
-	 * 
+	 *
 	 * @param experimentId
 	 */
 	public boolean launchExperiment(String experimentId, String gatewayId) throws TException {
@@ -260,7 +260,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 * This method will validate the experiment before launching, if is failed
 	 * we do not run the launch in airavata thrift service (only if validation
 	 * is enabled
-	 * 
+	 *
 	 * @param experimentId
 	 * @return
 	 * @throws TException
@@ -313,7 +313,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     /**
 	 * This can be used to cancel a running experiment and store the status to
 	 * terminated in registry
-	 * 
+	 *
 	 * @param experimentId
 	 * @return
 	 * @throws TException
@@ -392,9 +392,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         List<ApplicationDeploymentDescription> applicationDeployements = registryClient.getApplicationDeployments(selectedModuleId);
         Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();
 
-        for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
-            deploymentMap.put(registryClient.getComputeResource(deploymentDescription.getComputeHostId()), deploymentDescription);
-        }
+		for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
+			if (processModel.getComputeResourceId().equals(deploymentDescription.getComputeHostId())) {
+				deploymentMap.put(registryClient.getComputeResource(deploymentDescription.getComputeHostId()), deploymentDescription);
+			}
+		}
         List<ComputeResourceDescription> computeHostList = Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[]{}));
         Class<? extends HostScheduler> aClass = Class.forName(
                 ServerSettings.getHostScheduler()).asSubclass(

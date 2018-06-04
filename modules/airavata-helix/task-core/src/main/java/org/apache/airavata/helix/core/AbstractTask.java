@@ -21,6 +21,7 @@ package org.apache.airavata.helix.core;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
@@ -60,11 +61,17 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     private TaskCallbackContext callbackContext;
     private TaskHelper taskHelper;
+    private HelixParticipant participant;
 
     private int retryCount = 3;
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
+        if (participant != null) {
+            participant.registerRunningTask(this);
+        } else {
+            logger.warn("Task with id: " + taskId + " is not registered since the participant is not set");
+        }
         super.init(manager, workflowName, jobName, taskName);
         try {
             TaskUtil.deserializeTaskData(this, this.callbackContext.getTaskConfig().getConfigMap());
@@ -75,20 +82,33 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     @Override
     public final TaskResult run() {
-        boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null ||
-                this.callbackContext.getJobConfig().getJobId()
-                        .equals(this.callbackContext.getJobConfig().getWorkflow() + "_" + getUserContent(NEXT_JOB, Scope.WORKFLOW));
-        if (isThisNextJob) {
-            return onRun(this.taskHelper);
-        } else {
-            return new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
+        try {
+            boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null ||
+                    this.callbackContext.getJobConfig().getJobId()
+                            .equals(this.callbackContext.getJobConfig().getWorkflow() + "_" + getUserContent(NEXT_JOB, Scope.WORKFLOW));
+
+            return isThisNextJob ? onRun(this.taskHelper) : new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
+        } finally {
+            if (participant != null) {
+                participant.unregisterRunningTask(this);
+            } else {
+                logger.warn("Task with id: " + taskId + " is not unregistered since the participant is not set");
+            }
         }
     }
 
     @Override
     public final void cancel() {
-        logger.info("Cancelling task " + taskId);
-        onCancel();
+        try {
+            logger.info("Cancelling task " + taskId);
+            onCancel();
+        } finally {
+            if (participant != null) {
+                participant.unregisterRunningTask(this);
+            } else {
+                logger.warn("Task with id: " + taskId + " is not unregistered since the participant is not set");
+            }
+        }
     }
 
     public abstract TaskResult onRun(TaskHelper helper);
@@ -104,6 +124,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     protected TaskResult onFail(String reason, boolean fatal) {
         return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, reason);
     }
+
     protected void publishErrors(Throwable e) {
         // TODO Publish through kafka channel with task and workflow id
         e.printStackTrace();
@@ -182,5 +203,10 @@ public abstract class AbstractTask extends UserContentStore implements Task {
             }
         }
         return curatorClient;
+    }
+
+    public AbstractTask setParticipant(HelixParticipant participant) {
+        this.participant = participant;
+        return this;
     }
 }
