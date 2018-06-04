@@ -41,7 +41,8 @@
       createHomeAction: function () {
         return () => this.$router.push({
           name: 'group_resource_preference', params: {
-            value: this.data
+            value: this.data,
+            transform:false
           }
         })
       }

@@ -43,7 +43,9 @@
             setTimeout(function () {
               console.log("TimedOut")
               tempThis.msg = null
-            }, 5000)
+            }, 5000);
+            console.log("Success",value);
+            return value;
           },
           failure: (response) => {
             console.log("Failure Value",response)
@@ -53,7 +55,9 @@
             setTimeout(function () {
               console.log("TimedOut")
               tempThis.msg = null
-            }, 5000)
+            }, 5000);
+            console.log("Failure",response);
+            return response;
           }
         })
       }
@@ -73,7 +77,7 @@
   .msg-success{
     background-color: #3ca41a;
     color: #f1fff3;
-    transition-timing-function: ea  ;
+    transition-timing-function: ease-in  ;
   }
 
   .msg-failure{

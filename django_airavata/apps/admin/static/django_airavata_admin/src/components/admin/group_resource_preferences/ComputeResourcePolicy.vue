@@ -19,7 +19,6 @@
   import ComputeResourcePolicy from './ComputeResourcePolicy'
   import BatchQueueResourcePolicy from './BatchQueueResourcePolicy'
   import VModelMixin from '../../commons/vmodel_mixin'
-  import DjangoAiravataAPI from 'django-airavata-api'
 
   import Vue from 'vue';
 
@@ -34,48 +33,48 @@
       return {
         resourcePolicies: [],
         batchQueues: [],
-        defaultBatchQueueValues:[],
+        defaultBatchQueueValues: [],
         data: this.value
       }
     },
-    mounted: function () {
-      this.fetchBatchQueues(this.data.computeResourceId);
+    props: {
+      computeResource: {
+        default: null,
+        required: true
+      }
     },
     mixins: [VModelMixin],
     methods: {
-      fetchBatchQueues: function (computeResourceId) {
-        if (computeResourceId !== null) {
-          DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: computeResourceId}).then((computeResource) => {
-            let defaultBatchQueueValues=[];
-            this.batchQueues = computeResource.batchQueues.map((batchQueue) => {
-              defaultBatchQueueValues.push({
-                maxAllowedCores:batchQueue.defaultCPUCount,
-                maxAllowedNodes:batchQueue.defaultNodeCount,
-                maxAllowedWalltime:batchQueue.defaultWalltime,
-                queuename:batchQueue.queueName
-              });
-              this.defaultBatchQueueValues=defaultBatchQueueValues;
-              return {
-                name: batchQueue.queueName,
-                selected: false,
-                batchQueueResourcePolicy: null
-              }
-            });
-            this.data.batchQueueResourcePolicies.forEach(value => {
-              for (let index in queues) {
-                let queue = queues[index];
-                if (queue.name == value.queuename) {
-                  queue.selected = true;
-                  this.resourcePolicies[index] = value;
-                  break;
-                }
-              }
-            });
+      parseComputeResource: function () {
+        console.log("Compute Resource Policy", this.computeResource.batchQueues.length);
+        let defaultBatchQueueValues = [];
+        this.batchQueues = this.computeResource.batchQueues.map((batchQueue) => {
+          defaultBatchQueueValues.push({
+            maxAllowedCores: batchQueue.defaultCPUCount,
+            maxAllowedNodes: batchQueue.defaultNodeCount,
+            maxAllowedWalltime: batchQueue.defaultWalltime,
+            queuename: batchQueue.queueName
           });
-        }
+          this.defaultBatchQueueValues = defaultBatchQueueValues;
+          return {
+            name: batchQueue.queueName,
+            selected: false,
+            batchQueueResourcePolicy: null
+          }
+        });
+        this.data.batchQueueResourcePolicies.forEach(value => {
+          for (let index in this.batchQueues) {
+            let queue = this.batchQueues[index];
+            if (queue.name == value.queuename) {
+              queue.selected = true;
+              this.resourcePolicies[index] = value;
+              break;
+            }
+          }
+        });
       },
       createBatchQueue: function (index) {
-        if(index >=0){
+        if (index >= 0) {
           return this.defaultBatchQueueValues[index];
         }
         let batchQueuePreference = {
@@ -127,8 +126,8 @@
         },
         deep: true
       },
-      'data.computeResourceId': function (newValue) {
-        this.fetchBatchQueues(newValue);
+      computeResource:function (newValue) {
+        this.parseComputeResource();
       }
     }
   }

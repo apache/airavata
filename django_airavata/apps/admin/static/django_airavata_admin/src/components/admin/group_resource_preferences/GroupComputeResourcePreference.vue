@@ -58,24 +58,33 @@
             groupResourceProfileName: null,
             creationTime: null,
             updatedTime: null,
+            groupResourceProfileId: null
           }
         }
       },
       newCreation: {
         type: Boolean,
         default: false
+      },
+      transform: {
+        type: Boolean,
+        default: true
       }
     },
     mounted: function () {
       this.fetchGroups().then((value => {
         this.groups = value.results;
       }));
+      this.fetchGroup(this.value.groupResourceProfileId);
     },
     data: function () {
-
+      let data = Object.assign({},this.value);
+      if (this.transform) {
+        data = this.transformData(data);
+      }
       return {
         selectedGroups: [],
-        data: this.value,
+        data: data,
         service: DjangoAiravataAPI.services.ServiceFactory.service("GroupResourcePreference"),
         groups: [],
 
@@ -89,6 +98,36 @@
 
     },
     methods: {
+      transformData: function (groupResourceProfile) {
+        let computePreferences=groupResourceProfile.computePreferences;
+        console.log("Transform Compute prefernces",computePreferences.length,groupResourceProfile);
+        for (let computePreference of computePreferences) {
+          let groupResourceProfileId = computePreference.groupResourceProfileId;
+          let computeResourceId = computePreference.computeResourceId;
+          let computeResourcePolicies = []
+          console.log("Transforming   Group Resource Profile ID, Compute Resource ID", groupResourceProfileId, computeResourceId)
+          for (let computeResourcePolicy of groupResourceProfile.computeResourcePolicies) {
+            let resourcePolicyId = computeResourcePolicy.resourcePolicyId;
+            console.log("policy Group Resource Profile ID, Compute Resource ID Resource Policy", computeResourcePolicy.groupResourceProfileId, computeResourcePolicy.computeResourceId, resourcePolicyId)
+            if (groupResourceProfileId == computeResourcePolicy.groupResourceProfileId && computeResourceId == computeResourcePolicy.computeResourceId) {
+              let computeResourcePolicyTemp = computeResourcePolicy;
+              let batchQueueResourcePolicies = [];
+              for (let batchQueueResourcePolicy of groupResourceProfile.batchQueueResourcePolicies) {
+                console.log("batch policy Group Resource Profile ID, Compute Resource ID Resource Policy", batchQueueResourcePolicy.groupResourceProfileId, batchQueueResourcePolicy.computeResourceId, batchQueueResourcePolicy.resourcePolicyId)
+                if (groupResourceProfileId == batchQueueResourcePolicy.groupResourceProfileId && computeResourceId == batchQueueResourcePolicy.computeResourceId) {
+                  batchQueueResourcePolicies.push(batchQueueResourcePolicy);
+                }
+              }
+              console.log("Batch Queue Rsource Policies for", batchQueueResourcePolicies.length, computeResourcePolicy.computeResourceId);
+              computeResourcePolicyTemp.batchQueueResourcePolicies = batchQueueResourcePolicies;
+              computeResourcePolicies.push(computeResourcePolicyTemp);
+            }
+          }
+          computePreference.computeResourcePolicies = computeResourcePolicies;
+        }
+        groupResourceProfile.computePreferences=computePreferences;
+        return groupResourceProfile;
+      },
       createComputePreferences: function () {
         let computeResourcePreference = {
           computeResourceId: null,
@@ -126,8 +165,17 @@
         if (computePreferences) {
           for (let computePreference of computePreferences) {
             computePreference.groupResourceProfileId = groupResourceProfile.groupResourceProfileId;
+            if (!computePreference.computeResourcePolicies) {
+              console.log("Compute Resource Policies empty", computePreference);
+            }
             for (let computeResourcePolicy of computePreference.computeResourcePolicies) {
+              if (!computeResourcePolicy.batchQueueResourcePolicies) {batchQueueResourcePolicies
+                console.log("batchQueueResourcePolicies empty", computePreference);
+              }
+              computeResourcePolicy.groupResourceProfileId=groupResourceProfile.groupResourceProfileId;
               for (let batchQueueResourcePolicy of computeResourcePolicy.batchQueueResourcePolicies) {
+                batchQueueResourcePolicy.computeResourceId = computePreference.computeResourceId;
+                batchQueueResourcePolicy.groupResourceProfileId=groupResourceProfile.groupResourceProfileId;
                 batchQueueResourcePolicies.push(batchQueueResourcePolicy);
               }
               delete computeResourcePolicy.batchQueueResourcePolicies;
@@ -141,18 +189,37 @@
         }
         groupResourceProfile.computeResourcePolicies = computeResourcePolicies;
         groupResourceProfile.batchQueueResourcePolicies = batchQueueResourcePolicies;
-
         console.log("Saving..", groupResourceProfile);
-        if (computePreferences.groupResourceProfileId) {
-          this.service.update({data: groupResourceProfile});
+        if (this.data.groupResourceProfileId) {
+          DjangoAiravataAPI.utils.FetchUtils.put('/api/group-resource-profiles/' + this.data.groupResourceProfileId + '/', groupResourceProfile)
+            .then(callback.failure).then((data) => {
+            console.log("Completed")
+            if (data) {
+              this.data = this.transformData(data);
+              this.allowGroups();
+            }
+          });
         } else {
-          this.service.create({data: groupResourceProfile}).then(callback.success, callback.failure).then((value) => data.groupResourceProfileId = value);
+          this.service.create({data: groupResourceProfile}).then(callback.success, callback.failure).then((data) => {
+            console.log("Completed")
+            if (data) {
+              this.data = this.transformData(data);
+              this.allowGroups();
+            }
+          });
         }
       },
       fetchGroups: function () {
         return DjangoAiravataAPI.services.GroupService.list()
       },
-
+      fetchGroup: function (groupResourceProfileId) {
+        if (groupResourceProfileId) {
+          DjangoAiravataAPI.services.ServiceFactory.service('SharedEntitiesGroups').retrieve({lookup: groupResourceProfileId}).then((groups) => {
+            console.log("Selected Groups", groups);
+            this.selectedGroups = groups.groupList;
+          });
+        }
+      },
       computePreferenceClickHandler: function (index) {
         this.$router.push({
           name: 'compute_preferences', params: {
@@ -166,20 +233,23 @@
         // TODO: load compute resources to get the real name
         return (computeResourceId && computeResourceId.indexOf("_") > 0) ? computeResourceId.split("_")[0] : computeResourceId;
       },
-      allowGroups: function (selectedGroups) {
-        return DjangoAiravataAPI.utils.FetchUtils.post("/api/groups", {
-          entityId: this.data.groupResourceProfileId,
-          groupList: selectedGroups
-        });
+      allowGroups: function () {
+        return DjangoAiravataAPI.services.ServiceFactory.service('SharedEntitiesGroups').update({
+          lookup: this.data.groupResourceProfileId,
+          data: {
+            groupList: this.selectedGroups,
+            entityId: this.data.groupResourceProfileId
+          }
+        }).then((groups) => {
+          console.log("Selected Groups", groups);
+            this.selectedGroups = groups.groupList;
+            return
+        }, (response) => console.log("Failed Resp ", response));
+      },
+      fetchAllowedGroups: function () {
       }
     },
     watch: {
-      selectedGroups: {
-        handler: function (newValue) {
-          this.allowGroups(newValue);
-        },
-        deep: true
-      },
       'data.groupResourceProfileId': function (newValue) {
         let computePreferences = groupResourceProfile.computePreferences;
         for (let computePreference of computePreferences) {
@@ -188,7 +258,6 @@
             groupSSHAccountProvisionerConfig.groupResourceProfileId = newValue;
           }
         }
-
       }
     }
   }

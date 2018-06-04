@@ -30,37 +30,14 @@
     },
     data: function () {
       return {
-        groupResourceProfiles: null,
+        groupResourceProfiles: [],
       }
     },
     methods: {
-      clickHandler: function (preference) {
-        for (let computePreference of preference.computePreferences) {
-          let groupResourceProfileId = computePreference.groupResourceProfileId;
-          let computeResourceId = computePreference.computeResourceId;
-          let computeResourcePolicies = []
-          console.log("Group Resource Profile ID, Compute Resource ID", groupResourceProfileId, computeResourceId)
-          for (let computeResourcePolicy of preference.computeResourcePolicies) {
-            let resourcePolicyId = computeResourcePolicy.resourcePolicyId;
-            console.log("policy Group Resource Profile ID, Compute Resource ID Resource Policy", computeResourcePolicy.groupResourceProfileId, computeResourcePolicy.computeResourceId, resourcePolicyId)
-            if (groupResourceProfileId == computeResourcePolicy.groupResourceProfileId && computeResourceId == computeResourcePolicy.computeResourceId) {
-              let computeResourcePolicyTemp = computeResourcePolicy;
-              let batchQueueResourcePolicies = [];
-              for (let batchQueueResourcePolicy of preference.batchQueueResourcePolicies) {
-                console.log("batch policy Group Resource Profile ID, Compute Resource ID Resource Policy", batchQueueResourcePolicy.groupResourceProfileId, batchQueueResourcePolicy.computeResourceId, batchQueueResourcePolicy.resourcePolicyId)
-                if (groupResourceProfileId == batchQueueResourcePolicy.groupResourceProfileId && resourcePolicyId == batchQueueResourcePolicy.resourcePolicyId && computeResourceId == batchQueueResourcePolicy.computeResourceId) {
-                  batchQueueResourcePolicies.push(batchQueueResourcePolicy);
-                }
-              }
-              computeResourcePolicyTemp.batchQueueResourcePolicies = batchQueueResourcePolicies;
-              computeResourcePolicies.push(computeResourcePolicyTemp);
-            }
-          }
-          computePreference.computeResourcePolicies = computeResourcePolicies;
-        }
+      clickHandler: function (groupResourceProfile) {
         this.$router.push({
           name: 'group_resource_preference', params: {
-            value: preference
+            value: groupResourceProfile
           }
         });
       },
@@ -72,9 +49,13 @@
         })
       },
       transform: function (preference) {
+        let tags=["Created On " + new Date(preference.creationTime).toDateString()];
+        if(preference.creationTime !==preference.updatedTime){
+          tags.push("Updated On " + new Date(preference.updatedTime).toDateString());
+        }
         return {
           appModuleName: preference.groupResourceProfileName,
-          tags: ["creationTime: " + preference.creationTime, " updatedTime " + preference.updatedTime],
+          tags: tags,
           appModuleVersion: null,
           appModuleDescription: null
         }
