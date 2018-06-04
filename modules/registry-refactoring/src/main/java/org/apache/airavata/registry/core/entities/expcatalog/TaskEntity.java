@@ -23,28 +23,65 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import org.apache.airavata.model.task.TaskTypes;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * The persistent class for the task database table.
+ */
 @Entity
-@Table(name = "EXPCAT_TASK")
-public class TaskEntity {
-    private String taskId;
-    private TaskTypes taskType;
-    private String parentProcessId;
-    private long creationTime;
-    private long lastUpdateTime;
-    private String taskDetail;
-    private ByteBuffer subTaskModel;
-
-    private List<TaskStatusEntity> taskStatuses;
-    private List<TaskErrorEntity> taskErrors;
-    private List<JobEntity> jobs;
-
-    private ProcessEntity process;
+@Table(name = "TASK")
+public class TaskEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "TASK_ID")
+    private String taskId;
+
+    @Column(name = "TASK_TYPE")
+    private TaskTypes taskType;
+
+    @Column(name = "PARENT_PROCESS_ID")
+    private String parentProcessId;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "LAST_UPDATE_TIME")
+    private Timestamp lastUpdateTime;
+
+    @Lob
+    @Column(name = "TASK_DETAIL")
+    private String taskDetail;
+
+    @Column(name = "TASK_INTERNAL_STORE")
+    private ByteBuffer taskInternalStore;
+
+    @Lob
+    @Column(name = "SUB_TASK_MODEL")
+    private ByteBuffer subTaskModel;
+
+    @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "task", fetch = FetchType.EAGER)
+    private List<TaskStatusEntity> taskStatuses;
+
+    @OneToMany(targetEntity = TaskErrorEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "task", fetch = FetchType.EAGER)
+    private List<TaskErrorEntity> taskErrors;
+
+    @OneToMany(targetEntity = JobEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "task", fetch = FetchType.EAGER)
+    private List<JobEntity> jobs;
+
+    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_PROCESS_ID", referencedColumnName = "PROCESS_ID")
+    private ProcessEntity process;
+
+    public TaskEntity() {
+    }
+
     public String getTaskId() {
         return taskId;
     }
@@ -53,7 +90,6 @@ public class TaskEntity {
         this.taskId = taskId;
     }
 
-    @Column(name = "TASK_TYPE")
     public TaskTypes getTaskType() {
         return taskType;
     }
@@ -62,7 +98,6 @@ public class TaskEntity {
         this.taskType = taskType;
     }
 
-    @Column(name = "PARENT_PROCESS_ID")
     public String getParentProcessId() {
         return parentProcessId;
     }
@@ -71,25 +106,22 @@ public class TaskEntity {
         this.parentProcessId = parentProcessId;
     }
 
-    @Column(name = "CREATION_TIME")
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
-    @Column(name = "LAST_UPDATE_TIME")
-    public long getLastUpdateTime() {
+    public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
     }
 
-    public void setLastUpdateTime(long lastUpdateTime) {
+    public void setLastUpdateTime(Timestamp lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    @Column(name = "TASK_DETAIL")
     public String getTaskDetail() {
         return taskDetail;
     }
@@ -98,8 +130,14 @@ public class TaskEntity {
         this.taskDetail = taskDetail;
     }
 
-    @Lob
-    @Column(name = "SUB_TASK_MODEL")
+    public ByteBuffer getTaskInternalStore() {
+        return taskInternalStore;
+    }
+
+    public void setTaskInternalStore(ByteBuffer taskInternalStore) {
+        this.taskInternalStore = taskInternalStore;
+    }
+
     public ByteBuffer getSubTaskModel() {
         return subTaskModel;
     }
@@ -108,25 +146,22 @@ public class TaskEntity {
         this.subTaskModel = subTaskModel;
     }
 
-    @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "task")
     public List<TaskStatusEntity> getTaskStatuses() {
         return taskStatuses;
     }
 
-    public void setTaskStatuses(List<TaskStatusEntity> taskStatus) {
-        this.taskStatuses = taskStatus;
+    public void setTaskStatuses(List<TaskStatusEntity> taskStatuses) {
+        this.taskStatuses = taskStatuses;
     }
 
-    @OneToMany(targetEntity = TaskErrorEntity.class, cascade = CascadeType.ALL, mappedBy = "task")
     public List<TaskErrorEntity> getTaskErrors() {
         return taskErrors;
     }
 
-    public void setTaskErrors(List<TaskErrorEntity> taskError) {
-        this.taskErrors = taskError;
+    public void setTaskErrors(List<TaskErrorEntity> taskErrors) {
+        this.taskErrors = taskErrors;
     }
 
-    @OneToMany(targetEntity = JobEntity.class, cascade = CascadeType.ALL, mappedBy = "task")
     public List<JobEntity> getJobs() {
         return jobs;
     }
@@ -135,8 +170,6 @@ public class TaskEntity {
         this.jobs = jobs;
     }
 
-    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PARENT_PROCESS_ID", referencedColumnName = "PROCESS_ID")
     public ProcessEntity getProcess() {
         return process;
     }
