@@ -9,6 +9,9 @@ const FIELDS = [
     'isOwner',
     'isAdmin',
     'isMember',
+    'isGatewayAdminsGroup',
+    'isReadOnlyGatewayAdminsGroup',
+    'isDefaultGatewayUsersGroup',
 ];
 
 export default class Group extends BaseModel {

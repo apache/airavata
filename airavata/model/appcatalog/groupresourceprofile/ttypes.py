@@ -28,12 +28,12 @@ class GroupAccountSSHProvisionerConfig(object):
     thrift_spec = (
         None,  # 0
         (1, TType.STRING, 'resourceId', 'UTF8', None, ),  # 1
-        (2, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 2
+        (2, TType.STRING, 'groupResourceProfileId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 2
         (3, TType.STRING, 'configName', 'UTF8', None, ),  # 3
         (4, TType.STRING, 'configValue', 'UTF8', None, ),  # 4
     )
 
-    def __init__(self, resourceId=None, groupResourceProfileId=None, configName=None, configValue=None,):
+    def __init__(self, resourceId=None, groupResourceProfileId=thrift_spec[2][4], configName=None, configValue=None,):
         self.resourceId = resourceId
         self.groupResourceProfileId = groupResourceProfileId
         self.configName = configName
@@ -144,7 +144,7 @@ class GroupComputeResourcePreference(object):
     thrift_spec = (
         None,  # 0
         (1, TType.STRING, 'computeResourceId', 'UTF8', None, ),  # 1
-        (2, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 2
+        (2, TType.STRING, 'groupResourceProfileId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 2
         (3, TType.BOOL, 'overridebyAiravata', None, True, ),  # 3
         (4, TType.STRING, 'loginUserName', 'UTF8', None, ),  # 4
         (5, TType.I32, 'preferredJobSubmissionProtocol', None, None, ),  # 5
@@ -163,7 +163,7 @@ class GroupComputeResourcePreference(object):
         (18, TType.STRING, 'sshAccountProvisionerAdditionalInfo', 'UTF8', None, ),  # 18
     )
 
-    def __init__(self, computeResourceId=None, groupResourceProfileId=None, overridebyAiravata=thrift_spec[3][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None, qualityOfService=None, reservation=None, reservationStartTime=None, reservationEndTime=None, sshAccountProvisioner=None, groupSSHAccountProvisionerConfigs=None, sshAccountProvisionerAdditionalInfo=None,):
+    def __init__(self, computeResourceId=None, groupResourceProfileId=thrift_spec[2][4], overridebyAiravata=thrift_spec[3][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None, qualityOfService=None, reservation=None, reservationStartTime=None, reservationEndTime=None, sshAccountProvisioner=None, groupSSHAccountProvisionerConfigs=None, sshAccountProvisionerAdditionalInfo=None,):
         self.computeResourceId = computeResourceId
         self.groupResourceProfileId = groupResourceProfileId
         self.overridebyAiravata = overridebyAiravata
@@ -408,13 +408,13 @@ class ComputeResourcePolicy(object):
 
     thrift_spec = (
         None,  # 0
-        (1, TType.STRING, 'resourcePolicyId', 'UTF8', None, ),  # 1
+        (1, TType.STRING, 'resourcePolicyId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
         (2, TType.STRING, 'computeResourceId', 'UTF8', None, ),  # 2
-        (3, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 3
+        (3, TType.STRING, 'groupResourceProfileId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 3
         (4, TType.LIST, 'allowedBatchQueues', (TType.STRING, 'UTF8', False), None, ),  # 4
     )
 
-    def __init__(self, resourcePolicyId=None, computeResourceId=None, groupResourceProfileId=None, allowedBatchQueues=None,):
+    def __init__(self, resourcePolicyId=thrift_spec[1][4], computeResourceId=None, groupResourceProfileId=thrift_spec[3][4], allowedBatchQueues=None,):
         self.resourcePolicyId = resourcePolicyId
         self.computeResourceId = computeResourceId
         self.groupResourceProfileId = groupResourceProfileId
@@ -521,16 +521,16 @@ class BatchQueueResourcePolicy(object):
 
     thrift_spec = (
         None,  # 0
-        (1, TType.STRING, 'resourcePolicyId', 'UTF8', None, ),  # 1
+        (1, TType.STRING, 'resourcePolicyId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
         (2, TType.STRING, 'computeResourceId', 'UTF8', None, ),  # 2
-        (3, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 3
+        (3, TType.STRING, 'groupResourceProfileId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 3
         (4, TType.STRING, 'queuename', 'UTF8', None, ),  # 4
         (5, TType.I32, 'maxAllowedNodes', None, None, ),  # 5
         (6, TType.I32, 'maxAllowedCores', None, None, ),  # 6
         (7, TType.I32, 'maxAllowedWalltime', None, None, ),  # 7
     )
 
-    def __init__(self, resourcePolicyId=None, computeResourceId=None, groupResourceProfileId=None, queuename=None, maxAllowedNodes=None, maxAllowedCores=None, maxAllowedWalltime=None,):
+    def __init__(self, resourcePolicyId=thrift_spec[1][4], computeResourceId=None, groupResourceProfileId=thrift_spec[3][4], queuename=None, maxAllowedNodes=None, maxAllowedCores=None, maxAllowedWalltime=None,):
         self.resourcePolicyId = resourcePolicyId
         self.computeResourceId = computeResourceId
         self.groupResourceProfileId = groupResourceProfileId
@@ -678,8 +678,8 @@ class GroupResourceProfile(object):
 
     thrift_spec = (
         None,  # 0
-        (1, TType.STRING, 'gatewayId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
-        (2, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 2
+        (1, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 1
+        (2, TType.STRING, 'groupResourceProfileId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 2
         (3, TType.STRING, 'groupResourceProfileName', 'UTF8', None, ),  # 3
         (4, TType.LIST, 'computePreferences', (TType.STRUCT, (GroupComputeResourcePreference, GroupComputeResourcePreference.thrift_spec), False), None, ),  # 4
         (5, TType.LIST, 'computeResourcePolicies', (TType.STRUCT, (ComputeResourcePolicy, ComputeResourcePolicy.thrift_spec), False), None, ),  # 5
@@ -688,7 +688,7 @@ class GroupResourceProfile(object):
         (8, TType.I64, 'updatedTime', None, None, ),  # 8
     )
 
-    def __init__(self, gatewayId=thrift_spec[1][4], groupResourceProfileId=None, groupResourceProfileName=None, computePreferences=None, computeResourcePolicies=None, batchQueueResourcePolicies=None, creationTime=None, updatedTime=None,):
+    def __init__(self, gatewayId=None, groupResourceProfileId=thrift_spec[2][4], groupResourceProfileName=None, computePreferences=None, computeResourcePolicies=None, batchQueueResourcePolicies=None, creationTime=None, updatedTime=None,):
         self.gatewayId = gatewayId
         self.groupResourceProfileId = groupResourceProfileId
         self.groupResourceProfileName = groupResourceProfileName

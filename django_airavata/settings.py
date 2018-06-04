@@ -57,6 +57,9 @@ MIDDLEWARE = [
     'django_airavata.middleware.airavata_client',
      'django_airavata.middleware.sharing_client',
     'django_airavata.middleware.profile_service_client',
+    # Needs to come after authz_token_middleware, airavata_client and
+    # profile_service_client
+    'django_airavata.apps.auth.middleware.gateway_groups_middleware',
 ]
 
 ROOT_URLCONF = 'django_airavata.urls'

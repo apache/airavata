@@ -28,6 +28,7 @@ import airavata.model.appcatalog.gatewayprofile.ttypes
 import airavata.model.appcatalog.groupresourceprofile.ttypes
 import airavata.model.appcatalog.userresourceprofile.ttypes
 import airavata.model.data.movement.ttypes
+import airavata.model.appcatalog.gatewaygroups.ttypes
 import airavata.model.workflow.ttypes
 import airavata.model.data.replica.ttypes
 import airavata.model.group.ttypes
