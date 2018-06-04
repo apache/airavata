@@ -28,6 +28,7 @@ import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
                                          Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException{
         Map<String, Object> queryParameters = new HashMap<>();
 
-        if (fieldName.equals(DBConstants.Project.OWNER)) {
+        if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)) {
             logger.debug("Checking if the field name is owner");
             queryParameters.put(DBConstants.Project.OWNER, value);
             List<Project> projectList = select(QueryConstants.GET_ALL_PROJECTS_FOR_OWNER, limit, offset, queryParameters);
@@ -136,32 +137,32 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
         String query = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();
 
-        if (filters == null || !filters.containsKey(DBConstants.Project.GATEWAY_ID)) {
+        if (filters == null || !filters.containsKey(Constants.FieldConstants.ProjectConstants.GATEWAY_ID)) {
             logger.error("GatewayId is required");
             throw new RegistryException("GatewayId is required");
         }
 
         for (String field : filters.keySet()) {
 
-            if (field.equals(DBConstants.Project.GATEWAY_ID)) {
+            if (field.equals(Constants.FieldConstants.ProjectConstants.GATEWAY_ID)) {
                 logger.debug("Filter Projects by Gateway ID");
                 queryParameters.put(DBConstants.Project.GATEWAY_ID, filters.get(field));
                 query += "P.gatewayId LIKE :" + DBConstants.Project.GATEWAY_ID + " AND ";
             }
 
-            else if (field.equals(DBConstants.Project.OWNER)) {
+            else if (field.equals(Constants.FieldConstants.ProjectConstants.OWNER)) {
                 logger.debug("Filter Projects by Owner");
                 queryParameters.put(DBConstants.Project.OWNER, filters.get(field));
                 query += "P.owner LIKE :" + DBConstants.Project.OWNER + " AND ";
             }
 
-            else if (field.equals(DBConstants.Project.PROJECT_NAME)) {
+            else if (field.equals(Constants.FieldConstants.ProjectConstants.PROJECT_NAME)) {
                 logger.debug("Filter Projects by Project Name");
                 queryParameters.put(DBConstants.Project.PROJECT_NAME, filters.get(field));
                 query += "P.name LIKE :" + DBConstants.Project.PROJECT_NAME + " AND ";
             }
 
-            else if (field.equals(DBConstants.Project.DESCRIPTION)) {
+            else if (field.equals(Constants.FieldConstants.ProjectConstants.DESCRIPTION)) {
                 logger.debug("Filter Projects by Description");
                 queryParameters.put(DBConstants.Project.DESCRIPTION, filters.get(field));
                 query += "P.description LIKE :" + DBConstants.Project.DESCRIPTION + " AND ";
@@ -185,7 +186,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
             query = query.substring(0, query.length() - 5);
         }
 
-        if (orderByIdentifier != null && resultOrderType != null && orderByIdentifier.equals(DBConstants.Project.CREATION_TIME)) {
+        if (orderByIdentifier != null && resultOrderType != null && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
             String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
             query += " ORDER BY P." + DBConstants.Project.CREATION_TIME + " " + order;
         }

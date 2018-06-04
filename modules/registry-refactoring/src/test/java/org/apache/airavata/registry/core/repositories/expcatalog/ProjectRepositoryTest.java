@@ -23,8 +23,8 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
-import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,9 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class ProjectRepositoryTest {
 
@@ -88,16 +86,16 @@ public class ProjectRepositoryTest {
         Project retrievedProject = projectRepository.getProject(projectId);
         assertEquals(gatewayId, retrievedProject.getGatewayId());
 
-        assertTrue(projectRepository.getProjectIDs(DBConstants.Project.OWNER, "user").contains(projectId));
+        assertTrue(projectRepository.getProjectIDs(Constants.FieldConstants.ProjectConstants.OWNER, "user").contains(projectId));
 
         List<String> accessibleProjectIds = new ArrayList<>();
         accessibleProjectIds.add(projectId);
 
         Map<String, String> filters = new HashMap<>();
-        filters.put(DBConstants.Project.GATEWAY_ID, retrievedProject.getGatewayId());
-        filters.put(DBConstants.Project.OWNER, retrievedProject.getOwner());
-        filters.put(DBConstants.Project.PROJECT_NAME, retrievedProject.getName());
-        filters.put(DBConstants.Project.DESCRIPTION, retrievedProject.getDescription());
+        filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, retrievedProject.getGatewayId());
+        filters.put(Constants.FieldConstants.ProjectConstants.OWNER, retrievedProject.getOwner());
+        filters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, retrievedProject.getName());
+        filters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, retrievedProject.getDescription());
 
         assertTrue(projectRepository.searchAllAccessibleProjects(accessibleProjectIds, filters,
                 -1, 0, null, null).size() == 1);
