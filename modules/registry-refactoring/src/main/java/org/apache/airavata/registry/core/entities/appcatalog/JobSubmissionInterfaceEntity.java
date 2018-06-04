@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -45,7 +47,8 @@ public class JobSubmissionInterfaceEntity implements Serializable {
     private Timestamp creationTime;
 
     @Column(name = "JOB_SUBMISSION_PROTOCOL")
-    private String jobSubmissionProtocol;
+    @Enumerated(EnumType.STRING)
+    private JobSubmissionProtocol jobSubmissionProtocol;
 
     @Column(name = "PRIORITY_ORDER")
     private int priorityOrder;
@@ -92,11 +95,11 @@ public class JobSubmissionInterfaceEntity implements Serializable {
         this.creationTime = creationTime;
     }
 
-    public String getJobSubmissionProtocol() {
+    public JobSubmissionProtocol getJobSubmissionProtocol() {
         return jobSubmissionProtocol;
     }
 
-    public void setJobSubmissionProtocol(String jobSubmissionProtocol) {
+    public void setJobSubmissionProtocol(JobSubmissionProtocol jobSubmissionProtocol) {
         this.jobSubmissionProtocol = jobSubmissionProtocol;
     }
 

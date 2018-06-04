@@ -23,10 +23,10 @@ package org.apache.airavata.registry.core.entities.replicacatalog;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 
-import java.io.Serializable;
-import java.util.*;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Map;
 
 /**
  * The persistent class for the data_replica_location database table.
@@ -65,9 +65,11 @@ public class DataReplicaLocationEntity implements Serializable {
     private Timestamp validUntilTime;
 
     @Column(name = "REPLICA_LOCATION_CATEGORY")
+    @Enumerated(EnumType.STRING)
     private ReplicaLocationCategory replicaLocationCategory;
 
     @Column(name = "REPLICA_PERSISTENT_TYPE")
+    @Enumerated(EnumType.STRING)
     private ReplicaPersistentType replicaPersistentType;
 
     @ElementCollection(fetch = FetchType.EAGER)

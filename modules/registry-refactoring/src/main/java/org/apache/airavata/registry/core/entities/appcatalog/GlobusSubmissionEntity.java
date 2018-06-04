@@ -20,10 +20,9 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -43,7 +42,8 @@ public class GlobusSubmissionEntity implements Serializable {
 	private String resourceJobManager;
 
 	@Column(name = "SECURITY_PROTOCAL")
-	private String securityProtocal;
+    @Enumerated(EnumType.STRING)
+	private SecurityProtocol securityProtocal;
 
 	public GlobusSubmissionEntity() {
 	}
@@ -64,11 +64,11 @@ public class GlobusSubmissionEntity implements Serializable {
 		this.resourceJobManager = resourceJobManager;
 	}
 
-	public String getSecurityProtocal() {
+	public SecurityProtocol getSecurityProtocal() {
 		return securityProtocal;
 	}
 
-	public void setSecurityProtocal(String securityProtocal) {
+	public void setSecurityProtocal(SecurityProtocol securityProtocal) {
 		this.securityProtocal = securityProtocal;
 	}
 }

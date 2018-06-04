@@ -41,6 +41,7 @@ public class TaskEntity implements Serializable {
     private String taskId;
 
     @Column(name = "TASK_TYPE")
+    @Enumerated(EnumType.STRING)
     private TaskTypes taskType;
 
     @Column(name = "PARENT_PROCESS_ID")

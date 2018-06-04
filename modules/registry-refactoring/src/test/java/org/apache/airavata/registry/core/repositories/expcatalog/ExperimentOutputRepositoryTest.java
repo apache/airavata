@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -94,6 +95,7 @@ public class ExperimentOutputRepositoryTest {
 
         OutputDataObjectType outputDataObjectTypeExp = new OutputDataObjectType();
         outputDataObjectTypeExp.setName("outputE");
+        outputDataObjectTypeExp.setType(DataType.STRING);
 
         List<OutputDataObjectType> outputDataObjectTypeExpList = new ArrayList<>();
         outputDataObjectTypeExpList.add(outputDataObjectTypeExp);
@@ -107,6 +109,7 @@ public class ExperimentOutputRepositoryTest {
         List<OutputDataObjectType> retrievedExpOutputList = experimentOutputRepository.getExperimentOutputs(experimentId);
         assertTrue(retrievedExpOutputList.size() == 1);
         assertEquals("oValueE", retrievedExpOutputList.get(0).getValue());
+        assertEquals(DataType.STRING, retrievedExpOutputList.get(0).getType());
 
         experimentRepository.removeExperiment(experimentId);
         gatewayRepository.removeGateway(gatewayId);

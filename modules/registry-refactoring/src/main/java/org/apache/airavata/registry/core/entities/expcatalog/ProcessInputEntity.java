@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -45,7 +47,8 @@ public class ProcessInputEntity implements Serializable {
     private String value;
 
     @Column(name = "DATA_TYPE")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private DataType type;
 
     @Column(name = "APPLICATION_ARGUMENT")
     private String applicationArgument;
@@ -108,11 +111,11 @@ public class ProcessInputEntity implements Serializable {
         this.value = value;
     }
 
-    public String getType() {
+    public DataType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 

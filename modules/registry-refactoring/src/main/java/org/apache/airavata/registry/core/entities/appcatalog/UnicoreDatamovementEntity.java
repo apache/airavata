@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.data.movement.SecurityProtocol;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -41,7 +43,7 @@ public class UnicoreDatamovementEntity implements Serializable {
 	private String dataMovementInterfaceId;
 
 	@Column(name="SECURITY_PROTOCAL")
-	private String securityProtocal;
+	private SecurityProtocol securityProtocal;
 
 	@Column(name="UNICORE_ENDPOINT_URL")
 	private String unicoreEndpointUrl;
@@ -57,11 +59,11 @@ public class UnicoreDatamovementEntity implements Serializable {
 		this.dataMovementInterfaceId = dataMovementInterfaceId;
 	}
 
-	public String getSecurityProtocal() {
+	public SecurityProtocol getSecurityProtocal() {
 		return securityProtocal;
 	}
 
-	public void setSecurityProtocal(String securityProtocal) {
+	public void setSecurityProtocal(SecurityProtocol securityProtocal) {
 		this.securityProtocal = securityProtocal;
 	}
 

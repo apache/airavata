@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.status.TaskState;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -42,7 +44,8 @@ public class TaskStatusEntity implements Serializable {
     private String taskId;
 
     @Column(name = "STATE")
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private TaskState state;
 
     @Column(name = "TIME_OF_STATE_CHANGE")
     private Timestamp timeOfStateChange;
@@ -74,11 +77,11 @@ public class TaskStatusEntity implements Serializable {
         this.taskId = taskId;
     }
 
-    public String getState() {
+    public TaskState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(TaskState state) {
         this.state = state;
     }
 
