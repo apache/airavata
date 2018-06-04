@@ -20,10 +20,9 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -41,7 +40,8 @@ public class UnicoreSubmissionEntity implements Serializable {
 	private String jobSubmissionInterfaceId;
 
 	@Column(name="SECURITY_PROTOCAL")
-	private String securityProtocol;
+    @Enumerated(EnumType.STRING)
+	private SecurityProtocol securityProtocol;
 
 	@Column(name="UNICORE_ENDPOINT_URL")
 	private String unicoreEndPointURL;
@@ -57,11 +57,11 @@ public class UnicoreSubmissionEntity implements Serializable {
 		this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
 	}
 
-	public String getSecurityProtocol() {
+	public SecurityProtocol getSecurityProtocol() {
 		return securityProtocol;
 	}
 
-	public void setSecurityProtocol(String securityProtocol) {
+	public void setSecurityProtocol(SecurityProtocol securityProtocol) {
 		this.securityProtocol = securityProtocol;
 	}
 

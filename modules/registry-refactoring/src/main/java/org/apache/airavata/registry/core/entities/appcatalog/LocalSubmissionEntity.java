@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.data.movement.SecurityProtocol;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -46,7 +48,8 @@ public class LocalSubmissionEntity implements Serializable {
     private String resourceJobManagerId;
 
     @Column(name = "SECURITY_PROTOCOL")
-    private String securityProtocol;
+    @Enumerated(EnumType.STRING)
+    private SecurityProtocol securityProtocol;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID")
@@ -87,11 +90,11 @@ public class LocalSubmissionEntity implements Serializable {
         this.resourceJobManagerId = resourceJobManagerId;
     }
 
-    public String getSecurityProtocol() {
+    public SecurityProtocol getSecurityProtocol() {
         return securityProtocol;
     }
 
-    public void setSecurityProtocol(String securityProtocol) {
+    public void setSecurityProtocol(SecurityProtocol securityProtocol) {
         this.securityProtocol = securityProtocol;
     }
 

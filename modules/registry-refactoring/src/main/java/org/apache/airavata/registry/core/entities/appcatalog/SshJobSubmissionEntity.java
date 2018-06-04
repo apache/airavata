@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.data.movement.SecurityProtocol;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -52,7 +54,8 @@ public class SshJobSubmissionEntity implements Serializable {
 	private String monitorMode;
 
 	@Column(name="SECURITY_PROTOCOL")
-	private String securityProtocol;
+	@Enumerated(EnumType.STRING)
+	private SecurityProtocol securityProtocol;
 
 	@Column(name="SSH_PORT")
 	private int sshPort;
@@ -98,11 +101,11 @@ public class SshJobSubmissionEntity implements Serializable {
 		this.monitorMode = monitorMode;
 	}
 
-	public String getSecurityProtocol() {
+	public SecurityProtocol getSecurityProtocol() {
 		return securityProtocol;
 	}
 
-	public void setSecurityProtocol(String securityProtocol) {
+	public void setSecurityProtocol(SecurityProtocol securityProtocol) {
 		this.securityProtocol = securityProtocol;
 	}
 

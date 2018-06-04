@@ -20,10 +20,9 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -49,7 +48,8 @@ public class ResourceJobManagerEntity implements Serializable {
     private String pushMonitoringEndpoint;
 
     @Column(name = "RESOURCE_JOB_MANAGER_TYPE")
-    private String resourceJobManagerType;
+    @Enumerated(EnumType.STRING)
+    private ResourceJobManagerType resourceJobManagerType;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
@@ -89,11 +89,11 @@ public class ResourceJobManagerEntity implements Serializable {
         this.pushMonitoringEndpoint = pushMonitoringEndpoint;
     }
 
-    public String getResourceJobManagerType() {
+    public ResourceJobManagerType getResourceJobManagerType() {
         return resourceJobManagerType;
     }
 
-    public void setResourceJobManagerType(String resourceJobManagerType) {
+    public void setResourceJobManagerType(ResourceJobManagerType resourceJobManagerType) {
         this.resourceJobManagerType = resourceJobManagerType;
     }
 

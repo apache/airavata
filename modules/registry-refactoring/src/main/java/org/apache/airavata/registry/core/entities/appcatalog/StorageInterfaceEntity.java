@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -45,7 +47,8 @@ public class StorageInterfaceEntity implements Serializable {
     private Timestamp creationTime;
 
     @Column(name = "DATA_MOVEMENT_PROTOCOL")
-    private String dataMovementProtocol;
+    @Enumerated(EnumType.STRING)
+    private DataMovementProtocol dataMovementProtocol;
 
     @Column(name = "PRIORITY_ORDER")
     private int priorityOrder;
@@ -84,11 +87,11 @@ public class StorageInterfaceEntity implements Serializable {
         this.storageResource = storageResource;
     }
 
-    public String getDataMovementProtocol() {
+    public DataMovementProtocol getDataMovementProtocol() {
         return dataMovementProtocol;
     }
 
-    public void setDataMovementProtocol(String dataMovementProtocol) {
+    public void setDataMovementProtocol(DataMovementProtocol dataMovementProtocol) {
         this.dataMovementProtocol = dataMovementProtocol;
     }
 

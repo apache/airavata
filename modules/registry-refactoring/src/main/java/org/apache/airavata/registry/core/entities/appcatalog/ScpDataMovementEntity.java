@@ -20,10 +20,9 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -50,7 +49,8 @@ public class ScpDataMovementEntity implements Serializable {
     private String queueDescription;
 
     @Column(name = "SECURITY_PROTOCOL")
-    private String securityProtocol;
+    @Enumerated(EnumType.STRING)
+    private SecurityProtocol securityProtocol;
 
     @Column(name = "SSH_PORT")
     private int sshPort;
@@ -93,11 +93,11 @@ public class ScpDataMovementEntity implements Serializable {
         this.queueDescription = queueDescription;
     }
 
-    public String getSecurityProtocol() {
+    public SecurityProtocol getSecurityProtocol() {
         return securityProtocol;
     }
 
-    public void setSecurityProtocol(String securityProtocol) {
+    public void setSecurityProtocol(SecurityProtocol securityProtocol) {
         this.securityProtocol = securityProtocol;
     }
 

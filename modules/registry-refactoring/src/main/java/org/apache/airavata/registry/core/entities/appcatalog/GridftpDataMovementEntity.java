@@ -20,10 +20,9 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -44,7 +43,8 @@ public class GridftpDataMovementEntity implements Serializable {
     private Timestamp creationTime;
 
     @Column(name = "SECURITY_PROTOCOL")
-    private String securityProtocol;
+    @Enumerated(EnumType.STRING)
+    private SecurityProtocol securityProtocol;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
@@ -69,11 +69,11 @@ public class GridftpDataMovementEntity implements Serializable {
         this.creationTime = creationTime;
     }
 
-    public String getSecurityProtocol() {
+    public SecurityProtocol getSecurityProtocol() {
         return securityProtocol;
     }
 
-    public void setSecurityProtocol(String securityProtocol) {
+    public void setSecurityProtocol(SecurityProtocol securityProtocol) {
         this.securityProtocol = securityProtocol;
     }
 

@@ -19,10 +19,10 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.apache.airavata.model.appcatalog.computeresource.ProviderName;
+import org.apache.airavata.model.data.movement.SecurityProtocol;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -38,7 +38,8 @@ public class CloudJobSubmissionEntity implements Serializable {
     private String jobSubmissionInterfaceId;
 
     @Column(name = "SECURITY_PROTOCOL")
-    private String securityProtocol;
+    @Enumerated(EnumType.STRING)
+    private SecurityProtocol securityProtocol;
 
     @Column(name = "NODE_ID")
     private String nodeId;
@@ -47,7 +48,8 @@ public class CloudJobSubmissionEntity implements Serializable {
     private String executableType;
 
     @Column(name = "PROVIDER_NAME")
-    private String providerName;
+    @Enumerated(EnumType.STRING)
+    private ProviderName providerName;
 
     @Column(name = "USER_ACCOUNT_NAME")
     private String userAccountName;
@@ -61,11 +63,11 @@ public class CloudJobSubmissionEntity implements Serializable {
         this.executableType = executableType;
     }
 
-    public String getProviderName() {
+    public ProviderName getProviderName() {
         return providerName;
     }
 
-    public void setProviderName(String providerName) {
+    public void setProviderName(ProviderName providerName) {
         this.providerName = providerName;
     }
 
@@ -90,7 +92,7 @@ public class CloudJobSubmissionEntity implements Serializable {
     }
 
 
-    public String getSecurityProtocol() {
+    public SecurityProtocol getSecurityProtocol() {
         return securityProtocol;
     }
 
@@ -100,7 +102,7 @@ public class CloudJobSubmissionEntity implements Serializable {
     }
 
 
-    public void setSecurityProtocol(String securityProtocol) {
+    public void setSecurityProtocol(SecurityProtocol securityProtocol) {
         this.securityProtocol=securityProtocol;
     }
 }

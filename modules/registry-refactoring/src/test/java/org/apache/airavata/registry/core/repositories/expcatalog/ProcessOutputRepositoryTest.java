@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -100,6 +101,7 @@ public class ProcessOutputRepositoryTest {
 
         OutputDataObjectType outputDataObjectProType = new OutputDataObjectType();
         outputDataObjectProType.setName("outputP");
+        outputDataObjectProType.setType(DataType.STDERR);
 
         List<OutputDataObjectType> outputDataObjectTypeProList = new ArrayList<>();
         outputDataObjectTypeProList.add(outputDataObjectProType);
@@ -113,6 +115,7 @@ public class ProcessOutputRepositoryTest {
         List<OutputDataObjectType> retrievedProOutputList = processOutputRepository.getProcessOutputs(processId);
         assertTrue(retrievedProOutputList.size() == 1);
         assertEquals("oValueP", retrievedProOutputList.get(0).getValue());
+        assertEquals(DataType.STDERR, retrievedProOutputList.get(0).getType());
 
         experimentRepository.removeExperiment(experimentId);
         processRepository.removeProcess(processId);

@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
+
 import java.io.Serializable;
 
 /**
@@ -31,7 +33,7 @@ public class ComputeResourceFileSystemPK implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String computeResourceId;
-	private String fileSystem;
+	private FileSystems fileSystem;
 
 	public ComputeResourceFileSystemPK() {
 	}
@@ -44,11 +46,11 @@ public class ComputeResourceFileSystemPK implements Serializable {
 		this.computeResourceId = computeResourceId;
 	}
 
-	public String getFileSystem() {
+	public FileSystems getFileSystem() {
 		return fileSystem;
 	}
 
-	public void setFileSystem(String fileSystem) {
+	public void setFileSystem(FileSystems fileSystem) {
 		this.fileSystem = fileSystem;
 	}
 

@@ -89,7 +89,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             for (FileSystems key : fileSystems.keySet()) {
                 ComputeResourceFileSystemEntity computeResourceFileSystemEntity = new ComputeResourceFileSystemEntity();
                 computeResourceFileSystemEntity.setComputeResourceId(computeHostResource.getComputeResourceId());
-                computeResourceFileSystemEntity.setFileSystem(key.toString());
+                computeResourceFileSystemEntity.setFileSystem(key);
                 computeResourceFileSystemEntity.setPath(fileSystems.get(key));
                 computeResourceFileSystemEntity.setComputeResource(computeHostResource);
                 execute(entityManager -> entityManager.merge(computeResourceFileSystemEntity));
@@ -112,7 +112,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         List<ComputeResourceFileSystemEntity> computeResourceFileSystemEntityList = resultSet;
         Map<FileSystems, String> fileSystemsMap= new HashMap<FileSystems,String>();
         for (ComputeResourceFileSystemEntity fs: computeResourceFileSystemEntityList) {
-            fileSystemsMap.put(FileSystems.valueOf(fs.getFileSystem()), fs.getPath());
+            fileSystemsMap.put(fs.getFileSystem(), fs.getPath());
         }
         return fileSystemsMap;
     }
@@ -293,7 +293,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             (new ResourceJobManagerRepository()).createJobManagerCommand(localSubmission.getResourceJobManager().getJobManagerCommands(), localSubmissionEntity.getResourceJobManager());
         }
 
-        localSubmissionEntity.setSecurityProtocol(localSubmission.getSecurityProtocol().toString());
+        localSubmissionEntity.setSecurityProtocol(localSubmission.getSecurityProtocol());
         execute(entityManager -> entityManager.merge(localSubmissionEntity));
         return localSubmissionEntity.getJobSubmissionInterfaceId();
     }
@@ -309,7 +309,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         Mapper mapper = ObjectMapperSingleton.getInstance();
         UnicoreSubmissionEntity unicoreSubmissionEntity = mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
         if (unicoreJobSubmission.getSecurityProtocol() !=  null) {
-            unicoreSubmissionEntity.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol().toString());
+            unicoreSubmissionEntity.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol());
         }
         execute(entityManager -> entityManager.merge(unicoreSubmissionEntity));
         return unicoreJobSubmission.getJobSubmissionInterfaceId();

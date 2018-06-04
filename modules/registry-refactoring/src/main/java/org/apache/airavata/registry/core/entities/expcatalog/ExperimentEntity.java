@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.experiment.ExperimentType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -44,7 +46,8 @@ public class ExperimentEntity implements Serializable {
     public String gatewayId;
 
     @Column(name = "EXPERIMENT_TYPE")
-    public String experimentType;
+    @Enumerated(EnumType.STRING)
+    public ExperimentType experimentType;
 
     @Column(name = "USER_NAME")
     public String userName;
@@ -122,11 +125,11 @@ public class ExperimentEntity implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    public String getExperimentType() {
+    public ExperimentType getExperimentType() {
         return experimentType;
     }
 
-    public void setExperimentType(String experimentType) {
+    public void setExperimentType(ExperimentType experimentType) {
         this.experimentType = experimentType;
     }
 

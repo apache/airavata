@@ -48,6 +48,7 @@ public class JobStatusEntity implements Serializable {
     private String taskId;
 
     @Column(name = "STATE")
+    @Enumerated(EnumType.STRING)
     private JobState jobState;
 
     @Column(name = "TIME_OF_STATE_CHANGE")

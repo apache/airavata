@@ -57,6 +57,7 @@ public class NotificationEntity implements Serializable {
     private Timestamp expirationTime;
 
     @Column(name = "PRIORITY")
+    @Enumerated(EnumType.STRING)
     private NotificationPriority priority;
 
     public NotificationEntity() {

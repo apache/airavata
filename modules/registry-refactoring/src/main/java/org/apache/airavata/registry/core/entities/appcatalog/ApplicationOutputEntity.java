@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -50,7 +52,8 @@ public class ApplicationOutputEntity implements Serializable {
     private String location;
 
     @Column(name = "DATA_TYPE")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private DataType type;
 
     @Column(name = "IS_REQUIRED")
     private boolean isRequired;
@@ -114,11 +117,11 @@ public class ApplicationOutputEntity implements Serializable {
         this.location = location;
     }
 
-    public String getType() {
+    public DataType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 
