@@ -26,8 +26,13 @@ import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
@@ -36,14 +41,7 @@ import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.sharing.registry.models.Domain;
-import org.apache.airavata.sharing.registry.models.Entity;
-import org.apache.airavata.sharing.registry.models.EntityType;
-import org.apache.airavata.sharing.registry.models.GroupCardinality;
-import org.apache.airavata.sharing.registry.models.GroupType;
-import org.apache.airavata.sharing.registry.models.PermissionType;
-import org.apache.airavata.sharing.registry.models.User;
-import org.apache.airavata.sharing.registry.models.UserGroup;
+import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
 
@@ -51,11 +49,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AiravataDataMigrator {
@@ -277,20 +271,46 @@ public class AiravataDataMigrator {
 
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);
-                // Give default Gateway Users group and Read Only Admins group READ access
-                sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
-                        Arrays.asList(gatewayGroups.getDefaultGatewayUsersGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
-                        entity.domainId + ":" + ResourcePermissionType.READ, true);
-                // Give Admins group WRITE access
-                sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
-                        Arrays.asList(gatewayGroups.getAdminsGroupId()),
-                        entity.domainId + ":" + ResourcePermissionType.WRITE, true);
+                shareEntityWithGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups);
+            }
+        }
+
+        // Migrating from GatewayResourceProfile to GroupResourceProfile
+        for (String domainID : domainOwnerMap.keySet()) {
+            GatewayGroups gatewayGroups = gatewayGroupsMap.get(domainID);
+            if (needsGroupResourceProfileMigration(domainID, registryServiceClient)) {
+
+                GroupResourceProfile groupResourceProfile = migrateGatewayResourceProfileToGroupResourceProfile(domainID, registryServiceClient);
+
+                // create GroupResourceProfile entity in sharing registry
+                Entity entity = new Entity();
+                entity.setEntityId(groupResourceProfile.getGroupResourceProfileId());
+                entity.setDomainId(domainID);
+                entity.setEntityTypeId(entity.domainId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entity.setOwnerId(domainOwnerMap.get(domainID));
+                entity.setName(groupResourceProfile.getGroupResourceProfileName());
+                entity.setDescription(groupResourceProfile.getGroupResourceProfileName() + " Group Resource Profile");
+                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                    sharingRegistryServerHandler.createEntity(entity);
+                shareEntityWithGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups);
+
             }
         }
 
         expCatConnection.close();
         System.out.println("Completed!");
 
+    }
+
+    private static void shareEntityWithGatewayGroups(SharingRegistryServerHandler sharingRegistryServerHandler, Entity entity, GatewayGroups gatewayGroups) throws TException {
+        // Give default Gateway Users group and Read Only Admins group READ access
+        sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
+                Arrays.asList(gatewayGroups.getDefaultGatewayUsersGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
+                entity.domainId + ":" + ResourcePermissionType.READ, true);
+        // Give Admins group WRITE access
+        sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
+                Arrays.asList(gatewayGroups.getAdminsGroupId()),
+                entity.domainId + ":" + ResourcePermissionType.WRITE, true);
     }
 
     private static GatewayGroups migrateRolesToGatewayGroups(Domain domain, String ownerId, SharingRegistryServerHandler sharingRegistryServerHandler, RegistryService.Client registryServiceClient) throws TException, ApplicationSettingsException {
@@ -413,6 +433,63 @@ public class AiravataDataMigrator {
         sharingRegistryServerHandler.addUsersToGroup(domain.domainId, userIds, userGroup.getGroupId());
         return userGroup;
     }
+
+    private static boolean needsGroupResourceProfileMigration(String gatewayId, RegistryService.Client registryServiceClient) throws TException {
+        // Return true if GatewayResourceProfile has at least one ComputeResourcePreference and there is no GroupResourceProfile
+        List<ComputeResourcePreference> computeResourcePreferences = registryServiceClient.getAllGatewayComputeResourcePreferences(gatewayId);
+        List<GroupResourceProfile> groupResourceProfiles = registryServiceClient.getGroupResourceList(gatewayId, Collections.emptyList());
+        return !computeResourcePreferences.isEmpty() && groupResourceProfiles.isEmpty();
+    }
+
+    private static GroupResourceProfile migrateGatewayResourceProfileToGroupResourceProfile(String gatewayId, RegistryService.Client registryServiceClient) throws TException {
+
+        GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
+        groupResourceProfile.setGatewayId(gatewayId);
+        groupResourceProfile.setGroupResourceProfileName("Default");
+        List<GroupComputeResourcePreference> groupComputeResourcePreferences = new ArrayList<>();
+        List<ComputeResourcePolicy> computeResourcePolicies = new ArrayList<>();
+        List<ComputeResourcePreference> computeResourcePreferences = registryServiceClient.getAllGatewayComputeResourcePreferences(gatewayId);
+        for (ComputeResourcePreference computeResourcePreference : computeResourcePreferences) {
+            GroupComputeResourcePreference groupComputeResourcePreference = convertComputeResourcePreferenceToGroupComputeResourcePreference(groupResourceProfile.getGroupResourceProfileId(), computeResourcePreference);
+            ComputeResourcePolicy computeResourcePolicy = createDefaultComputeResourcePolicy(groupResourceProfile.getGroupResourceProfileId(), computeResourcePreference.getComputeResourceId(), registryServiceClient);
+            groupComputeResourcePreferences.add(groupComputeResourcePreference);
+            computeResourcePolicies.add(computeResourcePolicy);
+        }
+        groupResourceProfile.setComputePreferences(groupComputeResourcePreferences);
+        groupResourceProfile.setComputeResourcePolicies(computeResourcePolicies);
+        String groupResourceProfileId = registryServiceClient.createGroupResourceProfile(groupResourceProfile);
+        groupResourceProfile.setGroupResourceProfileId(groupResourceProfileId);
+        return groupResourceProfile;
+    }
+
+    private static GroupComputeResourcePreference convertComputeResourcePreferenceToGroupComputeResourcePreference(String groupResourceProfileId, ComputeResourcePreference computeResourcePreference) {
+        GroupComputeResourcePreference groupComputeResourcePreference = new GroupComputeResourcePreference();
+        groupComputeResourcePreference.setGroupResourceProfileId(groupResourceProfileId);
+        groupComputeResourcePreference.setComputeResourceId(computeResourcePreference.getComputeResourceId());
+        groupComputeResourcePreference.setOverridebyAiravata(computeResourcePreference.isOverridebyAiravata());
+        groupComputeResourcePreference.setLoginUserName(computeResourcePreference.getLoginUserName());
+        groupComputeResourcePreference.setPreferredJobSubmissionProtocol(computeResourcePreference.getPreferredJobSubmissionProtocol());
+        groupComputeResourcePreference.setPreferredDataMovementProtocol(computeResourcePreference.getPreferredDataMovementProtocol());
+        groupComputeResourcePreference.setPreferredBatchQueue(computeResourcePreference.getPreferredBatchQueue());
+        groupComputeResourcePreference.setScratchLocation(computeResourcePreference.getScratchLocation());
+        groupComputeResourcePreference.setAllocationProjectNumber(computeResourcePreference.getAllocationProjectNumber());
+        groupComputeResourcePreference.setResourceSpecificCredentialStoreToken(computeResourcePreference.getResourceSpecificCredentialStoreToken());
+        groupComputeResourcePreference.setUsageReportingGatewayId(computeResourcePreference.getUsageReportingGatewayId());
+        groupComputeResourcePreference.setQualityOfService(computeResourcePreference.getQualityOfService());
+        // Note: skipping copying of reservation time and ssh account provisioner configuration for now
+        return groupComputeResourcePreference;
+    }
+
+    private static ComputeResourcePolicy createDefaultComputeResourcePolicy(String groupResourceProfileId, String computeResourceId, RegistryService.Client registryServiceClient) throws TException {
+        ComputeResourcePolicy computeResourcePolicy = new ComputeResourcePolicy();
+        computeResourcePolicy.setComputeResourceId(computeResourceId);
+        computeResourcePolicy.setGroupResourceProfileId(groupResourceProfileId);
+        ComputeResourceDescription computeResourceDescription = registryServiceClient.getComputeResource(computeResourceId);
+        List<String> batchQueueNames = computeResourceDescription.getBatchQueues().stream().map(bq -> bq.getQueueName()).collect(Collectors.toList());
+        computeResourcePolicy.setAllowedBatchQueues(batchQueueNames);
+        return computeResourcePolicy;
+    }
+
 
     private static CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
