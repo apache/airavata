@@ -21,29 +21,68 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * The persistent class for the job database table.
+ */
 @Entity
-@Table(name = "EXPCAT_JOB")
-public class JobEntity {
-    private String jobId;
-    private String taskId;
-    private String processId;
-    private String jobDescription;
-    private long creationTime;
-    private String computeResourceConsumed;
-    private String jobName;
-    private String workingDir;
-    private String stdOut;
-    private String stdErr;
-    private int exitCode;
-
-    private List<JobStatusEntity> jobStatuses;
-
-    private TaskEntity task;
+@Table(name = "JOB")
+@IdClass(JobPK.class)
+public class JobEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "JOB_ID")
+    private String jobId;
+
+    @Id
+    @Column(name = "TASK_ID")
+    private String taskId;
+
+    @Column(name = "PROCESS_ID")
+    private String processId;
+
+    @Lob
+    @Column(name = "JOB_DESCRIPTION")
+    private String jobDescription;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "COMPUTE_RESOURCE_CONSUMED")
+    private String computeResourceConsumed;
+
+    @Column(name = "JOB_NAME")
+    private String jobName;
+
+    @Column(name = "WORKING_DIR")
+    private String workingDir;
+
+    @Lob
+    @Column(name = "STD_OUT")
+    private String stdOut;
+
+    @Lob
+    @Column(name = "STD_ERR")
+    private String stdErr;
+
+    @Column(name = "EXIT_CODE")
+    private int exitCode;
+
+    @OneToMany(targetEntity = JobStatusEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "job", fetch = FetchType.EAGER)
+    private List<JobStatusEntity> jobStatuses;
+
+    @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
+    private TaskEntity task;
+
+    public JobEntity() {
+    }
+
     public String getJobId() {
         return jobId;
     }
@@ -52,7 +91,6 @@ public class JobEntity {
         this.jobId = jobId;
     }
 
-    @Column(name = "TASK_ID")
     public String getTaskId() {
         return taskId;
     }
@@ -61,7 +99,6 @@ public class JobEntity {
         this.taskId = taskId;
     }
 
-    @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
     }
@@ -70,7 +107,6 @@ public class JobEntity {
         this.processId = processId;
     }
 
-    @Column(name = "JOB_DESCRIPTION")
     public String getJobDescription() {
         return jobDescription;
     }
@@ -79,16 +115,14 @@ public class JobEntity {
         this.jobDescription = jobDescription;
     }
 
-    @Column(name = "CREATION_TIME")
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
-    @Column(name = "COMPUTE_RESOURCE_CONSUMED")
     public String getComputeResourceConsumed() {
         return computeResourceConsumed;
     }
@@ -97,7 +131,6 @@ public class JobEntity {
         this.computeResourceConsumed = computeResourceConsumed;
     }
 
-    @Column(name = "JOB_NAME")
     public String getJobName() {
         return jobName;
     }
@@ -106,7 +139,6 @@ public class JobEntity {
         this.jobName = jobName;
     }
 
-    @Column(name = "WORKING_DIR")
     public String getWorkingDir() {
         return workingDir;
     }
@@ -115,8 +147,6 @@ public class JobEntity {
         this.workingDir = workingDir;
     }
 
-    @Lob
-    @Column(name = "STDOUT")
     public String getStdOut() {
         return stdOut;
     }
@@ -125,8 +155,6 @@ public class JobEntity {
         this.stdOut = stdOut;
     }
 
-    @Lob
-    @Column(name = "STDERR")
     public String getStdErr() {
         return stdErr;
     }
@@ -135,7 +163,6 @@ public class JobEntity {
         this.stdErr = stdErr;
     }
 
-    @Column(name = "EXIT_CODE")
     public int getExitCode() {
         return exitCode;
     }
@@ -144,17 +171,14 @@ public class JobEntity {
         this.exitCode = exitCode;
     }
 
-    @OneToMany(targetEntity = JobStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "job")
     public List<JobStatusEntity> getJobStatuses() {
         return jobStatuses;
     }
 
-    public void setJobStatuses(List<JobStatusEntity> jobStatus) {
-        this.jobStatuses = jobStatus;
+    public void setJobStatuses(List<JobStatusEntity> jobStatuses) {
+        this.jobStatuses = jobStatuses;
     }
 
-    @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
     public TaskEntity getTask() {
         return task;
     }

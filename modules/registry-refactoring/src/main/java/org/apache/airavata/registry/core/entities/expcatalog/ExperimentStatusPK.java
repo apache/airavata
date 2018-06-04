@@ -20,30 +20,29 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * The primary key class for the experiment_status database table.
+ */
 public class ExperimentStatusPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentStatusPK.class);
-    private String state;
+    //default serial version id, required for serializable classes.
+    private static final long serialVersionUID = 1L;
+
+    private String statusId;
     private String experimentId;
 
-    @Id
-    @Column(name = "STATUS_ID")
-    public String getState() {
-        return state;
+    public ExperimentStatusPK() {
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public String getStatusId() {
+        return statusId;
     }
 
-    @Id
-    @Column(name = "EXPERIMENT_ID")
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
+
     public String getExperimentId() {
         return experimentId;
     }
@@ -52,23 +51,25 @@ public class ExperimentStatusPK implements Serializable {
         this.experimentId = experimentId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ExperimentStatusPK that = (ExperimentStatusPK) o;
-
-        if (getState() != null ? !getState().equals(that.getState()) : that.getState() != null) return false;
-        if (getExperimentId() != null ? !getExperimentId().equals(that.getExperimentId()) : that.getExperimentId() != null) return false;
-
-        return true;
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof ExperimentStatusPK)) {
+            return false;
+        }
+        ExperimentStatusPK castOther = (ExperimentStatusPK) other;
+        return
+                this.statusId.equals(castOther.statusId)
+                        && this.experimentId.equals(castOther.experimentId);
     }
 
-    @Override
     public int hashCode() {
-        int result = getState() != null ? getState().hashCode() : 0;
-        result = 31 * result + (getExperimentId() != null ? getExperimentId().hashCode() : 0);
-        return result;
+        final int prime = 31;
+        int hash = 17;
+        hash = hash * prime + this.statusId.hashCode();
+        hash = hash * prime + this.experimentId.hashCode();
+
+        return hash;
     }
 }

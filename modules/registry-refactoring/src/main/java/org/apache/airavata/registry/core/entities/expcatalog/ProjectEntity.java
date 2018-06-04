@@ -18,25 +18,43 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.entities.workspacecatalog;
+package org.apache.airavata.registry.core.entities.expcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+/**
+ * The persistent class for the project database table.
+ */
 @Entity
-@Table(name = "WORKSPACE_PROJECT")
-public class ProjectEntity {
-    private String projectID;
-    private String owner;
-    private String gatewayId;
-    private String name;
-    private String description;
-    private long creationTime;
+@Table(name = "PROJECT")
+public class ProjectEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "PROJECT_ID")
+    private String projectID;
+
+    @Column(name = "USER_NAME")
+    private String owner;
+
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    @Column(name = "PROJECT_NAME")
+    private String name;
+
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    public ProjectEntity() {
+    }
+
     public String getProjectID() {
         return projectID;
     }
@@ -45,7 +63,6 @@ public class ProjectEntity {
         this.projectID = projectID;
     }
 
-    @Column(name = "OWNER")
     public String getOwner() {
         return owner;
     }
@@ -54,7 +71,6 @@ public class ProjectEntity {
         this.owner = owner;
     }
 
-    @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
     }
@@ -63,7 +79,6 @@ public class ProjectEntity {
         this.gatewayId = gatewayId;
     }
 
-    @Column(name = "PROJECT_NAME")
     public String getName() {
         return name;
     }
@@ -72,7 +87,6 @@ public class ProjectEntity {
         this.name = name;
     }
 
-    @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
     }
@@ -81,12 +95,12 @@ public class ProjectEntity {
         this.description = description;
     }
 
-    @Column(name = "CREATION_TIME")
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
+
 }

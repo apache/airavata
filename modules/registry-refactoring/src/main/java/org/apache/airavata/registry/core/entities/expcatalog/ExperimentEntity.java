@@ -21,36 +21,83 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * The persistent class for the experiment database table.
+ */
 @Entity
-@Table(name = "EXPCAT_EXPERIMENT")
-public class ExperimentEntity {
-    public String experimentId;
-    public String projectId;
-    public String gatewayId;
-    public String experimentType;
-    public String userName;
-    public String experimentName;
-    public long creationTime;
-    public String description;
-    public String executionId;
-    public String gatewayExecutionId;
-    public String gatewayInstanceId;
-    public boolean enableEmailNotification;
-    public List<String> emailAddresses;
-
-    private List<ExperimentInputEntity> experimentInputs;
-    private List<ExperimentOutputEntity> experimentOutputs;
-    private List<ExperimentErrorEntity> experimentErrors;
-    private List<ExperimentStatusEntity> experimentStatuses;
-
-    private UserConfigurationEntity userConfigurationData;
-
-    private List<ProcessEntity> processes;
+@Table(name = "EXPERIMENT")
+public class ExperimentEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
+    public String experimentId;
+
+    @Column(name = "PROJECT_ID")
+    public String projectId;
+
+    @Column(name = "GATEWAY_ID")
+    public String gatewayId;
+
+    @Column(name = "EXPERIMENT_TYPE")
+    public String experimentType;
+
+    @Column(name = "USER_NAME")
+    public String userName;
+
+    @Column(name = "EXPERIMENT_NAME")
+    public String experimentName;
+
+    @Column(name = "CREATION_TIME")
+    public Timestamp creationTime;
+
+    @Column(name = "DESCRIPTION")
+    public String description;
+
+    @Column(name = "EXECUTION_ID")
+    public String executionId;
+
+    @Column(name = "GATEWAY_EXECUTION_ID")
+    public String gatewayExecutionId;
+
+    @Column(name = "ENABLE_EMAIL_NOTIFICATION")
+    public boolean enableEmailNotification;
+
+    @Lob
+    @Column(name = "EMAIL_ADDRESSES")
+    public List<String> emailAddresses;
+
+    @OneToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "experiment", fetch = FetchType.EAGER)
+    private UserConfigurationDataEntity userConfigurationData;
+
+    @OneToMany(targetEntity = ExperimentInputEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "experiment", fetch = FetchType.EAGER)
+    private List<ExperimentInputEntity> experimentInputs;
+
+    @OneToMany(targetEntity = ExperimentOutputEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "experiment", fetch = FetchType.EAGER)
+    private List<ExperimentOutputEntity> experimentOutputs;
+
+    @OneToMany(targetEntity = ExperimentStatusEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "experiment", fetch = FetchType.EAGER)
+    private List<ExperimentStatusEntity> experimentStatus;
+
+    @OneToMany(targetEntity = ExperimentErrorEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "experiment", fetch = FetchType.EAGER)
+    private List<ExperimentErrorEntity> errors;
+
+    @OneToMany(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "experiment", fetch = FetchType.EAGER)
+    private List<ProcessEntity> processes;
+
+    public ExperimentEntity() {
+    }
+
     public String getExperimentId() {
         return experimentId;
     }
@@ -59,7 +106,6 @@ public class ExperimentEntity {
         this.experimentId = experimentId;
     }
 
-    @Column(name = "PROJECT_ID")
     public String getProjectId() {
         return projectId;
     }
@@ -68,7 +114,6 @@ public class ExperimentEntity {
         this.projectId = projectId;
     }
 
-    @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
     }
@@ -77,7 +122,6 @@ public class ExperimentEntity {
         this.gatewayId = gatewayId;
     }
 
-    @Column(name = "EXPERIMENT_TYPE")
     public String getExperimentType() {
         return experimentType;
     }
@@ -86,7 +130,6 @@ public class ExperimentEntity {
         this.experimentType = experimentType;
     }
 
-    @Column(name = "USER_NAME")
     public String getUserName() {
         return userName;
     }
@@ -95,7 +138,6 @@ public class ExperimentEntity {
         this.userName = userName;
     }
 
-    @Column(name = "EXPERIMENT_NAME")
     public String getExperimentName() {
         return experimentName;
     }
@@ -104,16 +146,14 @@ public class ExperimentEntity {
         this.experimentName = experimentName;
     }
 
-    @Column(name = "CREATION_TIME")
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
-    @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
     }
@@ -122,7 +162,6 @@ public class ExperimentEntity {
         this.description = description;
     }
 
-    @Column(name = "EXECUTION_ID")
     public String getExecutionId() {
         return executionId;
     }
@@ -131,7 +170,6 @@ public class ExperimentEntity {
         this.executionId = executionId;
     }
 
-    @Column(name = "GATEWAY_EXECUTION_ID")
     public String getGatewayExecutionId() {
         return gatewayExecutionId;
     }
@@ -140,16 +178,6 @@ public class ExperimentEntity {
         this.gatewayExecutionId = gatewayExecutionId;
     }
 
-    @Column(name = "GATEWAY_INSTANCE_ID")
-    public String getGatewayInstanceId() {
-        return gatewayInstanceId;
-    }
-
-    public void setGatewayInstanceId(String gatewayInstanceId) {
-        this.gatewayInstanceId = gatewayInstanceId;
-    }
-
-    @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     public boolean isEnableEmailNotification() {
         return enableEmailNotification;
     }
@@ -158,8 +186,6 @@ public class ExperimentEntity {
         this.enableEmailNotification = enableEmailNotification;
     }
 
-    @ElementCollection
-    @CollectionTable(name="EXPCAT_EXPERIMENT_EMAIL", joinColumns = @JoinColumn(name="EXPERIMENT_ID"))
     public List<String> getEmailAddresses() {
         return emailAddresses;
     }
@@ -168,16 +194,14 @@ public class ExperimentEntity {
         this.emailAddresses = emailAddresses;
     }
 
-    @OneToOne(targetEntity = UserConfigurationEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
-    public UserConfigurationEntity getUserConfigurationData() {
+    public UserConfigurationDataEntity getUserConfigurationData() {
         return userConfigurationData;
     }
 
-    public void setUserConfigurationData(UserConfigurationEntity userConfiguration) {
+    public void setUserConfigurationData(UserConfigurationDataEntity userConfiguration) {
         this.userConfigurationData = userConfiguration;
     }
 
-    @OneToMany(targetEntity = ExperimentInputEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
     public List<ExperimentInputEntity> getExperimentInputs() {
         return experimentInputs;
     }
@@ -186,7 +210,6 @@ public class ExperimentEntity {
         this.experimentInputs = experimentInputs;
     }
 
-    @OneToMany(targetEntity = ExperimentOutputEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
     public List<ExperimentOutputEntity> getExperimentOutputs() {
         return experimentOutputs;
     }
@@ -195,25 +218,22 @@ public class ExperimentEntity {
         this.experimentOutputs = experimentOutputs;
     }
 
-    @OneToMany(targetEntity = ExperimentErrorEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
-    public List<ExperimentErrorEntity> getExperimentErrors() {
-        return experimentErrors;
+    public List<ExperimentErrorEntity> getErrors() {
+        return errors;
     }
 
-    public void setExperimentErrors(List<ExperimentErrorEntity> experimentErrors) {
-        this.experimentErrors = experimentErrors;
+    public void setErrors(List<ExperimentErrorEntity> errors) {
+        this.errors = errors;
     }
 
-    @OneToMany(targetEntity = ExperimentStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
-    public List<ExperimentStatusEntity> getExperimentStatuses() {
-        return experimentStatuses;
+    public List<ExperimentStatusEntity> getExperimentStatus() {
+        return experimentStatus;
     }
 
-    public void setExperimentStatuses(List<ExperimentStatusEntity> experimentStatuses) {
-        this.experimentStatuses = experimentStatuses;
+    public void setExperimentStatus(List<ExperimentStatusEntity> experimentStatus) {
+        this.experimentStatus = experimentStatus;
     }
 
-    @OneToMany(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, mappedBy = "experiment")
     public List<ProcessEntity> getProcesses() {
         return processes;
     }
