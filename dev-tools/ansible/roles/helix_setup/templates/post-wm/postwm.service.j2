@@ -1,0 +1,14 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=postwm
+Before=
+After=network.target
+
+[Service]
+LOG_DIR={{ helix_post_wm_dist_log_dir }}
+ExecStart={{ helix_dir }}/{{ helix_post_wm_version }}/bin/post-wm-daemon.sh {{ helix_dir }}/{{ helix_post_wm_version }}/conf/airavata-server.properties
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

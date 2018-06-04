@@ -36,17 +36,17 @@ public class GlobalParticipant extends HelixParticipant {
     private final static Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
 
     private String[] taskClasses = {
-        "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
-        "org.apache.airavata.helix.impl.task.staging.InputDataStagingTask",
-        "org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask",
-        "org.apache.airavata.helix.impl.task.completing.CompletingTask",
-        "org.apache.airavata.helix.impl.task.submission.ForkJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.submission.LocalJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.staging.ArchiveTask",
-        "org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask",
-        "org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask",
-        "org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask"
+            "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
+            "org.apache.airavata.helix.impl.task.staging.InputDataStagingTask",
+            "org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask",
+            "org.apache.airavata.helix.impl.task.completing.CompletingTask",
+            "org.apache.airavata.helix.impl.task.submission.ForkJobSubmissionTask",
+            "org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask",
+            "org.apache.airavata.helix.impl.task.submission.LocalJobSubmissionTask",
+            "org.apache.airavata.helix.impl.task.staging.ArchiveTask",
+            "org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask",
+            "org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask",
+            "org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask"
     };
 
     public Map<String, TaskFactory> getTaskFactory() {
@@ -56,6 +56,7 @@ public class GlobalParticipant extends HelixParticipant {
             TaskFactory taskFac = context -> {
                 try {
                     return AbstractTask.class.cast(Class.forName(taskClass).newInstance())
+                            .setParticipant(GlobalParticipant.this)
                             .setCallbackContext(context)
                             .setTaskHelper(new TaskHelperImpl());
                 } catch (InstantiationException | IllegalAccessException e) {
