@@ -178,17 +178,6 @@ public class SharingRegistryServerHandlerTest {
         String permissionTypeId2 = sharingRegistryServerHandler.createPermissionType(permissionType2);
         Assert.assertNotNull(permissionTypeId2);
 
-        PermissionType permissionType3 = new PermissionType();
-        String permissionName3 = "EXEC";
-        permissionType3.setPermissionTypeId(domainId+":"+permissionName3);
-        permissionType3.setDomainId(domainId);
-        permissionType3.setName(permissionName3);
-        permissionType3.setDescription("EXEC description");
-        permissionType3.setCreatedTime(System.currentTimeMillis());
-        permissionType3.setUpdatedTime(System.currentTimeMillis());
-        String permissionTypeId3 = sharingRegistryServerHandler.createPermissionType(permissionType3);
-        Assert.assertNotNull(permissionTypeId3);
-
         //Creating entity types
         EntityType entityType1 = new EntityType();
         String entityType1Name = "Project";

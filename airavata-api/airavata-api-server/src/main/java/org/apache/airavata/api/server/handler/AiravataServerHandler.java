@@ -258,13 +258,6 @@ public class AiravataServerHandler implements Airavata.Iface {
                 permissionType.setName("WRITE");
                 permissionType.setDescription("Write permission type");
                 client.createPermissionType(permissionType);
-
-                permissionType = new PermissionType();
-                permissionType.setPermissionTypeId(domain.domainId+":EXEC");
-                permissionType.setDomainId(domain.domainId);
-                permissionType.setName("EXEC");
-                permissionType.setDescription("Execute permission type");
-                client.createPermissionType(permissionType);
             }
             sharingClientPool.returnResource(client);
         } catch (Exception ex) {
@@ -373,13 +366,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             permissionType.setDomainId(domain.domainId);
             permissionType.setName("WRITE");
             permissionType.setDescription("Write permission type");
-            sharingClient.createPermissionType(permissionType);
-
-            permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(domain.domainId+":EXEC");
-            permissionType.setDomainId(domain.domainId);
-            permissionType.setName("EXEC");
-            permissionType.setDescription("Execute permission type");
             sharingClient.createPermissionType(permissionType);
 
             //Create an "everyone" group for the domain
@@ -4965,9 +4951,6 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
-                else if(userPermission.getValue().equals(ResourcePermissionType.EXEC))
-                    sharingClient.shareEntityWithUsers(gatewayId, resourceId,
-                            Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC", true);
                 else {
                     logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
                     throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
@@ -5004,9 +4987,6 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(groupPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.shareEntityWithGroups(gatewayId, resourceId,
                             Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
-                else if(groupPermission.getValue().equals(ResourcePermissionType.EXEC))
-                    sharingClient.shareEntityWithGroups(gatewayId, resourceId,
-                            Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC", true);
                 else {
                     logger.error("Invalid ResourcePermissionType : " + groupPermission.getValue().toString());
                     throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
@@ -5042,9 +5022,6 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
-                else if(userPermission.getValue().equals(ResourcePermissionType.EXEC))
-                    sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
-                            Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC");
                 else {
                     logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
                     throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
@@ -5091,9 +5068,6 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(groupPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "READ");
-                else if(groupPermission.getValue().equals(ResourcePermissionType.EXEC))
-                    sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
-                            Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "EXEC");
                 else {
                     logger.error("Invalid ResourcePermissionType : " + groupPermission.getValue().toString());
                     throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
