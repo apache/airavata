@@ -27,6 +27,7 @@ export default {
     value: {
       type: Array,
       required: false
+        , default:[]
     },
 
     suggestions: {
@@ -34,23 +35,25 @@ export default {
       required: true
     }
   },
-
   data () {
+      console.log("Value",this.value.length);
     return {
       open: false,
       current: 0,
-      localValue: this.value ? this.value.slice() : [],
+      localValue: this.value,
       searchValue: '',
     }
   },
 
   computed: {
     filtered () {
+        console.log("local Value",this.localValue.length);
       return this.suggestions.filter((data) => {
         return data.name.indexOf(this.searchValue) >= 0
       })
     },
     selected () {
+        console.log("local Value",this.localValue.length);
         return this.suggestions.filter((suggestion) => {
             return this.localValue.indexOf(suggestion.id) >= 0;
         });
@@ -102,7 +105,12 @@ export default {
       this.localValue.splice(index,1);
       this.$emit('input',this.localValue);
     }
-  }
+  },
+    watch:{
+      value:function (newValue) {
+          this.localValue=newValue;
+      }
+    }
 }
 
 </script>
