@@ -20,20 +20,21 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * The primary key class for the experiment_output database table.
+ */
 public class ExperimentOutputPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentOutputPK.class);
+    //default serial version id, required for serializable classes.
+    private static final long serialVersionUID = 1L;
+
     private String experimentId;
     private String name;
 
-    @Id
-    @Column(name = "EXPERIMENT_ID")
+    public ExperimentOutputPK() {
+    }
+
     public String getExperimentId() {
         return experimentId;
     }
@@ -42,8 +43,6 @@ public class ExperimentOutputPK implements Serializable {
         this.experimentId = experimentId;
     }
 
-    @Id
-    @Column(name = "OUTPUT_NAME")
     public String getName() {
         return name;
     }
@@ -52,23 +51,25 @@ public class ExperimentOutputPK implements Serializable {
         this.name = name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ExperimentOutputPK that = (ExperimentOutputPK) o;
-
-        if (getExperimentId() != null ? !getExperimentId().equals(that.getExperimentId()) : that.getExperimentId() != null) return false;
-        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
-
-        return true;
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof ExperimentOutputPK)) {
+            return false;
+        }
+        ExperimentOutputPK castOther = (ExperimentOutputPK) other;
+        return
+                this.experimentId.equals(castOther.experimentId)
+                        && this.name.equals(castOther.name);
     }
 
-    @Override
     public int hashCode() {
-        int result = getExperimentId() != null ? getExperimentId().hashCode() : 0;
-        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
-        return result;
+        final int prime = 31;
+        int hash = 17;
+        hash = hash * prime + this.experimentId.hashCode();
+        hash = hash * prime + this.name.hashCode();
+
+        return hash;
     }
 }

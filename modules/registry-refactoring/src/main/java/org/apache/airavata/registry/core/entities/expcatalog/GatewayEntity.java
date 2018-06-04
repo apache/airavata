@@ -18,35 +18,83 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.entities.workspacecatalog;
+package org.apache.airavata.registry.core.entities.expcatalog;
+
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+/**
+ * The persistent class for the gateway database table.
+ */
 @Entity
-@Table(name="WORKSPACE_GATEWAY")
-public class GatewayEntity {
-    private String gatewayId;
-    private String gatewayName;
-    private String domain;
-    private String emailAddress;
-    private String gatewayApprovalStatus;
-    private String gatewayAcronym;
-    private String gatewayUrl;
-    private String gatewayPublicAbstract;
-    private String reviewProposalDescription;
-    private String gatewayAdminFirstName;
-    private String getGatewayAdminLastName;
-    private String gatewayAdminEmail;
-    private String identityServerUserName;
-    private String identityServerPasswordToken;
-    private String declinedReason;
-    private String oauthClientId;
-    private String getOauthClientSecret;
-    private long requestCreationTime;
-    private String requesterUsername;
+@Table(name="GATEWAY")
+public class GatewayEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    @Column(name = "GATEWAY_NAME")
+    private String gatewayName;
+
+    @Column(name = "GATEWAY_DOMAIN")
+    private String domain;
+
+    @Column(name = "EMAIL_ADDRESS")
+    private String emailAddress;
+
+    @Column(name = "GATEWAY_APPROVAL_STATUS")
+    private GatewayApprovalStatus gatewayApprovalStatus;
+
+    @Column(name = "GATEWAY_ACRONYM")
+    private String gatewayAcronym;
+
+    @Column(name = "GATEWAY_URL")
+    private String gatewayUrl;
+
+    @Column(name = "GATEWAY_PUBLIC_ABSTRACT")
+    private String gatewayPublicAbstract;
+
+    @Column(name = "GATEWAY_REVIEW_PROPOSAL_DESCRIPTION")
+    private String reviewProposalDescription;
+
+    @Column(name = "GATEWAY_ADMIN_FIRST_NAME")
+    private String gatewayAdminFirstName;
+
+    @Column(name = "GATEWAY_ADMIN_LAST_NAME")
+    private String gatewayAdminLastName;
+
+    @Column(name = "GATEWAY_ADMIN_EMAIL")
+    private String gatewayAdminEmail;
+
+    @Column(name = "IDENTITY_SERVER_USERNAME")
+    private String identityServerUserName;
+
+    @Column(name = "IDENTITY_SERVER_PASSWORD_TOKEN")
+    private String identityServerPasswordToken;
+
+    @Column(name = "DECLINED_REASON")
+    private String declinedReason;
+
+    @Column(name = "OAUTH_CLIENT_ID")
+    private String oauthClientId;
+
+    @Column(name = "OAUTH_CLIENT_SECRET")
+    private String getOauthClientSecret;
+
+    @Column(name = "REQUEST_CREATION_TIME")
+    private Timestamp requestCreationTime;
+
+    @Column(name = "REQUESTER_USERNAME")
+    private String requesterUsername;
+
+    public GatewayEntity() {
+    }
+
     public String getGatewayId() {
         return gatewayId;
     }
@@ -55,7 +103,6 @@ public class GatewayEntity {
         this.gatewayId = id;
     }
 
-    @Column(name = "GATEWAY_NAME")
     public String getGatewayName() {
         return gatewayName;
     }
@@ -64,7 +111,6 @@ public class GatewayEntity {
         this.gatewayName = gatewayName;
     }
 
-    @Column(name = "GATEWAY_DOMAIN")
     public String getDomain() {
         return domain;
     }
@@ -73,7 +119,6 @@ public class GatewayEntity {
         this.domain = domain;
     }
 
-    @Column(name = "EMAIL_ADDRESS")
     public String getEmailAddress() {
         return emailAddress;
     }
@@ -82,16 +127,14 @@ public class GatewayEntity {
         this.emailAddress = emailAddress;
     }
 
-    @Column(name = "GATEWAY_APPROVAL_STATUS")
-    public String getGatewayApprovalStatus() {
+    public GatewayApprovalStatus getGatewayApprovalStatus() {
         return gatewayApprovalStatus;
     }
 
-    public void setGatewayApprovalStatus(String gatewayApprovalStatus) {
+    public void setGatewayApprovalStatus(GatewayApprovalStatus gatewayApprovalStatus) {
         this.gatewayApprovalStatus = gatewayApprovalStatus;
     }
 
-    @Column(name = "GATEWAY_ACRONYM")
     public String getGatewayAcronym() {
         return gatewayAcronym;
     }
@@ -100,7 +143,6 @@ public class GatewayEntity {
         this.gatewayAcronym = gatewayAcronym;
     }
 
-    @Column(name = "GATEWAY_URL")
     public String getGatewayUrl() {
         return gatewayUrl;
     }
@@ -109,8 +151,6 @@ public class GatewayEntity {
         this.gatewayUrl = gatewayUrl;
     }
 
-    @Lob
-    @Column(name = "GATEWAY_PUBLIC_ABSTRACT")
     public String getGatewayPublicAbstract() {
         return gatewayPublicAbstract;
     }
@@ -119,8 +159,6 @@ public class GatewayEntity {
         this.gatewayPublicAbstract = gatewayPublicAbstract;
     }
 
-    @Lob
-    @Column(name = "REVIEW_PROPOSAL_DESCRIPTION")
     public String getReviewProposalDescription() {
         return reviewProposalDescription;
     }
@@ -129,7 +167,6 @@ public class GatewayEntity {
         this.reviewProposalDescription = reviewProposalDescription;
     }
 
-    @Column(name = "GATEWAY_ADMIN_FIRST_NAME")
     public String getGatewayAdminFirstName() {
         return gatewayAdminFirstName;
     }
@@ -138,16 +175,14 @@ public class GatewayEntity {
         this.gatewayAdminFirstName = gatewayAdminFirstName;
     }
 
-    @Column(name = "GATEWAY_ADMIN_LAST_NAME")
-    public String getGetGatewayAdminLastName() {
-        return getGatewayAdminLastName;
+    public String getGatewayAdminLastName() {
+        return gatewayAdminLastName;
     }
 
-    public void setGetGatewayAdminLastName(String getGatewayAdminLastName) {
-        this.getGatewayAdminLastName = getGatewayAdminLastName;
+    public void setGatewayAdminLastName(String gatewayAdminLastName) {
+        this.gatewayAdminLastName = gatewayAdminLastName;
     }
 
-    @Column(name = "GATEWAY_ADMIN_EMAIL")
     public String getGatewayAdminEmail() {
         return gatewayAdminEmail;
     }
@@ -156,7 +191,6 @@ public class GatewayEntity {
         this.gatewayAdminEmail = gatewayAdminEmail;
     }
 
-    @Column(name = "IDENTITY_SERVER_USERNAME")
     public String getIdentityServerUserName() {
         return identityServerUserName;
     }
@@ -165,7 +199,6 @@ public class GatewayEntity {
         this.identityServerUserName = identityServerUserName;
     }
 
-    @Column(name = "IDENTITY_SERVER_PASSWORD_TOKEN")
     public String getIdentityServerPasswordToken() {
         return identityServerPasswordToken;
     }
@@ -174,7 +207,6 @@ public class GatewayEntity {
         this.identityServerPasswordToken = identityServerPasswordToken;
     }
 
-    @Column(name = "REQUESTER_USERNAME")
     public String getRequesterUsername() {
         return requesterUsername;
     }
@@ -183,7 +215,6 @@ public class GatewayEntity {
         this.requesterUsername = requesterUsername;
     }
 
-    @Column(name = "DECLINED_REASON")
     public String getDeclinedReason() {
         return declinedReason;
     }
@@ -192,7 +223,7 @@ public class GatewayEntity {
         this.declinedReason = declinedReason;
     }
 
-    @Column(name = "OAUTH_CLIENT_ID")
+
     public String getOauthClientId() {
         return oauthClientId;
     }
@@ -201,16 +232,6 @@ public class GatewayEntity {
         this.oauthClientId = oauthClientId;
     }
 
-    @Column(name = "REQUEST_CREATION_TIME")
-    public long getRequestCreationTime() {
-        return requestCreationTime;
-    }
-
-    public void setRequestCreationTime(long requestCreationTime) {
-        this.requestCreationTime = requestCreationTime;
-    }
-
-    @Column(name = "OAUTH_CLIENT_SECRET")
     public String getGetOauthClientSecret() {
         return getOauthClientSecret;
     }
@@ -218,4 +239,13 @@ public class GatewayEntity {
     public void setGetOauthClientSecret(String oauthClientSecret) {
         this.getOauthClientSecret = oauthClientSecret;
     }
+
+    public Timestamp getRequestCreationTime() {
+        return requestCreationTime;
+    }
+
+    public void setRequestCreationTime(Timestamp requestCreationTime) {
+        this.requestCreationTime = requestCreationTime;
+    }
+
 }

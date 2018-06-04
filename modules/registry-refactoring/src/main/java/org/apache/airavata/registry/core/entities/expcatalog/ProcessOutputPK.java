@@ -20,16 +20,21 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * The primary key class for the process_output database table.
+ */
 public class ProcessOutputPK implements Serializable {
+    //default serial version id, required for serializable classes.
+    private static final long serialVersionUID = 1L;
+
     private String processId;
     private String name;
 
-    @Id
-    @Column(name = "PROCESS_ID")
+    public ProcessOutputPK() {
+    }
+
     public String getProcessId() {
         return processId;
     }
@@ -38,8 +43,6 @@ public class ProcessOutputPK implements Serializable {
         this.processId = processId;
     }
 
-    @Id
-    @Column(name = "OUTPUT_NAME")
     public String getName() {
         return name;
     }
@@ -48,23 +51,25 @@ public class ProcessOutputPK implements Serializable {
         this.name = name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ProcessOutputPK that = (ProcessOutputPK) o;
-
-        if (getProcessId() != null ? !getProcessId().equals(that.getProcessId()) : that.getProcessId() != null) return false;
-        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
-
-        return true;
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof ProcessOutputPK)) {
+            return false;
+        }
+        ProcessOutputPK castOther = (ProcessOutputPK) other;
+        return
+                this.processId.equals(castOther.processId)
+                        && this.name.equals(castOther.name);
     }
 
-    @Override
     public int hashCode() {
-        int result = getProcessId() != null ? getProcessId().hashCode() : 0;
-        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
-        return result;
+        final int prime = 31;
+        int hash = 17;
+        hash = hash * prime + this.processId.hashCode();
+        hash = hash * prime + this.name.hashCode();
+
+        return hash;
     }
 }

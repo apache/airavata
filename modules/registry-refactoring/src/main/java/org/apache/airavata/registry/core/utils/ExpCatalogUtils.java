@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,20 +16,14 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-package org.apache.airavata.registry.core.repositories.workspacecatalog;
+ */
+package org.apache.airavata.registry.core.utils;
 
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.registry.core.entities.workspacecatalog.NotificationEntity;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.UUID;
 
-public class NotificationRepository extends AbstractRepository<Notification, NotificationEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(NotificationRepository.class);
-
-    public NotificationRepository(Class thriftGenericClass, Class dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+public class ExpCatalogUtils {
+    public static String getID (String name){
+        String pro = name.replaceAll("\\s", "");
+        return pro + "_" + UUID.randomUUID();
     }
 }

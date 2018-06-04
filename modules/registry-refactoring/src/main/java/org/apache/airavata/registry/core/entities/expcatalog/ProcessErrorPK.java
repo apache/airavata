@@ -20,20 +20,21 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * The primary key class for the process_error database table.
+ */
 public class ProcessErrorPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(ProcessErrorPK.class);
+    //default serial version id, required for serializable classes.
+    private static final long serialVersionUID = 1L;
+
     private String errorId;
     private String processId;
 
-    @Column(name = "ERROR_ID")
-    @Id
+    public ProcessErrorPK() {
+    }
+
     public String getErrorId() {
         return errorId;
     }
@@ -42,8 +43,6 @@ public class ProcessErrorPK implements Serializable {
         this.errorId = errorId;
     }
 
-    @Column(name = "PROCESS_ID")
-    @Id
     public String getProcessId() {
         return processId;
     }
@@ -52,24 +51,25 @@ public class ProcessErrorPK implements Serializable {
         this.processId = processId;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ProcessErrorPK that = (ProcessErrorPK) o;
-
-        if (getErrorId() != null ? !getErrorId().equals(that.getErrorId()) : that.getErrorId() != null) return false;
-        if (getProcessId() != null ? !getProcessId().equals(that.getProcessId()) : that.getProcessId() != null) return false;
-
-        return true;
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof ProcessErrorPK)) {
+            return false;
+        }
+        ProcessErrorPK castOther = (ProcessErrorPK) other;
+        return
+                this.errorId.equals(castOther.errorId)
+                        && this.processId.equals(castOther.processId);
     }
 
-    @Override
     public int hashCode() {
-        int result = getErrorId() != null ? getErrorId().hashCode() : 0;
-        result = 31 * result + (getProcessId() != null ? getProcessId().hashCode() : 0);
-        return result;
+        final int prime = 31;
+        int hash = 17;
+        hash = hash * prime + this.errorId.hashCode();
+        hash = hash * prime + this.processId.hashCode();
+
+        return hash;
     }
 }
