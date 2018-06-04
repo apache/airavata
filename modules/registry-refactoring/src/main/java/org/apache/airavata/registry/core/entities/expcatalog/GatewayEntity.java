@@ -48,6 +48,7 @@ public class GatewayEntity implements Serializable {
     private String emailAddress;
 
     @Column(name = "GATEWAY_APPROVAL_STATUS")
+    @Enumerated(EnumType.STRING)
     private GatewayApprovalStatus gatewayApprovalStatus;
 
     @Column(name = "GATEWAY_ACRONYM")

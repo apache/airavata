@@ -21,6 +21,7 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -64,6 +65,7 @@ public class GatewayRepositoryTest {
         gateway.setGatewayId(testGatewayId);
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
+        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
 
         String gatewayId = gatewayRepository.addGateway(gateway);
         assertEquals(testGatewayId, gatewayId);
@@ -73,6 +75,7 @@ public class GatewayRepositoryTest {
 
         Gateway retrievedGateway = gatewayRepository.getGateway(gatewayId);
         assertEquals(gateway.getGatewayAdminFirstName(), retrievedGateway.getGatewayAdminFirstName());
+        assertEquals(GatewayApprovalStatus.APPROVED, gateway.getGatewayApprovalStatus());
 
         assertTrue(gatewayRepository.getAllGateways().size() == 1);
 
