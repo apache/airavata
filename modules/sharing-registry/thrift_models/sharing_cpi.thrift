@@ -238,19 +238,19 @@ service SharingRegistryService {
     /**
      <p>API method to share an entity with users</p>
     */
-    bool shareEntityWithUsers(1: required string domainId, 2: required string entityId, 3: required list<string> userList, 4: required string perssionTypeId, 5: required bool cascadePermission) throws (1: sharing_models.SharingRegistryException sre)
+    bool shareEntityWithUsers(1: required string domainId, 2: required string entityId, 3: required list<string> userList, 4: required string permissionTypeId, 5: required bool cascadePermission) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to revoke sharing from a list of users</p>
     */
-    bool revokeEntitySharingFromUsers(1: required string domainId, 2: required string entityId, 3: required list<string> userList, 4: required string perssionTypeId ) throws (1: sharing_models.SharingRegistryException sre)
+    bool revokeEntitySharingFromUsers(1: required string domainId, 2: required string entityId, 3: required list<string> userList, 4: required string permissionTypeId ) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to share an entity with list of groups</p>
     */
-    bool shareEntityWithGroups(1: required string domainId, 2: required string entityId, 3: required list<string> groupList, 4: required string perssionTypeId, 5: required bool cascadePermission) throws (1: sharing_models.SharingRegistryException sre)
+    bool shareEntityWithGroups(1: required string domainId, 2: required string entityId, 3: required list<string> groupList, 4: required string permissionTypeId, 5: required bool cascadePermission) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to revoke sharing from list of users</p>
     */
-    bool revokeEntitySharingFromGroups(1: required string domainId, 2: required string entityId, 3: required list<string> groupList, 4: required string perssionTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    bool revokeEntitySharingFromGroups(1: required string domainId, 2: required string entityId, 3: required list<string> groupList, 4: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
 
     /**
      <p>API method to check whether a user has access to a specific entity</p>
