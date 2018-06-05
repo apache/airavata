@@ -21,7 +21,6 @@ from airavata.model.application.io.ttypes import DataType
 from airavata.model.credential.store.ttypes import CredentialOwnerType, SummaryType, CredentialSummary
 from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMovement, SCPDataMovement, \
     UnicoreDataMovement
-from airavata.model.sharing.ttypes import Entity
 from django_airavata.apps.api.view_utils import GenericAPIBackedViewSet, APIBackedViewSet, APIResultIterator, \
     APIResultPagination
 from . import datastore
@@ -707,37 +706,7 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
         serializer.instance = group_resource_profile
 
     def perform_update(self, serializer):
-        return self.request.airavata_client.updateGroupResourceProfile(self.authz_token, serializer.save())
-
-
-class EntityViewSet(GenericAPIBackedViewSet, mixins.CreateModelMixin):
-    serializer_class = thrift_utils.create_serializer_class(Entity, enable_date_time_conversion=True)
-
-    def perform_create(self, serializer):
-        return self.request.sharing_client.createEntity(serializer.save())
-
-
-class ShareEntity(APIBackedViewSet):
-
-    def perform_update(self, serializer):
-        pass
-
-
-class ShareEntityWithGroup(APIView):
-    renderer_classes = (JSONRenderer,)
-
-    def post(self, request, entity_id=None, format=None):
-        params = request.data
-        params["domainId"] = settings.GATEWAY_ID
-        params["entityId"] = entity_id
-        return request.sharing_client.shareEntityWithGroups(self, **params)
-
-    def get(self, request, entity_id=None, format=None):
-        groups = self.request.sharing_client.getListOfSharedGroups(domainId=settings.GATEWAY_ID, entityId=entity_id,
-                                                                   permissionTypeId=None)
-        if groups:
-            groups = map(lambda val: val.groupId, groups)
-        return groups
+        self.request.airavata_client.updateGroupResourceProfile(self.authz_token, serializer.save())
 
 
 class SharedEntityGroups(APIBackedViewSet):
@@ -745,18 +714,20 @@ class SharedEntityGroups(APIBackedViewSet):
 
     def perform_update(self, serializer):
         before = serializer.data
-        after= serializer.initial_data
+        after = serializer.initial_data
         del serializer._data
         remaining = [item for item in before["groupList"] if item not in after["groupList"]]
         params = dict(after)
         params["domainId"] = settings.GATEWAY_ID
-        params["perssionTypeId"] = READ_PERMISSION_TYPE.format(settings.GATEWAY_ID)
+        params["permissionTypeId"] = READ_PERMISSION_TYPE.format(settings.GATEWAY_ID)
         params["cascadePermission"] = True
         ret = self.request.sharing_client.shareEntityWithGroups(**params)
         if remaining:
-            self.request.sharing_client.revokeEntitySharingFromGroups(domainId=settings.GATEWAY_ID, entityId=before["entityId"], groupList=remaining, perssionTypeId=READ_PERMISSION_TYPE.format(settings.GATEWAY_ID))
+            self.request.sharing_client.revokeEntitySharingFromGroups(domainId=settings.GATEWAY_ID,
+                                                                      entityId=before["entityId"], groupList=remaining,
+                                                                      permissionTypeId=READ_PERMISSION_TYPE.format(
+                                                                          settings.GATEWAY_ID))
         serializer.save()
-        print("Success shared groups {} {}".format(ret, params))
 
     def get_instance(self, entity_id):
         groups = {
