@@ -5115,6 +5115,34 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
+    public boolean userHasAccess(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        final String userId = authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domainId;
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        try {
+            final boolean hasOwnerAccess = sharingClient.userHasAccess(domainId, userId, resourceId, domainId + ":" + ResourcePermissionType.OWNER);
+            boolean hasAccess = false;
+            if (permissionType.equals(ResourcePermissionType.WRITE)) {
+                hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, resourceId, domainId + ":" + ResourcePermissionType.WRITE);
+            } else if (permissionType.equals(ResourcePermissionType.READ)) {
+                hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, resourceId, domainId + ":" + ResourcePermissionType.READ);
+            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
+                hasAccess = hasOwnerAccess;
+            }
+            sharingClientPool.returnResource(sharingClient);
+            return hasAccess;
+        } catch (Exception e) {
+            String msg = "Error in if user can access resource. User ID : " + userId + ", Resource ID : " + resourceId + ", Resource Permission Type : " + permissionType.toString();
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            sharingClientPool.returnBrokenResource(sharingClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
     public String createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         // TODO: verify that gatewayId in groupResourceProfile matches authzToken gatewayId
         RegistryService.Client regClient = registryClientPool.getResource();
