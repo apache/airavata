@@ -125,6 +125,10 @@ class ProcessModel {
    * @var bool
    */
   public $useUserCRPref = null;
+  /**
+   * @var string
+   */
+  public $groupResourceProfileId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -255,6 +259,10 @@ class ProcessModel {
           'var' => 'useUserCRPref',
           'type' => TType::BOOL,
           ),
+        25 => array(
+          'var' => 'groupResourceProfileId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -329,6 +337,9 @@ class ProcessModel {
       }
       if (isset($vals['useUserCRPref'])) {
         $this->useUserCRPref = $vals['useUserCRPref'];
+      }
+      if (isset($vals['groupResourceProfileId'])) {
+        $this->groupResourceProfileId = $vals['groupResourceProfileId'];
       }
     }
   }
@@ -586,6 +597,13 @@ class ProcessModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 25:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupResourceProfileId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -792,6 +810,11 @@ class ProcessModel {
     if ($this->useUserCRPref !== null) {
       $xfer += $output->writeFieldBegin('useUserCRPref', TType::BOOL, 24);
       $xfer += $output->writeBool($this->useUserCRPref);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupResourceProfileId !== null) {
+      $xfer += $output->writeFieldBegin('groupResourceProfileId', TType::STRING, 25);
+      $xfer += $output->writeString($this->groupResourceProfileId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
