@@ -29,6 +29,7 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.error.DuplicateEntryException;
+import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
@@ -194,6 +195,22 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 } catch (DuplicateEntryException ex) {
                                     log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.domainId+":FILE", ex);
                                 }
+
+                                log.info("Creating entity type. Id : " + domain.domainId+":"+ResourceType.APPLICATION_DEPLOYMENT);
+                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                                entityType.setEntityTypeId(domain.domainId+":"+ ResourceType.APPLICATION_DEPLOYMENT.name());
+                                entityType.setDomainId(domain.domainId);
+                                entityType.setName("APPLICATION-DEPLOYMENT");
+                                entityType.setDescription("Application Deployment entity type");
+                                sharingRegistryClient.createEntityType(entityType);
+
+                                log.info("Creating entity type. Id : " + domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE);
+                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+                                entityType.setDomainId(domain.domainId);
+                                entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+                                entityType.setDescription("Group Resource Profile entity type");
+                                sharingRegistryClient.createEntityType(entityType);
 
                                 //Creating Permission Types for each domain
                                 log.info("Creating Permission Type. Id : " + domain.domainId+":READ");
