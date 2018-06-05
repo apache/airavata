@@ -99,11 +99,13 @@ public class ProcessRepositoryTest {
         assertTrue(experimentRepository.getExperiment(experimentId).getProcesses().size() == 1);
 
         processModel.setProcessDetail("detail");
+        processModel.setUseUserCRPref(true);
         processRepository.updateProcess(processModel, processId);
 
         ProcessModel retrievedProcessModel = processRepository.getProcess(processId);
         assertEquals(experimentId, retrievedProcessModel.getExperimentId());
         assertEquals("detail", retrievedProcessModel.getProcessDetail());
+        assertTrue(retrievedProcessModel.isUseUserCRPref());
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
         assertEquals(processId, processRepository.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));

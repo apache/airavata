@@ -92,7 +92,7 @@ public class ProcessEntity implements Serializable {
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
-    @Column(name = "IS_USE_USER_CR_PREF")
+    @Column(name = "USE_USER_CR_PREF")
     private boolean useUserCRPref;
 
     @OneToMany(targetEntity = ProcessStatusEntity.class, cascade = CascadeType.ALL,
