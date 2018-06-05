@@ -4340,7 +4340,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
-            logger.error(userId, "Error while retrieving user resource profile...", e);
+            logger.error("Error while retrieving user resource profile for " + userId, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());

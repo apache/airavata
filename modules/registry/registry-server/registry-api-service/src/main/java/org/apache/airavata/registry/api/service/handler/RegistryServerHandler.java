@@ -4316,12 +4316,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
             logger.debug("Airavata retrieved User resource profile with user id : " + userId);
             return userResourceProfile;
         } catch (AppCatalogException e) {
-            logger.error(userId, "Error while retrieving user resource profile...", e);
+            logger.error("Error while retrieving user resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
             throw exception;
         } catch (RegistryException e) {
-            logger.error(userId, "Error while retrieving user resource profile...", e);
+            logger.error("Error while retrieving user resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
             throw exception;
