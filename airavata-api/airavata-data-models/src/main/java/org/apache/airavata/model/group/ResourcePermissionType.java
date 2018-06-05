@@ -24,6 +24,10 @@
 package org.apache.airavata.model.group;
 
 
+import java.util.Map;
+import java.util.HashMap;
+import org.apache.thrift.TEnum;
+
 public enum ResourcePermissionType implements org.apache.thrift.TEnum {
   WRITE(0),
   READ(1),
