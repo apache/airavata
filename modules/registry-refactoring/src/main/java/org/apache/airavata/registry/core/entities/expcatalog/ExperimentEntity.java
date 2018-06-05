@@ -67,6 +67,9 @@ public class ExperimentEntity implements Serializable {
     @Column(name = "GATEWAY_EXECUTION_ID")
     public String gatewayExecutionId;
 
+    @Column(name = "GATEWAY_INSTANCE_ID")
+    public String gatewayInstanceId;
+
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     public boolean enableEmailNotification;
 
@@ -179,6 +182,14 @@ public class ExperimentEntity implements Serializable {
 
     public void setGatewayExecutionId(String gatewayExecutionId) {
         this.gatewayExecutionId = gatewayExecutionId;
+    }
+
+    public String getGatewayInstanceId() {
+        return gatewayInstanceId;
+    }
+
+    public void setGatewayInstanceId(String gatewayInstanceId) {
+        this.gatewayInstanceId = gatewayInstanceId;
     }
 
     public boolean isEnableEmailNotification() {

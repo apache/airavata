@@ -86,6 +86,7 @@ public class ExperimentRepositoryTest {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
+        experimentModel.setGatewayInstanceId("gateway-instance-id");
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId != null);
@@ -96,6 +97,7 @@ public class ExperimentRepositoryTest {
         ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
         assertEquals(experimentModel.getDescription(), retrievedExperimentModel.getDescription());
         assertEquals(ExperimentType.SINGLE_APPLICATION, retrievedExperimentModel.getExperimentType());
+        assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);
