@@ -2201,6 +2201,21 @@ service RegistryService {
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
                /**
+                * Check if the given User Resource Profile exists.
+                *
+                * @param userId
+                *   The identifier for the requested User Resource Profile.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource Profile.
+                *
+                * @return true if User Resource Profile for these identifiers exists.
+                *
+               */
+               bool isUserResourceProfileExists(1: required string userId, 2: required string gatewayID)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
                 * Fetch the given User Resource Resource Profile.
                 *
                 * @param userId

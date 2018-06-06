@@ -4320,6 +4320,24 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    @SecurityCheck
+    public boolean isUserResourceProfileExists(AuthzToken authzToken, String userId, String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            boolean result = regClient.isUserResourceProfileExists(userId, gatewayID);
+            registryClientPool.returnResource(regClient);
+            return result;
+        } catch (Exception e) {
+            logger.error("Error while checking existence of user resource profile for " + userId, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while checking existence of user resource profile. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
     /**
      * Fetch the given User Resource Profile.
      *
