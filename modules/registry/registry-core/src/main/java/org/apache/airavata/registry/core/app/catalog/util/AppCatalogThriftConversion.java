@@ -984,10 +984,4 @@ public class AppCatalogThriftConversion {
         userResourceProfile.setUserStoragePreferences(storagePreferences);
         return userResourceProfile;
     }
-
-    public static UserResourceProfile createNullUserResourceProfile(String userId, String gatewayId){
-        UserResourceProfile userResourceProfile = new UserResourceProfile(userId, gatewayId);
-        userResourceProfile.setIsNull(true);
-        return userResourceProfile;
-    }
 }
