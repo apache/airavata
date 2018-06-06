@@ -157,69 +157,6 @@ public class AiravataDataMigrator {
 
         }
 
-        //Creating project entries
-        query = "SELECT * FROM PROJECT";
-        statement = expCatConnection.createStatement();
-        rs = statement.executeQuery(query);
-        while(rs.next()){
-            try{
-                Entity entity = new Entity();
-                entity.setEntityId(rs.getString("PROJECT_ID"));
-                entity.setDomainId(rs.getString("GATEWAY_ID"));
-                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":PROJECT");
-                entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
-                entity.setName(rs.getString("PROJECT_NAME"));
-                entity.setDescription(rs.getString("DESCRIPTION"));
-                if(entity.getDescription() == null)
-                    entity.setFullText(entity.getName());
-                else
-                    entity.setFullText(entity.getName() + " " + entity.getDescription());
-                Map<String, String> metadata = new HashMap<>();
-                metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
-
-                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
-                    sharingRegistryServerHandler.createEntity(entity);
-            }catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-        }
-
-        //Creating experiment entries
-        query = "SELECT * FROM EXPERIMENT";
-        statement = expCatConnection.createStatement();
-        rs = statement.executeQuery(query);
-        while(rs.next()){
-            try {
-                Entity entity = new Entity();
-                entity.setEntityId(rs.getString("EXPERIMENT_ID"));
-                entity.setDomainId(rs.getString("GATEWAY_ID"));
-                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":EXPERIMENT");
-                entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
-                entity.setParentEntityId(rs.getString("PROJECT_ID"));
-                entity.setName(rs.getString("EXPERIMENT_NAME"));
-                entity.setDescription(rs.getString("DESCRIPTION"));
-                if(entity.getDescription() == null)
-                    entity.setFullText(entity.getName());
-                else
-                    entity.setFullText(entity.getName() + " " + entity.getDescription());
-                Map<String, String> metadata = new HashMap<>();
-                metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
-                metadata.put("EXPERIMENT_TYPE", rs.getString("EXPERIMENT_TYPE"));
-                metadata.put("EXECUTION_ID", rs.getString("EXECUTION_ID"));
-                metadata.put("GATEWAY_EXECUTION_ID", rs.getString("GATEWAY_EXECUTION_ID"));
-                metadata.put("ENABLE_EMAIL_NOTIFICATION", rs.getString("ENABLE_EMAIL_NOTIFICATION"));
-                metadata.put("EMAIL_ADDRESSES", rs.getString("EMAIL_ADDRESSES"));
-                metadata.put("GATEWAY_INSTANCE_ID", rs.getString("GATEWAY_INSTANCE_ID"));
-                metadata.put("ARCHIVE", rs.getString("ARCHIVE"));
-
-                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
-                    sharingRegistryServerHandler.createEntity(entity);
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
-        }
-
         //Map to reuse the domain ID and owner for creating application-deployment entities
         Map<String, String> domainOwnerMap = new HashMap<>();
         Map<String, GatewayGroups> gatewayGroupsMap = new HashMap<>();
@@ -245,6 +182,80 @@ public class AiravataDataMigrator {
             }
         }
 
+        //Creating project entries
+        query = "SELECT * FROM PROJECT";
+        statement = expCatConnection.createStatement();
+        rs = statement.executeQuery(query);
+        List<Entity> projectEntities = new ArrayList<>();
+        while(rs.next()){
+            try{
+                Entity entity = new Entity();
+                entity.setEntityId(rs.getString("PROJECT_ID"));
+                entity.setDomainId(rs.getString("GATEWAY_ID"));
+                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":PROJECT");
+                entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
+                entity.setName(rs.getString("PROJECT_NAME"));
+                entity.setDescription(rs.getString("DESCRIPTION"));
+                if(entity.getDescription() == null)
+                    entity.setFullText(entity.getName());
+                else
+                    entity.setFullText(entity.getName() + " " + entity.getDescription());
+//                Map<String, String> metadata = new HashMap<>();
+//                metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
+                projectEntities.add(entity);
+
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        for (Entity entity : projectEntities) {
+            if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                sharingRegistryServerHandler.createEntity(entity);
+            shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
+        }
+
+        //Creating experiment entries
+        query = "SELECT * FROM EXPERIMENT";
+        statement = expCatConnection.createStatement();
+        rs = statement.executeQuery(query);
+        List<Entity> experimentEntities = new ArrayList<>();
+        while(rs.next()){
+            try {
+                Entity entity = new Entity();
+                entity.setEntityId(rs.getString("EXPERIMENT_ID"));
+                entity.setDomainId(rs.getString("GATEWAY_ID"));
+                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":EXPERIMENT");
+                entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
+                entity.setParentEntityId(rs.getString("PROJECT_ID"));
+                entity.setName(rs.getString("EXPERIMENT_NAME"));
+                entity.setDescription(rs.getString("DESCRIPTION"));
+                if(entity.getDescription() == null)
+                    entity.setFullText(entity.getName());
+                else
+                    entity.setFullText(entity.getName() + " " + entity.getDescription());
+//                Map<String, String> metadata = new HashMap<>();
+//                metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
+//                metadata.put("EXPERIMENT_TYPE", rs.getString("EXPERIMENT_TYPE"));
+//                metadata.put("EXECUTION_ID", rs.getString("EXECUTION_ID"));
+//                metadata.put("GATEWAY_EXECUTION_ID", rs.getString("GATEWAY_EXECUTION_ID"));
+//                metadata.put("ENABLE_EMAIL_NOTIFICATION", rs.getString("ENABLE_EMAIL_NOTIFICATION"));
+//                metadata.put("EMAIL_ADDRESSES", rs.getString("EMAIL_ADDRESSES"));
+//                metadata.put("GATEWAY_INSTANCE_ID", rs.getString("GATEWAY_INSTANCE_ID"));
+//                metadata.put("ARCHIVE", rs.getString("ARCHIVE"));
+                experimentEntities.add(entity);
+
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+
+        for (Entity entity : experimentEntities) {
+            if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                sharingRegistryServerHandler.createEntity(entity);
+            shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
+        }
+
         //Creating application deployment entries
         for (String domainID : domainOwnerMap.keySet()) {
             GatewayGroups gatewayGroups = gatewayGroupsMap.get(domainID);
@@ -264,7 +275,7 @@ public class AiravataDataMigrator {
 
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);
-                shareEntityWithGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups);
+                shareEntityWithGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups, false);
             }
         }
 
@@ -285,7 +296,7 @@ public class AiravataDataMigrator {
                 entity.setDescription(groupResourceProfile.getGroupResourceProfileName() + " Group Resource Profile");
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);
-                shareEntityWithGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups);
+                shareEntityWithGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups, false);
 
             }
         }
@@ -295,15 +306,23 @@ public class AiravataDataMigrator {
 
     }
 
-    private static void shareEntityWithGatewayGroups(SharingRegistryServerHandler sharingRegistryServerHandler, Entity entity, GatewayGroups gatewayGroups) throws TException {
+    private static void shareEntityWithGatewayGroups(SharingRegistryServerHandler sharingRegistryServerHandler, Entity entity, GatewayGroups gatewayGroups, boolean cascadePermission) throws TException {
         // Give default Gateway Users group and Read Only Admins group READ access
         sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
-                Arrays.asList(gatewayGroups.getDefaultGatewayUsersGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
-                entity.domainId + ":" + ResourcePermissionType.READ, true);
+                Arrays.asList(gatewayGroups.getDefaultGatewayUsersGroupId()),
+                entity.domainId + ":" + ResourcePermissionType.READ, cascadePermission);
+        shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups, cascadePermission);
+    }
+
+    private static void shareEntityWithAdminGatewayGroups(SharingRegistryServerHandler sharingRegistryServerHandler, Entity entity, GatewayGroups gatewayGroups, boolean cascadePermission) throws TException {
+        // Give default Gateway Users group and Read Only Admins group READ access
+        sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
+                Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()),
+                entity.domainId + ":" + ResourcePermissionType.READ, cascadePermission);
         // Give Admins group WRITE access
         sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
                 Arrays.asList(gatewayGroups.getAdminsGroupId()),
-                entity.domainId + ":" + ResourcePermissionType.WRITE, true);
+                entity.domainId + ":" + ResourcePermissionType.WRITE, cascadePermission);
     }
 
     private static GatewayGroups migrateRolesToGatewayGroups(Domain domain, String ownerId, SharingRegistryServerHandler sharingRegistryServerHandler, RegistryService.Client registryServiceClient) throws TException, ApplicationSettingsException {
