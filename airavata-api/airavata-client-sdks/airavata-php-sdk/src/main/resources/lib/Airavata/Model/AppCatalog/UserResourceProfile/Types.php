@@ -517,9 +517,6 @@ class UserStoragePreference {
  * 
  *  identityServerPwdCredToken:
  * 
- * isNull:
- *  Indicates that this instance is just a container for a null value.
- * 
  */
 class UserResourceProfile {
   static $_TSPEC;
@@ -552,10 +549,6 @@ class UserResourceProfile {
    * @var string
    */
   public $identityServerPwdCredToken = null;
-  /**
-   * @var bool
-   */
-  public $isNull = false;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -598,10 +591,6 @@ class UserResourceProfile {
           'var' => 'identityServerPwdCredToken',
           'type' => TType::STRING,
           ),
-        8 => array(
-          'var' => 'isNull',
-          'type' => TType::BOOL,
-          ),
         );
     }
     if (is_array($vals)) {
@@ -625,9 +614,6 @@ class UserResourceProfile {
       }
       if (isset($vals['identityServerPwdCredToken'])) {
         $this->identityServerPwdCredToken = $vals['identityServerPwdCredToken'];
-      }
-      if (isset($vals['isNull'])) {
-        $this->isNull = $vals['isNull'];
       }
     }
   }
@@ -722,13 +708,6 @@ class UserResourceProfile {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->isNull);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -799,11 +778,6 @@ class UserResourceProfile {
     if ($this->identityServerPwdCredToken !== null) {
       $xfer += $output->writeFieldBegin('identityServerPwdCredToken', TType::STRING, 7);
       $xfer += $output->writeString($this->identityServerPwdCredToken);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->isNull !== null) {
-      $xfer += $output->writeFieldBegin('isNull', TType::BOOL, 8);
-      $xfer += $output->writeBool($this->isNull);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
