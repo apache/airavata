@@ -64,7 +64,7 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTs6k2
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['zw355@cornell.edu','sgg@iu.edu']"
+admin_emails: "['zw355@cornell.edu','sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 # The portal theme is included in the dreg-gateway branch of airavata-php-gateway
