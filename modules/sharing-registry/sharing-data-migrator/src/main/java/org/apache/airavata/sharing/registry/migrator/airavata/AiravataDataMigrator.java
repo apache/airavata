@@ -55,12 +55,24 @@ import java.util.stream.Collectors;
 public class AiravataDataMigrator {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, TException, ApplicationSettingsException {
+        String gatewayId = null;
+        if (args.length > 0) {
+            gatewayId = args[0];
+        }
+        String gatewayWhereClause = "";
+        if (gatewayId != null) {
+            System.out.println("Running sharing data migration for " + gatewayId);
+            gatewayWhereClause = " WHERE GATEWAY_ID = '" + gatewayId + "'";
+        } else {
+            System.out.println("Running sharing data migration for all gateways");
+        }
+
         Connection expCatConnection = ConnectionFactory.getInstance().getExpCatConnection();
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
         CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
 
-        String query = "SELECT * FROM GATEWAY";
+        String query = "SELECT * FROM GATEWAY" + gatewayWhereClause;
         Statement statement = expCatConnection.createStatement();
         ResultSet rs = statement.executeQuery(query);
 
@@ -139,7 +151,7 @@ public class AiravataDataMigrator {
         }
 
         //Creating user entries
-        query = "SELECT * FROM USERS";
+        query = "SELECT * FROM USERS" + gatewayWhereClause;
         statement = expCatConnection.createStatement();
         rs = statement.executeQuery(query);
         while(rs.next()){
@@ -165,6 +177,10 @@ public class AiravataDataMigrator {
         List<Domain> domainList = sharingRegistryServerHandler.getDomains(0, -1);
         final RegistryService.Client registryServiceClient = getRegistryServiceClient();
         for (Domain domain : domainList) {
+            // If we're only running migration for gatewayId, then skip other gateways
+            if (gatewayId != null && !gatewayId.equals(domain.domainId)) {
+                continue;
+            }
             String ownerId = getAdminOwnerUser(domain, sharingRegistryServerHandler, credentialStoreServiceClient, registryServiceClient);
             if (ownerId != null) {
                 domainOwnerMap.put(domain.domainId, ownerId);
@@ -183,7 +199,7 @@ public class AiravataDataMigrator {
         }
 
         //Creating project entries
-        query = "SELECT * FROM PROJECT";
+        query = "SELECT * FROM PROJECT" + gatewayWhereClause;
         statement = expCatConnection.createStatement();
         rs = statement.executeQuery(query);
         List<Entity> projectEntities = new ArrayList<>();
@@ -216,7 +232,7 @@ public class AiravataDataMigrator {
         }
 
         //Creating experiment entries
-        query = "SELECT * FROM EXPERIMENT";
+        query = "SELECT * FROM EXPERIMENT" + gatewayWhereClause;
         statement = expCatConnection.createStatement();
         rs = statement.executeQuery(query);
         List<Entity> experimentEntities = new ArrayList<>();
