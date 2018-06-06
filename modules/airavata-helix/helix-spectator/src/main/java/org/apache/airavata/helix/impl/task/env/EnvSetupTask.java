@@ -45,7 +45,9 @@ public class EnvSetupTask extends AiravataTask {
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
 
-            logger.info("Creating directory " + getTaskContext().getWorkingDir() + " on compute resource " + getTaskContext().getComputeResourceId());
+            logger.info("Creating directory " + getTaskContext().getWorkingDir() + " on compute resource " +
+                    getTaskContext().getComputeResourceId() + " by user " + getTaskContext().getComputeResourceLoginUserName()
+                    + " using token " + getTaskContext().getComputeResourceCredentialToken());
             adaptor.createDirectory(getTaskContext().getWorkingDir());
             return onSuccess("Envi setup task successfully completed " + getTaskId());
 
