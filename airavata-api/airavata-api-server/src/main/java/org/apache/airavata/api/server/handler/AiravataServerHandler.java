@@ -1043,7 +1043,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleProjectIds
                         .add(p.entityId));
-                List<Project> result = regClient.searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
+                List<Project> result;
+                if (accessibleProjectIds.isEmpty()) {
+                    result = Collections.emptyList();
+                } else {
+                    result = regClient.searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
+                }
                 registryClientPool.returnResource(regClient);
                 sharingClientPool.returnResource(sharingClient);
                 return result;
@@ -1095,6 +1100,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             List<String> accessibleProjIds  = new ArrayList<>();
 
+            List<Project> result;
             if (ServerSettings.isEnableSharing()) {
                 List<SearchCriteria> sharingFilters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
@@ -1104,8 +1110,14 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingFilters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, sharingFilters, 0, -1).stream().forEach(e -> accessibleProjIds.add(e.entityId));
+                if (accessibleProjIds.isEmpty()) {
+                    result = Collections.emptyList();
+                } else {
+                    result = regClient.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
+                }
+            } else {
+                result = regClient.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
             }
-            List<Project> result = regClient.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
