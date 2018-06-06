@@ -4298,6 +4298,27 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+    @Override
+    public boolean isUserResourceProfileExists(String userId, String gatewayId) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayId)){
+                logger.error("user does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            return userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while checking existence of user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while checking existence of user resource profile. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error("Error while checking existence of user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while checking existence of user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Fetch the given Gateway Resource Profile.
      *
