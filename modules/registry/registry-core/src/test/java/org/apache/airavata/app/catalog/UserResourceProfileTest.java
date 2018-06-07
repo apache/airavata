@@ -107,10 +107,8 @@ public class UserResourceProfileTest {
 
         // Check if UserResourceProfile exists (should not exist)
         // This tests the mechanism that PGA will use to figure out if a user doesn't already have a UserResourceProfile
-        UserResourceProfile checkUserResourceProfile = userProfile.getUserResourceProfile(uf.getUserId(), uf.getGatewayID());
-        assertNotNull(checkUserResourceProfile.getUserId());
-        assertNotNull(checkUserResourceProfile.getGatewayID());
-        assertTrue(checkUserResourceProfile.isIsNull());
+        boolean exists = userProfile.isUserResourceProfileExists(uf.getUserId(), uf.getGatewayID());
+        assertFalse(exists);
 
         String gwId = userProfile.addUserResourceProfile(uf);
         UserResourceProfile retrievedProfile = null;
@@ -150,7 +148,6 @@ public class UserResourceProfileTest {
         //retrievedProfile = userProfile.getUserResourceProfile("hello",uf.getGatewayID());
         if (userProfile.isUserResourceProfileExists(uf.getUserId(),uf.getGatewayID())){
             retrievedProfile = userProfile.getUserResourceProfile(uf.getUserId(),uf.getGatewayID());
-            assertFalse(retrievedProfile.isIsNull());
             System.out.println("gateway ID :" + retrievedProfile.getGatewayID());
             System.out.println("user ID : " + retrievedProfile.getUserId());
             System.out.println("compute resource size : " + retrievedProfile.getUserComputeResourcePreferencesSize());
