@@ -849,9 +849,6 @@ public class AiravataServerHandler implements Airavata.Iface {
                     entity.setName(project.getName());
                     entity.setDescription(project.getDescription());
                     sharingClient.createEntity(entity);
-                    GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
-                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
-                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
                 } catch (Exception ex) {
                     logger.error(ex.getMessage(), ex);
                     logger.error("Rolling back project creation Proj ID : " + projectId);
@@ -1348,9 +1345,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     entity.setParentEntityId(experiment.getProjectId());
 
                     sharingClient.createEntity(entity);
-                    GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
-                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
-                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
+                    shareEntityWithAdminGatewayGroups(regClient, sharingClient, entity);
                 } catch (Exception ex) {
                     logger.error(ex.getMessage(), ex);
                     logger.error("Rolling back experiment creation Exp ID : " + experimentId);
@@ -2054,9 +2049,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entity.setName(existingExperiment.getExperimentName());
                 entity.setDescription(existingExperiment.getDescription());
                 sharingClient.createEntity(entity);
-                GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
-                sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
-                sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
+                shareEntityWithAdminGatewayGroups(regClient, sharingClient, entity);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
                 logger.error("rolling back experiment creation Exp ID : " + expId);
@@ -2331,9 +2324,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             entity.setName(result);
             entity.setDescription(applicationDeployment.getAppDeploymentDescription());
             sharingClient.createEntity(entity);
-            GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
-            sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
-            sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
+            shareEntityWithAdminGatewayGroups(regClient, sharingClient, entity);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
@@ -5192,9 +5183,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
                     sharingClient.createEntity(entity);
 
-                    GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, groupResourceProfile.getGatewayId());
-                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
-                    sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
+                    shareEntityWithAdminGatewayGroups(regClient, sharingClient, entity);
                 } catch (Exception ex) {
                     logger.error(ex.getMessage(), ex);
                     logger.error("Rolling back group resource profile creation Group Resource Profile ID : " + groupResourceProfileId);
@@ -5671,6 +5660,13 @@ public class AiravataServerHandler implements Airavata.Iface {
         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT_CANCEL, "CANCEL.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         experimentPublisher.publish(messageContext);
+    }
+
+    private void shareEntityWithAdminGatewayGroups(RegistryService.Client regClient, SharingRegistryService.Client sharingClient, Entity entity) throws TException {
+        final String domainId = entity.getDomainId();
+        GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, domainId);
+        sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
+        sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
     }
 
     private GatewayGroups retrieveGatewayGroups(RegistryService.Client regClient, String gatewayId) throws TException {

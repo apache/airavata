@@ -225,12 +225,6 @@ public class AiravataDataMigrator {
             }
         }
 
-        for (Entity entity : projectEntities) {
-            if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
-                sharingRegistryServerHandler.createEntity(entity);
-            shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
-        }
-
         //Creating experiment entries
         query = "SELECT * FROM EXPERIMENT" + gatewayWhereClause;
         statement = expCatConnection.createStatement();
@@ -320,10 +314,11 @@ public class AiravataDataMigrator {
         expCatConnection.close();
         System.out.println("Completed!");
 
+        System.exit(0);
     }
 
     private static void shareEntityWithGatewayGroups(SharingRegistryServerHandler sharingRegistryServerHandler, Entity entity, GatewayGroups gatewayGroups, boolean cascadePermission) throws TException {
-        // Give default Gateway Users group and Read Only Admins group READ access
+        // Give default Gateway Users group READ access
         sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
                 Arrays.asList(gatewayGroups.getDefaultGatewayUsersGroupId()),
                 entity.domainId + ":" + ResourcePermissionType.READ, cascadePermission);
@@ -331,9 +326,9 @@ public class AiravataDataMigrator {
     }
 
     private static void shareEntityWithAdminGatewayGroups(SharingRegistryServerHandler sharingRegistryServerHandler, Entity entity, GatewayGroups gatewayGroups, boolean cascadePermission) throws TException {
-        // Give default Gateway Users group and Read Only Admins group READ access
+        // Give Admins group and Read Only Admins group READ access
         sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
-                Arrays.asList(gatewayGroups.getReadOnlyAdminsGroupId()),
+                Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
                 entity.domainId + ":" + ResourcePermissionType.READ, cascadePermission);
         // Give Admins group WRITE access
         sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId,
