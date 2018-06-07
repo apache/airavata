@@ -15,4 +15,12 @@
             <b>updateTime</b>
         </field>
     </mapping>
+    <mapping>
+        <class-a>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationDataEntity</class-a>
+        <class-b>org.apache.airavata.model.experiment.UserConfigurationDataModel</class-b>
+        <field>
+            <a>this</a>
+            <b>computationalResourceScheduling</b>
+        </field>
+    </mapping>
 </mappings>
