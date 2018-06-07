@@ -23,6 +23,7 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
@@ -102,12 +103,39 @@ public class ExperimentRepositoryTest {
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
+        ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
+        computationalResourceSchedulingModel.setResourceHostId("resource-host-id");
+        computationalResourceSchedulingModel.setTotalCPUCount(12);
+        computationalResourceSchedulingModel.setNodeCount(13);
+        computationalResourceSchedulingModel.setNumberOfThreads(14);
+        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber("override-project-num");
+        computationalResourceSchedulingModel.setOverrideLoginUserName("override-login-username");
+        computationalResourceSchedulingModel.setOverrideScratchLocation("override-scratch-location");
+        computationalResourceSchedulingModel.setQueueName("queue-name");
+        computationalResourceSchedulingModel.setStaticWorkingDir("static-working-dir");
+        computationalResourceSchedulingModel.setTotalPhysicalMemory(1333);
+        computationalResourceSchedulingModel.setWallTimeLimit(77);
+        userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
         assertEquals(experimentId, experimentRepository.addUserConfigurationData(userConfigurationDataModel, experimentId));
 
         userConfigurationDataModel.setStorageId("storage2");
         experimentRepository.updateUserConfigurationData(userConfigurationDataModel, experimentId);
 
-        assertEquals("storage2", experimentRepository.getUserConfigurationData(experimentId).getStorageId());
+        final UserConfigurationDataModel retrievedUserConfigurationDataModel = experimentRepository.getUserConfigurationData(experimentId);
+        assertEquals("storage2", retrievedUserConfigurationDataModel.getStorageId());
+        final ComputationalResourceSchedulingModel retrievedComputationalResourceScheduling = retrievedUserConfigurationDataModel.getComputationalResourceScheduling();
+        assertNotNull(retrievedComputationalResourceScheduling);
+        assertEquals("resource-host-id", retrievedComputationalResourceScheduling.getResourceHostId());
+        assertEquals( 12, retrievedComputationalResourceScheduling.getTotalCPUCount());
+        assertEquals(13, retrievedComputationalResourceScheduling.getNodeCount());
+        assertEquals(14, retrievedComputationalResourceScheduling.getNumberOfThreads());
+        assertEquals("override-project-num", retrievedComputationalResourceScheduling.getOverrideAllocationProjectNumber());
+        assertEquals("override-login-username", retrievedComputationalResourceScheduling.getOverrideLoginUserName());
+        assertEquals("override-scratch-location", retrievedComputationalResourceScheduling.getOverrideScratchLocation());
+        assertEquals("queue-name", retrievedComputationalResourceScheduling.getQueueName());
+        assertEquals("static-working-dir", retrievedComputationalResourceScheduling.getStaticWorkingDir());
+        assertEquals(1333, retrievedComputationalResourceScheduling.getTotalPhysicalMemory());
+        assertEquals(77, retrievedComputationalResourceScheduling.getWallTimeLimit());
 
         List<String> experimentIdList = experimentRepository.getExperimentIDs(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         assertTrue(experimentIdList.size() == 1);
