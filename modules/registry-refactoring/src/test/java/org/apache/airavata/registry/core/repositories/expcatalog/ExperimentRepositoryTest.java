@@ -24,6 +24,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
@@ -92,13 +93,17 @@ public class ExperimentRepositoryTest {
         String experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId != null);
 
-        experimentModel.setDescription("description");
-        experimentRepository.updateExperiment(experimentModel, experimentId);
-
+        // Retrieve the experiment again to get ids populated on ExperimentStatus instances
         ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
-        assertEquals(experimentModel.getDescription(), retrievedExperimentModel.getDescription());
+        retrievedExperimentModel.setDescription("description");
+        experimentRepository.updateExperiment(retrievedExperimentModel, experimentId);
+
+        retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
+        assertEquals("description", retrievedExperimentModel.getDescription());
         assertEquals(ExperimentType.SINGLE_APPLICATION, retrievedExperimentModel.getExperimentType());
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
+        assertEquals(1, retrievedExperimentModel.getExperimentStatusSize());
+        assertEquals(ExperimentState.CREATED, retrievedExperimentModel.getExperimentStatus().get(0).getState());
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);

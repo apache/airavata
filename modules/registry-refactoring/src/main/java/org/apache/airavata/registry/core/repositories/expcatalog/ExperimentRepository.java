@@ -20,21 +20,28 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.registry.core.entities.expcatalog.*;
+import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentModel, ExperimentEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentRepository.class);
@@ -75,7 +82,12 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
 
         if (experimentEntity.getExperimentStatus() != null) {
             logger.debug("Populating the Primary Key of ExperimentStatus objects for the Experiment");
-            experimentEntity.getExperimentStatus().forEach(experimentStatusEntity -> experimentStatusEntity.setExperimentId(experimentId));
+            experimentEntity.getExperimentStatus().forEach(experimentStatusEntity -> {
+                if (experimentStatusEntity.getStatusId() == null) {
+                    experimentStatusEntity.setStatusId(AiravataUtils.getId("EXPERIMENT_STATE"));
+                }
+                experimentStatusEntity.setExperimentId(experimentId);
+            });
         }
 
         if (experimentEntity.getErrors() != null) {
@@ -97,6 +109,12 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
     }
 
     public String addExperiment(ExperimentModel experimentModel) throws RegistryException {
+
+        ExperimentStatus experimentStatus = new ExperimentStatus();
+        experimentStatus.setState(ExperimentState.CREATED);
+        experimentStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        experimentModel.addToExperimentStatus(experimentStatus);
+
         return saveExperimentModelData(experimentModel);
     }
 
