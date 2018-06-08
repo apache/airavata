@@ -444,8 +444,10 @@ class UserProfileSerializer(
 
 class GroupResourceProfileSerializer(
         thrift_utils.create_serializer_class(GroupResourceProfile)):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-resource-profile-detail', lookup_field='groupResourceProfileId', lookup_url_kwarg='group_resource_profile_id')
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)
+
 
 class SharedGroups(serializers.Serializer):
     groupList=serializers.ListField(child=serializers.CharField())

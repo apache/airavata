@@ -687,6 +687,7 @@ class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
 
 class GroupResourceProfileViewSet(APIBackedViewSet):
     serializer_class = serializers.GroupResourceProfileSerializer
+    lookup_field = 'group_resource_profile_id'
 
     def get_list(self):
         return self.request.airavata_client.getGroupResourceList(
