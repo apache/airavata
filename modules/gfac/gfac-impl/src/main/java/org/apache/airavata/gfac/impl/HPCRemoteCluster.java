@@ -203,6 +203,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	public List<String> getFileNameFromExtension(String fileRegex, String parentPath, Session session) throws GFacException {
 		try {
 			List<String> fileNames = SSHUtils.listDirectory(parentPath, session);
+			log.info("All files that are available in the path " + parentPath + " : " + fileNames.toString());
 			List<String> matchingNames = new ArrayList<>();
 			for(String fileName : fileNames){
 				String tempFileName = fileName;
@@ -223,7 +224,9 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 					matchingNames.add(fileName);
 				}
 			}
-			log.warn("No matching file found for extension: " + fileRegex + " in the " + parentPath + " directory");
+			if (matchingNames.isEmpty()) {
+				log.warn("No matching file found for extension: " + fileRegex + " in the " + parentPath + " directory");
+			}
 			return matchingNames;
 		} catch (Exception e) {
 			e.printStackTrace();

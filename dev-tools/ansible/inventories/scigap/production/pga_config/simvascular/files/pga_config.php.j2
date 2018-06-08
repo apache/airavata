@@ -186,6 +186,11 @@ return array(
         'max-total-cpu-count' => '96',
 
         /**
+         * Max wall time limit
+         */
+        'max-wall-time-limit' => '300',
+
+        /**
          * Enable app-catalog cache
          */
         'enable-app-catalog-cache' => true,
@@ -285,6 +290,6 @@ return array(
          * for it to be working correctly. Currently it is only set for
          * sending pageviews.
          */
-        'google-analytics-id' => ''
+        'google-analytics-id' => '{{ pga_google_analytics_id }}'
     ]
 );

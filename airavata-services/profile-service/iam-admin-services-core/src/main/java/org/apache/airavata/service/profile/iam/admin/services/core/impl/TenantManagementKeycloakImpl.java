@@ -352,6 +352,25 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
+    public boolean isUserAccountEnabled(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException{
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            List<UserRepresentation> userResourceList = client.realm(tenantId).users().search(username,0,1);
+            return userResourceList.size() == 1 && userResourceList.get(0).isEnabled();
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    @Override
     public boolean resetUserPassword(PasswordCredential realmAdminCreds, String tenantId, String username, String newPassword) throws IamAdminServicesException{
         Keycloak client = null;
         try{

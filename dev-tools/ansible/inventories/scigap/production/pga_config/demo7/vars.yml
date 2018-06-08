@@ -24,13 +24,12 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "sciencegateway.brylinski.org"
-vhost_server_redirect: "www.sciencegateway.brylinski.org"
-vhost_ssl: true
+vhost_servername: "demo7.scigap.org"
+vhost_ssl: false
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/privkey.pem"
+#ssl_certificate_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/cert.pem"
+#ssl_certificate_chain_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/fullchain.pem"
+#ssl_certificate_key_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -41,23 +40,26 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "LSU Computational Sys Biology"
+  - name: "Airavata Demo Gateway 7"
     oauth_grant_type: "password"
-oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+# - name: "CILogon"
+#    oauth_grant_type: "authorization_code"
+#   oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+#   logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
 
-gateway_id: "lsu-computational-sys-biology"
+gateway_id: "demo7"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDc/WQnD40zGuO+bIMsWc0ey8oxDzEj/dPFPg8LN7oNn/V7pi74mF2D57wgA8KsxcpsNydcReSXZhx6FynlK6iABDZP5QdREmhm87gkrMQUA/ZI7R2q7ekchbRtCnrGwU/pdHBh4penaiScs08o7OPfqJJp/TfgwH92dA9dThqGf9hD1Y0nmWECfvX56rXAggcgZl+Q6IFD0VFinFMkqZRWFFi4Zm7yiKCNWYXvXlIGjFOlDp0/ONGg5wjpCFivhI934Uk6Y69hSMhnFJc6g1JHD4PLaBILlUjwEikmH6KL3ii6Wt30pou+tIihBDBv0ODR4jDiOeBJGkcisWeh3Uzj"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCynXbrDvmrc++/O3HCNk64B0+3lfAzhc8MvrVNyG1bC7aKjBnKeiW7RNUTk5OE+SsRt9jybeNkm0J/Lijhs5v3FAzb3be6/FTwZGbA9JfVPICDJNmaBY8lTr8mPQx5jYo9wEp/WPOAz1S47G2STxpIiBOkcPkqEQARooRALOERQHKBdPUJlJko5pdSbilStWqkJsNawo10EBin23wOTXPcX41U/cONZcjfR4/MlaeVbx98H9li6vUIgqkVMzji1RCUaOKHLrg35Cbsrvz8pbV0+cPAJ4ixOsm3EDwyzdEtoC2mAd+OFC2KrFk2YAtJqEVYXxkb4rtkHOKOQ5yJ1CH/"
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgrc-iu-group@iu.edu','mbrylinski@lsu.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-portal_theme: "csbglsu-gateway-theme"
-portal_theme_repo: "https://github.com/SciGaP/csbglsu-gateway-theme"
-portal_title: "LSU Computational Sys Biology"
-pga_google_analytics_id: "UA-117484529-1"
+#portal_theme: "gsu-gateway-theme"
+#portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
+portal_title: "Airavata Demo Gateway 7"
 ...

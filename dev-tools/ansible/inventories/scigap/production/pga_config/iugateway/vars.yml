@@ -40,12 +40,12 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "IU Gateway"
-    oauth_grant_type: "password"
   - name: "IU CAS"
     oauth_grant_type: "authorization_code"
     oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
     logo: "/assets/cilogon-logo-24x24-b.png"
+# Since IU CAS is required for login, automatically give new users 'gateway-user' role
+initial_role_name: "gateway-user"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "iugateway"
