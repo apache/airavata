@@ -57,7 +57,7 @@ public class ExperimentStatusRepository extends ExpCatAbstractRepository<Experim
 
         if (experimentStatus.getStatusId() == null) {
             logger.debug("Setting the ExperimentStatus's StatusId");
-            experimentStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
+            experimentStatus.setStatusId(ExpCatalogUtils.getID("EXPERIMENT_STATE"));
         }
 
         return saveExperimentStatus(experimentStatus, experimentId);
