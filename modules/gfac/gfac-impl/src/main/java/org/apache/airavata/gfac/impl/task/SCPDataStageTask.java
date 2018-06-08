@@ -57,6 +57,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -165,9 +166,11 @@ public class SCPDataStageTask implements Task {
             status = new TaskStatus(TaskState.COMPLETED);
 
             //Wildcard for file name. Has to find the correct name.
-            if(fileName.contains("*")){
+            if (fileName.contains("*")) {
                 String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
+
+                log.info("Fetching output files for wildcard " + fileName + " in path " + sourceParentPath);
                 List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
                         .getFileNameFromExtension(fileName, sourceParentPath, remoteSession);
 
@@ -177,19 +180,21 @@ public class SCPDataStageTask implements Task {
 
                 OutputDataObjectType processOutput = taskContext.getProcessOutput();
 
-                for(int i=0; i<fileNames.size(); i++){
-                    String temp = fileNames.get(i);
-                    if(temp != null && temp != ""){
+                for (String temp : fileNames) {
+                    if (temp != null && !"".equals(temp)) {
                         fileName = temp;
                     }
-                    if(destParentPath.endsWith(File.separator)){
+
+                    if (destParentPath.endsWith(File.separator)) {
                         destinationURI = new URI(destParentPath + fileName);
-                    }else{
+                    } else {
                         destinationURI = new URI(destParentPath + File.separator + fileName);
                     }
-
                     //Wildcard support is only enabled for output data staging
                     if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                        URI newSourceURI = new URI((sourceParentPath.endsWith(File.separator) ?
+                                sourceParentPath : sourceParentPath + File.separator) +
+                                fileName);
                         processOutput.setName(fileName);
 
                         registryClient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
@@ -205,10 +210,10 @@ public class SCPDataStageTask implements Task {
                 }
                 if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                     status.setReason("Successfully staged output data");
-                }else{
+                } else {
                     status.setReason("Wildcard support is only enabled for output data staging");
                 }
-            }else {
+            } else {
                 if (processState == ProcessState.INPUT_DATA_STAGING) {
                     inputDataStaging(taskContext, storageSession, sourceURI, remoteSession, destinationURI);
                     status.setReason("Successfully staged input data");
