@@ -101,8 +101,13 @@ public class ExperimentStatusRepositoryTest {
         experimentStatus.setState(ExperimentState.EXECUTING);
         experimentStatusRepository.updateExperimentStatus(experimentStatus, experimentId);
 
+        ExperimentStatus updatedExecutingStatus = new ExperimentStatus(ExperimentState.EXECUTING);
+        updatedExecutingStatus.setReason("updated reason");
+        String updatedExperimentStatusId = experimentStatusRepository.updateExperimentStatus(updatedExecutingStatus, experimentId);
+
         ExperimentStatus retrievedExpStatus = experimentStatusRepository.getExperimentStatus(experimentId);
         assertEquals(ExperimentState.EXECUTING, retrievedExpStatus.getState());
+        assertEquals("updated reason", updatedExecutingStatus.getReason());
 
         experimentRepository.removeExperiment(experimentId);
         gatewayRepository.removeGateway(gatewayId);
