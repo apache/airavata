@@ -24,11 +24,13 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,9 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+
+import static org.junit.Assert.*;
 
 public class ProcessRepositoryTest {
 
@@ -94,6 +95,9 @@ public class ProcessRepositoryTest {
         String experimentId = experimentRepository.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
+        ProcessStatus processStatus = new ProcessStatus();
+        processStatus.setState(ProcessState.CREATED);
+        processModel.addToProcessStatuses(processStatus);
         String processId = processRepository.addProcess(processModel, experimentId);
         assertTrue(processId != null);
         assertTrue(experimentRepository.getExperiment(experimentId).getProcesses().size() == 1);
@@ -102,10 +106,12 @@ public class ProcessRepositoryTest {
         processModel.setUseUserCRPref(true);
         processRepository.updateProcess(processModel, processId);
 
-        ProcessModel retrievedProcessModel = processRepository.getProcess(processId);
-        assertEquals(experimentId, retrievedProcessModel.getExperimentId());
-        assertEquals("detail", retrievedProcessModel.getProcessDetail());
-        assertTrue(retrievedProcessModel.isUseUserCRPref());
+        ProcessModel retrievedProcess = processRepository.getProcess(processId);
+        assertEquals(experimentId, retrievedProcess.getExperimentId());
+        assertEquals("detail", retrievedProcess.getProcessDetail());
+        assertTrue(retrievedProcess.isUseUserCRPref());
+        assertEquals(1, retrievedProcess.getProcessStatusesSize());
+        assertEquals(ProcessState.CREATED, retrievedProcess.getProcessStatuses().get(0).getState());
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
         assertEquals(processId, processRepository.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));

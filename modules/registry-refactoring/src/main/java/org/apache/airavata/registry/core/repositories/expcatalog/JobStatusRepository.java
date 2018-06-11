@@ -63,7 +63,7 @@ public class JobStatusRepository extends ExpCatAbstractRepository<JobStatus, Job
 
         if (jobStatus.getStatusId() == null) {
             logger.debug("Setting the JobStatusEntity's StatusId");
-            jobStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
+            jobStatus.setStatusId(ExpCatalogUtils.getID("JOB_STATE"));
         }
 
         return saveJobStatus(jobStatus, jobPK);

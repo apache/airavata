@@ -25,6 +25,7 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -32,7 +33,6 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +54,21 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
             jobModel.setJobId(jobPK.getJobId());
         }
 
+        if (jobModel.getJobStatuses() != null) {
+            logger.debug("Populating the status ids of JobStatus objects for the Job");
+            jobModel.getJobStatuses().forEach(jobStatus -> {
+                if (jobStatus.getStatusId() == null) {
+                    jobStatus.setStatusId(ExpCatalogUtils.getID("JOB_STATE"));
+                }
+            });
+        }
+
+        if (!isJobExist(jobPK)) {
+            logger.debug("Setting creation time to current time if does not exist");
+            jobModel.setCreationTime(System.currentTimeMillis());
+        }
+
+
         String jobId = jobPK.getJobId();
         String taskId = jobPK.getTaskId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
@@ -65,11 +80,6 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
                 jobStatusEntity.setJobId(jobId);
                 jobStatusEntity.setTaskId(taskId);
             });
-        }
-
-        if (!isJobExist(jobPK)) {
-            logger.debug("Checking if the Job already exists");
-            jobEntity.setCreationTime(new Timestamp((System.currentTimeMillis())));
         }
 
         return execute(entityManager -> entityManager.merge(jobEntity));

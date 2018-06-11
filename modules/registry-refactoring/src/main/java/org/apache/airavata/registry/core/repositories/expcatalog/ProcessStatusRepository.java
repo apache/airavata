@@ -57,7 +57,7 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
 
         if (processStatus.getStatusId() == null) {
             logger.debug("Setting the ProcessStatus's StatusId");
-            processStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
+            processStatus.setStatusId(ExpCatalogUtils.getID("PROCESS_STATE"));
         }
 
         return saveProcessStatus(processStatus, processId);

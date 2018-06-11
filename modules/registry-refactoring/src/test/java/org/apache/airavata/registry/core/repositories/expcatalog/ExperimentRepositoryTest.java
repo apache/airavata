@@ -93,12 +93,10 @@ public class ExperimentRepositoryTest {
         String experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId != null);
 
-        // Retrieve the experiment again to get ids populated on ExperimentStatus instances
-        ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
-        retrievedExperimentModel.setDescription("description");
-        experimentRepository.updateExperiment(retrievedExperimentModel, experimentId);
+        experimentModel.setDescription("description");
+        experimentRepository.updateExperiment(experimentModel, experimentId);
 
-        retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
+        ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
         assertEquals("description", retrievedExperimentModel.getDescription());
         assertEquals(ExperimentType.SINGLE_APPLICATION, retrievedExperimentModel.getExperimentType());
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
