@@ -34,8 +34,6 @@ import org.apache.helix.manager.zk.ZkClient;
 import org.apache.helix.model.BuiltInStateModelDefinitions;
 import org.apache.helix.model.InstanceConfig;
 import org.apache.helix.participant.StateMachineEngine;
-import org.apache.helix.task.Task;
-import org.apache.helix.task.TaskCallbackContext;
 import org.apache.helix.task.TaskFactory;
 import org.apache.helix.task.TaskStateModelFactory;
 import org.slf4j.Logger;
@@ -60,28 +58,38 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     private String clusterName;
     private String participantName;
     private ZKHelixManager zkHelixManager;
+
     private String taskTypeName;
     private PropertyResolver propertyResolver;
-    private Class<T> taskClass;
+
+    private List<Class<? extends T>> taskClasses;
     private final List<AbstractTask> runningTasks = Collections.synchronizedList(new ArrayList<AbstractTask>());
 
-    public HelixParticipant(Class<T> taskClass, String taskTypeName) throws ApplicationSettingsException {
+    public HelixParticipant(List<Class<? extends T>> taskClasses, String taskTypeName) throws ApplicationSettingsException {
 
         logger.info("Initializing Participant Node");
 
         this.zkAddress = ServerSettings.getZookeeperConnection();
         this.clusterName = ServerSettings.getSetting("helix.cluster.name");
-        this.participantName = ServerSettings.getSetting("helix.participant.name");
-        this.taskTypeName = taskTypeName;
-        this.taskClass = taskClass;
+        this.participantName = getParticipantName();
 
-        logger.info("Zookeper connection url " + zkAddress);
+        this.taskTypeName = taskTypeName;
+        this.taskClasses = taskClasses;
+
+        logger.info("Zookeeper connection URL " + zkAddress);
         logger.info("Cluster name " + clusterName);
         logger.info("Participant name " + participantName);
         logger.info("Task type " + taskTypeName);
-        if (taskClass != null) {
-            logger.info("Task class " + taskClass.getCanonicalName());
+
+        if (taskClasses != null) {
+            for (Class<? extends T> taskClass : taskClasses) {
+                logger.info("Task classes include: " + taskClass.getCanonicalName());
+            }
         }
+    }
+
+    public HelixParticipant(Class<T> taskClass, String taskTypeName) throws ApplicationSettingsException {
+        this(taskClass != null ? Collections.singletonList(taskClass) : null, taskTypeName);
     }
 
     public void setShutdownGracePeriod(int shutdownGracePeriod) {
@@ -100,26 +108,25 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         runningTasks.remove(task);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Map<String, TaskFactory> getTaskFactory() {
-        Map<String, TaskFactory> taskRegistry = new HashMap<String, TaskFactory>();
+        Map<String, TaskFactory> taskRegistry = new HashMap<>();
 
-        TaskFactory taskFac = new TaskFactory() {
-            public Task createNewTask(TaskCallbackContext context) {
+        for (Class<? extends T> taskClass : taskClasses) {
+            TaskFactory taskFac = context -> {
                 try {
-                    return taskClass.newInstance()
+                    return AbstractTask.class.cast(taskClass.newInstance())
                             .setParticipant(HelixParticipant.this)
                             .setCallbackContext(context)
                             .setTaskHelper(new TaskHelperImpl());
                 } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    logger.error("Failed to initialize the task", e);
                     return null;
                 }
-            }
-        };
-
-        TaskDef taskDef = taskClass.getAnnotation(TaskDef.class);
-        taskRegistry.put(taskDef.name(), taskFac);
-
+            };
+            TaskDef taskDef = taskClass.getAnnotation(TaskDef.class);
+            taskRegistry.put(taskDef.name(), taskFac);
+        }
         return taskRegistry;
     }
 
@@ -217,5 +224,9 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
     public PropertyResolver getPropertyResolver() {
         return propertyResolver;
+    }
+
+    public String getParticipantName() throws ApplicationSettingsException {
+        return ServerSettings.getSetting("helix.participant.name");
     }
 }
