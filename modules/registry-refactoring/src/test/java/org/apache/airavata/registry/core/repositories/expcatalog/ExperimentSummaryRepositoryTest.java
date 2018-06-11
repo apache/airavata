@@ -109,9 +109,13 @@ public class ExperimentSummaryRepositoryTest {
 
         String experimentIdOne = experimentRepository.addExperiment(experimentModelOne);
         assertTrue(experimentIdOne != null);
+        // Reload experiment to get its status' identifier
+        experimentModelOne = experimentRepository.getExperiment(experimentIdOne);
 
         String expertimentIdTwo = experimentRepository.addExperiment(experimentModelTwo);
         assertTrue(expertimentIdTwo != null);
+        // Reload experiment to get its status' identifier
+        experimentModelTwo = experimentRepository.getExperiment(expertimentIdTwo);
 
         Timestamp timeOne = Timestamp.valueOf("2010-01-01 09:00:00");
         experimentModelOne.setCreationTime(timeOne.getTime());
@@ -127,7 +131,7 @@ public class ExperimentSummaryRepositoryTest {
 
         List<ExperimentSummaryModel> experimentSummaryModelList = experimentSummaryRepository.
                 searchExperiments(filters, -1, 0, null, null);
-        assertTrue(experimentSummaryModelList.size() == 2);
+        assertEquals(2, experimentSummaryModelList.size());
 
         filters.put(DBConstants.Experiment.EXECUTION_ID, "executionIdTwo");
 
