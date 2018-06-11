@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
@@ -59,6 +60,7 @@ public class ExperimentStatusRepository extends ExpCatAbstractRepository<Experim
             logger.debug("Setting the ExperimentStatus's StatusId");
             experimentStatus.setStatusId(ExpCatalogUtils.getID("EXPERIMENT_STATE"));
         }
+        experimentStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
         return saveExperimentStatus(experimentStatus, experimentId);
     }

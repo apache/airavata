@@ -90,11 +90,13 @@ public class ExperimentStatusRepositoryTest {
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId != null);
+        // addExperiment adds the CREATED experiment status
+        assertEquals(1, experimentRepository.getExperiment(experimentId).getExperimentStatus().size());
 
-        ExperimentStatus experimentStatus = new ExperimentStatus(ExperimentState.CREATED);
+        ExperimentStatus experimentStatus = new ExperimentStatus(ExperimentState.VALIDATED);
         String experimentStatusId = experimentStatusRepository.addExperimentStatus(experimentStatus, experimentId);
         assertTrue(experimentStatusId != null);
-        assertTrue(experimentRepository.getExperiment(experimentId).getExperimentStatus().size() == 1);
+        assertEquals(2, experimentRepository.getExperiment(experimentId).getExperimentStatus().size());
 
         experimentStatus.setState(ExperimentState.EXECUTING);
         experimentStatusRepository.updateExperimentStatus(experimentStatus, experimentId);
