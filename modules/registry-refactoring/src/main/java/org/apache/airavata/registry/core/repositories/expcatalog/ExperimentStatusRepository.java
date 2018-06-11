@@ -42,6 +42,18 @@ public class ExperimentStatusRepository extends ExpCatAbstractRepository<Experim
     public ExperimentStatusRepository() { super(ExperimentStatus.class, ExperimentStatusEntity.class); }
 
     protected String saveExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryException {
+
+        if (experimentStatus.getStatusId() == null) {
+
+            ExperimentStatus currentExperimentStatus = getExperimentStatus(experimentId);
+            if (currentExperimentStatus == null || currentExperimentStatus.getState() != experimentStatus.getState()) {
+                experimentStatus.setStatusId(ExpCatalogUtils.getID("EXPERIMENT_STATE"));
+            } else {
+                // Update the existing current status if experimentStatus has no status id and the same state
+                experimentStatus.setStatusId(currentExperimentStatus.getStatusId());
+            }
+        }
+
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentStatusEntity experimentStatusEntity = mapper.map(experimentStatus, ExperimentStatusEntity.class);
 
