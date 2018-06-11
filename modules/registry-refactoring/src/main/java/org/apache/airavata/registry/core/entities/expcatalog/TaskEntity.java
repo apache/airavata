@@ -24,7 +24,6 @@ import org.apache.airavata.model.task.TaskTypes;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -57,12 +56,9 @@ public class TaskEntity implements Serializable {
     @Column(name = "TASK_DETAIL")
     private String taskDetail;
 
-    @Column(name = "TASK_INTERNAL_STORE")
-    private ByteBuffer taskInternalStore;
-
     @Lob
     @Column(name = "SUB_TASK_MODEL")
-    private ByteBuffer subTaskModel;
+    private byte[] subTaskModel;
 
     @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL,
             mappedBy = "task", fetch = FetchType.EAGER)
@@ -131,19 +127,11 @@ public class TaskEntity implements Serializable {
         this.taskDetail = taskDetail;
     }
 
-    public ByteBuffer getTaskInternalStore() {
-        return taskInternalStore;
-    }
-
-    public void setTaskInternalStore(ByteBuffer taskInternalStore) {
-        this.taskInternalStore = taskInternalStore;
-    }
-
-    public ByteBuffer getSubTaskModel() {
+    public byte[] getSubTaskModel() {
         return subTaskModel;
     }
 
-    public void setSubTaskModel(ByteBuffer subTaskModel) {
+    public void setSubTaskModel(byte[] subTaskModel) {
         this.subTaskModel = subTaskModel;
     }
 

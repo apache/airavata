@@ -20,3 +20,6 @@
 
 -- AIRAVATA-2768
 alter table EXPERIMENT_INPUT modify METADATA VARCHAR(4096);
+
+-- AIRAVATA-2820
+alter table TASK drop column TASK_INTERNAL_STORE;
