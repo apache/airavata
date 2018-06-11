@@ -32,8 +32,10 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(TaskRepository.class);
@@ -52,17 +54,34 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
         }
 
         String taskId = taskModel.getTaskId();
+
+        if (taskModel.getJobs() != null) {
+            logger.debug("Populating the Job objects' Task ID for the Task");
+            taskModel.getJobs().forEach(jobEntity -> jobEntity.setTaskId(taskId));
+        }
+
+        if (taskModel.getTaskStatuses() != null) {
+            logger.debug("Populating the status id of TaskStatus objects for the Task");
+            taskModel.getTaskStatuses().forEach(taskStatusEntity -> {
+                if (taskStatusEntity.getStatusId() == null) {
+                    taskStatusEntity.setStatusId(ExpCatalogUtils.getID("TASK_STATE"));
+                }
+            });
+        }
+
+        if (!isTaskExist(taskId)) {
+            logger.debug("Setting creation time if Task doesn't already exist");
+            taskModel.setCreationTime(System.currentTimeMillis());
+        }
+
+        taskModel.setLastUpdateTime(System.currentTimeMillis());
+
         Mapper mapper = ObjectMapperSingleton.getInstance();
         TaskEntity taskEntity = mapper.map(taskModel, TaskEntity.class);
 
         if (taskEntity.getTaskStatuses() != null) {
             logger.debug("Populating the Primary Key of TaskStatus objects for the Task");
-            taskEntity.getTaskStatuses().forEach(taskStatusEntity -> {
-                if (taskStatusEntity.getStatusId() == null) {
-                    taskStatusEntity.setStatusId(ExpCatalogUtils.getID("TASK_STATE"));
-                }
-                taskStatusEntity.setTaskId(taskId);
-            });
+            taskEntity.getTaskStatuses().forEach(taskStatusEntity -> taskStatusEntity.setTaskId(taskId));
         }
 
         if (taskEntity.getTaskErrors() != null) {
@@ -70,17 +89,6 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
             taskEntity.getTaskErrors().forEach(taskErrorEntity -> taskErrorEntity.setTaskId(taskId));
         }
 
-        if (taskEntity.getJobs() != null) {
-            logger.debug("Populating the Job objects' Task ID for the Task");
-            taskEntity.getJobs().forEach(jobEntity -> jobEntity.setTaskId(taskId));
-        }
-
-        if (!isTaskExist(taskId)) {
-            logger.debug("Checking if the Task already exists");
-            taskEntity.setCreationTime(new Timestamp((System.currentTimeMillis())));
-        }
-
-        taskEntity.setLastUpdateTime(new Timestamp((System.currentTimeMillis())));
         return execute(entityManager -> entityManager.merge(taskEntity));
     }
 

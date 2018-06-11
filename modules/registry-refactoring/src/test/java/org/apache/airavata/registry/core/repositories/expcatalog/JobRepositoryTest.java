@@ -24,6 +24,8 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
@@ -118,6 +120,9 @@ public class JobRepositoryTest {
         jobModel.setTaskId(taskId);
         jobModel.setJobDescription("jobDescription");
 
+        JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
+        jobModel.addToJobStatuses(jobStatus);
+
         String jobId = jobRepository.addJob(jobModel, processId);
         assertTrue(jobId != null);
         assertTrue(taskRepository.getTask(taskId).getJobs().size() == 1);
@@ -128,7 +133,11 @@ public class JobRepositoryTest {
 
         jobModel.setJobName("jobName");
         jobRepository.updateJob(jobModel, jobPK);
-        assertEquals("jobName", jobRepository.getJob(jobPK).getJobName());
+        final JobModel retrievedJob = jobRepository.getJob(jobPK);
+        assertEquals("jobName", retrievedJob.getJobName());
+        assertEquals(1, retrievedJob.getJobStatusesSize());
+        assertEquals(JobState.SUBMITTED, retrievedJob.getJobStatuses().get(0).getJobState());
+
 
         List<String> jobIdList = jobRepository.getJobIds(DBConstants.Job.TASK_ID, taskId);
         assertTrue(jobIdList.size() == 1);

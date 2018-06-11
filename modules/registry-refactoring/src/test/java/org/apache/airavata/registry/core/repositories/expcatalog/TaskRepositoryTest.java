@@ -113,12 +113,11 @@ public class TaskRepositoryTest {
 
         String taskId = taskRepository.addTask(taskModel, processId);
         assertTrue(taskId != null);
-        // Retrieve task to get its automatically populated status id
-        final TaskModel retrievedTask = taskRepository.getTask(taskId);
         assertTrue(processRepository.getProcess(processId).getTasks().size() == 1);
 
-        retrievedTask.setTaskType(TaskTypes.MONITORING);
-        taskRepository.updateTask(retrievedTask, taskId);
+        taskModel.setTaskType(TaskTypes.MONITORING);
+        taskRepository.updateTask(taskModel, taskId);
+        TaskModel retrievedTask = taskRepository.getTask(taskId);
         assertEquals(TaskTypes.MONITORING, retrievedTask.getTaskType());
         assertArrayEquals("subtask model".getBytes(StandardCharsets.UTF_8), retrievedTask.getSubTaskModel());
         assertEquals(1, retrievedTask.getTaskStatusesSize());

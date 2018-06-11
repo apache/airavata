@@ -37,7 +37,6 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,8 +59,28 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             logger.debug("Setting the Experiment's ExperimentId");
             experimentModel.setExperimentId(ExpCatalogUtils.getID(experimentModel.getExperimentName()));
         }
-
         String experimentId = experimentModel.getExperimentId();
+
+        if (experimentModel.getExperimentStatus() != null) {
+            logger.debug("Populating the status id of ExperimentStatus objects for the Experiment");
+            experimentModel.getExperimentStatus().forEach(experimentStatusEntity -> {
+                if (experimentStatusEntity.getStatusId() == null) {
+                    experimentStatusEntity.setStatusId(AiravataUtils.getId("EXPERIMENT_STATE"));
+                }
+            });
+        }
+
+        if (experimentModel.getProcesses() != null) {
+            logger.debug("Populating the Process objects' Experiment ID for the Experiment");
+            experimentModel.getProcesses().forEach(processModel -> processModel.setExperimentId(experimentId));
+        }
+
+        if (!isExperimentExist(experimentId)) {
+            logger.debug("Populating creation time if it doesn't already exist");
+            experimentModel.setCreationTime(System.currentTimeMillis());
+        }
+
+
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentEntity experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
 
@@ -82,27 +101,12 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
 
         if (experimentEntity.getExperimentStatus() != null) {
             logger.debug("Populating the Primary Key of ExperimentStatus objects for the Experiment");
-            experimentEntity.getExperimentStatus().forEach(experimentStatusEntity -> {
-                if (experimentStatusEntity.getStatusId() == null) {
-                    experimentStatusEntity.setStatusId(AiravataUtils.getId("EXPERIMENT_STATE"));
-                }
-                experimentStatusEntity.setExperimentId(experimentId);
-            });
+            experimentEntity.getExperimentStatus().forEach(experimentStatusEntity -> experimentStatusEntity.setExperimentId(experimentId));
         }
 
         if (experimentEntity.getErrors() != null) {
             logger.debug("Populating the Primary Key of ExperimentError objects for the Experiment");
             experimentEntity.getErrors().forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
-        }
-
-        if (experimentEntity.getProcesses() != null) {
-            logger.debug("Populating the Process objects' Experiment ID for the Experiment");
-            experimentEntity.getProcesses().forEach(processEntity -> processEntity.setExperimentId(experimentId));
-        }
-
-        if (!isExperimentExist(experimentId)) {
-            logger.debug("Checking if the Experiment already exists");
-            experimentEntity.setCreationTime(new Timestamp((System.currentTimeMillis())));
         }
 
         return execute(entityManager -> entityManager.merge(experimentEntity));

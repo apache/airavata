@@ -33,8 +33,10 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, ProcessEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(ProcessRepository.class);
@@ -53,6 +55,27 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
         }
 
         String processId = processModel.getProcessId();
+
+        if (processModel.getProcessStatuses() != null) {
+            logger.debug("Populating the status id of ProcessStatus objects for the Process");
+            processModel.getProcessStatuses().forEach(processStatusEntity -> {
+                if (processStatusEntity.getStatusId() == null) {
+                    processStatusEntity.setStatusId(ExpCatalogUtils.getID("PROCESS_STATE"));
+                }
+            });
+        }
+
+        if (processModel.getTasks() != null) {
+            logger.debug("Populating the parent process id of Tasks for the Process");
+            processModel.getTasks().forEach(taskEntity -> taskEntity.setParentProcessId(processId));
+        }
+
+        if (!isProcessExist(processId)) {
+            logger.debug("Setting creation time if process doesn't already exist");
+            processModel.setCreationTime(System.currentTimeMillis());
+        }
+        processModel.setLastUpdateTime(System.currentTimeMillis());
+
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessEntity processEntity = mapper.map(processModel, ProcessEntity.class);
 
@@ -81,17 +104,6 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
             processEntity.getProcessErrors().forEach(processErrorEntity -> processErrorEntity.setProcessId(processId));
         }
 
-        if (processEntity.getTasks() != null) {
-            logger.debug("Populating the Process objects' Process ID for the Process");
-            processEntity.getTasks().forEach(taskEntity -> taskEntity.setParentProcessId(processId));
-        }
-
-        if (!isProcessExist(processId)) {
-            logger.debug("Checking if the Process already exists");
-            processEntity.setCreationTime(new Timestamp((System.currentTimeMillis())));
-        }
-
-        processEntity.setLastUpdateTime(new Timestamp((System.currentTimeMillis())));
         return execute(entityManager -> entityManager.merge(processEntity));
     }
 
