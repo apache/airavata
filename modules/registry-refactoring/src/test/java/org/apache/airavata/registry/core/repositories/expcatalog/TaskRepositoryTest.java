@@ -36,10 +36,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+
+import static org.junit.Assert.*;
 
 public class TaskRepositoryTest {
 
@@ -102,6 +102,7 @@ public class TaskRepositoryTest {
         TaskModel taskModel = new TaskModel();
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         taskModel.setParentProcessId(processId);
+        taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
 
         String taskId = taskRepository.addTask(taskModel, processId);
         assertTrue(taskId != null);
@@ -109,7 +110,10 @@ public class TaskRepositoryTest {
 
         taskModel.setTaskType(TaskTypes.MONITORING);
         taskRepository.updateTask(taskModel, taskId);
-        assertEquals(TaskTypes.MONITORING, taskRepository.getTask(taskId).getTaskType());
+        final TaskModel retrievedTask = taskRepository.getTask(taskId);
+        assertEquals(TaskTypes.MONITORING, retrievedTask.getTaskType());
+        assertArrayEquals("subtask model".getBytes(StandardCharsets.UTF_8), retrievedTask.getSubTaskModel());
+
 
         List<String> taskIdList = taskRepository.getTaskIds(DBConstants.Task.PARENT_PROCESS_ID, processId);
         assertTrue(taskIdList.size() == 1);
