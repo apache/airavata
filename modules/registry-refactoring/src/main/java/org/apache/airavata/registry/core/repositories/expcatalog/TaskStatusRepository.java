@@ -37,7 +37,7 @@ public class TaskStatusRepository extends ExpCatAbstractRepository<TaskStatus, T
 
         if (taskStatus.getStatusId() == null) {
             logger.debug("Setting the TaskStatus's StatusId");
-            taskStatus.setStatusId(ExpCatalogUtils.getID("STATUS"));
+            taskStatus.setStatusId(ExpCatalogUtils.getID("TASK_STATE"));
         }
 
         return saveTaskStatus(taskStatus, taskId);

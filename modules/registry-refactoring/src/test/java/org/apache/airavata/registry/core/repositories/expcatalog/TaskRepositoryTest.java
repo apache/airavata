@@ -20,9 +20,12 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
@@ -104,15 +107,22 @@ public class TaskRepositoryTest {
         taskModel.setParentProcessId(processId);
         taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
 
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.addToTaskStatuses(taskStatus);
+
         String taskId = taskRepository.addTask(taskModel, processId);
         assertTrue(taskId != null);
+        // Retrieve task to get its automatically populated status id
+        final TaskModel retrievedTask = taskRepository.getTask(taskId);
         assertTrue(processRepository.getProcess(processId).getTasks().size() == 1);
 
-        taskModel.setTaskType(TaskTypes.MONITORING);
-        taskRepository.updateTask(taskModel, taskId);
-        final TaskModel retrievedTask = taskRepository.getTask(taskId);
+        retrievedTask.setTaskType(TaskTypes.MONITORING);
+        taskRepository.updateTask(retrievedTask, taskId);
         assertEquals(TaskTypes.MONITORING, retrievedTask.getTaskType());
         assertArrayEquals("subtask model".getBytes(StandardCharsets.UTF_8), retrievedTask.getSubTaskModel());
+        assertEquals(1, retrievedTask.getTaskStatusesSize());
+        assertEquals(TaskState.CREATED, retrievedTask.getTaskStatuses().get(0).getState());
 
 
         List<String> taskIdList = taskRepository.getTaskIds(DBConstants.Task.PARENT_PROCESS_ID, processId);

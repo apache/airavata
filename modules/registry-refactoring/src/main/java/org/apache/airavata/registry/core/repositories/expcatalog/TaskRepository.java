@@ -57,7 +57,12 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
 
         if (taskEntity.getTaskStatuses() != null) {
             logger.debug("Populating the Primary Key of TaskStatus objects for the Task");
-            taskEntity.getTaskStatuses().forEach(taskStatusEntity -> taskStatusEntity.setTaskId(taskId));
+            taskEntity.getTaskStatuses().forEach(taskStatusEntity -> {
+                if (taskStatusEntity.getStatusId() == null) {
+                    taskStatusEntity.setStatusId(ExpCatalogUtils.getID("TASK_STATE"));
+                }
+                taskStatusEntity.setTaskId(taskId);
+            });
         }
 
         if (taskEntity.getTaskErrors() != null) {
