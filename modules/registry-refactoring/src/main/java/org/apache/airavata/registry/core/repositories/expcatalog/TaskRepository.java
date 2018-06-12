@@ -55,11 +55,6 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
 
         String taskId = taskModel.getTaskId();
 
-        if (taskModel.getJobs() != null) {
-            logger.debug("Populating the Job objects' Task ID for the Task");
-            taskModel.getJobs().forEach(jobEntity -> jobEntity.setTaskId(taskId));
-        }
-
         if (taskModel.getTaskStatuses() != null) {
             logger.debug("Populating the status id of TaskStatus objects for the Task");
             taskModel.getTaskStatuses().forEach(taskStatusEntity -> {
@@ -79,6 +74,15 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
         Mapper mapper = ObjectMapperSingleton.getInstance();
         TaskEntity taskEntity = mapper.map(taskModel, TaskEntity.class);
 
+        populateParentIds(taskEntity);
+
+        return execute(entityManager -> entityManager.merge(taskEntity));
+    }
+
+    protected void populateParentIds(TaskEntity taskEntity) {
+
+        String taskId = taskEntity.getTaskId();
+
         if (taskEntity.getTaskStatuses() != null) {
             logger.debug("Populating the Primary Key of TaskStatus objects for the Task");
             taskEntity.getTaskStatuses().forEach(taskStatusEntity -> taskStatusEntity.setTaskId(taskId));
@@ -89,7 +93,10 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
             taskEntity.getTaskErrors().forEach(taskErrorEntity -> taskErrorEntity.setTaskId(taskId));
         }
 
-        return execute(entityManager -> entityManager.merge(taskEntity));
+        if (taskEntity.getJobs() != null) {
+            logger.debug("Populating the Job objects' Task ID for the Task");
+            taskEntity.getJobs().forEach(jobEntity -> jobEntity.setTaskId(taskId));
+        }
     }
 
     public String addTask(TaskModel task, String processId) throws RegistryException {
