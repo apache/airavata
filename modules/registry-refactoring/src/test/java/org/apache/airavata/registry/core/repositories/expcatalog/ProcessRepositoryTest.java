@@ -26,6 +26,10 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
@@ -98,6 +102,16 @@ public class ProcessRepositoryTest {
         ProcessStatus processStatus = new ProcessStatus();
         processStatus.setState(ProcessState.CREATED);
         processModel.addToProcessStatuses(processStatus);
+
+        TaskModel task = new TaskModel();
+        task.setTaskId("task-id");
+        task.setTaskType(TaskTypes.ENV_SETUP);
+        processModel.addToTasks(task);
+
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setStatusId("task-status-id");
+        task.addToTaskStatuses(taskStatus);
+
         String processId = processRepository.addProcess(processModel, experimentId);
         assertTrue(processId != null);
         assertTrue(experimentRepository.getExperiment(experimentId).getProcesses().size() == 1);

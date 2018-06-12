@@ -41,6 +41,8 @@ import java.util.Map;
 public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, ProcessEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(ProcessRepository.class);
 
+    private final TaskRepository taskRepository = new TaskRepository();
+
     public ProcessRepository() { super(ProcessModel.class, ProcessEntity.class); }
 
     protected String saveProcessModelData(ProcessModel processModel) throws RegistryException {
@@ -65,11 +67,6 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
             });
         }
 
-        if (processModel.getTasks() != null) {
-            logger.debug("Populating the parent process id of Tasks for the Process");
-            processModel.getTasks().forEach(taskEntity -> taskEntity.setParentProcessId(processId));
-        }
-
         if (!isProcessExist(processId)) {
             logger.debug("Setting creation time if process doesn't already exist");
             processModel.setCreationTime(System.currentTimeMillis());
@@ -79,8 +76,15 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessEntity processEntity = mapper.map(processModel, ProcessEntity.class);
 
+        populateParentIds(processEntity);
+
+        return execute(entityManager -> entityManager.merge(processEntity));
+    }
+
+    protected void populateParentIds(ProcessEntity processEntity) {
+        String processId = processEntity.getProcessId();
         if (processEntity.getProcessResourceSchedule() != null) {
-            logger.debug("Populating the Primary Key of ProcessResourceSchedule object for the Process");
+            logger.debug("Populating the Primary Key of ProcessResourceSchedule objects for the Process");
             processEntity.getProcessResourceSchedule().setProcessId(processId);
         }
 
@@ -104,7 +108,13 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
             processEntity.getProcessErrors().forEach(processErrorEntity -> processErrorEntity.setProcessId(processId));
         }
 
-        return execute(entityManager -> entityManager.merge(processEntity));
+        if (processEntity.getTasks() != null) {
+            logger.debug("Populating the Primary Key of Task objects for the Process");
+            processEntity.getTasks().forEach(taskEntity -> {
+                taskEntity.setParentProcessId(processId);
+                taskRepository.populateParentIds(taskEntity);
+            });
+        }
     }
 
     public String addProcess(ProcessModel process, String experimentId) throws RegistryException {
