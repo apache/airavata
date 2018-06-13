@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ProcessStatusRepositoryTest {
@@ -107,6 +108,25 @@ public class ProcessStatusRepositoryTest {
 
         ProcessStatus retrievedStatus = processStatusRepository.getProcessStatus(processId);
         assertEquals(ProcessState.EXECUTING, retrievedStatus.getState());
+
+        ProcessStatus updatedStatus = new ProcessStatus(ProcessState.MONITORING);
+        // Verify that ProcessStatus without id can be added with updateProcessStatus
+        String updatedStatusId = processStatusRepository.updateProcessStatus(updatedStatus, processId);
+        retrievedStatus = processStatusRepository.getProcessStatus(processId);
+        assertEquals(ProcessState.MONITORING, retrievedStatus.getState());
+        assertEquals(updatedStatusId, retrievedStatus.getStatusId());
+        assertNull(retrievedStatus.getReason());
+
+        // Verify that updating status with same ProcessState as most recent ProcessStatus will update the most recent ProcessStatus
+        ProcessStatus updatedStatusWithReason = new ProcessStatus(ProcessState.MONITORING);
+        updatedStatusWithReason.setReason("test-reason");
+        String updateStatusWithReasonId = processStatusRepository.updateProcessStatus(updatedStatusWithReason, processId);
+        retrievedStatus = processStatusRepository.getProcessStatus(processId);
+        assertEquals(ProcessState.MONITORING, retrievedStatus.getState());
+        assertEquals(updateStatusWithReasonId, retrievedStatus.getStatusId());
+        assertEquals(updatedStatusId, updateStatusWithReasonId);
+        assertEquals("test-reason", retrievedStatus.getReason());
+
 
         experimentRepository.removeExperiment(experimentId);
         processRepository.removeProcess(processId);

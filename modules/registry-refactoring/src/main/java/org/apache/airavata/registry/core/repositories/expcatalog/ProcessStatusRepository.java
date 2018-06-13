@@ -41,6 +41,17 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
     public ProcessStatusRepository() { super(ProcessStatus.class, ProcessStatusEntity.class); }
 
     protected String saveProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
+        if (processStatus.getStatusId() == null) {
+
+            ProcessStatus currentProcessStatus = getProcessStatus(processId);
+            if (currentProcessStatus == null || currentProcessStatus.getState() != currentProcessStatus.getState()) {
+                processStatus.setStatusId(ExpCatalogUtils.getID("PROCESS_STATE"));
+            } else {
+                // Update the existing current status if processStatus has no status id and the same state
+                processStatus.setStatusId(currentProcessStatus.getStatusId());
+            }
+        }
+
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessStatusEntity processStatusEntity = mapper.map(processStatus, ProcessStatusEntity.class);
 
