@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,9 +44,10 @@ public class QueueOperator {
 
     private final static Logger logger = LoggerFactory.getLogger(QueueOperator.class);
 
-    private static final String WORKFLOW_PREFIX = "Job_queue_";
+    private static final String QUEUE_PREFIX = "Job_queue_";
+
     private HelixManager helixManager;
-    private HashMap<String, TaskQueue> taskQueues = new HashMap<>();
+    private TaskDriver taskDriver;
 
     public QueueOperator(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
 
@@ -58,79 +58,85 @@ public class QueueOperator {
         Runtime.getRuntime().addShutdownHook(
                 new Thread(() -> helixManager.disconnect())
         );
+
+        taskDriver = new TaskDriver(helixManager);
     }
 
-    public synchronized String createJobQueue(String queueName, boolean monitor) throws Exception {
+    public synchronized String createQueue(String queueId, boolean monitor) throws Exception {
 
-        String workflowName = WORKFLOW_PREFIX + queueName;
-        logger.info("Launching workflow " + workflowName + " for job queue " + queueName);
+        String queueName = QUEUE_PREFIX + queueId;
+        logger.info("Launching queue " + queueName + " for job queue " + queueId);
 
-        WorkflowConfig.Builder workflowCfgBuilder = new WorkflowConfig.Builder(workflowName);
+        WorkflowConfig.Builder workflowCfgBuilder = new WorkflowConfig.Builder(queueName);
         workflowCfgBuilder.setFailureThreshold(0);
         workflowCfgBuilder.setExpiry(0);
 
         JobQueue.Builder jobQueueBuilder = new JobQueue.Builder(queueName).setWorkflowConfig(workflowCfgBuilder.build());
-        taskQueues.put(queueName, new TaskQueue(jobQueueBuilder, workflowName, queueName, monitor));
 
-        return workflowName;
+        taskDriver.start(jobQueueBuilder.build());
+
+        if (monitor) {
+            TaskState taskState = taskDriver.pollForWorkflowState(queueName,
+                    TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
+            logger.info("Queue " + queueName + " finished with state " + taskState.name());
+        }
+
+        return queueName;
+    }
+
+    public synchronized void stopQueue(String queueName) throws InterruptedException {
+        logger.info("Stopping queue: " + queueName);
+        taskDriver.stop(queueName);
+    }
+
+    public synchronized void resumeQueue(String queueName) {
+        logger.info("Resuming queue: " + queueName);
+        taskDriver.resume(queueName);
+    }
+
+    public synchronized void deleteQueue(String queueName) {
+        logger.info("Deleting queue: " + queueName);
+        taskDriver.delete(queueName);
+    }
+
+    public synchronized void cleanupQueue(String queueName) throws InterruptedException {
+        logger.info("Cleaning up queue: " + queueName);
+        taskDriver.cleanupQueue(queueName);
     }
 
     public synchronized String addTaskToQueue(String queueName, AbstractTask task, boolean globalParticipant) throws IllegalAccessException {
-        return taskQueues.get(queueName).addTask(task, globalParticipant);
+        logger.info("Adding task: " + task.getTaskId() + " to queue: " + queueName);
+
+        String taskType = task.getClass().getAnnotation(TaskDef.class).name();
+
+        TaskConfig.Builder taskBuilder = new TaskConfig.Builder().setTaskId("Task_" + task.getTaskId())
+                .setCommand(taskType);
+
+        Map<String, String> paramMap = org.apache.airavata.helix.core.util.TaskUtil.serializeTaskData(task);
+        paramMap.forEach(taskBuilder::addConfig);
+
+        List<TaskConfig> taskBuilds = new ArrayList<>();
+        taskBuilds.add(taskBuilder.build());
+
+        JobConfig.Builder job = new JobConfig.Builder()
+                .addTaskConfigs(taskBuilds)
+                .setFailureThreshold(0)
+                .setMaxAttemptsPerTask(task.getRetryCount());
+
+        if (!globalParticipant) {
+            job.setInstanceGroupTag(taskType);
+        }
+
+        taskDriver.enqueueJob(queueName, task.getTaskId(), job);
+
+        return task.getTaskId();
     }
 
     public synchronized String removeTaskFromQueue(String queueName, String taskId) throws InterruptedException {
-        return taskQueues.get(queueName).removeTask(queueName, taskId);
-    }
-
-    private class TaskQueue {
-
-        private TaskDriver taskDriver;
-        private String queueName;
-
-        public TaskQueue(JobQueue.Builder jobQueueBuilder, String workflowName, String queueName, boolean monitor) throws InterruptedException {
-            this.queueName = queueName;
-            taskDriver = new TaskDriver(helixManager);
-            taskDriver.start(jobQueueBuilder.build());
-            if (monitor) {
-                TaskState taskState = taskDriver.pollForWorkflowState(workflowName,
-                        TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
-                logger.info("Workflow " + workflowName + " for queue " + queueName + " finished with state " + taskState.name());
-            }
-        }
-
-        public String addTask(AbstractTask task, boolean globalParticipant) throws IllegalAccessException {
-
-            String taskType = task.getClass().getAnnotation(TaskDef.class).name();
-
-            TaskConfig.Builder taskBuilder = new TaskConfig.Builder().setTaskId("Task_" + task.getTaskId())
-                    .setCommand(taskType);
-
-            Map<String, String> paramMap = org.apache.airavata.helix.core.util.TaskUtil.serializeTaskData(task);
-            paramMap.forEach(taskBuilder::addConfig);
-
-            List<TaskConfig> taskBuilds = new ArrayList<>();
-            taskBuilds.add(taskBuilder.build());
-
-            JobConfig.Builder job = new JobConfig.Builder()
-                    .addTaskConfigs(taskBuilds)
-                    .setFailureThreshold(0)
-                    .setMaxAttemptsPerTask(task.getRetryCount());
-
-            if (!globalParticipant) {
-                job.setInstanceGroupTag(taskType);
-            }
-
-            taskDriver.enqueueJob(queueName, task.getTaskId(), job);
-
-            return task.getTaskId();
-        }
-
-        public String removeTask(String taskId, String queueName) throws InterruptedException {
-            taskDriver.stop(queueName);
-            taskDriver.deleteJob(queueName, taskId);
-            taskDriver.resume(queueName);
-            return taskId;
-        }
+        logger.info("Removing task: " + taskId + " from queue: " + queueName);
+        taskDriver.stop(queueName);
+        taskDriver.deleteJob(queueName, taskId);
+        taskDriver.resume(queueName);
+        return taskId;
     }
 }
