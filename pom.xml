@@ -114,6 +114,7 @@
         <commons.io.version>2.4</commons.io.version>
         <google.guava.version>20.0</google.guava.version>
         <jacoco.version>0.8.1</jacoco.version>
+        <openjpa.version>2.4.3</openjpa.version>
     </properties>
 
     <developers>
