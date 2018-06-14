@@ -152,6 +152,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                 if (taskTypeName != null) {
                     zkHelixAdmin.addInstanceTag(clusterName, participantName, taskTypeName);
                 }
+                zkHelixAdmin.enableInstance(clusterName, participantName, true);
             }
 
             Runtime.getRuntime().addShutdownHook(
