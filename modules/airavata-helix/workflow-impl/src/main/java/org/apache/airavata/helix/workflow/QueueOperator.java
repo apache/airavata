@@ -35,11 +35,13 @@ import java.util.Map;
 /**
  * {@link QueueOperator} is responsible for handling Airavata Task Queues. Unlike in workflow, queue has the
  * following properties.
- * <p>
- * Queue will be there until user delete it.
- * Queue can keep accepting tasks.
- * No parallel run allowed except intentionally configured.
+ * <ul>
+ * <li>Queue will be there until user delete it.</li>
+ * <li>Queue can keep accepting tasks.</li>
+ * <li>No parallel run allowed except intentionally configured.</li>
+ * </ul>
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class QueueOperator {
 
     private final static Logger logger = LoggerFactory.getLogger(QueueOperator.class);
@@ -49,6 +51,14 @@ public class QueueOperator {
     private HelixManager helixManager;
     private TaskDriver taskDriver;
 
+    /**
+     * This is the constructor for {@link QueueOperator}
+     *
+     * @param helixClusterName   is the name of the Helix cluster
+     * @param instanceName       is the name of the Helix instance
+     * @param zkConnectionString is the connection details for Zookeeper connection in {@code <host>:<port>} format
+     * @throws Exception can be thrown when connecting
+     */
     public QueueOperator(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
 
         helixManager = HelixManagerFactory.getZKHelixManager(helixClusterName, instanceName,
@@ -62,7 +72,15 @@ public class QueueOperator {
         taskDriver = new TaskDriver(helixManager);
     }
 
-    public synchronized String createQueue(String queueId, boolean monitor) throws Exception {
+    /**
+     * Creates a new Helix job queue and returns its name
+     *
+     * @param queueId is the identifier given for the queue
+     * @param monitor indicates whether monitoring is required for the queue
+     * @return the name of the queue that needs to be used for queue operations after creating it
+     * @throws InterruptedException can be thrown (if monitor enabled) when polling for workflow state
+     */
+    public synchronized String createQueue(String queueId, boolean monitor) throws InterruptedException {
 
         String queueName = QUEUE_PREFIX + queueId;
         logger.info("Launching queue " + queueName + " for job queue " + queueId);
@@ -84,26 +102,61 @@ public class QueueOperator {
         return queueName;
     }
 
-    public synchronized void stopQueue(String queueName) throws InterruptedException {
-        logger.info("Stopping queue: " + queueName);
-        taskDriver.stop(queueName);
+    /**
+     * Stops the queue. The queue is guaranteed to be stopped if this method completes without any exception.
+     *
+     * @param queueName is the name returned at {@link #createQueue(String, boolean)}
+     * @param timeout   is the timeout to stop the queue in milliseconds
+     * @throws InterruptedException can be thrown when stopping the queue
+     */
+    public synchronized void stopQueue(String queueName, int timeout) throws InterruptedException {
+        logger.info("Stopping queue: " + queueName + " with timeout: " + timeout);
+        taskDriver.waitToStop(queueName, timeout);
     }
 
+    /**
+     * Resumes the queue if it was stopped
+     *
+     * @param queueName is the name returned at {@link #createQueue(String, boolean)}
+     */
     public synchronized void resumeQueue(String queueName) {
         logger.info("Resuming queue: " + queueName);
         taskDriver.resume(queueName);
     }
 
+    /**
+     * Deletes the queue
+     *
+     * @param queueName is the name returned at {@link #createQueue(String, boolean)}
+     */
     public synchronized void deleteQueue(String queueName) {
-        logger.info("Deleting queue: " + queueName);
-        taskDriver.delete(queueName);
+        if (taskDriver.getWorkflows().containsKey(queueName)) {
+            logger.info("Deleting queue: " + queueName);
+            taskDriver.delete(queueName);
+        }
+        logger.warn("Provided queue name: " + queueName + " is not available");
     }
 
-    public synchronized void cleanupQueue(String queueName) throws InterruptedException {
+    /**
+     * Removes all jobs that are in final states (ABORTED, FAILED, COMPLETED) from the job queue. The
+     * job config, job context will be removed from Zookeeper.
+     *
+     * @param queueName is the name returned at {@link #createQueue(String, boolean)}
+     */
+    public synchronized void cleanupQueue(String queueName) {
         logger.info("Cleaning up queue: " + queueName);
         taskDriver.cleanupQueue(queueName);
     }
 
+    /**
+     * Adds a new task to the queue
+     *
+     * @param queueName         is the name returned at {@link #createQueue(String, boolean)}
+     * @param task              {@link AbstractTask} instance which needs to added to the queue
+     * @param globalParticipant enable if needs to handled by the global participant
+     * @return the identifier of the added task
+     * @throws IllegalAccessException can be thrown when serializing the task
+     */
     public synchronized String addTaskToQueue(String queueName, AbstractTask task, boolean globalParticipant) throws IllegalAccessException {
         logger.info("Adding task: " + task.getTaskId() + " to queue: " + queueName);
 
@@ -132,9 +185,18 @@ public class QueueOperator {
         return task.getTaskId();
     }
 
-    public synchronized String removeTaskFromQueue(String queueName, String taskId) throws InterruptedException {
+    /**
+     * Removes a task from the queue
+     *
+     * @param queueName is the name returned at {@link #createQueue(String, boolean)}
+     * @param taskId    is the identifier of the task to be removed
+     * @param timeout   is the timeout to stop the queue before removing task in milliseconds
+     * @return the identifier of the removed task
+     * @throws InterruptedException can be thrown when stooping the queue before removing the task
+     */
+    public synchronized String removeTaskFromQueue(String queueName, String taskId, int timeout) throws InterruptedException {
         logger.info("Removing task: " + taskId + " from queue: " + queueName);
-        taskDriver.stop(queueName);
+        taskDriver.waitToStop(queueName, timeout);
         taskDriver.deleteJob(queueName, taskId);
         taskDriver.resume(queueName);
         return taskId;
