@@ -8,7 +8,7 @@ import GroupComputeResourcePreference from './components/admin/group_resource_pr
 import ComputePreferences from './components/admin/group_resource_preferences/ComputePreferences'
 import ComputeResourcePreferenceDashboard from './components/dashboards/ComputeResourcePreferenceDashboard'
 import CredentialStoreDashboard from './components/dashboards/CredentialStoreDashboard'
-import ArrayComponentView from './components/commons/ArrayComponentView'
+import ComponentTest from './components/commons/ComponentTest'
 import VueRouter from 'vue-router'
 
 
@@ -35,7 +35,7 @@ const routes = [
   {path: '/admin', component: AdminDashboard, name: "admin_dashboard"},
   {path: '/experiments', component: ExperimentsDashboard, name: 'experiments_dashboard'},
   {
-    path: '/group/resource/preferences', component: GroupComputeResourcePreference, name: 'group_resource_preference',
+    path: '/group/resource/profile', component: GroupComputeResourcePreference, name: 'group_resource_preference',
     props: true
   },
   {
@@ -43,7 +43,7 @@ const routes = [
     props: true
   },
   {
-    path: '/dashboards/group/resource/preferences',
+    path: '/dashboards/group/resource/profiles',
     component: ComputeResourcePreferenceDashboard,
     name: 'group_resource_preference_dashboard',
   },
@@ -54,7 +54,7 @@ const routes = [
   },
   {
     path: "/test",
-    component: ArrayComponentView,
+    component: ComponentTest,
     name: 'test'
   }
 ];

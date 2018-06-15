@@ -1,8 +1,7 @@
 <template>
   <array-component-view v-bind:homeAction="createHomeAction()" v-bind:maxIndex="data.computePreferences.length-1"
                         v-model="currentIndex">
-
-      <compute-preference v-model="data.computePreferences[currentIndex]" v-bind:key="currentIndex"></compute-preference>
+      <compute-preference v-model="data.computePreferences[currentIndex]" v-bind:key="currentIndex" v-bind:newCreation="data.computePreferences[currentIndex].groupResourceProfileId == null"></compute-preference>
   </array-component-view>
 </template>
 
@@ -22,6 +21,10 @@
       index: {
         type: Number,
         default: 0
+      },
+      newCreation:{
+        type:Boolean,
+        default:false
       }
     },
     data: function () {
@@ -38,7 +41,8 @@
       createHomeAction: function () {
         return () => this.$router.push({
           name: 'group_resource_preference', params: {
-            value: this.data
+            value: this.data,
+            transform:false
           }
         })
       }

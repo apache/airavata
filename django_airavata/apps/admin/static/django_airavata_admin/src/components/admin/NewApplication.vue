@@ -61,7 +61,6 @@
         }
         this.previous_active_tab=from.name
         this.current_active_tab=to.name
-
       }
     }
   }

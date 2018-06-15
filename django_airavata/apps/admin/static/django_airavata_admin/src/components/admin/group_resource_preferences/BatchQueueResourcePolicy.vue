@@ -6,11 +6,11 @@
     </div>
     <div class="entry">
       <div class="heading">Maximum Allowed Cores</div>
-      <input v-model="data.maxAllowedCores" type="text"/>
+      <input v-model="data.maxAllowedCores" type="number"/>
     </div>
     <div class="entry">
       <div class="heading">Maximum Allowed Wall Time</div>
-      <input v-model="data.maxAllowedWalltime" type="text"/>
+      <input v-model="data.maxAllowedWalltime" type="number"/>
     </div>
   </div>
 </template>

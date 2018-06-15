@@ -28,7 +28,16 @@
   export default {
     data:function () {
       return {
-        "applications":[]
+        "applications":[
+
+            {
+            "appModuleId": "",
+            "appModuleName": "No Applications Found",
+            "appModuleDescription": "",
+            "appModuleVersion": ""
+
+          }
+        ]
       };
     },
     components:{
@@ -70,11 +79,11 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .new_app {
     margin: 45px;
     width: 100%;
-    background-color: white;
+    background-color: #f7f7f7;
   }
 
   .new_app_header{

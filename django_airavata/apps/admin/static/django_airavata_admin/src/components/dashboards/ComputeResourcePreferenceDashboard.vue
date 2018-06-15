@@ -8,8 +8,10 @@
       <h6 style="color: #666666;">Group Resource Profile</h6>
       <div class="container-fluid">
         <div class="row">
-          <application-card v-for="groupResourceProfile in groupResourceProfiles" v-bind:app-module="transform(groupResourceProfile)"
-                            v-bind:key="groupResourceProfile.groupResourceProfileId" v-on:app-selected="clickHandler(groupResourceProfile)">
+          <application-card v-for="groupResourceProfile in groupResourceProfiles"
+                            v-bind:app-module="transform(groupResourceProfile)"
+                            v-bind:key="groupResourceProfile.groupResourceProfileId"
+                            v-on:app-selected="clickHandler(groupResourceProfile)">
           </application-card>
         </div>
       </div>
@@ -19,7 +21,7 @@
 
 <script>
   import {components as comps} from 'django-airavata-common-ui'
-  import {models, services} from 'django-airavata-api'
+  import {services} from 'django-airavata-api'
 
   export default {
     name: "compute-resource-preference",
@@ -28,59 +30,44 @@
     },
     data: function () {
       return {
-        groupResourceProfiles: null,
+        groupResourceProfiles: [],
       }
     },
     methods: {
-      clickHandler: function (preference) {
-        for (let computePreference of preference.computePreferences) {
-          let groupResourceProfileId = computePreference.groupResourceProfileId;
-          let computeResourceId = computePreference.computeResourceId;
-          let computeResourcePolicies=[]
-          console.log("Group Resource Profile ID, Compute Resource ID",groupResourceProfileId,computeResourceId)
-          for (let computeResourcePolicy of preference.computeResourcePolicies) {
-            let resourcePolicyId = computeResourcePolicy.resourcePolicyId;
-            console.log("policy Group Resource Profile ID, Compute Resource ID Resource Policy",computeResourcePolicy.groupResourceProfileId,computeResourcePolicy.computeResourceId, resourcePolicyId)
-            if (groupResourceProfileId == computeResourcePolicy.groupResourceProfileId && computeResourceId == computeResourcePolicy.computeResourceId) {
-              let computeResourcePolicyTemp=computeResourcePolicy;
-              let batchQueueResourcePolicies = [];
-              for (let batchQueueResourcePolicy of preference.batchQueueResourcePolicies) {
-                console.log("batch policy Group Resource Profile ID, Compute Resource ID Resource Policy",batchQueueResourcePolicy.groupResourceProfileId,batchQueueResourcePolicy.computeResourceId, batchQueueResourcePolicy.resourcePolicyId)
-                if (groupResourceProfileId == batchQueueResourcePolicy.groupResourceProfileId && resourcePolicyId == batchQueueResourcePolicy.resourcePolicyId && computeResourceId == batchQueueResourcePolicy.computeResourceId) {
-                  batchQueueResourcePolicies.push(batchQueueResourcePolicy);
-                }
-              }
-              computeResourcePolicyTemp.batchQueueResourcePolicies=batchQueueResourcePolicies;
-              computeResourcePolicies.push(computeResourcePolicyTemp);
-            }
-          }
-          computePreference.computeResourcePolicies=computeResourcePolicies;
-        }
+      clickHandler: function (groupResourceProfile) {
         this.$router.push({
           name: 'group_resource_preference', params: {
-            value: preference
+            value: groupResourceProfile
           }
         });
       },
       newGroupResourcePreference: function () {
-        this.$router.push({name: 'group_resource_preference'})
+        this.$router.push({
+          name: 'group_resource_preference', params: {
+            newCreation: true
+          }
+        })
       },
       transform: function (preference) {
+        let tags=["Created On " + new Date(preference.creationTime).toDateString()];
+        if(preference.creationTime !==preference.updatedTime){
+          tags.push("Updated On " + new Date(preference.updatedTime).toDateString());
+        }
         return {
           appModuleName: preference.groupResourceProfileName,
-          tags: ["creationTime: " + preference.creationTime, " updatedTime " + preference.updatedTime],
+          tags: tags,
           appModuleVersion: null,
           appModuleDescription: null
         }
       },
-      loadGroupResourceProfiles: function() {
+      loadGroupResourceProfiles: function () {
         services.GroupResourceProfileService.list()
           .then(groupResourceProfiles => {
             this.groupResourceProfiles = groupResourceProfiles;
           });
       },
     },
-    mounted: function() {
+    mounted: function () {
       this.loadGroupResourceProfiles();
     }
   }
@@ -98,7 +85,7 @@
     display: inline;
   }
 
-  .new_app_header label {
+  .new_app_header > label {
     background-color: #2e73bc;
     color: white;
     border: solid #2e73bc 1px;
