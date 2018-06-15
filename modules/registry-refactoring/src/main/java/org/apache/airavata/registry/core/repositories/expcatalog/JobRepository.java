@@ -69,11 +69,18 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
         }
 
 
-        String jobId = jobPK.getJobId();
-        String taskId = jobPK.getTaskId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         JobEntity jobEntity = mapper.map(jobModel, JobEntity.class);
 
+        populateParentIds(jobEntity);
+
+        return execute(entityManager -> entityManager.merge(jobEntity));
+    }
+
+    protected void populateParentIds(JobEntity jobEntity) {
+
+        String jobId = jobEntity.getJobId();
+        String taskId = jobEntity.getTaskId();
         if (jobEntity.getJobStatuses() != null) {
             logger.debug("Populating the Primary Key of JobStatus objects for the Job");
             jobEntity.getJobStatuses().forEach(jobStatusEntity -> {
@@ -81,8 +88,6 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
                 jobStatusEntity.setTaskId(taskId);
             });
         }
-
-        return execute(entityManager -> entityManager.merge(jobEntity));
     }
 
     public String addJob(JobModel job, String processId) throws RegistryException {
