@@ -22,12 +22,10 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
@@ -118,6 +116,19 @@ public class ProcessRepositoryTest {
 
         processModel.setProcessDetail("detail");
         processModel.setUseUserCRPref(true);
+
+        TaskModel jobSubmissionTask = new TaskModel();
+        jobSubmissionTask.setTaskType(TaskTypes.JOB_SUBMISSION);
+        jobSubmissionTask.setTaskId("job-task-id");
+        JobModel job = new JobModel();
+        job.setProcessId(processId);
+        job.setJobId("job-id");
+        job.setJobDescription("job-description");
+        JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
+        jobStatus.setStatusId("submitted-job-status-id");
+        job.addToJobStatuses(jobStatus);
+        jobSubmissionTask.addToJobs(job);
+        processModel.addToTasks(jobSubmissionTask);
         processRepository.updateProcess(processModel, processId);
 
         ProcessModel retrievedProcess = processRepository.getProcess(processId);
@@ -126,6 +137,7 @@ public class ProcessRepositoryTest {
         assertTrue(retrievedProcess.isUseUserCRPref());
         assertEquals(1, retrievedProcess.getProcessStatusesSize());
         assertEquals(ProcessState.CREATED, retrievedProcess.getProcessStatuses().get(0).getState());
+        assertEquals(2, retrievedProcess.getTasksSize());
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
         assertEquals(processId, processRepository.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));

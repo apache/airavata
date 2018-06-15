@@ -40,6 +40,8 @@ import java.util.Map;
 public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(TaskRepository.class);
 
+    private final JobRepository jobRepository = new JobRepository();
+
     public TaskRepository() { super(TaskModel.class, TaskEntity.class); }
 
     protected String saveTaskModelData(TaskModel taskModel) throws RegistryException {
@@ -95,7 +97,10 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
 
         if (taskEntity.getJobs() != null) {
             logger.debug("Populating the Job objects' Task ID for the Task");
-            taskEntity.getJobs().forEach(jobEntity -> jobEntity.setTaskId(taskId));
+            taskEntity.getJobs().forEach(jobEntity -> {
+                jobEntity.setTaskId(taskId);
+                jobRepository.populateParentIds(jobEntity);
+            });
         }
     }
 
