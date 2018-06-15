@@ -29,3 +29,12 @@ alter table COMPUTE_RESOURCE modify column DEFAULT_NODE_COUNT int default 0 null
 alter table COMPUTE_RESOURCE modify column DEFAULT_CPU_COUNT int default 0 null;
 alter table COMPUTE_RESOURCE modify column DEFAULT_WALLTIME int default 0 null;
 alter table COMPUTE_RESOURCE modify column UPDATE_TIME timestamp default '0000-00-00 00:00:00' null;
+
+-- AIRAVATA-2827: OpenJPA 2.4.3 upgrade, convert BIT -> TINYINT(1)
+alter table APPLICATION_OUTPUT modify column OUTPUT_STREAMING tinyint(1);
+alter table APPLICATION_INTERFACE modify column ARCHIVE_WORKING_DIRECTORY tinyint(1);
+alter table APPLICATION_INTERFACE modify column HAS_OPTIONAL_FILE_INPUTS tinyint(1);
+alter table APPLICATION_DEPLOYMENT modify column EDITABLE_BY_USER tinyint(1);
+alter table BATCH_QUEUE modify column IS_DEFAULT_QUEUE tinyint(1);
+alter table COMPUTE_RESOURCE modify column GATEWAY_USAGE_REPORTING tinyint(1);
+alter table USER_COMPUTE_RESOURCE_PREFERENCE modify column VALIDATED tinyint(1) default 0;
