@@ -154,13 +154,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 							userConfigurationData.getComputationalResourceScheduling().getResourceHostId());
             String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
 
-			if (userConfigurationData.getGroupResourceProfileId() != null) {
-				GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
-						userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
-						userConfigurationData.getGroupResourceProfileId());
-				if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
-					token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
-				}
+			final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
+			if (groupResourceProfileId == null) {
+				log.error("Experiment not configured with a Group Resource Profile: {}", experimentId);
+				return false;
+			}
+			GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
+					userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
+					groupResourceProfileId);
+			if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
+				token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
 			}
             if (token == null || token.isEmpty()){
                 // try with gateway profile level token

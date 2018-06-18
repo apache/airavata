@@ -1635,7 +1635,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            regClient.send_updateExperimentConfiguration(airavataExperimentId, userConfiguration);
+            regClient.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
             registryClientPool.returnResource(regClient);
         } catch (Exception e) {
             logger.error(airavataExperimentId, "Error while updating user configuration", e);
@@ -1852,26 +1852,62 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
             throws AuthorizationException, AiravataSystemException, TException {
+        // TODO: verify that gatewayId matches gatewayId in authzToken
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
-            // TODO: fix checking if the user has access to the deployment of this application, should check for entity type APPLICATION_DEPLOYMENT and permission type EXEC
-//            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-//            String appInterfaceId = experiment.getExecutionId();
-//            ApplicationInterfaceDescription applicationInterfaceDescription = regClient.getApplicationInterface(appInterfaceId);
-//            List<String> entityIds = applicationInterfaceDescription.getApplicationModules();
-//            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, entityIds.get(0),gatewayId + ":READ")) {
-//                logger.error(airavataExperimentId, "User does not have access to application module {}.", entityIds.get(0));
-//                throw new AuthorizationException("User does not have permission to access this resource");
-//            }
+
             if (experiment == null) {
-                logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
+
+            // For backwards compatibility, if there is no groupResourceProfileId, look up one that is shared with the user
+            if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
+                List<GroupResourceProfile> groupResourceProfiles = getGroupResourceList(authzToken, gatewayId);
+                if (!groupResourceProfiles.isEmpty()) {
+                    // Just pick the first one
+                    experiment.getUserConfigurationData().setGroupResourceProfileId(groupResourceProfiles.get(0).getGroupResourceProfileId());
+                    regClient.updateExperimentConfiguration(airavataExperimentId, experiment.getUserConfigurationData());
+                } else {
+                    throw new AuthorizationException("User " + username + " in gateway " + gatewayId + " doesn't have access to any group resource profiles.");
+                }
+            }
+
+            // Verify user has READ access to groupResourceProfileId
+            if (!sharingClient.userHasAccess(gatewayId, username + "@" + gatewayId, experiment.getUserConfigurationData().getGroupResourceProfileId(), gatewayId + ":READ")) {
+                throw new AuthorizationException("User " + username + " in gateway " + gatewayId + " doesn't have access to group resource profile " + experiment.getUserConfigurationData().getGroupResourceProfileId());
+            }
+
+            // Verify user has READ access to Application Deployment
+            final String appInterfaceId = experiment.getExecutionId();
+            final String resourceHostId = experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId();
+            ApplicationInterfaceDescription applicationInterfaceDescription = regClient.getApplicationInterface(appInterfaceId);
+            List<String> appModuleIds = applicationInterfaceDescription.getApplicationModules();
+            // Assume that there is only one app module for this interface (otherwise, how could we figure out the deployment)
+            String appModuleId = appModuleIds.get(0);
+            List<ApplicationDeploymentDescription> applicationDeploymentDescriptions = regClient.getApplicationDeployments(appModuleId);
+            Optional<ApplicationDeploymentDescription> applicationDeploymentDescription = applicationDeploymentDescriptions
+                    .stream()
+                    .filter(dep -> dep.getComputeHostId().equals(resourceHostId))
+                    .findFirst();
+            if (applicationDeploymentDescription.isPresent()) {
+                final String appDeploymentId = applicationDeploymentDescription.get().getAppDeploymentId();
+                if (!sharingClient.userHasAccess(gatewayId, username + "@" + gatewayId, appDeploymentId, gatewayId + ":READ")) {
+                    throw new AuthorizationException("User " + username + " in gateway " + gatewayId + " doesn't have access to app deployment " + appDeploymentId);
+                }
+            } else {
+                throw new InvalidRequestException("Application deployment doesn't exist for application interface " + appInterfaceId + " and host " + resourceHostId + " in gateway " + gatewayId);
             }
             submitExperiment(gatewayId, airavataExperimentId);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
+        } catch (InvalidRequestException|ExperimentNotFoundException|AuthorizationException e) {
+            logger.error(e.getMessage(), e);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw e;
         } catch (Exception e1) {
             logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
             AiravataSystemException exception = new AiravataSystemException();
