@@ -50,9 +50,6 @@ public abstract class AbstractRepository<T, E, Id> {
     public T update(T t) {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         E entity = mapper.map(t, dbEntityGenericClass);
-//        if (entity instanceof ParentIdPopulater) {
-//            ((ParentIdPopulater) entity).populateParentIds();
-//        }
         E persistedCopy = execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, thriftGenericClass);
     }
