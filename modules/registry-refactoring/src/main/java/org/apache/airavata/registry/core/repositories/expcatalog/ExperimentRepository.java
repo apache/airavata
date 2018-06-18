@@ -28,7 +28,6 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -57,7 +56,7 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
     protected ExperimentEntity saveExperiment(ExperimentModel experimentModel) throws RegistryException {
         if (experimentModel.getExperimentId() == null || experimentModel.getExperimentId().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Experiment's ExperimentId");
-            experimentModel.setExperimentId(ExpCatalogUtils.getID(experimentModel.getExperimentName()));
+            experimentModel.setExperimentId(AiravataUtils.getId(experimentModel.getExperimentName()));
         }
         String experimentId = experimentModel.getExperimentId();
 
