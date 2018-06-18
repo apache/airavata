@@ -67,7 +67,7 @@ export default {
         incrementCount();
         return fetch(url, {
             method: 'post',
-            body: JSON.stringify(body),
+            body: (body instanceof FormData || typeof body === 'string') ? body : JSON.stringify(body),
             headers: headers,
             credentials: "same-origin"
         }).then((response) => {
@@ -91,7 +91,7 @@ export default {
         incrementCount();
         return fetch(url, {
             method: 'put',
-            body: JSON.stringify(body),
+            body: (body instanceof FormData || typeof body === 'string') ? body : JSON.stringify(body),
             headers: headers,
             credentials: "same-origin"
         }).then((response) => {
