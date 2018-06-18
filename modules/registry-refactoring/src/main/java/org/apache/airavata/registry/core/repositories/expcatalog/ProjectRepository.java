@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity;
@@ -49,7 +50,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
     protected ProjectEntity saveProject(Project project, String gatewayId) throws RegistryException {
         if (project.getProjectID() == null || project.getProjectID().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Project's ProjectId");
-            project.setProjectID(getProjectId(project.getName()));
+            project.setProjectID(AiravataUtils.getId(project.getName()));
         }
 
         Mapper mapper = ObjectMapperSingleton.getInstance();
@@ -74,11 +75,6 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
 
     public void updateProject(Project project, String projectId) throws RegistryException {
         saveProjectData(project, projectId);
-    }
-
-    private String getProjectId(String projectName){
-        String pro = projectName.replaceAll("\\s", "");
-        return pro + "_" + UUID.randomUUID();
     }
 
     public Project getProject(String projectId) throws RegistryException {
