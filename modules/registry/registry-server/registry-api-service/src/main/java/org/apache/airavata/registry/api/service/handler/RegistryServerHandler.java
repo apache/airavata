@@ -1310,7 +1310,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            List<ApplicationDeploymentDescription> deployements = applicationDeploymentRepository.getAccessibleApplicationDeployements(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            List<ApplicationDeploymentDescription> deployements = applicationDeploymentRepository.getAccessibleApplicationDeployments(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
         } catch (AppCatalogException e) {
@@ -1334,7 +1334,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             List<String> appDeployments = new ArrayList<>();
             Map<String, String> filters = new HashMap<>();
             filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-            List<ApplicationDeploymentDescription> applicationDeployments = applicationDeploymentRepository.getApplicationDeployements(filters);
+            List<ApplicationDeploymentDescription> applicationDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
             for (ApplicationDeploymentDescription description : applicationDeployments){
                 appDeployments.add(description.getAppDeploymentId());
             }
@@ -1353,7 +1353,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             Map<String, String> filters = new HashMap<>();
             filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-            List<ApplicationDeploymentDescription> applicationDeployments = applicationDeploymentRepository.getApplicationDeployements(filters);
+            List<ApplicationDeploymentDescription> applicationDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
             return applicationDeployments;
         } catch (AppCatalogException e) {
             logger.error(appModuleId, "Error while retrieving application deployments...", e);
@@ -1516,7 +1516,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 for (String moduleId : applicationModules) {
                     filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, moduleId);
                     List<ApplicationDeploymentDescription> applicationDeployments =
-                            applicationDeploymentRepository.getApplicationDeployements(filters);
+                            applicationDeploymentRepository.getApplicationDeployments(filters);
                     for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
                         if (allComputeResources.get(deploymentDescription.getComputeHostId()) != null){
                             availableComputeResources.put(deploymentDescription.getComputeHostId(),

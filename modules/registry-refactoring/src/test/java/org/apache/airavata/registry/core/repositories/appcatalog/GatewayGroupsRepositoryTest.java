@@ -21,40 +21,25 @@
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
-import org.junit.After;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GatewayGroupsRepositoryTest {
+public class GatewayGroupsRepositoryTest extends TestBase {
 
     private static final String GATEWAY_ID = "gateway-id";
     private static final String ADMIN_GROUPS_ID = "admin-groups-id";
     private static final String READ_ONLY_ADMINS_GROUP_ID = "read-only-admins-group-id";
     private static final String DEFAULT_GATEWAY_USERS_GROUP_ID = "default-gateway-users-group-id";
 
-    private static Initialize initialize;
     private GatewayGroupsRepository gatewayGroupsRepository;
     private static final Logger logger = LoggerFactory.getLogger(GatewayProfileRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("appcatalog-derby.sql");
-            initialize.initializeDB();
-            gatewayGroupsRepository = new GatewayGroupsRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public GatewayGroupsRepositoryTest() {
+        super(Database.APP_CATALOG);
+        gatewayGroupsRepository = new GatewayGroupsRepository();
     }
 
     @Test

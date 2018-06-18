@@ -22,10 +22,8 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.*;
-import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,32 +33,19 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-public class GroupResourceProfileRepositoryTest {
+public class GroupResourceProfileRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
+    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepository.class);
+
     private ComputeResourceRepository computeResourceRepository;
     private GroupResourceProfileRepository groupResourceProfileRepository;
     private String gatewayId = "TEST_GATEWAY";
     private String groupResourceProfileId = null;
-    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepository.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("appcatalog-derby.sql");
-            initialize.initializeDB();
-            computeResourceRepository = new ComputeResourceRepository();
-            groupResourceProfileRepository = new GroupResourceProfileRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
-        initialize.stopDerbyServer();
+    public GroupResourceProfileRepositoryTest() {
+        super(Database.APP_CATALOG);
+        computeResourceRepository = new ComputeResourceRepository();
+        groupResourceProfileRepository = new GroupResourceProfileRepository();
     }
 
     @Test

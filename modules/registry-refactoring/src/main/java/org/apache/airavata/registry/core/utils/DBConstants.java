@@ -162,4 +162,8 @@ public class DBConstants {
         public static final String WORKFLOW_NAME = "workflowName";
     }
 
+    public static class DataMovement {
+        public static final String GRID_FTP_DATA_MOVEMENT_ID = "dataMovementId";
+    }
+
 }

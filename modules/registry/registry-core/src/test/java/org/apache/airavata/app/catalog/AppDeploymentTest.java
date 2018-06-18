@@ -124,11 +124,11 @@ public class AppDeploymentTest {
 
         Map<String, String> moduleIdFilter = new HashMap<String, String>();
         moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, wrfModuleId);
-        List<ApplicationDeploymentDescription> applicationDeployements = appDep.getApplicationDeployements(moduleIdFilter);
+        List<ApplicationDeploymentDescription> applicationDeployements = appDep.getApplicationDeployments(moduleIdFilter);
         System.out.println("******** Size of App deployments for module *********** : " + applicationDeployements.size());
         Map<String, String> hostFilter = new HashMap<String, String>();
         hostFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, hostId);
-        List<ApplicationDeploymentDescription> applicationDeployementsForHost = appDep.getApplicationDeployements(hostFilter);
+        List<ApplicationDeploymentDescription> applicationDeployementsForHost = appDep.getApplicationDeployments(hostFilter);
         System.out.println("******** Size of App deployments for host *********** : " + applicationDeployementsForHost.size());
 
         List<String> allApplicationDeployementIds = appDep.getAllApplicationDeployementIds();
@@ -138,7 +138,7 @@ public class AppDeploymentTest {
         accessibleAppIds.add(wrfModuleId);
         List<String> accessibleComputeResourceIds = new ArrayList<>();
         accessibleComputeResourceIds.add(hostId);
-        List<ApplicationDeploymentDescription> allApplicationDeployements = appDep.getAccessibleApplicationDeployements(ServerSettings.getDefaultUserGateway(), accessibleAppIds, accessibleComputeResourceIds);
+        List<ApplicationDeploymentDescription> allApplicationDeployements = appDep.getAccessibleApplicationDeployments(ServerSettings.getDefaultUserGateway(), accessibleAppIds, accessibleComputeResourceIds);
         System.out.println("******** Size of all App deployments *********** : " + allApplicationDeployements.size());
 
         assertTrue("App interface saved successfully", app != null);

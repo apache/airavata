@@ -51,7 +51,7 @@ public interface ApplicationDeployment {
      * @param filters map should be provided as the field name and it's value
      * @return list of application deployments
      */
-    List<ApplicationDeploymentDescription> getApplicationDeployements (Map<String, String> filters) throws AppCatalogException;
+    List<ApplicationDeploymentDescription> getApplicationDeployments(Map<String, String> filters) throws AppCatalogException;
 
     /**
      * This method will return a list of all application deployments
@@ -67,7 +67,7 @@ public interface ApplicationDeployment {
      * @param accessibleComputeResourceIds List of Accessible Compute Resource IDs
      * @return list of all application deployments accessible to the user
      */
-    List<ApplicationDeploymentDescription> getAccessibleApplicationDeployements (String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException;
+    List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException;
 
     List<String> getAllApplicationDeployementIds () throws AppCatalogException;
 

@@ -172,12 +172,13 @@ public class ApplicationInputEntity implements Serializable {
 		this.standardInput = standardInput;
 	}
 
-	public String getserFriendlyDescription() {
+	public String getUserFriendlyDescription() {
 		return userFriendlyDescription;
 	}
 
-	public void setserFriendlyDescription(String userFriendlyDescription) {
+	public ApplicationInputEntity setUserFriendlyDescription(String userFriendlyDescription) {
 		this.userFriendlyDescription = userFriendlyDescription;
+		return this;
 	}
 
 	public boolean getIsReadOnly() {

@@ -42,8 +42,8 @@ public class UnicoreDatamovementEntity implements Serializable {
 	@Column(name="DATAMOVEMENT_ID")
 	private String dataMovementInterfaceId;
 
-	@Column(name="SECURITY_PROTOCAL")
-	private SecurityProtocol securityProtocal;
+	@Column(name="SECURITY_PROTOCOL")
+	private SecurityProtocol securityProtocol;
 
 	@Column(name="UNICORE_ENDPOINT_URL")
 	private String unicoreEndpointUrl;
@@ -59,12 +59,12 @@ public class UnicoreDatamovementEntity implements Serializable {
 		this.dataMovementInterfaceId = dataMovementInterfaceId;
 	}
 
-	public SecurityProtocol getSecurityProtocal() {
-		return securityProtocal;
+	public SecurityProtocol getSecurityProtocol() {
+		return securityProtocol;
 	}
 
-	public void setSecurityProtocal(SecurityProtocol securityProtocal) {
-		this.securityProtocal = securityProtocal;
+	public void setSecurityProtocol(SecurityProtocol securityProtocol) {
+		this.securityProtocol = securityProtocol;
 	}
 
 	public String getUnicoreEndpointUrl() {

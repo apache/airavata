@@ -27,6 +27,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -40,31 +41,19 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class ExperimentRepositoryTest {
+public class ExperimentRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentRepositoryTest.class);
+
     GatewayRepository gatewayRepository;
     ProjectRepository projectRepository;
     ExperimentRepository experimentRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("expcatalog-derby.sql");
-            initialize.initializeDB();
-            gatewayRepository = new GatewayRepository();
-            projectRepository = new ProjectRepository();
-            experimentRepository = new ExperimentRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public ExperimentRepositoryTest() {
+        super(Database.EXP_CATALOG);
+        gatewayRepository = new GatewayRepository();
+        projectRepository = new ProjectRepository();
+        experimentRepository = new ExperimentRepository();
     }
 
     @Test
