@@ -8,7 +8,6 @@ import GroupComputeResourcePreference from './components/admin/group_resource_pr
 import ComputePreferences from './components/admin/group_resource_preferences/ComputePreferences'
 import ComputeResourcePreferenceDashboard from './components/dashboards/ComputeResourcePreferenceDashboard'
 import CredentialStoreDashboard from './components/dashboards/CredentialStoreDashboard'
-import ComponentTest from './components/commons/ComponentTest'
 import VueRouter from 'vue-router'
 
 
@@ -52,11 +51,6 @@ const routes = [
     component: CredentialStoreDashboard,
     name: 'credential_store'
   },
-  {
-    path: "/test",
-    component: ComponentTest,
-    name: 'test'
-  }
 ];
 export default new VueRouter({
   routes: routes
