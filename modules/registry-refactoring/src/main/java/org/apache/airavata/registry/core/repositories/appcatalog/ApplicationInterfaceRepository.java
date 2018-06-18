@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
@@ -33,10 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ApplicationInterfaceRepository extends AppCatAbstractRepository<ApplicationInterfaceDescription, ApplicationInterfaceEntity, String> implements ApplicationInterface {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepository.class);
@@ -219,6 +217,7 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     @Override
     public List<ApplicationModule> getAccessibleApplicationModules(String gatewayId, List<String> accessibleAppIds, List<String> accessibleCompHostIds) throws AppCatalogException {
         ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
+        ApplicationDeploymentRepository deploymentRepository = new ApplicationDeploymentRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationModule.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);

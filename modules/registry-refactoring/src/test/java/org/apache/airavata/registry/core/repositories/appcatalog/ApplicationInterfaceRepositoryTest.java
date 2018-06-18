@@ -23,14 +23,15 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,123 +42,436 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.*;
 
-public class ApplicationInterfaceRepositoryTest {
+public class ApplicationInterfaceRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepositoryTest.class);
+
     private ApplicationInterfaceRepository applicationInterfaceRepository;
     private ComputeResourceRepository computeResourceRepository;
     private ApplicationDeploymentRepository applicationDeploymentRepository;
     private String gatewayId = "testGateway";
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("appcatalog-derby.sql");
-            initialize.initializeDB();
-            applicationInterfaceRepository = new ApplicationInterfaceRepository();
-            computeResourceRepository = new ComputeResourceRepository();
-            applicationDeploymentRepository = new ApplicationDeploymentRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public ApplicationInterfaceRepositoryTest() {
+        super(TestBase.Database.APP_CATALOG);
+        computeResourceRepository = new ComputeResourceRepository();
+        applicationInterfaceRepository = new ApplicationInterfaceRepository();
+        applicationDeploymentRepository = new ApplicationDeploymentRepository();
     }
 
     @Test
-    public void ApplicationInterfaceRepositoryTest() throws AppCatalogException {
-        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
-        applicationInterfaceDescription.setApplicationInterfaceId("interface1");
-        applicationInterfaceDescription.setApplicationName("app interface 1");
+    public void addApplicationModuleTest() throws AppCatalogException {
+        ApplicationModule applicationModule = new ApplicationModule();
+        applicationModule.setAppModuleId("appMod1");
+        applicationModule.setAppModuleName("appMod1Name");
+        applicationModule.setAppModuleDescription("Description");
+        applicationModule.setAppModuleVersion("Version1");
+        String moduleId = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
 
-        String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
-        assertEquals(applicationInterfaceDescription.getApplicationInterfaceId(), interfaceId);
+        ApplicationModule savedAppModule = applicationInterfaceRepository.getApplicationModule(moduleId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(applicationModule, savedAppModule));
+    }
 
-        ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
-        computeResourceDescription.setComputeResourceId("compHost1");
-        computeResourceDescription.setHostName("compHost1Name");
-        String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
+    @Test
+    public void addApplicationModuleWithEmptyIdTest() throws AppCatalogException {
+        ApplicationModule applicationModule = new ApplicationModule();
+        applicationModule.setAppModuleName("appMod1Name");
+        applicationModule.setAppModuleDescription("Description");
+        applicationModule.setAppModuleVersion("Version1");
+        String moduleId = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
+
+        ApplicationModule savedAppModule = applicationInterfaceRepository.getApplicationModule(moduleId);
+        Assert.assertEquals(applicationModule.getAppModuleName(), savedAppModule.getAppModuleId());
+    }
+
+    @Test
+    public void deleteApplicationModuleTest() throws AppCatalogException {
+
+        Assert.assertNull(applicationInterfaceRepository.getApplicationModule("appMod1"));
 
         ApplicationModule applicationModule = new ApplicationModule();
         applicationModule.setAppModuleId("appMod1");
         applicationModule.setAppModuleName("appMod1Name");
         String moduleId = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
+        Assert.assertNotNull(applicationInterfaceRepository.getApplicationModule(moduleId));
 
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
-        applicationDeploymentDescription.setAppDeploymentId("appDep1");
-        applicationDeploymentDescription.setAppModuleId(moduleId);
-        applicationDeploymentDescription.setComputeHostId(computeResourceId);
-        applicationDeploymentDescription.setExecutablePath("executablePath");
-        applicationDeploymentDescription.setParallelism(ApplicationParallelismType.SERIAL);
-        String deploymentId = applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription, gatewayId);
+        Assert.assertTrue(applicationInterfaceRepository.removeApplicationModule("appMod1"));
 
+        Assert.assertNull(applicationInterfaceRepository.getApplicationModule("appMod1"));
+    }
+
+    @Test
+    public void updateApplicationModuleTest() throws AppCatalogException {
+        ApplicationModule applicationModule = new ApplicationModule();
+        applicationModule.setAppModuleId("appMod1");
+        applicationModule.setAppModuleName("appMod1Name");
+        applicationModule.setAppModuleDescription("Description");
+        applicationModule.setAppModuleVersion("Version1");
+        String moduleId = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
+
+        ApplicationModule savedAppModule = applicationInterfaceRepository.getApplicationModule(moduleId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(applicationModule, savedAppModule));
+
+        savedAppModule.setAppModuleName("Updated Name");
+        savedAppModule.setAppModuleDescription("Updated Description");
+        savedAppModule.setAppModuleVersion("new version");
+
+        applicationInterfaceRepository.updateApplicationModule("appMod1", savedAppModule);
+
+        ApplicationModule updatedAppModule = applicationInterfaceRepository.getApplicationModule(moduleId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(savedAppModule, updatedAppModule));
+    }
+
+    @Test
+    public void addApplicationInterfaceTest() throws AppCatalogException {
+        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+        applicationInterfaceDescription.setApplicationInterfaceId("interface1");
+        applicationInterfaceDescription.setApplicationName("app interface 1");
+        applicationInterfaceDescription.setApplicationModules(new ArrayList<>());
+        applicationInterfaceDescription.setApplicationInputs(new ArrayList<>());
+        applicationInterfaceDescription.setApplicationOutputs(new ArrayList<>());
+
+        String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
+        assertEquals(applicationInterfaceDescription.getApplicationInterfaceId(), interfaceId);
+
+        ApplicationInterfaceDescription savedInterface = applicationInterfaceRepository.getApplicationInterface(interfaceId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(applicationInterfaceDescription, savedInterface, "__isset_bitfield"));
+    }
+
+    @Test
+    public void deleteApplicationInterfaceTest() throws AppCatalogException {
+
+        Assert.assertNull(applicationInterfaceRepository.getApplicationModule("interface1"));
+
+        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+        applicationInterfaceDescription.setApplicationInterfaceId("interface1");
+        applicationInterfaceDescription.setApplicationName("app interface 1");
+        applicationInterfaceDescription.setApplicationModules(new ArrayList<>());
+        applicationInterfaceDescription.setApplicationInputs(new ArrayList<>());
+        applicationInterfaceDescription.setApplicationOutputs(new ArrayList<>());
+
+        String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
+
+        Assert.assertNotNull(applicationInterfaceRepository.getApplicationInterface(interfaceId));
+        Assert.assertTrue(applicationInterfaceRepository.removeApplicationInterface(interfaceId));
+        Assert.assertNull(applicationInterfaceRepository.getApplicationInterface(interfaceId));
+    }
+
+    @Test
+    public void addModulesToInterfaceTest() throws AppCatalogException {
         ApplicationModule applicationModule1 = new ApplicationModule();
-        applicationModule1.setAppModuleId("appMod2");
-        applicationModule1.setAppModuleName("appMod2Name");
+        applicationModule1.setAppModuleId("appMod1");
+        applicationModule1.setAppModuleName("appMod1Name");
         String moduleId1 = applicationInterfaceRepository.addApplicationModule(applicationModule1, gatewayId);
 
-        applicationInterfaceRepository.addApplicationModuleMapping(moduleId, interfaceId);
+        ApplicationModule applicationModule2 = new ApplicationModule();
+        applicationModule2.setAppModuleId("appMod2");
+        applicationModule2.setAppModuleName("appMod2Name");
+        String moduleId2 = applicationInterfaceRepository.addApplicationModule(applicationModule2, gatewayId);
+
+        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+        applicationInterfaceDescription.setApplicationInterfaceId("interface1");
+        applicationInterfaceDescription.setApplicationName("app interface 1");
+
+        String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
+
         applicationInterfaceRepository.addApplicationModuleMapping(moduleId1, interfaceId);
+        applicationInterfaceRepository.addApplicationModuleMapping(moduleId2, interfaceId);
+
+        ApplicationInterfaceDescription savedInterface = applicationInterfaceRepository.getApplicationInterface(interfaceId);
+
+        Assert.assertEquals(savedInterface.getApplicationModules().get(0), applicationModule1.getAppModuleId());
+        Assert.assertEquals(savedInterface.getApplicationModules().get(1), applicationModule2.getAppModuleId());
+    }
+
+    @Test
+    public void addInputsOutputsToInterfaceTest() throws AppCatalogException {
+
+        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+        applicationInterfaceDescription.setApplicationInterfaceId("interface1");
+        applicationInterfaceDescription.setApplicationName("app interface 1");
+
+        String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
 
         InputDataObjectType input = new InputDataObjectType();
         input.setName("input1");
+        input.setApplicationArgument("Arg");
+        input.setDataStaged(true);
+        input.setInputOrder(0);
+        input.setIsReadOnly(true);
+        input.setIsRequired(true);
+        input.setRequiredToAddedToCommandLine(true);
+        input.setType(DataType.FLOAT);
+        input.setUserFriendlyDescription("User friendly description");
+        input.setValue("113");
+        input.setMetaData("Metadata");
+        input.setStandardInput(true);
+        // TODO missing field
+        //input.setStorageResourceId("Storage resource id");
 
         OutputDataObjectType output = new OutputDataObjectType();
         output.setName("output1");
+        output.setValue("value");
+        output.setType(DataType.FLOAT);
+        output.setApplicationArgument("Argument");
+        output.setDataMovement(true);
+        output.setIsRequired(true);
+        output.setLocation("/home/");
+        output.setSearchQuery("Search query");
+        output.setRequiredToAddedToCommandLine(true);
+        output.setOutputStreaming(true);
+        // TODO missing field
+        //output.setStorageResourceId("Storage resource id");
 
-        applicationInterfaceDescription.setApplicationInputs(Arrays.asList(input));
-        applicationInterfaceDescription.setApplicationOutputs(Arrays.asList(output));
+        applicationInterfaceDescription.setApplicationInputs(Collections.singletonList(input));
+        applicationInterfaceDescription.setApplicationOutputs(Collections.singletonList(output));
+
         applicationInterfaceRepository.updateApplicationInterface(interfaceId, applicationInterfaceDescription);
-        ApplicationInterfaceDescription appDescription = applicationInterfaceRepository.getApplicationInterface(interfaceId);
-        assertTrue(appDescription.getApplicationInputs().size() == 1);
-        assertEquals(output.getName(), appDescription.getApplicationOutputs().get(0).getName());
 
-        applicationModule.setAppModuleVersion("1.0");
-        applicationInterfaceRepository.updateApplicationModule(moduleId, applicationModule);
-        ApplicationModule appModule = applicationInterfaceRepository.getApplicationModule(moduleId);
-        assertFalse(appModule.getAppModuleVersion() == null);
+        ApplicationInterfaceDescription savedInterface = applicationInterfaceRepository.getApplicationInterface(interfaceId);
+        Assert.assertEquals(1, savedInterface.getApplicationInputsSize());
+        Assert.assertEquals(1, savedInterface.getApplicationOutputsSize());
 
-        Map<String, String> filters = new HashMap<>();
-        filters.put(DBConstants.ApplicationInterface.APPLICATION_NAME, applicationInterfaceDescription.getApplicationName());
-        assertEquals(applicationInterfaceDescription.getApplicationName(),
-                applicationInterfaceRepository.getApplicationInterfaces(filters).get(0).getApplicationName());
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(input, savedInterface.getApplicationInputs().get(0), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(output, savedInterface.getApplicationOutputs().get(0), "__isset_bitfield"));
 
-        filters = new HashMap<>();
-        filters.put(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME, applicationModule.getAppModuleName());
-        assertEquals(applicationModule.getAppModuleName(),
-                applicationInterfaceRepository.getApplicationModules(filters).get(0).getAppModuleName());
+        List<InputDataObjectType> savedInputs = applicationInterfaceRepository.getApplicationInputs(interfaceId);
+        List<OutputDataObjectType> savedOutputs = applicationInterfaceRepository.getApplicationOutputs(interfaceId);
 
-        List<String> accessibleAppIds = new ArrayList<>();
-        accessibleAppIds.add(deploymentId);
-        List<String> accessibleCompHostIds = new ArrayList<>();
-        accessibleCompHostIds.add(computeResourceId);
-        List<ApplicationModule> appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, accessibleAppIds, accessibleCompHostIds);
-        assertTrue(appModuleList.size() == 1);
-        assertEquals(moduleId, appModuleList.get(0).getAppModuleId());
+        Assert.assertEquals(1, savedInputs.size());
+        Assert.assertEquals(1, savedOutputs.size());
 
-        assertTrue(applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId).size() == 1);
-        assertTrue(applicationInterfaceRepository.getAllApplicationModules(gatewayId).size() == 2);
-        assertEquals(interfaceId, applicationInterfaceRepository.getAllApplicationInterfaceIds().get(0));
-
-        assertEquals(input.getName(), applicationInterfaceRepository.getApplicationInputs(interfaceId).get(0).getName());
-        assertEquals(output.getName(), applicationInterfaceRepository.getApplicationOutputs(interfaceId).get(0).getName());
-
-        applicationInterfaceRepository.removeApplicationInterface(interfaceId);
-        assertFalse(applicationInterfaceRepository.isApplicationInterfaceExists(interfaceId));
-
-        applicationInterfaceRepository.removeApplicationModule(moduleId);
-        assertFalse(applicationInterfaceRepository.isApplicationModuleExists(moduleId));
-
-        applicationInterfaceRepository.removeApplicationModule(moduleId1);
-        assertFalse(applicationInterfaceRepository.isApplicationModuleExists(moduleId1));
-
-        computeResourceRepository.removeComputeResource(computeResourceId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(input, savedInputs.get(0), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(output, savedOutputs.get(0), "__isset_bitfield"));
 
     }
 
+    @Test
+    public void filterApplicationInterfacesTest() throws AppCatalogException {
+
+        List<ApplicationInterfaceDescription> interfaces = new ArrayList<>();
+        for (int i = 0 ;i < 5 ;i ++) {
+            ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+            applicationInterfaceDescription.setApplicationInterfaceId("interface" + i);
+            applicationInterfaceDescription.setApplicationName("app interface " + i);
+            interfaces.add(applicationInterfaceDescription);
+            applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
+        }
+
+        for (ApplicationInterfaceDescription iface : interfaces) {
+            Map<String, String> filters = new HashMap<>();
+            filters.put(DBConstants.ApplicationInterface.APPLICATION_NAME, iface.getApplicationName());
+            assertEquals(iface.getApplicationName(), applicationInterfaceRepository.getApplicationInterfaces(filters).get(0).getApplicationName());
+        }
+    }
+
+    @Test
+    public void filterApplicationModulesTest() throws AppCatalogException {
+        List<ApplicationModule> modules = new ArrayList<>();
+        for (int i = 0 ;i < 5 ;i ++) {
+            ApplicationModule applicationModule = new ApplicationModule();
+            applicationModule.setAppModuleId("appMod" + i);
+            applicationModule.setAppModuleName("appMod1Name");
+            applicationModule.setAppModuleDescription("Description");
+            applicationModule.setAppModuleVersion("Version1");
+            modules.add(applicationModule);
+            applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
+        }
+
+        for (ApplicationModule module : modules) {
+            Map<String, String> filters = new HashMap<>();
+            filters.put(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME, module.getAppModuleName());
+            assertEquals(module.getAppModuleName(),
+                    applicationInterfaceRepository.getApplicationModules(filters).get(0).getAppModuleName());
+        }
+    }
+
+    @Test
+    public void filterModuleByWrongCategoryTest() throws AppCatalogException {
+
+        ApplicationModule applicationModule = new ApplicationModule();
+        applicationModule.setAppModuleId("appMod1");
+        applicationModule.setAppModuleName("appMod1Name");
+        applicationModule.setAppModuleDescription("Description");
+        applicationModule.setAppModuleVersion("Version1");
+        applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
+
+        Map<String, String> filters = new HashMap<>();
+        filters.put("INVALID KEY", applicationModule.getAppModuleName());
+        try {
+            applicationInterfaceRepository.getApplicationModules(filters).get(0).getAppModuleName();
+            Assert.fail("Expected to throw an exception");
+        } catch (IllegalArgumentException e) {
+            // ignore
+        }
+    }
+
+    @Test
+    public void filterInterfaceByWrongCategoryTest() throws AppCatalogException {
+
+        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+        applicationInterfaceDescription.setApplicationInterfaceId("interface1");
+        applicationInterfaceDescription.setApplicationName("app interface");
+        applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
+
+        Map<String, String> filters = new HashMap<>();
+        filters.put("INVALID KEY", applicationInterfaceDescription.getApplicationName());
+        try {
+            applicationInterfaceRepository.getApplicationInterfaces(filters).get(0).getApplicationName();
+            Assert.fail("Expected to throw an exception");
+        } catch (IllegalArgumentException e) {
+            // ignore
+        }
+    }
+
+    @Test
+    public void getAccessibleApplicationModulesTest() throws AppCatalogException {
+
+        ComputeResourceDescription computeResourceDescription1 = new ComputeResourceDescription();
+        computeResourceDescription1.setComputeResourceId("compHost1");
+        computeResourceDescription1.setHostName("compHost1Name");
+        String computeResourceId1 = computeResourceRepository.addComputeResource(computeResourceDescription1);
+
+        ComputeResourceDescription computeResourceDescription2 = new ComputeResourceDescription();
+        computeResourceDescription2.setComputeResourceId("compHost2");
+        computeResourceDescription2.setHostName("compHost2Name");
+        String computeResourceId2 = computeResourceRepository.addComputeResource(computeResourceDescription2);
+
+        ApplicationModule applicationModule1 = new ApplicationModule();
+        applicationModule1.setAppModuleId("appMod1");
+        applicationModule1.setAppModuleName("appMod1Name");
+        String moduleId1 = applicationInterfaceRepository.addApplicationModule(applicationModule1, gatewayId);
+
+        ApplicationModule applicationModule2 = new ApplicationModule();
+        applicationModule2.setAppModuleId("appMod2");
+        applicationModule2.setAppModuleName("appMod2Name");
+        String moduleId2 = applicationInterfaceRepository.addApplicationModule(applicationModule2, gatewayId);
+
+        ApplicationDeploymentDescription applicationDeploymentDescription1 = new ApplicationDeploymentDescription();
+        applicationDeploymentDescription1.setAppDeploymentId("appDep1");
+        applicationDeploymentDescription1.setAppModuleId(moduleId1);
+        applicationDeploymentDescription1.setComputeHostId(computeResourceId1);
+        applicationDeploymentDescription1.setExecutablePath("executablePath");
+        applicationDeploymentDescription1.setParallelism(ApplicationParallelismType.SERIAL);
+        String deploymentId1 = applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription1, gatewayId);
+
+        ApplicationDeploymentDescription applicationDeployement = applicationDeploymentRepository.getApplicationDeployement(deploymentId1);
+
+        ApplicationDeploymentDescription applicationDeploymentDescription2 = new ApplicationDeploymentDescription();
+        applicationDeploymentDescription2.setAppDeploymentId("appDep2");
+        applicationDeploymentDescription2.setAppModuleId(moduleId1);
+        applicationDeploymentDescription2.setComputeHostId(computeResourceId2);
+        applicationDeploymentDescription2.setExecutablePath("executablePath");
+        applicationDeploymentDescription2.setParallelism(ApplicationParallelismType.SERIAL);
+        String deploymentId2 = applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription2, gatewayId);
+
+        List<String> deploymentIds = new ArrayList<>();
+        deploymentIds.add(deploymentId1);
+        List<String> compHostIds = new ArrayList<>();
+        compHostIds.add(computeResourceId1);
+        List<ApplicationModule> appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, deploymentIds, compHostIds);
+
+        assertEquals(1, appModuleList.size());
+        assertEquals(moduleId1, appModuleList.get(0).getAppModuleId());
+
+        deploymentIds = new ArrayList<>();
+        deploymentIds.add(deploymentId1);
+        compHostIds = new ArrayList<>();
+        compHostIds.add(computeResourceId2);
+        appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, deploymentIds, compHostIds);
+        assertEquals(0, appModuleList.size());
+
+        deploymentIds = new ArrayList<>();
+        deploymentIds.add(deploymentId2);
+        compHostIds = new ArrayList<>();
+        compHostIds.add(computeResourceId2);
+        appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, deploymentIds, compHostIds);
+        assertEquals(1, appModuleList.size());
+        assertEquals(moduleId1, appModuleList.get(0).getAppModuleId());
+    }
+
+    @Test
+    public void getAllApplicationModulesByGatewayTest() throws AppCatalogException {
+        Map<String, List<ApplicationModule>> moduleStore = new HashMap<>();
+
+        for (int j = 0; j < 5; j++) {
+            List<ApplicationModule> modules = new ArrayList<>();
+            String gateway  = "gateway" + j;
+            for (int i = 0; i < 5; i++) {
+                ApplicationModule applicationModule = new ApplicationModule();
+                applicationModule.setAppModuleId(gateway + "appMod" + i);
+                applicationModule.setAppModuleName(gateway + "appMod1Name");
+                applicationModule.setAppModuleDescription(gateway + "Description");
+                applicationModule.setAppModuleVersion(gateway + "Version1");
+                modules.add(applicationModule);
+                applicationInterfaceRepository.addApplicationModule(applicationModule, gateway);
+            }
+            moduleStore.put(gateway, modules);
+        }
+
+        for (int j = 0; j < 5; j++) {
+            String gateway  = "gateway" + j;
+            List<ApplicationModule> allApplicationModules = applicationInterfaceRepository.getAllApplicationModules(gateway);
+
+            Assert.assertEquals(moduleStore.get(gateway).size(), allApplicationModules.size());
+            for (int i = 0; i < allApplicationModules.size(); i++) {
+                Assert.assertTrue(EqualsBuilder.reflectionEquals(moduleStore.get(gateway).get(i), allApplicationModules.get(i), "__isset_bitfield"));
+            }
+        }
+    }
+
+    @Test
+    public void getAllApplicationInterfacesByGatewayTest() throws AppCatalogException {
+        Map<String, List<ApplicationInterfaceDescription>> interfaceStore = new HashMap<>();
+
+        for (int j = 0; j < 5; j++) {
+            List<ApplicationInterfaceDescription> interfaces = new ArrayList<>();
+            String gateway  = "gateway" + j;
+            for (int i = 0; i < 5; i++) {
+                ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+                applicationInterfaceDescription.setApplicationInterfaceId(gateway + "interface" + i);
+                applicationInterfaceDescription.setApplicationName(gateway + "app interface " + i);
+                applicationInterfaceDescription.setApplicationModules(new ArrayList<>());
+                applicationInterfaceDescription.setApplicationInputs(new ArrayList<>());
+                applicationInterfaceDescription.setApplicationOutputs(new ArrayList<>());
+                interfaces.add(applicationInterfaceDescription);
+                applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gateway);
+            }
+            interfaceStore.put(gateway, interfaces);
+        }
+
+        for (int j = 0; j < 5; j++) {
+            String gateway  = "gateway" + j;
+            List<ApplicationInterfaceDescription> allApplicationInterfaces = applicationInterfaceRepository.getAllApplicationInterfaces(gateway);
+
+            Assert.assertEquals(interfaceStore.get(gateway).size(), allApplicationInterfaces.size());
+            for (int i = 0; i < allApplicationInterfaces.size(); i++) {
+                Assert.assertTrue(EqualsBuilder.reflectionEquals(interfaceStore.get(gateway).get(i), allApplicationInterfaces.get(i), "__isset_bitfield"));
+            }
+        }
+    }
+
+    @Test
+    public void getAllApplicationInterfacesWithoutGatewayTest() throws AppCatalogException {
+
+        List<ApplicationInterfaceDescription> interfaces = new ArrayList<>();
+        for (int j = 0; j < 5; j++) {
+            String gateway  = "gateway" + j;
+            for (int i = 0; i < 5; i++) {
+                ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+                applicationInterfaceDescription.setApplicationInterfaceId(gateway + "interface" + i);
+                applicationInterfaceDescription.setApplicationName(gateway + "app interface " + i);
+                applicationInterfaceDescription.setApplicationModules(new ArrayList<>());
+                applicationInterfaceDescription.setApplicationInputs(new ArrayList<>());
+                applicationInterfaceDescription.setApplicationOutputs(new ArrayList<>());
+                interfaces.add(applicationInterfaceDescription);
+                applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gateway);
+            }
+        }
+
+        List<String> allApplicationInterfaceIds = applicationInterfaceRepository.getAllApplicationInterfaceIds();
+        Assert.assertEquals(interfaces.size(), allApplicationInterfaceIds.size());
+        for (int i = 0; i < interfaces.size(); i++) {
+            Assert.assertEquals(interfaces.get(i).getApplicationInterfaceId(), allApplicationInterfaceIds.get(i));
+        }
+    }
 }

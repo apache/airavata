@@ -41,7 +41,7 @@ public class BatchQueueEntity implements Serializable {
     private String queueName;
 
     @Column(name = "MAX_JOB_IN_QUEUE")
-    private int maxJobInQueue;
+    private int maxJobsInQueue;
 
     @Column(name = "MAX_MEMORY")
     private int maxMemory;
@@ -99,12 +99,12 @@ public class BatchQueueEntity implements Serializable {
         this.queueName = queueName;
     }
 
-    public int getMaxJobInQueue() {
-        return maxJobInQueue;
+    public int getMaxJobsInQueue() {
+        return maxJobsInQueue;
     }
 
-    public void setMaxJobInQueue(int maxJobInQueue) {
-        this.maxJobInQueue = maxJobInQueue;
+    public void setMaxJobsInQueue(int maxJobsInQueue) {
+        this.maxJobsInQueue = maxJobsInQueue;
     }
 
     public int getMaxMemory() {
@@ -195,11 +195,11 @@ public class BatchQueueEntity implements Serializable {
         this.queueSpecificMacros = queueSpecificMacros;
     }
 
-    public boolean isDefaultQueue() {
+    public boolean getIsDefaultQueue() {
         return isDefaultQueue;
     }
 
-    public void setDefaultQueue(boolean defaultQueue) {
+    public void setIsDefaultQueue(boolean defaultQueue) {
         isDefaultQueue = defaultQueue;
     }
 }

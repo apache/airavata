@@ -25,10 +25,8 @@ import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.data.movement.GridFTPDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
-import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,27 +40,15 @@ import static org.junit.Assert.fail;
 /**
  * Created by skariyat on 3/13/18.
  */
-public class StorageResourceRepositoryTest {
+public class StorageResourceRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
-    private StorageResourceRepository storageResourceRepository;
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceRepository.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("appcatalog-derby.sql");
-            initialize.initializeDB();
-            storageResourceRepository = new StorageResourceRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
+    private StorageResourceRepository storageResourceRepository;
 
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public StorageResourceRepositoryTest() {
+        super(Database.APP_CATALOG);
+        storageResourceRepository = new StorageResourceRepository();
     }
 
     @Test

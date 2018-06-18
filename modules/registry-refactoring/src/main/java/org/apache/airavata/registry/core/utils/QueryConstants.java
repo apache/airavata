@@ -160,4 +160,7 @@ public interface QueryConstants {
     String FIND_ALL_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR";
     String FIND_ALL_AVAILABLE_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
             "WHERE SR.enabled = TRUE";
+
+    String FIND_ALL_GRID_FTP_ENDPOINTS_BY_DATA_MOVEMENT = "SELECT GFE FROM " + GridftpEndpointEntity.class.getSimpleName() +
+            " GFE WHERE GFE.gridftpDataMovement.dataMovementInterfaceId LIKE :" + DBConstants.DataMovement.GRID_FTP_DATA_MOVEMENT_ID;
 }
