@@ -1868,7 +1868,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                 List<GroupResourceProfile> groupResourceProfiles = getGroupResourceList(authzToken, gatewayId);
                 if (!groupResourceProfiles.isEmpty()) {
                     // Just pick the first one
-                    experiment.getUserConfigurationData().setGroupResourceProfileId(groupResourceProfiles.get(0).getGroupResourceProfileId());
+                    final String groupResourceProfileId = groupResourceProfiles.get(0).getGroupResourceProfileId();
+                    logger.warn("Experiment {} doesn't have groupResourceProfileId, picking first one user has access to: {}", airavataExperimentId, groupResourceProfileId);
+                    experiment.getUserConfigurationData().setGroupResourceProfileId(groupResourceProfileId);
                     regClient.updateExperimentConfiguration(airavataExperimentId, experiment.getUserConfigurationData());
                 } else {
                     throw new AuthorizationException("User " + username + " in gateway " + gatewayId + " doesn't have access to any group resource profiles.");
