@@ -41,7 +41,7 @@ public class GatewayEntity implements Serializable {
     @Column(name = "GATEWAY_NAME")
     private String gatewayName;
 
-    @Column(name = "GATEWAY_DOMAIN")
+    @Column(name = "DOMAIN")
     private String domain;
 
     @Column(name = "EMAIL_ADDRESS")
