@@ -5190,6 +5190,37 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
+    public List<String> getAllAccessibleGroups(AuthzToken authzToken, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        try {
+            HashSet<String> accessibleGroups = new HashSet<>();
+            final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (permissionType.equals(ResourcePermissionType.WRITE)) {
+                sharingClient.getListOfSharedGroups(domainId, resourceId, domainId + ":WRITE")
+                        .stream()
+                        .forEach(g -> accessibleGroups.add(g.groupId));
+            } else if (permissionType.equals(ResourcePermissionType.READ)) {
+                sharingClient.getListOfSharedGroups(domainId, resourceId, domainId + ":READ")
+                        .stream()
+                        .forEach(g -> accessibleGroups.add(g.groupId));
+            }
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            return new ArrayList<>(accessibleGroups);
+        } catch (Exception e) {
+            String msg = "Error in getting all accessible groups for resource. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            sharingClientPool.returnBrokenResource(sharingClient);
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
     public boolean userHasAccess(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         final String userId = authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domainId;
