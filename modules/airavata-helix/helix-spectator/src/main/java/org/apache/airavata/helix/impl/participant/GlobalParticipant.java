@@ -20,15 +20,15 @@
 package org.apache.airavata.helix.impl.participant;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
-import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlobalParticipant extends HelixParticipant<AiravataTask> {
+public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     private final static Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
 
@@ -47,7 +47,7 @@ public class GlobalParticipant extends HelixParticipant<AiravataTask> {
     };
 
     @SuppressWarnings("WeakerAccess")
-    public GlobalParticipant(List<Class<? extends AiravataTask>> taskClasses, String taskTypeName) throws ApplicationSettingsException {
+    public GlobalParticipant(List<Class<? extends AbstractTask>> taskClasses, String taskTypeName) throws ApplicationSettingsException {
         super(taskClasses, taskTypeName);
     }
 
@@ -55,10 +55,11 @@ public class GlobalParticipant extends HelixParticipant<AiravataTask> {
         logger.info("Starting global participant");
 
         try {
-            ArrayList<Class<? extends AiravataTask>> taskClasses = new ArrayList<>();
+            ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
 
             for (String taskClassName : taskClassNames) {
-                taskClasses.add(Class.forName(taskClassName).asSubclass(AiravataTask.class));
+                logger.debug("Adding task class: " + taskClassName + " to the global participant");
+                taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
             }
 
             GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
