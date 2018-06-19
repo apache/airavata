@@ -87,10 +87,16 @@ export default class Experiment extends BaseModel {
         return validationResults;
     }
 
+    get latestStatus() {
+        if (this.experimentStatus && this.experimentStatus.length > 0) {
+            return this.experimentStatus[this.experimentStatus.length - 1];
+        } else {
+            return null;
+        }
+    }
+
     get isProgressing() {
-        return this.experimentStatus
-            && this.experimentStatus.length > 0
-            && this.experimentStatus[0].state.isProgressing;
+        return this.latestStatus && this.latestStatus.isProgressing;
     }
 
     get hasLaunched() {
@@ -101,9 +107,8 @@ export default class Experiment extends BaseModel {
                                    ExperimentState.CANCELED,
                                    ExperimentState.FAILED,
                                    ExperimentState.COMPLETED];
-        return this.experimentStatus
-            && this.experimentStatus.length > 0
-            && hasLaunchedStates.indexOf(this.experimentStatus[0].state) >= 0;
+        return this.latestStatus
+            && hasLaunchedStates.indexOf(this.latestStatus.state) >= 0;
     }
 
     populateInputsOutputsFromApplicationInterface(applicationInterface) {

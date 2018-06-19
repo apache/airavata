@@ -60,8 +60,7 @@ export default class FullExperiment extends BaseModel {
     }
 
     get experimentStatus() {
-        return this.experiment.experimentStatus && this.experiment.experimentStatus.length > 0
-            ? this.experiment.experimentStatus[0] : null;
+        return this.experiment.latestStatus;
     }
 
     get experimentStatusName() {
