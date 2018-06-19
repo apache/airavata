@@ -91,6 +91,7 @@ public class ExperimentEntity implements Serializable {
 
     @OneToMany(targetEntity = ExperimentStatusEntity.class, cascade = CascadeType.ALL,
             mappedBy = "experiment", fetch = FetchType.EAGER)
+    @OrderBy("timeOfStateChange ASC")
     private List<ExperimentStatusEntity> experimentStatus;
 
     @OneToMany(targetEntity = ExperimentErrorEntity.class, cascade = CascadeType.ALL,

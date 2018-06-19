@@ -97,6 +97,7 @@ public class ProcessEntity implements Serializable {
 
     @OneToMany(targetEntity = ProcessStatusEntity.class, cascade = CascadeType.ALL,
             mappedBy = "process", fetch = FetchType.EAGER)
+    @OrderBy("timeOfStateChange ASC")
     private List<ProcessStatusEntity> processStatuses;
 
     @OneToMany(targetEntity = ProcessErrorEntity.class, cascade = CascadeType.ALL,

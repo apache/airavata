@@ -62,6 +62,7 @@ public class TaskEntity implements Serializable {
 
     @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL,
             mappedBy = "task", fetch = FetchType.EAGER)
+    @OrderBy("timeOfStateChange ASC")
     private List<TaskStatusEntity> taskStatuses;
 
     @OneToMany(targetEntity = TaskErrorEntity.class, cascade = CascadeType.ALL,
