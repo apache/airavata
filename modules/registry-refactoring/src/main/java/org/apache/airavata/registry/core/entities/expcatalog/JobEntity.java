@@ -74,6 +74,7 @@ public class JobEntity implements Serializable {
 
     @OneToMany(targetEntity = JobStatusEntity.class, cascade = CascadeType.ALL,
             mappedBy = "job", fetch = FetchType.EAGER)
+    @OrderBy("timeOfStateChange ASC")
     private List<JobStatusEntity> jobStatuses;
 
     @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
