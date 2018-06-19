@@ -22,11 +22,10 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,28 +34,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-public class GatewayRepositoryTest {
+public class GatewayRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
-    private String testGatewayId = "testGateway";
-    GatewayRepository gatewayRepository;
     private static final Logger logger = LoggerFactory.getLogger(GatewayRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("expcatalog-derby.sql");
-            initialize.initializeDB();
-            gatewayRepository = new GatewayRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
+    private String testGatewayId = "testGateway";
+    GatewayRepository gatewayRepository;
 
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public GatewayRepositoryTest() {
+        super(Database.EXP_CATALOG);
+        gatewayRepository = new GatewayRepository();
     }
 
     @Test
