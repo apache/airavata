@@ -87,6 +87,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                     "|/airavata/getGroupComputeResourcePreference|/airavata/getGroupComputeResourcePolicy" +
                     "|/airavata/getBatchQueueResourcePolicy|/airavata/getGroupComputeResourcePrefList" +
                     "|/airavata/getGroupBatchQueueResourcePolicyList|/airavata/getGroupComputeResourcePolicyList";
+    // These methods are protected by sharing registry authorization
+    private final static String APPLICATION_DEPLOYMENT_METHODS =
+            "/airavata/registerApplicationDeployment|/airavata/getApplicationDeployment|/airavata/updateApplicationDeployment" +
+                    "|/airavata/deleteApplicationDeployment|/airavata/getAllApplicationDeployments|/airavata/getAccessibleApplicationDeployments";
     // Misc. other methods needed for group based authorization
     private final static String GROUP_BASED_AUTH_METHODS = "/airavata/getGatewayGroups";
 
@@ -159,7 +163,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts|" +
                 "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|/airavata/getAllAppModules|/airavata/getApplicationModule|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
                 SHARING_RESOURCE_METHODS + "|" + SSH_ACCOUNT_PROVISIONER_METHODS + "|" + GROUP_RESOURCE_PROFILE_METHODS +
-                "|" + GROUP_BASED_AUTH_METHODS);
+                "|" + APPLICATION_DEPLOYMENT_METHODS + "|" + GROUP_BASED_AUTH_METHODS);
 
         initializeSecurityInfra();
     }
