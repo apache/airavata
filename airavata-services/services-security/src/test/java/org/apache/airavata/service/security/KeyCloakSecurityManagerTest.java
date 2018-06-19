@@ -117,6 +117,26 @@ public class KeyCloakSecurityManagerTest {
     }
 
     @Test
+    public void testAllowedGatewayUserMethod3(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
+
+        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
+        createExpectationsForAuthzCacheDisabled();
+        createExpectationsForGatewayGroupsMembership(false, false);
+
+        runIsUserAuthorizedTest("getGroupResourceList", true);
+    }
+
+    @Test
+    public void testAllowedGatewayUserMethod4(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
+
+        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
+        createExpectationsForAuthzCacheDisabled();
+        createExpectationsForGatewayGroupsMembership(false, false);
+
+        runIsUserAuthorizedTest("revokeSharingOfResourceFromGroups", true);
+    }
+
+    @Test
     public void testAllowedAdminUserMethod(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
         createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
