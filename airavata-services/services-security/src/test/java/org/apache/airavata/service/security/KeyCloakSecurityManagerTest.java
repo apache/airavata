@@ -90,50 +90,45 @@ public class KeyCloakSecurityManagerTest {
     @Test
     public void testDisallowedGatewayUserMethod(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
-        createExpectationsForAuthzCacheDisabled();
-        createExpectationsForGatewayGroupsMembership(false, false);
-        runIsUserAuthorizedTest("getAllGatewaySSHPubKeys", false);
+        runGatewayUserMethodTest(openidConfigHttpURLConnection, userinfoHttpURLConnection, "getAllGatewaySSHPubKeys", false);
     }
 
     @Test
     public void testAllowedGatewayUserMethod(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
-        createExpectationsForAuthzCacheDisabled();
-        createExpectationsForGatewayGroupsMembership(false, false);
-
-        runIsUserAuthorizedTest("createProject", true);
+        runGatewayUserMethodTest(openidConfigHttpURLConnection, userinfoHttpURLConnection, "createProject", true);
     }
 
     @Test
     public void testAllowedGatewayUserMethod2(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
-        createExpectationsForAuthzCacheDisabled();
-        createExpectationsForGatewayGroupsMembership(false, false);
-
-        runIsUserAuthorizedTest("userHasAccess", true);
+        runGatewayUserMethodTest(openidConfigHttpURLConnection, userinfoHttpURLConnection, "userHasAccess", true);
     }
 
     @Test
     public void testAllowedGatewayUserMethod3(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
-        createExpectationsForAuthzCacheDisabled();
-        createExpectationsForGatewayGroupsMembership(false, false);
-
-        runIsUserAuthorizedTest("getGroupResourceList", true);
+        runGatewayUserMethodTest(openidConfigHttpURLConnection, userinfoHttpURLConnection, "getGroupResourceList", true);
     }
 
     @Test
     public void testAllowedGatewayUserMethod4(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
+        runGatewayUserMethodTest(openidConfigHttpURLConnection, userinfoHttpURLConnection, "revokeSharingOfResourceFromGroups", true);
+    }
+
+    @Test
+    public void testAllowedGatewayUserMethod5(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
+
+        runGatewayUserMethodTest(openidConfigHttpURLConnection, userinfoHttpURLConnection, "getApplicationDeployment", true);
+    }
+
+    private void runGatewayUserMethodTest(@Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection, String methodName, boolean expectedAuthorization) throws IOException, ApplicationSettingsException, AiravataSecurityException, TException {
         createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
         createExpectationsForAuthzCacheDisabled();
         createExpectationsForGatewayGroupsMembership(false, false);
 
-        runIsUserAuthorizedTest("revokeSharingOfResourceFromGroups", true);
+        runIsUserAuthorizedTest(methodName, expectedAuthorization);
     }
 
     @Test

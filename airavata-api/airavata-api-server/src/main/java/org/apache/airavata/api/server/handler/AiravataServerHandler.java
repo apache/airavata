@@ -2389,9 +2389,17 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, String appDeploymentId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if (ServerSettings.isEnableSharing()) {
+                final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, appDeploymentId, ResourcePermissionType.READ);
+                if (!hasAccess) {
+                    throw new AuthorizationException("User does not have access to application deployment " + appDeploymentId);
+                }
+            }
             ApplicationDeploymentDescription result = regClient.getApplicationDeployment(appDeploymentId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             logger.error(appDeploymentId, "Error while retrieving application deployment...", e);
@@ -2399,6 +2407,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -2417,9 +2426,17 @@ public class AiravataServerHandler implements Airavata.Iface {
                                                ApplicationDeploymentDescription applicationDeployment)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if (ServerSettings.isEnableSharing()) {
+                final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, appDeploymentId, ResourcePermissionType.WRITE);
+                if (!hasAccess) {
+                    throw new AuthorizationException("User does not have WRITE access to application deployment " + appDeploymentId);
+                }
+            }
             boolean result = regClient.updateApplicationDeployment(appDeploymentId, applicationDeployment);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             logger.error(appDeploymentId, "Error while updating application deployment...", e);
@@ -2427,6 +2444,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating application deployment. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -2443,9 +2461,17 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteApplicationDeployment(AuthzToken authzToken, String appDeploymentId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if (ServerSettings.isEnableSharing()) {
+                final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, appDeploymentId, ResourcePermissionType.WRITE);
+                if (!hasAccess) {
+                    throw new AuthorizationException("User does not have WRITE access to application deployment " + appDeploymentId);
+                }
+            }
             boolean result = regClient.deleteApplicationDeployment(appDeploymentId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             logger.error(appDeploymentId, "Error while deleting application deployment...", e);
@@ -2453,6 +2479,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting application deployment. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -2467,19 +2494,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        RegistryService.Client regClient = registryClientPool.getResource();
-        try {
-            List<ApplicationDeploymentDescription> result = regClient.getAllApplicationDeployments(gatewayId);
-            registryClientPool.returnResource(regClient);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while retrieving application deployments...", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
-            registryClientPool.returnBrokenResource(regClient);
-            throw exception;
-        }
+        return getAccessibleApplicationDeployments(authzToken, gatewayId, ResourcePermissionType.READ);
     }
 
 
@@ -2549,6 +2564,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
+            // TODO: restrict to only application deployments that are accessible to user
             List<String> result = regClient.getAppModuleDeployedResources(appModuleId);
             registryClientPool.returnResource(regClient);
             return result;
@@ -5179,15 +5195,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         final String userId = authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domainId;
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            final boolean hasOwnerAccess = sharingClient.userHasAccess(domainId, userId, resourceId, domainId + ":" + ResourcePermissionType.OWNER);
-            boolean hasAccess = false;
-            if (permissionType.equals(ResourcePermissionType.WRITE)) {
-                hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, resourceId, domainId + ":" + ResourcePermissionType.WRITE);
-            } else if (permissionType.equals(ResourcePermissionType.READ)) {
-                hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, resourceId, domainId + ":" + ResourcePermissionType.READ);
-            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
-                hasAccess = hasOwnerAccess;
-            }
+            final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, resourceId, permissionType);
             sharingClientPool.returnResource(sharingClient);
             return hasAccess;
         } catch (Exception e) {
@@ -5705,6 +5713,25 @@ public class AiravataServerHandler implements Airavata.Iface {
         GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, domainId);
         sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
         sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
+    }
+
+    private boolean userHasAccessInternal(SharingRegistryService.Client sharingClient, AuthzToken authzToken, String entityId, ResourcePermissionType permissionType) {
+        final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        final String userId = authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domainId;
+        try {
+            final boolean hasOwnerAccess = sharingClient.userHasAccess(domainId, userId, entityId, domainId + ":" + ResourcePermissionType.OWNER);
+            boolean hasAccess = false;
+            if (permissionType.equals(ResourcePermissionType.WRITE)) {
+                hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, entityId, domainId + ":" + ResourcePermissionType.WRITE);
+            } else if (permissionType.equals(ResourcePermissionType.READ)) {
+                hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, entityId, domainId + ":" + ResourcePermissionType.READ);
+            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
+                hasAccess = hasOwnerAccess;
+            }
+            return hasAccess;
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to check if user has access", e);
+        }
     }
 
     private GatewayGroups retrieveGatewayGroups(RegistryService.Client regClient, String gatewayId) throws TException {
