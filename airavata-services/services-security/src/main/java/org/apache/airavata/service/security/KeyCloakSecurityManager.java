@@ -72,13 +72,23 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             "|/airavata/deleteUserComputeResourcePreference|/airavata/deleteUserStoragePreference" +
             "|/airavata/generateAndRegisterSSHKeys|/airavata/getAllCredentialSummaryForUsersInGateway" +
             "|/airavata/deleteSSHPubKey|/airavata/isUserResourceProfileExists";
-    private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/getAllAccessibleUsers|/airavata/userHasAccess";
+    private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/shareResourceWithGroups|/airavata/revokeSharingOfResourceFromGroups|/airavata/getAllAccessibleUsers|/airavata/userHasAccess";
     private final static String SSH_ACCOUNT_PROVISIONER_METHODS =
             "/airavata/getSSHAccountProvisioners|/airavata/doesUserHaveSSHAccount|/airavata" +
                     "/setupUserComputeResourcePreferencesForSSH|" +
                     // getGatewayResourceProfile is needed to look up whether ssh account provisioning is
                     // configured for a gateway's compute resource preference
                     "/airavata/getGatewayResourceProfile";
+    // These methods are protected by sharing registry authorization
+    private final static String GROUP_RESOURCE_PROFILE_METHODS =
+            "/airavata/createGroupResourceProfile|/airavata/updateGroupResourceProfile|/airavata/getGroupResourceProfile" +
+                    "|/airavata/removeGroupResourceProfile|/airavata/getGroupResourceList|/airavata/removeGroupComputePrefs" +
+                    "|/airavata/removeGroupComputeResourcePolicy|/airavata/removeGroupBatchQueueResourcePolicy" +
+                    "|/airavata/getGroupComputeResourcePreference|/airavata/getGroupComputeResourcePolicy" +
+                    "|/airavata/getBatchQueueResourcePolicy|/airavata/getGroupComputeResourcePrefList" +
+                    "|/airavata/getGroupBatchQueueResourcePolicyList|/airavata/getGroupComputeResourcePolicyList";
+    // Misc. other methods needed for group based authorization
+    private final static String GROUP_BASED_AUTH_METHODS = "/airavata/getGatewayGroups";
 
     private RegistryService.Client registryServiceClient = null;
     private SharingRegistryService.Client sharingRegistryServiceClient = null;
@@ -148,7 +158,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getWorkflow|/airavata/getWorkflowTemplateId|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|" +
                 "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts|" +
                 "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|/airavata/getAllAppModules|/airavata/getApplicationModule|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
-                SHARING_RESOURCE_METHODS + "|" + SSH_ACCOUNT_PROVISIONER_METHODS);
+                SHARING_RESOURCE_METHODS + "|" + SSH_ACCOUNT_PROVISIONER_METHODS + "|" + GROUP_RESOURCE_PROFILE_METHODS +
+                "|" + GROUP_BASED_AUTH_METHODS);
 
         initializeSecurityInfra();
     }
