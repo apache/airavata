@@ -26,10 +26,8 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,33 +35,21 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ExperimentStatusRepositoryTest {
+public class ExperimentStatusRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentStatusRepositoryTest.class);
+
     GatewayRepository gatewayRepository;
     ProjectRepository projectRepository;
     ExperimentRepository experimentRepository;
     ExperimentStatusRepository experimentStatusRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentStatusRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("expcatalog-derby.sql");
-            initialize.initializeDB();
-            gatewayRepository = new GatewayRepository();
-            projectRepository = new ProjectRepository();
-            experimentRepository = new ExperimentRepository();
-            experimentStatusRepository = new ExperimentStatusRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public ExperimentStatusRepositoryTest() {
+        super(Database.EXP_CATALOG);
+        gatewayRepository = new GatewayRepository();
+        projectRepository = new ProjectRepository();
+        experimentRepository = new ExperimentRepository();
+        experimentStatusRepository = new ExperimentStatusRepository();
     }
 
     @Test

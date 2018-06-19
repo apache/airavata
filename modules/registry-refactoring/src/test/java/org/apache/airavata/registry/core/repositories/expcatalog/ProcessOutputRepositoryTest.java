@@ -27,10 +27,8 @@ import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,35 +38,23 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ProcessOutputRepositoryTest {
+public class ProcessOutputRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
+    private static final Logger logger = LoggerFactory.getLogger(ProcessOutputRepositoryTest.class);
+
     GatewayRepository gatewayRepository;
     ProjectRepository projectRepository;
     ExperimentRepository experimentRepository;
     ProcessRepository processRepository;
     ProcessOutputRepository processOutputRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ProcessOutputRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("expcatalog-derby.sql");
-            initialize.initializeDB();
-            gatewayRepository = new GatewayRepository();
-            projectRepository = new ProjectRepository();
-            experimentRepository = new ExperimentRepository();
-            processRepository = new ProcessRepository();
-            processOutputRepository = new ProcessOutputRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public ProcessOutputRepositoryTest() {
+        super(Database.EXP_CATALOG);
+        gatewayRepository = new GatewayRepository();
+        projectRepository = new ProjectRepository();
+        experimentRepository = new ExperimentRepository();
+        processRepository = new ProcessRepository();
+        processOutputRepository = new ProcessOutputRepository();
     }
 
     @Test

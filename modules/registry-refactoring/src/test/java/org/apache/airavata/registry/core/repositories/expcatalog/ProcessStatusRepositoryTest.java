@@ -27,47 +27,35 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.crypto.Data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class ProcessStatusRepositoryTest {
+public class ProcessStatusRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
+    private static final Logger logger = LoggerFactory.getLogger(ProcessStatusRepositoryTest.class);
+
     GatewayRepository gatewayRepository;
     ProjectRepository projectRepository;
     ExperimentRepository experimentRepository;
     ProcessRepository processRepository;
     ProcessStatusRepository processStatusRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ProcessStatusRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("expcatalog-derby.sql");
-            initialize.initializeDB();
-            gatewayRepository = new GatewayRepository();
-            projectRepository = new ProjectRepository();
-            experimentRepository = new ExperimentRepository();
-            processRepository = new ProcessRepository();
-            processStatusRepository = new ProcessStatusRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public ProcessStatusRepositoryTest() {
+        super(Database.EXP_CATALOG);
+        gatewayRepository = new GatewayRepository();
+        projectRepository = new ProjectRepository();
+        experimentRepository = new ExperimentRepository();
+        processRepository = new ProcessRepository();
+        processStatusRepository = new ProcessStatusRepository();
     }
 
     @Test
