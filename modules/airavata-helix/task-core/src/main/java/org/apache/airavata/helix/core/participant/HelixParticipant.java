@@ -60,7 +60,6 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     private ZKHelixManager zkHelixManager;
 
     private String taskTypeName;
-    private PropertyResolver propertyResolver;
 
     private List<Class<? extends T>> taskClasses;
     private final List<AbstractTask> runningTasks = Collections.synchronizedList(new ArrayList<AbstractTask>());
@@ -120,7 +119,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                             .setCallbackContext(context)
                             .setTaskHelper(new TaskHelperImpl());
                 } catch (InstantiationException | IllegalAccessException e) {
-                    logger.error("Failed to initialize the task", e);
+                    logger.error("Failed to initialize the task: " + context.getTaskConfig().getId(), e);
                     return null;
                 }
             };
@@ -147,23 +146,25 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                     instanceConfig.addTag(taskTypeName);
                 }
                 zkHelixAdmin.addInstance(clusterName, instanceConfig);
-                logger.debug("Instance: " + participantName + ", has been added to cluster: " + clusterName);
+                logger.info("Participant: " + participantName + " has been added to cluster: " + clusterName);
             } else {
                 if (taskTypeName != null) {
                     zkHelixAdmin.addInstanceTag(clusterName, participantName, taskTypeName);
                 }
                 zkHelixAdmin.enableInstance(clusterName, participantName, true);
+                logger.debug("Participant: " + participantName + " has been re-enabled at the cluster: " + clusterName);
             }
 
             Runtime.getRuntime().addShutdownHook(
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            logger.debug("Participant: " + participantName + ", shutdown hook called.");
+                    new Thread(() -> {
+                        logger.debug("Participant: " + participantName + " shutdown hook called");
+                        try {
                             zkHelixAdmin.enableInstance(clusterName, participantName, false);
-                            disconnect();
+                        } catch (Exception e) {
+                            logger.warn("Participant: " + participantName + " was not disabled normally", e);
                         }
-                    }
+                        disconnect();
+                    })
             );
 
             // connect the participant manager
@@ -221,10 +222,6 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
             logger.info("Participant: " + participantName + ", has disconnected from cluster: " + clusterName);
             zkHelixManager.disconnect();
         }
-    }
-
-    public PropertyResolver getPropertyResolver() {
-        return propertyResolver;
     }
 
     public String getParticipantName() throws ApplicationSettingsException {
