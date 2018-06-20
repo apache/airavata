@@ -3473,7 +3473,7 @@ class Iface(object):
         """
         pass
 
-    def shareResourceWithUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    def shareResourceWithUsers(self, authzToken, resourceId, userPermissionList):
         """
         Group Manager and Data Sharing Related API methods
 
@@ -3481,57 +3481,51 @@ class Iface(object):
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - userPermissionList
         """
         pass
 
-    def shareResourceWithGroups(self, authzToken, resourceId, resourceType, groupPermissionList):
+    def shareResourceWithGroups(self, authzToken, resourceId, groupPermissionList):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - groupPermissionList
         """
         pass
 
-    def revokeSharingOfResourceFromUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    def revokeSharingOfResourceFromUsers(self, authzToken, resourceId, userPermissionList):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - userPermissionList
         """
         pass
 
-    def revokeSharingOfResourceFromGroups(self, authzToken, resourceId, resourceType, groupPermissionList):
+    def revokeSharingOfResourceFromGroups(self, authzToken, resourceId, groupPermissionList):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - groupPermissionList
         """
         pass
 
-    def getAllAccessibleUsers(self, authzToken, resourceId, resourceType, permissionType):
+    def getAllAccessibleUsers(self, authzToken, resourceId, permissionType):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - permissionType
         """
         pass
 
-    def getAllAccessibleGroups(self, authzToken, resourceId, resourceType, permissionType):
+    def getAllAccessibleGroups(self, authzToken, resourceId, permissionType):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - permissionType
         """
         pass
@@ -12774,7 +12768,7 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getChildDataProducts failed: unknown result")
 
-    def shareResourceWithUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    def shareResourceWithUsers(self, authzToken, resourceId, userPermissionList):
         """
         Group Manager and Data Sharing Related API methods
 
@@ -12782,18 +12776,16 @@ class Client(Iface):
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - userPermissionList
         """
-        self.send_shareResourceWithUsers(authzToken, resourceId, resourceType, userPermissionList)
+        self.send_shareResourceWithUsers(authzToken, resourceId, userPermissionList)
         return self.recv_shareResourceWithUsers()
 
-    def send_shareResourceWithUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    def send_shareResourceWithUsers(self, authzToken, resourceId, userPermissionList):
         self._oprot.writeMessageBegin('shareResourceWithUsers', TMessageType.CALL, self._seqid)
         args = shareResourceWithUsers_args()
         args.authzToken = authzToken
         args.resourceId = resourceId
-        args.resourceType = resourceType
         args.userPermissionList = userPermissionList
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -12822,23 +12814,21 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "shareResourceWithUsers failed: unknown result")
 
-    def shareResourceWithGroups(self, authzToken, resourceId, resourceType, groupPermissionList):
+    def shareResourceWithGroups(self, authzToken, resourceId, groupPermissionList):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - groupPermissionList
         """
-        self.send_shareResourceWithGroups(authzToken, resourceId, resourceType, groupPermissionList)
+        self.send_shareResourceWithGroups(authzToken, resourceId, groupPermissionList)
         return self.recv_shareResourceWithGroups()
 
-    def send_shareResourceWithGroups(self, authzToken, resourceId, resourceType, groupPermissionList):
+    def send_shareResourceWithGroups(self, authzToken, resourceId, groupPermissionList):
         self._oprot.writeMessageBegin('shareResourceWithGroups', TMessageType.CALL, self._seqid)
         args = shareResourceWithGroups_args()
         args.authzToken = authzToken
         args.resourceId = resourceId
-        args.resourceType = resourceType
         args.groupPermissionList = groupPermissionList
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -12867,23 +12857,21 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "shareResourceWithGroups failed: unknown result")
 
-    def revokeSharingOfResourceFromUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    def revokeSharingOfResourceFromUsers(self, authzToken, resourceId, userPermissionList):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - userPermissionList
         """
-        self.send_revokeSharingOfResourceFromUsers(authzToken, resourceId, resourceType, userPermissionList)
+        self.send_revokeSharingOfResourceFromUsers(authzToken, resourceId, userPermissionList)
         return self.recv_revokeSharingOfResourceFromUsers()
 
-    def send_revokeSharingOfResourceFromUsers(self, authzToken, resourceId, resourceType, userPermissionList):
+    def send_revokeSharingOfResourceFromUsers(self, authzToken, resourceId, userPermissionList):
         self._oprot.writeMessageBegin('revokeSharingOfResourceFromUsers', TMessageType.CALL, self._seqid)
         args = revokeSharingOfResourceFromUsers_args()
         args.authzToken = authzToken
         args.resourceId = resourceId
-        args.resourceType = resourceType
         args.userPermissionList = userPermissionList
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -12912,23 +12900,21 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "revokeSharingOfResourceFromUsers failed: unknown result")
 
-    def revokeSharingOfResourceFromGroups(self, authzToken, resourceId, resourceType, groupPermissionList):
+    def revokeSharingOfResourceFromGroups(self, authzToken, resourceId, groupPermissionList):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - groupPermissionList
         """
-        self.send_revokeSharingOfResourceFromGroups(authzToken, resourceId, resourceType, groupPermissionList)
+        self.send_revokeSharingOfResourceFromGroups(authzToken, resourceId, groupPermissionList)
         return self.recv_revokeSharingOfResourceFromGroups()
 
-    def send_revokeSharingOfResourceFromGroups(self, authzToken, resourceId, resourceType, groupPermissionList):
+    def send_revokeSharingOfResourceFromGroups(self, authzToken, resourceId, groupPermissionList):
         self._oprot.writeMessageBegin('revokeSharingOfResourceFromGroups', TMessageType.CALL, self._seqid)
         args = revokeSharingOfResourceFromGroups_args()
         args.authzToken = authzToken
         args.resourceId = resourceId
-        args.resourceType = resourceType
         args.groupPermissionList = groupPermissionList
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -12957,23 +12943,21 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "revokeSharingOfResourceFromGroups failed: unknown result")
 
-    def getAllAccessibleUsers(self, authzToken, resourceId, resourceType, permissionType):
+    def getAllAccessibleUsers(self, authzToken, resourceId, permissionType):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - permissionType
         """
-        self.send_getAllAccessibleUsers(authzToken, resourceId, resourceType, permissionType)
+        self.send_getAllAccessibleUsers(authzToken, resourceId, permissionType)
         return self.recv_getAllAccessibleUsers()
 
-    def send_getAllAccessibleUsers(self, authzToken, resourceId, resourceType, permissionType):
+    def send_getAllAccessibleUsers(self, authzToken, resourceId, permissionType):
         self._oprot.writeMessageBegin('getAllAccessibleUsers', TMessageType.CALL, self._seqid)
         args = getAllAccessibleUsers_args()
         args.authzToken = authzToken
         args.resourceId = resourceId
-        args.resourceType = resourceType
         args.permissionType = permissionType
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -13002,23 +12986,21 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllAccessibleUsers failed: unknown result")
 
-    def getAllAccessibleGroups(self, authzToken, resourceId, resourceType, permissionType):
+    def getAllAccessibleGroups(self, authzToken, resourceId, permissionType):
         """
         Parameters:
          - authzToken
          - resourceId
-         - resourceType
          - permissionType
         """
-        self.send_getAllAccessibleGroups(authzToken, resourceId, resourceType, permissionType)
+        self.send_getAllAccessibleGroups(authzToken, resourceId, permissionType)
         return self.recv_getAllAccessibleGroups()
 
-    def send_getAllAccessibleGroups(self, authzToken, resourceId, resourceType, permissionType):
+    def send_getAllAccessibleGroups(self, authzToken, resourceId, permissionType):
         self._oprot.writeMessageBegin('getAllAccessibleGroups', TMessageType.CALL, self._seqid)
         args = getAllAccessibleGroups_args()
         args.authzToken = authzToken
         args.resourceId = resourceId
-        args.resourceType = resourceType
         args.permissionType = permissionType
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -19115,7 +19097,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = shareResourceWithUsers_result()
         try:
-            result.success = self._handler.shareResourceWithUsers(args.authzToken, args.resourceId, args.resourceType, args.userPermissionList)
+            result.success = self._handler.shareResourceWithUsers(args.authzToken, args.resourceId, args.userPermissionList)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -19146,7 +19128,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = shareResourceWithGroups_result()
         try:
-            result.success = self._handler.shareResourceWithGroups(args.authzToken, args.resourceId, args.resourceType, args.groupPermissionList)
+            result.success = self._handler.shareResourceWithGroups(args.authzToken, args.resourceId, args.groupPermissionList)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -19177,7 +19159,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = revokeSharingOfResourceFromUsers_result()
         try:
-            result.success = self._handler.revokeSharingOfResourceFromUsers(args.authzToken, args.resourceId, args.resourceType, args.userPermissionList)
+            result.success = self._handler.revokeSharingOfResourceFromUsers(args.authzToken, args.resourceId, args.userPermissionList)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -19208,7 +19190,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = revokeSharingOfResourceFromGroups_result()
         try:
-            result.success = self._handler.revokeSharingOfResourceFromGroups(args.authzToken, args.resourceId, args.resourceType, args.groupPermissionList)
+            result.success = self._handler.revokeSharingOfResourceFromGroups(args.authzToken, args.resourceId, args.groupPermissionList)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -19239,7 +19221,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = getAllAccessibleUsers_result()
         try:
-            result.success = self._handler.getAllAccessibleUsers(args.authzToken, args.resourceId, args.resourceType, args.permissionType)
+            result.success = self._handler.getAllAccessibleUsers(args.authzToken, args.resourceId, args.permissionType)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -19270,7 +19252,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = getAllAccessibleGroups_result()
         try:
-            result.success = self._handler.getAllAccessibleGroups(args.authzToken, args.resourceId, args.resourceType, args.permissionType)
+            result.success = self._handler.getAllAccessibleGroups(args.authzToken, args.resourceId, args.permissionType)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -53514,7 +53496,6 @@ class shareResourceWithUsers_args(object):
     Attributes:
      - authzToken
      - resourceId
-     - resourceType
      - userPermissionList
     """
 
@@ -53522,14 +53503,13 @@ class shareResourceWithUsers_args(object):
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
-        (3, TType.I32, 'resourceType', None, None, ),  # 3
+        None,  # 3
         (4, TType.MAP, 'userPermissionList', (TType.STRING, 'UTF8', TType.I32, None, False), None, ),  # 4
     )
 
-    def __init__(self, authzToken=None, resourceId=None, resourceType=None, userPermissionList=None,):
+    def __init__(self, authzToken=None, resourceId=None, userPermissionList=None,):
         self.authzToken = authzToken
         self.resourceId = resourceId
-        self.resourceType = resourceType
         self.userPermissionList = userPermissionList
 
     def read(self, iprot):
@@ -53550,11 +53530,6 @@ class shareResourceWithUsers_args(object):
             elif fid == 2:
                 if ftype == TType.STRING:
                     self.resourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.I32:
-                    self.resourceType = iprot.readI32()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -53586,10 +53561,6 @@ class shareResourceWithUsers_args(object):
             oprot.writeFieldBegin('resourceId', TType.STRING, 2)
             oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
             oprot.writeFieldEnd()
-        if self.resourceType is not None:
-            oprot.writeFieldBegin('resourceType', TType.I32, 3)
-            oprot.writeI32(self.resourceType)
-            oprot.writeFieldEnd()
         if self.userPermissionList is not None:
             oprot.writeFieldBegin('userPermissionList', TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.userPermissionList))
@@ -53606,8 +53577,6 @@ class shareResourceWithUsers_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.resourceId is None:
             raise TProtocolException(message='Required field resourceId is unset!')
-        if self.resourceType is None:
-            raise TProtocolException(message='Required field resourceType is unset!')
         return
 
     def __repr__(self):
@@ -53738,7 +53707,6 @@ class shareResourceWithGroups_args(object):
     Attributes:
      - authzToken
      - resourceId
-     - resourceType
      - groupPermissionList
     """
 
@@ -53746,14 +53714,13 @@ class shareResourceWithGroups_args(object):
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
-        (3, TType.I32, 'resourceType', None, None, ),  # 3
+        None,  # 3
         (4, TType.MAP, 'groupPermissionList', (TType.STRING, 'UTF8', TType.I32, None, False), None, ),  # 4
     )
 
-    def __init__(self, authzToken=None, resourceId=None, resourceType=None, groupPermissionList=None,):
+    def __init__(self, authzToken=None, resourceId=None, groupPermissionList=None,):
         self.authzToken = authzToken
         self.resourceId = resourceId
-        self.resourceType = resourceType
         self.groupPermissionList = groupPermissionList
 
     def read(self, iprot):
@@ -53774,11 +53741,6 @@ class shareResourceWithGroups_args(object):
             elif fid == 2:
                 if ftype == TType.STRING:
                     self.resourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.I32:
-                    self.resourceType = iprot.readI32()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -53810,10 +53772,6 @@ class shareResourceWithGroups_args(object):
             oprot.writeFieldBegin('resourceId', TType.STRING, 2)
             oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
             oprot.writeFieldEnd()
-        if self.resourceType is not None:
-            oprot.writeFieldBegin('resourceType', TType.I32, 3)
-            oprot.writeI32(self.resourceType)
-            oprot.writeFieldEnd()
         if self.groupPermissionList is not None:
             oprot.writeFieldBegin('groupPermissionList', TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.groupPermissionList))
@@ -53830,8 +53788,6 @@ class shareResourceWithGroups_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.resourceId is None:
             raise TProtocolException(message='Required field resourceId is unset!')
-        if self.resourceType is None:
-            raise TProtocolException(message='Required field resourceType is unset!')
         return
 
     def __repr__(self):
@@ -53962,7 +53918,6 @@ class revokeSharingOfResourceFromUsers_args(object):
     Attributes:
      - authzToken
      - resourceId
-     - resourceType
      - userPermissionList
     """
 
@@ -53970,14 +53925,13 @@ class revokeSharingOfResourceFromUsers_args(object):
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
-        (3, TType.I32, 'resourceType', None, None, ),  # 3
+        None,  # 3
         (4, TType.MAP, 'userPermissionList', (TType.STRING, 'UTF8', TType.I32, None, False), None, ),  # 4
     )
 
-    def __init__(self, authzToken=None, resourceId=None, resourceType=None, userPermissionList=None,):
+    def __init__(self, authzToken=None, resourceId=None, userPermissionList=None,):
         self.authzToken = authzToken
         self.resourceId = resourceId
-        self.resourceType = resourceType
         self.userPermissionList = userPermissionList
 
     def read(self, iprot):
@@ -53998,11 +53952,6 @@ class revokeSharingOfResourceFromUsers_args(object):
             elif fid == 2:
                 if ftype == TType.STRING:
                     self.resourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.I32:
-                    self.resourceType = iprot.readI32()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -54034,10 +53983,6 @@ class revokeSharingOfResourceFromUsers_args(object):
             oprot.writeFieldBegin('resourceId', TType.STRING, 2)
             oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
             oprot.writeFieldEnd()
-        if self.resourceType is not None:
-            oprot.writeFieldBegin('resourceType', TType.I32, 3)
-            oprot.writeI32(self.resourceType)
-            oprot.writeFieldEnd()
         if self.userPermissionList is not None:
             oprot.writeFieldBegin('userPermissionList', TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.userPermissionList))
@@ -54054,8 +53999,6 @@ class revokeSharingOfResourceFromUsers_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.resourceId is None:
             raise TProtocolException(message='Required field resourceId is unset!')
-        if self.resourceType is None:
-            raise TProtocolException(message='Required field resourceType is unset!')
         return
 
     def __repr__(self):
@@ -54186,7 +54129,6 @@ class revokeSharingOfResourceFromGroups_args(object):
     Attributes:
      - authzToken
      - resourceId
-     - resourceType
      - groupPermissionList
     """
 
@@ -54194,14 +54136,13 @@ class revokeSharingOfResourceFromGroups_args(object):
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
-        (3, TType.I32, 'resourceType', None, None, ),  # 3
+        None,  # 3
         (4, TType.MAP, 'groupPermissionList', (TType.STRING, 'UTF8', TType.I32, None, False), None, ),  # 4
     )
 
-    def __init__(self, authzToken=None, resourceId=None, resourceType=None, groupPermissionList=None,):
+    def __init__(self, authzToken=None, resourceId=None, groupPermissionList=None,):
         self.authzToken = authzToken
         self.resourceId = resourceId
-        self.resourceType = resourceType
         self.groupPermissionList = groupPermissionList
 
     def read(self, iprot):
@@ -54222,11 +54163,6 @@ class revokeSharingOfResourceFromGroups_args(object):
             elif fid == 2:
                 if ftype == TType.STRING:
                     self.resourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.I32:
-                    self.resourceType = iprot.readI32()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -54258,10 +54194,6 @@ class revokeSharingOfResourceFromGroups_args(object):
             oprot.writeFieldBegin('resourceId', TType.STRING, 2)
             oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
             oprot.writeFieldEnd()
-        if self.resourceType is not None:
-            oprot.writeFieldBegin('resourceType', TType.I32, 3)
-            oprot.writeI32(self.resourceType)
-            oprot.writeFieldEnd()
         if self.groupPermissionList is not None:
             oprot.writeFieldBegin('groupPermissionList', TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.groupPermissionList))
@@ -54278,8 +54210,6 @@ class revokeSharingOfResourceFromGroups_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.resourceId is None:
             raise TProtocolException(message='Required field resourceId is unset!')
-        if self.resourceType is None:
-            raise TProtocolException(message='Required field resourceType is unset!')
         return
 
     def __repr__(self):
@@ -54410,7 +54340,6 @@ class getAllAccessibleUsers_args(object):
     Attributes:
      - authzToken
      - resourceId
-     - resourceType
      - permissionType
     """
 
@@ -54418,14 +54347,13 @@ class getAllAccessibleUsers_args(object):
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
-        (3, TType.I32, 'resourceType', None, None, ),  # 3
+        None,  # 3
         (4, TType.I32, 'permissionType', None, None, ),  # 4
     )
 
-    def __init__(self, authzToken=None, resourceId=None, resourceType=None, permissionType=None,):
+    def __init__(self, authzToken=None, resourceId=None, permissionType=None,):
         self.authzToken = authzToken
         self.resourceId = resourceId
-        self.resourceType = resourceType
         self.permissionType = permissionType
 
     def read(self, iprot):
@@ -54446,11 +54374,6 @@ class getAllAccessibleUsers_args(object):
             elif fid == 2:
                 if ftype == TType.STRING:
                     self.resourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.I32:
-                    self.resourceType = iprot.readI32()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -54476,10 +54399,6 @@ class getAllAccessibleUsers_args(object):
             oprot.writeFieldBegin('resourceId', TType.STRING, 2)
             oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
             oprot.writeFieldEnd()
-        if self.resourceType is not None:
-            oprot.writeFieldBegin('resourceType', TType.I32, 3)
-            oprot.writeI32(self.resourceType)
-            oprot.writeFieldEnd()
         if self.permissionType is not None:
             oprot.writeFieldBegin('permissionType', TType.I32, 4)
             oprot.writeI32(self.permissionType)
@@ -54492,8 +54411,6 @@ class getAllAccessibleUsers_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.resourceId is None:
             raise TProtocolException(message='Required field resourceId is unset!')
-        if self.resourceType is None:
-            raise TProtocolException(message='Required field resourceType is unset!')
         if self.permissionType is None:
             raise TProtocolException(message='Required field permissionType is unset!')
         return
@@ -54634,7 +54551,6 @@ class getAllAccessibleGroups_args(object):
     Attributes:
      - authzToken
      - resourceId
-     - resourceType
      - permissionType
     """
 
@@ -54642,14 +54558,13 @@ class getAllAccessibleGroups_args(object):
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
-        (3, TType.I32, 'resourceType', None, None, ),  # 3
+        None,  # 3
         (4, TType.I32, 'permissionType', None, None, ),  # 4
     )
 
-    def __init__(self, authzToken=None, resourceId=None, resourceType=None, permissionType=None,):
+    def __init__(self, authzToken=None, resourceId=None, permissionType=None,):
         self.authzToken = authzToken
         self.resourceId = resourceId
-        self.resourceType = resourceType
         self.permissionType = permissionType
 
     def read(self, iprot):
@@ -54670,11 +54585,6 @@ class getAllAccessibleGroups_args(object):
             elif fid == 2:
                 if ftype == TType.STRING:
                     self.resourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.I32:
-                    self.resourceType = iprot.readI32()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -54700,10 +54610,6 @@ class getAllAccessibleGroups_args(object):
             oprot.writeFieldBegin('resourceId', TType.STRING, 2)
             oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
             oprot.writeFieldEnd()
-        if self.resourceType is not None:
-            oprot.writeFieldBegin('resourceType', TType.I32, 3)
-            oprot.writeI32(self.resourceType)
-            oprot.writeFieldEnd()
         if self.permissionType is not None:
             oprot.writeFieldBegin('permissionType', TType.I32, 4)
             oprot.writeI32(self.permissionType)
@@ -54716,8 +54622,6 @@ class getAllAccessibleGroups_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.resourceId is None:
             raise TProtocolException(message='Required field resourceId is unset!')
-        if self.resourceType is None:
-            raise TProtocolException(message='Required field resourceType is unset!')
         if self.permissionType is None:
             raise TProtocolException(message='Required field permissionType is unset!')
         return

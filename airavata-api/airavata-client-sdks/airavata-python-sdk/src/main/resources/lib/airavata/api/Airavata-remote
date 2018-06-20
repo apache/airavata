@@ -191,12 +191,12 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  string registerReplicaLocation(AuthzToken authzToken, DataReplicaLocationModel replicaLocationModel)')
     print('  DataProductModel getParentDataProduct(AuthzToken authzToken, string productUri)')
     print('   getChildDataProducts(AuthzToken authzToken, string productUri)')
-    print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
-    print('  bool shareResourceWithGroups(AuthzToken authzToken, string resourceId, ResourceType resourceType,  groupPermissionList)')
-    print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
-    print('  bool revokeSharingOfResourceFromGroups(AuthzToken authzToken, string resourceId, ResourceType resourceType,  groupPermissionList)')
-    print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType, ResourcePermissionType permissionType)')
-    print('   getAllAccessibleGroups(AuthzToken authzToken, string resourceId, ResourceType resourceType, ResourcePermissionType permissionType)')
+    print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId,  userPermissionList)')
+    print('  bool shareResourceWithGroups(AuthzToken authzToken, string resourceId,  groupPermissionList)')
+    print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId,  userPermissionList)')
+    print('  bool revokeSharingOfResourceFromGroups(AuthzToken authzToken, string resourceId,  groupPermissionList)')
+    print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('   getAllAccessibleGroups(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
     print('  bool userHasAccess(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
     print('  string createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
     print('  void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
@@ -1295,40 +1295,40 @@ elif cmd == 'getChildDataProducts':
     pp.pprint(client.getChildDataProducts(eval(args[0]), args[1],))
 
 elif cmd == 'shareResourceWithUsers':
-    if len(args) != 4:
-        print('shareResourceWithUsers requires 4 args')
+    if len(args) != 3:
+        print('shareResourceWithUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.shareResourceWithUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.shareResourceWithUsers(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'shareResourceWithGroups':
-    if len(args) != 4:
-        print('shareResourceWithGroups requires 4 args')
+    if len(args) != 3:
+        print('shareResourceWithGroups requires 3 args')
         sys.exit(1)
-    pp.pprint(client.shareResourceWithGroups(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.shareResourceWithGroups(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'revokeSharingOfResourceFromUsers':
-    if len(args) != 4:
-        print('revokeSharingOfResourceFromUsers requires 4 args')
+    if len(args) != 3:
+        print('revokeSharingOfResourceFromUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.revokeSharingOfResourceFromUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.revokeSharingOfResourceFromUsers(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'revokeSharingOfResourceFromGroups':
-    if len(args) != 4:
-        print('revokeSharingOfResourceFromGroups requires 4 args')
+    if len(args) != 3:
+        print('revokeSharingOfResourceFromGroups requires 3 args')
         sys.exit(1)
-    pp.pprint(client.revokeSharingOfResourceFromGroups(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.revokeSharingOfResourceFromGroups(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'getAllAccessibleUsers':
-    if len(args) != 4:
-        print('getAllAccessibleUsers requires 4 args')
+    if len(args) != 3:
+        print('getAllAccessibleUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.getAllAccessibleUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.getAllAccessibleUsers(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'getAllAccessibleGroups':
-    if len(args) != 4:
-        print('getAllAccessibleGroups requires 4 args')
+    if len(args) != 3:
+        print('getAllAccessibleGroups requires 3 args')
         sys.exit(1)
-    pp.pprint(client.getAllAccessibleGroups(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.getAllAccessibleGroups(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'userHasAccess':
     if len(args) != 3:
