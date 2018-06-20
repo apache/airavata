@@ -3503,42 +3503,42 @@ service Airavata {
  /**
   * Group Manager and Data Sharing Related API methods
   **/
-  bool shareResourceWithUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+  bool shareResourceWithUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                 4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
                throws (1: airavata_errors.InvalidRequestException ire,
                                                 2: airavata_errors.AiravataClientException ace,
                                                 3: airavata_errors.AiravataSystemException ase,
                                                 4: airavata_errors.AuthorizationException ae)
 
-  bool shareResourceWithGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+  bool shareResourceWithGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                 4: map<string, group_manager_model.ResourcePermissionType> groupPermissionList)
                throws (1: airavata_errors.InvalidRequestException ire,
                                                 2: airavata_errors.AiravataClientException ace,
                                                 3: airavata_errors.AiravataSystemException ase,
                                                 4: airavata_errors.AuthorizationException ae)
 
- bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+ bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                  4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
 
- bool revokeSharingOfResourceFromGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+ bool revokeSharingOfResourceFromGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                  4: map<string, group_manager_model.ResourcePermissionType> groupPermissionList)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
 
- list<string> getAllAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+ list<string> getAllAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                   4: required group_manager_model.ResourcePermissionType permissionType)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
 
- list<string> getAllAccessibleGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+ list<string> getAllAccessibleGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                   4: required group_manager_model.ResourcePermissionType permissionType)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
