@@ -4992,12 +4992,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      *
      * @param authzToken
      * @param resourceId
-     * @param resourceType
      * @param userPermissionList
      */
     @Override
     @SecurityCheck
-    public boolean shareResourceWithUsers(AuthzToken authzToken, String resourceId, ResourceType resourceType,
+    public boolean shareResourceWithUsers(AuthzToken authzToken, String resourceId,
                                           Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         // TODO: first verify that authenticating user is OWNER of the resource
@@ -5021,7 +5020,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return true;
         } catch (Exception e) {
-            String msg = "Error in sharing resource with users. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            String msg = "Error in sharing resource with users. Resource ID : " + resourceId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + " More info : " + e.getMessage());
@@ -5033,7 +5032,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean shareResourceWithGroups(AuthzToken authzToken, String resourceId, ResourceType resourceType,
+    public boolean shareResourceWithGroups(AuthzToken authzToken, String resourceId,
                                            Map<String, ResourcePermissionType> groupPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         // TODO: first verify that authenticating user is OWNER of the resource
@@ -5057,7 +5056,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return true;
         } catch (Exception e) {
-            String msg = "Error in sharing resource with groups. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            String msg = "Error in sharing resource with groups. Resource ID : " + resourceId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + " More info : " + e.getMessage());
@@ -5069,7 +5068,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean revokeSharingOfResourceFromUsers(AuthzToken authzToken, String resourceId, ResourceType resourceType,
+    public boolean revokeSharingOfResourceFromUsers(AuthzToken authzToken, String resourceId,
                                                     Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         // TODO: first verify that authenticating user is OWNER of the resource
         RegistryService.Client regClient = registryClientPool.getResource();
@@ -5092,7 +5091,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return true;
         } catch (Exception e) {
-            String msg = "Error in revoking access to resource from users. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            String msg = "Error in revoking access to resource from users. Resource ID : " + resourceId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + " More info : " + e.getMessage());
@@ -5104,7 +5103,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean revokeSharingOfResourceFromGroups(AuthzToken authzToken, String resourceId, ResourceType resourceType,
+    public boolean revokeSharingOfResourceFromGroups(AuthzToken authzToken, String resourceId,
                                                      Map<String, ResourcePermissionType> groupPermissionList) 
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         // TODO: first verify that authenticating user is OWNER of the resource
@@ -5138,7 +5137,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return true;
         } catch (Exception e) {
-            String msg = "Error in revoking access to resource from groups. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            String msg = "Error in revoking access to resource from groups. Resource ID : " + resourceId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + " More info : " + e.getMessage());
@@ -5150,7 +5149,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<String> getAllAccessibleUsers(AuthzToken authzToken, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<String> getAllAccessibleUsers(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -5178,7 +5177,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return new ArrayList<>(accessibleUsers);
         } catch (Exception e) {
-            String msg = "Error in getting all accessible users for resource. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            String msg = "Error in getting all accessible users for resource. Resource ID : " + resourceId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + " More info : " + e.getMessage());
@@ -5190,7 +5189,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<String> getAllAccessibleGroups(AuthzToken authzToken, String resourceId, ResourceType resourceType, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<String> getAllAccessibleGroups(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -5209,7 +5208,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return new ArrayList<>(accessibleGroups);
         } catch (Exception e) {
-            String msg = "Error in getting all accessible groups for resource. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
+            String msg = "Error in getting all accessible groups for resource. Resource ID : " + resourceId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + " More info : " + e.getMessage());
