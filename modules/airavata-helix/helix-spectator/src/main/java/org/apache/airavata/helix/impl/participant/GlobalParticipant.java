@@ -22,20 +22,17 @@ package org.apache.airavata.helix.impl.participant;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
-import org.apache.airavata.helix.core.support.TaskHelperImpl;
-import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.helix.task.TaskFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GlobalParticipant extends HelixParticipant {
+public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     private final static Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
 
-    private String[] taskClasses = {
+    private final static String[] taskClassNames = {
             "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
             "org.apache.airavata.helix.impl.task.staging.InputDataStagingTask",
             "org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask",
@@ -49,53 +46,29 @@ public class GlobalParticipant extends HelixParticipant {
             "org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask"
     };
 
-    public Map<String, TaskFactory> getTaskFactory() {
-        Map<String, TaskFactory> taskRegistry = new HashMap<>();
-
-        for (String taskClass : taskClasses) {
-            TaskFactory taskFac = context -> {
-                try {
-                    return AbstractTask.class.cast(Class.forName(taskClass).newInstance())
-                            .setParticipant(GlobalParticipant.this)
-                            .setCallbackContext(context)
-                            .setTaskHelper(new TaskHelperImpl());
-                } catch (InstantiationException | IllegalAccessException e) {
-                    logger.error("Failed to initialize the task", e);
-                    return null;
-                } catch (ClassNotFoundException e) {
-                    logger.error("Task class can not be found in the class path", e);
-                    return null;
-                }
-            };
-
-            TaskDef taskDef;
-            try {
-                taskDef = Class.forName(taskClass).getAnnotation(TaskDef.class);
-                taskRegistry.put(taskDef.name(), taskFac);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return taskRegistry;
-    }
-
     @SuppressWarnings("WeakerAccess")
-    public GlobalParticipant(Class taskClass, String taskTypeName) throws ApplicationSettingsException {
-        super(taskClass, taskTypeName);
+    public GlobalParticipant(List<Class<? extends AbstractTask>> taskClasses, String taskTypeName) throws ApplicationSettingsException {
+        super(taskClasses, taskTypeName);
     }
 
     public static void main(String args[]) {
         logger.info("Starting global participant");
 
-        GlobalParticipant participant;
         try {
-            participant = new GlobalParticipant(null, null);
+            ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
+
+            for (String taskClassName : taskClassNames) {
+                logger.debug("Adding task class: " + taskClassName + " to the global participant");
+                taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
+            }
+
+            GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
+
             Thread t = new Thread(participant);
             t.start();
+
         } catch (Exception e) {
             logger.error("Failed to start global participant", e);
         }
-
     }
-
 }
