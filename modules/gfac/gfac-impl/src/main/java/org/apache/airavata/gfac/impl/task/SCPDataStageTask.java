@@ -29,6 +29,7 @@ import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
+import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
@@ -65,7 +66,7 @@ public class SCPDataStageTask implements Task {
     private static final long MAX_FILE_SIZE_TO_READ = 2 * 1024 * 1024;
 
     @Override
-    public void init(Map<String, String> propertyMap) {
+    public void init(Map<String, String> propertyMap) throws TaskException {
 
     }
 
@@ -326,10 +327,14 @@ public class SCPDataStageTask implements Task {
             if (fileName.contains("*")) {
                 String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
+
+                log.info("Fetching output files for wildcard " + fileName + " in path " + sourceParentPath);
                 List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
                         .getFileNameFromExtension(fileName, sourceParentPath, remoteSession);
 
                 ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+
+                log.info("File names that matched with wildcard " + fileName + " : " + fileNames.toString());
 
                 String experimentId = processContext.getExperimentId();
 
@@ -338,9 +343,10 @@ public class SCPDataStageTask implements Task {
                 OutputDataObjectType processOutput = taskContext.getProcessOutput();
 
                 for (String temp : fileNames) {
-                    if (temp != null && !temp.equals("")) {
+                    if (temp != null && !"".equals(temp)) {
                         fileName = temp;
                     }
+
                     if (destParentPath.endsWith(File.separator)) {
                         destinationURI = new URI(destParentPath + fileName);
                     } else {
@@ -349,6 +355,9 @@ public class SCPDataStageTask implements Task {
 
                     //Wildcard support is only enabled for output data staging
                     if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                        URI newSourceURI = new URI((sourceParentPath.endsWith(File.separator) ?
+                                sourceParentPath : sourceParentPath + File.separator) +
+                                fileName);
                         processOutput.setName(fileName);
 
                         experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, Collections.singletonList(processOutput), experimentId);
@@ -358,8 +367,9 @@ public class SCPDataStageTask implements Task {
 
                         makeDir(taskContext, destinationURI);
                         // TODO - save updated subtask model with new destination
-                        outputDataStaging(taskContext, remoteSession, sourceURI, storageSession, destinationURI);
-                        status.setReason("Successfully staged output data");
+                        log.info("Staging derived output file " + fileName + " from " + newSourceURI.toString());
+                        outputDataStaging(taskContext, remoteSession, newSourceURI, storageSession, destinationURI);
+                        status.setReason("Successfully staged output file " + fileName);
                     }
                 }
                 if (processState == ProcessState.OUTPUT_DATA_STAGING) {
@@ -428,13 +438,15 @@ public class SCPDataStageTask implements Task {
             throws GFacException {
 
         //Wildcard file path has not been resolved and cannot be handled. Hence ignoring
-        if(!destinationURI.toString().contains("*")){
+        if(!destinationURI.toString().contains("*")) {
+            log.info("Starting file transfer from " + sourceURI.toString() + " to " + destinationURI.toString());
             taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
                     destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.TO, true);
             // update output locations
             GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
             GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
-        }else{
+            log.info("Finished file transfer to " + destinationURI.toString());
+        } else {
             log.warn("Destination file path contains unresolved wildcards. Path: " + destinationURI.toString());
         }
     }
