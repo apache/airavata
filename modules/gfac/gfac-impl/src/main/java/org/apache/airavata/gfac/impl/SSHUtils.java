@@ -499,6 +499,45 @@ public class SSHUtils {
 		return Arrays.asList(stdOutReader.getStdOutputString().split("\n"));
 	}
 
+	public static long getFileSize(String path, Session session) throws GFacException {
+
+		// exec 'scp -t rfile' remotely
+		String command = "du -b " + path;
+
+		Channel channel = null;
+		try {
+			channel = session.openChannel("exec");
+		} catch (JSchException e) {
+			log.error("Failed to open a channel to " + session.getHost(), e);
+			throw new GFacException("Failed to open a channel to " + session.getHost(), e);
+		}
+
+		StandardOutReader stdOutReader = new StandardOutReader();
+
+		((ChannelExec) channel).setCommand(command);
+
+
+		((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
+		try {
+			channel.connect();
+		} catch (JSchException e) {
+
+			channel.disconnect();
+//            session.disconnect();
+
+			throw new GFacException("Unable to retrieve command output. Command - " + command +
+					" on server - " + session.getHost() + ":" + session.getPort() +
+					" connecting user name - "
+					+ session.getUserName(), e);
+		}
+		stdOutReader.onOutput(channel);
+		stdOutReader.getStdOutputString();
+		if (stdOutReader.getStdErrorString().contains("du:")) {
+			throw new GFacException(stdOutReader.getStdErrorString());
+		}
+		channel.disconnect();
+		return Long.parseLong(stdOutReader.getStdOutputString().split("\t")[0]);
+	}
 
 	static int checkAck(InputStream in) throws IOException {
 		int b = in.read();

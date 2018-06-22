@@ -229,8 +229,8 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			}
 			return matchingNames;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new GFacException("Failed to list directory " + parentPath);
+			log.error("Failed to list directory " + parentPath, e);
+			throw new GFacException("Failed to list directory " + parentPath, e);
 		}
 	}
 
@@ -257,6 +257,11 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		} catch (JSchException | IOException e) {
 			throw new GFacException("Failed to create directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
+	}
+
+	@Override
+	public long getFileSize(String filePath) throws GFacException {
+		return SSHUtils.getFileSize(filePath, getSession());
 	}
 
 	@Override

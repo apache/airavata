@@ -99,6 +99,15 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	public void makeDirectory(String directoryPath) throws  GFacException;
 
 	/**
+	 * This will return the size of a given file in bytes
+	 *
+	 * @param filePath the full qualified path for the file
+	 * @return byte size of the file
+	 * @throws GFacException if failed to fetch the file size
+	 */
+	public long getFileSize(String filePath) throws GFacException;
+
+	/**
 	 * This will delete the given job from the queue
 	 *
 	 * @param jobID jobId of the job which user wants to delete
