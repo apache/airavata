@@ -169,20 +169,23 @@ public class SCPDataStageTask implements Task {
         try {
             if (arguments != null && !arguments.isEmpty()) {
 
-                String[] allArgs = arguments.split(",");
-                tempFile = File.createTempFile("temp-output", ".tmp");
-                URI sourceURI = new URI(subTaskModel.getSource());
-
-                log.info("Downloading file " + sourceURI.getPath() + " to temporary file " + tempFile);
-
-                taskContext.getParentProcessContext().getJobSubmissionRemoteCluster().copyFrom(sourceURI.getPath(), tempFile.getPath());
-
                 StringBuilder result = new StringBuilder();
-                // this is to identify that output is parsed
-                result.append("parsed-out: ");
 
+                URI sourceURI = new URI(subTaskModel.getSource());
+                long fileSize = taskContext.getParentProcessContext().getJobSubmissionRemoteCluster().getFileSize(sourceURI.getPath());
+                log.info("File size of " + sourceURI.getPath() + " is " + fileSize + " bytes");
                 // if the file size is grater than 2 MB, skip parsing to avoid possible OOM issues
-                if (tempFile.length() <= MAX_FILE_SIZE_TO_READ) {
+                if (fileSize <= MAX_FILE_SIZE_TO_READ) {
+
+                    String[] allArgs = arguments.split(",");
+                    tempFile = File.createTempFile("temp-output", ".tmp");
+
+                    log.info("Downloading file " + sourceURI.getPath() + " to temporary file " + tempFile);
+
+                    taskContext.getParentProcessContext().getJobSubmissionRemoteCluster().copyFrom(sourceURI.getPath(), tempFile.getPath());
+
+                    // this is to identify that output is parsed
+                    result.append("parsed-out: ");
 
                     try (FileReader fr = new FileReader(tempFile)) {
                         log.info("Searching for lines that contains " + arguments + " in file " + tempFile);
@@ -211,7 +214,7 @@ public class SCPDataStageTask implements Task {
                         status.setReason("Successfully parsed output file and fetched data");
 
                     } catch (IOException e) {
-                        String msg = "Failed while reading from the file " + tempFile;
+                        String msg = "Failed while reading from the file " + tempFile + " downloaded from " + sourceURI.getPath();
                         log.error(msg, e);
                         status.setState(TaskState.FAILED);
                         status.setReason(msg);
@@ -223,7 +226,7 @@ public class SCPDataStageTask implements Task {
                     }
 
                 } else {
-                    String msg = "Skipping output parsing as the file sized exceeded 2MB";
+                    String msg = "Skipping output parsing as the file " + sourceURI.getPath() + " sized exceeded 2MB (" + (fileSize/(1024*1024)) + ")";
                     log.warn(msg);
                     result.append(msg);
                     GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), result.toString());
