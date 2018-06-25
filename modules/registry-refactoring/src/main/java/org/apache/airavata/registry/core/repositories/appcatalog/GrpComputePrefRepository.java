@@ -19,9 +19,13 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferencePK;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefPK;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by skariyat on 2/10/18.
@@ -30,5 +34,31 @@ public class GrpComputePrefRepository extends AppCatAbstractRepository<GroupComp
 
     public GrpComputePrefRepository() {
         super(GroupComputeResourcePreference.class, GroupComputeResourcePrefEntity.class);
+    }
+
+    public void validateGroupComputeResourcePreference(GroupComputeResourcePreference groupComputeResourcePreference, String gatewayId) {
+        final String computeResourceId = groupComputeResourcePreference.getComputeResourceId();
+        final ComputeResourcePrefRepository computeResourcePrefRepository = new ComputeResourcePrefRepository();
+        ComputeResourcePreference computeResourcePreference = computeResourcePrefRepository.get(new ComputeResourcePreferencePK(gatewayId, computeResourceId));
+        if (computeResourcePreference != null) {
+            final String loginUserName = groupComputeResourcePreference.getLoginUserName();
+            boolean loginUserNameDiffers = StringUtils.isNotBlank(loginUserName) && !loginUserName.equals(computeResourcePreference.getLoginUserName());
+            boolean allocationProjectNumberNotBlankUsingSameLoginUserName = StringUtils.isNotBlank(groupComputeResourcePreference.getAllocationProjectNumber()) && StringUtils.isNotBlank(computeResourcePreference.getLoginUserName());
+            // Either loginUserName must differ from the corresponding ComputeResourcePreference
+            // or allocationProjectNumber should not be blank if using login credentials from computeResourcePreference
+            if (!loginUserNameDiffers && !allocationProjectNumberNotBlankUsingSameLoginUserName) {
+                throw new RuntimeException("loginUserName must differ from ComputeResourcePreference or " +
+                        "allocationProjectNumber should not be blank. GroupResourceProfile "
+                        + groupComputeResourcePreference.getGroupResourceProfileId()
+                        + " for compute resource " + computeResourceId);
+            }
+        }
+    }
+
+    @Override
+    public GroupComputeResourcePreference update(GroupComputeResourcePreference computeResourcePreference) {
+        GroupResourceProfile groupResourceProfile = (new GroupResourceProfileRepository()).getGroupResourceProfile(computeResourcePreference.getGroupResourceProfileId());
+        validateGroupComputeResourcePreference(computeResourcePreference, groupResourceProfile.getGatewayId());
+        return super.update(computeResourcePreference);
     }
 }
