@@ -24,23 +24,23 @@ package org.apache.airavata.service.profile.handlers;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,29 @@ import java.util.List;
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
-
+    private ThriftClientPool<CredentialStoreService.Client> csClientPool;
+    private ThriftClientPool<RegistryService.Client> registryClientPool;
+    public IamAdminServicesHandler() throws Exception {
+        try {
+            GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+            poolConfig.maxActive = 100;
+            poolConfig.minIdle = 5;
+            poolConfig.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+            poolConfig.testOnBorrow = true;
+            poolConfig.testWhileIdle = true;
+            poolConfig.numTestsPerEvictionRun = 10;
+            poolConfig.maxWait = 3000;
+            csClientPool = new ThriftClientPool<>(
+                    tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
+                    Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
+            registryClientPool = new ThriftClientPool<>(
+                    tProtocol -> new RegistryService.Client(tProtocol), poolConfig, ServerSettings.getRegistryServerHost(),
+                    Integer.parseInt(ServerSettings.getRegistryServerPort()));
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error occured while reading airavata-server properties..", e);
+            throw new Exception(e);
+        }
+    }
 
     @Override
     public String getAPIVersion(AuthzToken authzToken) throws IamAdminServicesException, AuthorizationException {
@@ -69,11 +91,11 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
+        CredentialStoreService.Client credentialStoreClient = csClientPool.getResource();
         try {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
 
             // Load the tenant admin password stored in gateway request
-            CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
             // Admin password token should already be stored under requested gateway's gatewayId
             PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
 
@@ -81,10 +103,12 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
             Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
+            csClientPool.returnResource(credentialStoreClient);
             return gatewayWithIdAndSecret;
-        } catch (TException|ApplicationSettingsException ex) {
+        } catch (TException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
             IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
+            csClientPool.returnBrokenResource(credentialStoreClient);
             throw iamAdminServicesException;
         }
     }
@@ -170,10 +194,12 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             if (!gatewayId.equals(userDetails.getGatewayId())) {
                 throw new IamAdminServicesException("gatewayId in user profile doesn't match authorization token!");
             }
+
             if (!username.equals(userDetails.getUserId())) {
+                String msg = "userId in user profile "+userDetails.getUserId()+" doesn't match authorization token "+username+"";
+                logger.error(msg);
                 throw new IamAdminServicesException("userId in user profile doesn't match authorization token!");
             }
-
             PasswordCredential credential = getTenantAdminPasswordCredential(gatewayId);
             keycloakclient.updateUserProfile(credential, gatewayId, username, userDetails);
         } catch (ApplicationSettingsException e) {
@@ -240,29 +266,23 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
 
-        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
-
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-        return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
-    }
-
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
+        RegistryService.Client regClient = registryClientPool.getResource();
+        GatewayResourceProfile gwrp = regClient.getGatewayResourceProfile(tenantId);
+        CredentialStoreService.Client csClient = csClientPool.getResource();
         try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
-        }
-    }
-
-    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-        try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
+            PasswordCredential TenantAdminPassword = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+            csClientPool.returnResource(csClient);
+            registryClientPool.returnResource(regClient);
+            return TenantAdminPassword;
+        } catch (Exception e){
+            logger.error("Error while getting the tenant admin password for the tenant id "+tenantId+"", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting password credentials. More info : " + e.getMessage());
+            csClientPool.returnBrokenResource(csClient);
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
         }
     }
 }
+

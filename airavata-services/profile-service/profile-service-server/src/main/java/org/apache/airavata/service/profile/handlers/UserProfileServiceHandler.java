@@ -24,36 +24,48 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.CustomDashboard;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 public class UserProfileServiceHandler implements UserProfileService.Iface {
-
     private final static Logger logger = LoggerFactory.getLogger(UserProfileServiceHandler.class);
-
+    private ThriftClientPool<IamAdminServices.Client> iasClientPool;
     private UserProfileRepository userProfileRepository;
-
-    public UserProfileServiceHandler() {
-
+    public UserProfileServiceHandler() throws Exception {
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
+        try {
+            GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+            poolConfig.maxActive = 100;
+            poolConfig.minIdle = 5;
+            poolConfig.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+            poolConfig.testOnBorrow = true;
+            poolConfig.testWhileIdle = true;
+            poolConfig.numTestsPerEvictionRun = 10;
+            poolConfig.maxWait = 3000;
+
+            iasClientPool = new ThriftClientPool<>(
+                    tProtocol -> new IamAdminServices.Client(tProtocol), poolConfig, ServerSettings.getProfileServiceServerHost(),
+                    Integer.parseInt(ServerSettings.getProfileServiceServerPort()));
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error occured while reading airavata-server properties..", e);
+            throw new Exception(e);
+        }
     }
 
     @Override
@@ -111,11 +123,16 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     }
 
     private Runnable getIAMUserProfileUpdater(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException {
-        IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
+        IamAdminServices.Client iamAdminServicesClient = iasClientPool.getResource();
         return () -> {
             try {
                 iamAdminServicesClient.updateUserProfile(authzToken, userProfile);
+                iasClientPool.returnResource(iamAdminServicesClient);
             } catch (TException e) {
+                if (iamAdminServicesClient != null) {
+                    logger.error("Error while Updating user profile in IAM Service", e);
+                    iasClientPool.returnBrokenResource(iamAdminServicesClient);
+                }
                 throw new RuntimeException("Failed to update user profile in IAM service", e);
             }
         };
@@ -192,18 +209,6 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while finding user profile. More info : " + e.getMessage());
             throw exception;
-        }
-    }
-
-    private IamAdminServices.Client getIamAdminServicesClient() throws UserProfileServiceException {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-            final String serverHost = ServerSettings.getProfileServiceServerHost();
-            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
-        } catch (IamAdminServicesException|ApplicationSettingsException e) {
-            logger.error("Failed to create IAM Admin Services client", e);
-            UserProfileServiceException ex = new UserProfileServiceException("Failed to create IAM Admin Services client");
-            throw ex;
         }
     }
 }

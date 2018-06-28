@@ -21,13 +21,8 @@
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.DBEventManagerConstants;
-import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.common.utils.*;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
@@ -42,10 +37,10 @@ import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileSer
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -53,14 +48,29 @@ import java.util.UUID;
  * Created by goshenoy on 3/6/17.
  */
 public class TenantProfileServiceHandler implements TenantProfileService.Iface {
-
     private final static Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
-
     private TenantProfileRepository tenantProfileRepository;
-
-    public TenantProfileServiceHandler() {
-        logger.debug("Initializing TenantProfileServiceHandler");
+    private ThriftClientPool<CredentialStoreService.Client> csClientPool;
+    public TenantProfileServiceHandler() throws Exception {
         this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
+        try {
+            logger.debug("Initializing TenantProfileServiceHandler");
+            GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+            poolConfig.maxActive = 100;
+            poolConfig.minIdle = 5;
+            poolConfig.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+            poolConfig.testOnBorrow = true;
+            poolConfig.testWhileIdle = true;
+            poolConfig.numTestsPerEvictionRun = 10;
+            poolConfig.maxWait = 3000;
+            csClientPool = new ThriftClientPool<>(
+                    tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
+                    Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
+
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error occured while reading airavata-server properties..", e);
+            throw new Exception(e);
+        }
     }
 
     @Override
@@ -119,7 +129,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @SecurityCheck
     public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
-
             // if admin password token changes then copy the admin password and store under this gateway id and then update the admin password token
             Gateway existingGateway = tenantProfileRepository.getGateway(updatedGateway.getAiravataInternalGatewayId());
             if (updatedGateway.getIdentityServerPasswordToken() != null
@@ -247,13 +256,15 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     // admin passwords are stored in credential store in the super portal gateway and need to be
     // copied to a credential that is stored in the requested/newly created gateway
     private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway) throws TException, ApplicationSettingsException {
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+        CredentialStoreService.Client csClient = csClientPool.getResource();
         try {
             String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             PasswordCredential adminPasswordCredential = csClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), requestGatewayId);
             adminPasswordCredential.setGatewayId(gateway.getGatewayId());
             String newAdminPasswordCredentialToken = csClient.addPasswordCredential(adminPasswordCredential);
             gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
+        } catch (TException e) {
+            throw new RuntimeException("Failed to copy the Admin Password to Gateway", e);
         } finally {
             if (csClient.getInputProtocol().getTransport().isOpen()) {
                 csClient.getInputProtocol().getTransport().close();
@@ -261,16 +272,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             if (csClient.getOutputProtocol().getTransport().isOpen()) {
                 csClient.getOutputProtocol().getTransport().close();
             }
-        }
-    }
-
-    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-        try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
+            csClientPool.returnResource(csClient);
         }
     }
 }
