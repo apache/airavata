@@ -21,6 +21,7 @@ from airavata.model.application.io.ttypes import DataType
 from airavata.model.credential.store.ttypes import CredentialOwnerType, SummaryType, CredentialSummary
 from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMovement, SCPDataMovement, \
     UnicoreDataMovement
+from airavata.model.group.ttypes import ResourcePermissionType
 from django_airavata.apps.api.view_utils import GenericAPIBackedViewSet, APIBackedViewSet, APIResultIterator, \
     APIResultPagination
 from . import datastore
@@ -741,3 +742,117 @@ class SharedEntityGroups(APIBackedViewSet):
             group_list = map(lambda val: val.groupId, group_list)
         groups['groupList'] = group_list
         return groups
+
+
+class SharedEntityViewSet(mixins.RetrieveModelMixin,
+                          mixins.UpdateModelMixin,
+                          GenericAPIBackedViewSet):
+    serializer_class = serializers.SharedEntitySerializer
+    lookup_field = 'entity_id'
+
+    def get_instance(self, lookup_value):
+        users = {}
+        # Load accessible users in order of permission precedence: users that
+        # have WRITE permission should also have READ
+        users.update(self._load_accessible_users(
+            lookup_value, ResourcePermissionType.READ))
+        users.update(self._load_accessible_users(
+            lookup_value, ResourcePermissionType.WRITE))
+        owner_ids = self._load_accessible_users(lookup_value,
+                                                ResourcePermissionType.OWNER)
+        # Assume that there is one and only one owner
+        owner_id = list(owner_ids.keys())[0]
+        # Remove owner from the users list
+        del users[owner_id]
+        user_list = []
+        for user_id in users:
+            user_list.append({'user': self._load_user_profile(user_id),
+                              'permissionType': users[user_id]})
+        groups = {}
+        groups.update(self._load_accessible_groups(
+            lookup_value, ResourcePermissionType.READ))
+        groups.update(self._load_accessible_groups(
+            lookup_value, ResourcePermissionType.WRITE))
+        group_list = []
+        for group_id in groups:
+            group_list.append({'group': self._load_group(group_id),
+                               'permissionType': groups[group_id]})
+        return {'entityId': lookup_value,
+                'users': user_list,
+                'groups': group_list,
+                'owner': self._load_user_profile(owner_id)}
+
+    def _load_accessible_users(self, entity_id, permission_type):
+        users = self.request.airavata_client.getAllAccessibleUsers(self.authz_token, entity_id, permission_type)
+        return {user_id: permission_type for user_id in users}
+
+    def _load_user_profile(self, user_id):
+        user_profile_client = self.request.profile_service['user_profile']
+        username = user_id[0:user_id.rindex('@')]
+        return user_profile_client.getUserProfileById(self.authz_token,
+                                                      username,
+                                                      settings.GATEWAY_ID)
+
+    def _load_accessible_groups(self, entity_id, permission_type):
+        groups = self.request.airavata_client.getAllAccessibleGroups(self.authz_token, entity_id, permission_type)
+        return {group_id: permission_type for group_id in groups}
+
+    def _load_group(self, group_id):
+        group_manager_client = self.request.profile_service['group_manager']
+        return group_manager_client.getGroup(self.authz_token, group_id)
+
+    def perform_update(self, serializer):
+        shared_entity = serializer.save()
+        entity_id = shared_entity.entityId
+        if len(shared_entity._user_grant_read_permission) > 0:
+            self._share_with_users(
+                entity_id, ResourcePermissionType.READ,
+                shared_entity._user_grant_read_permission)
+        if len(shared_entity._user_grant_write_permission) > 0:
+            self._share_with_users(
+                entity_id, ResourcePermissionType.WRITE,
+                shared_entity._user_grant_write_permission)
+        if len(shared_entity._user_revoke_read_permission) > 0:
+            self._revoke_from_users(
+                entity_id, ResourcePermissionType.READ,
+                shared_entity._user_revoke_read_permission)
+        if len(shared_entity._user_revoke_write_permission) > 0:
+            self._revoke_from_users(
+                entity_id, ResourcePermissionType.WRITE,
+                shared_entity._user_revoke_write_permission)
+        if len(shared_entity._group_grant_read_permission) > 0:
+            self._share_with_groups(
+                entity_id, ResourcePermissionType.READ,
+                shared_entity._group_grant_read_permission)
+        if len(shared_entity._group_grant_write_permission) > 0:
+            self._share_with_groups(
+                entity_id, ResourcePermissionType.WRITE,
+                shared_entity._group_grant_write_permission)
+        if len(shared_entity._group_revoke_read_permission) > 0:
+            self._revoke_from_groups(
+                entity_id, ResourcePermissionType.READ,
+                shared_entity._group_revoke_read_permission)
+        if len(shared_entity._group_revoke_write_permission) > 0:
+            self._revoke_from_groups(
+                entity_id, ResourcePermissionType.WRITE,
+                shared_entity._group_revoke_write_permission)
+
+    def _share_with_users(self, entity_id, permission_type, user_ids):
+        self.request.airavata_client.shareResourceWithUsers(
+            self.authz_token, entity_id,
+            {user_id: permission_type for user_id in user_ids})
+
+    def _revoke_from_users(self, entity_id, permission_type, user_ids):
+        self.request.airavata_client.revokeSharingOfResourceFromUsers(
+            self.authz_token, entity_id,
+            {user_id: permission_type for user_id in user_ids})
+
+    def _share_with_groups(self, entity_id, permission_type, group_ids):
+        self.request.airavata_client.shareResourceWithGroups(
+            self.authz_token, entity_id,
+            {group_id: permission_type for group_id in group_ids})
+
+    def _revoke_from_groups(self, entity_id, permission_type, group_ids):
+        self.request.airavata_client.revokeSharingOfResourceFromGroups(
+            self.authz_token, entity_id,
+            {group_id: permission_type for group_id in group_ids})

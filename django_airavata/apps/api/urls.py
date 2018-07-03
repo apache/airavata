@@ -22,6 +22,8 @@ router.register(r'user-profiles', views.UserProfileViewSet,
 router.register(r'group-resource-profiles', views.GroupResourceProfileViewSet,
                 base_name='group-resource-profile')
 router.register(r'shared/group/entities',views.SharedEntityGroups,base_name="shared_entities_with_groups")
+router.register(r'shared-entities', views.SharedEntityViewSet,
+                base_name='shared-entity')
 
 app_name = 'django_airavata_api'
 urlpatterns = [
