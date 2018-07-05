@@ -4999,10 +4999,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean shareResourceWithUsers(AuthzToken authzToken, String resourceId,
                                           Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        // TODO: first verify that authenticating user is OWNER of the resource
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
+            }
             for(Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()){
                 String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
@@ -5035,10 +5037,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean shareResourceWithGroups(AuthzToken authzToken, String resourceId,
                                            Map<String, ResourcePermissionType> groupPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        // TODO: first verify that authenticating user is OWNER of the resource
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
+            }
             for(Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()){
                 String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 if(groupPermission.getValue().equals(ResourcePermissionType.WRITE))
@@ -5070,10 +5074,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean revokeSharingOfResourceFromUsers(AuthzToken authzToken, String resourceId,
                                                     Map<String, ResourcePermissionType> userPermissionList) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        // TODO: first verify that authenticating user is OWNER of the resource
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
+            }
             for(Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()){
                 String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
@@ -5106,11 +5112,13 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean revokeSharingOfResourceFromGroups(AuthzToken authzToken, String resourceId,
                                                      Map<String, ResourcePermissionType> groupPermissionList) 
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        // TODO: first verify that authenticating user is OWNER of the resource
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         final String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
+            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
+            }
             // Prevent removing Admins WRITE access and Read Only Admins READ access
             GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
             if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
