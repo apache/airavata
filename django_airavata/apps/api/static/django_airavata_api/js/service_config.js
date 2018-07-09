@@ -42,5 +42,9 @@ export default {
             name:"create",
             pagination:true
         }]
-    }
+    },
+    "SharedEntities": {
+        url: "/api/shared-entities",
+        viewSet: true
+    },
 }

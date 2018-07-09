@@ -9,6 +9,7 @@ import Project from './models/Project'
 import FullExperiment from './models/FullExperiment'
 import Group from './models/Group'
 import GroupResourceProfile from './models/GroupResourceProfile'
+import SharedEntity from './models/SharedEntity'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
@@ -45,6 +46,7 @@ exports.models = {
     Project,
     Group,
     GroupResourceProfile,
+    SharedEntity,
 }
 
 exports.services = {

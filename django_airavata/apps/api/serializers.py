@@ -472,8 +472,8 @@ class GroupPermissionSerializer(serializers.Serializer):
 class SharedEntitySerializer(serializers.Serializer):
 
     entityId = serializers.CharField(read_only=True)
-    users = UserPermissionSerializer(many=True)
-    groups = GroupPermissionSerializer(many=True)
+    userPermissions = UserPermissionSerializer(many=True)
+    groupPermissions = GroupPermissionSerializer(many=True)
     owner = UserProfileSerializer(read_only=True)
     isOwner = serializers.SerializerMethodField()
 
@@ -483,9 +483,9 @@ class SharedEntitySerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         # Compute lists of ids to grant/revoke READ/WRITE
         existing_user_permissions = {user.user.userId: user.permissionType
-                                     for user in instance.users}
+                                     for user in instance.userPermissions}
         new_user_permissions = {user.user.userId: user.permissionType
-                                for user in validated_data.users}
+                                for user in validated_data.userPermissions}
 
         (user_grant_read_permission, user_grant_write_permission,
          user_revoke_read_permission, user_revoke_write_permission) = \
@@ -493,9 +493,9 @@ class SharedEntitySerializer(serializers.Serializer):
                                                  new_user_permissions)
 
         existing_group_permissions = {group.group.groupId: group.permissionType
-                                      for group in instance.groups}
+                                      for group in instance.groupPermissions}
         new_group_permissions = {group.group.groupId: group.permissionType
-                                 for group in validated_data.groups}
+                                 for group in validated_data.groupPermissions}
 
         (group_grant_read_permission, group_grant_write_permission,
          group_revoke_read_permission, group_revoke_write_permission) = \

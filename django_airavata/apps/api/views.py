@@ -778,8 +778,8 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             group_list.append({'group': self._load_group(group_id),
                                'permissionType': groups[group_id]})
         return {'entityId': lookup_value,
-                'users': user_list,
-                'groups': group_list,
+                'userPermissions': user_list,
+                'groupPermissions': group_list,
                 'owner': self._load_user_profile(owner_id)}
 
     def _load_accessible_users(self, entity_id, permission_type):

@@ -12,6 +12,7 @@
           <auto-complete v-model="selectedGroups"
                          v-bind:suggestions="groups"></auto-complete>
         </div>
+        <share-button v-if="sharedEntity" v-model="sharedEntity"/>
       </div>
       <div class="new-application-tab-main">
         <h4>Compute Preferences</h4>
@@ -76,6 +77,10 @@
         this.groups = value.results;
       }));
       this.fetchGroup(this.value.groupResourceProfileId);
+      if (this.value.groupResourceProfileId) {
+        DjangoAiravataAPI.services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.value.groupResourceProfileId})
+          .then(sharedEntity => this.sharedEntity = sharedEntity);
+      }
     },
     data: function () {
       let data = Object.assign({},this.value);
@@ -87,6 +92,7 @@
         data: data,
         service: DjangoAiravataAPI.services.ServiceFactory.service("GroupResourcePreference"),
         groups: [],
+        sharedEntity: null,
 
       }
     },
@@ -94,8 +100,8 @@
     components: {
       ComputePreference,
       "auto-complete": comps.Autocomplete,
-      TabActionConsole
-
+      TabActionConsole,
+      "share-button": comps.ShareButton,
     },
     methods: {
       transformData: function (groupResourceProfile) {
