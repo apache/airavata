@@ -132,7 +132,12 @@ public class SshAgentAdaptor implements AgentAdaptor {
     }
 
     public void createDirectory(String path) throws AgentException {
-        String command = "mkdir -p " + path;
+        createDirectory(path, false);
+    }
+
+    @Override
+    public void createDirectory(String path, boolean recursive) throws AgentException {
+        String command = (recursive? "mkdir -p " : "mkdir ") + path;
         ChannelExec channelExec = null;
         try {
             channelExec = (ChannelExec)session.openChannel("exec");

@@ -36,6 +36,8 @@ public interface AgentAdaptor {
 
     public void createDirectory(String path) throws AgentException;
 
+    public void createDirectory(String path, boolean recursive) throws AgentException;
+
     public void copyFileTo(String localFile, String remoteFile) throws AgentException;
 
     public void copyFileFrom(String remoteFile, String localFile) throws AgentException;
