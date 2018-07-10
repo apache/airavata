@@ -200,10 +200,11 @@ public class PoolingSSHJClient extends SSHClient {
     }
 
     private void removeStaleConnections() {
+        List<Map.Entry<SSHClient, SSHClientInfo>> entriesTobeRemoved;
         lock.writeLock().lock();
         logger.debug("Removing stale connections for host {}", host);
         try {
-            List<Map.Entry<SSHClient, SSHClientInfo>> entriesTobeRemoved = clientInfoMap.entrySet().stream().filter(entry ->
+            entriesTobeRemoved = clientInfoMap.entrySet().stream().filter(entry ->
                     ((entry.getValue().getSessionCount() == 0) &&
                             (entry.getValue().getLastAccessedTime() + maxConnectionIdleTimeMS < System.currentTimeMillis()))).collect(Collectors.toList());
             entriesTobeRemoved.forEach(entry -> {
@@ -213,6 +214,14 @@ public class PoolingSSHJClient extends SSHClient {
         } finally {
             lock.writeLock().unlock();
         }
+
+        entriesTobeRemoved.forEach(entry -> {
+            try {
+                entry.getKey().disconnect();
+            } catch (IOException e) {
+                logger.warn("Failed to disconnect connection {} for host {}", entry.getValue().clientId, host);
+            }
+        });
     }
 
     private SSHClient createNewSSHClient() throws IOException {
