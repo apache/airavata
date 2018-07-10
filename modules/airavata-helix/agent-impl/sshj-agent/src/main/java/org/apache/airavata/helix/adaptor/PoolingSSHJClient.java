@@ -64,7 +64,7 @@ public class PoolingSSHJClient extends SSHClient {
     private int port;
 
     private int maxSessionsForConnection = 1;
-    private int maxConnectionIdleTimeMS = 60000;
+    private long maxConnectionIdleTimeMS = 10 * 60 * 1000;
 
     public void addHostKeyVerifier(HostKeyVerifier verifier) {
         this.hostKeyVerifier = verifier;
@@ -91,7 +91,7 @@ public class PoolingSSHJClient extends SSHClient {
             public void run() {
                 removeStaleConnections();
             }
-        }, 10, maxConnectionIdleTimeMS, TimeUnit.MILLISECONDS);
+        }, 10, maxConnectionIdleTimeMS * 2, TimeUnit.MILLISECONDS);
     }
 
     ////////////////// client specific operations ///////
