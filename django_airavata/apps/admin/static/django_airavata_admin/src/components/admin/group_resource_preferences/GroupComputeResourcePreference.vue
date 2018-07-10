@@ -79,7 +79,8 @@
       this.fetchGroup(this.value.groupResourceProfileId);
       if (this.value.groupResourceProfileId) {
         DjangoAiravataAPI.services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.value.groupResourceProfileId})
-          .then(sharedEntity => this.sharedEntity = sharedEntity);
+          // TODO: once ServiceFactory supports model classes, won't need to do this conversion
+          .then(sharedEntity => this.sharedEntity = new DjangoAiravataAPI.models.SharedEntity(sharedEntity));
       }
     },
     data: function () {

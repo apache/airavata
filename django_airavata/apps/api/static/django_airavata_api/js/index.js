@@ -1,14 +1,16 @@
+
 import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition'
 import ApplicationModule from './models/ApplicationModule'
 import DataType from './models/DataType'
 import Experiment from './models/Experiment'
 import ExperimentState from './models/ExperimentState'
-import InputDataObjectType from './models/InputDataObjectType'
-import OutputDataObjectType from './models/OutputDataObjectType'
-import Project from './models/Project'
 import FullExperiment from './models/FullExperiment'
 import Group from './models/Group'
 import GroupResourceProfile from './models/GroupResourceProfile'
+import InputDataObjectType from './models/InputDataObjectType'
+import OutputDataObjectType from './models/OutputDataObjectType'
+import Project from './models/Project'
+import ResourcePermissionType from './models/ResourcePermissionType'
 import SharedEntity from './models/SharedEntity'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
@@ -41,11 +43,12 @@ exports.models = {
     Experiment,
     ExperimentState,
     FullExperiment,
+    Group,
+    GroupResourceProfile,
     InputDataObjectType,
     OutputDataObjectType,
     Project,
-    Group,
-    GroupResourceProfile,
+    ResourcePermissionType,
     SharedEntity,
 }
 

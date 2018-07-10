@@ -171,6 +171,7 @@ class ServiceFactory {
                     }
                 };
                 switch (config.requestType.toLowerCase()) {
+                    // TODO: convert response to instances of model class
                     case postKey:
                         return FetchUtils.post(url, bodyParams, queryParams).then(paginationHandler);
                     case getKey:
