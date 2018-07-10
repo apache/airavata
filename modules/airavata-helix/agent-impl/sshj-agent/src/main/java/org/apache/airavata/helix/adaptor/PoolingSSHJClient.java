@@ -38,8 +38,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * This class will keep a pool of {@link SSHClient} and scale them according to the number of SSH requests.
@@ -61,7 +63,8 @@ public class PoolingSSHJClient extends SSHClient {
     private String host;
     private int port;
 
-    private int maxSessionsForConnection = 10;
+    private int maxSessionsForConnection = 1;
+    private int maxConnectionIdleTimeMS = 60000;
 
     public void addHostKeyVerifier(HostKeyVerifier verifier) {
         this.hostKeyVerifier = verifier;
@@ -76,6 +79,19 @@ public class PoolingSSHJClient extends SSHClient {
         this.config = config;
         this.host = host;
         this.port = port;
+
+        ScheduledExecutorService poolMonitoringService = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread thread = new Thread(r, "SSH-Pool-Monitor-" + host + "-" + port);
+            thread.setDaemon(true);
+            return thread;
+        });
+
+        poolMonitoringService.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                removeStaleConnections();
+            }
+        }, 10, maxConnectionIdleTimeMS, TimeUnit.MILLISECONDS);
     }
 
     ////////////////// client specific operations ///////
@@ -115,7 +131,7 @@ public class PoolingSSHJClient extends SSHClient {
                         }
                     }
                 } catch (Exception e) {
-                    logger.warn("Failed to fetch max session count for " + host + ". Continuing with default value 10. " + e.getMessage() );
+                    logger.warn("Failed to fetch max session count for " + host + ". Continuing with default value 1. " + e.getMessage() );
                 }
                 return newClient;
 
@@ -126,12 +142,12 @@ public class PoolingSSHJClient extends SSHClient {
                     Map.Entry<SSHClient, SSHClientInfo> minEntry = minEntryOp.get();
                     // use the connection with least amount of sessions created.
 
-                    logger.debug("Session count for selected connection {} is {}. Threshold {}",
-                            minEntry.getValue().getClientId(), minEntry.getValue().getSessionCount(), maxSessionsForConnection);
+                    logger.debug("Session count for selected connection {} is {}. Threshold {} for host {}",
+                            minEntry.getValue().getClientId(), minEntry.getValue().getSessionCount(), maxSessionsForConnection, host);
                     if (minEntry.getValue().getSessionCount() >= maxSessionsForConnection) {
                         // if it exceeds the maximum session count, create a new connection
                         logger.debug("Connection with least amount of sessions exceeds the threshold. So creating a new connection. " +
-                                "Current connection count " + clientInfoMap.size());
+                                "Current connection count {} for host {}", clientInfoMap.size(), host);
                         SSHClient newClient = createNewSSHClient();
                         SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis(), clientInfoMap.size());
                         clientInfoMap.put(newClient, info);
@@ -139,13 +155,13 @@ public class PoolingSSHJClient extends SSHClient {
 
                     } else {
                         // otherwise reuse the same connetion
-                        logger.debug("Reusing the same connection {} as it doesn't exceed the threshold", minEntry.getValue().getClientId());
+                        logger.debug("Reusing the same connection {} as it doesn't exceed the threshold for host {}", minEntry.getValue().getClientId(), host);
                         minEntry.getValue().setSessionCount(minEntry.getValue().getSessionCount() + 1);
                         minEntry.getValue().setLastAccessedTime(System.currentTimeMillis());
                         return minEntry.getKey();
                     }
                 } else {
-                    throw new Exception("Failed to find a connection in the pool for " + host);
+                    throw new Exception("Failed to find a connection in the pool for host " + host);
                 }
             }
 
@@ -159,6 +175,7 @@ public class PoolingSSHJClient extends SSHClient {
 
         try {
             if (clientInfoMap.containsKey(client)) {
+                logger.debug("Removing the disconnected connection {} for host {}", clientInfoMap.get(client).getClientId(), host);
                 clientInfoMap.remove(client);
             }
 
@@ -172,10 +189,27 @@ public class PoolingSSHJClient extends SSHClient {
 
         try {
             if (clientInfoMap.containsKey(client)) {
+                logger.debug("Removing the session for connection {} for host {}", clientInfoMap.get(client).getClientId(), host);
                 SSHClientInfo sshClientInfo = clientInfoMap.get(client);
                 sshClientInfo.setSessionCount(sshClientInfo.getSessionCount() - 1);
             }
 
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    private void removeStaleConnections() {
+        lock.writeLock().lock();
+        logger.debug("Removing stale connections for host {}", host);
+        try {
+            List<Map.Entry<SSHClient, SSHClientInfo>> entriesTobeRemoved = clientInfoMap.entrySet().stream().filter(entry ->
+                    ((entry.getValue().getSessionCount() == 0) &&
+                            (entry.getValue().getLastAccessedTime() + maxConnectionIdleTimeMS < System.currentTimeMillis()))).collect(Collectors.toList());
+            entriesTobeRemoved.forEach(entry -> {
+                logger.debug("Removing connection {} due to inactivity for host {}", entry.getValue().getClientId(), host);
+                clientInfoMap.remove(entry.getKey());
+            });
         } finally {
             lock.writeLock().unlock();
         }
