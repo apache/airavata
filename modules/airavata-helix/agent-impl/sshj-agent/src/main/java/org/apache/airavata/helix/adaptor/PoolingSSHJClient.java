@@ -86,7 +86,7 @@ public class PoolingSSHJClient extends SSHClient {
         try {
             if (clientInfoMap.isEmpty()) {
                 SSHClient newClient = createNewSSHClient();
-                SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis());
+                SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis(), 0);
                 clientInfoMap.put(newClient, info);
 
                 /* if this is the very first connection that is created to the compute host, fetch the MaxSessions
@@ -126,19 +126,20 @@ public class PoolingSSHJClient extends SSHClient {
                     Map.Entry<SSHClient, SSHClientInfo> minEntry = minEntryOp.get();
                     // use the connection with least amount of sessions created.
 
-                    logger.debug("Session count for selected connection {}. Threshold {}", minEntry.getValue().getSessionCount(), maxSessionsForConnection);
+                    logger.debug("Session count for selected connection {} is {}. Threshold {}",
+                            minEntry.getValue().getClientId(), minEntry.getValue().getSessionCount(), maxSessionsForConnection);
                     if (minEntry.getValue().getSessionCount() >= maxSessionsForConnection) {
                         // if it exceeds the maximum session count, create a new connection
                         logger.debug("Connection with least amount of sessions exceeds the threshold. So creating a new connection. " +
                                 "Current connection count " + clientInfoMap.size());
                         SSHClient newClient = createNewSSHClient();
-                        SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis());
+                        SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis(), clientInfoMap.size());
                         clientInfoMap.put(newClient, info);
                         return newClient;
 
                     } else {
                         // otherwise reuse the same connetion
-                        logger.debug("Reusing the same connection as it doesn't exceed the threshold");
+                        logger.debug("Reusing the same connection {} as it doesn't exceed the threshold", minEntry.getValue().getClientId());
                         minEntry.getValue().setSessionCount(minEntry.getValue().getSessionCount() + 1);
                         minEntry.getValue().setLastAccessedTime(System.currentTimeMillis());
                         return minEntry.getKey();
@@ -261,10 +262,12 @@ public class PoolingSSHJClient extends SSHClient {
 
         private int sessionCount;
         private long lastAccessedTime;
+        private int clientId;
 
-        public SSHClientInfo(int sessionCount, long lastAccessedTime) {
+        public SSHClientInfo(int sessionCount, long lastAccessedTime, int clientId) {
             this.sessionCount = sessionCount;
             this.lastAccessedTime = lastAccessedTime;
+            this.clientId = clientId;
         }
 
         public int getSessionCount() {
@@ -283,6 +286,14 @@ public class PoolingSSHJClient extends SSHClient {
         public SSHClientInfo setLastAccessedTime(long lastAccessedTime) {
             this.lastAccessedTime = lastAccessedTime;
             return this;
+        }
+
+        public int getClientId() {
+            return clientId;
+        }
+
+        public void setClientId(int clientId) {
+            this.clientId = clientId;
         }
     }
 
