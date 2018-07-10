@@ -129,7 +129,8 @@ public class PoolingSSHJClient extends SSHClient {
                     logger.debug("Session count for selected connection {}. Threshold {}", minEntry.getValue().getSessionCount(), maxSessionsForConnection);
                     if (minEntry.getValue().getSessionCount() >= maxSessionsForConnection) {
                         // if it exceeds the maximum session count, create a new connection
-                        logger.debug("Connection with least amount of sessions exceeds the threshold. So creating a new connection");
+                        logger.debug("Connection with least amount of sessions exceeds the threshold. So creating a new connection. " +
+                                "Current connection count " + clientInfoMap.size());
                         SSHClient newClient = createNewSSHClient();
                         SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis());
                         clientInfoMap.put(newClient, info);
