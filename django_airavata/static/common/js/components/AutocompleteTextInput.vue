@@ -6,9 +6,9 @@
             </b-input-group-addon>
             <b-form-input type="text" :value="searchValue" placeholder="Type to get suggestions..."
               @input="updateSearchValue"
-              @keydown.enter = 'enter'
-              @keydown.down = 'down'
-              @keydown.up = 'up'
+              @keydown.native.enter = 'enter'
+              @keydown.native.down = 'down'
+              @keydown.native.up = 'up'
             ></b-form-input>
         </b-input-group>
         <b-list-group class="autocomplete-suggestion-list" v-if="open">
@@ -62,7 +62,7 @@ export default {
       this.searchValue = value;
     },
     enter () {
-      this.emitSelectedItem(index);
+      this.emitSelectedItem(this.current);
       this.searchValue = '';
       this.open = false
     },
