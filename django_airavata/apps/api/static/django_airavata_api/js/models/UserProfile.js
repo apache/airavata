@@ -45,6 +45,6 @@ export default class UserProfile extends BaseModel {
     }
 
     get email() {
-        return (emails != null && emails.length > 0) ? emails[0] : null;
+        return (this.emails != null && this.emails.length > 0) ? this.emails[0] : null;
     }
 }

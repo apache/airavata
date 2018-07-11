@@ -5,19 +5,38 @@
             <b-badge>{{ totalCount }}</b-badge>
         </b-button>
         <b-modal id="modal-share-settings" title="Sharing Settings">
-            <b-form-group label="Search for groups" labelFor="user-groups-autocomplete">
+            <b-form-group label="Search for users/groups" labelFor="user-groups-autocomplete">
                 <autocomplete-text-input id="user-groups-autocomplete"
-                    :suggestions="groupSuggestions"
+                    :suggestions="usersAndGroupsSuggestions"
                     @selected="suggestionSelected">
                     <template slot="suggestion" slot-scope="slotProps">
                         <span v-if="slotProps.suggestion.type == 'group'">
                             <i class="fa fa-users"></i> {{ slotProps.suggestion.name }}
                         </span>
+                        <span v-if="slotProps.suggestion.type == 'user'">
+                            <i class="fa fa-user"></i>
+                            {{ slotProps.suggestion.user.firstName }} {{ slotProps.suggestion.user.lastName }}
+                            ({{ slotProps.suggestion.user.userId }}) - {{ slotProps.suggestion.user.email }}
+                        </span>
                     </template>
                 </autocomplete-text-input>
             </b-form-group>
-            <h5>Currently Shared With</h5>
-            <b-table id="modal-group-table" hover :items="sharedEntity.groupPermissions" :fields="groupFields">
+            <h5 v-if="totalCount > 0">Currently Shared With</h5>
+            <b-table v-if="usersCount > 0" id="modal-user-table" hover :items="sharedEntity.userPermissions" :fields="userFields">
+                <template slot="name" slot-scope="data">
+                    <span :title="data.item.user.userId">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
+                </template>
+                <template slot="email" slot-scope="data">
+                    {{data.item.user.email}}
+                </template>
+                <template slot="permission" slot-scope="data">
+                    <b-form-select v-model="data.item.permissionType" :options="permissionOptions"/>
+                </template>
+                <template slot="remove" slot-scope="data">
+                    <a href="#" @click.prevent="removeUser(data.item.user)"><span class="fa fa-trash"></span></a>
+                </template>
+            </b-table>
+            <b-table v-if="groupsCount > 0" id="modal-group-table" hover :items="sharedEntity.groupPermissions" :fields="groupFields">
                 <template slot="name" slot-scope="data">
                     {{data.item.group.name}}
                 </template>
@@ -48,11 +67,18 @@ export default {
     data: function() {
         return {
             sharedEntity: this.value ? this.value.clone() : new models.SharedEntity(),
-            groupFields: [
-                {key: 'name', label: 'Group Name'},
-                {key: 'permission', label: 'Permission Settings'},
+            userFields: [
+                {key: 'name', label: 'User Name'},
+                {key: 'email', label: 'Email'},
+                {key: 'permission', label: 'Permission'},
                 {key: 'remove', label: 'Remove'},
             ],
+            groupFields: [
+                {key: 'name', label: 'Group Name'},
+                {key: 'permission', label: 'Permission'},
+                {key: 'remove', label: 'Remove'},
+            ],
+            users: [],
             groups: [],
         }
     },
@@ -103,6 +129,23 @@ export default {
                         type: 'group',
                     }
                 });
+        },
+        userSuggestions: function() {
+            // filter out already selected users
+            const currentUserIds = this.sharedEntity.userPermissions.map(userPerm => userPerm.user.airavataInternalUserId);
+            return this.users
+                .filter(user => currentUserIds.indexOf(user.airavataInternalUserId) < 0)
+                .map(user => {
+                    return {
+                        id: user.airavataInternalUserId,
+                        name: user.firstName + ' ' + user.lastName + ' (' + user.userId + ') ' + user.email,
+                        user: user,
+                        type: 'user',
+                    }
+                });
+        },
+        usersAndGroupsSuggestions: function() {
+            return this.userSuggestions.concat(this.groupSuggestions);
         }
     },
     methods: {
@@ -112,6 +155,10 @@ export default {
          */
         merge: function(sharedEntity) {
             // TODO: implement this
+        },
+        removeUser: function(user) {
+            this.sharedEntity.userPermissions = this.sharedEntity.userPermissions.filter(
+                userPermission => userPermission.user.airavataInternalUserId !== user.airavataInternalUserId);
         },
         removeGroup: function(group) {
             this.sharedEntity.groupPermissions = this.sharedEntity.groupPermissions.filter(
@@ -124,12 +171,19 @@ export default {
                     'group': group,
                     'permissionType': models.ResourcePermissionType.READ
                 }));
+            } else if (suggestion.type === 'user') {
+                const user = this.users.find(user => user.airavataInternalUserId === suggestion.id);
+                this.sharedEntity.userPermissions.push(new models.UserPermission({
+                    'user': user,
+                    'permissionType': models.ResourcePermissionType.READ
+                }));
             }
         }
     },
     mounted: function() {
-        // Load all of the groups
+        // Load all of the groups and users
         services.ServiceFactory.service("Groups").list({limit: -1}).then(groups => this.groups = groups);
+        services.ServiceFactory.service("UserProfiles").list().then(users => this.users = users);
     }
 }
 </script>

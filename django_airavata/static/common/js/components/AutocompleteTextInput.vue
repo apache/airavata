@@ -45,7 +45,8 @@ export default {
   computed: {
     filtered () {
       return this.suggestions.filter((data) => {
-        return data.name.indexOf(this.searchValue) >= 0
+        // Case insensitive search
+        return data.name.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0
       })
     },
   },

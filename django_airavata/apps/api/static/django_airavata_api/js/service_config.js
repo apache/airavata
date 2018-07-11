@@ -1,5 +1,6 @@
 import Group from './models/Group'
 import SharedEntity from './models/SharedEntity'
+import UserProfile from './models/UserProfile'
 
 const post = "post";
 const get = "get";
@@ -60,5 +61,12 @@ export default {
         pagination: true,
         queryParams: ['limit', 'offset'],
         modelClass: Group,
+    },
+    "UserProfiles": {
+        url: "/api/user-profiles",
+        viewSet: [{
+            name: "list"
+        }],
+        modelClass: UserProfile,
     },
 }
