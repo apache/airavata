@@ -1,37 +1,8 @@
 import BaseModel from './BaseModel';
-import Group from './Group';
-import ResourcePermissionType from './ResourcePermissionType';
+import GroupPermission from './GroupPermission';
+import UserPermission from './UserPermission';
 import UserProfile from './UserProfile';
 
-class UserPermission extends BaseModel {
-    constructor(data = {}) {
-        super([
-            {
-                name: 'user',
-                type: UserProfile,
-            },
-            {
-                name: 'permissionType',
-                type: ResourcePermissionType,
-            }
-        ], data);
-    }
-}
-
-class GroupPermission extends BaseModel {
-    constructor(data = {}) {
-        super([
-            {
-                name: 'group',
-                type: Group,
-            },
-            {
-                name: 'permissionType',
-                type: ResourcePermissionType,
-            }
-        ], data);
-    }
-}
 
 const FIELDS = [
     'entityId',

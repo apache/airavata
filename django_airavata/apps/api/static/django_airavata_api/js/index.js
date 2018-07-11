@@ -6,12 +6,14 @@ import Experiment from './models/Experiment'
 import ExperimentState from './models/ExperimentState'
 import FullExperiment from './models/FullExperiment'
 import Group from './models/Group'
+import GroupPermission from './models/GroupPermission'
 import GroupResourceProfile from './models/GroupResourceProfile'
 import InputDataObjectType from './models/InputDataObjectType'
 import OutputDataObjectType from './models/OutputDataObjectType'
 import Project from './models/Project'
 import ResourcePermissionType from './models/ResourcePermissionType'
 import SharedEntity from './models/SharedEntity'
+import UserPermission from './models/UserPermission'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
@@ -44,12 +46,14 @@ exports.models = {
     ExperimentState,
     FullExperiment,
     Group,
+    GroupPermission,
     GroupResourceProfile,
     InputDataObjectType,
     OutputDataObjectType,
     Project,
     ResourcePermissionType,
     SharedEntity,
+    UserPermission,
 }
 
 exports.services = {

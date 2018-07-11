@@ -6,23 +6,16 @@
           </b-button>
         </span>
         <hr>
-        <input class="form-control" type="text" :value="searchValue" placeholder="Type to get suggestions..." @input="updateSearchValue($event.target.value)"
-          @keydown.enter = 'enter'
-          @keydown.down = 'down'
-          @keydown.up = 'up'
-        >
-        <b-list-group style="width: 100%;" v-if="open">
-            <b-list-group-item v-for="(suggestion, index) in filtered.slice(0,5)" v-bind:class="{'active': isActive(index)}" href="#" @click="suggestionClick(index)" v-bind:key="suggestion.id">
-              {{ suggestion.name }}
-            </b-list-group-item>
-        </b-list-group>
+        <autocomplete-text-input :suggestions="suggestions" @selected="suggestionSelected"/>
     </div>
 </template>
 
 <script>
+import AutocompleteTextInput from './AutocompleteTextInput.vue'
 
 export default {
 
+  name: 'autocomplete',
   props: {
     value: {
       type: Array,
@@ -38,20 +31,13 @@ export default {
   data () {
       console.log("Value",this.value.length);
     return {
-      open: false,
-      current: 0,
       localValue: this.value,
-      searchValue: '',
     }
   },
-
+  components: {
+      AutocompleteTextInput,
+  },
   computed: {
-    filtered () {
-        console.log("local Value",this.localValue.length);
-      return this.suggestions.filter((data) => {
-        return data.name.indexOf(this.searchValue) >= 0
-      })
-    },
     selected () {
         console.log("local Value",this.localValue.length);
         return this.suggestions.filter((suggestion) => {
@@ -60,45 +46,11 @@ export default {
     }
   },
   methods: {
-    updateSearchValue (value) {
-      if (this.open === false) {
-        this.open = true
-        this.current = 0
-      }
-      if(value===''){
-        this.open = false;
-      }
-      this.searchValue = value;
-    },
-    enter () {
-      var index = this.suggestions.indexOf(this.filtered[this.current].name);
-      if(this.localValue.indexOf(this.filtered[this.current].id)==-1){
-        this.localValue.push(this.filtered[this.current].id);
+    suggestionSelected (suggestion) {
+      if(this.localValue.indexOf(suggestion.id)==-1) {
+        this.localValue.push(suggestion.id);
       }
       this.$emit('input',this.localValue);
-      this.searchValue = '';
-      this.open = false
-    },
-    up () {
-      if (this.current > 0) {
-        this.current--
-      }
-    },
-    down () {
-      if (this.current < this.filtered.length - 1) {
-        this.current++
-      }
-    },
-    isActive (index) {
-      return index === this.current
-    },
-    suggestionClick (index) {
-      if(this.localValue.indexOf(this.filtered[index].id)==-1) {
-        this.localValue.push(this.filtered[index].id);
-      }
-      this.$emit('input',this.localValue);
-      this.searchValue = '';
-      this.open = false;
     },
     removeClick(data) {
       var index = this.localValue.indexOf(data.id);
