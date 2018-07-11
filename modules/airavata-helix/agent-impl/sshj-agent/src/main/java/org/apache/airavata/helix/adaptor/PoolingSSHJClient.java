@@ -202,13 +202,13 @@ public class PoolingSSHJClient extends SSHClient {
     private void removeStaleConnections() {
         List<Map.Entry<SSHClient, SSHClientInfo>> entriesTobeRemoved;
         lock.writeLock().lock();
-        logger.debug("Removing stale connections for host {}", host);
+        logger.info("Removing stale connections for host {}", host);
         try {
             entriesTobeRemoved = clientInfoMap.entrySet().stream().filter(entry ->
                     ((entry.getValue().getSessionCount() == 0) &&
                             (entry.getValue().getLastAccessedTime() + maxConnectionIdleTimeMS < System.currentTimeMillis()))).collect(Collectors.toList());
             entriesTobeRemoved.forEach(entry -> {
-                logger.debug("Removing connection {} due to inactivity for host {}", entry.getValue().getClientId(), host);
+                logger.info("Removing connection {} due to inactivity for host {}", entry.getValue().getClientId(), host);
                 clientInfoMap.remove(entry.getKey());
             });
         } finally {
