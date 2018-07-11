@@ -1,4 +1,5 @@
 import Group from './models/Group'
+import SharedEntity from './models/SharedEntity'
 
 const post = "post";
 const get = "get";
@@ -50,7 +51,8 @@ export default {
     },
     "SharedEntities": {
         url: "/api/shared-entities",
-        viewSet: true
+        viewSet: true,
+        modelClass: SharedEntity,
     },
     "Groups": {
         url: "/api/groups",

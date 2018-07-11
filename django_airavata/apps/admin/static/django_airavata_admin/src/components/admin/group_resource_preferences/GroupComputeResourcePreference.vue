@@ -8,11 +8,8 @@
           <input type="text" v-model="data.groupResourceProfileName"/>
         </div>
         <div class="entry">
-          <div class="heading">Groups</div>
-          <auto-complete v-model="selectedGroups"
-                         v-bind:suggestions="groups"></auto-complete>
+          <share-button v-if="sharedEntity" v-model="sharedEntity"/>
         </div>
-        <share-button v-if="sharedEntity" v-model="sharedEntity"/>
       </div>
       <div class="new-application-tab-main">
         <h4>Compute Preferences</h4>
@@ -73,14 +70,9 @@
       }
     },
     mounted: function () {
-      this.fetchGroups().then((value => {
-        this.groups = value.results;
-      }));
-      this.fetchGroup(this.value.groupResourceProfileId);
       if (this.value.groupResourceProfileId) {
         DjangoAiravataAPI.services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.value.groupResourceProfileId})
-          // TODO: once ServiceFactory supports model classes, won't need to do this conversion
-          .then(sharedEntity => this.sharedEntity = new DjangoAiravataAPI.models.SharedEntity(sharedEntity));
+          .then(sharedEntity => this.sharedEntity = sharedEntity);
       }
     },
     data: function () {
@@ -89,10 +81,8 @@
         data = this.transformData(data);
       }
       return {
-        selectedGroups: [],
         data: data,
         service: DjangoAiravataAPI.services.ServiceFactory.service("GroupResourcePreference"),
-        groups: [],
         sharedEntity: null,
 
       }
@@ -203,7 +193,6 @@
             console.log("Completed")
             if (data) {
               this.data = this.transformData(data);
-              this.allowGroups();
             }
           });
         } else {
@@ -211,19 +200,7 @@
             console.log("Completed")
             if (data) {
               this.data = this.transformData(data);
-              this.allowGroups();
             }
-          });
-        }
-      },
-      fetchGroups: function () {
-        return DjangoAiravataAPI.services.GroupService.list()
-      },
-      fetchGroup: function (groupResourceProfileId) {
-        if (groupResourceProfileId) {
-          DjangoAiravataAPI.services.ServiceFactory.service('SharedEntitiesGroups').retrieve({lookup: groupResourceProfileId}).then((groups) => {
-            console.log("Selected Groups", groups);
-            this.selectedGroups = groups.groupList;
           });
         }
       },
@@ -240,21 +217,6 @@
         // TODO: load compute resources to get the real name
         return (computeResourceId && computeResourceId.indexOf("_") > 0) ? computeResourceId.split("_")[0] : computeResourceId;
       },
-      allowGroups: function () {
-        return DjangoAiravataAPI.services.ServiceFactory.service('SharedEntitiesGroups').update({
-          lookup: this.data.groupResourceProfileId,
-          data: {
-            groupList: this.selectedGroups,
-            entityId: this.data.groupResourceProfileId
-          }
-        }).then((groups) => {
-          console.log("Selected Groups", groups);
-            this.selectedGroups = groups.groupList;
-            return
-        }, (response) => console.log("Failed Resp ", response));
-      },
-      fetchAllowedGroups: function () {
-      }
     },
     watch: {
       'data.groupResourceProfileId': function (newValue) {
