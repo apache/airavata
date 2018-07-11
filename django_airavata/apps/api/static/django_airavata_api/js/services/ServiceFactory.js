@@ -38,11 +38,17 @@ const parseServiceMapping = function (serviceConfiguration) {
         if (!url.endsWith("/")) {
             url = url + "/";
         }
+        let modelClass = serviceConfiguration.modelClass;
+        let queryParams = serviceConfiguration.queryParams;
+        let defaultPagination = (serviceConfiguration.pagination) ? true : false;
         delete serviceConfiguration.viewSet;
         delete serviceConfiguration.url;
+        delete serviceConfiguration.modelClass;
+        delete serviceConfiguration.queryParams;
+        delete serviceConfiguration.pagination;
         for (let supportedFunction of supportedFunctions) {
             let supportedFunctionName = supportedFunction
-            let pagination = false
+            let pagination = defaultPagination;
             if (typeof(supportedFunctionName) !== "string") {
                 supportedFunctionName = supportedFunction.name
                 pagination = supportedFunction.pagination
@@ -52,6 +58,8 @@ const parseServiceMapping = function (serviceConfiguration) {
                     serviceConfiguration["list"] = {
                         url: url,
                         requestType: getKey,
+                        modelClass: modelClass,
+                        queryParams: queryParams,
                     }
                     break;
                 case "create":
@@ -60,7 +68,9 @@ const parseServiceMapping = function (serviceConfiguration) {
                         requestType: postKey,
                         bodyParams: {
                             name: "data"
-                        }
+                        },
+                        modelClass: modelClass,
+                        queryParams: queryParams,
                     }
                     break;
                 case "update":
@@ -69,19 +79,25 @@ const parseServiceMapping = function (serviceConfiguration) {
                         requestType: putKey,
                         bodyParams: {
                             name: "data"
-                        }
+                        },
+                        modelClass: modelClass,
+                        queryParams: queryParams,
                     }
                     break;
                 case  "retrieve":
                     serviceConfiguration["retrieve"] = {
                         url: url + "<lookup>/",
                         requestType: getKey,
+                        modelClass: modelClass,
+                        queryParams: queryParams,
                     }
                     break;
                 case "delete":
                     serviceConfiguration["delete"] = {
                         url: url + "<lookup>/",
                         requestType: delKey,
+                        modelClass: modelClass,
+                        queryParams: queryParams,
                     }
             }
             serviceConfiguration[supportedFunctionName].pagination = pagination
@@ -164,20 +180,24 @@ class ServiceFactory {
                     }
                 }
                 let paginationHandler = (data) => {
-                    if (config.pagination === true) {
-                        return new PaginationIterator(data);
+                    if (config.pagination === true && data.next) {
+                        return new PaginationIterator(data, config.modelClass);
+                    } else if (data instanceof Array) {
+                        return data.map(item => resultHandler(item));
                     } else {
-                        return data;
+                        return resultHandler(data);
                     }
                 };
+                let resultHandler = (data) => {
+                    return (config.modelClass) ? new config.modelClass(data) : data;
+                }
                 switch (config.requestType.toLowerCase()) {
-                    // TODO: convert response to instances of model class
                     case postKey:
-                        return FetchUtils.post(url, bodyParams, queryParams).then(paginationHandler);
+                        return FetchUtils.post(url, bodyParams, queryParams).then(resultHandler);
                     case getKey:
                         return FetchUtils.get(url, queryParams).then(paginationHandler);
                     case putKey:
-                        return FetchUtils.put(url, bodyParams);
+                        return FetchUtils.put(url, bodyParams).then(resultHandler);
                     case delKey:
                         return FetchUtils.delete(url);
                 }

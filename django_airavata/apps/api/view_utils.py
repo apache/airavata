@@ -131,6 +131,12 @@ class APIResultPagination(pagination.LimitOffsetPagination):
 
         return list(queryset[self.offset:self.offset + self.limit])
 
+    def get_limit(self, request):
+        # If limit <= 0 then don't paginate
+        if self.limit_query_param in request.query_params and int(request.query_params[self.limit_query_param]) <= 0:
+            return None
+        return super().get_limit(request)
+
     def get_paginated_response(self, data):
         has_next_link = len(data) >= self.limit
         return Response(OrderedDict([

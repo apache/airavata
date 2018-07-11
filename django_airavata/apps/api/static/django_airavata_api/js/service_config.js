@@ -1,3 +1,5 @@
+import Group from './models/Group'
+
 const post = "post";
 const get = "get";
 const put = "put";
@@ -9,7 +11,9 @@ Generating Services based on the API view set
 {
 serviceName:{
 url:'/example/api',
-viewSet:true
+viewSet:true,
+pagination: true/false,
+modelClass: ModelClass,
 }
 }
 Normal service configuration:
@@ -20,6 +24,7 @@ url:'/example/api/<look_up>',  # the <look_up> implies a path parameter lok_up
 requestType:'post',
 bodyParams:[...] # body parameter names for json parameter if body params id=s a list of array else an object with the param name for the body object
 queryParams:[] # list query param names/ query param name to param name mapping
+pagination:true # whether to treat the response as a paginated response
 
 
 }
@@ -46,5 +51,12 @@ export default {
     "SharedEntities": {
         url: "/api/shared-entities",
         viewSet: true
+    },
+    "Groups": {
+        url: "/api/groups",
+        viewSet: true,
+        pagination: true,
+        queryParams: ['limit', 'offset'],
+        modelClass: Group,
     },
 }

@@ -128,8 +128,8 @@ export default {
         }
     },
     mounted: function() {
-        // TODO: fetch all groups, not just the first page of them
-        services.GroupService.list().then(groups => this.groups = groups.results);
+        // Load all of the groups
+        services.ServiceFactory.service("Groups").list({limit: -1}).then(groups => this.groups = groups);
     }
 }
 </script>
