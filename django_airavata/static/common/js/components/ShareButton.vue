@@ -4,7 +4,12 @@
             Share
             <b-badge>{{ totalCount }}</b-badge>
         </b-button>
-        <b-modal id="modal-share-settings" title="Sharing Settings">
+        <b-modal id="modal-share-settings" title="Sharing Settings"
+                ref="modalSharingSettings"
+                ok-title="Save" @ok="saveSharedEntity" @cancel="cancelEditSharedEntity"
+                no-close-on-esc no-close-on-backdrop hide-header-close
+                :ok-disabled="loading" :cancel-disabled="loading">
+            <b-alert variant="danger" :show="!!errorMessage">{{errorMessage}}</b-alert>
             <b-form-group label="Search for users/groups" labelFor="user-groups-autocomplete">
                 <autocomplete-text-input id="user-groups-autocomplete"
                     :suggestions="usersAndGroupsSuggestions"
@@ -66,7 +71,7 @@ export default {
     },
     data: function() {
         return {
-            sharedEntity: this.value ? this.value.clone() : new models.SharedEntity(),
+            sharedEntity: this.cloneSharedEntity(this.value),
             userFields: [
                 {key: 'name', label: 'User Name'},
                 {key: 'email', label: 'Email'},
@@ -80,6 +85,8 @@ export default {
             ],
             users: [],
             groups: [],
+            errorMessage: null,
+            loading: false,
         }
     },
     computed: {
@@ -178,12 +185,44 @@ export default {
                     'permissionType': models.ResourcePermissionType.READ
                 }));
             }
+        },
+        saveSharedEntity: function(event) {
+            // Prevent hiding the modal, hide it programmatically
+            this.errorMessage = null;
+            this.loading = true;
+            event.preventDefault();
+            services.ServiceFactory.service("SharedEntities")
+                .update({'data': this.sharedEntity, 'lookup': this.sharedEntity.entityId})
+                .then(sharedEntity => {
+                    this.emitValueChanged();
+                    this.$refs.modalSharingSettings.hide();
+                })
+                .catch(error => {
+                    console.log("Error occurred while saving:", error);
+                    this.errorMessage = "Error occurred while saving: " + JSON.stringify(error);
+                })
+                .then(() => this.loading = false, () => this.loading = false);
+        },
+        cancelEditSharedEntity: function(event) {
+            this.errorMessage = null;
+            this.sharedEntity = this.cloneSharedEntity(this.value);
+        },
+        emitValueChanged: function() {
+            this.$emit('input', this.sharedEntity);
+        },
+        cloneSharedEntity: function(sharedEntity) {
+            return sharedEntity ? sharedEntity.clone() : new models.SharedEntity();
         }
     },
     mounted: function() {
         // Load all of the groups and users
         services.ServiceFactory.service("Groups").list({limit: -1}).then(groups => this.groups = groups);
         services.ServiceFactory.service("UserProfiles").list().then(users => this.users = users);
+    },
+    watch: {
+        value: function(newValue) {
+            this.sharedEntity = this.cloneSharedEntity(newValue);
+        }
     }
 }
 </script>

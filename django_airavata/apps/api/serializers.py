@@ -130,7 +130,7 @@ class StoredJSONField(serializers.JSONField):
 
 class GroupSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
-    id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
+    id = serializers.CharField(default=GroupModel.thrift_spec[1][4])
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True, allow_blank=True)
     ownerId = serializers.CharField(read_only=True)
@@ -482,34 +482,36 @@ class SharedEntitySerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         # Compute lists of ids to grant/revoke READ/WRITE
-        existing_user_permissions = {user.user.userId: user.permissionType
-                                     for user in instance.userPermissions}
-        new_user_permissions = {user.user.userId: user.permissionType
-                                for user in validated_data.userPermissions}
+        existing_user_permissions = {user['user'].airavataInternalUserId: user['permissionType']
+                                     for user in instance['userPermissions']}
+        new_user_permissions = {user['user']['airavataInternalUserId']: user['permissionType']
+                                for user in validated_data['userPermissions']}
 
         (user_grant_read_permission, user_grant_write_permission,
          user_revoke_read_permission, user_revoke_write_permission) = \
             self._compute_all_revokes_and_grants(existing_user_permissions,
                                                  new_user_permissions)
 
-        existing_group_permissions = {group.group.groupId: group.permissionType
-                                      for group in instance.groupPermissions}
-        new_group_permissions = {group.group.groupId: group.permissionType
-                                 for group in validated_data.groupPermissions}
+        existing_group_permissions = {
+            group['group'].id: group['permissionType']
+            for group in instance['groupPermissions']}
+        new_group_permissions = {
+            group['group']['id']: group['permissionType']
+            for group in validated_data['groupPermissions']}
 
         (group_grant_read_permission, group_grant_write_permission,
          group_revoke_read_permission, group_revoke_write_permission) = \
             self._compute_all_revokes_and_grants(existing_group_permissions,
                                                  new_group_permissions)
 
-        instance._user_grant_read_permission = user_grant_read_permission
-        instance._user_grant_write_permission = user_grant_write_permission
-        instance._user_revoke_read_permission = user_revoke_read_permission
-        instance._user_revoke_write_permission = user_revoke_write_permission
-        instance._group_grant_read_permission = group_grant_read_permission
-        instance._group_grant_write_permission = group_grant_write_permission
-        instance._group_revoke_read_permission = group_revoke_read_permission
-        instance._group_revoke_write_permission = group_revoke_write_permission
+        instance['_user_grant_read_permission'] = user_grant_read_permission
+        instance['_user_grant_write_permission'] = user_grant_write_permission
+        instance['_user_revoke_read_permission'] = user_revoke_read_permission
+        instance['_user_revoke_write_permission'] = user_revoke_write_permission
+        instance['_group_grant_read_permission'] = group_grant_read_permission
+        instance['_group_grant_write_permission'] = group_grant_write_permission
+        instance['_group_revoke_read_permission'] = group_revoke_read_permission
+        instance['_group_revoke_write_permission'] = group_revoke_write_permission
         return instance
 
     def _compute_all_revokes_and_grants(self, existing_permissions,
@@ -538,9 +540,9 @@ class SharedEntitySerializer(serializers.Serializer):
 
     def _compute_revokes_and_grants(self, current_permission=None,
                                     new_permission=None):
-        read_permissions = set(ResourcePermissionType.READ)
-        write_permissions = set(ResourcePermissionType.READ,
-                                ResourcePermissionType.WRITE)
+        read_permissions = set((ResourcePermissionType.READ,))
+        write_permissions = set((ResourcePermissionType.READ,
+                                ResourcePermissionType.WRITE))
         current_permissions_set = set()
         new_permissions_set = set()
         if current_permission == ResourcePermissionType.READ:

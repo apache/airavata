@@ -803,39 +803,39 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
 
     def perform_update(self, serializer):
         shared_entity = serializer.save()
-        entity_id = shared_entity.entityId
-        if len(shared_entity._user_grant_read_permission) > 0:
+        entity_id = shared_entity['entityId']
+        if len(shared_entity['_user_grant_read_permission']) > 0:
             self._share_with_users(
                 entity_id, ResourcePermissionType.READ,
-                shared_entity._user_grant_read_permission)
-        if len(shared_entity._user_grant_write_permission) > 0:
+                shared_entity['_user_grant_read_permission'])
+        if len(shared_entity['_user_grant_write_permission']) > 0:
             self._share_with_users(
                 entity_id, ResourcePermissionType.WRITE,
-                shared_entity._user_grant_write_permission)
-        if len(shared_entity._user_revoke_read_permission) > 0:
+                shared_entity['_user_grant_write_permission'])
+        if len(shared_entity['_user_revoke_read_permission']) > 0:
             self._revoke_from_users(
                 entity_id, ResourcePermissionType.READ,
-                shared_entity._user_revoke_read_permission)
-        if len(shared_entity._user_revoke_write_permission) > 0:
+                shared_entity['_user_revoke_read_permission'])
+        if len(shared_entity['_user_revoke_write_permission']) > 0:
             self._revoke_from_users(
                 entity_id, ResourcePermissionType.WRITE,
-                shared_entity._user_revoke_write_permission)
-        if len(shared_entity._group_grant_read_permission) > 0:
+                shared_entity['_user_revoke_write_permission'])
+        if len(shared_entity['_group_grant_read_permission']) > 0:
             self._share_with_groups(
                 entity_id, ResourcePermissionType.READ,
-                shared_entity._group_grant_read_permission)
-        if len(shared_entity._group_grant_write_permission) > 0:
+                shared_entity['_group_grant_read_permission'])
+        if len(shared_entity['_group_grant_write_permission']) > 0:
             self._share_with_groups(
                 entity_id, ResourcePermissionType.WRITE,
-                shared_entity._group_grant_write_permission)
-        if len(shared_entity._group_revoke_read_permission) > 0:
+                shared_entity['_group_grant_write_permission'])
+        if len(shared_entity['_group_revoke_read_permission']) > 0:
             self._revoke_from_groups(
                 entity_id, ResourcePermissionType.READ,
-                shared_entity._group_revoke_read_permission)
-        if len(shared_entity._group_revoke_write_permission) > 0:
+                shared_entity['_group_revoke_read_permission'])
+        if len(shared_entity['_group_revoke_write_permission']) > 0:
             self._revoke_from_groups(
                 entity_id, ResourcePermissionType.WRITE,
-                shared_entity._group_revoke_write_permission)
+                shared_entity['_group_revoke_write_permission'])
 
     def _share_with_users(self, entity_id, permission_type, user_ids):
         self.request.airavata_client.shareResourceWithUsers(
