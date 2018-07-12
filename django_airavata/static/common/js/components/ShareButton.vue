@@ -97,20 +97,20 @@ export default {
                 + (this.usersCount > 0 ? " (" + this.userNames.join(", ") + ")" : "");
         },
         usersCount: function() {
-            return this.sharedEntity ? this.sharedEntity.userPermissions.length : 0;
+            return this.sharedEntity && this.sharedEntity.userPermissions ? this.sharedEntity.userPermissions.length : 0;
         },
         userNames: function() {
-            return this.sharedEntity
+            return this.sharedEntity && this.sharedEntity.userPermissions
                 ? this.sharedEntity.userPermissions.map(userPerm => userPerm.user.firstName + " " + userPerm.user.lastName)
                 : null;
         },
         groupNames: function() {
-            return this.sharedEntity
+            return this.sharedEntity && this.sharedEntity.groupPermissions
                 ? this.sharedEntity.groupPermissions.map(groupPerm => groupPerm.group.name)
                 : null;
         },
         groupsCount: function() {
-            return this.sharedEntity ? this.sharedEntity.groupPermissions.length: 0;
+            return this.sharedEntity && this.sharedEntity.groupPermissions ? this.sharedEntity.groupPermissions.length: 0;
         },
         totalCount: function() {
             return this.usersCount + this.groupsCount;
@@ -126,7 +126,7 @@ export default {
         },
         groupSuggestions: function() {
             // filter out already selected groups
-            const currentGroupIds = this.sharedEntity.groupPermissions.map(groupPerm => groupPerm.group.id);
+            const currentGroupIds = this.sharedEntity.groupPermissions ? this.sharedEntity.groupPermissions.map(groupPerm => groupPerm.group.id) : [];
             return this.groups
                 .filter(group => currentGroupIds.indexOf(group.id) < 0)
                 .map(group => {
@@ -139,7 +139,7 @@ export default {
         },
         userSuggestions: function() {
             // filter out already selected users
-            const currentUserIds = this.sharedEntity.userPermissions.map(userPerm => userPerm.user.airavataInternalUserId);
+            const currentUserIds = this.sharedEntity.userPermissions ? this.sharedEntity.userPermissions.map(userPerm => userPerm.user.airavataInternalUserId) : [];
             return this.users
                 .filter(user => currentUserIds.indexOf(user.airavataInternalUserId) < 0)
                 .map(user => {
@@ -157,11 +157,19 @@ export default {
     },
     methods: {
         /**
-         * Merge the given persisted SharedEntity with the local SharedEntity
+         * Merge the persisted SharedEntity with the local SharedEntity
          * instance and save it, returning a Promise.
          */
-        merge: function(sharedEntity) {
-            // TODO: implement this
+        mergeAndSave: function(entityId) {
+            return services.ServiceFactory.service("SharedEntities").retrieve({lookup: entityId})
+                .then(persistedSharedEntity => {
+                    // Copy the local sharedEntity instance onto the
+                    // persistedSharedEntity and update it
+                    persistedSharedEntity.merge(this.sharedEntity);
+                    return services.ServiceFactory.service("SharedEntities")
+                        .update({'data': persistedSharedEntity, 'lookup': persistedSharedEntity.entityId})
+                        .then(sharedEntity => this.sharedEntity = sharedEntity);
+                });
         },
         removeUser: function(user) {
             this.sharedEntity.userPermissions = this.sharedEntity.userPermissions.filter(
@@ -174,12 +182,18 @@ export default {
         suggestionSelected: function(suggestion) {
             if (suggestion.type === 'group') {
                 const group = this.groups.find(group => group.id === suggestion.id);
+                if (!this.sharedEntity.groupPermissions) {
+                    this.sharedEntity.groupPermissions = [];
+                }
                 this.sharedEntity.groupPermissions.push(new models.GroupPermission({
                     'group': group,
                     'permissionType': models.ResourcePermissionType.READ
                 }));
             } else if (suggestion.type === 'user') {
                 const user = this.users.find(user => user.airavataInternalUserId === suggestion.id);
+                if (!this.sharedEntity.userPermissions) {
+                    this.sharedEntity.userPermissions = [];
+                }
                 this.sharedEntity.userPermissions.push(new models.UserPermission({
                     'user': user,
                     'permissionType': models.ResourcePermissionType.READ
@@ -187,6 +201,12 @@ export default {
             }
         },
         saveSharedEntity: function(event) {
+            // If entity hasn't been persisted yet then just emitValueChanged.
+            // Sharing settings will need to be saved later (see mergeAndSave).
+            if (!this.sharedEntity.entityId) {
+                this.emitValueChanged();
+                return;
+            }
             // Prevent hiding the modal, hide it programmatically
             this.errorMessage = null;
             this.loading = true;
@@ -212,7 +232,7 @@ export default {
         },
         cloneSharedEntity: function(sharedEntity) {
             return sharedEntity ? sharedEntity.clone() : new models.SharedEntity();
-        }
+        },
     },
     mounted: function() {
         // Load all of the groups and users
@@ -233,6 +253,7 @@ button {
 }
 #share-button >>> #modal-share-settings .modal-body {
     max-height: 50vh;
+    min-height: 300px;
     overflow: auto;
 }
 </style>

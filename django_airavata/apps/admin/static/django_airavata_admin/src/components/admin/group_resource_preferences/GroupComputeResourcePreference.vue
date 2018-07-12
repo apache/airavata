@@ -8,7 +8,7 @@
           <input type="text" v-model="data.groupResourceProfileName"/>
         </div>
         <div class="entry">
-          <share-button v-if="sharedEntity" v-model="sharedEntity"/>
+          <share-button ref="shareButton" v-model="sharedEntity"/>
         </div>
       </div>
       <div class="new-application-tab-main">
@@ -201,6 +201,8 @@
             if (data) {
               this.data = this.transformData(data);
             }
+            // Save sharing settings too
+            return this.$refs.shareButton.mergeAndSave(data.groupResourceProfileId);
           });
         }
       },
@@ -220,7 +222,7 @@
     },
     watch: {
       'data.groupResourceProfileId': function (newValue) {
-        let computePreferences = groupResourceProfile.computePreferences;
+        let computePreferences = this.data.computePreferences;
         for (let computePreference of computePreferences) {
           computePreference.groupResourceProfileId = newValue;
           for (let groupSSHAccountProvisionerConfig of computePreference.groupSSHAccountProvisionerConfigs) {

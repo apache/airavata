@@ -38,7 +38,10 @@ log = logging.getLogger(__name__)
 
 class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     def get_url(self, obj, view_name, request, format):
-        lookup_value = getattr(obj, self.lookup_field)
+        if hasattr(obj, self.lookup_field):
+            lookup_value = getattr(obj, self.lookup_field)
+        else:
+            lookup_value = obj.get(self.lookup_field)
         encoded_lookup_value = quote(lookup_value, safe="")
         # Bit of a hack. Django's URL reversing does URL encoding but it doesn't
         # encode all characters including some like '/' that are used in URL
@@ -512,6 +515,15 @@ class SharedEntitySerializer(serializers.Serializer):
         instance['_group_grant_write_permission'] = group_grant_write_permission
         instance['_group_revoke_read_permission'] = group_revoke_read_permission
         instance['_group_revoke_write_permission'] = group_revoke_write_permission
+        instance['userPermissions'] = [
+            {'user': UserProfile(**data['user']),
+             'permissionType': data['permissionType']}
+            for data in validated_data.get(
+                'userPermissions', instance['userPermissions'])]
+        instance['groupPermissions'] = [
+            {'group': GroupModel(**data['group']),
+             'permissionType': data['permissionType']}
+            for data in validated_data.get('groupPermissions', instance['groupPermissions'])]
         return instance
 
     def _compute_all_revokes_and_grants(self, existing_permissions,
