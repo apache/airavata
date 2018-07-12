@@ -41,7 +41,7 @@
                     <a href="#" @click.prevent="removeUser(data.item.user)"><span class="fa fa-trash"></span></a>
                 </template>
             </b-table>
-            <b-table v-if="groupsCount > 0" id="modal-group-table" hover :items="sharedEntity.groupPermissions" :fields="groupFields">
+            <b-table v-if="groupsCount > 0" id="modal-group-table" hover :items="filteredGroupPermissions" :fields="groupFields">
                 <template slot="name" slot-scope="data">
                     {{data.item.group.name}}
                 </template>
@@ -104,13 +104,16 @@ export default {
                 ? this.sharedEntity.userPermissions.map(userPerm => userPerm.user.firstName + " " + userPerm.user.lastName)
                 : null;
         },
-        groupNames: function() {
+        filteredGroupPermissions: function() {
             return this.sharedEntity && this.sharedEntity.groupPermissions
-                ? this.sharedEntity.groupPermissions.map(groupPerm => groupPerm.group.name)
-                : null;
+                ? this.sharedEntity.groupPermissions.filter(grp => !grp.group.isGatewayAdminsGroup && !grp.group.isReadOnlyGatewayAdminsGroup)
+                : [];
+        },
+        groupNames: function() {
+            return this.filteredGroupPermissions.map(groupPerm => groupPerm.group.name);
         },
         groupsCount: function() {
-            return this.sharedEntity && this.sharedEntity.groupPermissions ? this.sharedEntity.groupPermissions.length: 0;
+            return this.filteredGroupPermissions.length;
         },
         totalCount: function() {
             return this.usersCount + this.groupsCount;
@@ -126,9 +129,11 @@ export default {
         },
         groupSuggestions: function() {
             // filter out already selected groups
-            const currentGroupIds = this.sharedEntity.groupPermissions ? this.sharedEntity.groupPermissions.map(groupPerm => groupPerm.group.id) : [];
+            const currentGroupIds = this.filteredGroupPermissions.map(groupPerm => groupPerm.group.id);
             return this.groups
-                .filter(group => currentGroupIds.indexOf(group.id) < 0)
+                .filter(group => currentGroupIds.indexOf(group.id) < 0
+                    && !group.isGatewayAdminsGroup
+                    && !group.isReadOnlyGatewayAdminsGroup)
                 .map(group => {
                     return {
                         id: group.id,
