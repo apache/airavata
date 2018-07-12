@@ -33,7 +33,9 @@ export default class BaseModel {
     }
 
     convertField(fieldType, fieldValue, fieldDefault) {
-        if (fieldType === 'string' || fieldType === 'boolean' || fieldType === 'number') {
+        if (fieldValue === null || typeof fieldValue === 'undefined') {
+            return fieldDefault;
+        } else if (fieldType === 'string' || fieldType === 'boolean' || fieldType === 'number') {
             return this.convertSimpleField(fieldValue, fieldDefault);
         } else if (fieldType === 'date') {
             return this.convertDateField(fieldValue, fieldDefault);
