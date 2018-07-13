@@ -1,6 +1,6 @@
 <template>
     <div id="share-button">
-        <b-button v-b-modal.modal-share-settings :variant="'outline-primary'" :title="title">
+        <b-button v-b-modal.modal-share-settings :variant="'outline-primary'" :title="title" :disabled="!shareButtonEnabled">
             Share
             <b-badge>{{ totalCount }}</b-badge>
         </b-button>
@@ -163,7 +163,11 @@ export default {
         },
         usersAndGroupsSuggestions: function() {
             return this.userSuggestions.concat(this.groupSuggestions);
-        }
+        },
+        shareButtonEnabled: function() {
+            // Enable share button if new entity or user is the entity's owner
+            return (!this.sharedEntity.entityId || this.sharedEntity.isOwner);
+        },
     },
     methods: {
         /**
