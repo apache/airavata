@@ -8,7 +8,8 @@
                 ref="modalSharingSettings"
                 ok-title="Save" @ok="saveSharedEntity" @cancel="cancelEditSharedEntity"
                 no-close-on-esc no-close-on-backdrop hide-header-close
-                :ok-disabled="loading" :cancel-disabled="loading">
+                :ok-disabled="loading" :cancel-disabled="loading"
+                @show="showSharingSettingsModal">
             <b-alert variant="danger" :show="!!errorMessage">{{errorMessage}}</b-alert>
             <b-form-group label="Search for users/groups" labelFor="user-groups-autocomplete">
                 <autocomplete-text-input id="user-groups-autocomplete"
@@ -64,7 +65,10 @@ export default {
     name: "share-button",
     props: {
         value: models.SharedEntity,
-        // TODO: add gatewayGroups
+        autoAddDefaultGatewayUsersGroup: {
+            type: Boolean,
+            default: true,
+        },
     },
     components: {
         AutocompleteTextInput,
@@ -87,6 +91,7 @@ export default {
             groups: [],
             errorMessage: null,
             loading: false,
+            sharedEntityCopy: null,
         }
     },
     computed: {
@@ -187,13 +192,7 @@ export default {
         suggestionSelected: function(suggestion) {
             if (suggestion.type === 'group') {
                 const group = this.groups.find(group => group.id === suggestion.id);
-                if (!this.sharedEntity.groupPermissions) {
-                    this.sharedEntity.groupPermissions = [];
-                }
-                this.sharedEntity.groupPermissions.push(new models.GroupPermission({
-                    'group': group,
-                    'permissionType': models.ResourcePermissionType.READ
-                }));
+                this.addGroup(group);
             } else if (suggestion.type === 'user') {
                 const user = this.users.find(user => user.airavataInternalUserId === suggestion.id);
                 if (!this.sharedEntity.userPermissions) {
@@ -204,6 +203,15 @@ export default {
                     'permissionType': models.ResourcePermissionType.READ
                 }));
             }
+        },
+        addGroup: function(group) {
+            if (!this.sharedEntity.groupPermissions) {
+                this.sharedEntity.groupPermissions = [];
+            }
+            this.sharedEntity.groupPermissions.push(new models.GroupPermission({
+                'group': group,
+                'permissionType': models.ResourcePermissionType.READ
+            }));
         },
         saveSharedEntity: function(event) {
             // If entity hasn't been persisted yet then just emitValueChanged.
@@ -230,7 +238,7 @@ export default {
         },
         cancelEditSharedEntity: function(event) {
             this.errorMessage = null;
-            this.sharedEntity = this.cloneSharedEntity(this.value);
+            this.sharedEntity = this.sharedEntityCopy;
         },
         emitValueChanged: function() {
             this.$emit('input', this.sharedEntity);
@@ -238,10 +246,20 @@ export default {
         cloneSharedEntity: function(sharedEntity) {
             return sharedEntity ? sharedEntity.clone() : new models.SharedEntity();
         },
+        showSharingSettingsModal: function(event) {
+            this.sharedEntityCopy = this.cloneSharedEntity(this.sharedEntity);
+        }
     },
     mounted: function() {
         // Load all of the groups and users
-        services.ServiceFactory.service("Groups").list({limit: -1}).then(groups => this.groups = groups);
+        services.ServiceFactory.service("Groups").list({limit: -1})
+            .then(groups => {
+                this.groups = groups;
+                // If a new sharedEntity, automatically add the defaultGatewayUsersGroup
+                if (!this.sharedEntity.entityId && this.autoAddDefaultGatewayUsersGroup) {
+                    this.groups.filter(group => group.isDefaultGatewayUsersGroup).forEach(this.addGroup);
+                }
+            });
         services.ServiceFactory.service("UserProfiles").list().then(users => this.users = users);
     },
     watch: {
