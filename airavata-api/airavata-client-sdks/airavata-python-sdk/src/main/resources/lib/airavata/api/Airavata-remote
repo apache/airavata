@@ -88,6 +88,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('   getAllApplicationDeployments(AuthzToken authzToken, string gatewayId)')
     print('   getAccessibleApplicationDeployments(AuthzToken authzToken, string gatewayId, ResourcePermissionType permissionType)')
     print('   getAppModuleDeployedResources(AuthzToken authzToken, string appModuleId)')
+    print('   getApplicationDeploymentsForAppModuleAndGroupResourceProfile(AuthzToken authzToken, string appModuleId, string groupResourceProfileId)')
     print('  string registerApplicationInterface(AuthzToken authzToken, string gatewayId, ApplicationInterfaceDescription applicationInterface)')
     print('  string cloneApplicationInterface(AuthzToken authzToken, string existingAppInterfaceID, string newApplicationName, string gatewayId)')
     print('  ApplicationInterfaceDescription getApplicationInterface(AuthzToken authzToken, string appInterfaceId)')
@@ -675,6 +676,12 @@ elif cmd == 'getAppModuleDeployedResources':
         print('getAppModuleDeployedResources requires 2 args')
         sys.exit(1)
     pp.pprint(client.getAppModuleDeployedResources(eval(args[0]), args[1],))
+
+elif cmd == 'getApplicationDeploymentsForAppModuleAndGroupResourceProfile':
+    if len(args) != 3:
+        print('getApplicationDeploymentsForAppModuleAndGroupResourceProfile requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getApplicationDeploymentsForAppModuleAndGroupResourceProfile(eval(args[0]), args[1], args[2],))
 
 elif cmd == 'registerApplicationInterface':
     if len(args) != 3:
