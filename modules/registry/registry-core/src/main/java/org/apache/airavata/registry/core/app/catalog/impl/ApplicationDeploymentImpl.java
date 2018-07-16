@@ -416,6 +416,11 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, String appModuleId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException {
+        throw new RuntimeException("Not implemented, use ApplicationDeploymentRepository.");
+    }
+
+    @Override
     public List<String> getAllApplicationDeployementIds() throws AppCatalogException {
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
