@@ -2267,7 +2267,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ApplicationModule> getAccessibleAppModules(AuthzToken authzToken, String gatewayId, ResourcePermissionType permissionType) throws InvalidRequestException,
+    public List<ApplicationModule> getAccessibleAppModules(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -2284,7 +2284,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 SearchCriteria permissionTypeFilter = new SearchCriteria();
                 permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
                 permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
-                permissionTypeFilter.setValue(gatewayId + ":" + permissionType.name());
+                permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
                 sharingFilters.add(permissionTypeFilter);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
@@ -2561,6 +2561,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
+    @Deprecated
     public List<String> getAppModuleDeployedResources(AuthzToken authzToken, String appModuleId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
@@ -2889,6 +2890,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
+    @Deprecated
     public Map<String, String> getAvailableAppInterfaceComputeResources(AuthzToken authzToken, String appInterfaceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
