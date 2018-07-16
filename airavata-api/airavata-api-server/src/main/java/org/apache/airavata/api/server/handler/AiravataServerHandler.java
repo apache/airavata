@@ -93,6 +93,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
@@ -2574,6 +2575,71 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch a list of Application Deployments that this user can use for executing the given Application Module using the given Group Resource Profile.
+     * The user must have at least READ access to the Group Resource Profile.
+     *
+     * @param appModuleId
+     *    The identifier for the Application Module
+     *
+     * @param groupResourceProfileId
+     *    The identifier for the Group Resource Profile
+     *
+     * @return list<ApplicationDeploymentDescription>
+     *    Returns a list of Application Deployments
+     */
+    @Override
+    @SecurityCheck
+    public List<ApplicationDeploymentDescription> getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
+            AuthzToken authzToken, String appModuleId, String groupResourceProfileId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+            // Get list of compute resources for this Group Resource Profile
+            if (!userHasAccessInternal(sharingClient, authzToken, groupResourceProfileId, ResourcePermissionType.READ)) {
+                throw new AuthorizationException("User is not authorized to access Group Resource Profile " + groupResourceProfileId);
+            }
+            GroupResourceProfile groupResourceProfile = regClient.getGroupResourceProfile(groupResourceProfileId);
+            List<String> accessibleComputeResourceIds = groupResourceProfile.getComputePreferences()
+                    .stream()
+                    .map(compPref -> compPref.getComputeResourceId())
+                    .collect(Collectors.toList());
+
+            // Get list of accessible Application Deployments
+            List<String> accessibleAppDeploymentIds = new ArrayList<>();
+            List<SearchCriteria> sharingFilters = new ArrayList<>();
+            SearchCriteria entityTypeFilter = new SearchCriteria();
+            entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+            entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+            entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            sharingFilters.add(entityTypeFilter);
+            SearchCriteria permissionTypeFilter = new SearchCriteria();
+            permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+            permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+            permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
+            sharingFilters.add(permissionTypeFilter);
+            sharingClient.searchEntities(gatewayId, userName + "@" + gatewayId, sharingFilters, 0, -1)
+                    .forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
+
+            List<ApplicationDeploymentDescription> result = regClient.getAccessibleApplicationDeploymentsForAppModule(
+                    gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            return result;
+        } catch (Exception e) {
+            logger.error("Error while retrieving application deployments...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }

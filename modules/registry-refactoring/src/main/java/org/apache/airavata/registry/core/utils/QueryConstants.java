@@ -19,13 +19,11 @@
  */
 package org.apache.airavata.registry.core.utils;
 
-import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.entities.expcatalog.*;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity;
-import org.apache.openjpa.kernel.exps.Exp;
 
 public interface QueryConstants {
 
@@ -48,6 +46,11 @@ public interface QueryConstants {
             "WHERE AD.gatewayId LIKE :" + DBConstants.ApplicationDeployment.GATEWAY_ID + " AND AD.appDeploymentId IN :" +
             DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS + " AND AD.computeHostId IN :" +
             DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS;
+    String FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS_FOR_APP_MODULE = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
+            "WHERE AD.gatewayId LIKE :" + DBConstants.ApplicationDeployment.GATEWAY_ID + " AND AD.appDeploymentId IN :" +
+            DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS + " AND AD.computeHostId IN :" +
+            DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS + " AND AD.appModuleId = :" +
+            DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID;
 
     // Application Module Queries
     String FIND_APPLICATION_MODULES_FOR_GATEWAY_ID = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
