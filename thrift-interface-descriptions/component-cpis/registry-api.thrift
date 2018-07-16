@@ -995,6 +995,32 @@ service RegistryService {
                 	throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
+             *
+             * Fetch all accessible Application Deployment Descriptions for the given Application Module.
+             *
+             * @param gatewayId
+             *    ID of the gateway which need to list all available application deployment documentation.
+             *
+             * @param appModuleId
+             *    The given Application Module ID.
+             *
+             * @param accessibleAppDeploymentIds
+             *    Application Deployment IDs which are accessible to the current user.
+             *
+             * @param accessibleComputeResourceIds
+             *    Compute Resource IDs which are accessible to the current user.
+             *
+             * @return list<applicationDeployment>
+             *    Returns the list of all application Deployment Objects.
+             *
+             */
+            list<application_deployment_model.ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(1: required string gatewayId,
+                        2: required string appModuleId,
+                        3: required list<string> accessibleAppDeploymentIds,
+                        4: required list<string> accessibleComputeResourceIds)
+                throws (1: registry_api_errors.RegistryServiceException rse)
+
+            /**
              * Fetch a list of Deployed Compute Hosts.
              *
              * @param appModuleId

@@ -1579,6 +1579,26 @@ service Airavata {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
+  /**
+   * Fetch a list of Application Deployments that this user can use for executing the given Application Module using the given Group Resource Profile.
+   * The user must have at least READ access to the Group Resource Profile.
+   *
+   * @param appModuleId
+   *    The identifier for the Application Module
+   *
+   * @param groupResourceProfileId
+   *    The identifier for the Group Resource Profile
+   *
+   * @return list<ApplicationDeploymentDescription>
+   *    Returns a list of Application Deployments
+   */
+  list<application_deployment_model.ApplicationDeploymentDescription> getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
+          1: required security_model.AuthzToken authzToken, 2: required string appModuleId, 3: required string groupResourceProfileId)
+      throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
 /*
  *
  * Application Interface

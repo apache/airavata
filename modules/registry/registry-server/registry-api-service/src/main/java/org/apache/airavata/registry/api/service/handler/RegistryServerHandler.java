@@ -1321,6 +1321,47 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+
+    /**
+     *
+     * Fetch all accessible Application Deployment Descriptions for the given Application Module.
+     *
+     * @param gatewayId
+     *    ID of the gateway which need to list all available application deployment documentation.
+     *
+     * @param appModuleId
+     *    The given Application Module ID.
+     *
+     * @param accessibleAppDeploymentIds
+     *    Application Deployment IDs which are accessible to the current user.
+     *
+     * @param accessibleComputeResourceIds
+     *    Compute Resource IDs which are accessible to the current user.
+     *
+     * @return list<applicationDeployment>
+     *    Returns the list of all application Deployment Objects.
+     *
+     */
+    @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(
+                String gatewayId, String appModuleId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds)
+            throws RegistryServiceException, TException {
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            List<ApplicationDeploymentDescription> deployments = applicationDeploymentRepository.getAccessibleApplicationDeployments(
+                    gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            return deployments;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application deployments...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Fetch a list of Deployed Compute Hosts.
      *
