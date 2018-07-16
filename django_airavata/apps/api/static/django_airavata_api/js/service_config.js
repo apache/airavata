@@ -48,12 +48,12 @@ export default {
             name: "list"
         }, {
             name: "names",
-            url: "/api/compute-resources/all_names",
+            url: "/api/compute-resources/all_names/",
             requestType: 'get',
             modelClass: Object,
         }, {
             name: "namesList",
-            url: "/api/compute-resources/all_names_list",
+            url: "/api/compute-resources/all_names_list/",
             requestType: 'get',
             modelClass: Array,
         }],

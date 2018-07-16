@@ -259,7 +259,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
     lookup_field = 'app_module_id'
 
     def get_list(self):
-        return self.request.airavata_client.getAllAppModules(self.authz_token, self.gateway_id)
+        return self.request.airavata_client.getAccessibleAppModules(self.authz_token, self.gateway_id)
 
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getApplicationModule(self.authz_token, lookup_value)
