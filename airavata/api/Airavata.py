@@ -1358,15 +1358,13 @@ class Iface(object):
         """
         pass
 
-    def getAccessibleAppModules(self, authzToken, gatewayId, permissionType):
+    def getAccessibleAppModules(self, authzToken, gatewayId):
         """
 
         Fetch all accessible Application Module Descriptions.
 
         @param gatewayId
            ID of the gateway which need to list all accessible application deployment documentation.
-        @param permissionType
-           ResourcePermissionType to check for this user
 
         @return list
            Returns the list of all Application Module Objects that are accessible to the user.
@@ -1375,7 +1373,6 @@ class Iface(object):
         Parameters:
          - authzToken
          - gatewayId
-         - permissionType
         """
         pass
 
@@ -6896,15 +6893,13 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllAppModules failed: unknown result")
 
-    def getAccessibleAppModules(self, authzToken, gatewayId, permissionType):
+    def getAccessibleAppModules(self, authzToken, gatewayId):
         """
 
         Fetch all accessible Application Module Descriptions.
 
         @param gatewayId
            ID of the gateway which need to list all accessible application deployment documentation.
-        @param permissionType
-           ResourcePermissionType to check for this user
 
         @return list
            Returns the list of all Application Module Objects that are accessible to the user.
@@ -6913,17 +6908,15 @@ class Client(Iface):
         Parameters:
          - authzToken
          - gatewayId
-         - permissionType
         """
-        self.send_getAccessibleAppModules(authzToken, gatewayId, permissionType)
+        self.send_getAccessibleAppModules(authzToken, gatewayId)
         return self.recv_getAccessibleAppModules()
 
-    def send_getAccessibleAppModules(self, authzToken, gatewayId, permissionType):
+    def send_getAccessibleAppModules(self, authzToken, gatewayId):
         self._oprot.writeMessageBegin('getAccessibleAppModules', TMessageType.CALL, self._seqid)
         args = getAccessibleAppModules_args()
         args.authzToken = authzToken
         args.gatewayId = gatewayId
-        args.permissionType = permissionType
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -15702,7 +15695,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = getAccessibleAppModules_result()
         try:
-            result.success = self._handler.getAccessibleAppModules(args.authzToken, args.gatewayId, args.permissionType)
+            result.success = self._handler.getAccessibleAppModules(args.authzToken, args.gatewayId)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -31095,20 +31088,17 @@ class getAccessibleAppModules_args(object):
     Attributes:
      - authzToken
      - gatewayId
-     - permissionType
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 2
-        (3, TType.I32, 'permissionType', None, None, ),  # 3
     )
 
-    def __init__(self, authzToken=None, gatewayId=None, permissionType=None,):
+    def __init__(self, authzToken=None, gatewayId=None,):
         self.authzToken = authzToken
         self.gatewayId = gatewayId
-        self.permissionType = permissionType
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -31130,11 +31120,6 @@ class getAccessibleAppModules_args(object):
                     self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.I32:
-                    self.permissionType = iprot.readI32()
-                else:
-                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -31153,10 +31138,6 @@ class getAccessibleAppModules_args(object):
             oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
             oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
             oprot.writeFieldEnd()
-        if self.permissionType is not None:
-            oprot.writeFieldBegin('permissionType', TType.I32, 3)
-            oprot.writeI32(self.permissionType)
-            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -31165,8 +31146,6 @@ class getAccessibleAppModules_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.gatewayId is None:
             raise TProtocolException(message='Required field gatewayId is unset!')
-        if self.permissionType is None:
-            raise TProtocolException(message='Required field permissionType is unset!')
         return
 
     def __repr__(self):
