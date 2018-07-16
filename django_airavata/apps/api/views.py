@@ -8,6 +8,7 @@ from rest_framework import mixins
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.decorators import list_route
+from rest_framework.exceptions import ParseError
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -23,7 +24,7 @@ from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMo
     UnicoreDataMovement
 from airavata.model.group.ttypes import ResourcePermissionType
 from django_airavata.apps.api.view_utils import GenericAPIBackedViewSet, APIBackedViewSet, APIResultIterator, \
-    APIResultPagination
+    APIResultPagination, ReadOnlyAPIBackedViewSet
 from . import datastore
 from . import serializers
 from . import thrift_utils
@@ -380,7 +381,18 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
     lookup_value_regex = '[^/]+'
 
     def get_list(self):
-        return self.request.airavata_client.getAllApplicationDeployments(self.authz_token, self.gateway_id)
+        app_module_id = self.request.query_params.get('appModuleId', None)
+        group_resource_profile_id = self.request.query_params.get('groupResourceProfileId', None)
+        if (app_module_id and not group_resource_profile_id)\
+                or (not app_module_id and group_resource_profile_id):
+            raise ParseError("Query params appModuleId and "
+                             "groupResourceProfileId are required together.")
+        if app_module_id and group_resource_profile_id:
+            return self.request.airavata_client.getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
+                self.authz_token, app_module_id, group_resource_profile_id)
+        else:
+            return self.request.airavata_client.getAccessibleApplicationDeployments(
+                self.authz_token, self.gateway_id, ResourcePermissionType.READ)
 
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getApplicationDeployment(self.authz_token, lookup_value)
@@ -416,27 +428,6 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
                 batch_queue.defaultWalltime = app_deployment.defaultWalltime
             batch_queues.append(batch_queue)
         serializer = serializers.BatchQueueSerializer(batch_queues, many=True, context={'request': request})
-        return Response(serializer.data)
-
-
-class ComputeResourceList(APIView):
-    renderer_classes = (JSONRenderer,)
-
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        cr = request.airavata_client.getAllComputeResourceNames(request.authz_token)
-
-        return Response([{'host_id': host_id, 'host': host} for host_id, host in cr.items()])
-
-
-class ComputeResourceDetails(APIView):
-    renderer_classes = (JSONRenderer,)
-
-    def get(self, request, format=None):
-        details = request.airavata_client.getComputeResource(request.authz_token, request.query_params["id"])
-        serializer = thrift_utils.create_serializer(ComputeResourceDescription, instance=details,
-                                                    context={'request': request})
-        print(details)
         return Response(serializer.data)
 
 
@@ -521,34 +512,33 @@ class DeleteSSHPubKey(APIView):
         return Response(request.airavata_client.deleteSSHPubKey(request.authz_token, request.data['token'], gateway_id))
 
 
-class ComputeResourceAPIViewSet(mixins.RetrieveModelMixin,
-                                mixins.ListModelMixin,
-                                GenericAPIBackedViewSet):
-    serializer_class = thrift_utils.create_serializer_class(ComputeResourceDescription)
+class ComputeResourceViewSet(mixins.RetrieveModelMixin,
+                             GenericAPIBackedViewSet):
+    serializer_class = serializers.ComputeResourceDescriptionSerializer
+    lookup_field = 'compute_resource_id'
+    lookup_value_regex = '[^/]+'
 
-    def list(self, request, *args, **kwargs):
+    def get_instance(self, lookup_value, format=None):
+        return self.request.airavata_client.getComputeResource(self.authz_token, lookup_value)
+
+    @list_route()
+    def all_names(self, request, format=None):
+        """Return a map of compute resource names keyed by resource id."""
         return Response(request.airavata_client.getAllComputeResourceNames(request.authz_token))
 
-    def retrieve(self, request, pk=None):
-        compute_resource_id = request.query_params["id"]
-        compute_resource = request.airavata_client.getComputeResource(request.authz_token, compute_resource_id)
-        return Response(thrift_utils.create_serializer(ComputeResourceDescription, instance=compute_resource).data)
+    @list_route()
+    def all_names_list(self, request, format=None):
+        """Return a list of compute resource names keyed by resource id."""
+        all_names = request.airavata_client.getAllComputeResourceNames(request.authz_token)
+        return Response([{'host_id': host_id, 'host': host} for host_id, host in all_names.items()])
 
-
-class ComputeResourceListView(APIView):
-    renderer_classes = (JSONRenderer,)
-
-    def get(self, request, format=None):
-        return Response(request.airavata_client.getAllComputeResourceNames(request.authz_token))
-
-
-class ComputeResourceView(APIView):
-    renderer_classes = (JSONRenderer,)
-
-    def get(self, request, format=None):
-        compute_resource_id = request.query_params["id"]
-        compute_resource = request.airavata_client.getComputeResource(request.authz_token, compute_resource_id)
-        return Response(thrift_utils.create_serializer(ComputeResourceDescription, instance=compute_resource).data)
+    @detail_route()
+    def queues(self, request, compute_resource_id, format=None):
+        details = request.airavata_client.getComputeResource(request.authz_token, compute_resource_id)
+        serializer = self.serializer_class(instance=details,
+                                           context={'request': request})
+        data = serializer.data
+        return Response([queue["queueName"] for queue in data["batchQueues"]])
 
 
 class LocalJobSubmissionView(APIView):

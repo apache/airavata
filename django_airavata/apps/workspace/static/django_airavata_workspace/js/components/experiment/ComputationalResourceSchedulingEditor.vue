@@ -49,10 +49,6 @@ export default {
             type: String,
             required: true
         },
-        appInterfaceId: {
-            type: String,
-            required: true
-        },
         groupResourceProfileId: {
             type: String,
             required: true
@@ -73,22 +69,18 @@ export default {
         QueueSettingsEditor,
     },
     mounted: function () {
-        this.loadApplicationDeployments(this.appModuleId);
-        this.loadComputeResourcesForApplicationInterface(this.appInterfaceId);
+        this.loadApplicationDeployments(this.appModuleId, this.groupResourceProfileId);
+        this.loadComputeResourceNames();
         this.loadGroupResourceProfile();
     },
     computed: {
         computeResourceOptions: function() {
-            const computeResourceOptions = [];
-            for (let computeResourceId in this.computeResources) {
-                if (this.computeResources.hasOwnProperty(computeResourceId)
-                    && this.isComputeHostInGroupResourceProfile(computeResourceId)) {
-                    computeResourceOptions.push({
-                        value: computeResourceId,
-                        text: this.computeResources[computeResourceId],
-                    })
+            const computeResourceOptions = this.applicationDeployments.map(dep => {
+                return {
+                    value: dep.computeHostId,
+                    text: dep.computeHostId in this.computeResources ? this.computeResources[dep.computeHostId] : null,
                 }
-            }
+            });
             computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
             return computeResourceOptions;
         },
@@ -137,18 +129,12 @@ export default {
             this.localComputationalResourceScheduling.resourceHostId = selectedComputeResourceId;
             this.emitValueChanged();
         },
-        loadApplicationDeployments: function(appModuleId) {
+        loadApplicationDeployments: function(appModuleId, groupResourceProfileId) {
             this.loadingCount++;
-            services.ApplicationModuleService.getApplicationDeployments(appModuleId)
+            services.ServiceFactory.service("ApplicationDeployments").list({appModuleId: appModuleId, groupResourceProfileId: groupResourceProfileId})
                 .then(applicationDeployments => {
                     this.applicationDeployments = applicationDeployments;
                 })
-                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
-        },
-        loadComputeResourcesForApplicationInterface: function(appInterfaceId) {
-            this.loadingCount++;
-            services.ApplicationInterfaceService.getComputeResources(appInterfaceId)
-                .then(computeResources => this.computeResources = computeResources)
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
         loadGroupResourceProfile: function() {
@@ -159,14 +145,11 @@ export default {
                 })
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
-        isComputeHostInGroupResourceProfile: function(computeHostId) {
-            // TODO: for now don't require a GroupResourceProfile
-            if (this.selectedGroupResourceProfile === null) {
-                return true;
-            }
-            return this.selectedGroupResourceProfile.computePreferences.some(cp => {
-                return cp.computeResourceId === computeHostId;
-            })
+        loadComputeResourceNames: function() {
+            this.loadingCount++;
+            services.ServiceFactory.service("ComputeResources").names()
+                .then(computeResourceNames => this.computeResources = computeResourceNames)
+                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
         queueSettingsChanged: function() {
             // QueueSettingsEditor updates the full
@@ -193,6 +176,9 @@ export default {
             if (this.resourceHostId !== null && !newOptions.find(opt => opt.value === this.resourceHostId)) {
                 this.resourceHostId = null;
             }
+        },
+        groupResourceProfileId: function(newGroupResourceProfileId) {
+            this.loadApplicationDeployments(this.appModuleId, newGroupResourceProfileId);
         }
     }
 }

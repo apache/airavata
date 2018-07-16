@@ -15,7 +15,9 @@ from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymen
                                                             SetEnvPaths)
 from airavata.model.appcatalog.appinterface.ttypes import \
     ApplicationInterfaceDescription
-from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
+from airavata.model.appcatalog.computeresource.ttypes \
+    import (BatchQueue,
+            ComputeResourceDescription)
 from airavata.model.appcatalog.groupresourceprofile.ttypes import \
     GroupResourceProfile
 from airavata.model.application.io.ttypes import (InputDataObjectType,
@@ -333,12 +335,8 @@ class ApplicationDeploymentDescriptionSerializer(thrift_utils.create_serializer_
     queues = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-deployment-queues', lookup_field='appDeploymentId', lookup_url_kwarg='app_deployment_id')
 
 
-class ComputeResourceDescriptionSerializer(CustomSerializer):
-    hostName=serializers.CharField()
-    hostAliases=serializers.ListField(child=serializers.CharField())
-    ipAddresses=serializers.ListField(child=serializers.CharField())
-    resourceDescription=serializers.CharField()
-    enabled=serializers.BooleanField()
+class ComputeResourceDescriptionSerializer(thrift_utils.create_serializer_class(ComputeResourceDescription)):
+    pass
 
 
 class BatchQueueSerializer(thrift_utils.create_serializer_class(BatchQueue)):

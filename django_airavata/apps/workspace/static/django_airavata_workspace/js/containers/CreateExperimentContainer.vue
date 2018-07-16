@@ -1,6 +1,6 @@
 <template>
-    <experiment-editor v-if="appModule && appInterface" :experiment="experiment"
-            :app-module="appModule" :app-interface="appInterface"
+    <experiment-editor v-if="experiment" :experiment="experiment"
+            :app-module="appModule"
             @saved="handleSavedExperiment"
             @savedAndLaunched="handleSavedAndLaunchedExperiment">
         <span slot="title">Create a New Experiment</span>
@@ -21,9 +21,8 @@ export default {
     ],
     data () {
         return {
-            'experiment': new models.Experiment(),
+            'experiment': null,
             'appModule': null,
-            'appInterface': null,
         }
     },
     components: {
@@ -42,18 +41,20 @@ export default {
     computed: {
     },
     mounted: function () {
+        const experiment = new models.Experiment();
         // TODO: integrate loading spinner
-        services.ApplicationModuleService.get(this.appModuleId)
+        const loadAppModule = services.ApplicationModuleService.get(this.appModuleId)
             .then(appModule => {
-                this.experiment.experimentName = appModule.appModuleName + ' on ' + moment().format('lll');
+                experiment.experimentName = appModule.appModuleName + ' on ' + moment().format('lll');
                 this.appModule = appModule;
             });
-        services.ApplicationInterfaceService.getForAppModuleId(this.appModuleId)
+        const loadAppInterface = services.ApplicationInterfaceService.getForAppModuleId(this.appModuleId)
             .then(appInterface => {
-                this.experiment.populateInputsOutputsFromApplicationInterface(appInterface);
-                this.appInterface = appInterface;
-                this.experiment.executionId = this.appInterface.applicationInterfaceId;
+                experiment.populateInputsOutputsFromApplicationInterface(appInterface);
+                experiment.executionId = appInterface.applicationInterfaceId;
             });
+        Promise.all([loadAppModule, loadAppInterface])
+            .then(() => this.experiment = experiment);
     }
 }
 </script>

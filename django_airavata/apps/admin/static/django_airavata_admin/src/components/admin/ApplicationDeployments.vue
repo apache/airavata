@@ -182,7 +182,7 @@
       fetchComputeHosts:function () {
         this.computeHosts=[{"host":"Loading...","host_id":""}]
         var callable=(value)=>this.computeHosts=value
-        Utils.get('/api/compute/resources',{success:callable,failure:(value)=>this.computeHosts=[]})
+        Utils.get('/api/compute-resources/all_names_list/',{success:callable,failure:(value)=>this.computeHosts=[]})
       },
       saveApplicationDeployment:function ({success=null,failure=null}={}) {
         this.syncData()
@@ -204,7 +204,7 @@
       },
       "appDeployments.computeHostId":function (value) {
         if(value){
-          Utils.get("/api/compute/resource/queues",{queryParams:{id:value},success:(value)=>this.queues=value})
+          Utils.get("/api/compute-resources/" + encodeURIComponent(value) + "/queues",{success:(value)=>this.queues=value})
         }
       },
       "getCompleteData": function (value) {
@@ -259,4 +259,3 @@
     margin-bottom: 5px;
   }
 </style>
-

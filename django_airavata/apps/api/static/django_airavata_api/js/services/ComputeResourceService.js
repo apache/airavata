@@ -44,12 +44,12 @@ class ComputeResourceService {
     }
 
     list() {
-        return FetchUtils.get('/api/compute/resources')
+        return FetchUtils.get('/api/compute-resources/all_names_list')
     }
 
      retrieve(id) {
         this.data=null
-        return  FetchUtils.get('/api/compute/resource/details', {id: id})
+        return  FetchUtils.get('/api/compute-resource/' + encodeURIComponent(id) + '/')
     }
 }
 

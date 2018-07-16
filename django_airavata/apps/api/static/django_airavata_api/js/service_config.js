@@ -1,3 +1,4 @@
+import ApplicationDeploymentDescription from './models/ApplicationDeploymentDescription'
 import Group from './models/Group'
 import SharedEntity from './models/SharedEntity'
 import UserProfile from './models/UserProfile'
@@ -35,25 +36,32 @@ pagination:true # whether to treat the response as a paginated response
  */
 
 export default {
+    "ApplicationDeployments": {
+        url: "/api/application-deployments",
+        viewSet: true,
+        queryParams: ['appModuleId', 'groupResourceProfileId'],
+        modelClass: ApplicationDeploymentDescription,
+    },
+    "ComputeResources": {
+        url: "/api/compute-resources",
+        viewSet: [{
+            name: "list"
+        }, {
+            name: "names",
+            url: "/api/compute-resources/all_names",
+            requestType: 'get',
+            modelClass: Object,
+        }, {
+            name: "namesList",
+            url: "/api/compute-resources/all_names_list",
+            requestType: 'get',
+            modelClass: Array,
+        }],
+        modelClass: ApplicationDeploymentDescription,
+    },
     "GroupResourcePreference": {
         url: "/api/group-resource-profiles/",
         viewSet: true
-    },
-    "SharedEntitiesGroups": {
-        url: "/api/shared/group/entities",
-        viewSet: true
-    },
-    "Entities": {
-        url: "/api/entities",
-        viewSet: [{
-            name:"create",
-            pagination:true
-        }]
-    },
-    "SharedEntities": {
-        url: "/api/shared-entities",
-        viewSet: true,
-        modelClass: SharedEntity,
     },
     "Groups": {
         url: "/api/groups",
@@ -61,6 +69,11 @@ export default {
         pagination: true,
         queryParams: ['limit', 'offset'],
         modelClass: Group,
+    },
+    "SharedEntities": {
+        url: "/api/shared-entities",
+        viewSet: true,
+        modelClass: SharedEntity,
     },
     "UserProfiles": {
         url: "/api/user-profiles",

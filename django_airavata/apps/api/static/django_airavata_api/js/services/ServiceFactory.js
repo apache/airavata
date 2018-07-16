@@ -99,6 +99,11 @@ const parseServiceMapping = function (serviceConfiguration) {
                         modelClass: modelClass,
                         queryParams: queryParams,
                     }
+                    break;
+                default:
+                    // Assume all fields have been provided
+                    serviceConfiguration[supportedFunctionName] = supportedFunction;
+                    break;
             }
             serviceConfiguration[supportedFunctionName].pagination = pagination
         }

@@ -77,7 +77,6 @@
                         v-model="localExperiment.userConfigurationData.computationalResourceScheduling"
                         v-if="localExperiment.userConfigurationData.groupResourceProfileId"
                         :app-module-id="appModule.appModuleId"
-                        :app-interface-id="appInterface.applicationInterfaceId"
                         :group-resource-profile-id="localExperiment.userConfigurationData.groupResourceProfileId">
                     </computational-resource-scheduling-editor>
                 </div>
@@ -117,10 +116,6 @@ export default {
             type: models.ApplicationModule,
             required: true
         },
-        appInterface: {
-            type: models.ApplicationInterface,
-            required: true
-        }
     },
     data () {
         return {

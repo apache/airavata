@@ -206,7 +206,7 @@
         this.data.overridebyAiravata = value
       },
       fetchComputeResources: function () {
-        return DjangoAiravataAPI.utils.FetchUtils.get('/api/compute/resources').then((value) => this.computeResources = value);
+        return DjangoAiravataAPI.utils.FetchUtils.get('/api/compute-resources/all_names_list').then((value) => this.computeResources = value);
       },
       createComputeResourcePolicy: function () {
         return {
