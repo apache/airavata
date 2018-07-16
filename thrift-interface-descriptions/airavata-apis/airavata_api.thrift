@@ -1405,15 +1405,13 @@ service Airavata {
    *
    * @param gatewayId
    *    ID of the gateway which need to list all accessible application deployment documentation.
-   * @param permissionType
-   *    ResourcePermissionType to check for this user
    *
    * @return list
    *    Returns the list of all Application Module Objects that are accessible to the user.
    *
   */
   list<application_deployment_model.ApplicationModule> getAccessibleAppModules (1: required security_model.AuthzToken authzToken,
-                2: required string gatewayId, 3: required group_manager_model.ResourcePermissionType permissionType)
+                2: required string gatewayId)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
@@ -1573,6 +1571,7 @@ service Airavata {
    *   Returns a list of Deployed Resources.
    *
   */
+  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
   list<string> getAppModuleDeployedResources(1: required security_model.AuthzToken authzToken, 2: required string appModuleId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -1785,6 +1784,7 @@ service Airavata {
    *   Deployments of each modules listed within the interfaces will be listed.
    *
   */
+  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
   map<string, string> getAvailableAppInterfaceComputeResources(1: required security_model.AuthzToken authzToken, 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
