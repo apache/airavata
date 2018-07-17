@@ -739,6 +739,7 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
                           GenericAPIBackedViewSet):
     serializer_class = serializers.SharedEntitySerializer
     lookup_field = 'entity_id'
+    lookup_value_regex = '[^/]+'
 
     def get_instance(self, lookup_value):
         users = {}
