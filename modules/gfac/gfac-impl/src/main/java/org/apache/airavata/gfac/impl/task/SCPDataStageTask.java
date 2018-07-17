@@ -110,7 +110,17 @@ public class SCPDataStageTask implements Task {
 
                 } else if (processOutput.getType() == DataType.FLOAT || processOutput.getType() == DataType.STRING ||
                         processOutput.getType() == DataType.INTEGER ) {
-                    return extractStringFromFile(subTaskModel, taskContext, processOutput.getApplicationArgument());
+
+                    if (processOutput.getSearchQuery() == null || "".equals(processOutput.getSearchQuery())) {
+                        String msg = "Search query can not be empty in " + processOutput.getType().name() +
+                                " type output : " + processOutput.getName() + ". Specify the target file file in search query";
+                        log.error(msg);
+                        status.setState(TaskState.FAILED);
+                        status.setReason(msg);
+                        return status;
+                    }
+
+                    return extractStringFromFile(subTaskModel, taskContext, processOutput.getSearchQuery());
 
                 } else {
                     String msg = "Unknown output data staging type " + processOutput.getType().name();
