@@ -276,6 +276,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             group.setGroupCardinality(GroupCardinality.MULTI_USER);
             group.setCreatedTime(System.currentTimeMillis());
             group.setUpdatedTime(System.currentTimeMillis());
+            //Add group admins once the group is created
+            group.unsetGroupAdmins();
             (new UserGroupRepository()).create(group);
 
             addUsersToGroup(group.domainId, Arrays.asList(group.ownerId), group.groupId);
@@ -464,7 +466,12 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean addGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
         try{
+            List<User> groupUser = getGroupMembersOfTypeUser(domainId, groupId, 0, -1);
+
             for (String adminId: adminIds) {
+                if (! isUserBelongsToGroup(groupUser, adminId)) {
+                    throw new SharingRegistryException("Admin not the user of the group. GroupId : "+ groupId + ", AdminId : "+ adminId);
+                }
                 GroupAdminPK groupAdminPK = new GroupAdminPK();
                 groupAdminPK.setGroupId(groupId);
                 groupAdminPK.setAdminId(adminId);
