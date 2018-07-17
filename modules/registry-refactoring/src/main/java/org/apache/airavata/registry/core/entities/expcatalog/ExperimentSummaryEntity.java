@@ -57,7 +57,7 @@ public class ExperimentSummaryEntity implements Serializable {
     private String executionId;
 
     @Column(name = "STATE")
-    private String state;
+    private String experimentStatus;
 
     @Column(name = "RESOURCE_HOST_ID")
     private String resourceHostId;
@@ -132,12 +132,12 @@ public class ExperimentSummaryEntity implements Serializable {
         this.executionId = executionId;
     }
 
-    public String getState() {
-        return state;
+    public String getExperimentStatus() {
+        return experimentStatus;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setExperimentStatus(String experimentStatus) {
+        this.experimentStatus = experimentStatus;
     }
 
     public String getResourceHostId() {

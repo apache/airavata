@@ -95,7 +95,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             logger.debug("Filter Experiments by State");
             String state = ExperimentState.valueOf(filters.get(DBConstants.ExperimentStatus.STATE)).toString();
             queryParameters.put(DBConstants.ExperimentStatus.STATE, state);
-            query += "ES.state LIKE :" + DBConstants.ExperimentStatus.STATE + " AND ";
+            query += "ES.experimentStatus LIKE :" + DBConstants.ExperimentStatus.STATE + " AND ";
         }
 
         if (filters.get(DBConstants.ExperimentSummary.FROM_DATE) != null
@@ -241,7 +241,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         if (experimentState != null) {
             logger.debug("Filter Experiments by Experiment State");
             queryParameters.put(DBConstants.Experiment.EXPERIMENT_STATE, experimentState);
-            query += "ES.state LIKE :" + DBConstants.Experiment.EXPERIMENT_STATE + " AND ";
+            query += "ES.experimentStatus LIKE :" + DBConstants.Experiment.EXPERIMENT_STATE + " AND ";
         }
 
         if (gatewayId != null) {
