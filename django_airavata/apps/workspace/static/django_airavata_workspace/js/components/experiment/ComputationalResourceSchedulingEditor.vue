@@ -78,7 +78,7 @@ export default {
             const computeResourceOptions = this.applicationDeployments.map(dep => {
                 return {
                     value: dep.computeHostId,
-                    text: dep.computeHostId in this.computeResources ? this.computeResources[dep.computeHostId] : null,
+                    text: dep.computeHostId in this.computeResources ? this.computeResources[dep.computeHostId] : "",
                 }
             });
             computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
