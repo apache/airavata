@@ -93,6 +93,17 @@ public class SharingRegistryServerHandlerTest {
 
         Assert.assertNotNull(sharingRegistryServerHandler.createUser(user3));
 
+        User user7 = new User();
+        String userName7 = "test-user-7." + System.currentTimeMillis();
+        String userId7 = domainId + ":" + userName7;
+        user7.setUserId(userId7);
+        user7.setUserName(userName7);
+        user7.setDomainId(domainId);
+        user7.setCreatedTime(System.currentTimeMillis());
+        user7.setUpdatedTime(System.currentTimeMillis());
+
+        Assert.assertNotNull(sharingRegistryServerHandler.createUser(user7));
+
         Assert.assertTrue(sharingRegistryServerHandler.getUsers(domainId, 0, 10).size() > 0);
 
         // Creating user groups
@@ -128,6 +139,7 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertNotNull(sharingRegistryServerHandler.createGroup(userGroup2));
 
         sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId1), groupId1);
+        sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId7), groupId1);
 
         sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId2, userId3), groupId2);
         Assert.assertEquals(1, sharingRegistryServerHandler.getAllMemberGroupsForUser(domainId, userId3).size());
@@ -143,10 +155,10 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertTrue(sharingRegistryServerHandler.hasOwnerAccess(domainId, groupId1, userId1));
 
         // user has admin access
-        Assert.assertTrue(sharingRegistryServerHandler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId2)));
-        Assert.assertTrue(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId2));
-        Assert.assertTrue(sharingRegistryServerHandler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId2)));
-        Assert.assertFalse(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId2));
+        Assert.assertTrue(sharingRegistryServerHandler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId7)));
+        Assert.assertTrue(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId7));
+        Assert.assertTrue(sharingRegistryServerHandler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId7)));
+        Assert.assertFalse(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId7));
 
         // transfer group ownership
         sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId2), groupId1);
