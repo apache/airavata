@@ -19,8 +19,7 @@ export default {
   props: {
     value: {
       type: Array,
-      required: false
-        , default:[]
+      required: false,
     },
 
     suggestions: {
@@ -29,9 +28,8 @@ export default {
     }
   },
   data () {
-      console.log("Value",this.value.length);
     return {
-      localValue: this.value,
+      localValue: this.value ? this.value.slice() : [],
     }
   },
   components: {
@@ -39,7 +37,6 @@ export default {
   },
   computed: {
     selected () {
-        console.log("local Value",this.localValue.length);
         return this.suggestions.filter((suggestion) => {
             return this.localValue.indexOf(suggestion.id) >= 0;
         });

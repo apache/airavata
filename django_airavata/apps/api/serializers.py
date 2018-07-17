@@ -135,7 +135,7 @@ class StoredJSONField(serializers.JSONField):
 
 class GroupSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
-    id = serializers.CharField(default=GroupModel.thrift_spec[1][4])
+    id = serializers.CharField(default=GroupModel.thrift_spec[1][4], allow_null=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True, allow_blank=True)
     ownerId = serializers.CharField(read_only=True)
