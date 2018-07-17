@@ -83,6 +83,61 @@ public class DBConstants {
         public static final String GATEWAY_ID = "gatewayId";
     }
 
+    public static class Gateway {
+        public static final String GATEWAY_NAME = "gatewayName";
+    }
+
+    public static class Notification {
+        public static final String GATEWAY_ID = "gatewayId";
+    }
+
+    public static class Project {
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String OWNER = "owner";
+        public static final String PROJECT_NAME = "name";
+        public static final String DESCRIPTION = "description";
+        public static final String ACCESSIBLE_PROJECT_IDS = "accessibleProjectIds";
+        public static final String CREATION_TIME = "creationTime";
+    }
+
+    public static class Experiment {
+        public static final String USER_NAME = "userName";
+        public static final String PROJECT_ID = "projectId";
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String EXPERIMENT_NAME = "experimentName";
+        public static final String DESCRIPTION = "description";
+        public static final String EXECUTION_ID = "executionId";
+        public static final String CREATION_TIME = "creationTime";
+        public static final String RESOURCE_HOST_ID = "resourceHostId";
+        public static final String ACCESSIBLE_EXPERIMENT_IDS = "accessibleExperimentIds";
+        public static final String EXPERIMENT_STATE = "experimentState";
+    }
+
+    public final class ExperimentStatus {
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String STATE = "state";
+        public static final String REASON = "reason";
+    }
+
+    public static class Process {
+        public static final String EXPERIMENT_ID = "experimentId";
+    }
+
+    public static class Task {
+        public static final String PARENT_PROCESS_ID = "parentProcessId";
+    }
+
+    public static class Job {
+        public static final String PROCESS_ID = "processId";
+        public static final String TASK_ID = "taskId";
+    }
+
+    public static class ExperimentSummary {
+        public static final String FROM_DATE = "fromDate";
+        public static final String TO_DATE = "toDate";
+    }
+
     public static class UserComputeResourcePreference {
         public static final String USER_ID = "userId";
         public static final String GATEWAY_ID = "gatewayId";
@@ -105,6 +160,10 @@ public class DBConstants {
     public static class Workflow {
         public static final String GATEWAY_ID = "gatewayId";
         public static final String WORKFLOW_NAME = "workflowName";
+    }
+
+    public static class DataMovement {
+        public static final String GRID_FTP_DATA_MOVEMENT_ID = "dataMovementId";
     }
 
 }

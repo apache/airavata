@@ -335,7 +335,7 @@
 <pre><code>bool</code> shareEntityWithUsers(<code>string</code> domainId,
                           <code>string</code> entityId,
                           <code>list&lt;<code>string</code>&gt;</code> userList,
-                          <code>string</code> perssionTypeId,
+                          <code>string</code> permissionTypeId,
                           <code>bool</code> cascadePermission)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to share an entity with users</p>
@@ -343,14 +343,14 @@
 <pre><code>bool</code> revokeEntitySharingFromUsers(<code>string</code> domainId,
                                   <code>string</code> entityId,
                                   <code>list&lt;<code>string</code>&gt;</code> userList,
-                                  <code>string</code> perssionTypeId)
+                                  <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to revoke sharing from a list of users</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_shareEntityWithGroups">Function: SharingRegistryService.shareEntityWithGroups</h4>
 <pre><code>bool</code> shareEntityWithGroups(<code>string</code> domainId,
                            <code>string</code> entityId,
                            <code>list&lt;<code>string</code>&gt;</code> groupList,
-                           <code>string</code> perssionTypeId,
+                           <code>string</code> permissionTypeId,
                            <code>bool</code> cascadePermission)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to share an entity with list of groups</p>
@@ -358,7 +358,7 @@
 <pre><code>bool</code> revokeEntitySharingFromGroups(<code>string</code> domainId,
                                    <code>string</code> entityId,
                                    <code>list&lt;<code>string</code>&gt;</code> groupList,
-                                   <code>string</code> perssionTypeId)
+                                   <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to revoke sharing from list of users</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_userHasAccess">Function: SharingRegistryService.userHasAccess</h4>

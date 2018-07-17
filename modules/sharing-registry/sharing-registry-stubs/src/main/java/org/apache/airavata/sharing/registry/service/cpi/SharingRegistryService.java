@@ -422,10 +422,10 @@ public class SharingRegistryService {
      * @param domainId
      * @param entityId
      * @param userList
-     * @param perssionTypeId
+     * @param permissionTypeId
      * @param cascadePermission
      */
-    public boolean shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to revoke sharing from a list of users</p>
@@ -433,9 +433,9 @@ public class SharingRegistryService {
      * @param domainId
      * @param entityId
      * @param userList
-     * @param perssionTypeId
+     * @param permissionTypeId
      */
-    public boolean revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to share an entity with list of groups</p>
@@ -443,10 +443,10 @@ public class SharingRegistryService {
      * @param domainId
      * @param entityId
      * @param groupList
-     * @param perssionTypeId
+     * @param permissionTypeId
      * @param cascadePermission
      */
-    public boolean shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to revoke sharing from list of users</p>
@@ -454,9 +454,9 @@ public class SharingRegistryService {
      * @param domainId
      * @param entityId
      * @param groupList
-     * @param perssionTypeId
+     * @param permissionTypeId
      */
-    public boolean revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to check whether a user has access to a specific entity</p>
@@ -572,13 +572,13 @@ public class SharingRegistryService {
 
     public void getPermissionTypes(java.lang.String domainId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.PermissionType>> resultHandler) throws org.apache.thrift.TException;
 
-    public void shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
     public void userHasAccess(java.lang.String domainId, java.lang.String userId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
@@ -1970,19 +1970,19 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPermissionTypes failed: unknown result");
     }
 
-    public boolean shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_shareEntityWithUsers(domainId, entityId, userList, perssionTypeId, cascadePermission);
+      send_shareEntityWithUsers(domainId, entityId, userList, permissionTypeId, cascadePermission);
       return recv_shareEntityWithUsers();
     }
 
-    public void send_shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, boolean cascadePermission) throws org.apache.thrift.TException
+    public void send_shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, boolean cascadePermission) throws org.apache.thrift.TException
     {
       shareEntityWithUsers_args args = new shareEntityWithUsers_args();
       args.setDomainId(domainId);
       args.setEntityId(entityId);
       args.setUserList(userList);
-      args.setPerssionTypeId(perssionTypeId);
+      args.setPermissionTypeId(permissionTypeId);
       args.setCascadePermission(cascadePermission);
       sendBase("shareEntityWithUsers", args);
     }
@@ -2000,19 +2000,19 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "shareEntityWithUsers failed: unknown result");
     }
 
-    public boolean revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_revokeEntitySharingFromUsers(domainId, entityId, userList, perssionTypeId);
+      send_revokeEntitySharingFromUsers(domainId, entityId, userList, permissionTypeId);
       return recv_revokeEntitySharingFromUsers();
     }
 
-    public void send_revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId) throws org.apache.thrift.TException
+    public void send_revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId) throws org.apache.thrift.TException
     {
       revokeEntitySharingFromUsers_args args = new revokeEntitySharingFromUsers_args();
       args.setDomainId(domainId);
       args.setEntityId(entityId);
       args.setUserList(userList);
-      args.setPerssionTypeId(perssionTypeId);
+      args.setPermissionTypeId(permissionTypeId);
       sendBase("revokeEntitySharingFromUsers", args);
     }
 
@@ -2029,19 +2029,19 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "revokeEntitySharingFromUsers failed: unknown result");
     }
 
-    public boolean shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, boolean cascadePermission) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_shareEntityWithGroups(domainId, entityId, groupList, perssionTypeId, cascadePermission);
+      send_shareEntityWithGroups(domainId, entityId, groupList, permissionTypeId, cascadePermission);
       return recv_shareEntityWithGroups();
     }
 
-    public void send_shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, boolean cascadePermission) throws org.apache.thrift.TException
+    public void send_shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, boolean cascadePermission) throws org.apache.thrift.TException
     {
       shareEntityWithGroups_args args = new shareEntityWithGroups_args();
       args.setDomainId(domainId);
       args.setEntityId(entityId);
       args.setGroupList(groupList);
-      args.setPerssionTypeId(perssionTypeId);
+      args.setPermissionTypeId(permissionTypeId);
       args.setCascadePermission(cascadePermission);
       sendBase("shareEntityWithGroups", args);
     }
@@ -2059,19 +2059,19 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "shareEntityWithGroups failed: unknown result");
     }
 
-    public boolean revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_revokeEntitySharingFromGroups(domainId, entityId, groupList, perssionTypeId);
+      send_revokeEntitySharingFromGroups(domainId, entityId, groupList, permissionTypeId);
       return recv_revokeEntitySharingFromGroups();
     }
 
-    public void send_revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId) throws org.apache.thrift.TException
+    public void send_revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId) throws org.apache.thrift.TException
     {
       revokeEntitySharingFromGroups_args args = new revokeEntitySharingFromGroups_args();
       args.setDomainId(domainId);
       args.setEntityId(entityId);
       args.setGroupList(groupList);
-      args.setPerssionTypeId(perssionTypeId);
+      args.setPermissionTypeId(permissionTypeId);
       sendBase("revokeEntitySharingFromGroups", args);
     }
 
@@ -3906,9 +3906,9 @@ public class SharingRegistryService {
       }
     }
 
-    public void shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void shareEntityWithUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      shareEntityWithUsers_call method_call = new shareEntityWithUsers_call(domainId, entityId, userList, perssionTypeId, cascadePermission, resultHandler, this, ___protocolFactory, ___transport);
+      shareEntityWithUsers_call method_call = new shareEntityWithUsers_call(domainId, entityId, userList, permissionTypeId, cascadePermission, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -3917,14 +3917,14 @@ public class SharingRegistryService {
       private java.lang.String domainId;
       private java.lang.String entityId;
       private java.util.List<java.lang.String> userList;
-      private java.lang.String perssionTypeId;
+      private java.lang.String permissionTypeId;
       private boolean cascadePermission;
-      public shareEntityWithUsers_call(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public shareEntityWithUsers_call(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.domainId = domainId;
         this.entityId = entityId;
         this.userList = userList;
-        this.perssionTypeId = perssionTypeId;
+        this.permissionTypeId = permissionTypeId;
         this.cascadePermission = cascadePermission;
       }
 
@@ -3934,7 +3934,7 @@ public class SharingRegistryService {
         args.setDomainId(domainId);
         args.setEntityId(entityId);
         args.setUserList(userList);
-        args.setPerssionTypeId(perssionTypeId);
+        args.setPermissionTypeId(permissionTypeId);
         args.setCascadePermission(cascadePermission);
         args.write(prot);
         prot.writeMessageEnd();
@@ -3950,9 +3950,9 @@ public class SharingRegistryService {
       }
     }
 
-    public void revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void revokeEntitySharingFromUsers(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      revokeEntitySharingFromUsers_call method_call = new revokeEntitySharingFromUsers_call(domainId, entityId, userList, perssionTypeId, resultHandler, this, ___protocolFactory, ___transport);
+      revokeEntitySharingFromUsers_call method_call = new revokeEntitySharingFromUsers_call(domainId, entityId, userList, permissionTypeId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -3961,13 +3961,13 @@ public class SharingRegistryService {
       private java.lang.String domainId;
       private java.lang.String entityId;
       private java.util.List<java.lang.String> userList;
-      private java.lang.String perssionTypeId;
-      public revokeEntitySharingFromUsers_call(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private java.lang.String permissionTypeId;
+      public revokeEntitySharingFromUsers_call(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> userList, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.domainId = domainId;
         this.entityId = entityId;
         this.userList = userList;
-        this.perssionTypeId = perssionTypeId;
+        this.permissionTypeId = permissionTypeId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -3976,7 +3976,7 @@ public class SharingRegistryService {
         args.setDomainId(domainId);
         args.setEntityId(entityId);
         args.setUserList(userList);
-        args.setPerssionTypeId(perssionTypeId);
+        args.setPermissionTypeId(permissionTypeId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -3991,9 +3991,9 @@ public class SharingRegistryService {
       }
     }
 
-    public void shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void shareEntityWithGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      shareEntityWithGroups_call method_call = new shareEntityWithGroups_call(domainId, entityId, groupList, perssionTypeId, cascadePermission, resultHandler, this, ___protocolFactory, ___transport);
+      shareEntityWithGroups_call method_call = new shareEntityWithGroups_call(domainId, entityId, groupList, permissionTypeId, cascadePermission, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -4002,14 +4002,14 @@ public class SharingRegistryService {
       private java.lang.String domainId;
       private java.lang.String entityId;
       private java.util.List<java.lang.String> groupList;
-      private java.lang.String perssionTypeId;
+      private java.lang.String permissionTypeId;
       private boolean cascadePermission;
-      public shareEntityWithGroups_call(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public shareEntityWithGroups_call(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, boolean cascadePermission, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.domainId = domainId;
         this.entityId = entityId;
         this.groupList = groupList;
-        this.perssionTypeId = perssionTypeId;
+        this.permissionTypeId = permissionTypeId;
         this.cascadePermission = cascadePermission;
       }
 
@@ -4019,7 +4019,7 @@ public class SharingRegistryService {
         args.setDomainId(domainId);
         args.setEntityId(entityId);
         args.setGroupList(groupList);
-        args.setPerssionTypeId(perssionTypeId);
+        args.setPermissionTypeId(permissionTypeId);
         args.setCascadePermission(cascadePermission);
         args.write(prot);
         prot.writeMessageEnd();
@@ -4035,9 +4035,9 @@ public class SharingRegistryService {
       }
     }
 
-    public void revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void revokeEntitySharingFromGroups(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      revokeEntitySharingFromGroups_call method_call = new revokeEntitySharingFromGroups_call(domainId, entityId, groupList, perssionTypeId, resultHandler, this, ___protocolFactory, ___transport);
+      revokeEntitySharingFromGroups_call method_call = new revokeEntitySharingFromGroups_call(domainId, entityId, groupList, permissionTypeId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -4046,13 +4046,13 @@ public class SharingRegistryService {
       private java.lang.String domainId;
       private java.lang.String entityId;
       private java.util.List<java.lang.String> groupList;
-      private java.lang.String perssionTypeId;
-      public revokeEntitySharingFromGroups_call(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String perssionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private java.lang.String permissionTypeId;
+      public revokeEntitySharingFromGroups_call(java.lang.String domainId, java.lang.String entityId, java.util.List<java.lang.String> groupList, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.domainId = domainId;
         this.entityId = entityId;
         this.groupList = groupList;
-        this.perssionTypeId = perssionTypeId;
+        this.permissionTypeId = permissionTypeId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -4061,7 +4061,7 @@ public class SharingRegistryService {
         args.setDomainId(domainId);
         args.setEntityId(entityId);
         args.setGroupList(groupList);
-        args.setPerssionTypeId(perssionTypeId);
+        args.setPermissionTypeId(permissionTypeId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -5435,7 +5435,7 @@ public class SharingRegistryService {
       public shareEntityWithUsers_result getResult(I iface, shareEntityWithUsers_args args) throws org.apache.thrift.TException {
         shareEntityWithUsers_result result = new shareEntityWithUsers_result();
         try {
-          result.success = iface.shareEntityWithUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId, args.cascadePermission);
+          result.success = iface.shareEntityWithUsers(args.domainId, args.entityId, args.userList, args.permissionTypeId, args.cascadePermission);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
@@ -5460,7 +5460,7 @@ public class SharingRegistryService {
       public revokeEntitySharingFromUsers_result getResult(I iface, revokeEntitySharingFromUsers_args args) throws org.apache.thrift.TException {
         revokeEntitySharingFromUsers_result result = new revokeEntitySharingFromUsers_result();
         try {
-          result.success = iface.revokeEntitySharingFromUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId);
+          result.success = iface.revokeEntitySharingFromUsers(args.domainId, args.entityId, args.userList, args.permissionTypeId);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
@@ -5485,7 +5485,7 @@ public class SharingRegistryService {
       public shareEntityWithGroups_result getResult(I iface, shareEntityWithGroups_args args) throws org.apache.thrift.TException {
         shareEntityWithGroups_result result = new shareEntityWithGroups_result();
         try {
-          result.success = iface.shareEntityWithGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId, args.cascadePermission);
+          result.success = iface.shareEntityWithGroups(args.domainId, args.entityId, args.groupList, args.permissionTypeId, args.cascadePermission);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
@@ -5510,7 +5510,7 @@ public class SharingRegistryService {
       public revokeEntitySharingFromGroups_result getResult(I iface, revokeEntitySharingFromGroups_args args) throws org.apache.thrift.TException {
         revokeEntitySharingFromGroups_result result = new revokeEntitySharingFromGroups_result();
         try {
-          result.success = iface.revokeEntitySharingFromGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId);
+          result.success = iface.revokeEntitySharingFromGroups(args.domainId, args.entityId, args.groupList, args.permissionTypeId);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
@@ -8966,7 +8966,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, shareEntityWithUsers_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.shareEntityWithUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId, args.cascadePermission,resultHandler);
+        iface.shareEntityWithUsers(args.domainId, args.entityId, args.userList, args.permissionTypeId, args.cascadePermission,resultHandler);
       }
     }
 
@@ -9032,7 +9032,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, revokeEntitySharingFromUsers_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.revokeEntitySharingFromUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId,resultHandler);
+        iface.revokeEntitySharingFromUsers(args.domainId, args.entityId, args.userList, args.permissionTypeId,resultHandler);
       }
     }
 
@@ -9098,7 +9098,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, shareEntityWithGroups_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.shareEntityWithGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId, args.cascadePermission,resultHandler);
+        iface.shareEntityWithGroups(args.domainId, args.entityId, args.groupList, args.permissionTypeId, args.cascadePermission,resultHandler);
       }
     }
 
@@ -9164,7 +9164,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, revokeEntitySharingFromGroups_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.revokeEntitySharingFromGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId,resultHandler);
+        iface.revokeEntitySharingFromGroups(args.domainId, args.entityId, args.groupList, args.permissionTypeId,resultHandler);
       }
     }
 
@@ -57266,7 +57266,7 @@ public class SharingRegistryService {
     private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
     private static final org.apache.thrift.protocol.TField USER_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("userList", org.apache.thrift.protocol.TType.LIST, (short)3);
-    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField PERMISSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("permissionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
     private static final org.apache.thrift.protocol.TField CASCADE_PERMISSION_FIELD_DESC = new org.apache.thrift.protocol.TField("cascadePermission", org.apache.thrift.protocol.TType.BOOL, (short)5);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new shareEntityWithUsers_argsStandardSchemeFactory();
@@ -57275,7 +57275,7 @@ public class SharingRegistryService {
     public java.lang.String domainId; // required
     public java.lang.String entityId; // required
     public java.util.List<java.lang.String> userList; // required
-    public java.lang.String perssionTypeId; // required
+    public java.lang.String permissionTypeId; // required
     public boolean cascadePermission; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -57283,7 +57283,7 @@ public class SharingRegistryService {
       DOMAIN_ID((short)1, "domainId"),
       ENTITY_ID((short)2, "entityId"),
       USER_LIST((short)3, "userList"),
-      PERSSION_TYPE_ID((short)4, "perssionTypeId"),
+      PERMISSION_TYPE_ID((short)4, "permissionTypeId"),
       CASCADE_PERMISSION((short)5, "cascadePermission");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
@@ -57305,8 +57305,8 @@ public class SharingRegistryService {
             return ENTITY_ID;
           case 3: // USER_LIST
             return USER_LIST;
-          case 4: // PERSSION_TYPE_ID
-            return PERSSION_TYPE_ID;
+          case 4: // PERMISSION_TYPE_ID
+            return PERMISSION_TYPE_ID;
           case 5: // CASCADE_PERMISSION
             return CASCADE_PERMISSION;
           default:
@@ -57361,7 +57361,7 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.USER_LIST, new org.apache.thrift.meta_data.FieldMetaData("userList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-      tmpMap.put(_Fields.PERSSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("perssionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.PERMISSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("permissionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.CASCADE_PERMISSION, new org.apache.thrift.meta_data.FieldMetaData("cascadePermission", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
@@ -57376,14 +57376,14 @@ public class SharingRegistryService {
       java.lang.String domainId,
       java.lang.String entityId,
       java.util.List<java.lang.String> userList,
-      java.lang.String perssionTypeId,
+      java.lang.String permissionTypeId,
       boolean cascadePermission)
     {
       this();
       this.domainId = domainId;
       this.entityId = entityId;
       this.userList = userList;
-      this.perssionTypeId = perssionTypeId;
+      this.permissionTypeId = permissionTypeId;
       this.cascadePermission = cascadePermission;
       setCascadePermissionIsSet(true);
     }
@@ -57403,8 +57403,8 @@ public class SharingRegistryService {
         java.util.List<java.lang.String> __this__userList = new java.util.ArrayList<java.lang.String>(other.userList);
         this.userList = __this__userList;
       }
-      if (other.isSetPerssionTypeId()) {
-        this.perssionTypeId = other.perssionTypeId;
+      if (other.isSetPermissionTypeId()) {
+        this.permissionTypeId = other.permissionTypeId;
       }
       this.cascadePermission = other.cascadePermission;
     }
@@ -57418,7 +57418,7 @@ public class SharingRegistryService {
       this.domainId = null;
       this.entityId = null;
       this.userList = null;
-      this.perssionTypeId = null;
+      this.permissionTypeId = null;
       setCascadePermissionIsSet(false);
       this.cascadePermission = false;
     }
@@ -57510,27 +57510,27 @@ public class SharingRegistryService {
       }
     }
 
-    public java.lang.String getPerssionTypeId() {
-      return this.perssionTypeId;
+    public java.lang.String getPermissionTypeId() {
+      return this.permissionTypeId;
     }
 
-    public shareEntityWithUsers_args setPerssionTypeId(java.lang.String perssionTypeId) {
-      this.perssionTypeId = perssionTypeId;
+    public shareEntityWithUsers_args setPermissionTypeId(java.lang.String permissionTypeId) {
+      this.permissionTypeId = permissionTypeId;
       return this;
     }
 
-    public void unsetPerssionTypeId() {
-      this.perssionTypeId = null;
+    public void unsetPermissionTypeId() {
+      this.permissionTypeId = null;
     }
 
-    /** Returns true if field perssionTypeId is set (has been assigned a value) and false otherwise */
-    public boolean isSetPerssionTypeId() {
-      return this.perssionTypeId != null;
+    /** Returns true if field permissionTypeId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPermissionTypeId() {
+      return this.permissionTypeId != null;
     }
 
-    public void setPerssionTypeIdIsSet(boolean value) {
+    public void setPermissionTypeIdIsSet(boolean value) {
       if (!value) {
-        this.perssionTypeId = null;
+        this.permissionTypeId = null;
       }
     }
 
@@ -57583,11 +57583,11 @@ public class SharingRegistryService {
         }
         break;
 
-      case PERSSION_TYPE_ID:
+      case PERMISSION_TYPE_ID:
         if (value == null) {
-          unsetPerssionTypeId();
+          unsetPermissionTypeId();
         } else {
-          setPerssionTypeId((java.lang.String)value);
+          setPermissionTypeId((java.lang.String)value);
         }
         break;
 
@@ -57613,8 +57613,8 @@ public class SharingRegistryService {
       case USER_LIST:
         return getUserList();
 
-      case PERSSION_TYPE_ID:
-        return getPerssionTypeId();
+      case PERMISSION_TYPE_ID:
+        return getPermissionTypeId();
 
       case CASCADE_PERMISSION:
         return isCascadePermission();
@@ -57636,8 +57636,8 @@ public class SharingRegistryService {
         return isSetEntityId();
       case USER_LIST:
         return isSetUserList();
-      case PERSSION_TYPE_ID:
-        return isSetPerssionTypeId();
+      case PERMISSION_TYPE_ID:
+        return isSetPermissionTypeId();
       case CASCADE_PERMISSION:
         return isSetCascadePermission();
       }
@@ -57686,12 +57686,12 @@ public class SharingRegistryService {
           return false;
       }
 
-      boolean this_present_perssionTypeId = true && this.isSetPerssionTypeId();
-      boolean that_present_perssionTypeId = true && that.isSetPerssionTypeId();
-      if (this_present_perssionTypeId || that_present_perssionTypeId) {
-        if (!(this_present_perssionTypeId && that_present_perssionTypeId))
+      boolean this_present_permissionTypeId = true && this.isSetPermissionTypeId();
+      boolean that_present_permissionTypeId = true && that.isSetPermissionTypeId();
+      if (this_present_permissionTypeId || that_present_permissionTypeId) {
+        if (!(this_present_permissionTypeId && that_present_permissionTypeId))
           return false;
-        if (!this.perssionTypeId.equals(that.perssionTypeId))
+        if (!this.permissionTypeId.equals(that.permissionTypeId))
           return false;
       }
 
@@ -57723,9 +57723,9 @@ public class SharingRegistryService {
       if (isSetUserList())
         hashCode = hashCode * 8191 + userList.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetPerssionTypeId()) ? 131071 : 524287);
-      if (isSetPerssionTypeId())
-        hashCode = hashCode * 8191 + perssionTypeId.hashCode();
+      hashCode = hashCode * 8191 + ((isSetPermissionTypeId()) ? 131071 : 524287);
+      if (isSetPermissionTypeId())
+        hashCode = hashCode * 8191 + permissionTypeId.hashCode();
 
       hashCode = hashCode * 8191 + ((cascadePermission) ? 131071 : 524287);
 
@@ -57770,12 +57770,12 @@ public class SharingRegistryService {
           return lastComparison;
         }
       }
-      lastComparison = java.lang.Boolean.valueOf(isSetPerssionTypeId()).compareTo(other.isSetPerssionTypeId());
+      lastComparison = java.lang.Boolean.valueOf(isSetPermissionTypeId()).compareTo(other.isSetPermissionTypeId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetPerssionTypeId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.perssionTypeId, other.perssionTypeId);
+      if (isSetPermissionTypeId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.permissionTypeId, other.permissionTypeId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -57834,11 +57834,11 @@ public class SharingRegistryService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("perssionTypeId:");
-      if (this.perssionTypeId == null) {
+      sb.append("permissionTypeId:");
+      if (this.permissionTypeId == null) {
         sb.append("null");
       } else {
-        sb.append(this.perssionTypeId);
+        sb.append(this.permissionTypeId);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -57860,8 +57860,8 @@ public class SharingRegistryService {
       if (userList == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userList' was not present! Struct: " + toString());
       }
-      if (perssionTypeId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'perssionTypeId' was not present! Struct: " + toString());
+      if (permissionTypeId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'permissionTypeId' was not present! Struct: " + toString());
       }
       // alas, we cannot check 'cascadePermission' because it's a primitive and you chose the non-beans generator.
       // check for sub-struct validity
@@ -57937,10 +57937,10 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // PERSSION_TYPE_ID
+            case 4: // PERMISSION_TYPE_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.perssionTypeId = iprot.readString();
-                struct.setPerssionTypeIdIsSet(true);
+                struct.permissionTypeId = iprot.readString();
+                struct.setPermissionTypeIdIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -57993,9 +57993,9 @@ public class SharingRegistryService {
           }
           oprot.writeFieldEnd();
         }
-        if (struct.perssionTypeId != null) {
-          oprot.writeFieldBegin(PERSSION_TYPE_ID_FIELD_DESC);
-          oprot.writeString(struct.perssionTypeId);
+        if (struct.permissionTypeId != null) {
+          oprot.writeFieldBegin(PERMISSION_TYPE_ID_FIELD_DESC);
+          oprot.writeString(struct.permissionTypeId);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldBegin(CASCADE_PERMISSION_FIELD_DESC);
@@ -58027,7 +58027,7 @@ public class SharingRegistryService {
             oprot.writeString(_iter140);
           }
         }
-        oprot.writeString(struct.perssionTypeId);
+        oprot.writeString(struct.permissionTypeId);
         oprot.writeBool(struct.cascadePermission);
       }
 
@@ -58049,8 +58049,8 @@ public class SharingRegistryService {
           }
         }
         struct.setUserListIsSet(true);
-        struct.perssionTypeId = iprot.readString();
-        struct.setPerssionTypeIdIsSet(true);
+        struct.permissionTypeId = iprot.readString();
+        struct.setPermissionTypeIdIsSet(true);
         struct.cascadePermission = iprot.readBool();
         struct.setCascadePermissionIsSet(true);
       }
@@ -58533,7 +58533,7 @@ public class SharingRegistryService {
     private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
     private static final org.apache.thrift.protocol.TField USER_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("userList", org.apache.thrift.protocol.TType.LIST, (short)3);
-    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField PERMISSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("permissionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new revokeEntitySharingFromUsers_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new revokeEntitySharingFromUsers_argsTupleSchemeFactory();
@@ -58541,14 +58541,14 @@ public class SharingRegistryService {
     public java.lang.String domainId; // required
     public java.lang.String entityId; // required
     public java.util.List<java.lang.String> userList; // required
-    public java.lang.String perssionTypeId; // required
+    public java.lang.String permissionTypeId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       DOMAIN_ID((short)1, "domainId"),
       ENTITY_ID((short)2, "entityId"),
       USER_LIST((short)3, "userList"),
-      PERSSION_TYPE_ID((short)4, "perssionTypeId");
+      PERMISSION_TYPE_ID((short)4, "permissionTypeId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -58569,8 +58569,8 @@ public class SharingRegistryService {
             return ENTITY_ID;
           case 3: // USER_LIST
             return USER_LIST;
-          case 4: // PERSSION_TYPE_ID
-            return PERSSION_TYPE_ID;
+          case 4: // PERMISSION_TYPE_ID
+            return PERMISSION_TYPE_ID;
           default:
             return null;
         }
@@ -58621,7 +58621,7 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.USER_LIST, new org.apache.thrift.meta_data.FieldMetaData("userList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-      tmpMap.put(_Fields.PERSSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("perssionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.PERMISSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("permissionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(revokeEntitySharingFromUsers_args.class, metaDataMap);
@@ -58634,13 +58634,13 @@ public class SharingRegistryService {
       java.lang.String domainId,
       java.lang.String entityId,
       java.util.List<java.lang.String> userList,
-      java.lang.String perssionTypeId)
+      java.lang.String permissionTypeId)
     {
       this();
       this.domainId = domainId;
       this.entityId = entityId;
       this.userList = userList;
-      this.perssionTypeId = perssionTypeId;
+      this.permissionTypeId = permissionTypeId;
     }
 
     /**
@@ -58657,8 +58657,8 @@ public class SharingRegistryService {
         java.util.List<java.lang.String> __this__userList = new java.util.ArrayList<java.lang.String>(other.userList);
         this.userList = __this__userList;
       }
-      if (other.isSetPerssionTypeId()) {
-        this.perssionTypeId = other.perssionTypeId;
+      if (other.isSetPermissionTypeId()) {
+        this.permissionTypeId = other.permissionTypeId;
       }
     }
 
@@ -58671,7 +58671,7 @@ public class SharingRegistryService {
       this.domainId = null;
       this.entityId = null;
       this.userList = null;
-      this.perssionTypeId = null;
+      this.permissionTypeId = null;
     }
 
     public java.lang.String getDomainId() {
@@ -58761,27 +58761,27 @@ public class SharingRegistryService {
       }
     }
 
-    public java.lang.String getPerssionTypeId() {
-      return this.perssionTypeId;
+    public java.lang.String getPermissionTypeId() {
+      return this.permissionTypeId;
     }
 
-    public revokeEntitySharingFromUsers_args setPerssionTypeId(java.lang.String perssionTypeId) {
-      this.perssionTypeId = perssionTypeId;
+    public revokeEntitySharingFromUsers_args setPermissionTypeId(java.lang.String permissionTypeId) {
+      this.permissionTypeId = permissionTypeId;
       return this;
     }
 
-    public void unsetPerssionTypeId() {
-      this.perssionTypeId = null;
+    public void unsetPermissionTypeId() {
+      this.permissionTypeId = null;
     }
 
-    /** Returns true if field perssionTypeId is set (has been assigned a value) and false otherwise */
-    public boolean isSetPerssionTypeId() {
-      return this.perssionTypeId != null;
+    /** Returns true if field permissionTypeId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPermissionTypeId() {
+      return this.permissionTypeId != null;
     }
 
-    public void setPerssionTypeIdIsSet(boolean value) {
+    public void setPermissionTypeIdIsSet(boolean value) {
       if (!value) {
-        this.perssionTypeId = null;
+        this.permissionTypeId = null;
       }
     }
 
@@ -58811,11 +58811,11 @@ public class SharingRegistryService {
         }
         break;
 
-      case PERSSION_TYPE_ID:
+      case PERMISSION_TYPE_ID:
         if (value == null) {
-          unsetPerssionTypeId();
+          unsetPermissionTypeId();
         } else {
-          setPerssionTypeId((java.lang.String)value);
+          setPermissionTypeId((java.lang.String)value);
         }
         break;
 
@@ -58833,8 +58833,8 @@ public class SharingRegistryService {
       case USER_LIST:
         return getUserList();
 
-      case PERSSION_TYPE_ID:
-        return getPerssionTypeId();
+      case PERMISSION_TYPE_ID:
+        return getPermissionTypeId();
 
       }
       throw new java.lang.IllegalStateException();
@@ -58853,8 +58853,8 @@ public class SharingRegistryService {
         return isSetEntityId();
       case USER_LIST:
         return isSetUserList();
-      case PERSSION_TYPE_ID:
-        return isSetPerssionTypeId();
+      case PERMISSION_TYPE_ID:
+        return isSetPermissionTypeId();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -58901,12 +58901,12 @@ public class SharingRegistryService {
           return false;
       }
 
-      boolean this_present_perssionTypeId = true && this.isSetPerssionTypeId();
-      boolean that_present_perssionTypeId = true && that.isSetPerssionTypeId();
-      if (this_present_perssionTypeId || that_present_perssionTypeId) {
-        if (!(this_present_perssionTypeId && that_present_perssionTypeId))
+      boolean this_present_permissionTypeId = true && this.isSetPermissionTypeId();
+      boolean that_present_permissionTypeId = true && that.isSetPermissionTypeId();
+      if (this_present_permissionTypeId || that_present_permissionTypeId) {
+        if (!(this_present_permissionTypeId && that_present_permissionTypeId))
           return false;
-        if (!this.perssionTypeId.equals(that.perssionTypeId))
+        if (!this.permissionTypeId.equals(that.permissionTypeId))
           return false;
       }
 
@@ -58929,9 +58929,9 @@ public class SharingRegistryService {
       if (isSetUserList())
         hashCode = hashCode * 8191 + userList.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetPerssionTypeId()) ? 131071 : 524287);
-      if (isSetPerssionTypeId())
-        hashCode = hashCode * 8191 + perssionTypeId.hashCode();
+      hashCode = hashCode * 8191 + ((isSetPermissionTypeId()) ? 131071 : 524287);
+      if (isSetPermissionTypeId())
+        hashCode = hashCode * 8191 + permissionTypeId.hashCode();
 
       return hashCode;
     }
@@ -58974,12 +58974,12 @@ public class SharingRegistryService {
           return lastComparison;
         }
       }
-      lastComparison = java.lang.Boolean.valueOf(isSetPerssionTypeId()).compareTo(other.isSetPerssionTypeId());
+      lastComparison = java.lang.Boolean.valueOf(isSetPermissionTypeId()).compareTo(other.isSetPermissionTypeId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetPerssionTypeId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.perssionTypeId, other.perssionTypeId);
+      if (isSetPermissionTypeId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.permissionTypeId, other.permissionTypeId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -59028,11 +59028,11 @@ public class SharingRegistryService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("perssionTypeId:");
-      if (this.perssionTypeId == null) {
+      sb.append("permissionTypeId:");
+      if (this.permissionTypeId == null) {
         sb.append("null");
       } else {
-        sb.append(this.perssionTypeId);
+        sb.append(this.permissionTypeId);
       }
       first = false;
       sb.append(")");
@@ -59050,8 +59050,8 @@ public class SharingRegistryService {
       if (userList == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userList' was not present! Struct: " + toString());
       }
-      if (perssionTypeId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'perssionTypeId' was not present! Struct: " + toString());
+      if (permissionTypeId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'permissionTypeId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -59124,10 +59124,10 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // PERSSION_TYPE_ID
+            case 4: // PERMISSION_TYPE_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.perssionTypeId = iprot.readString();
-                struct.setPerssionTypeIdIsSet(true);
+                struct.permissionTypeId = iprot.readString();
+                struct.setPermissionTypeIdIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -59169,9 +59169,9 @@ public class SharingRegistryService {
           }
           oprot.writeFieldEnd();
         }
-        if (struct.perssionTypeId != null) {
-          oprot.writeFieldBegin(PERSSION_TYPE_ID_FIELD_DESC);
-          oprot.writeString(struct.perssionTypeId);
+        if (struct.permissionTypeId != null) {
+          oprot.writeFieldBegin(PERMISSION_TYPE_ID_FIELD_DESC);
+          oprot.writeString(struct.permissionTypeId);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -59200,7 +59200,7 @@ public class SharingRegistryService {
             oprot.writeString(_iter148);
           }
         }
-        oprot.writeString(struct.perssionTypeId);
+        oprot.writeString(struct.permissionTypeId);
       }
 
       @Override
@@ -59221,8 +59221,8 @@ public class SharingRegistryService {
           }
         }
         struct.setUserListIsSet(true);
-        struct.perssionTypeId = iprot.readString();
-        struct.setPerssionTypeIdIsSet(true);
+        struct.permissionTypeId = iprot.readString();
+        struct.setPermissionTypeIdIsSet(true);
       }
     }
 
@@ -59703,7 +59703,7 @@ public class SharingRegistryService {
     private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
     private static final org.apache.thrift.protocol.TField GROUP_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("groupList", org.apache.thrift.protocol.TType.LIST, (short)3);
-    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField PERMISSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("permissionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
     private static final org.apache.thrift.protocol.TField CASCADE_PERMISSION_FIELD_DESC = new org.apache.thrift.protocol.TField("cascadePermission", org.apache.thrift.protocol.TType.BOOL, (short)5);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new shareEntityWithGroups_argsStandardSchemeFactory();
@@ -59712,7 +59712,7 @@ public class SharingRegistryService {
     public java.lang.String domainId; // required
     public java.lang.String entityId; // required
     public java.util.List<java.lang.String> groupList; // required
-    public java.lang.String perssionTypeId; // required
+    public java.lang.String permissionTypeId; // required
     public boolean cascadePermission; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -59720,7 +59720,7 @@ public class SharingRegistryService {
       DOMAIN_ID((short)1, "domainId"),
       ENTITY_ID((short)2, "entityId"),
       GROUP_LIST((short)3, "groupList"),
-      PERSSION_TYPE_ID((short)4, "perssionTypeId"),
+      PERMISSION_TYPE_ID((short)4, "permissionTypeId"),
       CASCADE_PERMISSION((short)5, "cascadePermission");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
@@ -59742,8 +59742,8 @@ public class SharingRegistryService {
             return ENTITY_ID;
           case 3: // GROUP_LIST
             return GROUP_LIST;
-          case 4: // PERSSION_TYPE_ID
-            return PERSSION_TYPE_ID;
+          case 4: // PERMISSION_TYPE_ID
+            return PERMISSION_TYPE_ID;
           case 5: // CASCADE_PERMISSION
             return CASCADE_PERMISSION;
           default:
@@ -59798,7 +59798,7 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.GROUP_LIST, new org.apache.thrift.meta_data.FieldMetaData("groupList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-      tmpMap.put(_Fields.PERSSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("perssionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.PERMISSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("permissionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.CASCADE_PERMISSION, new org.apache.thrift.meta_data.FieldMetaData("cascadePermission", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
@@ -59813,14 +59813,14 @@ public class SharingRegistryService {
       java.lang.String domainId,
       java.lang.String entityId,
       java.util.List<java.lang.String> groupList,
-      java.lang.String perssionTypeId,
+      java.lang.String permissionTypeId,
       boolean cascadePermission)
     {
       this();
       this.domainId = domainId;
       this.entityId = entityId;
       this.groupList = groupList;
-      this.perssionTypeId = perssionTypeId;
+      this.permissionTypeId = permissionTypeId;
       this.cascadePermission = cascadePermission;
       setCascadePermissionIsSet(true);
     }
@@ -59840,8 +59840,8 @@ public class SharingRegistryService {
         java.util.List<java.lang.String> __this__groupList = new java.util.ArrayList<java.lang.String>(other.groupList);
         this.groupList = __this__groupList;
       }
-      if (other.isSetPerssionTypeId()) {
-        this.perssionTypeId = other.perssionTypeId;
+      if (other.isSetPermissionTypeId()) {
+        this.permissionTypeId = other.permissionTypeId;
       }
       this.cascadePermission = other.cascadePermission;
     }
@@ -59855,7 +59855,7 @@ public class SharingRegistryService {
       this.domainId = null;
       this.entityId = null;
       this.groupList = null;
-      this.perssionTypeId = null;
+      this.permissionTypeId = null;
       setCascadePermissionIsSet(false);
       this.cascadePermission = false;
     }
@@ -59947,27 +59947,27 @@ public class SharingRegistryService {
       }
     }
 
-    public java.lang.String getPerssionTypeId() {
-      return this.perssionTypeId;
+    public java.lang.String getPermissionTypeId() {
+      return this.permissionTypeId;
     }
 
-    public shareEntityWithGroups_args setPerssionTypeId(java.lang.String perssionTypeId) {
-      this.perssionTypeId = perssionTypeId;
+    public shareEntityWithGroups_args setPermissionTypeId(java.lang.String permissionTypeId) {
+      this.permissionTypeId = permissionTypeId;
       return this;
     }
 
-    public void unsetPerssionTypeId() {
-      this.perssionTypeId = null;
+    public void unsetPermissionTypeId() {
+      this.permissionTypeId = null;
     }
 
-    /** Returns true if field perssionTypeId is set (has been assigned a value) and false otherwise */
-    public boolean isSetPerssionTypeId() {
-      return this.perssionTypeId != null;
+    /** Returns true if field permissionTypeId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPermissionTypeId() {
+      return this.permissionTypeId != null;
     }
 
-    public void setPerssionTypeIdIsSet(boolean value) {
+    public void setPermissionTypeIdIsSet(boolean value) {
       if (!value) {
-        this.perssionTypeId = null;
+        this.permissionTypeId = null;
       }
     }
 
@@ -60020,11 +60020,11 @@ public class SharingRegistryService {
         }
         break;
 
-      case PERSSION_TYPE_ID:
+      case PERMISSION_TYPE_ID:
         if (value == null) {
-          unsetPerssionTypeId();
+          unsetPermissionTypeId();
         } else {
-          setPerssionTypeId((java.lang.String)value);
+          setPermissionTypeId((java.lang.String)value);
         }
         break;
 
@@ -60050,8 +60050,8 @@ public class SharingRegistryService {
       case GROUP_LIST:
         return getGroupList();
 
-      case PERSSION_TYPE_ID:
-        return getPerssionTypeId();
+      case PERMISSION_TYPE_ID:
+        return getPermissionTypeId();
 
       case CASCADE_PERMISSION:
         return isCascadePermission();
@@ -60073,8 +60073,8 @@ public class SharingRegistryService {
         return isSetEntityId();
       case GROUP_LIST:
         return isSetGroupList();
-      case PERSSION_TYPE_ID:
-        return isSetPerssionTypeId();
+      case PERMISSION_TYPE_ID:
+        return isSetPermissionTypeId();
       case CASCADE_PERMISSION:
         return isSetCascadePermission();
       }
@@ -60123,12 +60123,12 @@ public class SharingRegistryService {
           return false;
       }
 
-      boolean this_present_perssionTypeId = true && this.isSetPerssionTypeId();
-      boolean that_present_perssionTypeId = true && that.isSetPerssionTypeId();
-      if (this_present_perssionTypeId || that_present_perssionTypeId) {
-        if (!(this_present_perssionTypeId && that_present_perssionTypeId))
+      boolean this_present_permissionTypeId = true && this.isSetPermissionTypeId();
+      boolean that_present_permissionTypeId = true && that.isSetPermissionTypeId();
+      if (this_present_permissionTypeId || that_present_permissionTypeId) {
+        if (!(this_present_permissionTypeId && that_present_permissionTypeId))
           return false;
-        if (!this.perssionTypeId.equals(that.perssionTypeId))
+        if (!this.permissionTypeId.equals(that.permissionTypeId))
           return false;
       }
 
@@ -60160,9 +60160,9 @@ public class SharingRegistryService {
       if (isSetGroupList())
         hashCode = hashCode * 8191 + groupList.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetPerssionTypeId()) ? 131071 : 524287);
-      if (isSetPerssionTypeId())
-        hashCode = hashCode * 8191 + perssionTypeId.hashCode();
+      hashCode = hashCode * 8191 + ((isSetPermissionTypeId()) ? 131071 : 524287);
+      if (isSetPermissionTypeId())
+        hashCode = hashCode * 8191 + permissionTypeId.hashCode();
 
       hashCode = hashCode * 8191 + ((cascadePermission) ? 131071 : 524287);
 
@@ -60207,12 +60207,12 @@ public class SharingRegistryService {
           return lastComparison;
         }
       }
-      lastComparison = java.lang.Boolean.valueOf(isSetPerssionTypeId()).compareTo(other.isSetPerssionTypeId());
+      lastComparison = java.lang.Boolean.valueOf(isSetPermissionTypeId()).compareTo(other.isSetPermissionTypeId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetPerssionTypeId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.perssionTypeId, other.perssionTypeId);
+      if (isSetPermissionTypeId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.permissionTypeId, other.permissionTypeId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -60271,11 +60271,11 @@ public class SharingRegistryService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("perssionTypeId:");
-      if (this.perssionTypeId == null) {
+      sb.append("permissionTypeId:");
+      if (this.permissionTypeId == null) {
         sb.append("null");
       } else {
-        sb.append(this.perssionTypeId);
+        sb.append(this.permissionTypeId);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -60297,8 +60297,8 @@ public class SharingRegistryService {
       if (groupList == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupList' was not present! Struct: " + toString());
       }
-      if (perssionTypeId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'perssionTypeId' was not present! Struct: " + toString());
+      if (permissionTypeId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'permissionTypeId' was not present! Struct: " + toString());
       }
       // alas, we cannot check 'cascadePermission' because it's a primitive and you chose the non-beans generator.
       // check for sub-struct validity
@@ -60374,10 +60374,10 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // PERSSION_TYPE_ID
+            case 4: // PERMISSION_TYPE_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.perssionTypeId = iprot.readString();
-                struct.setPerssionTypeIdIsSet(true);
+                struct.permissionTypeId = iprot.readString();
+                struct.setPermissionTypeIdIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -60430,9 +60430,9 @@ public class SharingRegistryService {
           }
           oprot.writeFieldEnd();
         }
-        if (struct.perssionTypeId != null) {
-          oprot.writeFieldBegin(PERSSION_TYPE_ID_FIELD_DESC);
-          oprot.writeString(struct.perssionTypeId);
+        if (struct.permissionTypeId != null) {
+          oprot.writeFieldBegin(PERMISSION_TYPE_ID_FIELD_DESC);
+          oprot.writeString(struct.permissionTypeId);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldBegin(CASCADE_PERMISSION_FIELD_DESC);
@@ -60464,7 +60464,7 @@ public class SharingRegistryService {
             oprot.writeString(_iter156);
           }
         }
-        oprot.writeString(struct.perssionTypeId);
+        oprot.writeString(struct.permissionTypeId);
         oprot.writeBool(struct.cascadePermission);
       }
 
@@ -60486,8 +60486,8 @@ public class SharingRegistryService {
           }
         }
         struct.setGroupListIsSet(true);
-        struct.perssionTypeId = iprot.readString();
-        struct.setPerssionTypeIdIsSet(true);
+        struct.permissionTypeId = iprot.readString();
+        struct.setPermissionTypeIdIsSet(true);
         struct.cascadePermission = iprot.readBool();
         struct.setCascadePermissionIsSet(true);
       }
@@ -60970,7 +60970,7 @@ public class SharingRegistryService {
     private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
     private static final org.apache.thrift.protocol.TField GROUP_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("groupList", org.apache.thrift.protocol.TType.LIST, (short)3);
-    private static final org.apache.thrift.protocol.TField PERSSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("perssionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField PERMISSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("permissionTypeId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new revokeEntitySharingFromGroups_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new revokeEntitySharingFromGroups_argsTupleSchemeFactory();
@@ -60978,14 +60978,14 @@ public class SharingRegistryService {
     public java.lang.String domainId; // required
     public java.lang.String entityId; // required
     public java.util.List<java.lang.String> groupList; // required
-    public java.lang.String perssionTypeId; // required
+    public java.lang.String permissionTypeId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       DOMAIN_ID((short)1, "domainId"),
       ENTITY_ID((short)2, "entityId"),
       GROUP_LIST((short)3, "groupList"),
-      PERSSION_TYPE_ID((short)4, "perssionTypeId");
+      PERMISSION_TYPE_ID((short)4, "permissionTypeId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -61006,8 +61006,8 @@ public class SharingRegistryService {
             return ENTITY_ID;
           case 3: // GROUP_LIST
             return GROUP_LIST;
-          case 4: // PERSSION_TYPE_ID
-            return PERSSION_TYPE_ID;
+          case 4: // PERMISSION_TYPE_ID
+            return PERMISSION_TYPE_ID;
           default:
             return null;
         }
@@ -61058,7 +61058,7 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.GROUP_LIST, new org.apache.thrift.meta_data.FieldMetaData("groupList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-      tmpMap.put(_Fields.PERSSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("perssionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.PERMISSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("permissionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(revokeEntitySharingFromGroups_args.class, metaDataMap);
@@ -61071,13 +61071,13 @@ public class SharingRegistryService {
       java.lang.String domainId,
       java.lang.String entityId,
       java.util.List<java.lang.String> groupList,
-      java.lang.String perssionTypeId)
+      java.lang.String permissionTypeId)
     {
       this();
       this.domainId = domainId;
       this.entityId = entityId;
       this.groupList = groupList;
-      this.perssionTypeId = perssionTypeId;
+      this.permissionTypeId = permissionTypeId;
     }
 
     /**
@@ -61094,8 +61094,8 @@ public class SharingRegistryService {
         java.util.List<java.lang.String> __this__groupList = new java.util.ArrayList<java.lang.String>(other.groupList);
         this.groupList = __this__groupList;
       }
-      if (other.isSetPerssionTypeId()) {
-        this.perssionTypeId = other.perssionTypeId;
+      if (other.isSetPermissionTypeId()) {
+        this.permissionTypeId = other.permissionTypeId;
       }
     }
 
@@ -61108,7 +61108,7 @@ public class SharingRegistryService {
       this.domainId = null;
       this.entityId = null;
       this.groupList = null;
-      this.perssionTypeId = null;
+      this.permissionTypeId = null;
     }
 
     public java.lang.String getDomainId() {
@@ -61198,27 +61198,27 @@ public class SharingRegistryService {
       }
     }
 
-    public java.lang.String getPerssionTypeId() {
-      return this.perssionTypeId;
+    public java.lang.String getPermissionTypeId() {
+      return this.permissionTypeId;
     }
 
-    public revokeEntitySharingFromGroups_args setPerssionTypeId(java.lang.String perssionTypeId) {
-      this.perssionTypeId = perssionTypeId;
+    public revokeEntitySharingFromGroups_args setPermissionTypeId(java.lang.String permissionTypeId) {
+      this.permissionTypeId = permissionTypeId;
       return this;
     }
 
-    public void unsetPerssionTypeId() {
-      this.perssionTypeId = null;
+    public void unsetPermissionTypeId() {
+      this.permissionTypeId = null;
     }
 
-    /** Returns true if field perssionTypeId is set (has been assigned a value) and false otherwise */
-    public boolean isSetPerssionTypeId() {
-      return this.perssionTypeId != null;
+    /** Returns true if field permissionTypeId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPermissionTypeId() {
+      return this.permissionTypeId != null;
     }
 
-    public void setPerssionTypeIdIsSet(boolean value) {
+    public void setPermissionTypeIdIsSet(boolean value) {
       if (!value) {
-        this.perssionTypeId = null;
+        this.permissionTypeId = null;
       }
     }
 
@@ -61248,11 +61248,11 @@ public class SharingRegistryService {
         }
         break;
 
-      case PERSSION_TYPE_ID:
+      case PERMISSION_TYPE_ID:
         if (value == null) {
-          unsetPerssionTypeId();
+          unsetPermissionTypeId();
         } else {
-          setPerssionTypeId((java.lang.String)value);
+          setPermissionTypeId((java.lang.String)value);
         }
         break;
 
@@ -61270,8 +61270,8 @@ public class SharingRegistryService {
       case GROUP_LIST:
         return getGroupList();
 
-      case PERSSION_TYPE_ID:
-        return getPerssionTypeId();
+      case PERMISSION_TYPE_ID:
+        return getPermissionTypeId();
 
       }
       throw new java.lang.IllegalStateException();
@@ -61290,8 +61290,8 @@ public class SharingRegistryService {
         return isSetEntityId();
       case GROUP_LIST:
         return isSetGroupList();
-      case PERSSION_TYPE_ID:
-        return isSetPerssionTypeId();
+      case PERMISSION_TYPE_ID:
+        return isSetPermissionTypeId();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -61338,12 +61338,12 @@ public class SharingRegistryService {
           return false;
       }
 
-      boolean this_present_perssionTypeId = true && this.isSetPerssionTypeId();
-      boolean that_present_perssionTypeId = true && that.isSetPerssionTypeId();
-      if (this_present_perssionTypeId || that_present_perssionTypeId) {
-        if (!(this_present_perssionTypeId && that_present_perssionTypeId))
+      boolean this_present_permissionTypeId = true && this.isSetPermissionTypeId();
+      boolean that_present_permissionTypeId = true && that.isSetPermissionTypeId();
+      if (this_present_permissionTypeId || that_present_permissionTypeId) {
+        if (!(this_present_permissionTypeId && that_present_permissionTypeId))
           return false;
-        if (!this.perssionTypeId.equals(that.perssionTypeId))
+        if (!this.permissionTypeId.equals(that.permissionTypeId))
           return false;
       }
 
@@ -61366,9 +61366,9 @@ public class SharingRegistryService {
       if (isSetGroupList())
         hashCode = hashCode * 8191 + groupList.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetPerssionTypeId()) ? 131071 : 524287);
-      if (isSetPerssionTypeId())
-        hashCode = hashCode * 8191 + perssionTypeId.hashCode();
+      hashCode = hashCode * 8191 + ((isSetPermissionTypeId()) ? 131071 : 524287);
+      if (isSetPermissionTypeId())
+        hashCode = hashCode * 8191 + permissionTypeId.hashCode();
 
       return hashCode;
     }
@@ -61411,12 +61411,12 @@ public class SharingRegistryService {
           return lastComparison;
         }
       }
-      lastComparison = java.lang.Boolean.valueOf(isSetPerssionTypeId()).compareTo(other.isSetPerssionTypeId());
+      lastComparison = java.lang.Boolean.valueOf(isSetPermissionTypeId()).compareTo(other.isSetPermissionTypeId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetPerssionTypeId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.perssionTypeId, other.perssionTypeId);
+      if (isSetPermissionTypeId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.permissionTypeId, other.permissionTypeId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -61465,11 +61465,11 @@ public class SharingRegistryService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("perssionTypeId:");
-      if (this.perssionTypeId == null) {
+      sb.append("permissionTypeId:");
+      if (this.permissionTypeId == null) {
         sb.append("null");
       } else {
-        sb.append(this.perssionTypeId);
+        sb.append(this.permissionTypeId);
       }
       first = false;
       sb.append(")");
@@ -61487,8 +61487,8 @@ public class SharingRegistryService {
       if (groupList == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupList' was not present! Struct: " + toString());
       }
-      if (perssionTypeId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'perssionTypeId' was not present! Struct: " + toString());
+      if (permissionTypeId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'permissionTypeId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -61561,10 +61561,10 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // PERSSION_TYPE_ID
+            case 4: // PERMISSION_TYPE_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.perssionTypeId = iprot.readString();
-                struct.setPerssionTypeIdIsSet(true);
+                struct.permissionTypeId = iprot.readString();
+                struct.setPermissionTypeIdIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -61606,9 +61606,9 @@ public class SharingRegistryService {
           }
           oprot.writeFieldEnd();
         }
-        if (struct.perssionTypeId != null) {
-          oprot.writeFieldBegin(PERSSION_TYPE_ID_FIELD_DESC);
-          oprot.writeString(struct.perssionTypeId);
+        if (struct.permissionTypeId != null) {
+          oprot.writeFieldBegin(PERMISSION_TYPE_ID_FIELD_DESC);
+          oprot.writeString(struct.permissionTypeId);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -61637,7 +61637,7 @@ public class SharingRegistryService {
             oprot.writeString(_iter164);
           }
         }
-        oprot.writeString(struct.perssionTypeId);
+        oprot.writeString(struct.permissionTypeId);
       }
 
       @Override
@@ -61658,8 +61658,8 @@ public class SharingRegistryService {
           }
         }
         struct.setGroupListIsSet(true);
-        struct.perssionTypeId = iprot.readString();
-        struct.setPerssionTypeIdIsSet(true);
+        struct.permissionTypeId = iprot.readString();
+        struct.setPermissionTypeIdIsSet(true);
       }
     }
 

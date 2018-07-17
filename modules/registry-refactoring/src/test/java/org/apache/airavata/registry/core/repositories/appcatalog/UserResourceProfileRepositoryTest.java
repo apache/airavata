@@ -3,10 +3,8 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
-import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,29 +14,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.*;
 
-public class UserResourceProfileRepositoryTest {
+public class UserResourceProfileRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
+    private static final Logger logger = LoggerFactory.getLogger(UserResourceProfileRepositoryTest.class);
+
     private UserResourceProfileRepository userResourceProfileRepository;
     private String userId = "testUser";
     private String gatewayId = "testGateway";
-    private static final Logger logger = LoggerFactory.getLogger(UserResourceProfileRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("appcatalog-derby.sql");
-            initialize.initializeDB();
-            userResourceProfileRepository = new UserResourceProfileRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public UserResourceProfileRepositoryTest() {
+        super(Database.APP_CATALOG);
+        userResourceProfileRepository = new UserResourceProfileRepository();
     }
 
     @Test

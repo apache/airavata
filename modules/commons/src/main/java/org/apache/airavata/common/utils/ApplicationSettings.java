@@ -461,17 +461,24 @@ public class ApplicationSettings {
     }
 
     public static URL loadFile(String fileName) {
-        final URL resource = ApplicationSettings.class.getClassLoader().getResource(fileName);
-        if(resource == null) {
-            if(System.getProperty(AIRAVATA_CONFIG_DIR) != null) {
-                final String airavataConfigDir = System.getProperty(AIRAVATA_CONFIG_DIR);
-                try {
-                     return new File(airavataConfigDir + File.separator + fileName).toURI().toURL();
-                } catch (MalformedURLException e) {
-                    logger.error("Error parsing the file from airavata.config.dir", airavataConfigDir);
+
+        if(System.getProperty(AIRAVATA_CONFIG_DIR) != null) {
+            String airavataConfigDir = System.getProperty(AIRAVATA_CONFIG_DIR);
+            try {
+                airavataConfigDir = airavataConfigDir.endsWith(File.separator) ? airavataConfigDir : airavataConfigDir + File.separator;
+                String filePath = airavataConfigDir + fileName;
+
+                File asfile  = new File(filePath);
+                if (asfile.exists()) {
+
+                    return asfile.toURI().toURL();
                 }
+            } catch (MalformedURLException e) {
+                logger.error("Error parsing the file from airavata.config.dir", airavataConfigDir);
             }
         }
-        return resource;
+
+        return ApplicationSettings.class.getClassLoader().getResource(fileName);
+
     }
 }

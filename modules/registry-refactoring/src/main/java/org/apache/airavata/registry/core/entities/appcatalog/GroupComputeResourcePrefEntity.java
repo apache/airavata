@@ -19,6 +19,9 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -55,10 +58,12 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     private String preferredBatchQueue;
 
     @Column(name = "PREFERED_DATA_MOVE_PROTOCOL")
-    private String preferredDataMovementProtocol;
+    @Enumerated(EnumType.STRING)
+    private DataMovementProtocol preferredDataMovementProtocol;
 
     @Column(name = "PREFERED_JOB_SUB_PROTOCOL")
-    private String preferredJobSubmissionProtocol;
+    @Enumerated(EnumType.STRING)
+    private JobSubmissionProtocol preferredJobSubmissionProtocol;
 
     @Column(name = "QUALITY_OF_SERVICE")
     private String qualityOfService;
@@ -145,19 +150,19 @@ public class GroupComputeResourcePrefEntity implements Serializable {
         this.preferredBatchQueue = preferredBatchQueue;
     }
 
-    public String getPreferredDataMovementProtocol() {
+    public DataMovementProtocol getPreferredDataMovementProtocol() {
         return preferredDataMovementProtocol;
     }
 
-    public void setPreferredDataMovementProtocol(String preferredDataMovementProtocol) {
+    public void setPreferredDataMovementProtocol(DataMovementProtocol preferredDataMovementProtocol) {
         this.preferredDataMovementProtocol = preferredDataMovementProtocol;
     }
 
-    public String getPreferredJobSubmissionProtocol() {
+    public JobSubmissionProtocol getPreferredJobSubmissionProtocol() {
         return preferredJobSubmissionProtocol;
     }
 
-    public void setPreferredJobSubmissionProtocol(String preferredJobSubmissionProtocol) {
+    public void setPreferredJobSubmissionProtocol(JobSubmissionProtocol preferredJobSubmissionProtocol) {
         this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
     }
 

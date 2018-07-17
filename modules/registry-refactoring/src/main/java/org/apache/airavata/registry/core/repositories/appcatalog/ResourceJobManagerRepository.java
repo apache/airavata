@@ -44,7 +44,7 @@ public class ResourceJobManagerRepository extends AppCatAbstractRepository<Resou
                 jobManagerCommandEntity.setCommand(jobManagerCommands.get(commandType));
                 jobManagerCommandEntity.setResourceJobManager(resourceJobManagerEntity);
                 jobManagerCommandEntity.setResourceJobManagerId(resourceJobManagerEntity.getResourceJobManagerId());
-                jobManagerCommandEntity.setCommandType(commandType.toString());
+                jobManagerCommandEntity.setCommandType(commandType);
                 execute(entityManager -> entityManager.merge(jobManagerCommandEntity));
             }
         }
@@ -56,7 +56,7 @@ public class ResourceJobManagerRepository extends AppCatAbstractRepository<Resou
                 ParallelismCommandEntity parallelismCommandEntity = new ParallelismCommandEntity();
                 parallelismCommandEntity.setCommand(parallelismPrefix.get(commandType));
                 parallelismCommandEntity.setResourceJobManager(resourceJobManagerEntity);
-                parallelismCommandEntity.setCommandType(commandType.toString());
+                parallelismCommandEntity.setCommandType(commandType);
                 parallelismCommandEntity.setResourceJobManagerId(resourceJobManagerEntity.getResourceJobManagerId());
                 execute(entityManager -> entityManager.merge(parallelismCommandEntity));
             }
@@ -78,7 +78,7 @@ public class ResourceJobManagerRepository extends AppCatAbstractRepository<Resou
         List<JobManagerCommandEntity> jobManagerCommandEntityList = resultSet;
         Map<JobManagerCommand, String> jobManagerCommandMap= new HashMap<JobManagerCommand,String>();
         for (JobManagerCommandEntity jm: jobManagerCommandEntityList) {
-            jobManagerCommandMap.put(JobManagerCommand.valueOf(jm.getCommandType()), jm.getCommand());
+            jobManagerCommandMap.put(jm.getCommandType(), jm.getCommand());
         }
         return jobManagerCommandMap;
     }
@@ -98,7 +98,7 @@ public class ResourceJobManagerRepository extends AppCatAbstractRepository<Resou
         List<ParallelismCommandEntity> parallelismCommandEntityList = resultSet;
         Map<ApplicationParallelismType, String> applicationParallelismTypeMap= new HashMap<ApplicationParallelismType,String>();
         for (ParallelismCommandEntity pc: parallelismCommandEntityList) {
-            applicationParallelismTypeMap.put(ApplicationParallelismType.valueOf(pc.getCommandType()), pc.getCommand());
+            applicationParallelismTypeMap.put(pc.getCommandType(), pc.getCommand());
         }
         return applicationParallelismTypeMap;
     }

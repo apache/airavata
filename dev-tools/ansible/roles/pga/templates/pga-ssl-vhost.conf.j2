@@ -1,3 +1,10 @@
+{% if vhost_server_redirect is defined %}
+<VirtualHost *:{{pga_default_http_port}}>
+    ServerName {{ vhost_server_redirect }}
+    Redirect "/" "https://{{ vhost_servername }}"
+</VirtualHost>
+{% endif %}
+
 <VirtualHost *:{{pga_default_http_port}}>
     ServerName {{ vhost_servername }}
     {% if vhost_serveralias is defined %}

@@ -24,10 +24,8 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,27 +37,15 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
-public class GatewayProfileRepositoryTest {
+public class GatewayProfileRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
-    private GwyResourceProfileRepository gwyResourceProfileRepository;
     private static final Logger logger = LoggerFactory.getLogger(GatewayProfileRepositoryTest.class);
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("appcatalog-derby.sql");
-            initialize.initializeDB();
-            gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
+    private GwyResourceProfileRepository gwyResourceProfileRepository;
 
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public GatewayProfileRepositoryTest() {
+        super(Database.APP_CATALOG);
+        gwyResourceProfileRepository = new GwyResourceProfileRepository();
     }
 
     @Test

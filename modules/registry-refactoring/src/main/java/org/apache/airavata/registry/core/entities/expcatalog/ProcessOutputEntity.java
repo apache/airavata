@@ -20,30 +20,67 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
+/**
+ * The persistent class for the process_output database table.
+ */
 @Entity
-@Table(name = "EXPCAT_PROCESS_OUTPUT")
+@Table(name = "PROCESS_OUTPUT")
 @IdClass(ProcessOutputPK.class)
-public class ProcessOutputEntity {
-    private String processId;
-    public String name;
-    public String value;
-    public String type;
-    public String applicationArgument;
-    public boolean isRequired;
-    public boolean requiredToAddedToCommandLine;
-    public boolean dataMovement;
-    public String location;
-    public String searchQuery;
-    public boolean outputStreaming;
-    public String storageResourceId;
-
-    private ProcessEntity process;
-
+public class ProcessOutputEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "PROCESS_ID")
+    private String processId;
+
+    @Id
+    @Column(name = "OUTPUT_NAME")
+    private String name;
+
+    @Lob
+    @Column(name = "OUTPUT_VALUE")
+    private String value;
+
+    @Column(name = "DATA_TYPE")
+    @Enumerated(EnumType.STRING)
+    private DataType type;
+
+    @Column(name = "APPLICATION_ARGUMENT")
+    private String applicationArgument;
+
+    @Column(name = "IS_REQUIRED")
+    private boolean isRequired;
+
+    @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
+    private boolean requiredToAddedToCommandLine;
+
+    @Column(name = "DATA_MOVEMENT")
+    private boolean dataMovement;
+
+    @Column(name = "LOCATION")
+    private String location;
+
+    @Column(name = "SEARCH_QUERY")
+    private String searchQuery;
+
+    @Column(name = "OUTPUT_STREAMING")
+    private boolean outputStreaming;
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    private String storageResourceId;
+
+    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
+    private ProcessEntity process;
+
+    public ProcessOutputEntity() {
+    }
+
     public String getProcessId() {
         return processId;
     }
@@ -52,8 +89,6 @@ public class ProcessOutputEntity {
         this.processId = processId;
     }
 
-    @Id
-    @Column(name = "OUTPUT_NAME")
     public String getName() {
         return name;
     }
@@ -62,7 +97,6 @@ public class ProcessOutputEntity {
         this.name = name;
     }
 
-    @Column(name = "OUTPUT_VALUE")
     public String getValue() {
         return value;
     }
@@ -71,16 +105,14 @@ public class ProcessOutputEntity {
         this.value = value;
     }
 
-    @Column(name = "OUTPUT_TYPE")
-    public String getType() {
+    public DataType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 
-    @Column(name = "APPLICATION_ARGUMENT")
     public String getApplicationArgument() {
         return applicationArgument;
     }
@@ -89,17 +121,14 @@ public class ProcessOutputEntity {
         this.applicationArgument = applicationArgument;
     }
 
-    @Column(name = "REQUIRED")
     public boolean isRequired() {
         return isRequired;
     }
 
-    public void setRequired(boolean isRequired) {
-        this.isRequired = isRequired;
+    public void setRequired(boolean required) {
+        isRequired = required;
     }
 
-
-    @Column(name = "REQUIRED_TO_ADDED_TO_COMMANDLINE")
     public boolean isRequiredToAddedToCommandLine() {
         return requiredToAddedToCommandLine;
     }
@@ -108,7 +137,6 @@ public class ProcessOutputEntity {
         this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
     }
 
-    @Column(name = "DATA_MOVEMENT")
     public boolean isDataMovement() {
         return dataMovement;
     }
@@ -117,7 +145,6 @@ public class ProcessOutputEntity {
         this.dataMovement = dataMovement;
     }
 
-    @Column(name = "LOCATION")
     public String getLocation() {
         return location;
     }
@@ -126,7 +153,6 @@ public class ProcessOutputEntity {
         this.location = location;
     }
 
-    @Column(name = "SEARCH_QUERY")
     public String getSearchQuery() {
         return searchQuery;
     }
@@ -135,7 +161,6 @@ public class ProcessOutputEntity {
         this.searchQuery = searchQuery;
     }
 
-    @Column(name = "OUTPUT_STREAMING")
     public boolean isOutputStreaming() {
         return outputStreaming;
     }
@@ -144,7 +169,6 @@ public class ProcessOutputEntity {
         this.outputStreaming = outputStreaming;
     }
 
-    @Column(name = "STORAGE_RESOURCE_ID")
     public String getStorageResourceId() {
         return storageResourceId;
     }
@@ -153,8 +177,6 @@ public class ProcessOutputEntity {
         this.storageResourceId = storageResourceId;
     }
 
-    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
     public ProcessEntity getProcess() {
         return process;
     }

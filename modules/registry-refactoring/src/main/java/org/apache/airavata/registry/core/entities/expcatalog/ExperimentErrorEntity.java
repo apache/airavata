@@ -21,24 +21,52 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * The persistent class for the experiment_error database table.
+ */
 @Entity
-@Table(name = "EXPCAT_EXPERIMENT_ERROR")
+@Table(name = "EXPERIMENT_ERROR")
 @IdClass(ExperimentErrorPK.class)
-public class ExperimentErrorEntity {
-    private String errorId;
-    private String experimentId;
-    private long creationTime;
-    private String actualErrorMessage;
-    private String userFriendlyMessage;
-    private boolean transientOrPersistent;
-    private List<String> rootCauseErrorIdList;
-
-    private ExperimentEntity experiment;
+public class ExperimentErrorEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "ERROR_ID")
+    private String errorId;
+
+    @Id
+    @Column(name = "EXPERIMENT_ID")
+    private String experimentId;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Lob
+    @Column(name = "ACTUAL_ERROR_MESSAGE")
+    private String actualErrorMessage;
+
+    @Lob
+    @Column(name = "USER_FRIENDLY_MESSAGE")
+    private String userFriendlyMessage;
+
+    @Column(name = "TRANSIENT_OR_PERSISTENT")
+    private boolean transientOrPersistent;
+
+    @Lob
+    @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
+    private String rootCauseErrorIdList;
+
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    private ExperimentEntity experiment;
+
+    public ExperimentErrorEntity() {
+    }
+
     public String getErrorId() {
         return errorId;
     }
@@ -47,8 +75,6 @@ public class ExperimentErrorEntity {
         this.errorId = errorId;
     }
 
-    @Id
-    @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
     }
@@ -57,16 +83,14 @@ public class ExperimentErrorEntity {
         this.experimentId = experimentId;
     }
 
-    @Column(name = "CREATION_TIME")
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
-    @Column(name = "ACTUAL_ERROR_MESSAGE")
     public String getActualErrorMessage() {
         return actualErrorMessage;
     }
@@ -75,7 +99,6 @@ public class ExperimentErrorEntity {
         this.actualErrorMessage = actualErrorMessage;
     }
 
-    @Column(name = "USER_FRIENDLY_MESSAGE")
     public String getUserFriendlyMessage() {
         return userFriendlyMessage;
     }
@@ -85,7 +108,6 @@ public class ExperimentErrorEntity {
     }
 
 
-    @Column(name = "TRANSIENT_OR_PERSISTENT")
     public boolean isTransientOrPersistent() {
         return transientOrPersistent;
     }
@@ -94,20 +116,14 @@ public class ExperimentErrorEntity {
         this.transientOrPersistent = transientOrPersistent;
     }
 
-
-    @ElementCollection
-    @CollectionTable(name="EXPERIMENT_ERROR_ROOT_CAUSE_ERROR_ID", joinColumns = @JoinColumn(name="ERROR_ID"))
-    public List<String> getRootCauseErrorIdList() {
+    public String getRootCauseErrorIdList() {
         return rootCauseErrorIdList;
     }
 
-    public void setRootCauseErrorIdList(List<String> rootCauseErrorIdList) {
+    public void setRootCauseErrorIdList(String rootCauseErrorIdList) {
         this.rootCauseErrorIdList = rootCauseErrorIdList;
     }
 
-
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     public ExperimentEntity getExperiment() {
         return experiment;
     }

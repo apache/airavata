@@ -21,6 +21,7 @@ package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.registry.core.entities.expcatalog.*;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity;
 
@@ -45,6 +46,11 @@ public interface QueryConstants {
             "WHERE AD.gatewayId LIKE :" + DBConstants.ApplicationDeployment.GATEWAY_ID + " AND AD.appDeploymentId IN :" +
             DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS + " AND AD.computeHostId IN :" +
             DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS;
+    String FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS_FOR_APP_MODULE = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
+            "WHERE AD.gatewayId LIKE :" + DBConstants.ApplicationDeployment.GATEWAY_ID + " AND AD.appDeploymentId IN :" +
+            DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS + " AND AD.computeHostId IN :" +
+            DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS + " AND AD.appModuleId = :" +
+            DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID;
 
     // Application Module Queries
     String FIND_APPLICATION_MODULES_FOR_GATEWAY_ID = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
@@ -52,9 +58,10 @@ public interface QueryConstants {
     String FIND_APPLICATION_MODULES_FOR_APPLICATION_MODULE_NAME = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
             "WHERE AM.appModuleName LIKE :" + DBConstants.ApplicationModule.APPLICATION_MODULE_NAME;
     String FIND_ACCESSIBLE_APPLICATION_MODULES = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
-            ", " + ApplicationDeploymentEntity.class.getSimpleName() + " AD WHERE AM.appModuleId = AD.appModuleId AND AM.gatewayId LIKE :" +
-            DBConstants.ApplicationModule.GATEWAY_ID + " AND AD.appDeploymentId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS +
-            " AND AD.computeHostId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS;
+            "WHERE AM.gatewayId LIKE :" + DBConstants.ApplicationModule.GATEWAY_ID + " AND " +
+            "EXISTS (SELECT 1 FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
+            "WHERE AM.appModuleId = AD.appModuleId AND AD.appDeploymentId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS +
+            " AND AD.computeHostId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS + ")";
 
     // Application Interface Queries
     String FIND_APPLICATION_INTERFACES_FOR_GATEWAY_ID = "SELECT AI FROM " + ApplicationInterfaceEntity.class.getSimpleName() + " AI " +
@@ -103,6 +110,36 @@ public interface QueryConstants {
     String GET_ALL_GATEWAY_ID = "SELECT DISTINCT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP " +
             "WHERE URP.gatewayId LIKE :" + DBConstants.UserResourceProfile.GATEWAY_ID;
 
+    String GET_ALL_GATEWAYS = "SELECT G FROM " + GatewayEntity.class.getSimpleName() + " G";
+    String GET_GATEWAY_FROM_GATEWAY_NAME = "SELECT G FROM " + GatewayEntity.class.getSimpleName() + " G " +
+            "WHERE G.gatewayName LIKE :" + DBConstants.Gateway.GATEWAY_NAME;
+
+    String GET_ALL_GATEWAY_NOTIFICATIONS = "SELECT N FROM " + NotificationEntity.class.getSimpleName() + " N " +
+            "WHERE N.gatewayId LIKE :" + DBConstants.Notification.GATEWAY_ID;
+
+    String GET_ALL_PROJECTS_FOR_OWNER = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P " +
+            "WHERE P.owner LIKE :" + DBConstants.Project.OWNER;
+
+    String GET_EXPERIMENTS_FOR_USER = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
+            "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME;
+    String GET_EXPERIMENTS_FOR_PROJECT_ID = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
+            "WHERE E.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID;
+    String GET_EXPERIMENTS_FOR_GATEWAY_ID = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
+            "WHERE E.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID;
+
+    String GET_PROCESS_FOR_EXPERIMENT_ID = "SELECT P FROM " + ProcessEntity.class.getSimpleName() + " P " +
+            "WHERE P.experimentId LIKE :" + DBConstants.Process.EXPERIMENT_ID;
+
+    String GET_TASK_FOR_PARENT_PROCESS_ID = "SELECT T FROM " + TaskEntity.class.getSimpleName() + " T " +
+            "WHERE T.parentProcessId LIKE :" + DBConstants.Task.PARENT_PROCESS_ID;
+
+    String GET_JOB_FOR_PROCESS_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
+            "WHERE J.processId LIKE :" + DBConstants.Job.PROCESS_ID;
+    String GET_JOB_FOR_TASK_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
+            "WHERE J.taskId LIKE :" + DBConstants.Job.TASK_ID;
+
+    String GET_ALL_QUEUE_STATUS_MODELS = "SELECT QSM FROM " + QueueStatusEntity.class.getSimpleName() + " QSM";
+
     String GET_ALL_USER_COMPUTE_RESOURCE_PREFERENCE = "SELECT UCRP FROM " + UserComputeResourcePreferenceEntity.class.getSimpleName() + " UCRP " +
             "WHERE UCRP.userId LIKE :" + DBConstants.UserComputeResourcePreference.USER_ID + " AND UCRP.gatewayId LIKE :" +
             DBConstants.UserComputeResourcePreference.GATEWAY_ID;
@@ -127,4 +164,7 @@ public interface QueryConstants {
     String FIND_ALL_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR";
     String FIND_ALL_AVAILABLE_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
             "WHERE SR.enabled = TRUE";
+
+    String FIND_ALL_GRID_FTP_ENDPOINTS_BY_DATA_MOVEMENT = "SELECT GFE FROM " + GridftpEndpointEntity.class.getSimpleName() +
+            " GFE WHERE GFE.gridftpDataMovement.dataMovementInterfaceId LIKE :" + DBConstants.DataMovement.GRID_FTP_DATA_MOVEMENT_ID;
 }

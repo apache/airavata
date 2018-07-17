@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -38,7 +40,8 @@ public class ParallelismCommandEntity implements Serializable {
 
     @Id
     @Column(name = "COMMAND_TYPE")
-    private String commandType;
+    @Enumerated(EnumType.STRING)
+    private ApplicationParallelismType commandType;
 
     @Column(name = "COMMAND")
     private String command;
@@ -58,11 +61,11 @@ public class ParallelismCommandEntity implements Serializable {
         this.resourceJobManagerId = resourceJobManagerId;
     }
 
-    public String getCommandType() {
+    public ApplicationParallelismType getCommandType() {
         return commandType;
     }
 
-    public void setCommandType(String commandType) {
+    public void setCommandType(ApplicationParallelismType commandType) {
         this.commandType = commandType;
     }
 

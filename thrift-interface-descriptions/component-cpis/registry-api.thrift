@@ -39,6 +39,7 @@ include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
+include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
@@ -992,6 +993,32 @@ service RegistryService {
                         2: required list<string> accessibleAppDeploymentIds,
                         3: required list<string> accessibleComputeResourceIds)
                 	throws (1: registry_api_errors.RegistryServiceException rse)
+
+            /**
+             *
+             * Fetch all accessible Application Deployment Descriptions for the given Application Module.
+             *
+             * @param gatewayId
+             *    ID of the gateway which need to list all available application deployment documentation.
+             *
+             * @param appModuleId
+             *    The given Application Module ID.
+             *
+             * @param accessibleAppDeploymentIds
+             *    Application Deployment IDs which are accessible to the current user.
+             *
+             * @param accessibleComputeResourceIds
+             *    Compute Resource IDs which are accessible to the current user.
+             *
+             * @return list<applicationDeployment>
+             *    Returns the list of all application Deployment Objects.
+             *
+             */
+            list<application_deployment_model.ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(1: required string gatewayId,
+                        2: required string appModuleId,
+                        3: required list<string> accessibleAppDeploymentIds,
+                        4: required list<string> accessibleComputeResourceIds)
+                throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
              * Fetch a list of Deployed Compute Hosts.
@@ -2200,6 +2227,21 @@ service RegistryService {
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
                /**
+                * Check if the given User Resource Profile exists.
+                *
+                * @param userId
+                *   The identifier for the requested User Resource Profile.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource Profile.
+                *
+                * @return true if User Resource Profile for these identifiers exists.
+                *
+               */
+               bool isUserResourceProfileExists(1: required string userId, 2: required string gatewayID)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
                 * Fetch the given User Resource Resource Profile.
                 *
                 * @param userId
@@ -2613,4 +2655,15 @@ service RegistryService {
                list<group_resource_profile_model.ComputeResourcePolicy> getGroupComputeResourcePolicyList(1: required string groupResourceProfileId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
+    /*
+     * Gateway Groups API methods
+     */
+    void createGatewayGroups(1: required gateway_groups_model.GatewayGroups gatewayGroups)
+            throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
+    void updateGatewayGroups(1: required gateway_groups_model.GatewayGroups gatewayGroups)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    bool isGatewayGroupsExists(1: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    gateway_groups_model.GatewayGroups getGatewayGroups(1: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse)
 }

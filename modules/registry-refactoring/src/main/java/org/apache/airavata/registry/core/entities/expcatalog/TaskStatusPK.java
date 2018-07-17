@@ -20,30 +20,29 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * The primary key class for the task_status database table.
+ */
 public class TaskStatusPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(TaskStatusPK.class);
-    private String state;
+    //default serial version id, required for serializable classes.
+    private static final long serialVersionUID = 1L;
+
+    private String statusId;
     private String taskId;
 
-    @Id
-    @Column(name = "STATUS_ID")
-    public String getState() {
-        return state;
+    public TaskStatusPK() {
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public String getStatusId() {
+        return statusId;
     }
 
-    @Id
-    @Column(name = "TASK_ID")
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
+
     public String getTaskId() {
         return taskId;
     }
@@ -52,23 +51,25 @@ public class TaskStatusPK implements Serializable {
         this.taskId = taskId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TaskStatusPK that = (TaskStatusPK) o;
-
-        if (getState() != null ? !getState().equals(that.getState()) : that.getState() != null) return false;
-        if (getTaskId() != null ? !getTaskId().equals(that.getTaskId()) : that.getTaskId() != null) return false;
-
-        return true;
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof TaskStatusPK)) {
+            return false;
+        }
+        TaskStatusPK castOther = (TaskStatusPK) other;
+        return
+                this.statusId.equals(castOther.statusId)
+                        && this.taskId.equals(castOther.taskId);
     }
 
-    @Override
     public int hashCode() {
-        int result = getState() != null ? getState().hashCode() : 0;
-        result = 31 * result + (getTaskId() != null ? getTaskId().hashCode() : 0);
-        return result;
+        final int prime = 31;
+        int hash = 17;
+        hash = hash * prime + this.statusId.hashCode();
+        hash = hash * prime + this.taskId.hashCode();
+
+        return hash;
     }
 }

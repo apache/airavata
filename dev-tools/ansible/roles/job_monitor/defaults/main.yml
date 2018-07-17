@@ -1,0 +1,50 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# Variables related to helix integration
+helix_controller_name: "helixcontroller"
+helix_participant_name: "helixparticipant"
+helix_pre_wm_name: "prewm"
+helix_post_wm_name: "postwm"
+
+# Variables related to email monitor
+email_monitor_version: "email-monitor-{{ snapshot_version }}"
+email_monitor_dist_name: "{{ email_monitor_version }}-bin.tar.gz"
+email_monitor_log_dir: "{{ helix_dir }}/{{ email_monitor_version }}/logs"
+email_job_monitor_broker_publisher: "EmailBasedProducer"
+
+# Variables related to realtime monitor
+realtime_monitor_version: "realtime-monitor-{{ snapshot_version }}"
+realtime_monitor_dist_name: "{{ realtime_monitor_version }}-bin.tar.gz"
+realtime_monitor_log_dir: "{{ helix_dir }}/{{ realtime_monitor_version }}/logs"
+realtime_monitor_broker_publisher: "RealtimeProducer"
+realtime_monitor_broker_consumer_group: "monitor"
+realtime_monitor_broker_topic: "helix-airavata-mq"
+
+job_monitor_broker_topic: "parsed-data"
+
+# kafka related variables
+job_monitor_broker_topic: "parsed-data"
+job_monitor_broker_consumer_group: "MonitoringConsumer"
+
+helix_log_max_history: 30
+helix_log_total_size_cap: "1GB"
+...

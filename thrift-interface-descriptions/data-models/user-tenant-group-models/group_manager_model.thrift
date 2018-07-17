@@ -39,7 +39,6 @@ enum ResourcePermissionType {
     WRITE,
     READ,
     OWNER,
-    EXEC,
 }
 
 struct GroupModel{

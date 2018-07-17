@@ -265,7 +265,7 @@ rabbitmq.status.exchange.name=status_exchange
 rabbitmq.process.exchange.name=process_exchange
 rabbitmq.experiment.exchange.name=experiment_exchange
 durable.queue=false
-prefetch.count=200
+prefetch.count=400
 process.launch.queue.name=process.launch.queue
 experiment.launch..queue.name=experiment.launch.queue
 
@@ -273,7 +273,7 @@ experiment.launch..queue.name=experiment.launch.queue
 # Zookeeper Server Configuration
 ###########################################################################
 embedded.zk=false
-zookeeper.server.connection={{ zookeeper_url }}
+zookeeper.server.connection={{ zookeeper_connection_url }}
 zookeeper.timeout=30000
 
 ########################################################################

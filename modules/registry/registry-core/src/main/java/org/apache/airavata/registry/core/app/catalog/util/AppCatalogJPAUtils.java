@@ -45,37 +45,42 @@ public class AppCatalogJPAUtils {
     @PersistenceContext(unitName = "appcatalog_data")
     private static EntityManager appCatEntityManager;
 
+    private static Object lock = new Object();
+
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
-        if (factory == null) {
-            String connectionProperties = "DriverClassName=" + readServerProperties(APPCATALOG_JDBC_DRIVER) + "," +
-                    "Url=" + readServerProperties(APPCATALOG_JDBC_URL) + "?autoReconnect=true," +
-                    "Username=" + readServerProperties(APPCATALOG_JDBC_USER) + "," +
-                    "Password=" + readServerProperties(APPCATALOG_JDBC_PWD) +
-                    ",validationQuery=" + readServerProperties(APPCATALOG_VALIDATION_QUERY);
-            System.out.println(connectionProperties);
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
-            properties.put("openjpa.ConnectionProperties", connectionProperties);
-            properties.put("openjpa.DynamicEnhancementAgent", "true");
-            properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-            // For app catalog, we don't need caching
+        synchronized (lock) {
+            if (factory == null) {
+                String connectionProperties = "DriverClassName=" + readServerProperties(APPCATALOG_JDBC_DRIVER) + "," +
+                        "Url=" + readServerProperties(APPCATALOG_JDBC_URL) + "?autoReconnect=true," +
+                        "Username=" + readServerProperties(APPCATALOG_JDBC_USER) + "," +
+                        "Password=" + readServerProperties(APPCATALOG_JDBC_PWD) +
+                        ",validationQuery=" + readServerProperties(APPCATALOG_VALIDATION_QUERY);
+                System.out.println(connectionProperties);
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
+                properties.put("openjpa.ConnectionProperties", connectionProperties);
+                properties.put("openjpa.DynamicEnhancementAgent", "true");
+                properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
+                //properties.put("openjpa.Multithreaded", "true");
+                // For app catalog, we don't need caching
 //            properties.put("openjpa.DataCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
 //            properties.put("openjpa.QueryCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
-            properties.put("openjpa.RemoteCommitProvider", "sjvm");
-            properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
-            properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-            properties.put("openjpa.jdbc.QuerySQLCache", "false");
-            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
-            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
-        }
-        // clear cache at entitymangerfactory level
-        if (factory.getCache() != null) {
-            factory.getCache().evictAll();
-        }
-        appCatEntityManager = factory.createEntityManager();
-        // clear the entitymanager cache
-        if (appCatEntityManager != null) {
-            appCatEntityManager.clear();
+                properties.put("openjpa.RemoteCommitProvider", "sjvm");
+                properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
+                properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
+                properties.put("openjpa.jdbc.QuerySQLCache", "false");
+                properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
+                factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
+            }
+            // clear cache at entitymangerfactory level
+            if (factory.getCache() != null) {
+                factory.getCache().evictAll();
+            }
+            appCatEntityManager = factory.createEntityManager();
+            // clear the entitymanager cache
+            if (appCatEntityManager != null) {
+                appCatEntityManager.clear();
+            }
         }
         return appCatEntityManager;
     }

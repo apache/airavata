@@ -43,7 +43,7 @@ public class RabbitMQPublisher implements Publisher {
     private final RabbitMQProperties properties;
     private final Function<MessageContext, String> routingKeySupplier;
     private Connection connection;
-    private Channel channel;
+    private ThreadLocal<Channel> channelThreadLocal = new ThreadLocal<>();
 
     public RabbitMQPublisher(RabbitMQProperties properties, Function<MessageContext, String> routingKeySupplier) throws AiravataException {
         this.properties = properties;
@@ -68,25 +68,12 @@ public class RabbitMQPublisher implements Publisher {
                 }
             });
             log.info("connected to rabbitmq: " + connection + " for " + properties.getExchangeName());
-            channel = connection.createChannel();
-            if (properties.getPrefetchCount() > 0) {
-                channel.basicQos(properties.getPrefetchCount());
-            }
-
-            if (properties.getExchangeName() != null) {
-                channel.exchangeDeclare(properties.getExchangeName(),
-                                        properties.getExchangeType(),
-                                        true); //durable
-            }
         } catch (Exception e) {
             String msg = "RabbitMQ connection issue for exchange : " + properties.getExchangeName();
             log.error(msg);
             throw new AiravataException(msg, e);
         }
-
-
     }
-
 
     @Override
     public void publish(MessageContext messageContext) throws AiravataException {
@@ -145,7 +132,21 @@ public class RabbitMQPublisher implements Publisher {
 
     public void send(byte []message, String routingKey) throws Exception {
         try {
-            channel.basicPublish(properties.getExchangeName(), routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, message);
+            if (channelThreadLocal.get() == null) {
+                log.info("Creating the channel for thread " + Thread.currentThread().getName() + " " + toString());
+                Channel channel = connection.createChannel();
+                if (properties.getPrefetchCount() > 0) {
+                    channel.basicQos(properties.getPrefetchCount());
+                }
+
+                if (properties.getExchangeName() != null) {
+                    channel.exchangeDeclare(properties.getExchangeName(),
+                            properties.getExchangeType(),
+                            true); //durable
+                }
+                channelThreadLocal.set(channel);
+            }
+            channelThreadLocal.get().basicPublish(properties.getExchangeName(), routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, message);
         } catch (IOException e) {
             String msg = "Failed to publish message to exchange: " + properties.getExchangeName();
             log.error(msg, e);

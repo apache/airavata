@@ -40,8 +40,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-all</artifactId>
-            <version>2.3.0</version>
+            <artifactId>openjpa</artifactId>
+            <version>${openjpa.version}</version>
         </dependency>
 
         <dependency>
@@ -96,6 +96,12 @@
             <artifactId>airavata-registry-cpi</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.ibatis</groupId>
+            <artifactId>ibatis-sqlmap</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -112,7 +118,7 @@
             <plugin>
                 <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
-                <version>2.2.0</version>
+                <version>${openjpa.version}</version>
                 <configuration>
                     <includes>**/entities/*.class</includes>
                     <excludes>**/entities/XML*.class</excludes>
@@ -128,13 +134,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.openjpa</groupId>
-                        <artifactId>openjpa</artifactId>
-                        <version>2.2.0</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

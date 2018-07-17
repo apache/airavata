@@ -83,6 +83,16 @@ public interface TenantManagementInterface {
     boolean enableUserAccount(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException;
 
     /**
+     * Method to check if user is enabled in Identity Server
+     *
+     * @param realmAdminCreds identity server realm admin credentials
+     * @param tenantId
+     * @param username
+     * @return boolean.
+     */
+    boolean isUserAccountEnabled(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
      * Method to reset user password in Identity Server
      *
      * @param realmAdminCreds identity server realm admin credentials

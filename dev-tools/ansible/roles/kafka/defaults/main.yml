@@ -1,0 +1,47 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+#Variables associated with this role
+kafka_package_name: "confluent-4.1.0"
+kafka_tgz_url: "http://packages.confluent.io/archive/4.1/confluent-oss-4.1.0-2.11.tar.gz"
+kafka_dir: "{{ deployment_dir }}/{{ kafka_package_name }}"
+
+# Kafka related variables
+broker_id: "0"
+network_threads_count: "3"
+io_threads_count: "8"
+socket_send_buf_bytes: "102400"
+socket_receive_buf_bytes: "102400"
+socket_request_max_bytes: "104857600"
+num_partitions: "1"
+num_recovery_threads: "1"
+offsets_topic_replication_fac: "1"
+trans_state_log_replication_fac: "1"
+trans_state_log: "1"
+log_retention_hrs: "168"
+log_segment_bytes: "1073741824"
+log_retention_check_interval: "300000"
+grp_initial_rebalance_delay: "0"
+kafka_listener_port: 9092
+kafka_rest_proxy_listener_port: 8082
+
+...

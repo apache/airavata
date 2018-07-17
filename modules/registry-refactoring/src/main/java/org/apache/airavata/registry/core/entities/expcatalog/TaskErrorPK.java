@@ -20,20 +20,21 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * The primary key class for the task_error database table.
+ */
 public class TaskErrorPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(TaskErrorPK.class);
+    //default serial version id, required for serializable classes.
+    private static final long serialVersionUID = 1L;
+
     private String errorId;
     private String taskId;
 
-    @Column(name = "ERROR_ID")
-    @Id
+    public TaskErrorPK() {
+    }
+
     public String getErrorId() {
         return errorId;
     }
@@ -42,8 +43,6 @@ public class TaskErrorPK implements Serializable {
         this.errorId = errorId;
     }
 
-    @Column(name = "TASK_ID")
-    @Id
     public String getTaskId() {
         return taskId;
     }
@@ -52,24 +51,25 @@ public class TaskErrorPK implements Serializable {
         this.taskId = taskId;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TaskErrorPK that = (TaskErrorPK) o;
-
-        if (getErrorId() != null ? !getErrorId().equals(that.getErrorId()) : that.getErrorId() != null) return false;
-        if (getTaskId() != null ? !getTaskId().equals(that.getTaskId()) : that.getTaskId() != null) return false;
-
-        return true;
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof TaskErrorPK)) {
+            return false;
+        }
+        TaskErrorPK castOther = (TaskErrorPK) other;
+        return
+                this.errorId.equals(castOther.errorId)
+                        && this.taskId.equals(castOther.taskId);
     }
 
-    @Override
     public int hashCode() {
-        int result = getErrorId() != null ? getErrorId().hashCode() : 0;
-        result = 31 * result + (getTaskId() != null ? getTaskId().hashCode() : 0);
-        return result;
+        final int prime = 31;
+        int hash = 17;
+        hash = hash * prime + this.errorId.hashCode();
+        hash = hash * prime + this.taskId.hashCode();
+
+        return hash;
     }
 }

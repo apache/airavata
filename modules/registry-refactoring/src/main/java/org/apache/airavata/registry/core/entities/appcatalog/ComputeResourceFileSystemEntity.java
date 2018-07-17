@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -40,7 +42,8 @@ public class ComputeResourceFileSystemEntity implements Serializable {
 
 	@Column(name="FILE_SYSTEM")
 	@Id
-	private String fileSystem;
+	@Enumerated(EnumType.STRING)
+	private FileSystems fileSystem;
 
 	@ManyToOne(cascade= CascadeType.MERGE)
 	@JoinColumn(name = "COMPUTE_RESOURCE_ID")
@@ -61,11 +64,11 @@ public class ComputeResourceFileSystemEntity implements Serializable {
 		this.computeResourceId = computeResourceId;
 	}
 
-	public String getFileSystem() {
+	public FileSystems getFileSystem() {
 		return fileSystem;
 	}
 
-	public void setFileSystem(String fileSystem) {
+	public void setFileSystem(FileSystems fileSystem) {
 		this.fileSystem = fileSystem;
 	}
 

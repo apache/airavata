@@ -1,0 +1,28 @@
+# inventory file : scigap staging deployment
+
+[zookeeper]
+api.staging.scigap.org
+#helix.staging.scigap.org
+#pga.staging.scigap.org
+
+[rabbitmq]
+api.staging.scigap.org
+
+[database]
+db.staging.scigap.org
+
+[api-orch]
+api.staging.scigap.org
+
+[helix]
+helix.staging.scigap.org ansible_user=root
+
+[kafka]
+helix.staging.scigap.org ansible_user=root
+
+[pga]
+pga.staging.scigap.org
+
+# Using the same keycloak as production
+#[keycloak]
+#gf7.ucs.indiana.edu ansible_user=root

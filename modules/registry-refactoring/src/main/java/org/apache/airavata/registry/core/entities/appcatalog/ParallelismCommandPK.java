@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+
 import java.io.Serializable;
 
 /**
@@ -30,7 +32,7 @@ public class ParallelismCommandPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String resourceJobManagerId;
-    private String commandType;
+    private ApplicationParallelismType commandType;
 
     public ParallelismCommandPK() {
     }
@@ -43,11 +45,11 @@ public class ParallelismCommandPK implements Serializable {
         this.resourceJobManagerId = resourceJobManagerId;
     }
 
-    public String getCommandType() {
+    public ApplicationParallelismType getCommandType() {
         return commandType;
     }
 
-    public void setCommandType(String commandType) {
+    public void setCommandType(ApplicationParallelismType commandType) {
         this.commandType = commandType;
     }
 

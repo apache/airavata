@@ -727,7 +727,7 @@ getComputeResourceCredentialToken());
 					isValid(groupComputeResourcePreference.getAllocationProjectNumber())){
 			return groupComputeResourcePreference.getAllocationProjectNumber();
 		} else {
-			return gatewayComputeResourcePreference.getAllocationProjectNumber();
+		    return null;
 		}
 	}
 
