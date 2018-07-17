@@ -36,11 +36,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
 import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class ApplicationInterfaceRepositoryTest extends TestBase {
 
@@ -383,6 +381,16 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         deploymentIds = new ArrayList<>();
         deploymentIds.add(deploymentId2);
         compHostIds = new ArrayList<>();
+        compHostIds.add(computeResourceId2);
+        appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, deploymentIds, compHostIds);
+        assertEquals(1, appModuleList.size());
+        assertEquals(moduleId1, appModuleList.get(0).getAppModuleId());
+
+        deploymentIds = new ArrayList<>();
+        deploymentIds.add(deploymentId1);
+        deploymentIds.add(deploymentId2);
+        compHostIds = new ArrayList<>();
+        compHostIds.add(computeResourceId1);
         compHostIds.add(computeResourceId2);
         appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, deploymentIds, compHostIds);
         assertEquals(1, appModuleList.size());
