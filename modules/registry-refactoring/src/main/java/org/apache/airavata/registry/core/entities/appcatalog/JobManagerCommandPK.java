@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
+
 import java.io.Serializable;
 
 /**
@@ -30,7 +32,7 @@ public class JobManagerCommandPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String resourceJobManagerId;
-    private String commandType;
+    private JobManagerCommand commandType;
 
     public JobManagerCommandPK() {
     }
@@ -43,11 +45,11 @@ public class JobManagerCommandPK implements Serializable {
         this.resourceJobManagerId = resourceJobManagerId;
     }
 
-    public String getCommandType() {
+    public JobManagerCommand getCommandType() {
         return commandType;
     }
 
-    public void setCommandType(String commandType) {
+    public void setCommandType(JobManagerCommand commandType) {
         this.commandType = commandType;
     }
 

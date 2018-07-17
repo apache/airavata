@@ -43,6 +43,7 @@ include "../data-models/resource-catalog-models/gateway_resource_profile_model.t
 include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
+include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../data-models/user-tenant-group-models/group_manager_model.thrift"
@@ -1404,15 +1405,13 @@ service Airavata {
    *
    * @param gatewayId
    *    ID of the gateway which need to list all accessible application deployment documentation.
-   * @param permissionType
-   *    ResourcePermissionType to check for this user
    *
    * @return list
    *    Returns the list of all Application Module Objects that are accessible to the user.
    *
   */
   list<application_deployment_model.ApplicationModule> getAccessibleAppModules (1: required security_model.AuthzToken authzToken,
-                2: required string gatewayId, 3: required group_manager_model.ResourcePermissionType permissionType)
+                2: required string gatewayId)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
@@ -1572,11 +1571,32 @@ service Airavata {
    *   Returns a list of Deployed Resources.
    *
   */
+  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
   list<string> getAppModuleDeployedResources(1: required security_model.AuthzToken authzToken, 2: required string appModuleId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Fetch a list of Application Deployments that this user can use for executing the given Application Module using the given Group Resource Profile.
+   * The user must have at least READ access to the Group Resource Profile.
+   *
+   * @param appModuleId
+   *    The identifier for the Application Module
+   *
+   * @param groupResourceProfileId
+   *    The identifier for the Group Resource Profile
+   *
+   * @return list<ApplicationDeploymentDescription>
+   *    Returns a list of Application Deployments
+   */
+  list<application_deployment_model.ApplicationDeploymentDescription> getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
+          1: required security_model.AuthzToken authzToken, 2: required string appModuleId, 3: required string groupResourceProfileId)
+      throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
 /*
  *
@@ -1764,6 +1784,7 @@ service Airavata {
    *   Deployments of each modules listed within the interfaces will be listed.
    *
   */
+  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
   map<string, string> getAvailableAppInterfaceComputeResources(1: required security_model.AuthzToken authzToken, 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -3046,6 +3067,24 @@ service Airavata {
                 4: airavata_errors.AuthorizationException ae)
 
     /**
+     * Check if User Resource Profile exists.
+     *
+     * @param userId
+     *   The identifier for the requested user resource profile.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @return bool
+     *
+    */
+    bool isUserResourceProfileExists(1: required security_model.AuthzToken authzToken,
+                  2: required string userId, 3: required string gatewayID)
+        	throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
+    /**
      * Fetch the given User Resource Profile.
      *
      * @param userId
@@ -3484,22 +3523,49 @@ service Airavata {
  /**
   * Group Manager and Data Sharing Related API methods
   **/
-  bool shareResourceWithUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+  bool shareResourceWithUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                 4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
                throws (1: airavata_errors.InvalidRequestException ire,
                                                 2: airavata_errors.AiravataClientException ace,
                                                 3: airavata_errors.AiravataSystemException ase,
                                                 4: airavata_errors.AuthorizationException ae)
 
- bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+  bool shareResourceWithGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                4: map<string, group_manager_model.ResourcePermissionType> groupPermissionList)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                                                2: airavata_errors.AiravataClientException ace,
+                                                3: airavata_errors.AiravataSystemException ase,
+                                                4: airavata_errors.AuthorizationException ae)
+
+ bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                  4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
 
- list<string> getAllAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+ bool revokeSharingOfResourceFromGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                 4: map<string, group_manager_model.ResourcePermissionType> groupPermissionList)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                   4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllAccessibleGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                  4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ bool userHasAccess(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourcePermissionType permissionType)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
@@ -3589,6 +3655,14 @@ service Airavata {
                                                                                          2: airavata_errors.AiravataClientException ace,
                                                                                          3: airavata_errors.AiravataSystemException ase,
                                                                                          4: airavata_errors.AuthorizationException ae)
+  /**
+   * GatewayGroups API methods
+   */
+  gateway_groups_model.GatewayGroups getGatewayGroups(1: required security_model.AuthzToken authzToken)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
  //
  //End of API
  }

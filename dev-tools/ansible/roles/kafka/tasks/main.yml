@@ -1,0 +1,93 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# Check for the availability of the Kafka package
+- name: Check kafka package availability
+  stat: path={{ kafka_dir }}
+  register: kafka_package
+
+# Download Kafka
+- name: Download and unarchive Kafka from {{ kafka_tgz_url }}
+  unarchive: src="{{ kafka_tgz_url }}"
+      dest="{{ deployment_dir }}"
+      copy=no
+      owner="{{ user }}"
+      group="{{ group }}"
+  when: not kafka_package.stat.exists
+  become: yes
+
+# Create kafka logs directory
+- name: Create kafka logs directory
+  file: path="{{ kafka_dir }}/logs" state=directory owner={{ user }} group={{ group }}
+
+# Config kafka server and start
+- name: Copy kafka server properties file
+  template: src=server.properties.j2
+            dest="{{ kafka_dir }}/etc/kafka/server.properties"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+  notify: restart kafka
+  become: yes
+
+# Config rest proxy and start
+- name: Copy kafka server properties file
+  template: src=kafka-rest.properties.j2
+            dest="{{ kafka_dir }}/etc/kafka-rest/kafka-rest.properties"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+  notify: restart kafka-rest-proxy
+  become: yes
+
+# Open kafka port to be accessible from outside
+- name: Open firwall ports
+  firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
+  with_items:
+    - "{{ kafka_listener_port }}/tcp"
+    - "{{ kafka_rest_proxy_listener_port }}/tcp"
+  become_user: root
+
+- name: systemd install kafka service script
+  template: src=kafka.service.j2
+            dest=/usr/lib/systemd/system/kafka.service
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+  notify: start kafka
+  become: yes
+
+- name: systemd install kafka rest proxy service script
+  template: src=kafka-rest-proxy.service.j2
+            dest=/usr/lib/systemd/system/kafka-rest-proxy.service
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+  notify: start kafka-rest-proxy
+  become: yes
+
+- name: Reload systemd daemons
+  command: systemctl daemon-reload
+  notify: restart kafka
+  become: yes
+
+...

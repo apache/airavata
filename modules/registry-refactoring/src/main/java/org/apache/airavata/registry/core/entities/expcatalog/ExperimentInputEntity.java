@@ -20,30 +20,73 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
+/**
+ * The persistent class for the experiment_input database table.
+ */
 @Entity
-@Table(name = "EXPCAT_EXPERIMENT_INPUT")
+@Table(name = "EXPERIMENT_INPUT")
 @IdClass(ExperimentInputPK.class)
-public class ExperimentInputEntity {
-    private String experimentId;
-    public String name;
-    public String value;
-    public String type;
-    public String applicationArgument;
-    public boolean standardInput;
-    public String userFriendlyDescription;
-    public String metaData;
-    public int inputOrder;
-    public boolean isRequired;
-    public boolean requiredToAddedToCommandLine;
-    public boolean dataStaged;
-    public String storageResourceId;
-
-    private ExperimentEntity experiment;
+public class ExperimentInputEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
+    private String experimentId;
+
+    @Id
+    @Column(name = "INPUT_NAME")
+    private String name;
+
+    @Lob
+    @Column(name = "INPUT_VALUE")
+    private String value;
+
+    @Column(name = "DATA_TYPE")
+    @Enumerated(EnumType.STRING)
+    private DataType type;
+
+    @Column(name = "APPLICATION_ARGUMENT")
+    private String applicationArgument;
+
+    @Column(name = "STANDARD_INPUT")
+    private boolean standardInput;
+
+    @Column(name = "USER_FRIENDLY_DESCRIPTION")
+    private String userFriendlyDescription;
+
+    @Column(name = "METADATA", length = 4096)
+    private String metaData;
+
+    @Column(name = "INPUT_ORDER")
+    private int inputOrder;
+
+    @Column(name = "IS_REQUIRED")
+    private boolean isRequired;
+
+    @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
+    private boolean requiredToAddedToCommandLine;
+
+    @Column(name = "DATA_STAGED")
+    private boolean dataStaged;
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    private String storageResourceId;
+
+    @Column(name = "IS_READ_ONLY")
+    private boolean isReadOnly;
+
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    private ExperimentEntity experiment;
+
+    public ExperimentInputEntity() {
+    }
+
     public String getExperimentId() {
         return experimentId;
     }
@@ -52,8 +95,6 @@ public class ExperimentInputEntity {
         this.experimentId = experimentId;
     }
 
-    @Id
-    @Column(name = "INPUT_NAME")
     public String getName() {
         return name;
     }
@@ -62,7 +103,6 @@ public class ExperimentInputEntity {
         this.name = name;
     }
 
-    @Column(name = "INPUT_VALUE")
     public String getValue() {
         return value;
     }
@@ -71,16 +111,14 @@ public class ExperimentInputEntity {
         this.value = value;
     }
 
-    @Column(name = "INPUT_TYPE")
-    public String getType() {
+    public DataType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 
-    @Column(name = "APPLICATION_ARGUMENT")
     public String getApplicationArgument() {
         return applicationArgument;
     }
@@ -89,7 +127,6 @@ public class ExperimentInputEntity {
         this.applicationArgument = applicationArgument;
     }
 
-    @Column(name = "STANDARD_INPUT")
     public boolean isStandardInput() {
         return standardInput;
     }
@@ -98,7 +135,6 @@ public class ExperimentInputEntity {
         this.standardInput = standardInput;
     }
 
-    @Column(name = "USER_FRIENDLY_DESCRIPTION")
     public String getUserFriendlyDescription() {
         return userFriendlyDescription;
     }
@@ -107,7 +143,6 @@ public class ExperimentInputEntity {
         this.userFriendlyDescription = userFriendlyDescription;
     }
 
-    @Column(name = "METADATA", length = 4096)
     public String getMetaData() {
         return metaData;
     }
@@ -116,7 +151,6 @@ public class ExperimentInputEntity {
         this.metaData = metaData;
     }
 
-    @Column(name = "INPUT_ORDER")
     public int getInputOrder() {
         return inputOrder;
     }
@@ -125,7 +159,6 @@ public class ExperimentInputEntity {
         this.inputOrder = inputOrder;
     }
 
-    @Column(name = "REQUIRED")
     public boolean isRequired() {
         return isRequired;
     }
@@ -134,7 +167,6 @@ public class ExperimentInputEntity {
         this.isRequired = isRequired;
     }
 
-    @Column(name = "REQUIRED_TO_ADDED_TO_COMMANDLINE")
     public boolean isRequiredToAddedToCommandLine() {
         return requiredToAddedToCommandLine;
     }
@@ -143,7 +175,6 @@ public class ExperimentInputEntity {
         this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
     }
 
-    @Column(name = "DATA_STAGED")
     public boolean isDataStaged() {
         return dataStaged;
     }
@@ -152,7 +183,6 @@ public class ExperimentInputEntity {
         this.dataStaged = dataStaged;
     }
 
-    @Column(name = "STORAGE_RESOURCE_ID")
     public String getStorageResourceId() {
         return storageResourceId;
     }
@@ -161,13 +191,17 @@ public class ExperimentInputEntity {
         this.storageResourceId = storageResourceId;
     }
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     public ExperimentEntity getExperiment() {
         return experiment;
     }
 
     public void setExperiment(ExperimentEntity experiment) {
         this.experiment = experiment;
+    }
+
+    public boolean getIsReadOnly() { return isReadOnly; }
+
+    public void setIsReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
     }
 }

@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -48,7 +50,8 @@ public class ApplicationInputEntity implements Serializable {
 	private boolean dataStaged;
 
 	@Column(name = "DATA_TYPE")
-	private String type;
+	@Enumerated(EnumType.STRING)
+	private DataType type;
 
 	@Column(name = "INPUT_ORDER")
 	private int inputOrder;
@@ -113,11 +116,11 @@ public class ApplicationInputEntity implements Serializable {
 		this.dataStaged = dataStaged;
 	}
 
-	public String getType() {
+	public DataType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(DataType type) {
 		this.type = type;
 	}
 
@@ -169,12 +172,13 @@ public class ApplicationInputEntity implements Serializable {
 		this.standardInput = standardInput;
 	}
 
-	public String getserFriendlyDescription() {
+	public String getUserFriendlyDescription() {
 		return userFriendlyDescription;
 	}
 
-	public void setserFriendlyDescription(String userFriendlyDescription) {
+	public ApplicationInputEntity setUserFriendlyDescription(String userFriendlyDescription) {
 		this.userFriendlyDescription = userFriendlyDescription;
+		return this;
 	}
 
 	public boolean getIsReadOnly() {

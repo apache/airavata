@@ -22,10 +22,11 @@ package org.apache.airavata.registry.core.entities.replicacatalog;
 
 import org.apache.airavata.model.data.replica.DataProductType;
 
-import java.util.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The persistent class for the data_product database table.
@@ -64,6 +65,7 @@ public class DataProductEntity implements Serializable {
     private Timestamp lastModifiedTime;
 
     @Column(name = "PRODUCT_TYPE")
+    @Enumerated(EnumType.STRING)
     private DataProductType dataProductType;
 
     @ElementCollection(fetch = FetchType.EAGER)

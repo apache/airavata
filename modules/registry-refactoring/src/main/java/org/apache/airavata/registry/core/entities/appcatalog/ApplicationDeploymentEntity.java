@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -53,7 +55,8 @@ public class ApplicationDeploymentEntity implements Serializable {
     private String gatewayId;
 
     @Column(name = "parallelism")
-    private String parallelism;
+    @Enumerated(EnumType.STRING)
+    private ApplicationParallelismType parallelism;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
@@ -154,11 +157,11 @@ public class ApplicationDeploymentEntity implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    public String getParallelism() {
+    public ApplicationParallelismType getParallelism() {
         return parallelism;
     }
 
-    public void setParallelism(String parallelism) {
+    public void setParallelism(ApplicationParallelismType parallelism) {
         this.parallelism = parallelism;
     }
 

@@ -24,12 +24,13 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "searchsra.scigap.org"
-vhost_ssl: false
+vhost_servername: "www.searchsra.org"
+vhost_serveralias: "sciencegateway.searchsra.org"
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/www.searchsra.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/www.searchsra.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/www.searchsra.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -56,10 +57,10 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCx981D
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgrc-iu-group@iu.edu','rynge@isi.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu','rynge@isi.edu','raedwards@gmail.com']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-#portal_theme: "gsu-gateway-theme"
+portal_theme: "searchingsra-gateway-theme"
 #portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
 portal_title: "Searching SRA"
 ...

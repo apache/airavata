@@ -20,30 +20,67 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
+/**
+ * The persistent class for the experiment_output database table.
+ */
 @Entity
-@Table(name = "EXPCAT_EXPERIMENT_OUTPUT")
+@Table(name = "EXPERIMENT_OUTPUT")
 @IdClass(ExperimentOutputPK.class)
-public class ExperimentOutputEntity {
-    private String experimentId;
-    public String name;
-    public String value;
-    public String type;
-    public String applicationArgument;
-    public boolean isRequired;
-    public boolean requiredToAddedToCommandLine;
-    public boolean dataMovement;
-    public String location;
-    public String searchQuery;
-    public boolean outputStreaming;
-    public String storageResourceId;
-
-    private ExperimentEntity experiment;
-
+public class ExperimentOutputEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
+    private String experimentId;
+
+    @Id
+    @Column(name = "OUTPUT_NAME")
+    private String name;
+
+    @Lob
+    @Column(name = "OUTPUT_VALUE")
+    private String value;
+
+    @Column(name = "DATA_TYPE")
+    @Enumerated(EnumType.STRING)
+    private DataType type;
+
+    @Column(name = "APPLICATION_ARGUMENT")
+    private String applicationArgument;
+
+    @Column(name = "IS_REQUIRED")
+    private boolean isRequired;
+
+    @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
+    private boolean requiredToAddedToCommandLine;
+
+    @Column(name = "DATA_MOVEMENT")
+    private boolean dataMovement;
+
+    @Column(name = "LOCATION")
+    private String location;
+
+    @Column(name = "SEARCH_QUERY")
+    private String searchQuery;
+
+    @Column(name = "OUTPUT_STREAMING")
+    private boolean outputStreaming;
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    private String storageResourceId;
+
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    private ExperimentEntity experiment;
+
+    public ExperimentOutputEntity() {
+    }
+
     public String getExperimentId() {
         return experimentId;
     }
@@ -52,8 +89,6 @@ public class ExperimentOutputEntity {
         this.experimentId = experimentId;
     }
 
-    @Id
-    @Column(name = "OUTPUT_NAME")
     public String getName() {
         return name;
     }
@@ -62,7 +97,6 @@ public class ExperimentOutputEntity {
         this.name = name;
     }
 
-    @Column(name = "OUTPUT_VALUE")
     public String getValue() {
         return value;
     }
@@ -71,16 +105,14 @@ public class ExperimentOutputEntity {
         this.value = value;
     }
 
-    @Column(name = "OUTPUT_TYPE")
-    public String getType() {
+    public DataType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 
-    @Column(name = "APPLICATION_ARGUMENT")
     public String getApplicationArgument() {
         return applicationArgument;
     }
@@ -89,7 +121,6 @@ public class ExperimentOutputEntity {
         this.applicationArgument = applicationArgument;
     }
 
-    @Column(name = "REQUIRED")
     public boolean isRequired() {
         return isRequired;
     }
@@ -99,7 +130,6 @@ public class ExperimentOutputEntity {
     }
 
 
-    @Column(name = "REQUIRED_TO_ADDED_TO_COMMANDLINE")
     public boolean isRequiredToAddedToCommandLine() {
         return requiredToAddedToCommandLine;
     }
@@ -108,7 +138,6 @@ public class ExperimentOutputEntity {
         this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
     }
 
-    @Column(name = "DATA_MOVEMENT")
     public boolean isDataMovement() {
         return dataMovement;
     }
@@ -117,7 +146,6 @@ public class ExperimentOutputEntity {
         this.dataMovement = dataMovement;
     }
 
-    @Column(name = "LOCATION")
     public String getLocation() {
         return location;
     }
@@ -126,7 +154,6 @@ public class ExperimentOutputEntity {
         this.location = location;
     }
 
-    @Column(name = "SEARCH_QUERY")
     public String getSearchQuery() {
         return searchQuery;
     }
@@ -135,7 +162,6 @@ public class ExperimentOutputEntity {
         this.searchQuery = searchQuery;
     }
 
-    @Column(name = "OUTPUT_STREAMING")
     public boolean isOutputStreaming() {
         return outputStreaming;
     }
@@ -144,7 +170,6 @@ public class ExperimentOutputEntity {
         this.outputStreaming = outputStreaming;
     }
 
-    @Column(name = "STORAGE_RESOURCE_ID")
     public String getStorageResourceId() {
         return storageResourceId;
     }
@@ -153,8 +178,6 @@ public class ExperimentOutputEntity {
         this.storageResourceId = storageResourceId;
     }
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     public ExperimentEntity getExperiment() {
         return experiment;
     }

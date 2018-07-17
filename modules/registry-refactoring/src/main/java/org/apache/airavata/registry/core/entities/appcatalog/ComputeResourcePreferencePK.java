@@ -35,6 +35,11 @@ public class ComputeResourcePreferencePK implements Serializable {
     public ComputeResourcePreferencePK() {
     }
 
+    public ComputeResourcePreferencePK(String gatewayId, String computeResourceId) {
+        this.gatewayId = gatewayId;
+        this.computeResourceId = computeResourceId;
+    }
+
     public String getGatewayId() {
         return gatewayId;
     }

@@ -20,21 +20,55 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.status.ExperimentState;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+/**
+ * The persistent class for the experiment_status database table.
+ */
 @Entity
-@Table(name = "EXPCAT_EXPERIMENT_STATUS")
+@Table(name = "EXPERIMENT_STATUS")
 @IdClass(ExperimentStatusPK.class)
-public class ExperimentStatusEntity {
-    private String experimentId;
-    private String state;
-    private long timeOfStateChange;
-    private String reason;
+public class ExperimentStatusEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private ExperimentEntity experiment;
+    @Id
+    @Column(name = "STATUS_ID")
+    private String statusId;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
+    private String experimentId;
+
+    @Column(name = "STATE")
+    @Enumerated(EnumType.STRING)
+    private ExperimentState state;
+
+    @Column(name = "TIME_OF_STATE_CHANGE")
+    private Timestamp timeOfStateChange;
+
+    @Lob
+    @Column(name = "REASON")
+    private String reason;
+
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    private ExperimentEntity experiment;
+
+    public ExperimentStatusEntity() {
+    }
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
+
     public String getExperimentId() {
         return experimentId;
     }
@@ -43,26 +77,22 @@ public class ExperimentStatusEntity {
         this.experimentId = experimentId;
     }
 
-    @Id
-    @Column(name = "STATE")
-    public String getState() {
+    public ExperimentState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(ExperimentState state) {
         this.state = state;
     }
 
-    @Column(name = "TIME_OF_STATE_CHANGE")
-    public long getTimeOfStateChange() {
+    public Timestamp getTimeOfStateChange() {
         return timeOfStateChange;
     }
 
-    public void setTimeOfStateChange(long timeOfStateChange) {
+    public void setTimeOfStateChange(Timestamp timeOfStateChange) {
         this.timeOfStateChange = timeOfStateChange;
     }
 
-    @Column(name = "REASON")
     public String getReason() {
         return reason;
     }
@@ -71,8 +101,6 @@ public class ExperimentStatusEntity {
         this.reason = reason;
     }
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     public ExperimentEntity getExperiment() {
         return experiment;
     }

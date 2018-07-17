@@ -115,29 +115,65 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
     }
 
     @Override
-    public List<ApplicationDeploymentDescription> getApplicationDeployements(Map<String, String> filters) throws AppCatalogException {
-        if(filters.containsKey(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID)) {
-            logger.debug("Fetching all Application Deployments for given Application Module ID");
-            Map<String, Object> queryParameters = new HashMap<>();
-            queryParameters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, filters.get(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID));
-            List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList =
-                    select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_APPLICATION_MODULE_ID, -1, 0, queryParameters);
-            return applicationDeploymentDescriptionList;
-        }
+    public List<ApplicationDeploymentDescription> getApplicationDeployments(Map<String, String> filters) throws AppCatalogException {
 
-        else if(filters.containsKey(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID)) {
-            logger.debug("Fetching Application Deployments for given Compute Host ID");
-            Map<String, Object> queryParameters = new HashMap<>();
-            queryParameters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, filters.get(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID));
-            List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList =
-                    select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_COMPUTE_HOST_ID, -1, 0, queryParameters);
-            return applicationDeploymentDescriptionList;
-        }
+        List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<>();
+        try {
+            boolean firstTry=true;
+            for (String fieldName : filters.keySet() ){
+                List<ApplicationDeploymentDescription> tmpDescriptions;
 
-        else {
-            logger.error("Unsupported field name for app deployment in filters: " + filters);
-            throw new IllegalArgumentException("Unsupported field name for app deployment in filters: " + filters);
+                switch (fieldName) {
+                    case DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID: {
+                        logger.debug("Fetching all Application Deployments for Application Module ID " +
+                                filters.get(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID));
+
+                        Map<String, Object> queryParameters = new HashMap<>();
+                        queryParameters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, filters.get(fieldName));
+                        tmpDescriptions = select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_APPLICATION_MODULE_ID, -1, 0, queryParameters);
+                        break;
+                    }
+
+                    case DBConstants.ApplicationDeployment.COMPUTE_HOST_ID: {
+                        logger.debug("Fetching Application Deployments for Compute Host ID " +
+                                filters.get(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID));
+
+                        Map<String, Object> queryParameters = new HashMap<>();
+                        queryParameters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, filters.get(fieldName));
+                        tmpDescriptions = select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_COMPUTE_HOST_ID, -1, 0, queryParameters);
+                        break;
+                    }
+
+                    default:
+                        logger.error("Unsupported field name for app deployment in filters: " + filters);
+                        throw new IllegalArgumentException("Unsupported field name for app deployment in filters: " + filters);
+
+                }
+
+                if (firstTry) {
+                    deploymentDescriptions.addAll(tmpDescriptions);
+                    firstTry=false;
+
+                } else {
+                    List<String> ids = new ArrayList<>();
+                    for (ApplicationDeploymentDescription applicationDeploymentDescription : deploymentDescriptions) {
+                        ids.add(applicationDeploymentDescription.getAppDeploymentId());
+                    }
+                    List<ApplicationDeploymentDescription> tmp2Descriptions = new ArrayList<>();
+                    for (ApplicationDeploymentDescription applicationDeploymentDescription : tmpDescriptions) {
+                        if (ids.contains(applicationDeploymentDescription.getAppDeploymentId())){
+                            tmp2Descriptions.add(applicationDeploymentDescription);
+                        }
+                    }
+                    deploymentDescriptions.clear();
+                    deploymentDescriptions.addAll(tmp2Descriptions);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieving app deployment list...", e);
+            throw new AppCatalogException(e);
         }
+        return deploymentDescriptions;
     }
 
     @Override
@@ -150,13 +186,25 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
     }
 
     @Override
-    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployements(String gatewayId, List<String> accessibleAppIds, List<String> accessibleCompHostIds) throws AppCatalogException {
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, List<String> accessibleAppIds, List<String> accessibleCompHostIds) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS, accessibleCompHostIds);
         List<ApplicationDeploymentDescription> accessibleApplicationDeployments =
                 select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS, -1, 0, queryParameters);
+        return accessibleApplicationDeployments;
+    }
+
+    @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, String appModuleId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException {
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
+        queryParameters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
+        queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
+        queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS, accessibleComputeResourceIds);
+        List<ApplicationDeploymentDescription> accessibleApplicationDeployments =
+                select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS_FOR_APP_MODULE, -1, 0, queryParameters);
         return accessibleApplicationDeployments;
     }
 

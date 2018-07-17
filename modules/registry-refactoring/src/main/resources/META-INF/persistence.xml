@@ -28,6 +28,7 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationDeploymentEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInterfaceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GatewayGroupsEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.StorageResourceEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ScpDataMovementEntity</class>
@@ -81,13 +82,6 @@
         <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    <persistence-unit name="workspacecatalog_data">
-        <class>org.apache.airavata.registry.core.entities.workspacecatalog.GatewayEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workspacecatalog.UserProfileEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workspacecatalog.NSFDemographicsEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workspacecatalog.NotificationEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workspacecatalog.ProjectEntity</class>
-    </persistence-unit>
     <persistence-unit name="workflowcatalog_data">
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgeEntity</class>
@@ -99,23 +93,29 @@
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>
     </persistence-unit>
     <persistence-unit name="experiment_data_new">
-        <class>org.apache.airavata.registry.core.entities.expcatalog.ComputeResourceSchedulingEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentErrorEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentInputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentStatusEntity</class>
-        <class>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentSummaryEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.GatewayEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.GatewayWorkerEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.JobEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.NotificationEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessInputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity</class>
-        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessResourceSchedulingEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessResourceScheduleEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProjectUserEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.QueueStatusEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.TaskEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.TaskErrorEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.TaskStatusEntity</class>
-        <class>org.apache.airavata.registry.core.entities.expcatalog.JobEntity</class>
-        <class>org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationDataEntity</class>
     </persistence-unit>
 </persistence>

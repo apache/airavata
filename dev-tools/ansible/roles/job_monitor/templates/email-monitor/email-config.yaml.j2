@@ -1,0 +1,21 @@
+config:
+ resources:
+   - jobManagerType: PBS
+     emailParser: org.apache.airavata.monitor.email.parser.PBSEmailParser
+     resourceEmailAddresses:
+       - pbsconsult@sdsc.edu  # gordon
+       - adm@trident.bigred2.uits.iu.edu # Bigred2
+       - root <adm@trident.bigred2.uits.iu.edu> # Bigred2
+       - root <adm@scyld.localdomain> # alamo
+
+   - jobManagerType: SLURM
+     emailParser: org.apache.airavata.monitor.email.parser.SLURMEmailParser
+     resourceEmailAddresses:
+       - SDSC Admin <slurm@comet-fe3.sdsc.edu> # comet
+       - slurm@batch1.stampede.tacc.utexas.edu # stampede
+       - slurm@helix-slurm-headnode.novalocal
+
+   - jobManagerType: UGE
+     emailParser: org.apache.airavata.monitor.email.parser.UGEEmailParser
+     resourceEmailAddresses:
+       - ls4.tacc.utexas.edu # contain Lonestar

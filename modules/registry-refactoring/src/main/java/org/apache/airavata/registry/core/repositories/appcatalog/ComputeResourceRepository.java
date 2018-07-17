@@ -38,6 +38,7 @@ import javax.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeResourceDescription, ComputeResourceEntity, String> implements ComputeResource {
 
@@ -89,7 +90,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             for (FileSystems key : fileSystems.keySet()) {
                 ComputeResourceFileSystemEntity computeResourceFileSystemEntity = new ComputeResourceFileSystemEntity();
                 computeResourceFileSystemEntity.setComputeResourceId(computeHostResource.getComputeResourceId());
-                computeResourceFileSystemEntity.setFileSystem(key.toString());
+                computeResourceFileSystemEntity.setFileSystem(key);
                 computeResourceFileSystemEntity.setPath(fileSystems.get(key));
                 computeResourceFileSystemEntity.setComputeResource(computeHostResource);
                 execute(entityManager -> entityManager.merge(computeResourceFileSystemEntity));
@@ -112,7 +113,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         List<ComputeResourceFileSystemEntity> computeResourceFileSystemEntityList = resultSet;
         Map<FileSystems, String> fileSystemsMap= new HashMap<FileSystems,String>();
         for (ComputeResourceFileSystemEntity fs: computeResourceFileSystemEntityList) {
-            fileSystemsMap.put(FileSystems.valueOf(fs.getFileSystem()), fs.getPath());
+            fileSystemsMap.put(fs.getFileSystem(), fs.getPath());
         }
         return fileSystemsMap;
     }
@@ -125,7 +126,9 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
     @Override
     public ComputeResourceDescription getComputeResource(String resourceId) throws AppCatalogException {
         ComputeResourceDescription computeResourceDescription = get(resourceId);
-        computeResourceDescription.setFileSystems(getFileSystems(resourceId));
+        if (computeResourceDescription != null) {
+            computeResourceDescription.setFileSystems(getFileSystems(resourceId));
+        }
         return computeResourceDescription;
     }
 
@@ -263,8 +266,10 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
         ResourceJobManagerRepository resourceJobManagerRepository = new ResourceJobManagerRepository();
         ResourceJobManager resourceJobManager = resourceJobManagerRepository.get(resourceJobManagerId);
-        resourceJobManager.setJobManagerCommands(resourceJobManagerRepository.getJobManagerCommand(resourceJobManagerId));
-        resourceJobManager.setParallelismPrefix(resourceJobManagerRepository.getParallelismPrefix(resourceJobManagerId));
+        if (resourceJobManager != null) {
+            resourceJobManager.setJobManagerCommands(resourceJobManagerRepository.getJobManagerCommand(resourceJobManagerId));
+            resourceJobManager.setParallelismPrefix(resourceJobManagerRepository.getParallelismPrefix(resourceJobManagerId));
+        }
         return resourceJobManager;
     }
 
@@ -293,7 +298,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             (new ResourceJobManagerRepository()).createJobManagerCommand(localSubmission.getResourceJobManager().getJobManagerCommands(), localSubmissionEntity.getResourceJobManager());
         }
 
-        localSubmissionEntity.setSecurityProtocol(localSubmission.getSecurityProtocol().toString());
+        localSubmissionEntity.setSecurityProtocol(localSubmission.getSecurityProtocol());
         execute(entityManager -> entityManager.merge(localSubmissionEntity));
         return localSubmissionEntity.getJobSubmissionInterfaceId();
     }
@@ -309,7 +314,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         Mapper mapper = ObjectMapperSingleton.getInstance();
         UnicoreSubmissionEntity unicoreSubmissionEntity = mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
         if (unicoreJobSubmission.getSecurityProtocol() !=  null) {
-            unicoreSubmissionEntity.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol().toString());
+            unicoreSubmissionEntity.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol());
         }
         execute(entityManager -> entityManager.merge(unicoreSubmissionEntity));
         return unicoreJobSubmission.getJobSubmissionInterfaceId();
@@ -424,10 +429,29 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
     public GridFTPDataMovement getGridFTPDataMovement(String dataMoveId) throws AppCatalogException {
         GridftpDataMovementEntity entity = execute(entityManager -> entityManager
                 .find(GridftpDataMovementEntity.class, dataMoveId));
-        if(entity == null)
+        if(entity == null) {
             return null;
+        }
+
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.DataMovement.GRID_FTP_DATA_MOVEMENT_ID, entity.getDataMovementInterfaceId());
+        List resultSet = execute(entityManager -> {
+            Query jpaQuery = entityManager.createQuery(QueryConstants.FIND_ALL_GRID_FTP_ENDPOINTS_BY_DATA_MOVEMENT);
+            for (Map.Entry<String, Object> entry : queryParameters.entrySet()) {
+                jpaQuery.setParameter(entry.getKey(), entry.getValue());
+            }
+            return jpaQuery.setFirstResult(0).getResultList();
+        });
+
+        List<GridftpEndpointEntity> endpointEntities = resultSet;
+
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, GridFTPDataMovement.class);
+
+        List<String> endpoints = endpointEntities.stream().map(GridftpEndpointEntity::getEndpoint).collect(Collectors.toList());
+        GridFTPDataMovement dataMovement = mapper.map(entity, GridFTPDataMovement.class);
+        dataMovement.setGridFTPEndPoints(endpoints);
+
+        return dataMovement;
     }
 
     @Override

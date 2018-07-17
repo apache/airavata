@@ -1,0 +1,66 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+#
+
+###########################################################################
+#
+#  This properties file provides configuration for all of the properties
+#  needed by the AiravataDataMigrator.
+#
+###########################################################################
+
+###########################################################################
+#  API Server Registry Configuration
+###########################################################################
+
+registry.jdbc.driver=org.mariadb.jdbc.Driver
+registry.jdbc.url=jdbc:mariadb://localhost:3306/experiment_catalog
+registry.jdbc.user=airavata
+registry.jdbc.password=airavata
+
+###########################################################################
+#  Sharing Catalog DB Configuration
+###########################################################################
+sharingcatalog.jdbc.driver=org.mariadb.jdbc.Driver
+sharingcatalog.jdbc.url=jdbc:mariadb://localhost:3306/sharing_catalog
+sharingcatalog.jdbc.user=airavata
+sharingcatalog.jdbc.password=airavata
+sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
+#  Keycloak Configuration
+###########################################################################
+
+# Note: this relative path works if running the AiravataDataMigrator from the sharing-data-migrator module directory
+trust.store=../../configuration/server/src/main/resources/client_truststore.jks
+trust.store.password=airavata
+iam.server.url=http://localhost/auth
+
+###########################################################################
+#  Registry Server Configurations
+###########################################################################
+regserver.server.host=localhost
+regserver.server.port=8970
+
+
+###########################################################################
+# Credential Store module Configuration
+###########################################################################
+credential.store.server.host=localhost
+credential.store.server.port=8960

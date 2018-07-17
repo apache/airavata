@@ -45,20 +45,17 @@ class ResourcePermissionType(object):
     WRITE = 0
     READ = 1
     OWNER = 2
-    EXEC = 3
 
     _VALUES_TO_NAMES = {
         0: "WRITE",
         1: "READ",
         2: "OWNER",
-        3: "EXEC",
     }
 
     _NAMES_TO_VALUES = {
         "WRITE": 0,
         "READ": 1,
         "OWNER": 2,
-        "EXEC": 3,
     }
 
 

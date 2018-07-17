@@ -1,0 +1,49 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+helix_controller_name: "helixcontroller"
+helix_participant_name: "helixparticipant"
+helix_pre_wm_name: "prewm"
+helix_post_wm_name: "postwm"
+
+helix_controller_version: "helix-controller-{{ snapshot_version }}"
+helix_participant_version: "helix-participant-{{ snapshot_version }}"
+helix_pre_wm_version: "helix-pre-wm-{{ snapshot_version }}"
+helix_post_wm_version: "helix-post-wm-{{ snapshot_version }}"
+
+helix_controller_dist_name: "{{ helix_controller_version }}-bin.tar.gz"
+helix_participant_dist_name: "{{ helix_participant_version }}-bin.tar.gz"
+helix_pre_wm_dist_name: "{{ helix_pre_wm_version }}-bin.tar.gz"
+helix_post_wm_dist_name: "{{ helix_post_wm_version }}-bin.tar.gz"
+
+helix_controller_log_dir: "{{ helix_dir }}/{{ helix_controller_version }}/logs"
+helix_participant_log_dir: "{{ helix_dir }}/{{ helix_participant_version }}/logs"
+helix_pre_wm_dist_log_dir: "{{ helix_dir }}/{{ helix_pre_wm_version }}/logs"
+helix_post_wm_dist_log_dir: "{{ helix_dir }}/{{ helix_post_wm_version }}/logs"
+
+job_status_publish_endpoint: "http://{{ groups['kafka'][0] }}:{{ kafka_rest_proxy_listener_port }}/topics/{{ realtime_monitor_broker_topic }}"
+
+helix_log_max_history: 30
+helix_log_total_size_cap: "1GB"
+
+kafka_listener_port: 9092
+kafka_rest_proxy_listener_port: 8082
+...

@@ -20,21 +20,55 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.status.TaskState;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+/**
+ * The persistent class for the task_status database table.
+ */
 @Entity
-@Table(name = "EXPCAT_TASK_STATUS")
+@Table(name = "TASK_STATUS")
 @IdClass(TaskStatusPK.class)
-public class TaskStatusEntity {
-    private String taskId;
-    private String state;
-    private long timeOfStateChange;
-    private String reason;
+public class TaskStatusEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private TaskEntity task;
+    @Id
+    @Column(name = "STATUS_ID")
+    private String statusId;
 
     @Id
     @Column(name = "TASK_ID")
+    private String taskId;
+
+    @Column(name = "STATE")
+    @Enumerated(EnumType.STRING)
+    private TaskState state;
+
+    @Column(name = "TIME_OF_STATE_CHANGE")
+    private Timestamp timeOfStateChange;
+
+    @Lob
+    @Column(name = "REASON")
+    private String reason;
+
+    @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
+    private TaskEntity task;
+
+    public TaskStatusEntity() {
+    }
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
+
     public String getTaskId() {
         return taskId;
     }
@@ -43,26 +77,22 @@ public class TaskStatusEntity {
         this.taskId = taskId;
     }
 
-    @Id
-    @Column(name = "STATE")
-    public String getState() {
+    public TaskState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(TaskState state) {
         this.state = state;
     }
 
-    @Column(name = "TIME_OF_STATE_CHANGE")
-    public long getTimeOfStateChange() {
+    public Timestamp getTimeOfStateChange() {
         return timeOfStateChange;
     }
 
-    public void setTimeOfStateChange(long timeOfStateChange) {
+    public void setTimeOfStateChange(Timestamp timeOfStateChange) {
         this.timeOfStateChange = timeOfStateChange;
     }
 
-    @Column(name = "REASON")
     public String getReason() {
         return reason;
     }
@@ -71,8 +101,6 @@ public class TaskStatusEntity {
         this.reason = reason;
     }
 
-    @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
     public TaskEntity getTask() {
         return task;
     }

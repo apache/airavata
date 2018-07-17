@@ -71,11 +71,10 @@ public interface Orchestrator {
      * We just have to give the experimentID
      *
      * @param experiment
-     * @param processModel
      * @param tokenId
      * @throws OrchestratorException
      */
-    void cancelExperiment(ExperimentModel experiment, ProcessModel processModel, String tokenId) throws OrchestratorException;
+    void cancelExperiment(ExperimentModel experiment, String tokenId) throws OrchestratorException;
     //todo have to add another method to handle failed or jobs to be recovered by orchestrator
     //todo if you don't add these this is not an orchestrator, its just an intemediate component which invoke gfac
 

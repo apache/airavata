@@ -20,21 +20,55 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.status.ProcessState;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+/**
+ * The persistent class for the process_status database table.
+ */
 @Entity
-@Table(name = "EXPCAT_PROCESS_STATUS")
+@Table(name = "PROCESS_STATUS")
 @IdClass(ProcessStatusPK.class)
-public class ProcessStatusEntity {
-    private String processId;
-    private String state;
-    private long timeOfStateChange;
-    private String reason;
+public class ProcessStatusEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private ProcessEntity process;
+    @Id
+    @Column(name = "STATUS_ID")
+    private String statusId;
 
     @Id
     @Column(name = "PROCESS_ID")
+    private String processId;
+
+    @Column(name = "STATE")
+    @Enumerated(EnumType.STRING)
+    private ProcessState state;
+
+    @Column(name = "TIME_OF_STATE_CHANGE")
+    private Timestamp timeOfStateChange;
+
+    @Lob
+    @Column(name = "REASON")
+    private String reason;
+
+    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
+    private ProcessEntity process;
+
+    public ProcessStatusEntity() {
+    }
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
+
     public String getProcessId() {
         return processId;
     }
@@ -43,26 +77,22 @@ public class ProcessStatusEntity {
         this.processId = processId;
     }
 
-    @Id
-    @Column(name = "STATE")
-    public String getState() {
+    public ProcessState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(ProcessState state) {
         this.state = state;
     }
 
-    @Column(name = "TIME_OF_STATE_CHANGE")
-    public long getTimeOfStateChange() {
+    public Timestamp getTimeOfStateChange() {
         return timeOfStateChange;
     }
 
-    public void setTimeOfStateChange(long timeOfStateChange) {
+    public void setTimeOfStateChange(Timestamp timeOfStateChange) {
         this.timeOfStateChange = timeOfStateChange;
     }
 
-    @Column(name = "REASON")
     public String getReason() {
         return reason;
     }
@@ -71,8 +101,6 @@ public class ProcessStatusEntity {
         this.reason = reason;
     }
 
-    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
     public ProcessEntity getProcess() {
         return process;
     }

@@ -62,9 +62,9 @@
 			<scope>test</scope>
 		</dependency>
         <dependency>
-        	<groupId>org.apache.openjpa</groupId>
-        	<artifactId>openjpa-all</artifactId>
-        	<version>2.2.0</version>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>${openjpa.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
