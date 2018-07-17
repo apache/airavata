@@ -58,9 +58,10 @@ public interface QueryConstants {
     String FIND_APPLICATION_MODULES_FOR_APPLICATION_MODULE_NAME = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
             "WHERE AM.appModuleName LIKE :" + DBConstants.ApplicationModule.APPLICATION_MODULE_NAME;
     String FIND_ACCESSIBLE_APPLICATION_MODULES = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
-            ", " + ApplicationDeploymentEntity.class.getSimpleName() + " AD WHERE AM.appModuleId = AD.appModuleId AND AM.gatewayId LIKE :" +
-            DBConstants.ApplicationModule.GATEWAY_ID + " AND AD.appDeploymentId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS +
-            " AND AD.computeHostId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS;
+            "WHERE AM.gatewayId LIKE :" + DBConstants.ApplicationModule.GATEWAY_ID + " AND " +
+            "EXISTS (SELECT 1 FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
+            "WHERE AM.appModuleId = AD.appModuleId AND AD.appDeploymentId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS +
+            " AND AD.computeHostId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS + ")";
 
     // Application Interface Queries
     String FIND_APPLICATION_INTERFACES_FOR_GATEWAY_ID = "SELECT AI FROM " + ApplicationInterfaceEntity.class.getSimpleName() + " AI " +
