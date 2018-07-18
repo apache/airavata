@@ -17,14 +17,132 @@
         $('[data-toggle="tooltip"]').tooltip()
     });
 </script>
+<style>
+    #airavata-spinner {
+        display: none;
+    }
 
+    .loading {
+        position: absolute;
+        z-index: 999;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Spinner css https://github.com/tobiasahlin/SpinKit*/
+    .sk-folding-cube {
+        margin: 20px auto;
+        width: 40px;
+        height: 40px;
+        position: relative;
+        -webkit-transform: rotateZ(45deg);
+        transform: rotateZ(45deg);
+        top: calc(50% - 40px);
+    }
+
+    .sk-folding-cube .sk-cube {
+        float: left;
+        width: 50%;
+        height: 50%;
+        position: relative;
+        -webkit-transform: scale(1.1);
+        -ms-transform: scale(1.1);
+        transform: scale(1.1);
+        color: #007BFF;
+    }
+
+    .sk-folding-cube .sk-cube:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: currentColor;
+        -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
+        animation: sk-foldCubeAngle 2.4s infinite linear both;
+        -webkit-transform-origin: 100% 100%;
+        -ms-transform-origin: 100% 100%;
+        transform-origin: 100% 100%;
+    }
+
+    .sk-folding-cube .sk-cube2 {
+        -webkit-transform: scale(1.1) rotateZ(90deg);
+        transform: scale(1.1) rotateZ(90deg);
+    }
+
+    .sk-folding-cube .sk-cube3 {
+        -webkit-transform: scale(1.1) rotateZ(180deg);
+        transform: scale(1.1) rotateZ(180deg);
+    }
+
+    .sk-folding-cube .sk-cube4 {
+        -webkit-transform: scale(1.1) rotateZ(270deg);
+        transform: scale(1.1) rotateZ(270deg);
+    }
+
+    .sk-folding-cube .sk-cube2:before {
+        -webkit-animation-delay: 0.3s;
+        animation-delay: 0.3s;
+    }
+
+    .sk-folding-cube .sk-cube3:before {
+        -webkit-animation-delay: 0.6s;
+        animation-delay: 0.6s;
+    }
+
+    .sk-folding-cube .sk-cube4:before {
+        -webkit-animation-delay: 0.9s;
+        animation-delay: 0.9s;
+    }
+
+    @-webkit-keyframes sk-foldCubeAngle {
+        0%, 10% {
+            -webkit-transform: perspective(140px) rotateX(-180deg);
+            transform: perspective(140px) rotateX(-180deg);
+            opacity: 0;
+        }
+        25%, 75% {
+            -webkit-transform: perspective(140px) rotateX(0deg);
+            transform: perspective(140px) rotateX(0deg);
+            opacity: 1;
+        }
+        90%, 100% {
+            -webkit-transform: perspective(140px) rotateY(180deg);
+            transform: perspective(140px) rotateY(180deg);
+            opacity: 0;
+        }
+    }
+
+    @keyframes sk-foldCubeAngle {
+        0%, 10% {
+            -webkit-transform: perspective(140px) rotateX(-180deg);
+            transform: perspective(140px) rotateX(-180deg);
+            opacity: 0;
+        }
+        25%, 75% {
+            -webkit-transform: perspective(140px) rotateX(0deg);
+            transform: perspective(140px) rotateX(0deg);
+            opacity: 1;
+        }
+        90%, 100% {
+            -webkit-transform: perspective(140px) rotateY(180deg);
+            transform: perspective(140px) rotateY(180deg);
+            opacity: 0;
+        }
+    }
+</style>
 <body>
 <header class=c-header>
     {% block header %}
         <div class=c-header__logo>
             <a href="{% url 'home' %}">
-                <svg aria-labelledby=iu-logo xmlns=http://www.w3.org/2000/svg width=70 height=70 viewBox="0 0 70 70"><title
-                        id=iu-logo>IU logo</title>
+                <svg aria-labelledby=iu-logo xmlns=http://www.w3.org/2000/svg width=70 height=70 viewBox="0 0 70 70">
+                    <title
+                            id=iu-logo>IU logo</title>
                     <polygon
                             points="40.96 18.44 40.96 21.84 43.52 21.84 43.52 40.51 38.41 40.51 38.41 15.9 40.96 15.9 40.96 12.5 29.04 12.5 29.04 15.9 31.58 15.9 31.58 40.51 26.48 40.51 26.48 21.84 29.04 21.84 29.04 18.44 17.09 18.44 17.09 21.84 19.65 21.84 19.65 43.79 23.72 48.15 31.58 48.15 31.58 53.26 29.04 53.26 29.04 57.5 40.96 57.5 40.96 53.26 38.41 53.26 38.41 48.15 45.93 48.15 50.33 43.79 50.33 21.84 52.91 21.84 52.91 18.44 40.96 18.44"
                             fill="#fff"/>
@@ -32,13 +150,14 @@
             </a>
         </div>
     {% endblock %}
-    <div class=c-header__title><a href="{% url 'home' %}">{% block title %}Django Airavata Gateway{% endblock %}</a></div>
+    <div class=c-header__title><a href="{% url 'home' %}">{% block title %}Django Airavata Gateway{% endblock %}</a>
+    </div>
     {% if user.is_authenticated %}
         <div class=c-header__controls>
             <div class="btn-group">
                 <div class=dropdown>
                     <a href=#0 class="dropdown-toggle text-dark" id=appDropdownMenuButton data-toggle=dropdown
-                            aria-haspopup=true aria-expanded=false>
+                       aria-haspopup=true aria-expanded=false>
                         {% if current_airavata_app %}
                             <i class="fa {{ current_airavata_app.fa_icon_class }} mr-2"></i>
                             {{ current_airavata_app.verbose_name }}
@@ -47,24 +166,24 @@
                         {% endif %}
                     </a>
                     <div class=dropdown-menu aria-labelledby=appDropdownMenuButton>
-                            {% for app in airavata_apps %}
-                                {% if app == current_airavata_app %}
-                                    <a class="dropdown-item active" href="{% url app.url_home %}">
-                                        <i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}
-                                    </a>
-                                {% else %}
-                                    <a class="dropdown-item" href="{% url app.url_home %}">
-                                        <i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}
-                                    </a>
-                                {% endif %}
-                            {% endfor %}
+                        {% for app in airavata_apps %}
+                            {% if app == current_airavata_app %}
+                                <a class="dropdown-item active" href="{% url app.url_home %}">
+                                    <i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}
+                                </a>
+                            {% else %}
+                                <a class="dropdown-item" href="{% url app.url_home %}">
+                                    <i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>
             <div class="btn-group ml-3">
                 <div class=dropdown>
                     <a href=#0 class="dropdown-toggle text-dark" id=dropdownMenuButton data-toggle=dropdown
-                        aria-haspopup=true aria-expanded=false>
+                       aria-haspopup=true aria-expanded=false>
                         <i class="fa fa-user mr-2"></i> {{ request.session.USERINFO.given_name }} {{ request.session.USERINFO.family_name }}
                     </a>
                     <div class=dropdown-menu aria-labelledby=dropdownMenuButton>
@@ -86,6 +205,14 @@
     </nav>
     <main class="main-content">
         <div class="container-fluid">
+            <div id="airavata-spinner" class="loading">
+                <div class="sk-folding-cube" :style="{ color: color }">
+                    <div class="sk-cube1 sk-cube"></div>
+                    <div class="sk-cube2 sk-cube"></div>
+                    <div class="sk-cube4 sk-cube"></div>
+                    <div class="sk-cube3 sk-cube"></div>
+                </div>
+            </div>
             {% block content %}
             {% endblock %}
         </div>

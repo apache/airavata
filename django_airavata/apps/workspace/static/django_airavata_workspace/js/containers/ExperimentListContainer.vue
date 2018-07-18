@@ -13,6 +13,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Application</th>
                                     <th>Creation Time</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -20,10 +21,13 @@
                             </thead>
                             <tbody>
                                 <tr v-for="experiment in experiments" :key="experiment.experimentId">
-                                    <td><a :href="'/workspace/experiments/' + encodeURIComponent(experiment.experimentId) + '/'">{{experiment.name}}</a></td>
+                                    <td>{{experiment.name}}</td>
+                                    <td>{{applicationName(experiment)}}</td>
                                     <td><span :title="experiment.creationTime">{{ fromNow(experiment.creationTime) }}</span></td>
-                                    <td>{{experiment.experimentStatus}}</td>
-                                    <td></td>
+                                    <td><experiment-status-badge :statusName="experiment.experimentStatus" /></td>
+                                    <td>
+                                        <a :href="viewLink(experiment)">View <i class="fa fa-bar-chart" aria-hidden="true"></i></a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -41,6 +45,8 @@
 import { models, services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
 
+import ExperimentStatusBadge from '../components/experiment/ExperimentStatusBadge.vue'
+
 import moment from 'moment';
 
 export default {
@@ -49,10 +55,12 @@ export default {
     data () {
         return {
             experimentsPaginator: null,
+            applicationInterfaces: {},
         }
     },
     components: {
         'pager': comps.Pager,
+        'experiment-status-badge': ExperimentStatusBadge,
     },
     methods: {
         nextExperiments: function(event) {
@@ -63,6 +71,21 @@ export default {
         },
         fromNow: function(date) {
             return moment(date).fromNow();
+        },
+        viewLink: function(experiment) {
+            return '/workspace/experiments/' + encodeURIComponent(experiment.experimentId) + '/';
+        },
+        applicationName: function(experiment) {
+            if (experiment.executionId in this.applicationInterfaces){
+                if (this.applicationInterfaces[experiment.executionId] instanceof models.ApplicationInterfaceDefinition) {
+                    return this.applicationInterfaces[experiment.executionId].applicationName;
+                }
+            } else {
+                const request = services.ApplicationInterfaceService.get(experiment.executionId)
+                    .then(result => this.$set(this.applicationInterfaces, experiment.executionId, result));
+                this.$set(this.applicationInterfaces, experiment.executionId, request);
+            }
+            return "...";
         }
     },
     computed: {
@@ -72,10 +95,7 @@ export default {
     },
     beforeMount: function () {
         services.ExperimentSearchService.list(this.initialExperimentsData)
-            .then(result => {
-                this.experimentsPaginator = result
-                console.log("experiments", result.results);
-            });
+            .then(result => this.experimentsPaginator = result);
     }
 }
 </script>

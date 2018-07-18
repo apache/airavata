@@ -1,6 +1,7 @@
 
 import copy
 import datetime
+import json
 import logging
 from urllib.parse import quote, urlencode
 
@@ -14,7 +15,9 @@ from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymen
                                                             SetEnvPaths)
 from airavata.model.appcatalog.appinterface.ttypes import \
     ApplicationInterfaceDescription
-from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
+from airavata.model.appcatalog.computeresource.ttypes \
+    import (BatchQueue,
+            ComputeResourceDescription)
 from airavata.model.appcatalog.groupresourceprofile.ttypes import \
     GroupResourceProfile
 from airavata.model.application.io.ttypes import (InputDataObjectType,
@@ -23,7 +26,7 @@ from airavata.model.data.replica.ttypes import (DataProductModel,
                                                 DataReplicaLocationModel)
 from airavata.model.experiment.ttypes import (ExperimentModel,
                                               ExperimentSummaryModel)
-from airavata.model.group.ttypes import GroupModel
+from airavata.model.group.ttypes import GroupModel, ResourcePermissionType
 from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.user.ttypes import UserProfile
@@ -37,7 +40,10 @@ log = logging.getLogger(__name__)
 
 class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     def get_url(self, obj, view_name, request, format):
-        lookup_value = getattr(obj, self.lookup_field)
+        if hasattr(obj, self.lookup_field):
+            lookup_value = getattr(obj, self.lookup_field)
+        else:
+            lookup_value = obj.get(self.lookup_field)
         encoded_lookup_value = quote(lookup_value, safe="")
         # Bit of a hack. Django's URL reversing does URL encoding but it doesn't
         # encode all characters including some like '/' that are used in URL
@@ -113,9 +119,23 @@ class GatewayIdDefaultField(serializers.CharField):
         self.default = settings.GATEWAY_ID
 
 
+class StoredJSONField(serializers.JSONField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def to_representation(self, value):
+        try:
+            if value:
+                return json.loads(value)
+            else:
+                return value
+        except Exception:
+            return value
+
+
 class GroupSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
-    id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
+    id = serializers.CharField(default=GroupModel.thrift_spec[1][4], allow_null=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True, allow_blank=True)
     ownerId = serializers.CharField(read_only=True)
@@ -123,6 +143,9 @@ class GroupSerializer(serializers.Serializer):
     isAdmin = serializers.SerializerMethodField()
     isOwner = serializers.SerializerMethodField()
     isMember = serializers.SerializerMethodField()
+    isGatewayAdminsGroup = serializers.SerializerMethodField()
+    isReadOnlyGatewayAdminsGroup = serializers.SerializerMethodField()
+    isDefaultGatewayUsersGroup = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         validated_data['ownerId'] = self.context['request'].user.username + "@" + settings.GATEWAY_ID
@@ -154,6 +177,27 @@ class GroupSerializer(serializers.Serializer):
         request = self.context['request']
         username = request.user.username + "@" + settings.GATEWAY_ID
         return group.members and username in group.members
+
+    def get_isGatewayAdminsGroup(self, group):
+        request = self.context['request']
+        return group.id == self._gateway_groups()['adminsGroupId']
+
+    def get_isReadOnlyGatewayAdminsGroup(self, group):
+        request = self.context['request']
+        return group.id == self._gateway_groups()['readOnlyAdminsGroupId']
+
+    def get_isDefaultGatewayUsersGroup(self, group):
+        return group.id == self._gateway_groups()['defaultGatewayUsersGroupId']
+
+    def _gateway_groups(self):
+        request = self.context['request']
+        # gateway_groups_middleware sets this session variable
+        if 'GATEWAY_GROUPS' in request.session:
+            return request.session['GATEWAY_GROUPS']
+        else:
+            gateway_groups = request.airavata_client.getGatewayGroups(
+                request.authz_token)
+            return copy.deepcopy(gateway_groups.__dict__)
 
 
 class ProjectSerializer(serializers.Serializer):
@@ -198,7 +242,7 @@ class InputDataObjectTypeSerializer(serializers.Serializer):
     type = serializers.IntegerField(required=False)
     applicationArgument = serializers.CharField(required=False)
     standardInput = serializers.BooleanField(required=False)
-    metaData = serializers.CharField(required=False)
+    metaData = StoredJSONField(required=False)
     inputOrder = serializers.IntegerField(required=False)
     isRequired = serializers.BooleanField(required=False)
     requiredToAddedToCommandLine = serializers.BooleanField(required=False)
@@ -291,12 +335,8 @@ class ApplicationDeploymentDescriptionSerializer(thrift_utils.create_serializer_
     queues = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-deployment-queues', lookup_field='appDeploymentId', lookup_url_kwarg='app_deployment_id')
 
 
-class ComputeResourceDescriptionSerializer(CustomSerializer):
-    hostName=serializers.CharField()
-    hostAliases=serializers.ListField(child=serializers.CharField())
-    ipAddresses=serializers.ListField(child=serializers.CharField())
-    resourceDescription=serializers.CharField()
-    enabled=serializers.BooleanField()
+class ComputeResourceDescriptionSerializer(thrift_utils.create_serializer_class(ComputeResourceDescription)):
+    pass
 
 
 class BatchQueueSerializer(thrift_utils.create_serializer_class(BatchQueue)):
@@ -318,6 +358,7 @@ class ExperimentSerializer(
     full_experiment = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:full-experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
     project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
     jobs = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-jobs', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
+    shared_entity = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:shared-entity-detail', lookup_field='experimentId', lookup_url_kwarg='entity_id')
     userName = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
@@ -405,5 +446,128 @@ class UserProfileSerializer(
 
 class GroupResourceProfileSerializer(
         thrift_utils.create_serializer_class(GroupResourceProfile)):
-    creationTime = UTCPosixTimestampDateTimeField()
-    updatedTime = UTCPosixTimestampDateTimeField()
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-resource-profile-detail', lookup_field='groupResourceProfileId', lookup_url_kwarg='group_resource_profile_id')
+    creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
+    updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)
+
+
+class SharedGroups(serializers.Serializer):
+    groupList=serializers.ListField(child=serializers.CharField())
+    entityId=serializers.CharField()
+
+    def update(self, instance, validated_data):
+        instance["groupList"]=validated_data["groupList"]
+        return instance
+
+
+class UserPermissionSerializer(serializers.Serializer):
+    user = UserProfileSerializer()
+    permissionType = serializers.IntegerField()
+
+
+class GroupPermissionSerializer(serializers.Serializer):
+    group = GroupSerializer()
+    permissionType = serializers.IntegerField()
+
+
+class SharedEntitySerializer(serializers.Serializer):
+
+    entityId = serializers.CharField(read_only=True)
+    userPermissions = UserPermissionSerializer(many=True)
+    groupPermissions = GroupPermissionSerializer(many=True)
+    owner = UserProfileSerializer(read_only=True)
+    isOwner = serializers.SerializerMethodField()
+
+    def create(self, validated_data):
+        raise Exception("Not implemented")
+
+    def update(self, instance, validated_data):
+        # Compute lists of ids to grant/revoke READ/WRITE
+        existing_user_permissions = {user['user'].airavataInternalUserId: user['permissionType']
+                                     for user in instance['userPermissions']}
+        new_user_permissions = {user['user']['airavataInternalUserId']: user['permissionType']
+                                for user in validated_data['userPermissions']}
+
+        (user_grant_read_permission, user_grant_write_permission,
+         user_revoke_read_permission, user_revoke_write_permission) = \
+            self._compute_all_revokes_and_grants(existing_user_permissions,
+                                                 new_user_permissions)
+
+        existing_group_permissions = {
+            group['group'].id: group['permissionType']
+            for group in instance['groupPermissions']}
+        new_group_permissions = {
+            group['group']['id']: group['permissionType']
+            for group in validated_data['groupPermissions']}
+
+        (group_grant_read_permission, group_grant_write_permission,
+         group_revoke_read_permission, group_revoke_write_permission) = \
+            self._compute_all_revokes_and_grants(existing_group_permissions,
+                                                 new_group_permissions)
+
+        instance['_user_grant_read_permission'] = user_grant_read_permission
+        instance['_user_grant_write_permission'] = user_grant_write_permission
+        instance['_user_revoke_read_permission'] = user_revoke_read_permission
+        instance['_user_revoke_write_permission'] = user_revoke_write_permission
+        instance['_group_grant_read_permission'] = group_grant_read_permission
+        instance['_group_grant_write_permission'] = group_grant_write_permission
+        instance['_group_revoke_read_permission'] = group_revoke_read_permission
+        instance['_group_revoke_write_permission'] = group_revoke_write_permission
+        instance['userPermissions'] = [
+            {'user': UserProfile(**data['user']),
+             'permissionType': data['permissionType']}
+            for data in validated_data.get(
+                'userPermissions', instance['userPermissions'])]
+        instance['groupPermissions'] = [
+            {'group': GroupModel(**data['group']),
+             'permissionType': data['permissionType']}
+            for data in validated_data.get('groupPermissions', instance['groupPermissions'])]
+        return instance
+
+    def _compute_all_revokes_and_grants(self, existing_permissions,
+                                        new_permissions):
+        grant_read_permission = []
+        grant_write_permission = []
+        revoke_read_permission = []
+        revoke_write_permission = []
+        # Union the two sets of user/group ids
+        all_ids = existing_permissions.keys() | new_permissions.keys()
+        for id in all_ids:
+            revokes, grants = self._compute_revokes_and_grants(
+                existing_permissions.get(id),
+                new_permissions.get(id)
+            )
+            if ResourcePermissionType.READ in revokes:
+                revoke_read_permission.append(id)
+            if ResourcePermissionType.WRITE in revokes:
+                revoke_write_permission.append(id)
+            if ResourcePermissionType.READ in grants:
+                grant_read_permission.append(id)
+            if ResourcePermissionType.WRITE in grants:
+                grant_write_permission.append(id)
+        return (grant_read_permission, grant_write_permission,
+                revoke_read_permission, revoke_write_permission)
+
+    def _compute_revokes_and_grants(self, current_permission=None,
+                                    new_permission=None):
+        read_permissions = set((ResourcePermissionType.READ,))
+        write_permissions = set((ResourcePermissionType.READ,
+                                ResourcePermissionType.WRITE))
+        current_permissions_set = set()
+        new_permissions_set = set()
+        if current_permission == ResourcePermissionType.READ:
+            current_permissions_set = read_permissions
+        elif current_permission == ResourcePermissionType.WRITE:
+            current_permissions_set = write_permissions
+        if new_permission == ResourcePermissionType.READ:
+            new_permissions_set = read_permissions
+        elif new_permission == ResourcePermissionType.WRITE:
+            new_permissions_set = write_permissions
+
+        # return tuple: permissions to revoke and permissions to grant
+        return (current_permissions_set - new_permissions_set,
+                new_permissions_set - current_permissions_set)
+
+    def get_isOwner(self, shared_entity):
+        request = self.context['request']
+        return shared_entity['owner'].userId == request.user.username

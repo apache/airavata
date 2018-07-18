@@ -2,11 +2,14 @@
   <div class="main_section">
     <div class="new-application-tab-main">
       <h4>Application Deployments</h4>
-      <div class="entry" v-if="appDeployments.appDeployments.length!=0">
+      <div class="entry" v-if="appDeployments.appDeployments && appDeployments.appDeployments.length!=0">
         <div class="heading">Select an Application Deployment to Edit</div>
         <select v-model="appDeploymentIndex">
           <option v-for="(appDeployment,index) in appDeployments.appDeployments" v-bind:value="index">{{appDeployment.appDeploymentId}}</option>
         </select>
+      </div>
+      <div class="entry" v-if="appDeployments.appDeploymentId">
+          <share-button v-model="sharedEntity"/>
       </div>
       <div class="entry">
         <div class="heading">Application module</div>
@@ -127,16 +130,20 @@
 </template>
 <script>
   import {createNamespacedHelpers} from 'vuex'
-  import NewApplicationButtons from './NewApplicationButtons.vue';
+  import NewApplicationButtons from './TabActionConsole.vue';
   import Loading from '../Loading.vue'
 
   import Utils from '../../utils'
+  import {components as comps} from 'django-airavata-common-ui'
+  import DjangoAiravataAPI from 'django-airavata-api'
 
   const {mapGetters, mapActions} = createNamespacedHelpers('newApplication/appDeploymentsTab')
 
   export default {
     components: {
-      NewApplicationButtons,Loading
+      NewApplicationButtons,
+      Loading,
+      "share-button": comps.ShareButton,
     },
     mounted: function () {
       this.initializeAppDeployment(()=>{
@@ -145,13 +152,12 @@
       })
     },
     data: function () {
-      var appDeployments = this.getCompleteData
-      console.log("Application Deployment Data", appDeployments)
       return {
-        "appDeployments": appDeployments,
+        "appDeployments": this.getCompleteData ? this.getCompleteData : {},
         "computeHosts":[],
         "queues":[],
-        "appDeploymentIndex":null
+        "appDeploymentIndex":null,
+        sharedEntity: null,
       }
     },
     computed: {
@@ -182,7 +188,7 @@
       fetchComputeHosts:function () {
         this.computeHosts=[{"host":"Loading...","host_id":""}]
         var callable=(value)=>this.computeHosts=value
-        Utils.get('/api/compute/resources',{success:callable,failure:(value)=>this.computeHosts=[]})
+        Utils.get('/api/compute-resources/all_names_list/',{success:callable,failure:(value)=>this.computeHosts=[]})
       },
       saveApplicationDeployment:function ({success=null,failure=null}={}) {
         this.syncData()
@@ -204,7 +210,7 @@
       },
       "appDeployments.computeHostId":function (value) {
         if(value){
-          Utils.get("/api/compute/resource/queues",{queryParams:{id:value},success:(value)=>this.queues=value})
+          Utils.get("/api/compute-resources/" + encodeURIComponent(value) + "/queues",{success:(value)=>this.queues=value})
         }
       },
       "getCompleteData": function (value) {
@@ -214,6 +220,11 @@
         var temp=this.appDeployments.appDeployments[value]
         temp.appDeployments=this.appDeployments.appDeployments
         this.appDeployments=temp
+      },
+      "appDeployments.appDeploymentId": function (value) {
+        DjangoAiravataAPI.services.ServiceFactory.service("SharedEntities")
+          .retrieve({lookup: value})
+          .then(sharedEntity => this.sharedEntity = sharedEntity);
       }
     }
   }
@@ -253,20 +264,9 @@
     width: 100%;
   }
 
-  .name_value {
-    display: inline-flex;
-    width: 100%;
-    margin-bottom: 5px;
-  }
 
-  .name_value input {
-    width: 50%;
-    display: inline-flex;
-    margin-right: 5px;
-  }
 
   .deployment-entry .entry {
     margin-bottom: 5px;
   }
 </style>
-

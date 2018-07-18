@@ -49,19 +49,17 @@ export default {
             type: String,
             required: true
         },
-        appInterfaceId: {
+        groupResourceProfileId: {
             type: String,
             required: true
-        },
+        }
     },
     data () {
         return {
             localComputationalResourceScheduling: this.value.clone(),
             computeResources: {},
             applicationDeployments: [],
-            groupResourceProfiles: [],
-            selectedGroupResourceProfile: null,
-            appDeploymentId: null,
+            selectedGroupResourceProfileData: null,
             resourceHostId: null,
             // TODO: replace this with Loading spinner, better mechanism
             loadingCount: 0,
@@ -71,22 +69,18 @@ export default {
         QueueSettingsEditor,
     },
     mounted: function () {
-        this.loadApplicationDeployments(this.appModuleId);
-        this.loadComputeResourcesForApplicationInterface(this.appInterfaceId);
-        this.loadGroupResourceProfiles();
+        this.loadApplicationDeployments(this.appModuleId, this.groupResourceProfileId);
+        this.loadComputeResourceNames();
+        this.loadGroupResourceProfile();
     },
     computed: {
         computeResourceOptions: function() {
-            const computeResourceOptions = [];
-            for (let computeResourceId in this.computeResources) {
-                if (this.computeResources.hasOwnProperty(computeResourceId)
-                    && this.isComputeHostInGroupResourceProfile(computeResourceId)) {
-                    computeResourceOptions.push({
-                        value: computeResourceId,
-                        text: this.computeResources[computeResourceId],
-                    })
+            const computeResourceOptions = this.applicationDeployments.map(dep => {
+                return {
+                    value: dep.computeHostId,
+                    text: dep.computeHostId in this.computeResources ? this.computeResources[dep.computeHostId] : "",
                 }
-            }
+            });
             computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
             return computeResourceOptions;
         },
@@ -108,53 +102,54 @@ export default {
             return this.selectedGroupResourceProfile.batchQueueResourcePolicies.filter(bqrp => {
                 return bqrp.computeResourceId === this.localComputationalResourceScheduling.resourceHostId;
             });
+        },
+        selectedGroupResourceProfile: function() {
+            // Reload selectedGroupResourceProfile when group-resource-profile-id changes
+            if (this.selectedGroupResourceProfileData
+                    && this.selectedGroupResourceProfileData.groupResourceProfileId !== this.groupResourceProfileId) {
+                this.selectedGroupResourceProfileData = null;
+                this.loadGroupResourceProfile();
+            }
+            return this.selectedGroupResourceProfileData;
+        },
+        appDeploymentId: function() {
+            if (!this.resourceHostId) {
+                return null;
+            }
+            // Find application deployment that corresponds to this compute resource
+            let selectedApplicationDeployment = this.applicationDeployments.find(dep => dep.computeHostId === this.resourceHostId);
+            if (!selectedApplicationDeployment) {
+                throw new Error("Failed to find application deployment!");
+            }
+            return selectedApplicationDeployment.appDeploymentId;
         }
     },
     methods: {
         computeResourceChanged: function(selectedComputeResourceId) {
             this.localComputationalResourceScheduling.resourceHostId = selectedComputeResourceId;
             this.emitValueChanged();
-            // Find application deployment that corresponds to this compute resource
-            let selectedApplicationDeployment = this.applicationDeployments.find(dep => dep.computeHostId === selectedComputeResourceId);
-            if (!selectedApplicationDeployment) {
-                throw new Error("Failed to find application deployment!");
-            }
-            this.appDeploymentId = selectedApplicationDeployment.appDeploymentId;
         },
-        loadApplicationDeployments: function(appModuleId) {
+        loadApplicationDeployments: function(appModuleId, groupResourceProfileId) {
             this.loadingCount++;
-            services.ApplicationModuleService.getApplicationDeployments(appModuleId)
+            services.ServiceFactory.service("ApplicationDeployments").list({appModuleId: appModuleId, groupResourceProfileId: groupResourceProfileId})
                 .then(applicationDeployments => {
                     this.applicationDeployments = applicationDeployments;
                 })
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
-        loadComputeResourcesForApplicationInterface: function(appInterfaceId) {
+        loadGroupResourceProfile: function() {
             this.loadingCount++;
-            services.ApplicationInterfaceService.getComputeResources(appInterfaceId)
-                .then(computeResources => this.computeResources = computeResources)
-                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
-        },
-        loadGroupResourceProfiles: function() {
-            this.loadingCount++;
-            services.GroupResourceProfileService.list()
-                .then(groupResourceProfiles => {
-                    this.groupResourceProfiles = groupResourceProfiles;
-                    if (this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
-                        // Just pick the first one for now
-                        this.selectedGroupResourceProfile = this.groupResourceProfiles[0];
-                    }
+            services.GroupResourceProfileService.get(this.groupResourceProfileId)
+                .then(groupResourceProfile => {
+                    this.selectedGroupResourceProfileData = groupResourceProfile;
                 })
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
-        isComputeHostInGroupResourceProfile: function(computeHostId) {
-            // TODO: for now don't require a GroupResourceProfile
-            if (this.selectedGroupResourceProfile === null) {
-                return true;
-            }
-            return this.selectedGroupResourceProfile.computePreferences.some(cp => {
-                return cp.computeResourceId === computeHostId;
-            })
+        loadComputeResourceNames: function() {
+            this.loadingCount++;
+            services.ServiceFactory.service("ComputeResources").names()
+                .then(computeResourceNames => this.computeResources = computeResourceNames)
+                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
         queueSettingsChanged: function() {
             // QueueSettingsEditor updates the full
@@ -175,6 +170,16 @@ export default {
         },
     },
     watch: {
+        computeResourceOptions: function(newOptions) {
+            // If the selected resourceHostId is not in the new list of
+            // computeResourceOptions, reset it to null
+            if (this.resourceHostId !== null && !newOptions.find(opt => opt.value === this.resourceHostId)) {
+                this.resourceHostId = null;
+            }
+        },
+        groupResourceProfileId: function(newGroupResourceProfileId) {
+            this.loadApplicationDeployments(this.appModuleId, newGroupResourceProfileId);
+        }
     }
 }
 </script>

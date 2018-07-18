@@ -1,6 +1,13 @@
 import BaseEnum from './BaseEnum'
 
 export default class ExperimentState extends BaseEnum {
+    get isProgressing() {
+        const progressingStates = [ExperimentState.SCHEDULED,
+                                   ExperimentState.LAUNCHED,
+                                   ExperimentState.EXECUTING,
+                                   ExperimentState.CANCELING];
+        return progressingStates.indexOf(this) >= 0;
+    }
 }
 ExperimentState.init([
     'CREATED',

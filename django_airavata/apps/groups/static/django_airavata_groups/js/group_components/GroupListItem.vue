@@ -1,6 +1,10 @@
 <template>
     <tr>
-        <td>{{ group.name }}</td>
+        <td>{{ group.name }}
+            <b-badge v-if="group.isGatewayAdminsGroup">Admins</b-badge>
+            <b-badge v-if="group.isReadOnlyGatewayAdminsGroup">Read Only Admins</b-badge>
+            <b-badge v-if="group.isDefaultGatewayUsersGroup">Default</b-badge>
+        </td>
         <td>{{ group.ownerId }}</td>
         <td>{{ group.description }}</td>
         <td>
@@ -8,7 +12,7 @@
                 :href="'/groups/edit/' + encodeURIComponent(group.id) + '/'">
                 Edit <i class="fa fa-pencil"></i>
             </a>
-            <a href="#" v-if="group.isOwner" @click="show=true" :variant="deleteButtonVariant">
+            <a href="#" v-if="deleteable" @click="show=true" :variant="deleteButtonVariant">
                 Delete <i class="fa fa-trash"></i>
             </a>
             <b-modal :header-bg-variant="headerBgVariant" :header-text-variant="headerTextVariant" :body-bg-variant="bodyBgVariant" v-model="show" :id="'modal'+group.id" title="Are you sure?">
@@ -41,6 +45,16 @@ export default {
       }
     },
     props: ['group'],
+    computed: {
+        deleteable: function() {
+            return this.group.isOwner
+                // Don't allow deleting "GatewayGroups" groups since they serve
+                // a special function in the gateway
+                && this.group.isGatewayAdminsGroup === false
+                && this.group.isReadOnlyGatewayAdminsGroup === false
+                && this.group.isDefaultGatewayUsersGroup === false;
+        }
+    },
     methods: {
       deleteGroup(id) {
           this.deleting = true;

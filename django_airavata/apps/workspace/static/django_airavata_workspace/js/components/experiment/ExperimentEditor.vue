@@ -50,17 +50,14 @@
                             <h2 class="h6 mb-3">
                                 Application Inputs
                             </h2>
-                            <b-form-group v-for="experimentInput in localExperiment.experimentInputs"
-                                    :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name"
-                                    :feedback="getValidationFeedback(['experimentInputs', experimentInput.name, 'value'])"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])">
-                                <b-form-input v-if="isSimpleInput(experimentInput)" :id="experimentInput.name" type="text" v-model="experimentInput.value" required
-                                    :placeholder="experimentInput.userFriendlyDescription"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-input>
-                                <b-form-file v-if="isFileInput(experimentInput)" :id="experimentInput.name" type="text" v-model="experimentInput.value" required
-                                    :placeholder="experimentInput.userFriendlyDescription"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-file>
-                            </b-form-group>
+                            <component :is="getInputEditorComponentName(experimentInput)"
+                                v-for="experimentInput in localExperiment.experimentInputs"
+                                :experiment="localExperiment"
+                                :experiment-input="experimentInput"
+                                v-model="experimentInput.value"
+                                :key="experimentInput.name"
+                                @invalid="recordInvalidInputEditorValue(experimentInput.name)"
+                                @valid="recordValidInputEditorValue(experimentInput.name)"/>
                         </div>
                     </div>
                 </div>
@@ -72,12 +69,15 @@
                     </h2>
                 </div>
             </div>
+            <group-resource-profile-selector v-model="localExperiment.userConfigurationData.groupResourceProfileId">
+            </group-resource-profile-selector>
             <div class="row">
                 <div class="col">
                     <computational-resource-scheduling-editor
                         v-model="localExperiment.userConfigurationData.computationalResourceScheduling"
+                        v-if="localExperiment.userConfigurationData.groupResourceProfileId"
                         :app-module-id="appModule.appModuleId"
-                        :app-interface-id="appInterface.applicationInterfaceId">
+                        :group-resource-profile-id="localExperiment.userConfigurationData.groupResourceProfileId">
                     </computational-resource-scheduling-editor>
                 </div>
             </div>
@@ -97,6 +97,11 @@
 
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
+import GroupResourceProfileSelector from './GroupResourceProfileSelector.vue'
+import RadioButtonInputEditor from './input-editors/RadioButtonInputEditor.vue'
+import StringInputEditor from './input-editors/StringInputEditor.vue'
+import FileInputEditor from './input-editors/FileInputEditor.vue'
+import TextareaInputEditor from './input-editors/TextareaInputEditor.vue'
 import {models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
@@ -111,19 +116,21 @@ export default {
             type: models.ApplicationModule,
             required: true
         },
-        appInterface: {
-            type: models.ApplicationInterface,
-            required: true
-        }
     },
     data () {
         return {
             projects: [],
             localExperiment: this.experiment.clone(),
+            invalidInputs: [],
         }
     },
     components: {
         ComputationalResourceSchedulingEditor,
+        GroupResourceProfileSelector,
+        FileInputEditor,
+        RadioButtonInputEditor,
+        StringInputEditor,
+        TextareaInputEditor,
     },
     mounted: function () {
         services.ProjectService.listAll()
@@ -136,9 +143,12 @@ export default {
                 text: project.name,
             }));
         },
-        isSaveDisabled: function() {
+        valid: function() {
             const validation = this.localExperiment.validate();
-            return Object.keys(validation).length > 0;
+            return Object.keys(validation).length === 0 && this.invalidInputs.length === 0;
+        },
+        isSaveDisabled: function() {
+            return !this.valid;
         },
     },
     methods: {
@@ -148,7 +158,7 @@ export default {
                     return services.ExperimentService.save(this.localExperiment)
                         .then(experiment => {
                             this.localExperiment = experiment;
-                            console.log(experiment);
+                            console.log(JSON.stringify(experiment));
                             this.$emit('saved', experiment);
                         });
                 })
@@ -187,38 +197,36 @@ export default {
             });
             return Promise.all(uploads);
         },
-        getApplicationInputState: function(applicationInput) {
-            const validation = this.getApplicationInputValidation(applicationInput);
-            return validation !== null ? 'invalid' : null;
-        },
-        getApplicationInputFeedback: function(applicationInput) {
-            const validation = this.getApplicationInputValidation(applicationInput);
-            return validation !== null ? validation['value'] : null;
-        },
-        getApplicationInputValidation: function(applicationInput) {
-            const validationResults = applicationInput.validate();
-            if (validationResults !== null && 'value' in validationResults) {
-                return validationResults;
-            }
-            return null;
-        },
         getValidationFeedback: function(properties) {
             return utils.getProperty(this.localExperiment.validate(), properties);
         },
         getValidationState: function(properties) {
             return this.getValidationFeedback(properties) ? 'invalid' : null;
         },
-        isSimpleInput: function(experimentInput) {
-            return [
-                models.DataType.STRING,
-                models.DataType.FLOAT,
-                models.DataType.INTEGER,
-            ].indexOf(experimentInput.type) >= 0;
+        getInputEditorComponentName: function(experimentInput) {
+            // If input specifices an editor UI component, use that
+            if (experimentInput.editorUIComponentId) {
+                return experimentInput.editorUIComponentId;
+            }
+            // Default UI components based on input type
+            if (experimentInput.type === models.DataType.STRING) {
+                return 'string-input-editor';
+            } else if (experimentInput.type === models.DataType.URI) {
+                return 'file-input-editor';
+            }
+            // Default
+            return 'string-input-editor';
         },
-        isFileInput: function(experimentInput) {
-            return [
-                models.DataType.URI,
-            ].indexOf(experimentInput.type) >= 0;
+        recordInvalidInputEditorValue: function(experimentInputName) {
+            if (!this.invalidInputs.includes(experimentInputName)) {
+                this.invalidInputs.push(experimentInputName);
+            }
+        },
+        recordValidInputEditorValue: function(experimentInputName) {
+            if (this.invalidInputs.includes(experimentInputName)) {
+                const index = this.invalidInputs.indexOf(experimentInputName);
+                this.invalidInputs.splice(index, 1);
+            }
         },
     },
     watch: {

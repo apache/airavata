@@ -19,14 +19,16 @@ class ResourceType(object):
     EXPERIMENT = 1
     DATA = 2
     APPLICATION_DEPLOYMENT = 3
-    OTHER = 4
+    GROUP_RESOURCE_PROFILE = 4
+    OTHER = 5
 
     _VALUES_TO_NAMES = {
         0: "PROJECT",
         1: "EXPERIMENT",
         2: "DATA",
         3: "APPLICATION_DEPLOYMENT",
-        4: "OTHER",
+        4: "GROUP_RESOURCE_PROFILE",
+        5: "OTHER",
     }
 
     _NAMES_TO_VALUES = {
@@ -34,7 +36,8 @@ class ResourceType(object):
         "EXPERIMENT": 1,
         "DATA": 2,
         "APPLICATION_DEPLOYMENT": 3,
-        "OTHER": 4,
+        "GROUP_RESOURCE_PROFILE": 4,
+        "OTHER": 5,
     }
 
 
@@ -42,20 +45,17 @@ class ResourcePermissionType(object):
     WRITE = 0
     READ = 1
     OWNER = 2
-    EXEC = 3
 
     _VALUES_TO_NAMES = {
         0: "WRITE",
         1: "READ",
         2: "OWNER",
-        3: "EXEC",
     }
 
     _NAMES_TO_VALUES = {
         "WRITE": 0,
         "READ": 1,
         "OWNER": 2,
-        "EXEC": 3,
     }
 
 

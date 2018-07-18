@@ -17,7 +17,7 @@
       </b-form-group>
 
       <b-form-group id="group3" label="Add Members:" label-for="members">
-        <autocomplete id="members" :suggestions="suggestions" v-model="localGroup.members"></autocomplete>
+        <autocomplete id="members" :suggestions="suggestions" v-model="localGroup.members"/>
       </b-form-group>
 
       <b-button @click="submitForm" variant="primary">Submit</b-button>
@@ -28,8 +28,9 @@
 <script>
 
 import { models, services } from 'django-airavata-api'
+import { components as comps } from 'django-airavata-common-ui'
 
-import Autocomplete from '../utils/Autocomplete.vue'
+const Autocomplete = comps.Autocomplete;
 
 export default {
     props: {

@@ -5,7 +5,7 @@
 {% endblock %}
 {% block css %}
 <link rel=stylesheet type=text/css href={% static 'django_airavata_admin/dist/static/css/app.css' %}>
-    <link rel=stylesheet type=text/css href={% static 'css/admin.css' %}>
+<link rel=stylesheet type=text/css href={% static 'django_airavata_admin/dist/static/css/admin.css' %}>
  {% endblock %}
 {% block nav-items %}
 
@@ -14,6 +14,9 @@
         </a>
         <a href="{% url 'django_airavata_admin:credential_store' %}" class="c-nav__item {% if request.active_nav_item == 'credential_store' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Credential Store">
             <i class="fa fa-lock"></i> <span class=sr-only>Credential Store</span>
+        </a>
+        <a href="{% url 'django_airavata_admin:group_resource_profile' %}" class="c-nav__item {% if request.active_nav_item == 'group_resource_profile' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Group Resouce Profile">
+            <i class="fa fa-server"></i> <span class=sr-only>Group Resource Profile</span>
         </a>
 {% endblock %}
 {% block scripts %}
