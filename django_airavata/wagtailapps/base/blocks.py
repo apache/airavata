@@ -4,7 +4,6 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.core.blocks import (
     CharBlock, ChoiceBlock, RichTextBlock, StreamBlock, StructBlock, TextBlock, ListBlock, BooleanBlock, StaticBlock, IntegerBlock, RawHTMLBlock
 )
-from django_airavata.wagtailapps.base import models
 
 class ImageBlock(StructBlock):
     """
