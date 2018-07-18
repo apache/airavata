@@ -13,12 +13,12 @@
 
 3. Input your Username and Password and click `Sign In`. If you are authorized by gateway admin to access the CMS dashboard, you will be redirected to the Wagtail dashboard which should look like shown below:
 
-![wagtail dashboard](https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/wagtail-dashboard.png)
+![wagtail dashboard](./images/wagtail-dashboard.png?raw=true)
 
 
 #### CMS Dashboard Overview
 
-![wagtail dashboard overview](https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/wagtail-dashboard-overview.png)
+![wagtail dashboard overview](./images/wagtail-dashboard-overview.png?raw=true)
 
 
 #### Page Structure in CMS
@@ -29,7 +29,7 @@
 4. If you have a pre-configured site and you just need to maintain it, you don't need to touch site settings unless your host name or site name changes.
 5. The following diagram clearly depicts all the useful points to note about CMS page structure.
 
-![CMS Page Structure](https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/page-structure.png)
+![CMS Page Structure](./images/page-structure.png?raw=true)
 
 
 #### Creating a New Page
@@ -82,7 +82,7 @@
 2. Developers will update this list in the future if they see fit. so please be on look out for any new items in the future.
 3. Lets get to the details of each item.
 
-![PANEL](https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/panel.png)
+![PANEL](./images/panel.png?raw=true)
 
 ###### Paragraph Block
 1. This is the most important item of all the items in the panel.
