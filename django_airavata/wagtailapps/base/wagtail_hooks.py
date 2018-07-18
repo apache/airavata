@@ -8,7 +8,7 @@ def register_custom_style_feature(features):
     feature_name = 'purple'
     type_ = feature_name.upper()
     tag = 'span'
-    detection = f'{tag}[class="{feature_name}"]'
+    detection = '{tag}[class="{feature_name}"]'.format(tag=tag, feature_name=feature_name)
 
     control = {
         'type': type_,
