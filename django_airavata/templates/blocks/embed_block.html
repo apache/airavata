@@ -1,0 +1,5 @@
+{% load wagtailimages_tags %}
+
+<div class="{% if self.custom_class %}{{self.custom_class}}{% endif %}">
+  {{ self.embed }}
+</div>

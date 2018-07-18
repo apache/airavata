@@ -1,0 +1,97 @@
+{% extends "wagtail_base.html" %}
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+{% block content %}
+
+{% if page.show_navbar == "yes" %}
+  {% block header %}
+    {# Header contains the main_navigation block #}
+    {% include "includes/header.html" with parent=site_root calling_page=self %}
+  {% endblock header %}
+{% endif %}
+
+{% if page.show_nav_extra == "yes" %}
+  {% block nav-extra %}
+    {% include "includes/nav-extra.html" %}
+  {% endblock nav-extra %}
+{% endif %}
+
+{% block messages %}
+  {% include "includes/messages.html" %}
+{% endblock messages %}
+
+<div id="branding-bar" itemscope="itemscope" itemtype="http://schema.org/CollegeOrUniversity" role="complementary" aria-labelledby="campus-name">
+       <div class="row pad">
+         {% if page.site_logo %}
+           {% image page.site_logo original as tmp_photo %}
+           <img src="{{tmp_photo.url}}" style="width:{{page.site_logo_width}};height:{{self.site_logo_height}};" alt="site-logo"/>
+         {% endif %}
+           <p id="iu-campus">
+               <a href="{{page.site_link}}" title="{{page.site_text}}" class="external">
+                   <span id="campus-name" class="show-on-desktop" itemprop="name">{{page.site_text}}</span>
+                   <span class="show-on-tablet" itemprop="name">{{page.site_text}}</span>
+                   <span class="show-on-mobile" itemprop="name">{{page.site_text}}</span>
+               </a>
+           </p>
+       </div>
+   </div>
+   <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper="">
+       <div class="off-canvas-content" data-off-canvas-content="">
+        {% if page.site_header %}
+
+           <header class="site-header" itemscope="itemscope" itemtype="https://schema.org/CollegeOrUniversity" role="banner">
+
+               <div class="row pad">
+                   <h1><a class="title" href="/" itemprop="department">{{page.site_header}}</a></h1>
+               </div>
+           </header>
+
+           {% if page.site_link_text1 %}
+           <div class="nav-secondary">
+               <div class="row pad">
+                 <div class="col-md-6"></div>
+                 <div class="col-md-6">
+                   <ul class="inline separators" itemscope="itemscope" itemtype="https://schema.org/SiteNavigationElement">
+                       {% if page.site_link_text1 %}<li class="first"><a href="{{page.site_link1}}" itemprop="url"><span itemprop="name">{{page.site_link_text1}}</span></a></li>{% endif %}
+                       {% if page.site_link_text2 %}<li><a href="{{page.site_link2}}" itemprop="url"><span itemprop="name">{{page.site_link_text2}}</span></a></li>{% endif %}
+                       {% if page.site_link_text3 %}<li class="last"><a href="{{page.site_link3}}" itemprop="url"><span itemprop="name">{{page.site_link_text3}}</span></a></li>{% endif %}
+                   </ul>
+                 </div>
+               </div>
+           </div>
+           {% endif %}
+
+      {% endif %}
+
+        {% for item in page.row.all %}
+          {% for block in item.body %}
+            {% include_block block.value %}
+          {% endfor %}
+        {% endfor %}
+
+        <div class="breakout section bg-gray" id="contact">
+          <div class="row pad">
+            <div class="grid halves">
+              {% for block in page.contact %}
+                {% include_block block.value %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+       <footer id="footer" role="contentinfo" itemscope="itemscope" itemtype="https://schema.org/CollegeOrUniversity">
+           <div class="row pad">
+             {% for block in page.footer %}
+               {% include_block block.value %}
+             {% endfor %}
+           </div>
+       </footer>
+     </div>
+   </div>
+
+   {% if page.show_footer == "yes" %}
+      <footer class="theme-footer">
+        {% include "includes/footer.html" %}
+      </footer>
+    {% endif %}
+{% endblock content %}

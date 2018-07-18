@@ -15,6 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+
+# wagtail related imports
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.core import urls as wagtail_urls
 
 from . import views
 
@@ -24,5 +31,8 @@ urlpatterns = [
     url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
     url(r'^api/', include('django_airavata.apps.api.urls')),
     url(r'^groups/', include('django_airavata.apps.groups.urls')),
-    url(r'^$', views.home, name='home')
-]
+    url(r'^home$', views.home, name='home'),
+    url(r'^cms/', include(wagtailadmin_urls)),
+    url(r'^documents/', include(wagtaildocs_urls)),
+    url(r'', include(wagtail_urls)),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,10 @@
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+<a href="{{ navbar.logo_redirect_link}}" class="navbar-brand" style="color:{{navbar.logo_text_color}};font-size:{{navbar.logo_text_size}};">
+    {% if navbar.logo %}
+      {% image navbar.logo original as tmp_photo %}
+      <img src="{{tmp_photo.url}}" style="width:{{navbar.logo_width}};height={{navbar.logo_height}}" alt="image" class="img-fluid"/>&nbsp;&nbsp;{% if navbar.logo_with_text == "yes" %}{{ navbar.logo_text }}{% endif %}
+    {% else %}
+      {{ navbar.logo_text }}
+    {% endif %}
+</a>

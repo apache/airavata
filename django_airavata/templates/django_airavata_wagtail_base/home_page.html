@@ -1,0 +1,91 @@
+{% extends "wagtail_base.html" %}
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+{% block content %}
+
+{% if page.show_navbar == "yes" %}
+  {% block header %}
+    {# Header contains the main_navigation block #}
+    {% include "includes/header.html" with parent=site_root calling_page=self %}
+  {% endblock header %}
+{% endif %}
+
+{% if page.show_nav_extra == "yes" %}
+  {% block nav-extra %}
+    {% include "includes/nav-extra.html" %}
+  {% endblock nav-extra %}
+{% endif %}
+
+{% block messages %}
+  {% include "includes/messages.html" %}
+{% endblock messages %}
+
+{% get_announcements %}
+
+<div class="hero-unit">
+	<!--
+	<h1>Hero Image</h1>
+	<h2>This is a simple hero unit, a simple jumbotron-style component for calling extra 7
+	attention to featured content or information.</h2>
+	<p><a class="btn btn-primary btn-large">Learn more</a></p>
+	-->
+  {% image page.image original class="img-fluid" %}
+</div>
+
+
+<div class="darker-blue-bg text-center">
+	<a href="#seagrid-features"><i class="fa fa-chevron-down floating" style="font-size:5em; color: #20b2aa;padding-left:15px;"></i></a>
+</div>
+
+<div class="container-fluid text-center breathing-space" id="seagrid-features">
+	{% if page.site_logo %}
+    <h1>{% image page.site_logo max-140x43 %} Features</h1><br/>
+  {% endif %}
+
+  {% if page.features_text %}
+	<p class="font-1-5">
+		{{ page.features_text|richtext }}
+	</p>
+  {% endif %}
+	<hr/>
+  <div class="row">
+  	<div class="col">
+  		<span class="feature-icon-img">{% if page.feature_logo_1 %}{% image page.feature_logo_1 fill-200x200 %}{% endif %}</span>
+  		<h3>{% if page.feature_1_title %}{{ page.feature_1_title }}{% endif %}</h3>
+  		<p>{% if page.feature_1_text %}{{ page.feature_1_text|richtext }}{% endif %}</p>
+  	</div>
+  	<div class="col">
+      <span class="feature-icon-img">{% if page.feature_logo_2 %}{% image page.feature_logo_2 fill-200x200 %}{% endif %}</span>
+  		<h3>{% if page.feature_2_title %}{{ page.feature_2_title }}{% endif %}</h3>
+  		<p>{% if page.feature_2_text %}{{ page.feature_2_text|richtext }}{% endif %}</p>
+  	</div>
+  	<div class="col">
+      <span class="feature-icon-img">{% if page.feature_logo_3 %}{% image page.feature_logo_3 fill-200x200 %}{% endif %}</span>
+  		<h3>{% if page.feature_3_title %}{{ page.feature_3_title }}{% endif %}</h3>
+  		<p>{% if page.feature_3_text %}{{ page.feature_3_text|richtext }}{% endif %}</p>
+  	</div>
+  	<div class="col">
+      <span class="feature-icon-img">{% if page.feature_logo_4 %}{% image page.feature_logo_4 fill-200x200 %}{% endif %}</span>
+  		<h3>{% if page.feature_4_title %}{{ page.feature_4_title }}{% endif %}</h3>
+  		<p>{% if page.feature_4_text %}{{ page.feature_4_text|richtext }}{% endif %}</p>
+  	</div>
+  </div>
+
+	<div class="card card-body bg-light text-center">
+		{% if page.custom_body_message %}{{ page.custom_body_message|richtext }}{% endif %}
+	</div>
+</div>
+
+<div class="col-md-12 text-center seagrid-workflow darker-blue-bg">
+	<h1>{% if page.site_logo %}{% image page.site_logo max-140x43 %}{% endif %} DNA</h1><br/>
+	<div class="video-space">
+		{% if page.banner_image %}{% image page.banner_image original class="img-fluid" %}{% endif %}
+	</div>
+</div>
+
+{% if page.show_footer == "yes" %}
+ <footer class="theme-footer">
+   {% include "includes/footer.html" %}
+ </footer>
+ {% endif %}
+{% endblock content %}

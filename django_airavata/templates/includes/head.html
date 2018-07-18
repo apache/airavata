@@ -1,0 +1,40 @@
+{% load static navigation_tags %}
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>
+        {% block title %}
+            {% block title_prefix %}
+                {{get_site_root}}
+            {% endblock %}
+            {% if self.seo_title %}
+                {{ self.seo_title }}
+            {% else %}
+                {{ self.title }}
+            {% endif %}
+        {% endblock %}
+    </title>
+    <meta name="description" content="{% if self.search_description %}{{ self.search_description }}{% endif %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel=stylesheet type=text/css href="{% static 'bootstrap-4.0.0-beta/css/bootstrap.min.css' %}">
+    <link rel=stylesheet type=text/css
+          href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+
+    <!-- Custom Fonts -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Alegreya:400,700|Lato:300,400,700,900" rel="stylesheet">
+
+    <link rel=stylesheet type=text/css href="{% static 'css/draft-colors.css' %}">
+
+    {% block head-extra %}
+      {% include "includes/head-extra.html" %}
+    {% endblock head-extra %}
+
+    <style>
+      {% get_css %}
+    </style>
+</head>

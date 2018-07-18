@@ -1,0 +1,9 @@
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+<div class="container-fluid">
+  <div class="row">
+    {% for block in footer_text.footer %}
+      {% include_block block.value %}
+    {% endfor %}
+  </div>
+</div>
