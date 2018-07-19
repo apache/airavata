@@ -274,6 +274,7 @@ public class AiravataDataMigrator {
             if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId)) {
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.parentEntityId)) {
                     System.out.println("Warning: project entity does exist for experiment entity " + entity.entityId + " in gateway " + entity.domainId);
+                    continue;
                 } else {
                     sharingRegistryServerHandler.createEntity(entity);
                 }
