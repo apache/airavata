@@ -349,24 +349,24 @@ public class AiravataDataMigrator {
                 .collect(Collectors.toList());
         Map<String, List<String>> roleMap = loadRolesForUsers(domain.domainId, usernames);
 
-        if (roleMap.containsKey("gateway-user")) {
-            UserGroup gatewayUsersGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
-                    "Gateway Users",
-                    "Default group for users of the gateway.", roleMap.get("gateway-user"));
-            gatewayGroups.setDefaultGatewayUsersGroupId(gatewayUsersGroup.groupId);
-        }
-        if (roleMap.containsKey("admin")) {
-            UserGroup adminUsersGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
-                    "Admin Users",
-                    "Admin users group.", roleMap.get("admin"));
-            gatewayGroups.setAdminsGroupId(adminUsersGroup.groupId);
-        }
-        if (roleMap.containsKey("admin-read-only")) {
-            UserGroup readOnlyAdminsGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
-                    "Read Only Admin Users",
-                    "Group of admin users with read-only access.", roleMap.get("admin-read-only"));
-            gatewayGroups.setReadOnlyAdminsGroupId(readOnlyAdminsGroup.groupId);
-        }
+        UserGroup gatewayUsersGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
+                "Gateway Users",
+                "Default group for users of the gateway.",
+                roleMap.containsKey("gateway-user") ? roleMap.get("gateway-user") : Collections.emptyList());
+        gatewayGroups.setDefaultGatewayUsersGroupId(gatewayUsersGroup.groupId);
+
+        UserGroup adminUsersGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
+                "Admin Users",
+                "Admin users group.",
+                roleMap.containsKey("admin") ? roleMap.get("admin") : Collections.emptyList());
+        gatewayGroups.setAdminsGroupId(adminUsersGroup.groupId);
+
+        UserGroup readOnlyAdminsGroup = createGroup(sharingRegistryServerHandler, domain, ownerId,
+                "Read Only Admin Users",
+                "Group of admin users with read-only access.",
+                roleMap.containsKey("admin-read-only") ? roleMap.get("admin-read-only") : Collections.emptyList());
+        gatewayGroups.setReadOnlyAdminsGroupId(readOnlyAdminsGroup.groupId);
+
         registryServiceClient.createGatewayGroups(gatewayGroups);
         return gatewayGroups;
     }
