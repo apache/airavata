@@ -55,6 +55,11 @@ def gateway_groups_middleware(get_response):
             request.is_gateway_admin = admins_group_id in group_ids
             request.is_read_only_gateway_admin = \
                 read_only_admins_group_id in group_ids
+            # Gateway Admins are made 'superuser' in Django so they can edit
+            # pages in the CMS
+            if request.is_gateway_admin and not request.user.is_superuser:
+                request.user.is_superuser = True
+                request.user.save()
         except Exception as e:
             log.error("Failed to set is_gateway_admin, "
                       "is_read_only_gateway_admin for user", exc_info=e)
