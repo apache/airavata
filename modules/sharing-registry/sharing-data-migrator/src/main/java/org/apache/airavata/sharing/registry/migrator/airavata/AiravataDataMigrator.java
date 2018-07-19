@@ -40,7 +40,6 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
@@ -419,7 +418,7 @@ public class AiravataDataMigrator {
                 } else {
                     System.err.println("Warning: user [" + username + "] in tenant [" + gatewayId + "] has no roles.");
                 }
-            } catch (IamAdminServicesException e) {
+            } catch (Exception e) {
                 System.err.println("Error: unable to load roles for user [" + username + "] in tenant [" + gatewayId + "].");
                 e.printStackTrace();
             }
