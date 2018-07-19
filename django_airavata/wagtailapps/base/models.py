@@ -352,6 +352,60 @@ class CustomHeaderLinks(models.Model):
     class Meta:
         verbose_name_plural = 'Header Custom Links'
 
+
+@register_snippet
+class GatewayIcon(models.Model):
+    """
+    Image icon displayed in the header for logged in users.
+    """
+
+    icon = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Choose Gateway Icon with dimensions 70x70'
+    )
+    background_color = models.CharField(
+        max_length=10,
+        default="#EEEEEE",
+        help_text='Background color for icon (e.g. #FFFFFF)',
+    )
+
+    panels = [
+        ImageChooserPanel('icon'),
+        FieldPanel('background_color'),
+    ]
+
+    def __str__(self):
+        return "Gateway Icon"
+
+    class Meta:
+        verbose_name_plural = 'Gateway Icon'
+
+
+@register_snippet
+class GatewayTitle(models.Model):
+    """
+    Title displayed in the header for logged in users.
+    """
+
+    title_text = models.CharField(
+        max_length=100,
+        help_text='Title to display to logged in users.',
+    )
+
+    panels = [
+        FieldPanel('title_text'),
+    ]
+
+    def __str__(self):
+        return "Gateway Title: {}".format(self.title_text)
+
+    class Meta:
+        verbose_name_plural = 'Gateway Title'
+
 class HomePage(Page):
     """
     The Home Page. This looks slightly more complicated than it is. You can

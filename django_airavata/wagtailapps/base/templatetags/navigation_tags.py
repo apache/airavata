@@ -14,6 +14,10 @@ from django_airavata.wagtailapps.base.models import CustomCss
 
 from django_airavata.wagtailapps.base.models import NavExtra
 
+from django_airavata.wagtailapps.base.models import GatewayIcon
+
+from django_airavata.wagtailapps.base.models import GatewayTitle
+
 
 register = template.Library()
 # https://docs.djangoproject.com/en/1.9/howto/custom-template-tags/
@@ -160,4 +164,20 @@ def get_nav_extra(context):
 
     return {
         'navextra': nav_extra,
+    }
+
+@register.inclusion_tag('django_airavata_wagtail_base/includes/gateway_icon.html', takes_context=True)
+def gateway_icon(context):
+    gateway_icon = GatewayIcon.objects.first()
+
+    return {
+        'gateway_icon': gateway_icon
+    }
+
+@register.inclusion_tag('django_airavata_wagtail_base/includes/gateway_title.html', takes_context=True)
+def gateway_title(context):
+    gateway_title = GatewayTitle.objects.first()
+
+    return {
+        'gateway_title': gateway_title
     }

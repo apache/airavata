@@ -17,10 +17,17 @@ body {
     &__logo {
         margin-right: 1rem;
         width: 70px;
-        background-color: #990000;
-        
+        height: 70px;
+        background-color: #EEEEEE;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
         svg {
             display: block;
+        }
+        img {
+            max-width: 100%;
         }
     }
     
