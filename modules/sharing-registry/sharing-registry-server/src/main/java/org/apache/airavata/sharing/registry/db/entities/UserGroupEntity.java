@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "USER_GROUP", schema = "")
@@ -38,6 +39,7 @@ public class UserGroupEntity {
     private String groupCardinality;
     private Long createdTime;
     private Long updatedTime;
+    private List<GroupAdminEntity> groupAdmins;
 
     @Id
     @Column(name = "GROUP_ID")
@@ -127,6 +129,16 @@ public class UserGroupEntity {
 
     public void setUpdatedTime(Long updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    @OneToMany(targetEntity = GroupAdminEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "userGroup", fetch = FetchType.EAGER)
+    public List<GroupAdminEntity> getGroupAdmins() {
+        return groupAdmins;
+    }
+
+    public void setGroupAdmins(List<GroupAdminEntity> groupAdmins) {
+        this.groupAdmins = groupAdmins;
     }
 
     @Override

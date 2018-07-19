@@ -1,0 +1,24 @@
+---
+# inventory file : scigap production deployment
+
+# api.group-based-auth.scigap.org
+[zookeeper]
+149.165.169.138
+
+[rabbitmq]
+149.165.169.138
+
+[api-orch]
+149.165.169.138
+
+# db.group-based-auth.scigap.org
+[database]
+149.165.168.22
+
+# gfac.group-based-auth.scigap.org
+[gfac]
+149.165.169.36
+
+# deploying the pga on pgadev.scigap.org
+[pga]
+149.165.156.46

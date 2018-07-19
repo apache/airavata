@@ -53,9 +53,21 @@ service GroupManagerService {
                       throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                               2: airavata_errors.AuthorizationException ae);
 
+    list<group_manager_model.GroupModel> getGroups(1: required security_model.AuthzToken authzToken)
+                      throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
+                              2: airavata_errors.AuthorizationException ae);
+
     list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName)
                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                                2: airavata_errors.AuthorizationException ae);
+
+    bool addUsersToGroup(1: required security_model.AuthzToken authzToken, 2: required list<string> userIds, 3: required string groupId)
+                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
+                                2: airavata_errors.AuthorizationException ae);
+
+    bool removeUsersFromGroup(1: required security_model.AuthzToken authzToken, 2: required list<string> userIds, 3: required string groupId)
+                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
+                                2: airavata_errors.AuthorizationException ae);
 
     bool transferGroupOwnership(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string newOwnerId)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,

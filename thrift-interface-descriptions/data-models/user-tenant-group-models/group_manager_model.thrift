@@ -30,13 +30,15 @@ enum ResourceType {
     PROJECT,
     EXPERIMENT,
     DATA,
+    APPLICATION_DEPLOYMENT,
+    GROUP_RESOURCE_PROFILE,
     OTHER
 }
 
 enum ResourcePermissionType {
     WRITE,
     READ,
-    OWNER
+    OWNER,
 }
 
 struct GroupModel{

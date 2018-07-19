@@ -31,6 +31,8 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
@@ -68,6 +70,8 @@ public class ProcessContext {
 	private GatewayResourceProfile gatewayResourceProfile;
 	private ComputeResourcePreference gatewayComputeResourcePreference;
 	private StoragePreference gatewayStorageResourcePreference;
+	private GroupResourceProfile groupResourceProfile;
+	private GroupComputeResourcePreference groupComputeResourcePreference;
 	private UserResourceProfile userResourceProfile;
 	private UserComputeResourcePreference userComputeResourcePreference;
 	private UserStoragePreference userStoragePreference;
@@ -168,7 +172,10 @@ public class ProcessContext {
 				scratchLocation = userComputeResourcePreference.getScratchLocation();
 			} else if (isValid(processModel.getProcessResourceSchedule().getOverrideScratchLocation())) {
 				scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
-			}else {
+			} else if (isSetGroupResourceProfile() && groupComputeResourcePreference != null &&
+						isValid(groupComputeResourcePreference.getScratchLocation())) {
+				scratchLocation = groupComputeResourcePreference.getScratchLocation();
+			} else {
 				scratchLocation = gatewayComputeResourcePreference.getScratchLocation();
 			}
 		}
@@ -185,6 +192,22 @@ public class ProcessContext {
 
 	public void setGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
 		this.gatewayResourceProfile = gatewayResourceProfile;
+	}
+
+	public GroupResourceProfile getGroupResourceProfile() {
+		return groupResourceProfile;
+	}
+
+	public void setGroupResourceProfile(GroupResourceProfile groupResourceProfile) {
+		this.groupResourceProfile = groupResourceProfile;
+	}
+
+	public GroupComputeResourcePreference getGroupComputeResourcePreference() {
+		return groupComputeResourcePreference;
+	}
+
+	public void setGroupComputeResourcePreference(GroupComputeResourcePreference groupComputeResourcePreference) {
+		this.groupComputeResourcePreference = groupComputeResourcePreference;
 	}
 
 	public UserResourceProfile getUserResourceProfile() {
@@ -308,7 +331,11 @@ public class ProcessContext {
 
 	public JobSubmissionProtocol getJobSubmissionProtocol() {
 		if (jobSubmissionProtocol == null) {
-			jobSubmissionProtocol = gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
+			if (isSetGroupResourceProfile() && groupComputeResourcePreference != null) {
+				jobSubmissionProtocol = groupComputeResourcePreference.getPreferredJobSubmissionProtocol();
+			} else {
+				jobSubmissionProtocol = gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
+			}
 		}
 		return jobSubmissionProtocol;
 	}
@@ -319,7 +346,11 @@ public class ProcessContext {
 
 	public DataMovementProtocol getDataMovementProtocol() {
 		if (dataMovementProtocol == null) {
-			dataMovementProtocol = gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
+			if (isSetGroupResourceProfile() && groupComputeResourcePreference != null) {
+				dataMovementProtocol = groupComputeResourcePreference.getPreferredDataMovementProtocol();
+			} else {
+				dataMovementProtocol = gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
+			}
 		}
 		return dataMovementProtocol;
 	}
@@ -417,6 +448,10 @@ public class ProcessContext {
 				userComputeResourcePreference != null &&
 				isValid(userComputeResourcePreference.getComputeResourceId())) {
 			return userComputeResourcePreference.getComputeResourceId();
+		} else if (isSetGroupResourceProfile() &&
+					groupComputeResourcePreference != null &&
+					isValid(groupComputeResourcePreference.getComputeResourceId())){
+			return groupComputeResourcePreference.getComputeResourceId();
 		} else {
 			return gatewayComputeResourcePreference.getComputeResourceId();
 		}
@@ -430,7 +465,11 @@ public class ProcessContext {
 			} else {
 				return userResourceProfile.getCredentialStoreToken();
 			}
-		} else {
+		} else if (isSetGroupResourceProfile() &&
+                    groupComputeResourcePreference != null &&
+                    isValid(groupComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+                return groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+        } else {
 			if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
 				return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
 			} else {
@@ -448,11 +487,21 @@ public class ProcessContext {
 	}
 
 	public JobSubmissionProtocol getPreferredJobSubmissionProtocol(){
-		return gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
+	    if (isSetGroupResourceProfile() &&
+                groupComputeResourcePreference != null &&
+                groupComputeResourcePreference.getPreferredJobSubmissionProtocol() != null) {
+	        return groupComputeResourcePreference.getPreferredJobSubmissionProtocol();
+        }
+        return gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
 	}
 
 	public DataMovementProtocol getPreferredDataMovementProtocol() {
-		return gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
+	    if (isSetGroupResourceProfile() &&
+                groupComputeResourcePreference != null &&
+                groupComputeResourcePreference.getPreferredDataMovementProtocol() != null) {
+	        return groupComputeResourcePreference.getPreferredDataMovementProtocol();
+        }
+        return gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
 	}
 
 	public void setMonitorMode(MonitorMode monitorMode) {
@@ -570,6 +619,10 @@ public class ProcessContext {
 		return getProcessModel().isUseUserCRPref();
 	}
 
+	public boolean isSetGroupResourceProfile() {
+		return getProcessModel().isSetGroupResourceProfileId();
+	}
+
 	public String getComputeResourceLoginUserName(){
 		if (isUseUserCRPref() &&
 				userComputeResourcePreference != null &&
@@ -577,7 +630,12 @@ public class ProcessContext {
 			return userComputeResourcePreference.getLoginUserName();
 		} else if (isValid(processModel.getProcessResourceSchedule().getOverrideLoginUserName())) {
 			return processModel.getProcessResourceSchedule().getOverrideLoginUserName();
-		} else {
+		} else if (isSetGroupResourceProfile() &&
+						groupComputeResourcePreference != null &&
+						isValid(groupComputeResourcePreference.getLoginUserName())){
+			return groupComputeResourcePreference.getLoginUserName();
+		}
+		else {
 			return gatewayComputeResourcePreference.getLoginUserName();
 		}
 	}
@@ -651,6 +709,11 @@ getComputeResourceCredentialToken());
 	}
 
 	public String getUsageReportingGatewayId() {
+	    if (isSetGroupResourceProfile() &&
+                groupComputeResourcePreference != null &&
+                isValid(groupComputeResourcePreference.getUsageReportingGatewayId())) {
+	        return groupComputeResourcePreference.getUsageReportingGatewayId();
+        }
 		return gatewayComputeResourcePreference.getUsageReportingGatewayId();
 	}
 
@@ -659,8 +722,12 @@ getComputeResourceCredentialToken());
 				userComputeResourcePreference != null &&
 				userComputeResourcePreference.getAllocationProjectNumber() != null) {
 			return userComputeResourcePreference.getAllocationProjectNumber();
+		} else if (isSetGroupResourceProfile() &&
+					groupComputeResourcePreference != null &&
+					isValid(groupComputeResourcePreference.getAllocationProjectNumber())){
+			return groupComputeResourcePreference.getAllocationProjectNumber();
 		} else {
-			return gatewayComputeResourcePreference.getAllocationProjectNumber();
+		    return null;
 		}
 	}
 
@@ -673,6 +740,12 @@ getComputeResourceCredentialToken());
 			reservation = userComputeResourcePreference.getReservation();
 			start = userComputeResourcePreference.getReservationStartTime();
 			end = userComputeResourcePreference.getReservationEndTime();
+		} else if (isSetGroupResourceProfile() &&
+						groupComputeResourcePreference != null &&
+						isValid(groupComputeResourcePreference.getReservation())){
+			reservation = groupComputeResourcePreference.getReservation();
+			start = groupComputeResourcePreference.getReservationStartTime();
+			end = groupComputeResourcePreference.getReservationEndTime();
 		} else {
 			reservation = gatewayComputeResourcePreference.getReservation();
 			start = gatewayComputeResourcePreference.getReservationStartTime();
@@ -692,7 +765,11 @@ getComputeResourceCredentialToken());
 				userComputeResourcePreference != null &&
 				userComputeResourcePreference.getQualityOfService() != null) {
 			return userComputeResourcePreference.getQualityOfService();
-		} else {
+		} else if (isSetGroupResourceProfile() &&
+                        groupComputeResourcePreference != null &&
+                        isValid(groupComputeResourcePreference.getQualityOfService())){
+		    return groupComputeResourcePreference.getQualityOfService();
+        } else {
 			return gatewayComputeResourcePreference.getQualityOfService();
 		}
 	}
@@ -705,7 +782,11 @@ getComputeResourceCredentialToken());
 				userComputeResourcePreference != null &&
 				userComputeResourcePreference.getPreferredBatchQueue() != null) {
 			return userComputeResourcePreference.getPreferredBatchQueue();
-		} else {
+		} else if (isSetGroupResourceProfile() &&
+                    groupComputeResourcePreference != null &&
+                    isValid(groupComputeResourcePreference.getPreferredBatchQueue())){
+		    return groupComputeResourcePreference.getPreferredBatchQueue();
+        } else {
 			return gatewayComputeResourcePreference.getPreferredBatchQueue();
 		}
 	}

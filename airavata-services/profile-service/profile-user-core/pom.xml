@@ -18,7 +18,6 @@
         <surefire.version>2.18.1</surefire.version>
         <skipTests>false</skipTests>
         <mysql.connector.version>5.1.34</mysql.connector.version>
-        <openjpa.version>2.2.0</openjpa.version>
     </properties>
 
     <dependencies>
@@ -43,7 +42,7 @@
             <plugin>
                 <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
-                <version>2.2.0</version>
+                <version>${openjpa.version}</version>
                 <configuration>
                     <includes>**/entities/*.class</includes>
                     <excludes>**/entities/XML*.class</excludes>
@@ -59,13 +58,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.openjpa</groupId>
-                        <artifactId>openjpa</artifactId>
-                        <version>${openjpa.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
