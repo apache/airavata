@@ -439,7 +439,7 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
                 }
                 em.close();
             }
-            return results != null;
+            return results != null && results.size() == 1;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);

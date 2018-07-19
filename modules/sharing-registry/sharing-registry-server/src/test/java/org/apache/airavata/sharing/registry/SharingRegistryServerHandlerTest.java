@@ -59,7 +59,6 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertNotNull(sharingRegistryServerHandler.createDomain(domain));
         Assert.assertTrue(sharingRegistryServerHandler.getDomains(0, 10).size() > 0);
 
-
         //Creating users
         User user1 = new User();
         String userName1 = "test-user-1." + System.currentTimeMillis();
@@ -94,6 +93,17 @@ public class SharingRegistryServerHandlerTest {
 
         Assert.assertNotNull(sharingRegistryServerHandler.createUser(user3));
 
+        User user7 = new User();
+        String userName7 = "test-user-7." + System.currentTimeMillis();
+        String userId7 = domainId + ":" + userName7;
+        user7.setUserId(userId7);
+        user7.setUserName(userName7);
+        user7.setDomainId(domainId);
+        user7.setCreatedTime(System.currentTimeMillis());
+        user7.setUpdatedTime(System.currentTimeMillis());
+
+        Assert.assertNotNull(sharingRegistryServerHandler.createUser(user7));
+
         Assert.assertTrue(sharingRegistryServerHandler.getUsers(domainId, 0, 10).size() > 0);
 
         // Creating user groups
@@ -111,7 +121,7 @@ public class SharingRegistryServerHandlerTest {
         userGroup1.setUpdatedTime(System.currentTimeMillis());
 
         Assert.assertNotNull(sharingRegistryServerHandler.createGroup(userGroup1));
-        Assert.assertTrue(sharingRegistryServerHandler.getAllMemberGroupsForUser(domainId, userId1).size() == 1);
+        Assert.assertEquals(1, sharingRegistryServerHandler.getAllMemberGroupsForUser(domainId, userId1).size());
 
         UserGroup userGroup2 = new UserGroup();
         String groupName2 = "test-group-2." + System.currentTimeMillis();
@@ -129,9 +139,10 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertNotNull(sharingRegistryServerHandler.createGroup(userGroup2));
 
         sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId1), groupId1);
+        sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId7), groupId1);
 
         sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId2, userId3), groupId2);
-        Assert.assertTrue(sharingRegistryServerHandler.getAllMemberGroupsForUser(domainId, userId3).size() == 1);
+        Assert.assertEquals(1, sharingRegistryServerHandler.getAllMemberGroupsForUser(domainId, userId3).size());
 
         sharingRegistryServerHandler.addChildGroupsToParentGroup(domainId, Arrays.asList(groupId2), groupId1);
 
@@ -144,12 +155,13 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertTrue(sharingRegistryServerHandler.hasOwnerAccess(domainId, groupId1, userId1));
 
         // user has admin access
-        Assert.assertTrue(sharingRegistryServerHandler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId2)));
-        Assert.assertTrue(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId2));
-        Assert.assertTrue(sharingRegistryServerHandler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId2)));
-        Assert.assertFalse(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId2));
+        Assert.assertTrue(sharingRegistryServerHandler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId7)));
+        Assert.assertTrue(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId7));
+        Assert.assertTrue(sharingRegistryServerHandler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId7)));
+        Assert.assertFalse(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId7));
 
         // transfer group ownership
+        sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId2), groupId1);
         Assert.assertTrue(sharingRegistryServerHandler.transferGroupOwnership(domainId, groupId1, userId2));
         Assert.assertTrue(sharingRegistryServerHandler.hasOwnerAccess(domainId, groupId1, userId2));
         Assert.assertTrue(sharingRegistryServerHandler.transferGroupOwnership(domainId, groupId1, userId1));
@@ -211,6 +223,17 @@ public class SharingRegistryServerHandlerTest {
         entityType3.setUpdatedTime(System.currentTimeMillis());
         String entityTypeId3 = sharingRegistryServerHandler.createEntityType(entityType3);
         Assert.assertNotNull(entityTypeId3);
+
+        EntityType entityType4 = new EntityType();
+        String entityType4Name = "Application-Deployment";
+        entityType4.setEntityTypeId(domainId+":"+entityType4Name);
+        entityType4.setDomainId(domainId);
+        entityType4.setName(entityType4Name);
+        entityType4.setDescription("test entity type");
+        entityType4.setCreatedTime(System.currentTimeMillis());
+        entityType4.setUpdatedTime(System.currentTimeMillis());
+        String entityTypeId4 = sharingRegistryServerHandler.createEntityType(entityType4);
+        Assert.assertNotNull(entityTypeId4);
 
         //Creating Entities
         Entity entity1 = new Entity();
@@ -280,6 +303,27 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId1, entityId4, permissionTypeId1));
         Assert.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId1, permissionTypeId1));
 
+        Entity entity5 = new Entity();
+        entity5.setEntityId(domainId+":Entity5");
+        entity5.setDomainId(domainId);
+        entity5.setEntityTypeId(entityTypeId4);
+        entity5.setOwnerId(userId1);
+        entity5.setName("App deployment name");
+        entity5.setDescription("App deployment description");
+        entity5.setFullText("App Deployment name app deployment description");
+        entity5.setCreatedTime(System.currentTimeMillis());
+        entity5.setUpdatedTime(System.currentTimeMillis());
+
+        String entityId5 = sharingRegistryServerHandler.createEntity(entity5);
+        Assert.assertNotNull(entityId5);
+
+        sharingRegistryServerHandler.shareEntityWithUsers(domainId, entityId5, Arrays.asList(userId2), permissionTypeId1, true);
+        sharingRegistryServerHandler.shareEntityWithGroups(domainId, entityId5, Arrays.asList(groupId2), permissionTypeId2, true);
+
+        Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId5, permissionTypeId2));
+        Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId5, permissionTypeId1));
+        Assert.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId5, permissionTypeId1));
+
         ArrayList<SearchCriteria> filters = new ArrayList<>();
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchCondition(SearchCondition.LIKE);
@@ -300,7 +344,5 @@ public class SharingRegistryServerHandlerTest {
 
         Assert.assertTrue(sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId1, domainId + ":OWNER").size()==1);
 
-//        sharingRegistryServerHandler.revokeEntitySharingFromUsers(entityId1, Arrays.asList(userId2), permissionTypeId1);
-//        sharingRegistryServerHandler.revokeEntitySharingFromGroups(entityId3, Arrays.asList(groupId2), permissionTypeId1);
     }
 }

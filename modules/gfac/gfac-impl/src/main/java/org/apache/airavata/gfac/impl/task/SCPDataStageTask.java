@@ -57,8 +57,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This will be used for both Input file staging and output file staging, hence if you do any changes to a part of logic
@@ -129,7 +131,10 @@ public class SCPDataStageTask implements Task {
             } else {
                 throw new GFacException("Storage Resource is null");
             }
-            String inputPath  = processContext.getStorageFileSystemRootLocation();
+
+            String inputPath  = Optional.ofNullable(processContext.getStorageFileSystemRootLocation())
+                    .orElseThrow(() -> new GFacException("Input path can not be null"));
+
             inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
 
             // use rsync instead of scp if source and destination host and user name is same.
@@ -161,9 +166,11 @@ public class SCPDataStageTask implements Task {
             status = new TaskStatus(TaskState.COMPLETED);
 
             //Wildcard for file name. Has to find the correct name.
-            if(fileName.contains("*")){
+            if (fileName.contains("*")) {
                 String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
+
+                log.info("Fetching output files for wildcard " + fileName + " in path " + sourceParentPath);
                 List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
                         .getFileNameFromExtension(fileName, sourceParentPath, remoteSession);
 
@@ -173,19 +180,21 @@ public class SCPDataStageTask implements Task {
 
                 OutputDataObjectType processOutput = taskContext.getProcessOutput();
 
-                for(int i=0; i<fileNames.size(); i++){
-                    String temp = fileNames.get(i);
-                    if(temp != null && temp != ""){
+                for (String temp : fileNames) {
+                    if (temp != null && !"".equals(temp)) {
                         fileName = temp;
                     }
-                    if(destParentPath.endsWith(File.separator)){
+
+                    if (destParentPath.endsWith(File.separator)) {
                         destinationURI = new URI(destParentPath + fileName);
-                    }else{
+                    } else {
                         destinationURI = new URI(destParentPath + File.separator + fileName);
                     }
-
                     //Wildcard support is only enabled for output data staging
                     if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                        URI newSourceURI = new URI((sourceParentPath.endsWith(File.separator) ?
+                                sourceParentPath : sourceParentPath + File.separator) +
+                                fileName);
                         processOutput.setName(fileName);
 
                         registryClient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
@@ -201,10 +210,10 @@ public class SCPDataStageTask implements Task {
                 }
                 if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                     status.setReason("Successfully staged output data");
-                }else{
+                } else {
                     status.setReason("Wildcard support is only enabled for output data staging");
                 }
-            }else {
+            } else {
                 if (processState == ProcessState.INPUT_DATA_STAGING) {
                     inputDataStaging(taskContext, storageSession, sourceURI, remoteSession, destinationURI);
                     status.setReason("Successfully staged input data");
@@ -288,7 +297,16 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } finally {
+        } catch (Exception e) {
+            String msg = "Unknown exception occurred while data staging";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        }finally {
             if (registryClient != null) {
                 ThriftUtils.close(registryClient);
             }
@@ -320,8 +338,12 @@ public class SCPDataStageTask implements Task {
          */
         //Wildcard file path has not been resolved and cannot be handled. Hence ignoring
         if(!destinationURI.toString().contains("*")){
+            log.info("SCP " + taskContext.getTaskId() + " step31");
+
             taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
                     destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.TO, true);
+            log.info("SCP " + taskContext.getTaskId() + " step32");
+
             // update output locations
             GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), registryClient, taskContext.getProcessOutput().getName(), destinationURI.toString());
             GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), registryClient, taskContext.getProcessOutput().getName(), destinationURI.toString());

@@ -51,9 +51,33 @@ public interface ApplicationDeployment {
      * @param filters map should be provided as the field name and it's value
      * @return list of application deployments
      */
-    List<ApplicationDeploymentDescription> getApplicationDeployements (Map<String, String> filters) throws AppCatalogException;
+    List<ApplicationDeploymentDescription> getApplicationDeployments(Map<String, String> filters) throws AppCatalogException;
 
+    /**
+     * This method will return a list of all application deployments
+     * @param gatewayId Gateway ID
+     * @return list of all application deployments
+     */
     List<ApplicationDeploymentDescription> getAllApplicationDeployements (String gatewayId) throws AppCatalogException;
+
+    /**
+     * This method will return a list of all application deployments
+     * @param gatewayId Gateway ID
+     * @param accessibleAppIds List of Accessible App IDs
+     * @param accessibleComputeResourceIds List of Accessible Compute Resource IDs
+     * @return list of all application deployments accessible to the user
+     */
+    List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException;
+
+    /**
+     * This method will return a list of all application deployments
+     * @param gatewayId Gateway ID
+     * @param appModuleId Application Module ID
+     * @param accessibleAppIds List of Accessible App Deployment IDs
+     * @param accessibleComputeResourceIds List of Accessible Compute Resource IDs
+     * @return list of all application deployments accessible to the user
+     */
+    List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, String appModuleId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException;
 
     List<String> getAllApplicationDeployementIds () throws AppCatalogException;
 

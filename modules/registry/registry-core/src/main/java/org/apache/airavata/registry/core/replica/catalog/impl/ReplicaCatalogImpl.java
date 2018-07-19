@@ -48,7 +48,7 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
             throw new ReplicaCatalogException("owner name and gateway id should be non empty");
         }
 
-        if(productModel.getParentProductUri() != null && (!isExists(productModel.getParentProductUri())
+        if(productModel.getParentProductUri() != null && (!isDataProductExists(productModel.getParentProductUri())
                 || !getDataProduct(productModel.getParentProductUri()).getDataProductType().equals(DataProductType.COLLECTION))){
             throw new ReplicaCatalogException("Parent Product does not exists or parent type is not Collection");
         }
@@ -169,7 +169,7 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
     }
 
     @Override
-    public boolean isExists(String productUri) throws ReplicaCatalogException {
+    public boolean isDataProductExists(String productUri) throws ReplicaCatalogException {
         EntityManager em = null;
         try {
             em = ReplicaCatalogJPAUtils.getEntityManager();

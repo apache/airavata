@@ -146,6 +146,7 @@ public class ExperimentRegistry {
             configDataResource.setStaticWorkingDir(configurationData.getComputationalResourceScheduling().getStaticWorkingDir());
             configDataResource.setStorageId(configurationData.getStorageId());
             configDataResource.setExperimentDataDir(configurationData.getExperimentDataDir());
+            configDataResource.setGroupResourceProfileId(configurationData.getGroupResourceProfileId());
             configDataResource.setUseUserCRPref(configurationData.isUseUserCRPref());
             configDataResource.setOverrideLoginUserName(configurationData.getComputationalResourceScheduling().getOverrideLoginUserName());
             configDataResource.setOverrideScratchLocation(configurationData.getComputationalResourceScheduling().getOverrideScratchLocation());
@@ -287,6 +288,7 @@ public class ExperimentRegistry {
             processResource.setExperimentDataDir(process.getExperimentDataDir());
             processResource.setUserName(process.getUserName());
             processResource.setUseUserCRPref(process.isUseUserCRPref());
+            processResource.setGroupResourceProfileId(process.getGroupResourceProfileId());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -739,6 +741,7 @@ public class ExperimentRegistry {
             configDataResource.setTotalPhysicalMemory(configurationData.getComputationalResourceScheduling().getTotalPhysicalMemory());
             configDataResource.setStaticWorkingDir(configurationData.getComputationalResourceScheduling().getStaticWorkingDir());
             configDataResource.setExperimentDataDir(configurationData.getExperimentDataDir());
+            configDataResource.setGroupResourceProfileId(configurationData.getGroupResourceProfileId());
             configDataResource.setUseUserCRPref(configurationData.isUseUserCRPref());
             configDataResource.setOverrideLoginUserName(configurationData.getComputationalResourceScheduling().getOverrideLoginUserName());
             configDataResource.setOverrideScratchLocation(configurationData.getComputationalResourceScheduling().getOverrideScratchLocation());

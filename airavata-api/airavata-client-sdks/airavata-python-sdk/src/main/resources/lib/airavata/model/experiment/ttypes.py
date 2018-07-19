@@ -95,6 +95,7 @@ class UserConfigurationDataModel(object):
      - storageId
      - experimentDataDir
      - useUserCRPref
+     - groupResourceProfileId
     """
 
     thrift_spec = (
@@ -109,9 +110,10 @@ class UserConfigurationDataModel(object):
         (8, TType.STRING, 'storageId', 'UTF8', None, ),  # 8
         (9, TType.STRING, 'experimentDataDir', 'UTF8', None, ),  # 9
         (10, TType.BOOL, 'useUserCRPref', None, None, ),  # 10
+        (11, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 11
     )
 
-    def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4], storageId=None, experimentDataDir=None, useUserCRPref=None,):
+    def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4], storageId=None, experimentDataDir=None, useUserCRPref=None, groupResourceProfileId=None,):
         self.airavataAutoSchedule = airavataAutoSchedule
         self.overrideManualScheduledParams = overrideManualScheduledParams
         self.shareExperimentPublicly = shareExperimentPublicly
@@ -122,6 +124,7 @@ class UserConfigurationDataModel(object):
         self.storageId = storageId
         self.experimentDataDir = experimentDataDir
         self.useUserCRPref = useUserCRPref
+        self.groupResourceProfileId = groupResourceProfileId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -183,6 +186,11 @@ class UserConfigurationDataModel(object):
                     self.useUserCRPref = iprot.readBool()
                 else:
                     iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.STRING:
+                    self.groupResourceProfileId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -232,6 +240,10 @@ class UserConfigurationDataModel(object):
         if self.useUserCRPref is not None:
             oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 10)
             oprot.writeBool(self.useUserCRPref)
+            oprot.writeFieldEnd()
+        if self.groupResourceProfileId is not None:
+            oprot.writeFieldBegin('groupResourceProfileId', TType.STRING, 11)
+            oprot.writeString(self.groupResourceProfileId.encode('utf-8') if sys.version_info[0] == 2 else self.groupResourceProfileId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

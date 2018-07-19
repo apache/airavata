@@ -79,13 +79,16 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  ApplicationModule getApplicationModule(AuthzToken authzToken, string appModuleId)')
     print('  bool updateApplicationModule(AuthzToken authzToken, string appModuleId, ApplicationModule applicationModule)')
     print('   getAllAppModules(AuthzToken authzToken, string gatewayId)')
+    print('   getAccessibleAppModules(AuthzToken authzToken, string gatewayId)')
     print('  bool deleteApplicationModule(AuthzToken authzToken, string appModuleId)')
     print('  string registerApplicationDeployment(AuthzToken authzToken, string gatewayId, ApplicationDeploymentDescription applicationDeployment)')
     print('  ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, string appDeploymentId)')
     print('  bool updateApplicationDeployment(AuthzToken authzToken, string appDeploymentId, ApplicationDeploymentDescription applicationDeployment)')
     print('  bool deleteApplicationDeployment(AuthzToken authzToken, string appDeploymentId)')
     print('   getAllApplicationDeployments(AuthzToken authzToken, string gatewayId)')
+    print('   getAccessibleApplicationDeployments(AuthzToken authzToken, string gatewayId, ResourcePermissionType permissionType)')
     print('   getAppModuleDeployedResources(AuthzToken authzToken, string appModuleId)')
+    print('   getApplicationDeploymentsForAppModuleAndGroupResourceProfile(AuthzToken authzToken, string appModuleId, string groupResourceProfileId)')
     print('  string registerApplicationInterface(AuthzToken authzToken, string gatewayId, ApplicationInterfaceDescription applicationInterface)')
     print('  string cloneApplicationInterface(AuthzToken authzToken, string existingAppInterfaceID, string newApplicationName, string gatewayId)')
     print('  ApplicationInterfaceDescription getApplicationInterface(AuthzToken authzToken, string appInterfaceId)')
@@ -161,6 +164,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool doesUserHaveSSHAccount(AuthzToken authzToken, string computeResourceId, string userId)')
     print('  UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(AuthzToken authzToken, string computeResourceId, string userId, string airavataCredStoreToken)')
     print('  string registerUserResourceProfile(AuthzToken authzToken, UserResourceProfile userResourceProfile)')
+    print('  bool isUserResourceProfileExists(AuthzToken authzToken, string userId, string gatewayID)')
     print('  UserResourceProfile getUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID)')
     print('  bool updateUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID, UserResourceProfile userResourceProfile)')
     print('  bool deleteUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID)')
@@ -188,9 +192,28 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  string registerReplicaLocation(AuthzToken authzToken, DataReplicaLocationModel replicaLocationModel)')
     print('  DataProductModel getParentDataProduct(AuthzToken authzToken, string productUri)')
     print('   getChildDataProducts(AuthzToken authzToken, string productUri)')
-    print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
-    print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
-    print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType, ResourcePermissionType permissionType)')
+    print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId,  userPermissionList)')
+    print('  bool shareResourceWithGroups(AuthzToken authzToken, string resourceId,  groupPermissionList)')
+    print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId,  userPermissionList)')
+    print('  bool revokeSharingOfResourceFromGroups(AuthzToken authzToken, string resourceId,  groupPermissionList)')
+    print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('   getAllAccessibleGroups(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('  bool userHasAccess(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('  string createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
+    print('  void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
+    print('  GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, string groupResourceProfileId)')
+    print('  bool removeGroupResourceProfile(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupResourceList(AuthzToken authzToken, string gatewayId)')
+    print('  bool removeGroupComputePrefs(AuthzToken authzToken, string computeResourceId, string groupResourceProfileId)')
+    print('  bool removeGroupComputeResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  bool removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  GroupComputeResourcePreference getGroupComputeResourcePreference(AuthzToken authzToken, string computeResourceId, string groupResourceProfileId)')
+    print('  ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('   getGroupComputeResourcePrefList(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupBatchQueueResourcePolicyList(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupComputeResourcePolicyList(AuthzToken authzToken, string groupResourceProfileId)')
+    print('  GatewayGroups getGatewayGroups(AuthzToken authzToken)')
     print('')
     sys.exit(0)
 
@@ -600,6 +623,12 @@ elif cmd == 'getAllAppModules':
         sys.exit(1)
     pp.pprint(client.getAllAppModules(eval(args[0]), args[1],))
 
+elif cmd == 'getAccessibleAppModules':
+    if len(args) != 2:
+        print('getAccessibleAppModules requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getAccessibleAppModules(eval(args[0]), args[1],))
+
 elif cmd == 'deleteApplicationModule':
     if len(args) != 2:
         print('deleteApplicationModule requires 2 args')
@@ -636,11 +665,23 @@ elif cmd == 'getAllApplicationDeployments':
         sys.exit(1)
     pp.pprint(client.getAllApplicationDeployments(eval(args[0]), args[1],))
 
+elif cmd == 'getAccessibleApplicationDeployments':
+    if len(args) != 3:
+        print('getAccessibleApplicationDeployments requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAccessibleApplicationDeployments(eval(args[0]), args[1], eval(args[2]),))
+
 elif cmd == 'getAppModuleDeployedResources':
     if len(args) != 2:
         print('getAppModuleDeployedResources requires 2 args')
         sys.exit(1)
     pp.pprint(client.getAppModuleDeployedResources(eval(args[0]), args[1],))
+
+elif cmd == 'getApplicationDeploymentsForAppModuleAndGroupResourceProfile':
+    if len(args) != 3:
+        print('getApplicationDeploymentsForAppModuleAndGroupResourceProfile requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getApplicationDeploymentsForAppModuleAndGroupResourceProfile(eval(args[0]), args[1], args[2],))
 
 elif cmd == 'registerApplicationInterface':
     if len(args) != 3:
@@ -1092,6 +1133,12 @@ elif cmd == 'registerUserResourceProfile':
         sys.exit(1)
     pp.pprint(client.registerUserResourceProfile(eval(args[0]), eval(args[1]),))
 
+elif cmd == 'isUserResourceProfileExists':
+    if len(args) != 3:
+        print('isUserResourceProfileExists requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.isUserResourceProfileExists(eval(args[0]), args[1], args[2],))
+
 elif cmd == 'getUserResourceProfile':
     if len(args) != 3:
         print('getUserResourceProfile requires 3 args')
@@ -1255,22 +1302,136 @@ elif cmd == 'getChildDataProducts':
     pp.pprint(client.getChildDataProducts(eval(args[0]), args[1],))
 
 elif cmd == 'shareResourceWithUsers':
-    if len(args) != 4:
-        print('shareResourceWithUsers requires 4 args')
+    if len(args) != 3:
+        print('shareResourceWithUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.shareResourceWithUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.shareResourceWithUsers(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'shareResourceWithGroups':
+    if len(args) != 3:
+        print('shareResourceWithGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.shareResourceWithGroups(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'revokeSharingOfResourceFromUsers':
-    if len(args) != 4:
-        print('revokeSharingOfResourceFromUsers requires 4 args')
+    if len(args) != 3:
+        print('revokeSharingOfResourceFromUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.revokeSharingOfResourceFromUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.revokeSharingOfResourceFromUsers(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'revokeSharingOfResourceFromGroups':
+    if len(args) != 3:
+        print('revokeSharingOfResourceFromGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.revokeSharingOfResourceFromGroups(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'getAllAccessibleUsers':
-    if len(args) != 4:
-        print('getAllAccessibleUsers requires 4 args')
+    if len(args) != 3:
+        print('getAllAccessibleUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.getAllAccessibleUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.getAllAccessibleUsers(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'getAllAccessibleGroups':
+    if len(args) != 3:
+        print('getAllAccessibleGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAllAccessibleGroups(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'userHasAccess':
+    if len(args) != 3:
+        print('userHasAccess requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.userHasAccess(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'createGroupResourceProfile':
+    if len(args) != 2:
+        print('createGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.createGroupResourceProfile(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'updateGroupResourceProfile':
+    if len(args) != 2:
+        print('updateGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.updateGroupResourceProfile(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'getGroupResourceProfile':
+    if len(args) != 2:
+        print('getGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupResourceProfile(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupResourceProfile':
+    if len(args) != 2:
+        print('removeGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupResourceProfile(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupResourceList':
+    if len(args) != 2:
+        print('getGroupResourceList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupResourceList(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupComputePrefs':
+    if len(args) != 3:
+        print('removeGroupComputePrefs requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupComputePrefs(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'removeGroupComputeResourcePolicy':
+    if len(args) != 2:
+        print('removeGroupComputeResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupComputeResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupBatchQueueResourcePolicy':
+    if len(args) != 2:
+        print('removeGroupBatchQueueResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupBatchQueueResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePreference':
+    if len(args) != 3:
+        print('getGroupComputeResourcePreference requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePreference(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'getGroupComputeResourcePolicy':
+    if len(args) != 2:
+        print('getGroupComputeResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getBatchQueueResourcePolicy':
+    if len(args) != 2:
+        print('getBatchQueueResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getBatchQueueResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePrefList':
+    if len(args) != 2:
+        print('getGroupComputeResourcePrefList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePrefList(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupBatchQueueResourcePolicyList':
+    if len(args) != 2:
+        print('getGroupBatchQueueResourcePolicyList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupBatchQueueResourcePolicyList(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePolicyList':
+    if len(args) != 2:
+        print('getGroupComputeResourcePolicyList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePolicyList(eval(args[0]), args[1],))
+
+elif cmd == 'getGatewayGroups':
+    if len(args) != 1:
+        print('getGatewayGroups requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.getGatewayGroups(eval(args[0]),))
 
 else:
     print('Unrecognized method %s' % cmd)

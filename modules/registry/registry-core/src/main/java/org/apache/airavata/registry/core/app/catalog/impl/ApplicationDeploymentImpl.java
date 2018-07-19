@@ -331,7 +331,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
-    public List<ApplicationDeploymentDescription> getApplicationDeployements(Map<String, String> filters) throws AppCatalogException {
+    public List<ApplicationDeploymentDescription> getApplicationDeployments(Map<String, String> filters) throws AppCatalogException {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
@@ -393,6 +393,31 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             throw new AppCatalogException(e);
         }
         return deploymentDescriptions;
+    }
+
+    @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException {
+        List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
+        try {
+            AppDeploymentResource resource = new AppDeploymentResource();
+            resource.setGatewayId(gatewayId);
+            resource.setAccessibleApplicationDeploymentIds(accessibleAppIds);
+            resource.setAccessibleComputeResourceIds(accessibleComputeResourceIds);
+            List<AppCatalogResource> resources = resource.getAll();
+            if (resources != null && !resources.isEmpty()){
+                deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
+            }
+
+        }catch (Exception e){
+            logger.error("Error while retrieving app deployment list...", e);
+            throw new AppCatalogException(e);
+        }
+        return deploymentDescriptions;
+    }
+
+    @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, String appModuleId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException {
+        throw new RuntimeException("Not implemented, use ApplicationDeploymentRepository.");
     }
 
     @Override

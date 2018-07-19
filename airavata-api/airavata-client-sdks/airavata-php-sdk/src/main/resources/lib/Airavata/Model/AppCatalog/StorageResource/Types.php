@@ -57,6 +57,14 @@ class StorageResourceDescription {
    * @var \Airavata\Model\Data\Movement\DataMovementInterface[]
    */
   public $dataMovementInterfaces = null;
+  /**
+   * @var int
+   */
+  public $creationTime = null;
+  /**
+   * @var int
+   */
+  public $updateTime = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -86,6 +94,14 @@ class StorageResourceDescription {
             'class' => '\Airavata\Model\Data\Movement\DataMovementInterface',
             ),
           ),
+        6 => array(
+          'var' => 'creationTime',
+          'type' => TType::I64,
+          ),
+        7 => array(
+          'var' => 'updateTime',
+          'type' => TType::I64,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -103,6 +119,12 @@ class StorageResourceDescription {
       }
       if (isset($vals['dataMovementInterfaces'])) {
         $this->dataMovementInterfaces = $vals['dataMovementInterfaces'];
+      }
+      if (isset($vals['creationTime'])) {
+        $this->creationTime = $vals['creationTime'];
+      }
+      if (isset($vals['updateTime'])) {
+        $this->updateTime = $vals['updateTime'];
       }
     }
   }
@@ -172,6 +194,20 @@ class StorageResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 6:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->creationTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->updateTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -220,6 +256,16 @@ class StorageResourceDescription {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->creationTime !== null) {
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 6);
+      $xfer += $output->writeI64($this->creationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->updateTime !== null) {
+      $xfer += $output->writeFieldBegin('updateTime', TType::I64, 7);
+      $xfer += $output->writeI64($this->updateTime);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

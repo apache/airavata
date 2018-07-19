@@ -21,6 +21,7 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.core.app.catalog.model.ApplicationDeployment;
 import org.apache.airavata.registry.core.app.catalog.model.ApplicationModule;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
@@ -44,6 +45,16 @@ public class AppModuleResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String gatewayId;
+    private List<String> accessibleApplicationDeploymentIds;
+    private List<String> accessibleComputeResourceIds;
+
+    public List<String> getAccessibleApplicationDeploymentIds() { return accessibleApplicationDeploymentIds; }
+
+    public void setAccessibleApplicationDeploymentIds(List<String> accessibleApplicationDeploymentIds) { this.accessibleApplicationDeploymentIds = accessibleApplicationDeploymentIds; }
+
+    public List<String> getAccessibleComputeResourceIds() { return accessibleComputeResourceIds; }
+
+    public void setAccessibleComputeResourceIds(List<String> accessibleComputeResourceIds) { this.accessibleComputeResourceIds = accessibleComputeResourceIds; }
 
     public String getGatewayId() {
         return gatewayId;
@@ -225,9 +236,25 @@ public class AppModuleResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_MODULE);
-            generator.setParameter(ApplicationModuleConstants.GATEWAY_ID, gatewayId);
-            Query q = generator.selectQuery(em);
+
+            String queryString = "SELECT appModule " +
+                    "FROM " + APPLICATION_MODULE + " appModule " +
+                    "WHERE appModule." + ApplicationModuleConstants.GATEWAY_ID + " = :" + ApplicationModuleConstants.GATEWAY_ID + " ";
+            if (accessibleApplicationDeploymentIds != null && !accessibleApplicationDeploymentIds.isEmpty()) {
+                queryString += "  AND appModule." + ApplicationModuleConstants.MODULE_ID + " IN (" +
+                        "    SELECT appDeploy." + ApplicationDeploymentConstants.APP_MODULE_ID + " " +
+                        "    FROM " + APPLICATION_DEPLOYMENT + " appDeploy " +
+                        "    WHERE appDeploy." + ApplicationDeploymentConstants.DEPLOYMENT_ID + " IN :" + ApplicationDeploymentConstants.DEPLOYMENT_ID +
+                        "    AND appDeploy." + ApplicationDeploymentConstants.COMPUTE_HOST_ID + " IN : " + ApplicationDeploymentConstants.COMPUTE_HOST_ID + ")";
+            }
+            Query q =  em.createQuery(queryString);
+            q.setParameter(ApplicationModuleConstants.GATEWAY_ID, gatewayId);
+            if (accessibleApplicationDeploymentIds != null && !accessibleApplicationDeploymentIds.isEmpty()) {
+                q.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleApplicationDeploymentIds);
+            }
+            if (accessibleComputeResourceIds != null && !accessibleComputeResourceIds.isEmpty()) {
+                q.setParameter(ApplicationDeploymentConstants.COMPUTE_HOST_ID, accessibleComputeResourceIds);
+            }
             List<?> results = q.getResultList();
             for (Object result : results) {
                 ApplicationModule module = (ApplicationModule) result;

@@ -28,7 +28,7 @@ show_usage() {
 	echo -e "\tcs Generate/Update Credential Store Stubs"
 	echo -e "\torch Generate/Update Orchestrator Stubs"
 	echo -e "\tgfac Generate/Update GFac Stubs"
-	echo -e "\registry Generate/Update Registry Stubs"
+	echo -e "\tregistry Generate/Update Registry Stubs"
 	echo -e "\tall Generate/Update all stubs (Credential Store, Orchestrator, GFac, Registry)."
 	echo -e "\t-h[elp] Print the usage options of this script"
 	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"

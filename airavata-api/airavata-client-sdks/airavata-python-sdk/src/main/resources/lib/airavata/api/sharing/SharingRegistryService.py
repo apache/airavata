@@ -524,7 +524,7 @@ class Iface(object):
         """
         pass
 
-    def shareEntityWithUsers(self, domainId, entityId, userList, perssionTypeId, cascadePermission):
+    def shareEntityWithUsers(self, domainId, entityId, userList, permissionTypeId, cascadePermission):
         """
         <p>API method to share an entity with users</p>
 
@@ -532,12 +532,12 @@ class Iface(object):
          - domainId
          - entityId
          - userList
-         - perssionTypeId
+         - permissionTypeId
          - cascadePermission
         """
         pass
 
-    def revokeEntitySharingFromUsers(self, domainId, entityId, userList, perssionTypeId):
+    def revokeEntitySharingFromUsers(self, domainId, entityId, userList, permissionTypeId):
         """
         <p>API method to revoke sharing from a list of users</p>
 
@@ -545,11 +545,11 @@ class Iface(object):
          - domainId
          - entityId
          - userList
-         - perssionTypeId
+         - permissionTypeId
         """
         pass
 
-    def shareEntityWithGroups(self, domainId, entityId, groupList, perssionTypeId, cascadePermission):
+    def shareEntityWithGroups(self, domainId, entityId, groupList, permissionTypeId, cascadePermission):
         """
         <p>API method to share an entity with list of groups</p>
 
@@ -557,12 +557,12 @@ class Iface(object):
          - domainId
          - entityId
          - groupList
-         - perssionTypeId
+         - permissionTypeId
          - cascadePermission
         """
         pass
 
-    def revokeEntitySharingFromGroups(self, domainId, entityId, groupList, perssionTypeId):
+    def revokeEntitySharingFromGroups(self, domainId, entityId, groupList, permissionTypeId):
         """
         <p>API method to revoke sharing from list of users</p>
 
@@ -570,7 +570,7 @@ class Iface(object):
          - domainId
          - entityId
          - groupList
-         - perssionTypeId
+         - permissionTypeId
         """
         pass
 
@@ -2465,7 +2465,7 @@ class Client(Iface):
             raise result.sre
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getPermissionTypes failed: unknown result")
 
-    def shareEntityWithUsers(self, domainId, entityId, userList, perssionTypeId, cascadePermission):
+    def shareEntityWithUsers(self, domainId, entityId, userList, permissionTypeId, cascadePermission):
         """
         <p>API method to share an entity with users</p>
 
@@ -2473,19 +2473,19 @@ class Client(Iface):
          - domainId
          - entityId
          - userList
-         - perssionTypeId
+         - permissionTypeId
          - cascadePermission
         """
-        self.send_shareEntityWithUsers(domainId, entityId, userList, perssionTypeId, cascadePermission)
+        self.send_shareEntityWithUsers(domainId, entityId, userList, permissionTypeId, cascadePermission)
         return self.recv_shareEntityWithUsers()
 
-    def send_shareEntityWithUsers(self, domainId, entityId, userList, perssionTypeId, cascadePermission):
+    def send_shareEntityWithUsers(self, domainId, entityId, userList, permissionTypeId, cascadePermission):
         self._oprot.writeMessageBegin('shareEntityWithUsers', TMessageType.CALL, self._seqid)
         args = shareEntityWithUsers_args()
         args.domainId = domainId
         args.entityId = entityId
         args.userList = userList
-        args.perssionTypeId = perssionTypeId
+        args.permissionTypeId = permissionTypeId
         args.cascadePermission = cascadePermission
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -2508,7 +2508,7 @@ class Client(Iface):
             raise result.sre
         raise TApplicationException(TApplicationException.MISSING_RESULT, "shareEntityWithUsers failed: unknown result")
 
-    def revokeEntitySharingFromUsers(self, domainId, entityId, userList, perssionTypeId):
+    def revokeEntitySharingFromUsers(self, domainId, entityId, userList, permissionTypeId):
         """
         <p>API method to revoke sharing from a list of users</p>
 
@@ -2516,18 +2516,18 @@ class Client(Iface):
          - domainId
          - entityId
          - userList
-         - perssionTypeId
+         - permissionTypeId
         """
-        self.send_revokeEntitySharingFromUsers(domainId, entityId, userList, perssionTypeId)
+        self.send_revokeEntitySharingFromUsers(domainId, entityId, userList, permissionTypeId)
         return self.recv_revokeEntitySharingFromUsers()
 
-    def send_revokeEntitySharingFromUsers(self, domainId, entityId, userList, perssionTypeId):
+    def send_revokeEntitySharingFromUsers(self, domainId, entityId, userList, permissionTypeId):
         self._oprot.writeMessageBegin('revokeEntitySharingFromUsers', TMessageType.CALL, self._seqid)
         args = revokeEntitySharingFromUsers_args()
         args.domainId = domainId
         args.entityId = entityId
         args.userList = userList
-        args.perssionTypeId = perssionTypeId
+        args.permissionTypeId = permissionTypeId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -2549,7 +2549,7 @@ class Client(Iface):
             raise result.sre
         raise TApplicationException(TApplicationException.MISSING_RESULT, "revokeEntitySharingFromUsers failed: unknown result")
 
-    def shareEntityWithGroups(self, domainId, entityId, groupList, perssionTypeId, cascadePermission):
+    def shareEntityWithGroups(self, domainId, entityId, groupList, permissionTypeId, cascadePermission):
         """
         <p>API method to share an entity with list of groups</p>
 
@@ -2557,19 +2557,19 @@ class Client(Iface):
          - domainId
          - entityId
          - groupList
-         - perssionTypeId
+         - permissionTypeId
          - cascadePermission
         """
-        self.send_shareEntityWithGroups(domainId, entityId, groupList, perssionTypeId, cascadePermission)
+        self.send_shareEntityWithGroups(domainId, entityId, groupList, permissionTypeId, cascadePermission)
         return self.recv_shareEntityWithGroups()
 
-    def send_shareEntityWithGroups(self, domainId, entityId, groupList, perssionTypeId, cascadePermission):
+    def send_shareEntityWithGroups(self, domainId, entityId, groupList, permissionTypeId, cascadePermission):
         self._oprot.writeMessageBegin('shareEntityWithGroups', TMessageType.CALL, self._seqid)
         args = shareEntityWithGroups_args()
         args.domainId = domainId
         args.entityId = entityId
         args.groupList = groupList
-        args.perssionTypeId = perssionTypeId
+        args.permissionTypeId = permissionTypeId
         args.cascadePermission = cascadePermission
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -2592,7 +2592,7 @@ class Client(Iface):
             raise result.sre
         raise TApplicationException(TApplicationException.MISSING_RESULT, "shareEntityWithGroups failed: unknown result")
 
-    def revokeEntitySharingFromGroups(self, domainId, entityId, groupList, perssionTypeId):
+    def revokeEntitySharingFromGroups(self, domainId, entityId, groupList, permissionTypeId):
         """
         <p>API method to revoke sharing from list of users</p>
 
@@ -2600,18 +2600,18 @@ class Client(Iface):
          - domainId
          - entityId
          - groupList
-         - perssionTypeId
+         - permissionTypeId
         """
-        self.send_revokeEntitySharingFromGroups(domainId, entityId, groupList, perssionTypeId)
+        self.send_revokeEntitySharingFromGroups(domainId, entityId, groupList, permissionTypeId)
         return self.recv_revokeEntitySharingFromGroups()
 
-    def send_revokeEntitySharingFromGroups(self, domainId, entityId, groupList, perssionTypeId):
+    def send_revokeEntitySharingFromGroups(self, domainId, entityId, groupList, permissionTypeId):
         self._oprot.writeMessageBegin('revokeEntitySharingFromGroups', TMessageType.CALL, self._seqid)
         args = revokeEntitySharingFromGroups_args()
         args.domainId = domainId
         args.entityId = entityId
         args.groupList = groupList
-        args.perssionTypeId = perssionTypeId
+        args.permissionTypeId = permissionTypeId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -3865,7 +3865,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = shareEntityWithUsers_result()
         try:
-            result.success = self._handler.shareEntityWithUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId, args.cascadePermission)
+            result.success = self._handler.shareEntityWithUsers(args.domainId, args.entityId, args.userList, args.permissionTypeId, args.cascadePermission)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -3887,7 +3887,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = revokeEntitySharingFromUsers_result()
         try:
-            result.success = self._handler.revokeEntitySharingFromUsers(args.domainId, args.entityId, args.userList, args.perssionTypeId)
+            result.success = self._handler.revokeEntitySharingFromUsers(args.domainId, args.entityId, args.userList, args.permissionTypeId)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -3909,7 +3909,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = shareEntityWithGroups_result()
         try:
-            result.success = self._handler.shareEntityWithGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId, args.cascadePermission)
+            result.success = self._handler.shareEntityWithGroups(args.domainId, args.entityId, args.groupList, args.permissionTypeId, args.cascadePermission)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -3931,7 +3931,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = revokeEntitySharingFromGroups_result()
         try:
-            result.success = self._handler.revokeEntitySharingFromGroups(args.domainId, args.entityId, args.groupList, args.perssionTypeId)
+            result.success = self._handler.revokeEntitySharingFromGroups(args.domainId, args.entityId, args.groupList, args.permissionTypeId)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -11679,7 +11679,7 @@ class shareEntityWithUsers_args(object):
      - domainId
      - entityId
      - userList
-     - perssionTypeId
+     - permissionTypeId
      - cascadePermission
     """
 
@@ -11688,15 +11688,15 @@ class shareEntityWithUsers_args(object):
         (1, TType.STRING, 'domainId', 'UTF8', None, ),  # 1
         (2, TType.STRING, 'entityId', 'UTF8', None, ),  # 2
         (3, TType.LIST, 'userList', (TType.STRING, 'UTF8', False), None, ),  # 3
-        (4, TType.STRING, 'perssionTypeId', 'UTF8', None, ),  # 4
+        (4, TType.STRING, 'permissionTypeId', 'UTF8', None, ),  # 4
         (5, TType.BOOL, 'cascadePermission', None, None, ),  # 5
     )
 
-    def __init__(self, domainId=None, entityId=None, userList=None, perssionTypeId=None, cascadePermission=None,):
+    def __init__(self, domainId=None, entityId=None, userList=None, permissionTypeId=None, cascadePermission=None,):
         self.domainId = domainId
         self.entityId = entityId
         self.userList = userList
-        self.perssionTypeId = perssionTypeId
+        self.permissionTypeId = permissionTypeId
         self.cascadePermission = cascadePermission
 
     def read(self, iprot):
@@ -11730,7 +11730,7 @@ class shareEntityWithUsers_args(object):
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.STRING:
-                    self.perssionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.permissionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 5:
@@ -11763,9 +11763,9 @@ class shareEntityWithUsers_args(object):
                 oprot.writeString(iter125.encode('utf-8') if sys.version_info[0] == 2 else iter125)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
-        if self.perssionTypeId is not None:
-            oprot.writeFieldBegin('perssionTypeId', TType.STRING, 4)
-            oprot.writeString(self.perssionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.perssionTypeId)
+        if self.permissionTypeId is not None:
+            oprot.writeFieldBegin('permissionTypeId', TType.STRING, 4)
+            oprot.writeString(self.permissionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.permissionTypeId)
             oprot.writeFieldEnd()
         if self.cascadePermission is not None:
             oprot.writeFieldBegin('cascadePermission', TType.BOOL, 5)
@@ -11781,8 +11781,8 @@ class shareEntityWithUsers_args(object):
             raise TProtocolException(message='Required field entityId is unset!')
         if self.userList is None:
             raise TProtocolException(message='Required field userList is unset!')
-        if self.perssionTypeId is None:
-            raise TProtocolException(message='Required field perssionTypeId is unset!')
+        if self.permissionTypeId is None:
+            raise TProtocolException(message='Required field permissionTypeId is unset!')
         if self.cascadePermission is None:
             raise TProtocolException(message='Required field cascadePermission is unset!')
         return
@@ -11877,7 +11877,7 @@ class revokeEntitySharingFromUsers_args(object):
      - domainId
      - entityId
      - userList
-     - perssionTypeId
+     - permissionTypeId
     """
 
     thrift_spec = (
@@ -11885,14 +11885,14 @@ class revokeEntitySharingFromUsers_args(object):
         (1, TType.STRING, 'domainId', 'UTF8', None, ),  # 1
         (2, TType.STRING, 'entityId', 'UTF8', None, ),  # 2
         (3, TType.LIST, 'userList', (TType.STRING, 'UTF8', False), None, ),  # 3
-        (4, TType.STRING, 'perssionTypeId', 'UTF8', None, ),  # 4
+        (4, TType.STRING, 'permissionTypeId', 'UTF8', None, ),  # 4
     )
 
-    def __init__(self, domainId=None, entityId=None, userList=None, perssionTypeId=None,):
+    def __init__(self, domainId=None, entityId=None, userList=None, permissionTypeId=None,):
         self.domainId = domainId
         self.entityId = entityId
         self.userList = userList
-        self.perssionTypeId = perssionTypeId
+        self.permissionTypeId = permissionTypeId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -11925,7 +11925,7 @@ class revokeEntitySharingFromUsers_args(object):
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.STRING:
-                    self.perssionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.permissionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -11953,9 +11953,9 @@ class revokeEntitySharingFromUsers_args(object):
                 oprot.writeString(iter132.encode('utf-8') if sys.version_info[0] == 2 else iter132)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
-        if self.perssionTypeId is not None:
-            oprot.writeFieldBegin('perssionTypeId', TType.STRING, 4)
-            oprot.writeString(self.perssionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.perssionTypeId)
+        if self.permissionTypeId is not None:
+            oprot.writeFieldBegin('permissionTypeId', TType.STRING, 4)
+            oprot.writeString(self.permissionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.permissionTypeId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -11967,8 +11967,8 @@ class revokeEntitySharingFromUsers_args(object):
             raise TProtocolException(message='Required field entityId is unset!')
         if self.userList is None:
             raise TProtocolException(message='Required field userList is unset!')
-        if self.perssionTypeId is None:
-            raise TProtocolException(message='Required field perssionTypeId is unset!')
+        if self.permissionTypeId is None:
+            raise TProtocolException(message='Required field permissionTypeId is unset!')
         return
 
     def __repr__(self):
@@ -12061,7 +12061,7 @@ class shareEntityWithGroups_args(object):
      - domainId
      - entityId
      - groupList
-     - perssionTypeId
+     - permissionTypeId
      - cascadePermission
     """
 
@@ -12070,15 +12070,15 @@ class shareEntityWithGroups_args(object):
         (1, TType.STRING, 'domainId', 'UTF8', None, ),  # 1
         (2, TType.STRING, 'entityId', 'UTF8', None, ),  # 2
         (3, TType.LIST, 'groupList', (TType.STRING, 'UTF8', False), None, ),  # 3
-        (4, TType.STRING, 'perssionTypeId', 'UTF8', None, ),  # 4
+        (4, TType.STRING, 'permissionTypeId', 'UTF8', None, ),  # 4
         (5, TType.BOOL, 'cascadePermission', None, None, ),  # 5
     )
 
-    def __init__(self, domainId=None, entityId=None, groupList=None, perssionTypeId=None, cascadePermission=None,):
+    def __init__(self, domainId=None, entityId=None, groupList=None, permissionTypeId=None, cascadePermission=None,):
         self.domainId = domainId
         self.entityId = entityId
         self.groupList = groupList
-        self.perssionTypeId = perssionTypeId
+        self.permissionTypeId = permissionTypeId
         self.cascadePermission = cascadePermission
 
     def read(self, iprot):
@@ -12112,7 +12112,7 @@ class shareEntityWithGroups_args(object):
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.STRING:
-                    self.perssionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.permissionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 5:
@@ -12145,9 +12145,9 @@ class shareEntityWithGroups_args(object):
                 oprot.writeString(iter139.encode('utf-8') if sys.version_info[0] == 2 else iter139)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
-        if self.perssionTypeId is not None:
-            oprot.writeFieldBegin('perssionTypeId', TType.STRING, 4)
-            oprot.writeString(self.perssionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.perssionTypeId)
+        if self.permissionTypeId is not None:
+            oprot.writeFieldBegin('permissionTypeId', TType.STRING, 4)
+            oprot.writeString(self.permissionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.permissionTypeId)
             oprot.writeFieldEnd()
         if self.cascadePermission is not None:
             oprot.writeFieldBegin('cascadePermission', TType.BOOL, 5)
@@ -12163,8 +12163,8 @@ class shareEntityWithGroups_args(object):
             raise TProtocolException(message='Required field entityId is unset!')
         if self.groupList is None:
             raise TProtocolException(message='Required field groupList is unset!')
-        if self.perssionTypeId is None:
-            raise TProtocolException(message='Required field perssionTypeId is unset!')
+        if self.permissionTypeId is None:
+            raise TProtocolException(message='Required field permissionTypeId is unset!')
         if self.cascadePermission is None:
             raise TProtocolException(message='Required field cascadePermission is unset!')
         return
@@ -12259,7 +12259,7 @@ class revokeEntitySharingFromGroups_args(object):
      - domainId
      - entityId
      - groupList
-     - perssionTypeId
+     - permissionTypeId
     """
 
     thrift_spec = (
@@ -12267,14 +12267,14 @@ class revokeEntitySharingFromGroups_args(object):
         (1, TType.STRING, 'domainId', 'UTF8', None, ),  # 1
         (2, TType.STRING, 'entityId', 'UTF8', None, ),  # 2
         (3, TType.LIST, 'groupList', (TType.STRING, 'UTF8', False), None, ),  # 3
-        (4, TType.STRING, 'perssionTypeId', 'UTF8', None, ),  # 4
+        (4, TType.STRING, 'permissionTypeId', 'UTF8', None, ),  # 4
     )
 
-    def __init__(self, domainId=None, entityId=None, groupList=None, perssionTypeId=None,):
+    def __init__(self, domainId=None, entityId=None, groupList=None, permissionTypeId=None,):
         self.domainId = domainId
         self.entityId = entityId
         self.groupList = groupList
-        self.perssionTypeId = perssionTypeId
+        self.permissionTypeId = permissionTypeId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -12307,7 +12307,7 @@ class revokeEntitySharingFromGroups_args(object):
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.STRING:
-                    self.perssionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.permissionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -12335,9 +12335,9 @@ class revokeEntitySharingFromGroups_args(object):
                 oprot.writeString(iter146.encode('utf-8') if sys.version_info[0] == 2 else iter146)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
-        if self.perssionTypeId is not None:
-            oprot.writeFieldBegin('perssionTypeId', TType.STRING, 4)
-            oprot.writeString(self.perssionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.perssionTypeId)
+        if self.permissionTypeId is not None:
+            oprot.writeFieldBegin('permissionTypeId', TType.STRING, 4)
+            oprot.writeString(self.permissionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.permissionTypeId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -12349,8 +12349,8 @@ class revokeEntitySharingFromGroups_args(object):
             raise TProtocolException(message='Required field entityId is unset!')
         if self.groupList is None:
             raise TProtocolException(message='Required field groupList is unset!')
-        if self.perssionTypeId is None:
-            raise TProtocolException(message='Required field perssionTypeId is unset!')
+        if self.permissionTypeId is None:
+            raise TProtocolException(message='Required field permissionTypeId is unset!')
         return
 
     def __repr__(self):
