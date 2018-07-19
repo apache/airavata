@@ -492,7 +492,12 @@ public class AiravataDataMigrator {
         List<GroupComputeResourcePreference> groupComputeResourcePreferences = new ArrayList<>();
         List<ComputeResourcePolicy> computeResourcePolicies = new ArrayList<>();
         List<ComputeResourcePreference> computeResourcePreferences = registryServiceClient.getAllGatewayComputeResourcePreferences(gatewayId);
+        Map<String, String> allComputeResourceNames = registryServiceClient.getAllComputeResourceNames();
         for (ComputeResourcePreference computeResourcePreference : computeResourcePreferences) {
+            if (!allComputeResourceNames.containsKey(computeResourcePreference.getComputeResourceId())) {
+                System.out.println("Warning: compute resource " + computeResourcePreference.getComputeResourceId() + " does not exist, skipping converting its ComputeResourcePreference for " + gatewayId);
+                continue;
+            }
             GroupComputeResourcePreference groupComputeResourcePreference = convertComputeResourcePreferenceToGroupComputeResourcePreference(groupResourceProfile.getGroupResourceProfileId(), computeResourcePreference);
             ComputeResourcePolicy computeResourcePolicy = createDefaultComputeResourcePolicy(groupResourceProfile.getGroupResourceProfileId(), computeResourcePreference.getComputeResourceId(), registryServiceClient);
             groupComputeResourcePreferences.add(groupComputeResourcePreference);
