@@ -113,7 +113,7 @@ public class SCPDataStageTask implements Task {
 
                     if (processOutput.getSearchQuery() == null || "".equals(processOutput.getSearchQuery())) {
                         String msg = "Search query can not be empty in " + processOutput.getType().name() +
-                                " type output : " + processOutput.getName() + ". Specify the target file file in search query";
+                                " type output : " + processOutput.getName() + ". Specify the string to search in file";
                         log.error(msg);
                         status.setState(TaskState.FAILED);
                         status.setReason(msg);
