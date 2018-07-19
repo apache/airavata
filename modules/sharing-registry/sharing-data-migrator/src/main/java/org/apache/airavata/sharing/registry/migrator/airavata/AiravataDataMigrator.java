@@ -262,7 +262,11 @@ public class AiravataDataMigrator {
         for (Entity entity : experimentEntities) {
             if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                 sharingRegistryServerHandler.createEntity(entity);
-            shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
+            if (gatewayGroupsMap.containsKey(entity.domainId)) {
+                shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
+            } else {
+                System.out.println("Warning: no Admin gateway groups to share experiment entity " + entity.entityId + " in gateway " + entity.domainId);
+            }
         }
 
         //Creating application deployment entries
