@@ -271,8 +271,13 @@ public class AiravataDataMigrator {
         }
 
         for (Entity entity : experimentEntities) {
-            if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
-                sharingRegistryServerHandler.createEntity(entity);
+            if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId)) {
+                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.parentEntityId)) {
+                    System.out.println("Warning: project entity does exist for experiment entity " + entity.entityId + " in gateway " + entity.domainId);
+                } else {
+                    sharingRegistryServerHandler.createEntity(entity);
+                }
+            }
             if (gatewayGroupsMap.containsKey(entity.domainId)) {
                 shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
             } else {
