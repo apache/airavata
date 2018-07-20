@@ -123,12 +123,22 @@ class KeycloakBackend(object):
     def _process_userinfo(self, request, userinfo):
         logger.debug("userinfo: {}".format(userinfo))
         username = userinfo['preferred_username']
+        email = userinfo['email']
+        first_name = userinfo['given_name']
+        last_name = userinfo['family_name']
         request.session['USERINFO'] = userinfo
-        # TODO load user roles too
         try:
             user = User.objects.get(username=username)
+            # Update these fields each time, in case they have changed
+            user.email = email
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
             return user
         except User.DoesNotExist:
-            user = User(username=username)
+            user = User(username=username,
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email)
             user.save()
             return user
