@@ -12,3 +12,6 @@ class WorkspaceConfig(AiravataAppConfig):
     app_description = """
         Launch applications and manage your experiments and projects.
     """
+
+    def ready(self):
+        import django_airavata.apps.workspace.signals  # noqa
