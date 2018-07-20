@@ -8,7 +8,7 @@ from django.dispatch import receiver
 
 from airavata.model.workspace.ttypes import Project
 from django_airavata.apps.auth.utils import get_authz_token
-from django_airavata.utils import airavata_client
+from django_airavata.utils import get_airavata_client
 
 log = logging.getLogger(__name__)
 
@@ -18,9 +18,10 @@ def create_default_project_if_not_exists(sender, request, user, **kwargs):
     # auth middleware hasn't run yet so authz_token attribute is not available
     # on request, so need to create the authz_token manually
     authz_token = get_authz_token(request)
-    with airavata_client() as client:
+    with get_airavata_client() as airavata_client:
         # Just retrieve the first project
-        projects = client.getUserProjects(authz_token, settings.GATEWAY_ID, request.user.username, 1, 0)
+        projects = airavata_client.getUserProjects(
+            authz_token, settings.GATEWAY_ID, request.user.username, 1, 0)
         if len(projects) == 0:
             log.info("Creating default project for user {}".format(
                 user.username))
@@ -31,5 +32,5 @@ def create_default_project_if_not_exists(sender, request, user, **kwargs):
             default_project.description = ("This is the default project for "
                                            "user {owner}".format(
                                                owner=default_project.owner))
-            client.createProject(authz_token, settings.GATEWAY_ID,
+            airavata_client.createProject(authz_token, settings.GATEWAY_ID,
                                  default_project)

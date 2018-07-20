@@ -55,7 +55,7 @@ def get_transport(hostname, port, secure=True):
     return transport
 
 
-def get_airavata_client(transport):
+def create_airavata_client(transport):
 
     # Airavata currently uses Binary Protocol
     protocol = TBinaryProtocol.TBinaryProtocol(transport)
@@ -65,7 +65,7 @@ def get_airavata_client(transport):
     return client
 
 
-def get_sharing_client(transport):
+def create_sharing_client(transport):
 
     protocol = TBinaryProtocol.TBinaryProtocol(transport)
 
@@ -76,81 +76,81 @@ def get_binary_protocol(transport):
     return TBinaryProtocol.TBinaryProtocol(transport)
 
 
-def get_group_manager_client(transport):
+def create_group_manager_client(transport):
     protocol = get_binary_protocol(transport)
     multiplex_prot = TMultiplexedProtocol(protocol, GROUP_MANAGER_CPI_NAME)
     return GroupManagerService.Client(multiplex_prot)
 
 
-def get_iamadmin_client(transport):
+def create_iamadmin_client(transport):
     protocol = get_binary_protocol(transport)
     multiplex_prot = TMultiplexedProtocol(protocol,
                                           IAM_ADMIN_SERVICES_CPI_NAME)
     return IamAdminServices.Client(multiplex_prot)
 
 
-def get_tenant_profile_client(transport):
+def create_tenant_profile_client(transport):
     protocol = get_binary_protocol(transport)
     multiplex_prot = TMultiplexedProtocol(protocol, TENANT_PROFILE_CPI_NAME)
     return TenantProfileService.Client(multiplex_prot)
 
 
-def get_user_profile_client(transport):
+def create_user_profile_client(transport):
     protocol = get_binary_protocol(transport)
     multiplex_prot = TMultiplexedProtocol(protocol, USER_PROFILE_CPI_NAME)
     return UserProfileService.Client(multiplex_prot)
 
 
-def airavata_client():
+def get_airavata_client():
     """Get Airavata API client as context manager (use in `with statement`)."""
-    return thrift_client(settings.AIRAVATA_API_HOST,
-                         settings.AIRAVATA_API_PORT,
-                         settings.AIRAVATA_API_SECURE,
-                         get_airavata_client)
+    return get_thrift_client(settings.AIRAVATA_API_HOST,
+                             settings.AIRAVATA_API_PORT,
+                             settings.AIRAVATA_API_SECURE,
+                             create_airavata_client)
 
 
-def sharing_client():
+def get_sharing_client():
     """Get Sharing API client as context manager (use in `with statement`)."""
-    return thrift_client(settings.SHARING_API_HOST,
-                         settings.SHARING_API_PORT,
-                         settings.SHARING_API_SECURE,
-                         get_airavata_client)
+    return get_thrift_client(settings.SHARING_API_HOST,
+                             settings.SHARING_API_PORT,
+                             settings.SHARING_API_SECURE,
+                             create_sharing_client)
 
 
-def group_manager_client():
+def get_group_manager_client():
     """Group Manager client as context manager (use in `with statement`)."""
-    return thrift_client(settings.PROFILE_SERVICE_HOST,
-                         settings.PROFILE_SERVICE_PORT,
-                         settings.PROFILE_SERVICE_SECURE,
-                         get_group_manager_client)
+    return get_thrift_client(settings.PROFILE_SERVICE_HOST,
+                             settings.PROFILE_SERVICE_PORT,
+                             settings.PROFILE_SERVICE_SECURE,
+                             create_group_manager_client)
 
 
-def iam_admin_client():
+def get_iam_admin_client():
     """IAM Admin client as context manager (use in `with statement`)."""
-    return thrift_client(settings.PROFILE_SERVICE_HOST,
-                         settings.PROFILE_SERVICE_PORT,
-                         settings.PROFILE_SERVICE_SECURE,
-                         get_iamadmin_client)
+    return get_thrift_client(settings.PROFILE_SERVICE_HOST,
+                             settings.PROFILE_SERVICE_PORT,
+                             settings.PROFILE_SERVICE_SECURE,
+                             create_iamadmin_client)
 
 
-def tenant_profile_client():
+def get_tenant_profile_client():
     """Tenant Profile client as context manager (use in `with statement`)."""
-    return thrift_client(settings.PROFILE_SERVICE_HOST,
-                         settings.PROFILE_SERVICE_PORT,
-                         settings.PROFILE_SERVICE_SECURE,
-                         get_tenant_profile_client)
+    return get_thrift_client(settings.PROFILE_SERVICE_HOST,
+                             settings.PROFILE_SERVICE_PORT,
+                             settings.PROFILE_SERVICE_SECURE,
+                             create_tenant_profile_client)
 
 
-def user_profile_client():
+def get_user_profile_client():
     """User Profile client as context manager (use in `with statement`)."""
-    return thrift_client(settings.PROFILE_SERVICE_HOST,
-                         settings.PROFILE_SERVICE_PORT,
-                         settings.PROFILE_SERVICE_SECURE,
-                         get_user_profile_client)
+    return get_thrift_client(settings.PROFILE_SERVICE_HOST,
+                             settings.PROFILE_SERVICE_PORT,
+                             settings.PROFILE_SERVICE_SECURE,
+                             create_user_profile_client)
 
 
 @contextmanager
-def thrift_client(host, port, is_secure, client_generator):
+def get_thrift_client(host, port, is_secure, client_generator):
     transport = get_transport(host, port, is_secure)
     client = client_generator(transport)
 
