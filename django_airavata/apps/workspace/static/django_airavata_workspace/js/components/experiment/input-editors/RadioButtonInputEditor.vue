@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import InputEditorMixin from './InputEditorMixin'
+import {InputEditorMixin} from 'django-airavata-workspace-plugin-api'
 
 const CONFIG_OPTION_TEXT_KEY = 'text';
 const CONFIG_OPTION_VALUE_KEY = 'value';

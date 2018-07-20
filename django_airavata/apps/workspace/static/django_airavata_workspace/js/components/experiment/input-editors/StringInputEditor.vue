@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import InputEditorMixin from './InputEditorMixin'
+import {InputEditorMixin} from 'django-airavata-workspace-plugin-api'
 
 export default {
     name: 'string-input-editor',

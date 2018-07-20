@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import InputEditorMixin from './InputEditorMixin'
+import {InputEditorMixin} from 'django-airavata-workspace-plugin-api'
 
 const DEFAULT_ROWS = 3;
 
