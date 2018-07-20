@@ -44,24 +44,26 @@ enum WorkflowState {
 }
 
 struct WorkflowStatus {
-    1:  required WorkflowState state,
-    2:  optional string description,
-    3:  optional i64 updatedAt
+    1:  optional string id,
+    2:  required WorkflowState state,
+    3:  optional string description,
+    4:  optional i64 updatedAt
 }
 
 struct AiravataWorkflow {
     1:  required string id = airavata_commons.DEFAULT_ID,
     2:  required string name,
     3:  required string gatewayId,
-    4:  required string storageResourceId,
-    5:  optional string description,
-    6:  optional bool enableEmailNotification,
-    7:  optional list<string> notificationEmails,
-    8:  optional list<workflow_application_model.WorkflowApplication> applications,
-    9:  optional list<workflow_handler_model.WorkflowHandler> handlers,
-    10: optional list<workflow_connection_model.WorkflowConnection> connections,
-    11: optional list<WorkflowStatus> statuses,
-    12: optional list<airavata_commons.ErrorModel> errors,
-    13: optional i64 createdAt,
-    14: optional i64 updatedAt
+    4:  required string userName,
+    5:  required string storageResourceId,
+    6:  optional string description,
+    7:  optional bool enableEmailNotification,
+    8:  optional list<string> notificationEmails,
+    9:  optional list<workflow_application_model.WorkflowApplication> applications,
+    10: optional list<workflow_handler_model.WorkflowHandler> handlers,
+    11: optional list<workflow_connection_model.WorkflowConnection> connections,
+    12: optional list<WorkflowStatus> statuses,
+    13: optional list<airavata_commons.ErrorModel> errors,
+    14: optional i64 createdAt,
+    15: optional i64 updatedAt
 }

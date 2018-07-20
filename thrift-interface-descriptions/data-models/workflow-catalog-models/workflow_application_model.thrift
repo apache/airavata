@@ -38,9 +38,10 @@ enum ApplicationState {
 }
 
 struct ApplicationStatus {
-    1:  required ApplicationState state,
-    2:  optional string description,
-    3:  optional i64 updatedAt
+    1:  optional string id,
+    2:  required ApplicationState state,
+    3:  optional string description,
+    4:  optional i64 updatedAt
 }
 
 struct ApplicationConfig {
