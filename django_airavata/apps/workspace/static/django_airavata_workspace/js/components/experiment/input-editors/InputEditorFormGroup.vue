@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import InputEditorMixin from './InputEditorMixin'
 
 export default {
     name: 'input-editor-form-group',

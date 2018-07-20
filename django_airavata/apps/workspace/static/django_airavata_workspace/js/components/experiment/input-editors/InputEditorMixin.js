@@ -15,6 +15,10 @@ export default {
             type: models.InputDataObjectType,
             required: true,
         },
+        id: {
+            type: String,
+            required: true,
+        },
     },
     data () {
         return {
@@ -26,21 +30,14 @@ export default {
         validationResults: function() {
             return this.experimentInput.validate(this.experiment, this.data);
         },
+        validationMessages: function() {
+            return 'value' in this.validationResults ? this.validationResults['value'] : [];
+        },
         valid: function() {
-            return Object.keys(this.validationResults).length === 0;
+            return this.validationMessages.length === 0;
         },
-        validationFeedback: function() {
-            // Only display validation feedback after the user has provided
-            // input so that missing required value errors are only displayed
-            // after interacting with the input editor
-            return this.inputHasBegun && 'value' in this.validationResults
-                ? this.validationResults['value']
-                : null;
-        },
-        validationState: function() {
-            return this.inputHasBegun && 'value' in this.validationResults
-                ? 'invalid'
-                : null;
+        componentValidState: function() {
+            return this.inputHasBegun && !this.valid ? 'invalid' : null;
         },
     },
     methods: {
@@ -53,7 +50,7 @@ export default {
             if (this.valid) {
                 this.$emit('valid');
             } else {
-                this.$emit('invalid');
+                this.$emit('invalid', this.validationMessages);
             }
         }
     },

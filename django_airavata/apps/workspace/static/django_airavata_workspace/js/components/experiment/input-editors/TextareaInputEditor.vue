@@ -1,16 +1,12 @@
 <template>
-    <input-editor-form-group :label="experimentInput.name" :label-for="experimentInput.name"
-        :state="validationState" :feedback-messages="validationFeedback">
-        <b-form-textarea :id="experimentInput.name" v-model="data"
-            :rows="rows"
-            :placeholder="experimentInput.userFriendlyDescription"
-            :state="validationState"
-            @input="valueChanged"/>
-    </input-editor-form-group>
+    <b-form-textarea :id="id" v-model="data"
+        :rows="rows"
+        :placeholder="experimentInput.userFriendlyDescription"
+        :state="componentValidState"
+        @input="valueChanged"/>
 </template>
 
 <script>
-import InputEditorFormGroup from './InputEditorFormGroup.vue'
 import InputEditorMixin from './InputEditorMixin'
 
 const DEFAULT_ROWS = 3;
@@ -23,9 +19,6 @@ export default {
             type: String,
             required: true,
         },
-    },
-    components: {
-        InputEditorFormGroup,
     },
     computed: {
         rows: function() {

@@ -50,7 +50,7 @@
                             <h2 class="h6 mb-3">
                                 Application Inputs
                             </h2>
-                            <component :is="getInputEditorComponentName(experimentInput)"
+                            <input-editor-container
                                 v-for="experimentInput in localExperiment.experimentInputs"
                                 :experiment="localExperiment"
                                 :experiment-input="experimentInput"
@@ -98,10 +98,7 @@
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
 import GroupResourceProfileSelector from './GroupResourceProfileSelector.vue'
-import RadioButtonInputEditor from './input-editors/RadioButtonInputEditor.vue'
-import StringInputEditor from './input-editors/StringInputEditor.vue'
-import FileInputEditor from './input-editors/FileInputEditor.vue'
-import TextareaInputEditor from './input-editors/TextareaInputEditor.vue'
+import InputEditorContainer from './input-editors/InputEditorContainer.vue'
 import {models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
@@ -127,10 +124,7 @@ export default {
     components: {
         ComputationalResourceSchedulingEditor,
         GroupResourceProfileSelector,
-        FileInputEditor,
-        RadioButtonInputEditor,
-        StringInputEditor,
-        TextareaInputEditor,
+        InputEditorContainer,
     },
     mounted: function () {
         services.ProjectService.listAll()
@@ -202,20 +196,6 @@ export default {
         },
         getValidationState: function(properties) {
             return this.getValidationFeedback(properties) ? 'invalid' : null;
-        },
-        getInputEditorComponentName: function(experimentInput) {
-            // If input specifices an editor UI component, use that
-            if (experimentInput.editorUIComponentId) {
-                return experimentInput.editorUIComponentId;
-            }
-            // Default UI components based on input type
-            if (experimentInput.type === models.DataType.STRING) {
-                return 'string-input-editor';
-            } else if (experimentInput.type === models.DataType.URI) {
-                return 'file-input-editor';
-            }
-            // Default
-            return 'string-input-editor';
         },
         recordInvalidInputEditorValue: function(experimentInputName) {
             if (!this.invalidInputs.includes(experimentInputName)) {

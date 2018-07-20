@@ -1,16 +1,12 @@
 <template>
-    <input-editor-form-group :label="experimentInput.name" :label-for="experimentInput.name"
-        :state="validationState" :feedback-messages="validationFeedback">
-        <b-form-radio-group :id="experimentInput.name" v-model="data"
-            :options="options"
-            stacked
-            :state="validationState"
-            @input="valueChanged"/>
-    </input-editor-form-group>
+    <b-form-radio-group :id="id" v-model="data"
+        :options="options"
+        stacked
+        :state="componentValidState"
+        @input="valueChanged"/>
 </template>
 
 <script>
-import InputEditorFormGroup from './InputEditorFormGroup.vue'
 import InputEditorMixin from './InputEditorMixin'
 
 const CONFIG_OPTION_TEXT_KEY = 'text';
@@ -24,9 +20,6 @@ export default {
             type: String,
             required: true,
         },
-    },
-    components: {
-        InputEditorFormGroup,
     },
     computed: {
         options: function() {
