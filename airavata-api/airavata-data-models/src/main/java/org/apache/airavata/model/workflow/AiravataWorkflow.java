@@ -31,17 +31,18 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)6);
-  private static final org.apache.thrift.protocol.TField NOTIFICATION_EMAILS_FIELD_DESC = new org.apache.thrift.protocol.TField("notificationEmails", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField APPLICATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("applications", org.apache.thrift.protocol.TType.LIST, (short)8);
-  private static final org.apache.thrift.protocol.TField HANDLERS_FIELD_DESC = new org.apache.thrift.protocol.TField("handlers", org.apache.thrift.protocol.TType.LIST, (short)9);
-  private static final org.apache.thrift.protocol.TField CONNECTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("connections", org.apache.thrift.protocol.TType.LIST, (short)10);
-  private static final org.apache.thrift.protocol.TField STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("statuses", org.apache.thrift.protocol.TType.LIST, (short)11);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)12);
-  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)13);
-  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)14);
+  private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)7);
+  private static final org.apache.thrift.protocol.TField NOTIFICATION_EMAILS_FIELD_DESC = new org.apache.thrift.protocol.TField("notificationEmails", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField APPLICATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("applications", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField HANDLERS_FIELD_DESC = new org.apache.thrift.protocol.TField("handlers", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField CONNECTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("connections", org.apache.thrift.protocol.TType.LIST, (short)11);
+  private static final org.apache.thrift.protocol.TField STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("statuses", org.apache.thrift.protocol.TType.LIST, (short)12);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)13);
+  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)14);
+  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)15);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new AiravataWorkflowStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new AiravataWorkflowTupleSchemeFactory();
@@ -49,6 +50,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
   private java.lang.String id; // required
   private java.lang.String name; // required
   private java.lang.String gatewayId; // required
+  private java.lang.String userName; // required
   private java.lang.String storageResourceId; // required
   private java.lang.String description; // optional
   private boolean enableEmailNotification; // optional
@@ -66,17 +68,18 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     ID((short)1, "id"),
     NAME((short)2, "name"),
     GATEWAY_ID((short)3, "gatewayId"),
-    STORAGE_RESOURCE_ID((short)4, "storageResourceId"),
-    DESCRIPTION((short)5, "description"),
-    ENABLE_EMAIL_NOTIFICATION((short)6, "enableEmailNotification"),
-    NOTIFICATION_EMAILS((short)7, "notificationEmails"),
-    APPLICATIONS((short)8, "applications"),
-    HANDLERS((short)9, "handlers"),
-    CONNECTIONS((short)10, "connections"),
-    STATUSES((short)11, "statuses"),
-    ERRORS((short)12, "errors"),
-    CREATED_AT((short)13, "createdAt"),
-    UPDATED_AT((short)14, "updatedAt");
+    USER_NAME((short)4, "userName"),
+    STORAGE_RESOURCE_ID((short)5, "storageResourceId"),
+    DESCRIPTION((short)6, "description"),
+    ENABLE_EMAIL_NOTIFICATION((short)7, "enableEmailNotification"),
+    NOTIFICATION_EMAILS((short)8, "notificationEmails"),
+    APPLICATIONS((short)9, "applications"),
+    HANDLERS((short)10, "handlers"),
+    CONNECTIONS((short)11, "connections"),
+    STATUSES((short)12, "statuses"),
+    ERRORS((short)13, "errors"),
+    CREATED_AT((short)14, "createdAt"),
+    UPDATED_AT((short)15, "updatedAt");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -97,27 +100,29 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           return NAME;
         case 3: // GATEWAY_ID
           return GATEWAY_ID;
-        case 4: // STORAGE_RESOURCE_ID
+        case 4: // USER_NAME
+          return USER_NAME;
+        case 5: // STORAGE_RESOURCE_ID
           return STORAGE_RESOURCE_ID;
-        case 5: // DESCRIPTION
+        case 6: // DESCRIPTION
           return DESCRIPTION;
-        case 6: // ENABLE_EMAIL_NOTIFICATION
+        case 7: // ENABLE_EMAIL_NOTIFICATION
           return ENABLE_EMAIL_NOTIFICATION;
-        case 7: // NOTIFICATION_EMAILS
+        case 8: // NOTIFICATION_EMAILS
           return NOTIFICATION_EMAILS;
-        case 8: // APPLICATIONS
+        case 9: // APPLICATIONS
           return APPLICATIONS;
-        case 9: // HANDLERS
+        case 10: // HANDLERS
           return HANDLERS;
-        case 10: // CONNECTIONS
+        case 11: // CONNECTIONS
           return CONNECTIONS;
-        case 11: // STATUSES
+        case 12: // STATUSES
           return STATUSES;
-        case 12: // ERRORS
+        case 13: // ERRORS
           return ERRORS;
-        case 13: // CREATED_AT
+        case 14: // CREATED_AT
           return CREATED_AT;
-        case 14: // UPDATED_AT
+        case 15: // UPDATED_AT
           return UPDATED_AT;
         default:
           return null;
@@ -173,6 +178,8 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.STORAGE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageResourceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -214,12 +221,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     java.lang.String id,
     java.lang.String name,
     java.lang.String gatewayId,
+    java.lang.String userName,
     java.lang.String storageResourceId)
   {
     this();
     this.id = id;
     this.name = name;
     this.gatewayId = gatewayId;
+    this.userName = userName;
     this.storageResourceId = storageResourceId;
   }
 
@@ -236,6 +245,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     }
     if (other.isSetGatewayId()) {
       this.gatewayId = other.gatewayId;
+    }
+    if (other.isSetUserName()) {
+      this.userName = other.userName;
     }
     if (other.isSetStorageResourceId()) {
       this.storageResourceId = other.storageResourceId;
@@ -297,6 +309,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
 
     this.name = null;
     this.gatewayId = null;
+    this.userName = null;
     this.storageResourceId = null;
     this.description = null;
     setEnableEmailNotificationIsSet(false);
@@ -379,6 +392,29 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
   public void setGatewayIdIsSet(boolean value) {
     if (!value) {
       this.gatewayId = null;
+    }
+  }
+
+  public java.lang.String getUserName() {
+    return this.userName;
+  }
+
+  public void setUserName(java.lang.String userName) {
+    this.userName = userName;
+  }
+
+  public void unsetUserName() {
+    this.userName = null;
+  }
+
+  /** Returns true if field userName is set (has been assigned a value) and false otherwise */
+  public boolean isSetUserName() {
+    return this.userName != null;
+  }
+
+  public void setUserNameIsSet(boolean value) {
+    if (!value) {
+      this.userName = null;
     }
   }
 
@@ -748,6 +784,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       }
       break;
 
+    case USER_NAME:
+      if (value == null) {
+        unsetUserName();
+      } else {
+        setUserName((java.lang.String)value);
+      }
+      break;
+
     case STORAGE_RESOURCE_ID:
       if (value == null) {
         unsetStorageResourceId();
@@ -850,6 +894,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     case GATEWAY_ID:
       return getGatewayId();
 
+    case USER_NAME:
+      return getUserName();
+
     case STORAGE_RESOURCE_ID:
       return getStorageResourceId();
 
@@ -900,6 +947,8 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       return isSetName();
     case GATEWAY_ID:
       return isSetGatewayId();
+    case USER_NAME:
+      return isSetUserName();
     case STORAGE_RESOURCE_ID:
       return isSetStorageResourceId();
     case DESCRIPTION:
@@ -965,6 +1014,15 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       if (!(this_present_gatewayId && that_present_gatewayId))
         return false;
       if (!this.gatewayId.equals(that.gatewayId))
+        return false;
+    }
+
+    boolean this_present_userName = true && this.isSetUserName();
+    boolean that_present_userName = true && that.isSetUserName();
+    if (this_present_userName || that_present_userName) {
+      if (!(this_present_userName && that_present_userName))
+        return false;
+      if (!this.userName.equals(that.userName))
         return false;
     }
 
@@ -1086,6 +1144,10 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     if (isSetGatewayId())
       hashCode = hashCode * 8191 + gatewayId.hashCode();
 
+    hashCode = hashCode * 8191 + ((isSetUserName()) ? 131071 : 524287);
+    if (isSetUserName())
+      hashCode = hashCode * 8191 + userName.hashCode();
+
     hashCode = hashCode * 8191 + ((isSetStorageResourceId()) ? 131071 : 524287);
     if (isSetStorageResourceId())
       hashCode = hashCode * 8191 + storageResourceId.hashCode();
@@ -1167,6 +1229,16 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     }
     if (isSetGatewayId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetUserName()).compareTo(other.isSetUserName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUserName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userName, other.userName);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1325,6 +1397,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("userName:");
+    if (this.userName == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.userName);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("storageResourceId:");
     if (this.storageResourceId == null) {
       sb.append("null");
@@ -1438,6 +1518,10 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
     }
 
+    if (!isSetUserName()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' is unset! Struct:" + toString());
+    }
+
     if (!isSetStorageResourceId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'storageResourceId' is unset! Struct:" + toString());
     }
@@ -1505,7 +1589,15 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // STORAGE_RESOURCE_ID
+          case 4: // USER_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.userName = iprot.readString();
+              struct.setUserNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // STORAGE_RESOURCE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.storageResourceId = iprot.readString();
               struct.setStorageResourceIdIsSet(true);
@@ -1513,7 +1605,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // DESCRIPTION
+          case 6: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.description = iprot.readString();
               struct.setDescriptionIsSet(true);
@@ -1521,7 +1613,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // ENABLE_EMAIL_NOTIFICATION
+          case 7: // ENABLE_EMAIL_NOTIFICATION
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.enableEmailNotification = iprot.readBool();
               struct.setEnableEmailNotificationIsSet(true);
@@ -1529,7 +1621,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // NOTIFICATION_EMAILS
+          case 8: // NOTIFICATION_EMAILS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -1547,7 +1639,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // APPLICATIONS
+          case 9: // APPLICATIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -1566,7 +1658,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // HANDLERS
+          case 10: // HANDLERS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
@@ -1585,7 +1677,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // CONNECTIONS
+          case 11: // CONNECTIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
@@ -1604,7 +1696,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // STATUSES
+          case 12: // STATUSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list12 = iprot.readListBegin();
@@ -1623,7 +1715,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // ERRORS
+          case 13: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list15 = iprot.readListBegin();
@@ -1642,7 +1734,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 13: // CREATED_AT
+          case 14: // CREATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.createdAt = iprot.readI64();
               struct.setCreatedAtIsSet(true);
@@ -1650,7 +1742,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // UPDATED_AT
+          case 15: // UPDATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.updatedAt = iprot.readI64();
               struct.setUpdatedAtIsSet(true);
@@ -1684,6 +1776,11 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       if (struct.gatewayId != null) {
         oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
         oprot.writeString(struct.gatewayId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.userName != null) {
+        oprot.writeFieldBegin(USER_NAME_FIELD_DESC);
+        oprot.writeString(struct.userName);
         oprot.writeFieldEnd();
       }
       if (struct.storageResourceId != null) {
@@ -1817,6 +1914,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       oprot.writeString(struct.id);
       oprot.writeString(struct.name);
       oprot.writeString(struct.gatewayId);
+      oprot.writeString(struct.userName);
       oprot.writeString(struct.storageResourceId);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetDescription()) {
@@ -1927,6 +2025,8 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       struct.setNameIsSet(true);
       struct.gatewayId = iprot.readString();
       struct.setGatewayIdIsSet(true);
+      struct.userName = iprot.readString();
+      struct.setUserNameIsSet(true);
       struct.storageResourceId = iprot.readString();
       struct.setStorageResourceIdIsSet(true);
       java.util.BitSet incoming = iprot.readBitSet(10);

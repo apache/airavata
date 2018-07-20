@@ -28,26 +28,29 @@ package org.apache.airavata.model.workflow;
 public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, HandlerStatus._Fields>, java.io.Serializable, Cloneable, Comparable<HandlerStatus> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("HandlerStatus");
 
-  private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)3);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)4);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new HandlerStatusStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new HandlerStatusTupleSchemeFactory();
 
+  private java.lang.String id; // optional
   private HandlerState state; // required
   private java.lang.String description; // optional
   private long updatedAt; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    ID((short)1, "id"),
     /**
      * 
      * @see HandlerState
      */
-    STATE((short)1, "state"),
-    DESCRIPTION((short)2, "description"),
-    UPDATED_AT((short)3, "updatedAt");
+    STATE((short)2, "state"),
+    DESCRIPTION((short)3, "description"),
+    UPDATED_AT((short)4, "updatedAt");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -62,11 +65,13 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // STATE
+        case 1: // ID
+          return ID;
+        case 2: // STATE
           return STATE;
-        case 2: // DESCRIPTION
+        case 3: // DESCRIPTION
           return DESCRIPTION;
-        case 3: // UPDATED_AT
+        case 4: // UPDATED_AT
           return UPDATED_AT;
         default:
           return null;
@@ -110,10 +115,12 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
   // isset id assignments
   private static final int __UPDATEDAT_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.DESCRIPTION,_Fields.UPDATED_AT};
+  private static final _Fields optionals[] = {_Fields.ID,_Fields.DESCRIPTION,_Fields.UPDATED_AT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, HandlerState.class)));
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -139,6 +146,9 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
    */
   public HandlerStatus(HandlerStatus other) {
     __isset_bitfield = other.__isset_bitfield;
+    if (other.isSetId()) {
+      this.id = other.id;
+    }
     if (other.isSetState()) {
       this.state = other.state;
     }
@@ -154,10 +164,34 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
 
   @Override
   public void clear() {
+    this.id = null;
     this.state = null;
     this.description = null;
     setUpdatedAtIsSet(false);
     this.updatedAt = 0;
+  }
+
+  public java.lang.String getId() {
+    return this.id;
+  }
+
+  public void setId(java.lang.String id) {
+    this.id = id;
+  }
+
+  public void unsetId() {
+    this.id = null;
+  }
+
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return this.id != null;
+  }
+
+  public void setIdIsSet(boolean value) {
+    if (!value) {
+      this.id = null;
+    }
   }
 
   /**
@@ -238,6 +272,14 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
 
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
+    case ID:
+      if (value == null) {
+        unsetId();
+      } else {
+        setId((java.lang.String)value);
+      }
+      break;
+
     case STATE:
       if (value == null) {
         unsetState();
@@ -267,6 +309,9 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
 
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
+    case ID:
+      return getId();
+
     case STATE:
       return getState();
 
@@ -287,6 +332,8 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
     }
 
     switch (field) {
+    case ID:
+      return isSetId();
     case STATE:
       return isSetState();
     case DESCRIPTION:
@@ -311,6 +358,15 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
       return false;
     if (this == that)
       return true;
+
+    boolean this_present_id = true && this.isSetId();
+    boolean that_present_id = true && that.isSetId();
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
+        return false;
+      if (!this.id.equals(that.id))
+        return false;
+    }
 
     boolean this_present_state = true && this.isSetState();
     boolean that_present_state = true && that.isSetState();
@@ -346,6 +402,10 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
   public int hashCode() {
     int hashCode = 1;
 
+    hashCode = hashCode * 8191 + ((isSetId()) ? 131071 : 524287);
+    if (isSetId())
+      hashCode = hashCode * 8191 + id.hashCode();
+
     hashCode = hashCode * 8191 + ((isSetState()) ? 131071 : 524287);
     if (isSetState())
       hashCode = hashCode * 8191 + state.getValue();
@@ -369,6 +429,16 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
 
     int lastComparison = 0;
 
+    lastComparison = java.lang.Boolean.valueOf(isSetId()).compareTo(other.isSetId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, other.id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = java.lang.Boolean.valueOf(isSetState()).compareTo(other.isSetState());
     if (lastComparison != 0) {
       return lastComparison;
@@ -419,6 +489,16 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
     java.lang.StringBuilder sb = new java.lang.StringBuilder("HandlerStatus(");
     boolean first = true;
 
+    if (isSetId()) {
+      sb.append("id:");
+      if (this.id == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.id);
+      }
+      first = false;
+    }
+    if (!first) sb.append(", ");
     sb.append("state:");
     if (this.state == null) {
       sb.append("null");
@@ -491,7 +571,15 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
           break;
         }
         switch (schemeField.id) {
-          case 1: // STATE
+          case 1: // ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.id = iprot.readString();
+              struct.setIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // STATE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.state = org.apache.airavata.model.workflow.HandlerState.findByValue(iprot.readI32());
               struct.setStateIsSet(true);
@@ -499,7 +587,7 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // DESCRIPTION
+          case 3: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.description = iprot.readString();
               struct.setDescriptionIsSet(true);
@@ -507,7 +595,7 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // UPDATED_AT
+          case 4: // UPDATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.updatedAt = iprot.readI64();
               struct.setUpdatedAtIsSet(true);
@@ -528,6 +616,13 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.id != null) {
+        if (struct.isSetId()) {
+          oprot.writeFieldBegin(ID_FIELD_DESC);
+          oprot.writeString(struct.id);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.state != null) {
         oprot.writeFieldBegin(STATE_FIELD_DESC);
         oprot.writeI32(struct.state.getValue());
@@ -564,13 +659,19 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeI32(struct.state.getValue());
       java.util.BitSet optionals = new java.util.BitSet();
-      if (struct.isSetDescription()) {
+      if (struct.isSetId()) {
         optionals.set(0);
       }
-      if (struct.isSetUpdatedAt()) {
+      if (struct.isSetDescription()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetUpdatedAt()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetId()) {
+        oprot.writeString(struct.id);
+      }
       if (struct.isSetDescription()) {
         oprot.writeString(struct.description);
       }
@@ -584,12 +685,16 @@ public class HandlerStatus implements org.apache.thrift.TBase<HandlerStatus, Han
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.state = org.apache.airavata.model.workflow.HandlerState.findByValue(iprot.readI32());
       struct.setStateIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(2);
+      java.util.BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
+        struct.id = iprot.readString();
+        struct.setIdIsSet(true);
+      }
+      if (incoming.get(1)) {
         struct.description = iprot.readString();
         struct.setDescriptionIsSet(true);
       }
-      if (incoming.get(1)) {
+      if (incoming.get(2)) {
         struct.updatedAt = iprot.readI64();
         struct.setUpdatedAtIsSet(true);
       }

@@ -42,7 +42,7 @@ include "../data-models/resource-catalog-models/gateway_resource_profile_model.t
 include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
-include "../data-models/workflow-models/workflow_data_model.thrift"
+include "../data-models/workflow-catalog-models/airavata_workflow_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../airavata-apis/airavata_errors.thrift"
 include "../airavata-apis/airavata_commons.thrift"
@@ -2565,21 +2565,21 @@ service RegistryService {
                 *
                */
 
-               workflow_data_model.WorkflowModel getWorkflow (1: required string workflowTemplateId)
+               airavata_workflow_model.AiravataWorkflow getWorkflow (1: required string workflowId)
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
-               void deleteWorkflow (1: required string workflowTemplateId)
+               void deleteWorkflow (1: required string workflowId)
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
                string registerWorkflow(1: required string gatewayId,
-                                       2: required workflow_data_model.WorkflowModel workflow)
+                                       2: required airavata_workflow_model.AiravataWorkflow workflow)
                        throws (1: registry_api_errors.RegistryServiceException rse)
 
-               void updateWorkflow (1: required string workflowTemplateId,
-                                    2: required workflow_data_model.WorkflowModel workflow)
+               void updateWorkflow (1: required string workflowId,
+                                    2: required airavata_workflow_model.AiravataWorkflow workflow)
                        throws (1: registry_api_errors.RegistryServiceException rse)
 
-               string getWorkflowTemplateId (1: required string workflowName)
+               string getWorkflowId (1: required string workflowName)
                        throws (1: registry_api_errors.RegistryServiceException rse)
 
                bool isWorkflowExistWithName(1: required string workflowName)
