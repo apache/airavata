@@ -56,9 +56,7 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
 
     private void updateChildren(GroupResourceProfile groupResourceProfile, String groupResourceProfileId) {
         if (groupResourceProfile.getComputePreferences() != null) {
-            GrpComputePrefRepository grpComputePrefRepository = new GrpComputePrefRepository();
             for (GroupComputeResourcePreference groupComputeResourcePreference: groupResourceProfile.getComputePreferences()) {
-                grpComputePrefRepository.validateGroupComputeResourcePreference(groupComputeResourcePreference, groupResourceProfile.getGatewayId());
                 groupComputeResourcePreference.setGroupResourceProfileId(groupResourceProfileId);
                 if (groupComputeResourcePreference.getGroupSSHAccountProvisionerConfigs() != null) {
                     groupComputeResourcePreference.getGroupSSHAccountProvisionerConfigs().forEach(gssh -> gssh.setGroupResourceProfileId(groupResourceProfileId));
