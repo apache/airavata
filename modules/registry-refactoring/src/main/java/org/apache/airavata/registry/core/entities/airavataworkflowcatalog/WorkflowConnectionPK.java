@@ -16,41 +16,20 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
  */
 package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.util.Objects;
 
-@Entity
-@Table(name = "NOTIFICATION_EMAIL")
-@IdClass(NotificationEmailPK.class)
-public class NotificationEmailEntity implements Serializable {
+public class WorkflowConnectionPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "ID")
     private String id;
-
-    @Id
-    @Column(name = "WORKFLOW_ID")
     private String workflowId;
 
-    @Column(name = "EMAIL")
-    private String email;
-
-    @Column(name = "CREATED_AT")
-    private Timestamp createdAt;
-
-    @Column(name = "UPDATED_AT")
-    private Timestamp updatedAt;
-
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "WORKFLOW_ID")
-    private AiravataWorkflowEntity workflow;
-
-    public NotificationEmailEntity() {
+    public WorkflowConnectionPK() {
     }
 
     public void setId(String id) {
@@ -61,22 +40,6 @@ public class NotificationEmailEntity implements Serializable {
         this.workflowId = workflowId;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public void setWorkflow(AiravataWorkflowEntity workflow) {
-        this.workflow = workflow;
-    }
-
     public String getId() {
         return id;
     }
@@ -85,19 +48,18 @@ public class NotificationEmailEntity implements Serializable {
         return workflowId;
     }
 
-    public String getEmail() {
-        return email;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WorkflowConnectionPK that = (WorkflowConnectionPK) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(workflowId, that.workflowId);
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
+    @Override
+    public int hashCode() {
 
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public AiravataWorkflowEntity getWorkflow() {
-        return workflow;
+        return Objects.hash(id, workflowId);
     }
 }

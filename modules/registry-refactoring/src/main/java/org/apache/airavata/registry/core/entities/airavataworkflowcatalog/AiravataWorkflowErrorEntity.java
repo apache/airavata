@@ -31,8 +31,8 @@ public class AiravataWorkflowErrorEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ID")
-    private String id;
+    @Column(name = "ERROR_ID")
+    private String errorId;
 
     @Id
     @Column(name = "WORKFLOW_ID")
@@ -63,8 +63,8 @@ public class AiravataWorkflowErrorEntity implements Serializable {
     public AiravataWorkflowErrorEntity() {
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setErrorId(String errorId) {
+        this.errorId = errorId;
     }
 
     public void setWorkflowId(String workflowId) {
@@ -95,8 +95,8 @@ public class AiravataWorkflowErrorEntity implements Serializable {
         this.workflow = workflow;
     }
 
-    public String getId() {
-        return id;
+    public String getErrorId() {
+        return errorId;
     }
 
     public String getWorkflowId() {

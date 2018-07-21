@@ -26,22 +26,22 @@ import java.util.Objects;
 public class ApplicationErrorPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    private String errorId;
     private String applicationId;
 
     public ApplicationErrorPK() {
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setErrorId(String errorId) {
+        this.errorId = errorId;
     }
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
     }
 
-    public String getId() {
-        return id;
+    public String getErrorId() {
+        return errorId;
     }
 
     public String getApplicationId() {
@@ -53,13 +53,13 @@ public class ApplicationErrorPK implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ApplicationErrorPK that = (ApplicationErrorPK) o;
-        return Objects.equals(id, that.id) &&
+        return Objects.equals(errorId, that.errorId) &&
                 Objects.equals(applicationId, that.applicationId);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, applicationId);
+        return Objects.hash(errorId, applicationId);
     }
 }

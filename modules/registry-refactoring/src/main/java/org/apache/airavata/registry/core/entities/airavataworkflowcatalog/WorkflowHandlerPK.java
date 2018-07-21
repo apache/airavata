@@ -23,25 +23,25 @@ package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class AiravataWorkflowErrorPK implements Serializable {
+public class WorkflowHandlerPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String errorId;
+    private String id;
     private String workflowId;
 
-    public AiravataWorkflowErrorPK() {
+    public WorkflowHandlerPK() {
     }
 
-    public void setErrorId(String errorId) {
-        this.errorId = errorId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setWorkflowId(String workflowId) {
         this.workflowId = workflowId;
     }
 
-    public String getErrorId() {
-        return errorId;
+    public String getId() {
+        return id;
     }
 
     public String getWorkflowId() {
@@ -52,14 +52,14 @@ public class AiravataWorkflowErrorPK implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AiravataWorkflowErrorPK that = (AiravataWorkflowErrorPK) o;
-        return Objects.equals(errorId, that.errorId) &&
+        WorkflowHandlerPK that = (WorkflowHandlerPK) o;
+        return Objects.equals(id, that.id) &&
                 Objects.equals(workflowId, that.workflowId);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(errorId, workflowId);
+        return Objects.hash(id, workflowId);
     }
 }

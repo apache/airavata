@@ -26,6 +26,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "WORKFLOW_APPLICATION")
+@IdClass(WorkflowApplicationPK.class)
 public class WorkflowApplicationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -33,6 +34,7 @@ public class WorkflowApplicationEntity implements Serializable {
     @Column(name = "ID")
     private String id;
 
+    @Id
     @Column(name = "WORKFLOW_ID")
     private String workflowId;
 
@@ -66,12 +68,15 @@ public class WorkflowApplicationEntity implements Serializable {
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "WORKFLOW_ID")
+    @ManyToOne(targetEntity = AiravataWorkflowEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID")
     private AiravataWorkflowEntity workflow;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "application")
+    @OneToMany(targetEntity = ApplicationStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "application", fetch = FetchType.EAGER)
     private List<ApplicationStatusEntity> statuses;
+
+    @OneToMany(targetEntity = ApplicationErrorEntity.class, cascade = CascadeType.ALL, mappedBy = "application", fetch = FetchType.EAGER)
+    private List<ApplicationErrorEntity> errors;
 
     public WorkflowApplicationEntity() {
     }
@@ -132,6 +137,10 @@ public class WorkflowApplicationEntity implements Serializable {
         this.statuses = statuses;
     }
 
+    public void setErrors(List<ApplicationErrorEntity> errors) {
+        this.errors = errors;
+    }
+
     public String getId() {
         return id;
     }
@@ -186,5 +195,9 @@ public class WorkflowApplicationEntity implements Serializable {
 
     public List<ApplicationStatusEntity> getStatuses() {
         return statuses;
+    }
+
+    public List<ApplicationErrorEntity> getErrors() {
+        return errors;
     }
 }

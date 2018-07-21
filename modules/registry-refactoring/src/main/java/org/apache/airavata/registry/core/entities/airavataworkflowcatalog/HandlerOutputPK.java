@@ -23,43 +23,43 @@ package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class AiravataWorkflowErrorPK implements Serializable {
+public class HandlerOutputPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String errorId;
-    private String workflowId;
+    private String handlerId;
+    private String name;
 
-    public AiravataWorkflowErrorPK() {
+    public HandlerOutputPK() {
     }
 
-    public void setErrorId(String errorId) {
-        this.errorId = errorId;
+    public void setHandlerId(String handlerId) {
+        this.handlerId = handlerId;
     }
 
-    public void setWorkflowId(String workflowId) {
-        this.workflowId = workflowId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getErrorId() {
-        return errorId;
+    public String getHandlerId() {
+        return handlerId;
     }
 
-    public String getWorkflowId() {
-        return workflowId;
+    public String getName() {
+        return name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AiravataWorkflowErrorPK that = (AiravataWorkflowErrorPK) o;
-        return Objects.equals(errorId, that.errorId) &&
-                Objects.equals(workflowId, that.workflowId);
+        HandlerOutputPK that = (HandlerOutputPK) o;
+        return Objects.equals(handlerId, that.handlerId) &&
+                Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(errorId, workflowId);
+        return Objects.hash(handlerId, name);
     }
 }

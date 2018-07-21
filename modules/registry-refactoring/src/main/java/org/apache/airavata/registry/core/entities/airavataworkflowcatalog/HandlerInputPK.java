@@ -23,43 +23,43 @@ package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class NotificationEmailPK implements Serializable {
+public class HandlerInputPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String id;
-    private String workflowId;
+    private String handlerId;
+    private String name;
 
-    public NotificationEmailPK() {
+    public HandlerInputPK() {
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setHandlerId(String handlerId) {
+        this.handlerId = handlerId;
     }
 
-    public void setWorkflowId(String workflowId) {
-        this.workflowId = workflowId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getHandlerId() {
+        return handlerId;
     }
 
-    public String getWorkflowId() {
-        return workflowId;
+    public String getName() {
+        return name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        NotificationEmailPK that = (NotificationEmailPK) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(workflowId, that.workflowId);
+        HandlerInputPK that = (HandlerInputPK) o;
+        return Objects.equals(handlerId, that.handlerId) &&
+                Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, workflowId);
+        return Objects.hash(handlerId, name);
     }
 }

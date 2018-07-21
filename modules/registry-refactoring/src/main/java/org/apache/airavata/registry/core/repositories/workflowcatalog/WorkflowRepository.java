@@ -56,7 +56,7 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
         }
 
         if (workflowModel.getStatuses() != null) {
-            logger.debug("Populating the status id of WorkflowStatus objects for the Workflow");
+            logger.debug("Populating the status ID of WorkflowStatus objects for the Workflow");
             workflowModel.getStatuses().forEach(workflowStatus -> {
                 if (workflowStatus.getId() == null) {
                     workflowStatus.setId(WorkflowCatalogUtils.getID("WORKFLOW_STATUS"));
@@ -64,45 +64,64 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
             });
         }
 
+        if (workflowModel.getGatewayId() == null) {
+            logger.debug("Setting the GatewayID for the new Workflow");
+            workflowModel.setGatewayId(gatewayId);
+        }
+
         String workflowId = workflowModel.getId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         AiravataWorkflowEntity workflowEntity = mapper.map(workflowModel, AiravataWorkflowEntity.class);
 
-        if (gatewayId != null) {
-            logger.debug("Setting the gateway ID of the Workflow");
-            workflowEntity.setGatewayId(gatewayId);
-        }
-
-        if (workflowModel.getName() != null) {
-            logger.debug("Setting the name for the Workflow with ID: " + workflowId);
-            workflowEntity.setName(workflowModel.getName());
-        }
-
-        if (workflowModel.getDescription() != null) {
-            logger.debug("Setting the description for the Workflow with ID: " + workflowId);
-            workflowEntity.setDescription(workflowModel.getDescription());
-        }
-
-        if (workflowModel.isEnableEmailNotification()) {
-            logger.debug("Enabling the email notifications for the Workflow with ID: " + workflowId);
-            workflowEntity.setEnableEmailNotification(true);
-        }
-
-        if (workflowEntity.getNotificationEmails() != null) {
-            logger.debug("Populating the ID for NotificationEmail objects for the Workflow with ID: " + workflowId);
-            workflowEntity.getNotificationEmails().forEach(
-                    notificationEmailEntity -> notificationEmailEntity.setWorkflowId(workflowId)
-            );
+        if (workflowEntity.getStatuses() != null) {
+            logger.debug("Populating the Workflow ID of WorkflowStatus objects for the Workflow");
+            workflowEntity.getStatuses().forEach(workflowStatusEntity -> workflowStatusEntity.setWorkflowId(workflowId));
         }
 
         if (workflowEntity.getApplications() != null) {
-            logger.debug("Populating the ID for WorkflowApplication objects for the Workflow with ID: " + workflowId);
-            workflowEntity.getApplications().forEach(applicationEntity -> applicationEntity.setWorkflowId(workflowId));
+            logger.debug("Populating the Workflow ID for WorkflowApplication objects for the Workflow with ID: " + workflowId);
+            workflowEntity.getApplications().forEach(applicationEntity -> {
+                applicationEntity.setWorkflowId(workflowId);
+
+                if (applicationEntity.getStatuses() != null) {
+                    logger.debug("Populating the Workflow ID of ApplicationStatus objects for the Application");
+                    applicationEntity.getStatuses().forEach(applicationStatusEntity -> applicationStatusEntity.setApplicationId(applicationEntity.getId()));
+                }
+            });
         }
 
         if (workflowEntity.getHandlers() != null) {
-            logger.debug("Populating the ID for WorkflowHandler objects for the Workflow with ID: " + workflowId);
-            workflowEntity.getHandlers().forEach(handlerEntity -> handlerEntity.setWorkflowId(workflowId));
+            logger.debug("Populating the Workflow ID for WorkflowHandler objects for the Workflow with ID: " + workflowId);
+            workflowEntity.getHandlers().forEach(handlerEntity -> {
+                handlerEntity.setWorkflowId(workflowId);
+
+                if (handlerEntity.getStatuses() != null) {
+                    logger.debug("Populating the Workflow ID of HandlerStatus objects for the Handler");
+                    handlerEntity.getStatuses().forEach(handlerStatusEntity -> handlerStatusEntity.setHandlerId(handlerEntity.getId()));
+                }
+
+                if (handlerEntity.getInputs() != null && !handlerEntity.getInputs().isEmpty()) {
+                    logger.debug("Populating the Handler ID for HandlerInput objects for the Handler with ID: " + handlerEntity.getId());
+                    handlerEntity.getInputs().forEach(inputEntity -> inputEntity.setHandlerId(handlerEntity.getId()));
+                }
+
+                if (handlerEntity.getOutputs() != null && !handlerEntity.getOutputs().isEmpty()) {
+                    logger.debug("Populating the Handler ID for HandlerOutput objects for the Handler with ID: " + handlerEntity.getId());
+                    handlerEntity.getOutputs().forEach(outputEntity -> outputEntity.setHandlerId(handlerEntity.getId()));
+                }
+            });
+        }
+
+        if (workflowEntity.getConnections() != null) {
+            logger.debug("Populating the ID and Workflow ID for WorkflowConnection objects for the Workflow with ID: " + workflowId);
+            workflowEntity.getConnections().forEach(connectionEntity -> {
+
+                if (connectionEntity.getId() == null || connectionEntity.getId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                    connectionEntity.setId(WorkflowCatalogUtils.getID("WORKFLOW_CONNECTION"));
+                }
+
+                connectionEntity.setWorkflowId(workflowId);
+            });
         }
 
         if (get(workflowId) == null) {
@@ -145,7 +164,7 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
     @Override
     public String getWorkflowId(String workflowName) throws WorkflowCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.Workflow.WORKFLOW_NAME, workflowName);
+        queryParameters.put(DBConstants.Workflow.NAME, workflowName);
         List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
 
         if (workflowModelList != null && !workflowModelList.isEmpty()) {
@@ -158,7 +177,7 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
     @Override
     public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.Workflow.WORKFLOW_NAME, workflowName);
+        queryParameters.put(DBConstants.Workflow.NAME, workflowName);
         List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
         return (workflowModelList != null && !workflowModelList.isEmpty());
     }
@@ -167,5 +186,4 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
     public void deleteWorkflow(String workflowId) throws WorkflowCatalogException {
         delete(workflowId);
     }
-
 }

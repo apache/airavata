@@ -19,12 +19,15 @@
  */
 package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 
+import org.apache.airavata.model.workflow.core.ComponentType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "WORKFLOW_CONNECTION")
+@IdClass(WorkflowConnectionPK.class)
 public class WorkflowConnectionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -32,6 +35,7 @@ public class WorkflowConnectionEntity implements Serializable {
     @Column(name = "ID")
     private String id;
 
+    @Id
     @Column(name = "WORKFLOW_ID")
     private String workflowId;
 
@@ -42,7 +46,8 @@ public class WorkflowConnectionEntity implements Serializable {
     private String belongsToMainWorkflow;
 
     @Column(name = "FROM_TYPE")
-    private String fromType;
+    @Enumerated(EnumType.STRING)
+    private ComponentType fromType;
 
     @Column(name = "FROM_ID")
     private String fromId;
@@ -51,7 +56,8 @@ public class WorkflowConnectionEntity implements Serializable {
     private String fromOutputName;
 
     @Column(name = "TO_TYPE")
-    private String toType;
+    @Enumerated(EnumType.STRING)
+    private ComponentType toType;
 
     @Column(name = "TO_ID")
     private String toId;
@@ -65,12 +71,12 @@ public class WorkflowConnectionEntity implements Serializable {
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "WORKFLOW_ID")
+    @ManyToOne(targetEntity = AiravataWorkflowEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID")
     private AiravataWorkflowEntity workflow;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DATA_BLOCK_ID")
+    @ManyToOne(targetEntity = WorkflowDataBlockEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DATA_BLOCK_ID", referencedColumnName = "ID")
     private WorkflowDataBlockEntity dataBlock;
 
     public WorkflowConnectionEntity() {
@@ -92,7 +98,7 @@ public class WorkflowConnectionEntity implements Serializable {
         this.belongsToMainWorkflow = belongsToMainWorkflow;
     }
 
-    public void setFromType(String fromType) {
+    public void setFromType(ComponentType fromType) {
         this.fromType = fromType;
     }
 
@@ -104,7 +110,7 @@ public class WorkflowConnectionEntity implements Serializable {
         this.fromOutputName = fromOutputName;
     }
 
-    public void setToType(String toType) {
+    public void setToType(ComponentType toType) {
         this.toType = toType;
     }
 
@@ -148,7 +154,7 @@ public class WorkflowConnectionEntity implements Serializable {
         return belongsToMainWorkflow;
     }
 
-    public String getFromType() {
+    public ComponentType getFromType() {
         return fromType;
     }
 
@@ -160,7 +166,7 @@ public class WorkflowConnectionEntity implements Serializable {
         return fromOutputName;
     }
 
-    public String getToType() {
+    public ComponentType getToType() {
         return toType;
     }
 
