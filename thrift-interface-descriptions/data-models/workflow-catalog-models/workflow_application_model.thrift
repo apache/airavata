@@ -44,22 +44,18 @@ struct ApplicationStatus {
     4:  optional i64 updatedAt
 }
 
-struct ApplicationConfig {
-    1:  optional string computeResourceId,
-    2:  optional string queue_name,
-    3:  optional i32 nodeCount,
-    4:  optional i32 coreCount,
-    5:  optional i32 wallTimeLimit,
-    6:  optional i32 physicalMemory
-}
-
 struct WorkflowApplication {
-    1:  required string componentId,
+    1:  required string id,
     2:  required bool belongsToMainWorkflow,
     3:  optional string applicationInterfaceId,
-    4:  optional ApplicationConfig config,
-    5:  optional list<ApplicationStatus> statuses,
-    6:  optional list<airavata_commons.ErrorModel> errors
-    7:  optional i64 createdAt,
-    8:  optional i64 updatedAt
+    4:  optional string computeResourceId,
+    5:  optional string queueName,
+    6:  optional i32 nodeCount,
+    7:  optional i32 coreCount,
+    8:  optional i32 wallTimeLimit,
+    9:  optional i32 physicalMemory
+    10: optional list<ApplicationStatus> statuses,
+    11: optional list<airavata_commons.ErrorModel> errors
+    12: optional i64 createdAt,
+    13: optional i64 updatedAt
 }

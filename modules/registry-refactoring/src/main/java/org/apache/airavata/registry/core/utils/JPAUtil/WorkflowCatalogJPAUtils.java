@@ -31,7 +31,7 @@ import java.util.Map;
 public class WorkflowCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCatalogJPAUtils.class);
 
-    private static final String PERSISTENCE_UNIT_NAME = "workflowcatalog_data";
+    private static final String PERSISTENCE_UNIT_NAME = "workflowcatalog_data_new";
     private static final String WFCATALOG_JDBC_DRIVER = "workflowcatalog.jdbc.driver";
     private static final String WFCATALOG_JDBC_URL = "workflowcatalog.jdbc.url";
     private static final String WFCATALOG_JDBC_USER = "workflowcatalog.jdbc.user";

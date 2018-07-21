@@ -28,22 +28,32 @@ package org.apache.airavata.model.workflow;
 public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowApplication, WorkflowApplication._Fields>, java.io.Serializable, Cloneable, Comparable<WorkflowApplication> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowApplication");
 
-  private static final org.apache.thrift.protocol.TField COMPONENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("componentId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("belongsToMainWorkflow", org.apache.thrift.protocol.TType.BOOL, (short)2);
   private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField CONFIG_FIELD_DESC = new org.apache.thrift.protocol.TField("config", org.apache.thrift.protocol.TType.STRUCT, (short)4);
-  private static final org.apache.thrift.protocol.TField STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("statuses", org.apache.thrift.protocol.TType.LIST, (short)5);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)6);
-  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)7);
-  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)8);
+  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField QUEUE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("queueName", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeCount", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField CORE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("coreCount", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField WALL_TIME_LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("wallTimeLimit", org.apache.thrift.protocol.TType.I32, (short)8);
+  private static final org.apache.thrift.protocol.TField PHYSICAL_MEMORY_FIELD_DESC = new org.apache.thrift.protocol.TField("physicalMemory", org.apache.thrift.protocol.TType.I32, (short)9);
+  private static final org.apache.thrift.protocol.TField STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("statuses", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)11);
+  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)12);
+  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)13);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new WorkflowApplicationStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new WorkflowApplicationTupleSchemeFactory();
 
-  private java.lang.String componentId; // required
+  private java.lang.String id; // required
   private boolean belongsToMainWorkflow; // required
   private java.lang.String applicationInterfaceId; // optional
-  private ApplicationConfig config; // optional
+  private java.lang.String computeResourceId; // optional
+  private java.lang.String queueName; // optional
+  private int nodeCount; // optional
+  private int coreCount; // optional
+  private int wallTimeLimit; // optional
+  private int physicalMemory; // optional
   private java.util.List<ApplicationStatus> statuses; // optional
   private java.util.List<org.apache.airavata.model.commons.ErrorModel> errors; // optional
   private long createdAt; // optional
@@ -51,14 +61,19 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    COMPONENT_ID((short)1, "componentId"),
+    ID((short)1, "id"),
     BELONGS_TO_MAIN_WORKFLOW((short)2, "belongsToMainWorkflow"),
     APPLICATION_INTERFACE_ID((short)3, "applicationInterfaceId"),
-    CONFIG((short)4, "config"),
-    STATUSES((short)5, "statuses"),
-    ERRORS((short)6, "errors"),
-    CREATED_AT((short)7, "createdAt"),
-    UPDATED_AT((short)8, "updatedAt");
+    COMPUTE_RESOURCE_ID((short)4, "computeResourceId"),
+    QUEUE_NAME((short)5, "queueName"),
+    NODE_COUNT((short)6, "nodeCount"),
+    CORE_COUNT((short)7, "coreCount"),
+    WALL_TIME_LIMIT((short)8, "wallTimeLimit"),
+    PHYSICAL_MEMORY((short)9, "physicalMemory"),
+    STATUSES((short)10, "statuses"),
+    ERRORS((short)11, "errors"),
+    CREATED_AT((short)12, "createdAt"),
+    UPDATED_AT((short)13, "updatedAt");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -73,21 +88,31 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // COMPONENT_ID
-          return COMPONENT_ID;
+        case 1: // ID
+          return ID;
         case 2: // BELONGS_TO_MAIN_WORKFLOW
           return BELONGS_TO_MAIN_WORKFLOW;
         case 3: // APPLICATION_INTERFACE_ID
           return APPLICATION_INTERFACE_ID;
-        case 4: // CONFIG
-          return CONFIG;
-        case 5: // STATUSES
+        case 4: // COMPUTE_RESOURCE_ID
+          return COMPUTE_RESOURCE_ID;
+        case 5: // QUEUE_NAME
+          return QUEUE_NAME;
+        case 6: // NODE_COUNT
+          return NODE_COUNT;
+        case 7: // CORE_COUNT
+          return CORE_COUNT;
+        case 8: // WALL_TIME_LIMIT
+          return WALL_TIME_LIMIT;
+        case 9: // PHYSICAL_MEMORY
+          return PHYSICAL_MEMORY;
+        case 10: // STATUSES
           return STATUSES;
-        case 6: // ERRORS
+        case 11: // ERRORS
           return ERRORS;
-        case 7: // CREATED_AT
+        case 12: // CREATED_AT
           return CREATED_AT;
-        case 8: // UPDATED_AT
+        case 13: // UPDATED_AT
           return UPDATED_AT;
         default:
           return null;
@@ -130,21 +155,35 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
 
   // isset id assignments
   private static final int __BELONGSTOMAINWORKFLOW_ISSET_ID = 0;
-  private static final int __CREATEDAT_ISSET_ID = 1;
-  private static final int __UPDATEDAT_ISSET_ID = 2;
+  private static final int __NODECOUNT_ISSET_ID = 1;
+  private static final int __CORECOUNT_ISSET_ID = 2;
+  private static final int __WALLTIMELIMIT_ISSET_ID = 3;
+  private static final int __PHYSICALMEMORY_ISSET_ID = 4;
+  private static final int __CREATEDAT_ISSET_ID = 5;
+  private static final int __UPDATEDAT_ISSET_ID = 6;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.APPLICATION_INTERFACE_ID,_Fields.CONFIG,_Fields.STATUSES,_Fields.ERRORS,_Fields.CREATED_AT,_Fields.UPDATED_AT};
+  private static final _Fields optionals[] = {_Fields.APPLICATION_INTERFACE_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.QUEUE_NAME,_Fields.NODE_COUNT,_Fields.CORE_COUNT,_Fields.WALL_TIME_LIMIT,_Fields.PHYSICAL_MEMORY,_Fields.STATUSES,_Fields.ERRORS,_Fields.CREATED_AT,_Fields.UPDATED_AT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.COMPONENT_ID, new org.apache.thrift.meta_data.FieldMetaData("componentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.BELONGS_TO_MAIN_WORKFLOW, new org.apache.thrift.meta_data.FieldMetaData("belongsToMainWorkflow", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.APPLICATION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationInterfaceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.CONFIG, new org.apache.thrift.meta_data.FieldMetaData("config", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ApplicationConfig.class)));
+    tmpMap.put(_Fields.COMPUTE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("computeResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.QUEUE_NAME, new org.apache.thrift.meta_data.FieldMetaData("queueName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.NODE_COUNT, new org.apache.thrift.meta_data.FieldMetaData("nodeCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.CORE_COUNT, new org.apache.thrift.meta_data.FieldMetaData("coreCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.WALL_TIME_LIMIT, new org.apache.thrift.meta_data.FieldMetaData("wallTimeLimit", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.PHYSICAL_MEMORY, new org.apache.thrift.meta_data.FieldMetaData("physicalMemory", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.STATUSES, new org.apache.thrift.meta_data.FieldMetaData("statuses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ApplicationStatus.class))));
@@ -163,11 +202,11 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   }
 
   public WorkflowApplication(
-    java.lang.String componentId,
+    java.lang.String id,
     boolean belongsToMainWorkflow)
   {
     this();
-    this.componentId = componentId;
+    this.id = id;
     this.belongsToMainWorkflow = belongsToMainWorkflow;
     setBelongsToMainWorkflowIsSet(true);
   }
@@ -177,16 +216,23 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
    */
   public WorkflowApplication(WorkflowApplication other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetComponentId()) {
-      this.componentId = other.componentId;
+    if (other.isSetId()) {
+      this.id = other.id;
     }
     this.belongsToMainWorkflow = other.belongsToMainWorkflow;
     if (other.isSetApplicationInterfaceId()) {
       this.applicationInterfaceId = other.applicationInterfaceId;
     }
-    if (other.isSetConfig()) {
-      this.config = new ApplicationConfig(other.config);
+    if (other.isSetComputeResourceId()) {
+      this.computeResourceId = other.computeResourceId;
     }
+    if (other.isSetQueueName()) {
+      this.queueName = other.queueName;
+    }
+    this.nodeCount = other.nodeCount;
+    this.coreCount = other.coreCount;
+    this.wallTimeLimit = other.wallTimeLimit;
+    this.physicalMemory = other.physicalMemory;
     if (other.isSetStatuses()) {
       java.util.List<ApplicationStatus> __this__statuses = new java.util.ArrayList<ApplicationStatus>(other.statuses.size());
       for (ApplicationStatus other_element : other.statuses) {
@@ -211,11 +257,20 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
 
   @Override
   public void clear() {
-    this.componentId = null;
+    this.id = null;
     setBelongsToMainWorkflowIsSet(false);
     this.belongsToMainWorkflow = false;
     this.applicationInterfaceId = null;
-    this.config = null;
+    this.computeResourceId = null;
+    this.queueName = null;
+    setNodeCountIsSet(false);
+    this.nodeCount = 0;
+    setCoreCountIsSet(false);
+    this.coreCount = 0;
+    setWallTimeLimitIsSet(false);
+    this.wallTimeLimit = 0;
+    setPhysicalMemoryIsSet(false);
+    this.physicalMemory = 0;
     this.statuses = null;
     this.errors = null;
     setCreatedAtIsSet(false);
@@ -224,26 +279,26 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     this.updatedAt = 0;
   }
 
-  public java.lang.String getComponentId() {
-    return this.componentId;
+  public java.lang.String getId() {
+    return this.id;
   }
 
-  public void setComponentId(java.lang.String componentId) {
-    this.componentId = componentId;
+  public void setId(java.lang.String id) {
+    this.id = id;
   }
 
-  public void unsetComponentId() {
-    this.componentId = null;
+  public void unsetId() {
+    this.id = null;
   }
 
-  /** Returns true if field componentId is set (has been assigned a value) and false otherwise */
-  public boolean isSetComponentId() {
-    return this.componentId != null;
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return this.id != null;
   }
 
-  public void setComponentIdIsSet(boolean value) {
+  public void setIdIsSet(boolean value) {
     if (!value) {
-      this.componentId = null;
+      this.id = null;
     }
   }
 
@@ -292,27 +347,138 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     }
   }
 
-  public ApplicationConfig getConfig() {
-    return this.config;
+  public java.lang.String getComputeResourceId() {
+    return this.computeResourceId;
   }
 
-  public void setConfig(ApplicationConfig config) {
-    this.config = config;
+  public void setComputeResourceId(java.lang.String computeResourceId) {
+    this.computeResourceId = computeResourceId;
   }
 
-  public void unsetConfig() {
-    this.config = null;
+  public void unsetComputeResourceId() {
+    this.computeResourceId = null;
   }
 
-  /** Returns true if field config is set (has been assigned a value) and false otherwise */
-  public boolean isSetConfig() {
-    return this.config != null;
+  /** Returns true if field computeResourceId is set (has been assigned a value) and false otherwise */
+  public boolean isSetComputeResourceId() {
+    return this.computeResourceId != null;
   }
 
-  public void setConfigIsSet(boolean value) {
+  public void setComputeResourceIdIsSet(boolean value) {
     if (!value) {
-      this.config = null;
+      this.computeResourceId = null;
     }
+  }
+
+  public java.lang.String getQueueName() {
+    return this.queueName;
+  }
+
+  public void setQueueName(java.lang.String queueName) {
+    this.queueName = queueName;
+  }
+
+  public void unsetQueueName() {
+    this.queueName = null;
+  }
+
+  /** Returns true if field queueName is set (has been assigned a value) and false otherwise */
+  public boolean isSetQueueName() {
+    return this.queueName != null;
+  }
+
+  public void setQueueNameIsSet(boolean value) {
+    if (!value) {
+      this.queueName = null;
+    }
+  }
+
+  public int getNodeCount() {
+    return this.nodeCount;
+  }
+
+  public void setNodeCount(int nodeCount) {
+    this.nodeCount = nodeCount;
+    setNodeCountIsSet(true);
+  }
+
+  public void unsetNodeCount() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __NODECOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field nodeCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetNodeCount() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __NODECOUNT_ISSET_ID);
+  }
+
+  public void setNodeCountIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __NODECOUNT_ISSET_ID, value);
+  }
+
+  public int getCoreCount() {
+    return this.coreCount;
+  }
+
+  public void setCoreCount(int coreCount) {
+    this.coreCount = coreCount;
+    setCoreCountIsSet(true);
+  }
+
+  public void unsetCoreCount() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __CORECOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field coreCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetCoreCount() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __CORECOUNT_ISSET_ID);
+  }
+
+  public void setCoreCountIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __CORECOUNT_ISSET_ID, value);
+  }
+
+  public int getWallTimeLimit() {
+    return this.wallTimeLimit;
+  }
+
+  public void setWallTimeLimit(int wallTimeLimit) {
+    this.wallTimeLimit = wallTimeLimit;
+    setWallTimeLimitIsSet(true);
+  }
+
+  public void unsetWallTimeLimit() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __WALLTIMELIMIT_ISSET_ID);
+  }
+
+  /** Returns true if field wallTimeLimit is set (has been assigned a value) and false otherwise */
+  public boolean isSetWallTimeLimit() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __WALLTIMELIMIT_ISSET_ID);
+  }
+
+  public void setWallTimeLimitIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __WALLTIMELIMIT_ISSET_ID, value);
+  }
+
+  public int getPhysicalMemory() {
+    return this.physicalMemory;
+  }
+
+  public void setPhysicalMemory(int physicalMemory) {
+    this.physicalMemory = physicalMemory;
+    setPhysicalMemoryIsSet(true);
+  }
+
+  public void unsetPhysicalMemory() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __PHYSICALMEMORY_ISSET_ID);
+  }
+
+  /** Returns true if field physicalMemory is set (has been assigned a value) and false otherwise */
+  public boolean isSetPhysicalMemory() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __PHYSICALMEMORY_ISSET_ID);
+  }
+
+  public void setPhysicalMemoryIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __PHYSICALMEMORY_ISSET_ID, value);
   }
 
   public int getStatusesSize() {
@@ -437,11 +603,11 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
 
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
-    case COMPONENT_ID:
+    case ID:
       if (value == null) {
-        unsetComponentId();
+        unsetId();
       } else {
-        setComponentId((java.lang.String)value);
+        setId((java.lang.String)value);
       }
       break;
 
@@ -461,11 +627,51 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       }
       break;
 
-    case CONFIG:
+    case COMPUTE_RESOURCE_ID:
       if (value == null) {
-        unsetConfig();
+        unsetComputeResourceId();
       } else {
-        setConfig((ApplicationConfig)value);
+        setComputeResourceId((java.lang.String)value);
+      }
+      break;
+
+    case QUEUE_NAME:
+      if (value == null) {
+        unsetQueueName();
+      } else {
+        setQueueName((java.lang.String)value);
+      }
+      break;
+
+    case NODE_COUNT:
+      if (value == null) {
+        unsetNodeCount();
+      } else {
+        setNodeCount((java.lang.Integer)value);
+      }
+      break;
+
+    case CORE_COUNT:
+      if (value == null) {
+        unsetCoreCount();
+      } else {
+        setCoreCount((java.lang.Integer)value);
+      }
+      break;
+
+    case WALL_TIME_LIMIT:
+      if (value == null) {
+        unsetWallTimeLimit();
+      } else {
+        setWallTimeLimit((java.lang.Integer)value);
+      }
+      break;
+
+    case PHYSICAL_MEMORY:
+      if (value == null) {
+        unsetPhysicalMemory();
+      } else {
+        setPhysicalMemory((java.lang.Integer)value);
       }
       break;
 
@@ -506,8 +712,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
 
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
-    case COMPONENT_ID:
-      return getComponentId();
+    case ID:
+      return getId();
 
     case BELONGS_TO_MAIN_WORKFLOW:
       return isBelongsToMainWorkflow();
@@ -515,8 +721,23 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     case APPLICATION_INTERFACE_ID:
       return getApplicationInterfaceId();
 
-    case CONFIG:
-      return getConfig();
+    case COMPUTE_RESOURCE_ID:
+      return getComputeResourceId();
+
+    case QUEUE_NAME:
+      return getQueueName();
+
+    case NODE_COUNT:
+      return getNodeCount();
+
+    case CORE_COUNT:
+      return getCoreCount();
+
+    case WALL_TIME_LIMIT:
+      return getWallTimeLimit();
+
+    case PHYSICAL_MEMORY:
+      return getPhysicalMemory();
 
     case STATUSES:
       return getStatuses();
@@ -541,14 +762,24 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     }
 
     switch (field) {
-    case COMPONENT_ID:
-      return isSetComponentId();
+    case ID:
+      return isSetId();
     case BELONGS_TO_MAIN_WORKFLOW:
       return isSetBelongsToMainWorkflow();
     case APPLICATION_INTERFACE_ID:
       return isSetApplicationInterfaceId();
-    case CONFIG:
-      return isSetConfig();
+    case COMPUTE_RESOURCE_ID:
+      return isSetComputeResourceId();
+    case QUEUE_NAME:
+      return isSetQueueName();
+    case NODE_COUNT:
+      return isSetNodeCount();
+    case CORE_COUNT:
+      return isSetCoreCount();
+    case WALL_TIME_LIMIT:
+      return isSetWallTimeLimit();
+    case PHYSICAL_MEMORY:
+      return isSetPhysicalMemory();
     case STATUSES:
       return isSetStatuses();
     case ERRORS:
@@ -576,12 +807,12 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     if (this == that)
       return true;
 
-    boolean this_present_componentId = true && this.isSetComponentId();
-    boolean that_present_componentId = true && that.isSetComponentId();
-    if (this_present_componentId || that_present_componentId) {
-      if (!(this_present_componentId && that_present_componentId))
+    boolean this_present_id = true && this.isSetId();
+    boolean that_present_id = true && that.isSetId();
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
         return false;
-      if (!this.componentId.equals(that.componentId))
+      if (!this.id.equals(that.id))
         return false;
     }
 
@@ -603,12 +834,57 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         return false;
     }
 
-    boolean this_present_config = true && this.isSetConfig();
-    boolean that_present_config = true && that.isSetConfig();
-    if (this_present_config || that_present_config) {
-      if (!(this_present_config && that_present_config))
+    boolean this_present_computeResourceId = true && this.isSetComputeResourceId();
+    boolean that_present_computeResourceId = true && that.isSetComputeResourceId();
+    if (this_present_computeResourceId || that_present_computeResourceId) {
+      if (!(this_present_computeResourceId && that_present_computeResourceId))
         return false;
-      if (!this.config.equals(that.config))
+      if (!this.computeResourceId.equals(that.computeResourceId))
+        return false;
+    }
+
+    boolean this_present_queueName = true && this.isSetQueueName();
+    boolean that_present_queueName = true && that.isSetQueueName();
+    if (this_present_queueName || that_present_queueName) {
+      if (!(this_present_queueName && that_present_queueName))
+        return false;
+      if (!this.queueName.equals(that.queueName))
+        return false;
+    }
+
+    boolean this_present_nodeCount = true && this.isSetNodeCount();
+    boolean that_present_nodeCount = true && that.isSetNodeCount();
+    if (this_present_nodeCount || that_present_nodeCount) {
+      if (!(this_present_nodeCount && that_present_nodeCount))
+        return false;
+      if (this.nodeCount != that.nodeCount)
+        return false;
+    }
+
+    boolean this_present_coreCount = true && this.isSetCoreCount();
+    boolean that_present_coreCount = true && that.isSetCoreCount();
+    if (this_present_coreCount || that_present_coreCount) {
+      if (!(this_present_coreCount && that_present_coreCount))
+        return false;
+      if (this.coreCount != that.coreCount)
+        return false;
+    }
+
+    boolean this_present_wallTimeLimit = true && this.isSetWallTimeLimit();
+    boolean that_present_wallTimeLimit = true && that.isSetWallTimeLimit();
+    if (this_present_wallTimeLimit || that_present_wallTimeLimit) {
+      if (!(this_present_wallTimeLimit && that_present_wallTimeLimit))
+        return false;
+      if (this.wallTimeLimit != that.wallTimeLimit)
+        return false;
+    }
+
+    boolean this_present_physicalMemory = true && this.isSetPhysicalMemory();
+    boolean that_present_physicalMemory = true && that.isSetPhysicalMemory();
+    if (this_present_physicalMemory || that_present_physicalMemory) {
+      if (!(this_present_physicalMemory && that_present_physicalMemory))
+        return false;
+      if (this.physicalMemory != that.physicalMemory)
         return false;
     }
 
@@ -655,9 +931,9 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   public int hashCode() {
     int hashCode = 1;
 
-    hashCode = hashCode * 8191 + ((isSetComponentId()) ? 131071 : 524287);
-    if (isSetComponentId())
-      hashCode = hashCode * 8191 + componentId.hashCode();
+    hashCode = hashCode * 8191 + ((isSetId()) ? 131071 : 524287);
+    if (isSetId())
+      hashCode = hashCode * 8191 + id.hashCode();
 
     hashCode = hashCode * 8191 + ((belongsToMainWorkflow) ? 131071 : 524287);
 
@@ -665,9 +941,29 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     if (isSetApplicationInterfaceId())
       hashCode = hashCode * 8191 + applicationInterfaceId.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetConfig()) ? 131071 : 524287);
-    if (isSetConfig())
-      hashCode = hashCode * 8191 + config.hashCode();
+    hashCode = hashCode * 8191 + ((isSetComputeResourceId()) ? 131071 : 524287);
+    if (isSetComputeResourceId())
+      hashCode = hashCode * 8191 + computeResourceId.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetQueueName()) ? 131071 : 524287);
+    if (isSetQueueName())
+      hashCode = hashCode * 8191 + queueName.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetNodeCount()) ? 131071 : 524287);
+    if (isSetNodeCount())
+      hashCode = hashCode * 8191 + nodeCount;
+
+    hashCode = hashCode * 8191 + ((isSetCoreCount()) ? 131071 : 524287);
+    if (isSetCoreCount())
+      hashCode = hashCode * 8191 + coreCount;
+
+    hashCode = hashCode * 8191 + ((isSetWallTimeLimit()) ? 131071 : 524287);
+    if (isSetWallTimeLimit())
+      hashCode = hashCode * 8191 + wallTimeLimit;
+
+    hashCode = hashCode * 8191 + ((isSetPhysicalMemory()) ? 131071 : 524287);
+    if (isSetPhysicalMemory())
+      hashCode = hashCode * 8191 + physicalMemory;
 
     hashCode = hashCode * 8191 + ((isSetStatuses()) ? 131071 : 524287);
     if (isSetStatuses())
@@ -696,12 +992,12 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
 
     int lastComparison = 0;
 
-    lastComparison = java.lang.Boolean.valueOf(isSetComponentId()).compareTo(other.isSetComponentId());
+    lastComparison = java.lang.Boolean.valueOf(isSetId()).compareTo(other.isSetId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetComponentId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.componentId, other.componentId);
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, other.id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -726,12 +1022,62 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetConfig()).compareTo(other.isSetConfig());
+    lastComparison = java.lang.Boolean.valueOf(isSetComputeResourceId()).compareTo(other.isSetComputeResourceId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetConfig()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.config, other.config);
+    if (isSetComputeResourceId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.computeResourceId, other.computeResourceId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetQueueName()).compareTo(other.isSetQueueName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetQueueName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.queueName, other.queueName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetNodeCount()).compareTo(other.isSetNodeCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetNodeCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.nodeCount, other.nodeCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetCoreCount()).compareTo(other.isSetCoreCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCoreCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.coreCount, other.coreCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetWallTimeLimit()).compareTo(other.isSetWallTimeLimit());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetWallTimeLimit()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.wallTimeLimit, other.wallTimeLimit);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetPhysicalMemory()).compareTo(other.isSetPhysicalMemory());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPhysicalMemory()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.physicalMemory, other.physicalMemory);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -796,11 +1142,11 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     java.lang.StringBuilder sb = new java.lang.StringBuilder("WorkflowApplication(");
     boolean first = true;
 
-    sb.append("componentId:");
-    if (this.componentId == null) {
+    sb.append("id:");
+    if (this.id == null) {
       sb.append("null");
     } else {
-      sb.append(this.componentId);
+      sb.append(this.id);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -817,14 +1163,48 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       }
       first = false;
     }
-    if (isSetConfig()) {
+    if (isSetComputeResourceId()) {
       if (!first) sb.append(", ");
-      sb.append("config:");
-      if (this.config == null) {
+      sb.append("computeResourceId:");
+      if (this.computeResourceId == null) {
         sb.append("null");
       } else {
-        sb.append(this.config);
+        sb.append(this.computeResourceId);
       }
+      first = false;
+    }
+    if (isSetQueueName()) {
+      if (!first) sb.append(", ");
+      sb.append("queueName:");
+      if (this.queueName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.queueName);
+      }
+      first = false;
+    }
+    if (isSetNodeCount()) {
+      if (!first) sb.append(", ");
+      sb.append("nodeCount:");
+      sb.append(this.nodeCount);
+      first = false;
+    }
+    if (isSetCoreCount()) {
+      if (!first) sb.append(", ");
+      sb.append("coreCount:");
+      sb.append(this.coreCount);
+      first = false;
+    }
+    if (isSetWallTimeLimit()) {
+      if (!first) sb.append(", ");
+      sb.append("wallTimeLimit:");
+      sb.append(this.wallTimeLimit);
+      first = false;
+    }
+    if (isSetPhysicalMemory()) {
+      if (!first) sb.append(", ");
+      sb.append("physicalMemory:");
+      sb.append(this.physicalMemory);
       first = false;
     }
     if (isSetStatuses()) {
@@ -865,8 +1245,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetComponentId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'componentId' is unset! Struct:" + toString());
+    if (!isSetId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' is unset! Struct:" + toString());
     }
 
     if (!isSetBelongsToMainWorkflow()) {
@@ -874,9 +1254,6 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     }
 
     // check for sub-struct validity
-    if (config != null) {
-      config.validate();
-    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -915,10 +1292,10 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
           break;
         }
         switch (schemeField.id) {
-          case 1: // COMPONENT_ID
+          case 1: // ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.componentId = iprot.readString();
-              struct.setComponentIdIsSet(true);
+              struct.id = iprot.readString();
+              struct.setIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -939,16 +1316,55 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // CONFIG
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.config = new ApplicationConfig();
-              struct.config.read(iprot);
-              struct.setConfigIsSet(true);
+          case 4: // COMPUTE_RESOURCE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.computeResourceId = iprot.readString();
+              struct.setComputeResourceIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // STATUSES
+          case 5: // QUEUE_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.queueName = iprot.readString();
+              struct.setQueueNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // NODE_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.nodeCount = iprot.readI32();
+              struct.setNodeCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // CORE_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.coreCount = iprot.readI32();
+              struct.setCoreCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // WALL_TIME_LIMIT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.wallTimeLimit = iprot.readI32();
+              struct.setWallTimeLimitIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // PHYSICAL_MEMORY
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.physicalMemory = iprot.readI32();
+              struct.setPhysicalMemoryIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 10: // STATUSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -967,7 +1383,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // ERRORS
+          case 11: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -986,7 +1402,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // CREATED_AT
+          case 12: // CREATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.createdAt = iprot.readI64();
               struct.setCreatedAtIsSet(true);
@@ -994,7 +1410,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // UPDATED_AT
+          case 13: // UPDATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.updatedAt = iprot.readI64();
               struct.setUpdatedAtIsSet(true);
@@ -1015,9 +1431,9 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.componentId != null) {
-        oprot.writeFieldBegin(COMPONENT_ID_FIELD_DESC);
-        oprot.writeString(struct.componentId);
+      if (struct.id != null) {
+        oprot.writeFieldBegin(ID_FIELD_DESC);
+        oprot.writeString(struct.id);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC);
@@ -1030,12 +1446,39 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
           oprot.writeFieldEnd();
         }
       }
-      if (struct.config != null) {
-        if (struct.isSetConfig()) {
-          oprot.writeFieldBegin(CONFIG_FIELD_DESC);
-          struct.config.write(oprot);
+      if (struct.computeResourceId != null) {
+        if (struct.isSetComputeResourceId()) {
+          oprot.writeFieldBegin(COMPUTE_RESOURCE_ID_FIELD_DESC);
+          oprot.writeString(struct.computeResourceId);
           oprot.writeFieldEnd();
         }
+      }
+      if (struct.queueName != null) {
+        if (struct.isSetQueueName()) {
+          oprot.writeFieldBegin(QUEUE_NAME_FIELD_DESC);
+          oprot.writeString(struct.queueName);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetNodeCount()) {
+        oprot.writeFieldBegin(NODE_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.nodeCount);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetCoreCount()) {
+        oprot.writeFieldBegin(CORE_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.coreCount);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetWallTimeLimit()) {
+        oprot.writeFieldBegin(WALL_TIME_LIMIT_FIELD_DESC);
+        oprot.writeI32(struct.wallTimeLimit);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetPhysicalMemory()) {
+        oprot.writeFieldBegin(PHYSICAL_MEMORY_FIELD_DESC);
+        oprot.writeI32(struct.physicalMemory);
+        oprot.writeFieldEnd();
       }
       if (struct.statuses != null) {
         if (struct.isSetStatuses()) {
@@ -1092,33 +1535,63 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, WorkflowApplication struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      oprot.writeString(struct.componentId);
+      oprot.writeString(struct.id);
       oprot.writeBool(struct.belongsToMainWorkflow);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetApplicationInterfaceId()) {
         optionals.set(0);
       }
-      if (struct.isSetConfig()) {
+      if (struct.isSetComputeResourceId()) {
         optionals.set(1);
       }
-      if (struct.isSetStatuses()) {
+      if (struct.isSetQueueName()) {
         optionals.set(2);
       }
-      if (struct.isSetErrors()) {
+      if (struct.isSetNodeCount()) {
         optionals.set(3);
       }
-      if (struct.isSetCreatedAt()) {
+      if (struct.isSetCoreCount()) {
         optionals.set(4);
       }
-      if (struct.isSetUpdatedAt()) {
+      if (struct.isSetWallTimeLimit()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetPhysicalMemory()) {
+        optionals.set(6);
+      }
+      if (struct.isSetStatuses()) {
+        optionals.set(7);
+      }
+      if (struct.isSetErrors()) {
+        optionals.set(8);
+      }
+      if (struct.isSetCreatedAt()) {
+        optionals.set(9);
+      }
+      if (struct.isSetUpdatedAt()) {
+        optionals.set(10);
+      }
+      oprot.writeBitSet(optionals, 11);
       if (struct.isSetApplicationInterfaceId()) {
         oprot.writeString(struct.applicationInterfaceId);
       }
-      if (struct.isSetConfig()) {
-        struct.config.write(oprot);
+      if (struct.isSetComputeResourceId()) {
+        oprot.writeString(struct.computeResourceId);
+      }
+      if (struct.isSetQueueName()) {
+        oprot.writeString(struct.queueName);
+      }
+      if (struct.isSetNodeCount()) {
+        oprot.writeI32(struct.nodeCount);
+      }
+      if (struct.isSetCoreCount()) {
+        oprot.writeI32(struct.coreCount);
+      }
+      if (struct.isSetWallTimeLimit()) {
+        oprot.writeI32(struct.wallTimeLimit);
+      }
+      if (struct.isSetPhysicalMemory()) {
+        oprot.writeI32(struct.physicalMemory);
       }
       if (struct.isSetStatuses()) {
         {
@@ -1149,21 +1622,40 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, WorkflowApplication struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      struct.componentId = iprot.readString();
-      struct.setComponentIdIsSet(true);
+      struct.id = iprot.readString();
+      struct.setIdIsSet(true);
       struct.belongsToMainWorkflow = iprot.readBool();
       struct.setBelongsToMainWorkflowIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(6);
+      java.util.BitSet incoming = iprot.readBitSet(11);
       if (incoming.get(0)) {
         struct.applicationInterfaceId = iprot.readString();
         struct.setApplicationInterfaceIdIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.config = new ApplicationConfig();
-        struct.config.read(iprot);
-        struct.setConfigIsSet(true);
+        struct.computeResourceId = iprot.readString();
+        struct.setComputeResourceIdIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.queueName = iprot.readString();
+        struct.setQueueNameIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.nodeCount = iprot.readI32();
+        struct.setNodeCountIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.coreCount = iprot.readI32();
+        struct.setCoreCountIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.wallTimeLimit = iprot.readI32();
+        struct.setWallTimeLimitIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.physicalMemory = iprot.readI32();
+        struct.setPhysicalMemoryIsSet(true);
+      }
+      if (incoming.get(7)) {
         {
           org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.statuses = new java.util.ArrayList<ApplicationStatus>(_list10.size);
@@ -1177,7 +1669,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         }
         struct.setStatusesIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(8)) {
         {
           org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list13.size);
@@ -1191,11 +1683,11 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         }
         struct.setErrorsIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(9)) {
         struct.createdAt = iprot.readI64();
         struct.setCreatedAtIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(10)) {
         struct.updatedAt = iprot.readI64();
         struct.setUpdatedAtIsSet(true);
       }

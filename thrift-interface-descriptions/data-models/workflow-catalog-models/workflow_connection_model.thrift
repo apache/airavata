@@ -18,6 +18,7 @@
  *
  */
 
+include "../../airavata-apis/airavata_commons.thrift"
 include "core-models/component_type.thrift"
 include "core-models/data_block_model.thrift"
 
@@ -27,13 +28,14 @@ namespace cpp apache.airavata.model.workflow
 namespace py airavata.model.workflow
 
 struct WorkflowConnection {
-    1:  required bool belongsToMainWorkflow,
-    2:  required component_type.ComponentType fromType
-    3:  required string fromId,
-    4:  required string fromOutputName,
-    5:  required component_type.ComponentType toType,
-    6:  required string toId,
-    7:  required string toInputName
-    8:  optional i64 createdAt,
-    9:  optional i64 updatedAt
+    1:  required string id = airavata_commons.DEFAULT_ID,
+    2:  required bool belongsToMainWorkflow,
+    3:  required component_type.ComponentType fromType
+    4:  required string fromId,
+    5:  required string fromOutputName,
+    6:  required component_type.ComponentType toType,
+    7:  required string toId,
+    8:  required string toInputName
+    9:  optional i64 createdAt,
+    10: optional i64 updatedAt
 }

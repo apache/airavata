@@ -28,19 +28,21 @@ package org.apache.airavata.model.workflow;
 public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConnection, WorkflowConnection._Fields>, java.io.Serializable, Cloneable, Comparable<WorkflowConnection> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowConnection");
 
-  private static final org.apache.thrift.protocol.TField BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("belongsToMainWorkflow", org.apache.thrift.protocol.TType.BOOL, (short)1);
-  private static final org.apache.thrift.protocol.TField FROM_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("fromType", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField FROM_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("fromId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField FROM_OUTPUT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("fromOutputName", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField TO_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("toType", org.apache.thrift.protocol.TType.I32, (short)5);
-  private static final org.apache.thrift.protocol.TField TO_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("toId", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField TO_INPUT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("toInputName", org.apache.thrift.protocol.TType.STRING, (short)7);
-  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)8);
-  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)9);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("belongsToMainWorkflow", org.apache.thrift.protocol.TType.BOOL, (short)2);
+  private static final org.apache.thrift.protocol.TField FROM_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("fromType", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField FROM_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("fromId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField FROM_OUTPUT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("fromOutputName", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField TO_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("toType", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField TO_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("toId", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField TO_INPUT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("toInputName", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)9);
+  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)10);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new WorkflowConnectionStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new WorkflowConnectionTupleSchemeFactory();
 
+  private java.lang.String id; // required
   private boolean belongsToMainWorkflow; // required
   private org.apache.airavata.model.workflow.core.ComponentType fromType; // required
   private java.lang.String fromId; // required
@@ -53,23 +55,24 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    BELONGS_TO_MAIN_WORKFLOW((short)1, "belongsToMainWorkflow"),
+    ID((short)1, "id"),
+    BELONGS_TO_MAIN_WORKFLOW((short)2, "belongsToMainWorkflow"),
     /**
      * 
      * @see org.apache.airavata.model.workflow.core.ComponentType
      */
-    FROM_TYPE((short)2, "fromType"),
-    FROM_ID((short)3, "fromId"),
-    FROM_OUTPUT_NAME((short)4, "fromOutputName"),
+    FROM_TYPE((short)3, "fromType"),
+    FROM_ID((short)4, "fromId"),
+    FROM_OUTPUT_NAME((short)5, "fromOutputName"),
     /**
      * 
      * @see org.apache.airavata.model.workflow.core.ComponentType
      */
-    TO_TYPE((short)5, "toType"),
-    TO_ID((short)6, "toId"),
-    TO_INPUT_NAME((short)7, "toInputName"),
-    CREATED_AT((short)8, "createdAt"),
-    UPDATED_AT((short)9, "updatedAt");
+    TO_TYPE((short)6, "toType"),
+    TO_ID((short)7, "toId"),
+    TO_INPUT_NAME((short)8, "toInputName"),
+    CREATED_AT((short)9, "createdAt"),
+    UPDATED_AT((short)10, "updatedAt");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -84,23 +87,25 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // BELONGS_TO_MAIN_WORKFLOW
+        case 1: // ID
+          return ID;
+        case 2: // BELONGS_TO_MAIN_WORKFLOW
           return BELONGS_TO_MAIN_WORKFLOW;
-        case 2: // FROM_TYPE
+        case 3: // FROM_TYPE
           return FROM_TYPE;
-        case 3: // FROM_ID
+        case 4: // FROM_ID
           return FROM_ID;
-        case 4: // FROM_OUTPUT_NAME
+        case 5: // FROM_OUTPUT_NAME
           return FROM_OUTPUT_NAME;
-        case 5: // TO_TYPE
+        case 6: // TO_TYPE
           return TO_TYPE;
-        case 6: // TO_ID
+        case 7: // TO_ID
           return TO_ID;
-        case 7: // TO_INPUT_NAME
+        case 8: // TO_INPUT_NAME
           return TO_INPUT_NAME;
-        case 8: // CREATED_AT
+        case 9: // CREATED_AT
           return CREATED_AT;
-        case 9: // UPDATED_AT
+        case 10: // UPDATED_AT
           return UPDATED_AT;
         default:
           return null;
@@ -150,6 +155,8 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.BELONGS_TO_MAIN_WORKFLOW, new org.apache.thrift.meta_data.FieldMetaData("belongsToMainWorkflow", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.FROM_TYPE, new org.apache.thrift.meta_data.FieldMetaData("fromType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -173,9 +180,12 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   }
 
   public WorkflowConnection() {
+    this.id = "DO_NOT_SET_AT_CLIENTS";
+
   }
 
   public WorkflowConnection(
+    java.lang.String id,
     boolean belongsToMainWorkflow,
     org.apache.airavata.model.workflow.core.ComponentType fromType,
     java.lang.String fromId,
@@ -185,6 +195,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     java.lang.String toInputName)
   {
     this();
+    this.id = id;
     this.belongsToMainWorkflow = belongsToMainWorkflow;
     setBelongsToMainWorkflowIsSet(true);
     this.fromType = fromType;
@@ -200,6 +211,9 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
    */
   public WorkflowConnection(WorkflowConnection other) {
     __isset_bitfield = other.__isset_bitfield;
+    if (other.isSetId()) {
+      this.id = other.id;
+    }
     this.belongsToMainWorkflow = other.belongsToMainWorkflow;
     if (other.isSetFromType()) {
       this.fromType = other.fromType;
@@ -229,6 +243,8 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
 
   @Override
   public void clear() {
+    this.id = "DO_NOT_SET_AT_CLIENTS";
+
     setBelongsToMainWorkflowIsSet(false);
     this.belongsToMainWorkflow = false;
     this.fromType = null;
@@ -241,6 +257,29 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     this.createdAt = 0;
     setUpdatedAtIsSet(false);
     this.updatedAt = 0;
+  }
+
+  public java.lang.String getId() {
+    return this.id;
+  }
+
+  public void setId(java.lang.String id) {
+    this.id = id;
+  }
+
+  public void unsetId() {
+    this.id = null;
+  }
+
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return this.id != null;
+  }
+
+  public void setIdIsSet(boolean value) {
+    if (!value) {
+      this.id = null;
+    }
   }
 
   public boolean isBelongsToMainWorkflow() {
@@ -465,6 +504,14 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
 
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
+    case ID:
+      if (value == null) {
+        unsetId();
+      } else {
+        setId((java.lang.String)value);
+      }
+      break;
+
     case BELONGS_TO_MAIN_WORKFLOW:
       if (value == null) {
         unsetBelongsToMainWorkflow();
@@ -542,6 +589,9 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
 
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
+    case ID:
+      return getId();
+
     case BELONGS_TO_MAIN_WORKFLOW:
       return isBelongsToMainWorkflow();
 
@@ -580,6 +630,8 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     }
 
     switch (field) {
+    case ID:
+      return isSetId();
     case BELONGS_TO_MAIN_WORKFLOW:
       return isSetBelongsToMainWorkflow();
     case FROM_TYPE:
@@ -616,6 +668,15 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       return false;
     if (this == that)
       return true;
+
+    boolean this_present_id = true && this.isSetId();
+    boolean that_present_id = true && that.isSetId();
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
+        return false;
+      if (!this.id.equals(that.id))
+        return false;
+    }
 
     boolean this_present_belongsToMainWorkflow = true;
     boolean that_present_belongsToMainWorkflow = true;
@@ -705,6 +766,10 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   public int hashCode() {
     int hashCode = 1;
 
+    hashCode = hashCode * 8191 + ((isSetId()) ? 131071 : 524287);
+    if (isSetId())
+      hashCode = hashCode * 8191 + id.hashCode();
+
     hashCode = hashCode * 8191 + ((belongsToMainWorkflow) ? 131071 : 524287);
 
     hashCode = hashCode * 8191 + ((isSetFromType()) ? 131071 : 524287);
@@ -750,6 +815,16 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
 
     int lastComparison = 0;
 
+    lastComparison = java.lang.Boolean.valueOf(isSetId()).compareTo(other.isSetId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, other.id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = java.lang.Boolean.valueOf(isSetBelongsToMainWorkflow()).compareTo(other.isSetBelongsToMainWorkflow());
     if (lastComparison != 0) {
       return lastComparison;
@@ -860,6 +935,14 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     java.lang.StringBuilder sb = new java.lang.StringBuilder("WorkflowConnection(");
     boolean first = true;
 
+    sb.append("id:");
+    if (this.id == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.id);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("belongsToMainWorkflow:");
     sb.append(this.belongsToMainWorkflow);
     first = false;
@@ -929,6 +1012,10 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (!isSetId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' is unset! Struct:" + toString());
+    }
+
     if (!isSetBelongsToMainWorkflow()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'belongsToMainWorkflow' is unset! Struct:" + toString());
     }
@@ -996,7 +1083,15 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
           break;
         }
         switch (schemeField.id) {
-          case 1: // BELONGS_TO_MAIN_WORKFLOW
+          case 1: // ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.id = iprot.readString();
+              struct.setIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // BELONGS_TO_MAIN_WORKFLOW
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.belongsToMainWorkflow = iprot.readBool();
               struct.setBelongsToMainWorkflowIsSet(true);
@@ -1004,7 +1099,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // FROM_TYPE
+          case 3: // FROM_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.fromType = org.apache.airavata.model.workflow.core.ComponentType.findByValue(iprot.readI32());
               struct.setFromTypeIsSet(true);
@@ -1012,7 +1107,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // FROM_ID
+          case 4: // FROM_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.fromId = iprot.readString();
               struct.setFromIdIsSet(true);
@@ -1020,7 +1115,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // FROM_OUTPUT_NAME
+          case 5: // FROM_OUTPUT_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.fromOutputName = iprot.readString();
               struct.setFromOutputNameIsSet(true);
@@ -1028,7 +1123,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // TO_TYPE
+          case 6: // TO_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.toType = org.apache.airavata.model.workflow.core.ComponentType.findByValue(iprot.readI32());
               struct.setToTypeIsSet(true);
@@ -1036,7 +1131,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // TO_ID
+          case 7: // TO_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.toId = iprot.readString();
               struct.setToIdIsSet(true);
@@ -1044,7 +1139,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // TO_INPUT_NAME
+          case 8: // TO_INPUT_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.toInputName = iprot.readString();
               struct.setToInputNameIsSet(true);
@@ -1052,7 +1147,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // CREATED_AT
+          case 9: // CREATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.createdAt = iprot.readI64();
               struct.setCreatedAtIsSet(true);
@@ -1060,7 +1155,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // UPDATED_AT
+          case 10: // UPDATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.updatedAt = iprot.readI64();
               struct.setUpdatedAtIsSet(true);
@@ -1081,6 +1176,11 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.id != null) {
+        oprot.writeFieldBegin(ID_FIELD_DESC);
+        oprot.writeString(struct.id);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldBegin(BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC);
       oprot.writeBool(struct.belongsToMainWorkflow);
       oprot.writeFieldEnd();
@@ -1141,6 +1241,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, WorkflowConnection struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      oprot.writeString(struct.id);
       oprot.writeBool(struct.belongsToMainWorkflow);
       oprot.writeI32(struct.fromType.getValue());
       oprot.writeString(struct.fromId);
@@ -1167,6 +1268,8 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, WorkflowConnection struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      struct.id = iprot.readString();
+      struct.setIdIsSet(true);
       struct.belongsToMainWorkflow = iprot.readBool();
       struct.setBelongsToMainWorkflowIsSet(true);
       struct.fromType = org.apache.airavata.model.workflow.core.ComponentType.findByValue(iprot.readI32());

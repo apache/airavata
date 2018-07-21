@@ -33,6 +33,9 @@ public class WorkflowDataBlockEntity implements Serializable {
     @Column(name = "ID")
     private String id;
 
+    @Column(name = "WORKFLOW_ID")
+    private String workflowId;
+
     @Column(name = "VALUE")
     private String value;
 
@@ -45,14 +48,22 @@ public class WorkflowDataBlockEntity implements Serializable {
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "dataBlock")
+    @OneToMany(targetEntity = WorkflowConnectionEntity.class, cascade = CascadeType.ALL, mappedBy = "dataBlock", fetch = FetchType.LAZY)
     private List<WorkflowConnectionEntity> connections;
+
+    @ManyToOne(targetEntity = AiravataWorkflowEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID")
+    private AiravataWorkflowEntity workflow;
 
     public WorkflowDataBlockEntity() {
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setWorkflowId(String workflowId) {
+        this.workflowId = workflowId;
     }
 
     public void setValue(String value) {
@@ -75,8 +86,16 @@ public class WorkflowDataBlockEntity implements Serializable {
         this.connections = connections;
     }
 
+    public void setWorkflow(AiravataWorkflowEntity workflow) {
+        this.workflow = workflow;
+    }
+
     public String getId() {
         return id;
+    }
+
+    public String getWorkflowId() {
+        return workflowId;
     }
 
     public String getValue() {
@@ -97,5 +116,9 @@ public class WorkflowDataBlockEntity implements Serializable {
 
     public List<WorkflowConnectionEntity> getConnections() {
         return connections;
+    }
+
+    public AiravataWorkflowEntity getWorkflow() {
+        return workflow;
     }
 }

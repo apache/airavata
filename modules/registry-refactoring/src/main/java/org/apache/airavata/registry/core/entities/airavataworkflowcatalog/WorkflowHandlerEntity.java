@@ -19,12 +19,16 @@
  */
 package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 
+import org.apache.airavata.model.workflow.HandlerType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "WORKFLOW_HANDLER")
+@IdClass(WorkflowHandlerPK.class)
 public class WorkflowHandlerEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -32,6 +36,7 @@ public class WorkflowHandlerEntity implements Serializable {
     @Column(name = "ID")
     private String id;
 
+    @Id
     @Column(name = "WORKFLOW_ID")
     private String workflowId;
 
@@ -39,7 +44,8 @@ public class WorkflowHandlerEntity implements Serializable {
     private String belongsToMainWorkflow;
 
     @Column(name = "TYPE")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private HandlerType type;
 
     @Column(name = "CREATED_AT")
     private Timestamp createdAt;
@@ -47,9 +53,21 @@ public class WorkflowHandlerEntity implements Serializable {
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "WORKFLOW_ID")
+    @ManyToOne(targetEntity = AiravataWorkflowEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID")
     private AiravataWorkflowEntity workflow;
+
+    @OneToMany(targetEntity = HandlerStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "handler", fetch = FetchType.EAGER)
+    private List<HandlerStatusEntity> statuses;
+
+    @OneToMany(targetEntity = HandlerErrorEntity.class, cascade = CascadeType.ALL, mappedBy = "handler", fetch = FetchType.EAGER)
+    private List<HandlerErrorEntity> errors;
+
+    @OneToMany(targetEntity = HandlerInputEntity.class, cascade = CascadeType.ALL, mappedBy = "handler", fetch = FetchType.EAGER)
+    private List<HandlerInputEntity> inputs;
+
+    @OneToMany(targetEntity = HandlerOutputEntity.class, cascade = CascadeType.ALL, mappedBy = "handler", fetch = FetchType.EAGER)
+    private List<HandlerOutputEntity> outputs;
 
     public WorkflowHandlerEntity() {
     }
@@ -66,7 +84,7 @@ public class WorkflowHandlerEntity implements Serializable {
         this.belongsToMainWorkflow = belongsToMainWorkflow;
     }
 
-    public void setType(String type) {
+    public void setType(HandlerType type) {
         this.type = type;
     }
 
@@ -82,6 +100,22 @@ public class WorkflowHandlerEntity implements Serializable {
         this.workflow = workflow;
     }
 
+    public void setStatuses(List<HandlerStatusEntity> statuses) {
+        this.statuses = statuses;
+    }
+
+    public void setErrors(List<HandlerErrorEntity> errors) {
+        this.errors = errors;
+    }
+
+    public void setInputs(List<HandlerInputEntity> inputs) {
+        this.inputs = inputs;
+    }
+
+    public void setOutputs(List<HandlerOutputEntity> outputs) {
+        this.outputs = outputs;
+    }
+
     public String getId() {
         return id;
     }
@@ -94,7 +128,7 @@ public class WorkflowHandlerEntity implements Serializable {
         return belongsToMainWorkflow;
     }
 
-    public String getType() {
+    public HandlerType getType() {
         return type;
     }
 
@@ -108,5 +142,21 @@ public class WorkflowHandlerEntity implements Serializable {
 
     public AiravataWorkflowEntity getWorkflow() {
         return workflow;
+    }
+
+    public List<HandlerStatusEntity> getStatuses() {
+        return statuses;
+    }
+
+    public List<HandlerErrorEntity> getErrors() {
+        return errors;
+    }
+
+    public List<HandlerInputEntity> getInputs() {
+        return inputs;
+    }
+
+    public List<HandlerOutputEntity> getOutputs() {
+        return outputs;
     }
 }

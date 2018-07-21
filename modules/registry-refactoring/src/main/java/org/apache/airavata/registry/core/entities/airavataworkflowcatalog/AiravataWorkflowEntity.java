@@ -51,26 +51,30 @@ public class AiravataWorkflowEntity implements Serializable {
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     private boolean enableEmailNotification;
 
+    @Lob
+    @Column(name = "NOTIFICATION_EMAILS")
+    private List<String> notificationEmails;
+
     @Column(name = "CREATED_AT")
     private Timestamp createdAt;
 
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "workflow")
-    private List<NotificationEmailEntity> notificationEmails;
-
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "workflow")
+    @OneToMany(targetEntity = WorkflowApplicationEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
     private List<WorkflowApplicationEntity> applications;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "workflow")
+    @OneToMany(targetEntity = WorkflowHandlerEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
     private List<WorkflowHandlerEntity> handlers;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "workflow")
+    @OneToMany(targetEntity = WorkflowConnectionEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
     private List<WorkflowConnectionEntity> connections;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "workflow")
-    private List<ApplicationStatusEntity> statuses;
+    @OneToMany(targetEntity = AiravataWorkflowStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
+    private List<AiravataWorkflowStatusEntity> statuses;
+
+    @OneToMany(targetEntity = AiravataWorkflowErrorEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
+    private List<AiravataWorkflowErrorEntity> errors;
 
     public AiravataWorkflowEntity() {
     }
@@ -103,16 +107,16 @@ public class AiravataWorkflowEntity implements Serializable {
         this.enableEmailNotification = enableEmailNotification;
     }
 
+    public void setNotificationEmails(List<String> notificationEmails) {
+        this.notificationEmails = notificationEmails;
+    }
+
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public void setNotificationEmails(List<NotificationEmailEntity> notificationEmails) {
-        this.notificationEmails = notificationEmails;
     }
 
     public void setApplications(List<WorkflowApplicationEntity> applications) {
@@ -127,8 +131,12 @@ public class AiravataWorkflowEntity implements Serializable {
         this.connections = connections;
     }
 
-    public void setStatuses(List<ApplicationStatusEntity> statuses) {
+    public void setStatuses(List<AiravataWorkflowStatusEntity> statuses) {
         this.statuses = statuses;
+    }
+
+    public void setErrors(List<AiravataWorkflowErrorEntity> errors) {
+        this.errors = errors;
     }
 
     public String getId() {
@@ -159,16 +167,16 @@ public class AiravataWorkflowEntity implements Serializable {
         return enableEmailNotification;
     }
 
+    public List<String> getNotificationEmails() {
+        return notificationEmails;
+    }
+
     public Timestamp getCreatedAt() {
         return createdAt;
     }
 
     public Timestamp getUpdatedAt() {
         return updatedAt;
-    }
-
-    public List<NotificationEmailEntity> getNotificationEmails() {
-        return notificationEmails;
     }
 
     public List<WorkflowApplicationEntity> getApplications() {
@@ -183,7 +191,11 @@ public class AiravataWorkflowEntity implements Serializable {
         return connections;
     }
 
-    public List<ApplicationStatusEntity> getStatuses() {
+    public List<AiravataWorkflowStatusEntity> getStatuses() {
         return statuses;
+    }
+
+    public List<AiravataWorkflowErrorEntity> getErrors() {
+        return errors;
     }
 }

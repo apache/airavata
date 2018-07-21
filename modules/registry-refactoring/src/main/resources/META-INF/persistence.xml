@@ -82,15 +82,21 @@
         <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    <persistence-unit name="workflowcatalog_data">
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgeEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.ComponentStatusEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.NodeEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.PortEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>
+    <persistence-unit name="workflowcatalog_data_new">
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowErrorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.ApplicationErrorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.ApplicationStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerErrorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerInputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerOutputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowApplicationEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowConnectionEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowDataBlockEntity</class>
+        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowHandlerEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="experiment_data_new">
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity</class>

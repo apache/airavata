@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,6 +21,7 @@ package org.apache.airavata.registry.core.repositories.workflowcatalog;
 
 import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.workflow.AiravataWorkflow;
 import org.apache.airavata.registry.core.repositories.workflowcatalog.util.Initialize;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.junit.After;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -44,7 +46,7 @@ public class WorkflowRepositoryTest {
     @Before
     public void setUp() {
         try {
-            initialize = new Initialize("workflowcatalog-derby.sql");
+            initialize = new Initialize("airavataworkflowcatalog-derby.sql");
             initialize.initializeDB();
             workflowRepository = new WorkflowRepository();
         } catch (Exception e) {
@@ -61,51 +63,56 @@ public class WorkflowRepositoryTest {
     @Test
     public void WorkflowRepositoryTest() throws WorkflowCatalogException {
 
-//        try {
-//            WorkflowModel workflowModel1 = new WorkflowModel();
-//            workflowModel1.setName("workflow1");
-//            String templateId1 = workflowRepository.registerWorkflow(workflowModel1, gatewayId);
-//            assertTrue(templateId1 != null);
+        AiravataWorkflow workflowModel1 = new AiravataWorkflow();
+        workflowModel1.setName("workflow1");
+        workflowModel1.setGatewayId(gatewayId);
+        workflowModel1.setUserName("user1");
+        workflowModel1.setStorageResourceId("storage1");
+        workflowModel1.setDescription("description1");
+        workflowModel1.setEnableEmailNotification(true);
+
+        ArrayList<String> emails = new ArrayList<>();
+        emails.add("example1@example.com");
+        emails.add("example2@example.com");
+
+        workflowModel1.setNotificationEmails(emails);
+
+        workflowRepository.registerWorkflow(workflowModel1, gatewayId);
+
+        List<String> workflows = workflowRepository.getAllWorkflows(gatewayId);
+        assertEquals(1, workflows.size());
+
+//        OutputDataObjectType outputDataObjectType1 = new OutputDataObjectType();
+//        outputDataObjectType1.setName("outputKey1");
+//        OutputDataObjectType outputDataObjectType2 = new OutputDataObjectType();
+//        outputDataObjectType2.setName("outputKey2");
+//        List<OutputDataObjectType> outputDataObjectTypeList = new ArrayList<>();
+//        outputDataObjectTypeList.add(outputDataObjectType1);
+//        outputDataObjectTypeList.add(outputDataObjectType2);
+//        workflowRepository.updateWorkflowOutputs(templateId1, outputDataObjectTypeList);
 //
-//            workflowModel1.setCreatedUser("user1");
-//            workflowRepository.updateWorkflow(templateId1, workflowModel1);
+//        WorkflowModel retrievedWorkflowModel = workflowRepository.getWorkflow(templateId1);
+//        assertEquals(gatewayId, retrievedWorkflowModel.getGatewayId());
+//        assertEquals(workflowModel1.getCreatedUser(), retrievedWorkflowModel.getCreatedUser());
+//        assertTrue(retrievedWorkflowModel.getWorkflowOutputs().size() == 2);
 //
-//            OutputDataObjectType outputDataObjectType1 = new OutputDataObjectType();
-//            outputDataObjectType1.setName("outputKey1");
-//            OutputDataObjectType outputDataObjectType2 = new OutputDataObjectType();
-//            outputDataObjectType2.setName("outputKey2");
-//            List<OutputDataObjectType> outputDataObjectTypeList = new ArrayList<>();
-//            outputDataObjectTypeList.add(outputDataObjectType1);
-//            outputDataObjectTypeList.add(outputDataObjectType2);
-//            workflowRepository.updateWorkflowOutputs(templateId1, outputDataObjectTypeList);
+//        WorkflowModel workflowModel2 = new WorkflowModel();
+//        workflowModel2.setName("workflow2");
+//        String templateId2 = workflowRepository.registerWorkflow(workflowModel2, gatewayId);
+//        assertTrue(templateId2 != null);
 //
-//            WorkflowModel retrievedWorkflowModel = workflowRepository.getWorkflow(templateId1);
-//            assertEquals(gatewayId, retrievedWorkflowModel.getGatewayId());
-//            assertEquals(workflowModel1.getCreatedUser(), retrievedWorkflowModel.getCreatedUser());
-//            assertTrue(retrievedWorkflowModel.getWorkflowOutputs().size() == 2);
+//        List<String> workflows = workflowRepository.getAllWorkflows(gatewayId);
+//        assertTrue(workflows.size() == 2);
 //
-//            WorkflowModel workflowModel2 = new WorkflowModel();
-//            workflowModel2.setName("workflow2");
-//            String templateId2 = workflowRepository.registerWorkflow(workflowModel2, gatewayId);
-//            assertTrue(templateId2 != null);
+//        String retrievedTemplateId = workflowRepository.getWorkflowId(workflowModel1.getName());
+//        assertEquals(templateId1, retrievedTemplateId);
 //
-//            List<String> workflows = workflowRepository.getAllWorkflows(gatewayId);
-//            assertTrue(workflows.size() == 2);
+//        assertTrue(workflowRepository.isWorkflowExistWithName(workflowModel2.getName()));
 //
-//            String retrievedTemplateId = workflowRepository.getWorkflowId(workflowModel1.getName());
-//            assertEquals(templateId1, retrievedTemplateId);
+//        workflowRepository.deleteWorkflow(templateId1);
+//        assertFalse(workflowRepository.isWorkflowExistWithName(workflowModel1.getName()));
 //
-//            assertTrue(workflowRepository.isWorkflowExistWithName(workflowModel2.getName()));
-//
-//            workflowRepository.deleteWorkflow(templateId1);
-//            assertFalse(workflowRepository.isWorkflowExistWithName(workflowModel1.getName()));
-//
-//            workflowRepository.deleteWorkflow(templateId2);
-//        }
-//
-//        catch (Exception e) {
-//            logger.error("The Workflow repository methods have not been implemented yet.");
-//        }
+//        workflowRepository.deleteWorkflow(templateId2);
     }
 
 }

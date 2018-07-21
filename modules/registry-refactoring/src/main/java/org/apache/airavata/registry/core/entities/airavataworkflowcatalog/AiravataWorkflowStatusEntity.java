@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "AIRAVATA_WORKFLOW_STATUS")
+@IdClass(AiravataWorkflowStatusPK.class)
 public class AiravataWorkflowStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -32,6 +33,7 @@ public class AiravataWorkflowStatusEntity implements Serializable {
     @Column(name = "ID")
     private String id;
 
+    @Id
     @Column(name = "WORKFLOW_ID")
     private String workflowId;
 

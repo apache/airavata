@@ -31,8 +31,8 @@ public class ApplicationErrorEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ID")
-    private String id;
+    @Column(name = "ERROR_ID")
+    private String errorId;
 
     @Id
     @Column(name = "APPLICATION_ID")
@@ -63,8 +63,8 @@ public class ApplicationErrorEntity implements Serializable {
     public ApplicationErrorEntity() {
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setErrorId(String errorId) {
+        this.errorId = errorId;
     }
 
     public void setApplicationId(String applicationId) {
@@ -95,8 +95,8 @@ public class ApplicationErrorEntity implements Serializable {
         this.application = application;
     }
 
-    public String getId() {
-        return id;
+    public String getErrorId() {
+        return errorId;
     }
 
     public String getApplicationId() {
