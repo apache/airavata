@@ -27,6 +27,20 @@ KEYCLOAK_LOGOUT_URL = '...'
 #KEYCLOAK_CA_CERTFILE = os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")
 KEYCLOAK_VERIFY_SSL = True
 
+AUTHENTICATION_OPTIONS = {
+    # Control whether username/password authentication is allowed
+    'password': {
+        'name': 'your account',
+    },
+    # Can have multiple external logins
+    # 'external': [
+    #     {
+    #         'idp_alias': 'cilogon',
+    #         'name': 'CILogon',
+    #     }
+    # ]
+}
+
 # Airavata API Configuration
 GATEWAY_ID = 'default'
 AIRAVATA_API_HOST = 'localhost'

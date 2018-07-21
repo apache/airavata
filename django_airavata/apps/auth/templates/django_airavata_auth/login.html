@@ -3,11 +3,29 @@
 {% block content %}
 
 <div class="container">
+    {% if options.external %}
     <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <h3>Login</h3>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Log in with your existing organizational login</h5>
+                    {% for external in options.external %}
+                    <a href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}" class="btn btn-primary btn-block mt-3">
+                        Sign in with {{ external.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if options.password %}
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Log in with {{ options.password.name|default:"a username and password" }}</h5>
                     <form action="{% url 'django_airavata_auth:handle_login' %}" method="post">
                         {% csrf_token %}
                         <div class="form-group">
@@ -21,23 +39,15 @@
                         {% if next %}
                         <input type="hidden" name="next" value="{{ next }}"/>
                         {% endif %}
-                        <button type="submit" class="btn btn-default">Submit</button>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Sign in with {{ options.password.name|default:"a username and password" }}
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <h3>CILogon</h3>
-                    <a href="{% url 'django_airavata_auth:redirect_login' %}" class="btn btn-default">
-                        Sign in with CILogon
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% endif %}
+</div>
 </div>
 {% endblock content %}

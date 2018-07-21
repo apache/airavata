@@ -186,10 +186,23 @@ WAGTAIL_SITE_NAME = 'Django Airavata Portal'
 WAGTAILIMAGES_JPEG_QUALITY = 100
 
 
-
 LOGIN_URL = 'django_airavata_auth:login'
 LOGIN_REDIRECT_URL = 'django_airavata_workspace:dashboard'
 LOGOUT_REDIRECT_URL = 'home'
+
+AUTHENTICATION_OPTIONS = {
+    # Control whether username/password authentication is allowed
+    'password': {
+        'name': 'your account',
+    },
+    # Can have multiple external logins
+    # 'external': [
+    #     {
+    #         'idp_alias': 'cilogon',
+    #         'name': 'CILogon',
+    #     }
+    # ]
+}
 
 LOGGING = {
     'version': 1,
@@ -208,6 +221,6 @@ LOGGING = {
 
 # Allow all settings to be overridden by settings_local.py file
 try:
-    from django_airavata.settings_local import *
+    from django_airavata.settings_local import *  # noqa
 except ImportError:
     pass

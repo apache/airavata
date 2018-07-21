@@ -12,11 +12,13 @@ logger = logging.getLogger(__name__)
 
 def start_login(request):
     return render(request, 'django_airavata_auth/login.html', {
-        'next': request.GET.get('next', None)
+        'next': request.GET.get('next', None),
+        'options': settings.AUTHENTICATION_OPTIONS,
     })
 
 
-def redirect_login(request):
+def redirect_login(request, idp_alias):
+    _validate_idp_alias(idp_alias)
     client_id = settings.KEYCLOAK_CLIENT_ID
     base_authorize_url = settings.KEYCLOAK_AUTHORIZE_URL
     oauth2_session = OAuth2Session(
@@ -25,9 +27,17 @@ def redirect_login(request):
             reverse('django_airavata_auth:callback')))
     authorization_url, state = oauth2_session.authorization_url(
         base_authorize_url)
+    authorization_url += '&kc_idp_hint=' + quote(idp_alias)
     # Store state in session for later validation (see backends.py)
     request.session['OAUTH2_STATE'] = state
     return redirect(authorization_url)
+
+
+def _validate_idp_alias(idp_alias):
+    external_auth_options = settings.AUTHENTICATION_OPTIONS['external']
+    valid_idp_aliases = [ext['idp_alias'] for ext in external_auth_options]
+    if idp_alias not in valid_idp_aliases:
+        raise Exception("idp_alias is not valid")
 
 
 def handle_login(request):
