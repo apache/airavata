@@ -31,6 +31,9 @@ ssl_certificate_file: "/etc/letsencrypt/live/gateway.simvascular.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.simvascular.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.simvascular.org/privkey.pem"
 
+php_upload_max_filesize: "300M"
+php_post_max_size: "2000M"
+
 # Custom pga_config file (gateway level maximum values)
 pga_config_template: "{{ inventory_dir }}/pga_config/simvascular/files/pga_config.php.j2"
 
