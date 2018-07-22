@@ -43,6 +43,9 @@ httpd_log_dir:
  RedHat: /var/log/httpd
 
 # PHP Config values set in httpd vhost config
+
+# Allow uploading files up to 64MB in size.
+# NOTE: if you change one of these values you will need to change the other one likewise.
 php_upload_max_filesize: "64M"
 php_post_max_size: "64M"
 
