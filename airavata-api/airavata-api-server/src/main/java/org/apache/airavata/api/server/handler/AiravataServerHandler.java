@@ -25,7 +25,7 @@ import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
-import org.apache.airavata.api.server.util.GatewayGroupsInitializer;
+import org.apache.airavata.service.security.GatewayGroupsInitializer;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -5782,6 +5782,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public GatewayGroups getGatewayGroups(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
 

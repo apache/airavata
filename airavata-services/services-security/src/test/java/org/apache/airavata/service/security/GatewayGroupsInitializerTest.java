@@ -18,7 +18,7 @@
  *
  */
 
-package org.apache.airavata.api.server.util;
+package org.apache.airavata.service.security;
 
 import mockit.Expectations;
 import mockit.Mocked;
