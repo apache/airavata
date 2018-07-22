@@ -18,7 +18,7 @@
  *
  */
 
-package org.apache.airavata.api.server.util;
+package org.apache.airavata.service.security;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -37,11 +37,15 @@ import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientF
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Create and save an initial set of user management groups for a gateway.
  */
 public class GatewayGroupsInitializer {
+
+    private final static Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
 
     public static GatewayGroups initializeGatewayGroups(String gatewayId) {
 
@@ -72,6 +76,8 @@ public class GatewayGroupsInitializer {
     }
 
     public GatewayGroups initialize(String gatewayId) throws TException {
+
+        logger.info("Creating a GatewayGroups instance for gateway " + gatewayId + " ...");
 
         GatewayGroups gatewayGroups = new GatewayGroups();
         gatewayGroups.setGatewayId(gatewayId);

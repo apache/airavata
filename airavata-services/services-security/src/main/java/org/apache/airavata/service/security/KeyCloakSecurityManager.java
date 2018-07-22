@@ -253,13 +253,21 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
 
     private GatewayGroupMembership getGatewayGroupMembership(String username, String token, String gatewayId) throws Exception {
         validateToken(username, token, gatewayId);
-        GatewayGroups gatewayGroups = registryServiceClient.getGatewayGroups(gatewayId);
+        GatewayGroups gatewayGroups = getGatewayGroups(gatewayId);
         List<UserGroup> userGroups = sharingRegistryServiceClient.getAllMemberGroupsForUser(gatewayId, username + "@" + gatewayId);
         List<String> userGroupIds = userGroups.stream().map(g -> g.getGroupId()).collect(Collectors.toList());
         GatewayGroupMembership gatewayGroupMembership = new GatewayGroupMembership();
         gatewayGroupMembership.setInAdminsGroup(userGroupIds.contains(gatewayGroups.getAdminsGroupId()));
         gatewayGroupMembership.setInReadOnlyAdminsGroup(userGroupIds.contains(gatewayGroups.getReadOnlyAdminsGroupId()));
         return gatewayGroupMembership;
+    }
+
+    private GatewayGroups getGatewayGroups(String gatewayId) throws Exception {
+        if (registryServiceClient.isGatewayGroupsExists(gatewayId)) {
+            return registryServiceClient.getGatewayGroups(gatewayId);
+        } else {
+            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
+        }
     }
 
     private void validateToken(String username, String token, String gatewayId) throws Exception {
