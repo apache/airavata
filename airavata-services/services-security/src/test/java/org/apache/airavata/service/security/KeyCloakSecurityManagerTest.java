@@ -50,7 +50,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(JMockit.class)
 public class KeyCloakSecurityManagerTest {
@@ -234,6 +237,7 @@ public class KeyCloakSecurityManagerTest {
 
         new Expectations() {{
 
+            mockRegistryServiceClient.isGatewayGroupsExists(TEST_GATEWAY); result = true;
             mockRegistryServiceClient.getGatewayGroups(TEST_GATEWAY); result = new GatewayGroups(TEST_GATEWAY, "admins-group-id", "read-only-admins-group-id", "default-gateway-users-group-id");
             List<UserGroup> userGroups = new ArrayList<>();
             UserGroup dummyGroup1 = new UserGroup();
