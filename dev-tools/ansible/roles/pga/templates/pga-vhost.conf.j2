@@ -14,6 +14,8 @@
     DocumentRoot {{ doc_root_dir }}/public
     <Directory "{{ doc_root_dir }}/public">
        AllowOverride All
+       php_value upload_max_filesize {{ php_upload_max_filesize }}
+       php_value post_max_size {{ php_post_max_size }}
     </Directory>
     ErrorLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.error.log
     CustomLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.requests.log combined
