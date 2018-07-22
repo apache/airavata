@@ -19,16 +19,19 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.registry.core.utils.*;
+import org.apache.airavata.registry.core.entities.appcatalog.AppModuleMappingEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationInterfaceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity;
+import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
-import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,8 +219,10 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     @Override
     public List<ApplicationModule> getAccessibleApplicationModules(String gatewayId, List<String> accessibleAppIds, List<String> accessibleCompHostIds) throws AppCatalogException {
+        if (accessibleAppIds.isEmpty() || accessibleCompHostIds.isEmpty()) {
+            return Collections.emptyList();
+        }
         ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
-        ApplicationDeploymentRepository deploymentRepository = new ApplicationDeploymentRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationModule.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);

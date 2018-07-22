@@ -31,10 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ApplicationDeploymentRepository extends AppCatAbstractRepository<ApplicationDeploymentDescription, ApplicationDeploymentEntity, String> implements ApplicationDeployment {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationDeploymentRepository.class);
@@ -187,6 +184,9 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
 
     @Override
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, List<String> accessibleAppIds, List<String> accessibleCompHostIds) throws AppCatalogException {
+        if (accessibleAppIds.isEmpty() || accessibleCompHostIds.isEmpty()) {
+            return Collections.emptyList();
+        }
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
@@ -198,6 +198,9 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
 
     @Override
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, String appModuleId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException {
+        if (accessibleAppIds.isEmpty() || accessibleComputeResourceIds.isEmpty()) {
+            return Collections.emptyList();
+        }
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
