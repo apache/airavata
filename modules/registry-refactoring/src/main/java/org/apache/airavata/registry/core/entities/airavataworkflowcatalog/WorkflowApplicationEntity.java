@@ -39,7 +39,7 @@ public class WorkflowApplicationEntity implements Serializable {
     private String workflowId;
 
     @Column(name = "BELONGS_TO_MAIN_WORKFLOW")
-    private String belongsToMainWorkflow;
+    private boolean belongsToMainWorkflow;
 
     @Column(name = "APPLICATION_INTERFACE_ID")
     private String applicationInterfaceId;
@@ -89,7 +89,7 @@ public class WorkflowApplicationEntity implements Serializable {
         this.workflowId = workflowId;
     }
 
-    public void setBelongsToMainWorkflow(String belongsToMainWorkflow) {
+    public void setBelongsToMainWorkflow(boolean belongsToMainWorkflow) {
         this.belongsToMainWorkflow = belongsToMainWorkflow;
     }
 
@@ -149,7 +149,7 @@ public class WorkflowApplicationEntity implements Serializable {
         return workflowId;
     }
 
-    public String getBelongsToMainWorkflow() {
+    public boolean isBelongsToMainWorkflow() {
         return belongsToMainWorkflow;
     }
 

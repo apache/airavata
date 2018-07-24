@@ -31,7 +31,7 @@ namespace py airavata.model.workflow
 enum HandlerType {
     FLOW_STARTER,
     FLOW_TERMINATOR,
-    DOWHILE_LOOP
+    DOWHILE_LOOP,
     FOREACH_LOOP
 }
 

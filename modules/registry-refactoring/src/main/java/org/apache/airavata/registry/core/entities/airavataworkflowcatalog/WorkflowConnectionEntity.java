@@ -43,7 +43,7 @@ public class WorkflowConnectionEntity implements Serializable {
     private String dataBlockId;
 
     @Column(name = "BELONGS_TO_MAIN_WORKFLOW")
-    private String belongsToMainWorkflow;
+    private boolean belongsToMainWorkflow;
 
     @Column(name = "FROM_TYPE")
     @Enumerated(EnumType.STRING)
@@ -75,7 +75,7 @@ public class WorkflowConnectionEntity implements Serializable {
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID")
     private AiravataWorkflowEntity workflow;
 
-    @ManyToOne(targetEntity = WorkflowDataBlockEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = WorkflowDataBlockEntity.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "DATA_BLOCK_ID", referencedColumnName = "ID")
     private WorkflowDataBlockEntity dataBlock;
 
@@ -94,7 +94,7 @@ public class WorkflowConnectionEntity implements Serializable {
         this.dataBlockId = dataBlockId;
     }
 
-    public void setBelongsToMainWorkflow(String belongsToMainWorkflow) {
+    public void setBelongsToMainWorkflow(boolean belongsToMainWorkflow) {
         this.belongsToMainWorkflow = belongsToMainWorkflow;
     }
 
@@ -150,7 +150,7 @@ public class WorkflowConnectionEntity implements Serializable {
         return dataBlockId;
     }
 
-    public String getBelongsToMainWorkflow() {
+    public boolean isBelongsToMainWorkflow() {
         return belongsToMainWorkflow;
     }
 

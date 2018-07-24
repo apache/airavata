@@ -19,85 +19,48 @@
  */
 package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 
-import org.apache.airavata.model.workflow.WorkflowState;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 @Entity
-@Table(name = "AIRAVATA_WORKFLOW_STATUS")
-@IdClass(AiravataWorkflowStatusPK.class)
-public class AiravataWorkflowStatusEntity implements Serializable {
+@Table(name = "NOTIFICATION_EMAIL")
+@IdClass(NotificationEmailPK.class)
+public class NotificationEmailEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @Column(name = "ID")
-    private String id;
 
     @Id
     @Column(name = "WORKFLOW_ID")
     private String workflowId;
 
-    @Column(name = "STATE")
-    @Enumerated(EnumType.STRING)
-    private WorkflowState state;
-
-    @Column(name = "DESCRIPTION")
-    private String description;
-
-    @Column(name = "UPDATED_AT")
-    private Timestamp updatedAt;
+    @Id
+    @Column(name = "EMAIL")
+    private String email;
 
     @ManyToOne(targetEntity = AiravataWorkflowEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID")
     private AiravataWorkflowEntity workflow;
 
-    public AiravataWorkflowStatusEntity() {
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public NotificationEmailEntity() {
     }
 
     public void setWorkflowId(String workflowId) {
         this.workflowId = workflowId;
     }
 
-    public void setState(WorkflowState state) {
-        this.state = state;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setWorkflow(AiravataWorkflowEntity workflow) {
         this.workflow = workflow;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public String getWorkflowId() {
         return workflowId;
     }
 
-    public WorkflowState getState() {
-        return state;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
+    public String getEmail() {
+        return email;
     }
 
     public AiravataWorkflowEntity getWorkflow() {

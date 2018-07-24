@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 
+import org.apache.airavata.model.workflow.ApplicationState;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -38,7 +40,8 @@ public class ApplicationStatusEntity implements Serializable {
     private String applicationId;
 
     @Column(name = "STATE")
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private ApplicationState state;
 
     @Column(name = "DESCRIPTION")
     private String description;
@@ -61,7 +64,7 @@ public class ApplicationStatusEntity implements Serializable {
         this.applicationId = applicationId;
     }
 
-    public void setState(String state) {
+    public void setState(ApplicationState state) {
         this.state = state;
     }
 
@@ -85,7 +88,7 @@ public class ApplicationStatusEntity implements Serializable {
         return applicationId;
     }
 
-    public String getState() {
+    public ApplicationState getState() {
         return state;
     }
 

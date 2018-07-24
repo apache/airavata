@@ -73,6 +73,11 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
         Mapper mapper = ObjectMapperSingleton.getInstance();
         AiravataWorkflowEntity workflowEntity = mapper.map(workflowModel, AiravataWorkflowEntity.class);
 
+        if (workflowEntity.getNotificationEmails() != null) {
+            logger.debug("Populating the Workflow ID of NotificationEmail objects for the Workflow");
+            workflowEntity.getNotificationEmails().forEach(notificationEmailEntity -> notificationEmailEntity.setWorkflowId(workflowId));
+        }
+
         if (workflowEntity.getStatuses() != null) {
             logger.debug("Populating the Workflow ID of WorkflowStatus objects for the Workflow");
             workflowEntity.getStatuses().forEach(workflowStatusEntity -> workflowStatusEntity.setWorkflowId(workflowId));

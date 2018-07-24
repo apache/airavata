@@ -157,7 +157,7 @@ public interface QueryConstants {
     String GET_ALL_WORKFLOWS = "SELECT W FROM " + AiravataWorkflowEntity.class.getSimpleName() + " W " +
             "WHERE W.gatewayId LIKE :" + DBConstants.Workflow.GATEWAY_ID;
     String GET_WORKFLOW_GIVEN_NAME = "SELECT W FROM " + AiravataWorkflowEntity.class.getSimpleName() + " W " +
-            "WHERE W.workflowName LIKE :" + DBConstants.Workflow.NAME;
+            "WHERE W.name LIKE :" + DBConstants.Workflow.NAME;
 
     String FIND_STORAGE_RESOURCE = "SELECT DISTINCT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
             "WHERE SR.hostName LIKE :" + DBConstants.StorageResource.HOST_NAME;

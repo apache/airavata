@@ -50,6 +50,10 @@ struct WorkflowStatus {
     4:  optional i64 updatedAt
 }
 
+struct NotificationEmail {
+    1:  required string email,
+}
+
 struct AiravataWorkflow {
     1:  required string id = airavata_commons.DEFAULT_ID,
     2:  required string name,
@@ -58,7 +62,7 @@ struct AiravataWorkflow {
     5:  required string storageResourceId,
     6:  optional string description,
     7:  optional bool enableEmailNotification,
-    8:  optional list<string> notificationEmails,
+    8:  optional list<NotificationEmail> notificationEmails,
     9:  optional list<workflow_application_model.WorkflowApplication> applications,
     10: optional list<workflow_handler_model.WorkflowHandler> handlers,
     11: optional list<workflow_connection_model.WorkflowConnection> connections,
