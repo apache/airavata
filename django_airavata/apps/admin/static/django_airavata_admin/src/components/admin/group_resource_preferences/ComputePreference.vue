@@ -228,7 +228,7 @@
       fetchComputeResource: function (id) {
         console.log("Fetching compute Resource", id);
         if (id) {
-          DjangoAiravataAPI.utils.FetchUtils.get("/api/compute/resource/details", {id: id}).then(value => {
+          DjangoAiravataAPI.utils.FetchUtils.get("/api/compute-resources/" + encodeURIComponent(id) + "/").then(value => {
             console.log("Compute  Resource", value);
             this.computeResource = value;
             this.computeResource.jobSubmissionInterfaces.forEach((jobSubmissionInterface) => {
