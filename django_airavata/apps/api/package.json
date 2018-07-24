@@ -1,7 +1,7 @@
 {
   "name": "django-airavata-api",
   "description": "Model and service classes for using the Django Airavata REST API",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "author": "Marcus Christie <machristie@apache.org>",
   "private": false,
   "main": "./static/django_airavata_api/dist/index.js",
@@ -12,6 +12,7 @@
     "watch": "babel static/django_airavata_api/js --watch -d static/django_airavata_api/dist"
   },
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "url-parse": "^1.2.0"
   },
   "devDependencies": {
