@@ -54,7 +54,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
   private java.lang.String storageResourceId; // required
   private java.lang.String description; // optional
   private boolean enableEmailNotification; // optional
-  private java.util.List<java.lang.String> notificationEmails; // optional
+  private java.util.List<NotificationEmail> notificationEmails; // optional
   private java.util.List<org.apache.airavata.model.workflow.WorkflowApplication> applications; // optional
   private java.util.List<org.apache.airavata.model.workflow.WorkflowHandler> handlers; // optional
   private java.util.List<org.apache.airavata.model.workflow.WorkflowConnection> connections; // optional
@@ -188,7 +188,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.NOTIFICATION_EMAILS, new org.apache.thrift.meta_data.FieldMetaData("notificationEmails", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, NotificationEmail.class))));
     tmpMap.put(_Fields.APPLICATIONS, new org.apache.thrift.meta_data.FieldMetaData("applications", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workflow.WorkflowApplication.class))));
@@ -257,7 +257,10 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     }
     this.enableEmailNotification = other.enableEmailNotification;
     if (other.isSetNotificationEmails()) {
-      java.util.List<java.lang.String> __this__notificationEmails = new java.util.ArrayList<java.lang.String>(other.notificationEmails);
+      java.util.List<NotificationEmail> __this__notificationEmails = new java.util.ArrayList<NotificationEmail>(other.notificationEmails.size());
+      for (NotificationEmail other_element : other.notificationEmails) {
+        __this__notificationEmails.add(new NotificationEmail(other_element));
+      }
       this.notificationEmails = __this__notificationEmails;
     }
     if (other.isSetApplications()) {
@@ -490,22 +493,22 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     return (this.notificationEmails == null) ? 0 : this.notificationEmails.size();
   }
 
-  public java.util.Iterator<java.lang.String> getNotificationEmailsIterator() {
+  public java.util.Iterator<NotificationEmail> getNotificationEmailsIterator() {
     return (this.notificationEmails == null) ? null : this.notificationEmails.iterator();
   }
 
-  public void addToNotificationEmails(java.lang.String elem) {
+  public void addToNotificationEmails(NotificationEmail elem) {
     if (this.notificationEmails == null) {
-      this.notificationEmails = new java.util.ArrayList<java.lang.String>();
+      this.notificationEmails = new java.util.ArrayList<NotificationEmail>();
     }
     this.notificationEmails.add(elem);
   }
 
-  public java.util.List<java.lang.String> getNotificationEmails() {
+  public java.util.List<NotificationEmail> getNotificationEmails() {
     return this.notificationEmails;
   }
 
-  public void setNotificationEmails(java.util.List<java.lang.String> notificationEmails) {
+  public void setNotificationEmails(java.util.List<NotificationEmail> notificationEmails) {
     this.notificationEmails = notificationEmails;
   }
 
@@ -820,7 +823,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       if (value == null) {
         unsetNotificationEmails();
       } else {
-        setNotificationEmails((java.util.List<java.lang.String>)value);
+        setNotificationEmails((java.util.List<NotificationEmail>)value);
       }
       break;
 
@@ -1625,11 +1628,12 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.notificationEmails = new java.util.ArrayList<java.lang.String>(_list0.size);
-                java.lang.String _elem1;
+                struct.notificationEmails = new java.util.ArrayList<NotificationEmail>(_list0.size);
+                NotificationEmail _elem1;
                 for (int _i2 = 0; _i2 < _list0.size; ++_i2)
                 {
-                  _elem1 = iprot.readString();
+                  _elem1 = new NotificationEmail();
+                  _elem1.read(iprot);
                   struct.notificationEmails.add(_elem1);
                 }
                 iprot.readListEnd();
@@ -1804,10 +1808,10 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
         if (struct.isSetNotificationEmails()) {
           oprot.writeFieldBegin(NOTIFICATION_EMAILS_FIELD_DESC);
           {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.notificationEmails.size()));
-            for (java.lang.String _iter18 : struct.notificationEmails)
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.notificationEmails.size()));
+            for (NotificationEmail _iter18 : struct.notificationEmails)
             {
-              oprot.writeString(_iter18);
+              _iter18.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1957,9 +1961,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       if (struct.isSetNotificationEmails()) {
         {
           oprot.writeI32(struct.notificationEmails.size());
-          for (java.lang.String _iter24 : struct.notificationEmails)
+          for (NotificationEmail _iter24 : struct.notificationEmails)
           {
-            oprot.writeString(_iter24);
+            _iter24.write(oprot);
           }
         }
       }
@@ -2040,12 +2044,13 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list30 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.notificationEmails = new java.util.ArrayList<java.lang.String>(_list30.size);
-          java.lang.String _elem31;
+          org.apache.thrift.protocol.TList _list30 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.notificationEmails = new java.util.ArrayList<NotificationEmail>(_list30.size);
+          NotificationEmail _elem31;
           for (int _i32 = 0; _i32 < _list30.size; ++_i32)
           {
-            _elem31 = iprot.readString();
+            _elem31 = new NotificationEmail();
+            _elem31.read(iprot);
             struct.notificationEmails.add(_elem31);
           }
         }

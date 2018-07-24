@@ -51,15 +51,14 @@ public class AiravataWorkflowEntity implements Serializable {
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     private boolean enableEmailNotification;
 
-    @Lob
-    @Column(name = "NOTIFICATION_EMAILS")
-    private List<String> notificationEmails;
-
     @Column(name = "CREATED_AT")
     private Timestamp createdAt;
 
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
+
+    @OneToMany(targetEntity = NotificationEmailEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
+    private List<NotificationEmailEntity> notificationEmails;
 
     @OneToMany(targetEntity = WorkflowApplicationEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
     private List<WorkflowApplicationEntity> applications;
@@ -107,16 +106,16 @@ public class AiravataWorkflowEntity implements Serializable {
         this.enableEmailNotification = enableEmailNotification;
     }
 
-    public void setNotificationEmails(List<String> notificationEmails) {
-        this.notificationEmails = notificationEmails;
-    }
-
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setNotificationEmails(List<NotificationEmailEntity> notificationEmails) {
+        this.notificationEmails = notificationEmails;
     }
 
     public void setApplications(List<WorkflowApplicationEntity> applications) {
@@ -167,16 +166,16 @@ public class AiravataWorkflowEntity implements Serializable {
         return enableEmailNotification;
     }
 
-    public List<String> getNotificationEmails() {
-        return notificationEmails;
-    }
-
     public Timestamp getCreatedAt() {
         return createdAt;
     }
 
     public Timestamp getUpdatedAt() {
         return updatedAt;
+    }
+
+    public List<NotificationEmailEntity> getNotificationEmails() {
+        return notificationEmails;
     }
 
     public List<WorkflowApplicationEntity> getApplications() {
