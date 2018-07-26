@@ -23,8 +23,8 @@ export default {
     },
     computed: {
         options: function() {
-            return 'options' in this.experimentInput.editorConfig
-                ? this.experimentInput.editorConfig['options'].map(option => {
+            return 'options' in this.editorConfig
+                ? this.editorConfig['options'].map(option => {
                     return {
                         text: option[CONFIG_OPTION_TEXT_KEY],
                         value: option[CONFIG_OPTION_VALUE_KEY],

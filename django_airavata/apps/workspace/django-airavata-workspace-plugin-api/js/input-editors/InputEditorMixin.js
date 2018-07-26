@@ -39,6 +39,9 @@ export default {
         componentValidState: function() {
             return this.inputHasBegun && !this.valid ? 'invalid' : null;
         },
+        editorConfig: function() {
+            return this.experimentInput.editorConfig;
+        }
     },
     methods: {
         valueChanged: function() {

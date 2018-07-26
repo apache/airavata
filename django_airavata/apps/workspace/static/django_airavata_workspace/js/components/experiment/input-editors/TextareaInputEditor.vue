@@ -22,8 +22,8 @@ export default {
     },
     computed: {
         rows: function() {
-            return 'rows' in this.experimentInput.editorConfig
-                ? this.experimentInput.editorConfig['rows']
+            return 'rows' in this.editorConfig
+                ? this.editorConfig['rows']
                 : DEFAULT_ROWS;
         }
     }
