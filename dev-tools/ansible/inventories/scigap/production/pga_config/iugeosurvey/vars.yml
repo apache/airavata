@@ -24,12 +24,12 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "geosurveyiu.scigap.org"
+vhost_servername: "simccs.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/geosurveyiu.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/geosurveyiu.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/geosurveyiu.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/simccs.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/simccs.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/simccs.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
