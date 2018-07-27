@@ -51,12 +51,13 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
     protected AiravataWorkflowEntity saveWorkflow(AiravataWorkflow workflowModel, String gatewayId) throws WorkflowCatalogException {
 
         if (workflowModel.getId() == null || workflowModel.getId().equals(airavata_commonsConstants.DEFAULT_ID)) {
-            logger.debug("Setting the ID for the new Workflow");
-            workflowModel.setId(WorkflowCatalogUtils.getID(workflowModel.getName()));
+            String newId = WorkflowCatalogUtils.getID(workflowModel.getName());
+            logger.debug("Setting the ID: " + newId + " for the new Workflow");
+            workflowModel.setId(newId);
         }
 
         if (workflowModel.getStatuses() != null) {
-            logger.debug("Populating the status ID of WorkflowStatus objects for the Workflow");
+            logger.debug("Populating the status IDs of WorkflowStatus objects for the Workflow with ID: " + workflowModel.getId());
             workflowModel.getStatuses().forEach(workflowStatus -> {
                 if (workflowStatus.getId() == null) {
                     workflowStatus.setId(WorkflowCatalogUtils.getID("WORKFLOW_STATUS"));
@@ -65,7 +66,7 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
         }
 
         if (workflowModel.getGatewayId() == null) {
-            logger.debug("Setting the GatewayID for the new Workflow");
+            logger.debug("Setting the GatewayID: " + gatewayId + " for the new Workflow with ID: " + workflowModel.getId());
             workflowModel.setGatewayId(gatewayId);
         }
 
@@ -74,12 +75,12 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
         AiravataWorkflowEntity workflowEntity = mapper.map(workflowModel, AiravataWorkflowEntity.class);
 
         if (workflowEntity.getNotificationEmails() != null) {
-            logger.debug("Populating the Workflow ID of NotificationEmail objects for the Workflow");
+            logger.debug("Populating the Workflow ID of NotificationEmail objects for the Workflow with ID" + workflowId);
             workflowEntity.getNotificationEmails().forEach(notificationEmailEntity -> notificationEmailEntity.setWorkflowId(workflowId));
         }
 
         if (workflowEntity.getStatuses() != null) {
-            logger.debug("Populating the Workflow ID of WorkflowStatus objects for the Workflow");
+            logger.debug("Populating the Workflow ID of WorkflowStatus objects for the Workflow with ID: " + workflowId);
             workflowEntity.getStatuses().forEach(workflowStatusEntity -> workflowStatusEntity.setWorkflowId(workflowId));
         }
 
