@@ -17,16 +17,13 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.registry.core.repositories.workflowcatalog;
 
-import org.apache.airavata.model.WorkflowModel;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
-import org.apache.airavata.registry.core.utils.QueryConstants;
-import org.apache.airavata.registry.core.utils.WorkflowCatalogUtils;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.model.workflow.AiravataWorkflow;
+import org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
+import org.apache.airavata.registry.core.utils.*;
 import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.dozer.Mapper;
@@ -39,117 +36,160 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WorkflowRepository extends WorkflowCatAbstractRepository<WorkflowModel, WorkflowEntity, String> implements WorkflowCatalog {
+public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWorkflow, AiravataWorkflowEntity, String> implements WorkflowCatalog {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowRepository.class);
 
-    public WorkflowRepository() { super(WorkflowModel.class, WorkflowEntity.class); }
-
-    protected String saveWorkflowModelData(WorkflowModel workflowModel, String gatewayId) throws WorkflowCatalogException {
-        WorkflowEntity workflowEntity = saveWorkflow(workflowModel, gatewayId);
-        return workflowEntity.getTemplateId();
+    public WorkflowRepository() {
+        super(AiravataWorkflow.class, AiravataWorkflowEntity.class);
     }
 
-    protected WorkflowEntity saveWorkflow(WorkflowModel workflowModel, String gatewayId) throws WorkflowCatalogException {
-        if (workflowModel.getTemplateId() == null) {
-            logger.debug("Setting the Template ID for the new Workflow");
-            workflowModel.setTemplateId(WorkflowCatalogUtils.getID(workflowModel.getName()));
+    protected String saveWorkflowModelData(AiravataWorkflow workflowModel, String gatewayId) throws WorkflowCatalogException {
+        AiravataWorkflowEntity workflowEntity = saveWorkflow(workflowModel, gatewayId);
+        return workflowEntity.getId();
+    }
+
+    protected AiravataWorkflowEntity saveWorkflow(AiravataWorkflow workflowModel, String gatewayId) throws WorkflowCatalogException {
+
+        if (workflowModel.getId() == null || workflowModel.getId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+            String newId = WorkflowCatalogUtils.getID(workflowModel.getName());
+            logger.debug("Setting the ID: " + newId + " for the new Workflow");
+            workflowModel.setId(newId);
         }
 
-        String templateId = workflowModel.getTemplateId();
+        if (workflowModel.getStatuses() != null) {
+            logger.debug("Populating the status IDs of WorkflowStatus objects for the Workflow with ID: " + workflowModel.getId());
+            workflowModel.getStatuses().forEach(workflowStatus -> {
+                if (workflowStatus.getId() == null) {
+                    workflowStatus.setId(WorkflowCatalogUtils.getID("WORKFLOW_STATUS"));
+                }
+            });
+        }
+
+        if (workflowModel.getGatewayId() == null) {
+            logger.debug("Setting the GatewayID: " + gatewayId + " for the new Workflow with ID: " + workflowModel.getId());
+            workflowModel.setGatewayId(gatewayId);
+        }
+
+        String workflowId = workflowModel.getId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        WorkflowEntity workflowEntity = mapper.map(workflowModel, WorkflowEntity.class);
+        AiravataWorkflowEntity workflowEntity = mapper.map(workflowModel, AiravataWorkflowEntity.class);
 
-        if (gatewayId != null) {
-            logger.debug("Setting the gateway ID of the Workflow");
-            workflowEntity.setGatewayId(gatewayId);
+        if (workflowEntity.getNotificationEmails() != null) {
+            logger.debug("Populating the Workflow ID of NotificationEmail objects for the Workflow with ID" + workflowId);
+            workflowEntity.getNotificationEmails().forEach(notificationEmailEntity -> notificationEmailEntity.setWorkflowId(workflowId));
         }
 
-        if (workflowEntity.getWorkflowInputs() != null) {
-            logger.debug("Populating the template ID for WorkflowInput objects for the Workflow");
-            workflowEntity.getWorkflowInputs().forEach(workflowInputEntity -> workflowInputEntity.setTemplateId(templateId));
+        if (workflowEntity.getStatuses() != null) {
+            logger.debug("Populating the Workflow ID of WorkflowStatus objects for the Workflow with ID: " + workflowId);
+            workflowEntity.getStatuses().forEach(workflowStatusEntity -> workflowStatusEntity.setWorkflowId(workflowId));
         }
 
-        if (workflowEntity.getWorkflowOutputs() != null) {
-            logger.debug("Populating the template ID for WorkflowOutput objects for the Workflow");
-            workflowEntity.getWorkflowOutputs().forEach(workflowOutputEntity -> workflowOutputEntity.setTemplateId(templateId));
+        if (workflowEntity.getApplications() != null) {
+            logger.debug("Populating the Workflow ID for WorkflowApplication objects for the Workflow with ID: " + workflowId);
+            workflowEntity.getApplications().forEach(applicationEntity -> {
+                applicationEntity.setWorkflowId(workflowId);
+
+                if (applicationEntity.getStatuses() != null) {
+                    logger.debug("Populating the Workflow ID of ApplicationStatus objects for the Application");
+                    applicationEntity.getStatuses().forEach(applicationStatusEntity -> applicationStatusEntity.setApplicationId(applicationEntity.getId()));
+                }
+            });
         }
 
-        if (get(templateId) == null) {
+        if (workflowEntity.getHandlers() != null) {
+            logger.debug("Populating the Workflow ID for WorkflowHandler objects for the Workflow with ID: " + workflowId);
+            workflowEntity.getHandlers().forEach(handlerEntity -> {
+                handlerEntity.setWorkflowId(workflowId);
+
+                if (handlerEntity.getStatuses() != null) {
+                    logger.debug("Populating the Workflow ID of HandlerStatus objects for the Handler");
+                    handlerEntity.getStatuses().forEach(handlerStatusEntity -> handlerStatusEntity.setHandlerId(handlerEntity.getId()));
+                }
+
+                if (handlerEntity.getInputs() != null && !handlerEntity.getInputs().isEmpty()) {
+                    logger.debug("Populating the Handler ID for HandlerInput objects for the Handler with ID: " + handlerEntity.getId());
+                    handlerEntity.getInputs().forEach(inputEntity -> inputEntity.setHandlerId(handlerEntity.getId()));
+                }
+
+                if (handlerEntity.getOutputs() != null && !handlerEntity.getOutputs().isEmpty()) {
+                    logger.debug("Populating the Handler ID for HandlerOutput objects for the Handler with ID: " + handlerEntity.getId());
+                    handlerEntity.getOutputs().forEach(outputEntity -> outputEntity.setHandlerId(handlerEntity.getId()));
+                }
+            });
+        }
+
+        if (workflowEntity.getConnections() != null) {
+            logger.debug("Populating the ID and Workflow ID for WorkflowConnection objects for the Workflow with ID: " + workflowId);
+            workflowEntity.getConnections().forEach(connectionEntity -> {
+
+                if (connectionEntity.getId() == null || connectionEntity.getId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                    connectionEntity.setId(WorkflowCatalogUtils.getID("WORKFLOW_CONNECTION"));
+                }
+
+                connectionEntity.setWorkflowId(workflowId);
+            });
+        }
+
+        if (get(workflowId) == null) {
             logger.debug("Checking if the Workflow already exists");
-            workflowEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+            workflowEntity.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         }
 
-        workflowEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        workflowEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         return execute(entityManager -> entityManager.merge(workflowEntity));
     }
 
     @Override
-    public String registerWorkflow(WorkflowModel workflowModel, String gatewayId) throws WorkflowCatalogException {
-        throw new WorkflowCatalogException("This method is not implemented");
-        //return saveWorkflowModelData(workflowModel, gatewayId);
+    public String registerWorkflow(AiravataWorkflow workflowModel, String gatewayId) throws WorkflowCatalogException {
+        return saveWorkflowModelData(workflowModel, gatewayId);
     }
 
     @Override
-    public void updateWorkflow(String templateId, WorkflowModel updatedWorkflowModel) throws WorkflowCatalogException {
-        throw new WorkflowCatalogException("This method is not implemented");
-        //saveWorkflowModelData(updatedWorkflowModel, null);
+    public void updateWorkflow(String templateId, AiravataWorkflow updatedWorkflowModel) throws WorkflowCatalogException {
+        saveWorkflowModelData(updatedWorkflowModel, null);
     }
 
     @Override
-    public WorkflowModel getWorkflow(String templateId) throws WorkflowCatalogException {
-        throw new WorkflowCatalogException("This method is not implemented");
-        //return get(templateId);
+    public AiravataWorkflow getWorkflow(String workflowId) throws WorkflowCatalogException {
+        return get(workflowId);
     }
 
     @Override
     public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException {
-        throw new WorkflowCatalogException("This method is not implemented");
-        /*Map<String, Object> queryParameters = new HashMap<>();
+        Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.Workflow.GATEWAY_ID, gatewayId);
-        List<WorkflowModel> workflowModelList = select(QueryConstants.GET_ALL_WORKFLOWS, -1, 0, queryParameters);
+        List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_ALL_WORKFLOWS, -1, 0, queryParameters);
         List<String> workflows = new ArrayList<>();
-        for (WorkflowModel workflowModel : workflowModelList) {
-            workflows.add(workflowModel.getTemplateId());
+        for (AiravataWorkflow workflowModel : workflowModelList) {
+            workflows.add(workflowModel.getId());
         }
-        return workflows;*/
+        return workflows;
     }
 
     @Override
-    public String getWorkflowTemplateId(String workflowName) throws WorkflowCatalogException {
-        throw new WorkflowCatalogException("This method is not implemented");
-        /*Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.Workflow.WORKFLOW_NAME, workflowName);
-        List<WorkflowModel> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
+    public String getWorkflowId(String workflowName) throws WorkflowCatalogException {
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.Workflow.NAME, workflowName);
+        List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
 
-        if (!workflowModelList.isEmpty() && workflowModelList != null) {
+        if (workflowModelList != null && !workflowModelList.isEmpty()) {
             logger.debug("Return the record (there is only one record)");
-            return workflowModelList.get(0).getTemplateId();
+            return workflowModelList.get(0).getId();
         }
-        return null;*/
+        return null;
     }
 
     @Override
     public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException {
-        throw new WorkflowCatalogException("This method is not implemented");
-        /*Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.Workflow.WORKFLOW_NAME, workflowName);
-        List<WorkflowModel> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
-        return (!workflowModelList.isEmpty() && workflowModelList != null);*/
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.Workflow.NAME, workflowName);
+        List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
+        return (workflowModelList != null && !workflowModelList.isEmpty());
     }
 
     @Override
-    public void updateWorkflowOutputs(String templateId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException {
-        throw new WorkflowCatalogException("This method is not implemented");
-        /*WorkflowModel workflowModel = getWorkflow(templateId);
-        workflowModel.setWorkflowOutputs(workflowOutputs);
-        updateWorkflow(workflowModel.getTemplateId(), workflowModel);*/
+    public void deleteWorkflow(String workflowId) throws WorkflowCatalogException {
+        delete(workflowId);
     }
-
-    @Override
-    public void deleteWorkflow(String templateId) throws WorkflowCatalogException {
-        throw new WorkflowCatalogException("This method is not implemented");
-        //delete(templateId);
-    }
-
 }
