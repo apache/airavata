@@ -45,7 +45,7 @@ public class AgentStore {
         if (protoToTokenMap != null) {
             Map<String, AgentAdaptor> tokenToAdaptorMap = protoToTokenMap.get(submissionProtocol);
             if (tokenToAdaptorMap != null) {
-                return Optional.of(tokenToAdaptorMap.get(authToken));
+                return Optional.ofNullable(tokenToAdaptorMap.get(authToken));
             } else {
                 return Optional.empty();
             }
@@ -65,7 +65,7 @@ public class AgentStore {
         if (protoToTokenMap != null) {
             Map<String, StorageResourceAdaptor> tokenToAdaptorMap = protoToTokenMap.get(dataMovementProtocol);
             if (tokenToAdaptorMap != null) {
-                return Optional.of(tokenToAdaptorMap.get(authToken));
+                return Optional.ofNullable(tokenToAdaptorMap.get(authToken));
             } else {
                 return Optional.empty();
             }

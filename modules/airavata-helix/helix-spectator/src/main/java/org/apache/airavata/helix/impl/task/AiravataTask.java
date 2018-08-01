@@ -24,6 +24,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -53,6 +54,7 @@ import org.slf4j.MDC;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class AiravataTask extends AbstractTask {
@@ -178,6 +180,41 @@ public abstract class AiravataTask extends AbstractTask {
             getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             logger.error("Failed to publist task status of task " + getTaskId());
+        }
+    }
+
+
+    public void saveAndPublishJobStatus(String jobId, String processId, String experimentId, String gateway,
+                                         JobState jobState) throws Exception {
+        try {
+
+            String taskId = Optional.ofNullable(MonitoringUtil.getTaskIdByJobId(getCuratorClient(), jobId))
+                    .orElseThrow(() -> new Exception("Can not find the task for job id " + jobId));
+
+            JobStatus jobStatus = new JobStatus();
+            jobStatus.setReason(jobState.name());
+            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            jobStatus.setJobState(jobState);
+
+            if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0 ) {
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            } else {
+                jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
+            }
+
+            getRegistryServiceClient().addJobStatus(jobStatus, taskId, jobId);
+
+            JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
+
+            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
+            MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
+                    (MessageType.JOB.name()), gateway);
+            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            getStatusPublisher().publish(msgCtx);
+
+            MonitoringUtil.updateStatusOfJob(getCuratorClient(), jobId, jobState);
+        } catch (Exception e) {
+            logger.error("Error persisting job status " + e.getLocalizedMessage(), e);
         }
     }
 

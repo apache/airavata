@@ -615,8 +615,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         DataStagingTaskModel submodel = new DataStagingTaskModel();
         ComputeResourceDescription computeResource = registryClient.
                 getComputeResource(processModel.getComputeResourceId());
-        String workingDir = OrchestratorUtils.getScratchLocation(processModel, gatewayId) +
-                File.separator + processModel.getProcessId() + File.separator;
+        String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
+        String workingDir = (scratchLocation.endsWith(File.separator) ? scratchLocation : scratchLocation + File.separator) +
+                processModel.getProcessId() + File.separator;
         URI destination = null;
         try {
             DataMovementProtocol dataMovementProtocol =

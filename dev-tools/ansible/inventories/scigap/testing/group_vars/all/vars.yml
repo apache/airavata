@@ -69,8 +69,8 @@ api_secured: "false"
 tls_enable: "true"
 api_server_tls_port: "9930"
 enable_sharing: "true"
-iam_server_url: "https://iam.scigap.org/auth"
-iam_server_super_admin_username: "AiravataAdmin"
+iam_server_url: "https://iamdev.scigap.org/auth"
+iam_server_super_admin_username: "admin"
 iam_server_super_admin_password: "{{ vault_iam_server_super_admin_password }}"
 
 # Orchestrator  related variables
@@ -107,7 +107,7 @@ keystores_location: "{{ deployment_dir }}/keystores"
 #gfac_log_dir: "{{ gfac_dir }}/logs"
 
 # Monitoring variables
-monitor_email_address: "stagingjobs@scigap.org"
+monitor_email_address: "testingjobsairavata@gmail.com"
 monitor_email_password: "{{ vault_monitor_email_password }}"
 
 # PGA variables

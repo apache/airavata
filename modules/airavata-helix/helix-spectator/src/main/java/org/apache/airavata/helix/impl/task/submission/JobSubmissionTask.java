@@ -233,7 +233,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         mapData.getPreJobCommands().add(0, "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
                 "-H \"Accept: application/vnd.kafka.v2+json\" " +
                 "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\"}}]}' \"" +
-                ServerSettings.getSetting("job.status.publish.endpoint") + "\"");
+                ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
 
         if (mapData.getPostJobCommands() == null) {
             mapData.setPostJobCommands(new ArrayList<>());
@@ -242,6 +242,6 @@ public abstract class JobSubmissionTask extends AiravataTask {
         mapData.getPostJobCommands().add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
                 "-H \"Accept: application/vnd.kafka.v2+json\" " +
                 "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\"}}]}' \"" +
-                ServerSettings.getSetting("job.status.publish.endpoint") + "\"");
+                ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
     }
 }

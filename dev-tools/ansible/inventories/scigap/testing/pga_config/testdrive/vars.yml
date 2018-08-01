@@ -23,12 +23,12 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "master"
 user: "pga"
 group: "pga"
-doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "staging.ultrascan.scigap.org"
+doc_root_dir: "/var/www/portals/testdrive"
+vhost_servername: "testing.testdrive.airavata.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/staging.ultrascan.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/staging.ultrascan.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/staging.ultrascan.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/testing.testdrive.airavata.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/testing.testdrive.airavata.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/testing.testdrive.airavata.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -36,10 +36,10 @@ admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
-oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+oidc_discovery_url: "https://iamdev.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "Ultrascan Gateway"
+  - name: "Test Drive"
     oauth_grant_type: "password"
   - name: "CILogon"
     oauth_grant_type: "authorization_code"
@@ -47,20 +47,19 @@ auth_options:
     logo: "/assets/cilogon-logo-24x24-b.png"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "ultrascan"
+gateway_id: "default"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/ultrascan"
-gateway_data_store_resource_id: "pga.staging.scigap.org_aa63ffa0-a99f-4885-8f4b-81e3c4c4d737"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqFFN7+93U5cELQCdZl+XiXmFxiSnQDXJaIdTKML3X/KU/0GkwUOBkrKVJaJEgpt+cSPLIg/qM4nVjt3iTfBIx9SPb6q8sHxSKnnNS/mfFvSOn/mxdNVgqNgTlqRy5axaeTn8wxa0afihZZLhU0MvUl0rrAcsR2gBU2zWeE9t+gj/HQ5D/dNmKQUJpexyY79RQi6mDwUPwHPXcLs+6YrJ68kpjmGQgGXUvCK/29neRvKpOXKds8E1kaa9nouxiQDCwAQKtqg8VAtfgMOX8gjur9DC1s45Ryjv+bLDuQ7MFMf5wEWg6QKSYoF94/JX3bC9nVjlL2wGX9HsWPDpWY2K5"
-data_sharing_enabled: "false"
+experiment_data_dir: "{{ user_data_dir }}/testdrive"
+gateway_data_store_resource_id: "testing.testdrive.airavata.org_558f61e0-da54-4e31-a62f-ce5ec3f2fb85"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFgLWSw6Mf0tPbkeSyzPMxgT50cNEXFDiE9UnEx0tIm+is9C3hIK78Ct8NAWgPxdXy1vd/9NBVIqkR516NZ7VyGbUHkrtPLOYL+Of9IyvxOQmrLzTLQNS9yVkxwxykJzBePZySyLcOKQdG8YoNj6+2iRolzfo5/w4Gz+MSqKmPJcVH8hjwTdoE5s0hYU4MaLF966hh6LUH7SG31BcTadtEgnE8nYfxeoa20oj0h0n1LKO06OZgVXVN3iulHimQ1paQiW71X9UPUhgpLnYAiI99BmYOQqEM4IndwZLZPwDeb23A0Dh3bLO8CAPgPRcG5b1Da6kABi5i5gcIt3WCJze"
 
 ## Portal related variables
 super_admin_portal: "false"
 admin_emails: "['sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-portal_theme: "base"
-portal_title: "Dev Ultrascan SciGaP Dashboard"
+#portal_theme: "base"
+#portal_theme_repo: ""
+portal_title: "Airavata Test Drive"
+#pga_google_analytics_id: "UA-111528347-2"
 ...
-
-

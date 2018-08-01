@@ -716,11 +716,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
             }
 		} catch (TException e) {
-			String logMessage =  expEvent.getExperimentId() != null && expEvent.getGatewayId() != null ?
+			String logMessage = expEvent.getExperimentId() != null && expEvent.getGatewayId() != null ?
 					String.format("Experiment launch failed due to Thrift conversion error, experimentId: %s, gatewayId: %s",
-					expEvent.getExperimentId(), expEvent.getGatewayId()): "Experiment launch failed due to Thrift conversion error";
-            log.error(logMessage,  e);
-			throw new RuntimeException("Experiment launch error", e);
+							expEvent.getExperimentId(), expEvent.getGatewayId()) : "Experiment launch failed due to Thrift conversion error";
+			log.error(logMessage, e);
+		} catch (Exception e) {
+			log.error("An unknown issue while launching experiment " + Optional.ofNullable(expEvent.getExperimentId()).orElse("missing experiment") +
+					" on gateway " + Optional.ofNullable(expEvent.getGatewayId()).orElse("missing gateway"), e);
 		} finally {
 			experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 			MDC.clear();
