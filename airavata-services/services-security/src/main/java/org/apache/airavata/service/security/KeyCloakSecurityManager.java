@@ -91,6 +91,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final static String APPLICATION_DEPLOYMENT_METHODS =
             "/airavata/registerApplicationDeployment|/airavata/getApplicationDeployment|/airavata/updateApplicationDeployment" +
                     "|/airavata/deleteApplicationDeployment|/airavata/getAllApplicationDeployments|/airavata/getAccessibleApplicationDeployments";
+    private final static String APPLICATION_MODULE_METHODS = "/airavata/getAccessibleAppModules";
     // Misc. other methods needed for group based authorization
     private final static String GROUP_BASED_AUTH_METHODS = "/airavata/getGatewayGroups";
 
@@ -163,7 +164,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts|" +
                 "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|/airavata/getAllAppModules|/airavata/getApplicationModule|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
                 SHARING_RESOURCE_METHODS + "|" + SSH_ACCOUNT_PROVISIONER_METHODS + "|" + GROUP_RESOURCE_PROFILE_METHODS +
-                "|" + APPLICATION_DEPLOYMENT_METHODS + "|" + GROUP_BASED_AUTH_METHODS);
+                "|" + APPLICATION_DEPLOYMENT_METHODS + "|" + GROUP_BASED_AUTH_METHODS + "|" + APPLICATION_MODULE_METHODS);
 
         initializeSecurityInfra();
     }
