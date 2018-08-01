@@ -1,0 +1,27 @@
+# inventory file : scigap staging deployment
+
+[zookeeper]
+149.165.170.103
+#helix.staging.scigap.org
+#pga.staging.scigap.org
+
+[rabbitmq]
+149.165.170.103 ansible_user=root
+
+[database]
+149.165.171.12 ansible_user=root
+
+[api-orch]
+149.165.170.103 ansible_user=root
+
+[helix]
+149.165.156.124 ansible_user=root
+
+[kafka]
+149.165.156.124 ansible_user=root
+
+[pga]
+149.165.156.125 ansible_user=root
+
+# Using the same keycloak as development
+#[keycloak]

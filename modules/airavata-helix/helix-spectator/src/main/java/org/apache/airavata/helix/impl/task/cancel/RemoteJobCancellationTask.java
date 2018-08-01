@@ -9,6 +9,7 @@ import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfigura
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
@@ -114,6 +115,10 @@ public class RemoteJobCancellationTask extends AiravataTask {
                     logger.error("Unknown error while canceling job " + jobId + " of process " + getProcessId());
                     return onFail("Unknown error while canceling job " + jobId + " of process " + getProcessId(), true, ex);
                 }
+
+                // TODO this is temporary fix. Remove this line when the schedulers are configured to notify when an job is externally cancelled
+                // forcefully make the job state as cancelled as some schedulers do not notify when the job is cancelled.
+                saveAndPublishJobStatus(jobId, getProcessId(), getExperimentId(), getGatewayId(), JobState.CANCELED);
             }
 
             logger.info("Successfully completed job cancellation task");
