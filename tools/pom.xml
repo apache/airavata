@@ -42,9 +42,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-		<module>registry-tool</module>
-		<module>gsissh</module>
-        </modules>
+                <module>load-client</module>
+            </modules>
         </profile>
     </profiles>
     <!--<properties>-->

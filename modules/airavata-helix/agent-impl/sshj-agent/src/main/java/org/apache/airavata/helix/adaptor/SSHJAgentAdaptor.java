@@ -128,6 +128,20 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
+    public void destroy() {
+        try {
+            if (sshjClient != null) {
+                sshjClient.disconnect();
+                sshjClient.close();
+            }
+        } catch (IOException e) {
+            logger.warn("Failed to stop sshj client for host " + sshjClient.getHost() + " and user " +
+                    sshjClient.getUsername() + " due to : " + e.getMessage());
+            // ignore
+        }
+    }
+
+    @Override
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
         try (Session session = sshjClient.startSessionWrapper()) {
 

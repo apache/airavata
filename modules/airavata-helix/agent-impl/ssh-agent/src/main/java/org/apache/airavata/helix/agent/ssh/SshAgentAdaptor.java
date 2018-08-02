@@ -106,6 +106,11 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
     }
 
+    @Override
+    public void destroy() {
+
+    }
+
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
         StandardOutReader commandOutput = new StandardOutReader();
         ChannelExec channelExec = null;

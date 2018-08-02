@@ -770,6 +770,7 @@
                 <module>modules/compute-account-provisioning</module>
                 <module>modules/airavata-helix</module>
                 <module>modules/job-monitor</module>
+                <module>tools</module>
             </modules>
         </profile>
         <profile>

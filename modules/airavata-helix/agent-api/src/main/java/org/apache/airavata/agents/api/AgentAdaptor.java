@@ -32,6 +32,8 @@ public interface AgentAdaptor {
 
     public void init(String computeResource, String gatewayId, String userId, String token) throws AgentException;
 
+    public void destroy();
+
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException;
 
     public void createDirectory(String path) throws AgentException;
