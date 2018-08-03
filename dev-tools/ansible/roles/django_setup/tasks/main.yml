@@ -1,0 +1,48 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+---
+# TODO: install python34
+# sudo yum -y install python34
+# sudo yum -y install httpd-devel
+# sudo yum -y install python34-devel
+
+# TODO: fetch and build mod_wsgi
+# mkdir mod_wsgi
+# cd mod_wsgi/
+# curl -LO https://github.com/GrahamDumpleton/mod_wsgi/archive/4.5.17.tar.gz
+# tar zxf 4.5.17.tar.gz
+# cd mod_wsgi-4.5.17/
+# ./configure --with-python=/usr/bin/python3
+# make
+# sudo make install
+
+# TODO: configure apache to load mod_wsgi
+# * configure Apache to load mod_wsgi
+# ```
+# sudo vim /etc/httpd/conf.modules.d/00-wsgi.conf
+# ```
+# * 00-wsgi.conf file contains
+# ```
+# LoadModule wsgi_module modules/mod_wsgi.so
+# ```
+
+# TODO: install Node.js EPEL repository and then install nodejs
+# sudo curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
+# sudo yum install nodejs
