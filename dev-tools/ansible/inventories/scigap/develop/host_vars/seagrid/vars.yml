@@ -19,7 +19,7 @@
 #
 
 ---
-doc_root_dir: "/var/www/portals/django-seagrid"
+doc_root_dir: "/data/portals/django-seagrid"
 vhost_servername: "django.seagrid.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/django.seagrid.org/cert.pem"
