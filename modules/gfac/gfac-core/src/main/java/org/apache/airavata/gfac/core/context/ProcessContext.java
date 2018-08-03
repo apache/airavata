@@ -486,24 +486,6 @@ public class ProcessContext {
 		}
 	}
 
-	public JobSubmissionProtocol getPreferredJobSubmissionProtocol(){
-	    if (isSetGroupResourceProfile() &&
-                groupComputeResourcePreference != null &&
-                groupComputeResourcePreference.getPreferredJobSubmissionProtocol() != null) {
-	        return groupComputeResourcePreference.getPreferredJobSubmissionProtocol();
-        }
-        return gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
-	}
-
-	public DataMovementProtocol getPreferredDataMovementProtocol() {
-	    if (isSetGroupResourceProfile() &&
-                groupComputeResourcePreference != null &&
-                groupComputeResourcePreference.getPreferredDataMovementProtocol() != null) {
-	        return groupComputeResourcePreference.getPreferredDataMovementProtocol();
-        }
-        return gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
-	}
-
 	public void setMonitorMode(MonitorMode monitorMode) {
 		this.monitorMode = monitorMode;
 	}
