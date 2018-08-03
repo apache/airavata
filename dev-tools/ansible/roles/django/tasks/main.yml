@@ -19,7 +19,7 @@
 #
 
 ---
-- name: Create root directory ({{ doc_root_dir }})
+- name: Create root directory
   file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
 
@@ -39,7 +39,7 @@
   pip:
     requirements: "{{ airavata_django_checkout }}/requirements.txt"
     virtualenv: "{{ django_venv_dir }}"
-    virtualenv_command: "python3 -m venv"
+    virtualenv_command: pyvenv-3.4
   become: yes
   become_user: "{{user}}"
 
@@ -70,7 +70,7 @@
   become: yes
   become_user: "{{user}}"
 
-- name: Create experiment data dir {{ experiment_data_dir }}
+- name: Create experiment data dir
   file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=yes follow=yes
   become: yes
 
