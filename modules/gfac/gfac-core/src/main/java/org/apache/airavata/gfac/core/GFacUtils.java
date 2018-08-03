@@ -802,7 +802,7 @@ public class GFacUtils {
     public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext, RegistryService.Client registryClient) throws TException, ApplicationSettingsException {
         try {
             String resourceHostId = processContext.getComputeResourceDescription().getComputeResourceId();
-            JobSubmissionProtocol preferredJobSubmissionProtocol = processContext.getPreferredJobSubmissionProtocol();
+            JobSubmissionProtocol preferredJobSubmissionProtocol = processContext.getJobSubmissionProtocol();
             ComputeResourceDescription resourceDescription = registryClient.getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
             Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
