@@ -448,12 +448,8 @@ public class ProcessContext {
 				userComputeResourcePreference != null &&
 				isValid(userComputeResourcePreference.getComputeResourceId())) {
 			return userComputeResourcePreference.getComputeResourceId();
-		} else if (isSetGroupResourceProfile() &&
-					groupComputeResourcePreference != null &&
-					isValid(groupComputeResourcePreference.getComputeResourceId())){
-			return groupComputeResourcePreference.getComputeResourceId();
 		} else {
-			return gatewayComputeResourcePreference.getComputeResourceId();
+			return groupComputeResourcePreference.getComputeResourceId();
 		}
 	}
 
@@ -470,11 +466,8 @@ public class ProcessContext {
                     isValid(groupComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
                 return groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
         } else {
-			if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
-				return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
-			} else {
-				return gatewayResourceProfile.getCredentialStoreToken();
-			}
+			// FIXME: fallback to credential store token on GroupResourceProfile (see AIRAVATA-2865)
+			return gatewayResourceProfile.getCredentialStoreToken();
 		}
 	}
 
@@ -691,11 +684,12 @@ getComputeResourceCredentialToken());
 	}
 
 	public String getUsageReportingGatewayId() {
-	    if (isSetGroupResourceProfile() &&
-                groupComputeResourcePreference != null &&
-                isValid(groupComputeResourcePreference.getUsageReportingGatewayId())) {
-	        return groupComputeResourcePreference.getUsageReportingGatewayId();
-        }
+	    // FIXME: Should GroupResourceProfiles be able to specify a different usage reporting gateway id?
+//	    if (isSetGroupResourceProfile() &&
+//                groupComputeResourcePreference != null &&
+//                isValid(groupComputeResourcePreference.getUsageReportingGatewayId())) {
+//	        return groupComputeResourcePreference.getUsageReportingGatewayId();
+//        }
 		return gatewayComputeResourcePreference.getUsageReportingGatewayId();
 	}
 
@@ -722,16 +716,10 @@ getComputeResourceCredentialToken());
 			reservation = userComputeResourcePreference.getReservation();
 			start = userComputeResourcePreference.getReservationStartTime();
 			end = userComputeResourcePreference.getReservationEndTime();
-		} else if (isSetGroupResourceProfile() &&
-						groupComputeResourcePreference != null &&
-						isValid(groupComputeResourcePreference.getReservation())){
+		} else {
 			reservation = groupComputeResourcePreference.getReservation();
 			start = groupComputeResourcePreference.getReservationStartTime();
 			end = groupComputeResourcePreference.getReservationEndTime();
-		} else {
-			reservation = gatewayComputeResourcePreference.getReservation();
-			start = gatewayComputeResourcePreference.getReservationStartTime();
-			end = gatewayComputeResourcePreference.getReservationEndTime();
 		}
 		if (reservation != null && start > 0 && start < end) {
 			long now = Calendar.getInstance().getTimeInMillis();
@@ -747,12 +735,8 @@ getComputeResourceCredentialToken());
 				userComputeResourcePreference != null &&
 				userComputeResourcePreference.getQualityOfService() != null) {
 			return userComputeResourcePreference.getQualityOfService();
-		} else if (isSetGroupResourceProfile() &&
-                        groupComputeResourcePreference != null &&
-                        isValid(groupComputeResourcePreference.getQualityOfService())){
+		} else {
 		    return groupComputeResourcePreference.getQualityOfService();
-        } else {
-			return gatewayComputeResourcePreference.getQualityOfService();
 		}
 	}
 
