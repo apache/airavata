@@ -1,5 +1,5 @@
 ---
-# inventory file : scigap production deployment
+# inventory file : scigap develop deployment
 
 [zookeeper]
 149.165.156.195
@@ -21,3 +21,7 @@
 
 [keycloak]
 149.165.156.151
+
+[django]
+seagrid ansible_host=pgadev.scigap.org
+#simvascular ansible_host=pgadev.scigap.org
