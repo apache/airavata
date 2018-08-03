@@ -19,26 +19,26 @@
 #
 
 ---
-doc_root_dir: "/var/www/portals/django-seagrid"
-vhost_servername: "django.seagrid.org"
+doc_root_dir: "/data/portals/django-simvascular"
+vhost_servername: "beta.gateway.simvascular.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/django.seagrid.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/django.seagrid.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/django.seagrid.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/beta.gateway.simvascular.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.gateway.simvascular.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/beta.gateway.simvascular.org/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "seagrid"
+tenant_domain: "simvascular"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "SEAGrid"
+    name: "Simvascular"
   external:
     - name: "CILogon"
-      idp_alias: "oidc"
+      idp_alias: "cilogon"
 
-gateway_id: "seagrid"
-experiment_data_dir: "{{ user_data_dir }}/django-seagrid"
+gateway_id: "simvascular"
+experiment_data_dir: "{{ user_data_dir }}/simvascular"
 
 ...

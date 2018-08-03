@@ -24,4 +24,4 @@
 
 [django]
 seagrid ansible_host=pgadev.scigap.org
-#simvascular ansible_host=pgadev.scigap.org
+simvascular ansible_host=pgadev.scigap.org
