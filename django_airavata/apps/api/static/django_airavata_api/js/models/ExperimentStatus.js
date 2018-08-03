@@ -17,4 +17,8 @@ export default class ExperimentStatus extends BaseModel {
     constructor(data = {}) {
         super(FIELDS, data);
     }
+
+    get isProgressing() {
+        return this.state && this.state.isProgressing;
+    }
 }
