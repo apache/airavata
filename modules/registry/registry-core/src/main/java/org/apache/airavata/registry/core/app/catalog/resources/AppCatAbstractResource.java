@@ -36,6 +36,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public static final String GLOBUS_GK_ENDPOINT = "GlobusGKEndpoint";
     public static final String SSH_SUBMISSION = "SSHSubmission";
 	public static final String SCP_DATA_MOVEMENT = "ScpDataMovement";
+	public static final String WEBDAV_DATA_MOVEMENT = "WebDavDataMovement";
 	public static final String GRIDFTP_DATA_MOVEMENT = "GridftpDataMovement";
 	public static final String GRIDFTP_ENDPOINT = "GridftpEndpoint";
 	public static final String JOB_SUBMISSION_PROTOCOL = "JobSubmissionProtocol";
@@ -173,6 +174,15 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 		public static final String ALTERNATIVE_SCP_HOSTNAME = "alternativeScpHostname";
 		public static final String SSH_PORT = "sshPort";
 	}
+
+	//WebDAV Data Movement Table
+    public final class WebDavDataMovementConstants {
+        public static final String QUEUE_DESCRIPTION = "queueDescription";
+        public static final String DATA_MOVEMENT_INTERFACE_ID = "dataMovementInterfaceId";
+        public static final String SECURITY_PROTOCOL = "securityProtocol";
+        public static final String ALTERNATIVE_WEBDAV_HOSTNAME = "webDavHostname";
+        public static final String SSH_PORT = "port";
+    }
 
     public final class GridFTPDataMovementConstants {
         public static final String DATA_MOVE_ID = "dataMoveID";

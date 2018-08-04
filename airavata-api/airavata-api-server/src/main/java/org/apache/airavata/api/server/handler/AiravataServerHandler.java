@@ -3327,6 +3327,98 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Add WebDAV datamovement details to the compute resource.
+     * @param authzToken
+     * @param resourceId
+     * @param dataMoveType
+     * @param priorityOrder
+     * @param davDataMovement
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws AuthorizationException
+     * @throws TException
+     */
+    @Override
+    @SecurityCheck
+    public String addWebDAVDataMovementDetails(AuthzToken authzToken, String resourceId, DMType dataMoveType, int priorityOrder, WebDAVDataMovement davDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            String result = regClient.addWebDAVDataMovementDetails(resourceId, dataMoveType, priorityOrder, davDataMovement);
+            registryClientPool.returnResource(regClient);
+            return result;
+        } catch (Exception e) {
+            logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    /**
+     * Update the WebDAV datamovement details to the compute resource.
+     * @param authzToken
+     * @param dataMovementInterfaceId
+     * @param davDataMovement
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws AuthorizationException
+     * @throws TException
+     */
+    @Override
+    @SecurityCheck
+    public boolean updateWebDAVDataMovementDetails(AuthzToken authzToken, String dataMovementInterfaceId, WebDAVDataMovement davDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            boolean result = regClient.updateWebDAVDataMovementDetails(dataMovementInterfaceId, davDataMovement);
+            registryClientPool.returnResource(regClient);
+            return result;
+        } catch (Exception e) {
+            logger.error(dataMovementInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    /**
+     * Method returns the datamovement object with the valid datamovement Id
+     * @param authzToken
+     * @param dataMovementId
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws AuthorizationException
+     * @throws TException
+     */
+    @Override
+    @SecurityCheck
+    public WebDAVDataMovement getWebDAVDataMovement(AuthzToken authzToken, String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            WebDAVDataMovement result = regClient.getWebDAVDataMovement(dataMovementId);
+            registryClientPool.returnResource(regClient);
+            return result;
+        } catch (Exception e) {
+            String errorMsg = "Error while retrieving WebDAV data movement interface to resource compute resource...";
+            logger.error(dataMovementId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
     @Override
     @SecurityCheck
     public String addUnicoreDataMovementDetails(AuthzToken authzToken, String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)

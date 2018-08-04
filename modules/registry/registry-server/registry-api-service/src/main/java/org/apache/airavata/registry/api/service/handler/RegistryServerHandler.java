@@ -1762,6 +1762,55 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+    @Override
+    public String addWebDAVDataMovementDetails(String resourceId, DMType dataMoveType, int priorityOrder, WebDAVDataMovement davDataMovement) throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            String movementInterface = addDataMovementInterface(computeResource, resourceId, dataMoveType,
+                    computeResource.addWebDAVDataMovement(davDataMovement), DataMovementProtocol.SCP, priorityOrder);
+            logger.debug("Airavata registered SCP data movement for resource Id: " + resourceId);
+            return movementInterface;
+        } catch (AppCatalogException e) {
+            logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean updateWebDAVDataMovementDetails(String dataMovementInterfaceId, WebDAVDataMovement davDataMovement) throws RegistryServiceException, TException {
+        try {
+            WebDavDataMovementResource movment = AppCatalogThriftConversion.getWebDavDataMovementDescription(davDataMovement);
+            movment.setDataMovementInterfaceId(dataMovementInterfaceId);
+            movment.save();
+            logger.debug("Airavata updated WebDAV data movement with data movement id: " + dataMovementInterfaceId);
+            return true;
+        } catch (Exception e) {
+            logger.error(dataMovementInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public WebDAVDataMovement getWebDAVDataMovement(String dataMovementId) throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            WebDAVDataMovement davDataMovement = appCatalog.getComputeResource().getWebDavDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved WebDAV data movement with data movement id: " + dataMovementId);
+            return davDataMovement;
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving WebDAV data movement interface to resource compute resource...";
+            logger.error(dataMovementId, errorMsg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * This method returns UNICORE datamovement object
      *

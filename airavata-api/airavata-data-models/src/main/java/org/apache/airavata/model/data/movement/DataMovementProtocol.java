@@ -49,7 +49,8 @@ public enum DataMovementProtocol implements org.apache.thrift.TEnum {
   SCP(1),
   SFTP(2),
   GridFTP(3),
-  UNICORE_STORAGE_SERVICE(4);
+  UNICORE_STORAGE_SERVICE(4),
+  WebDAV(5);
 
   private final int value;
 
@@ -80,6 +81,8 @@ public enum DataMovementProtocol implements org.apache.thrift.TEnum {
         return GridFTP;
       case 4:
         return UNICORE_STORAGE_SERVICE;
+      case 5:
+        return WebDAV;
       default:
         return null;
     }

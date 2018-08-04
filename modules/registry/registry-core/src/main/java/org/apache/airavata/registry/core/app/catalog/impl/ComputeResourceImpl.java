@@ -419,6 +419,31 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
+    public String addWebDAVDataMovement(WebDAVDataMovement davDataMovement) throws AppCatalogException {
+        try {
+            davDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("WebDAV"));
+            WebDavDataMovementResource resource = AppCatalogThriftConversion.getWebDavDataMovementDescription(davDataMovement);
+            resource.save();
+            return resource.getDataMovementInterfaceId();
+        }catch (Exception e){
+            logger.error("Error while saving WebDAV Data Movement...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public WebDAVDataMovement getWebDavDataMovement(String dataMoveId) throws AppCatalogException {
+        try {
+            WebDavDataMovementResource resource = new WebDavDataMovementResource();
+            WebDavDataMovementResource dataMovementResource = (WebDavDataMovementResource)resource.get(dataMoveId);
+            return AppCatalogThriftConversion.getWebDavDataMovementDescription(dataMovementResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving WebDAV Data Movement...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
     public ComputeResourceDescription getComputeResource(String resourceId) throws AppCatalogException {
         try {
             ComputeResourceResource resource = new ComputeResourceResource();

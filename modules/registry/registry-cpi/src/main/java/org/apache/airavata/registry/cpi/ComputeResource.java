@@ -97,6 +97,8 @@ public interface ComputeResource {
      */
     String addScpDataMovement (SCPDataMovement scpDataMovement) throws AppCatalogException;
 
+
+
     String addUnicoreDataMovement (UnicoreDataMovement unicoreDataMovement) throws AppCatalogException;
 
     /**
@@ -111,6 +113,22 @@ public interface ComputeResource {
      * @return uniquely generated data move id
      */
     String addGridFTPDataMovement (GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException;
+
+    /**
+     * This method will add the davDataMovement to the database
+     * @param davDataMovement
+     * @return
+     * @throws AppCatalogException
+     */
+    String addWebDAVDataMovement (WebDAVDataMovement davDataMovement) throws AppCatalogException;
+
+    /**
+     * This method will retrieve the WebDAV datamovement object
+     * @param dataMoveId
+     * @return
+     * @throws AppCatalogException
+     */
+    WebDAVDataMovement getWebDavDataMovement (String dataMoveId) throws AppCatalogException;
 
     /**
      * This method will retrieve compute resource object on given resource id
