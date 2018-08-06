@@ -1768,8 +1768,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
             String movementInterface = addDataMovementInterface(computeResource, resourceId, dataMoveType,
-                    computeResource.addWebDAVDataMovement(davDataMovement), DataMovementProtocol.SCP, priorityOrder);
-            logger.debug("Airavata registered SCP data movement for resource Id: " + resourceId);
+                    computeResource.addWebDAVDataMovement(davDataMovement), DataMovementProtocol.WebDAV, priorityOrder);
+            logger.debug("Airavata registered WebDAV data movement for resource Id: " + resourceId);
             return movementInterface;
         } catch (AppCatalogException e) {
             logger.error(resourceId, "Error while adding data movement interface to resource compute resource...", e);

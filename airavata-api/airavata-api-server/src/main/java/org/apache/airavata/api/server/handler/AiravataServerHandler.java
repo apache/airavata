@@ -3380,7 +3380,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
-            logger.error(dataMovementInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(dataMovementInterfaceId, "Error while updating data movement interface to resource compute resource. More info : \"", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -3409,7 +3409,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
-            String errorMsg = "Error while retrieving WebDAV data movement interface to resource compute resource...";
+            String errorMsg = "Error while retrieving WebDAV data movement interface from compute resource...";
             logger.error(dataMovementId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
