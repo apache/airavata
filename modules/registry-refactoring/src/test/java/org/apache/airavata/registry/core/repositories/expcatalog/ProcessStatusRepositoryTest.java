@@ -29,25 +29,28 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.crypto.Data;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 public class ProcessStatusRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessStatusRepositoryTest.class);
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ProcessRepository processRepository;
-    ProcessStatusRepository processStatusRepository;
+    private GatewayRepository gatewayRepository;
+    private ProjectRepository projectRepository;
+    private ExperimentRepository experimentRepository;
+    private ProcessRepository processRepository;
+    private ProcessStatusRepository processStatusRepository;
 
     public ProcessStatusRepositoryTest() {
         super(Database.EXP_CATALOG);
@@ -58,68 +61,161 @@ public class ProcessStatusRepositoryTest extends TestBase {
         processStatusRepository = new ProcessStatusRepository();
     }
 
-    @Test
-    public void ProcessStatusRepositoryTest() throws RegistryException {
+    private Gateway createSampleGateway(String tag) {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        gateway.setGatewayId("gateway" + tag);
+        gateway.setDomain("SEAGRID" + tag);
+        gateway.setEmailAddress("abc@d + " + tag + "+.com");
+        return gateway;
+    }
 
+    private Project createSampleProject(String tag) {
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
-        project.setGatewayId(gatewayId);
+        project.setName("projectName" + tag);
+        project.setOwner("user" + tag);
+        return project;
+    }
 
-        String projectId = projectRepository.addProject(project, gatewayId);
-
+    private ExperimentModel createSampleExperiment(String projectId, String gatewayId, String tag) {
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
+        experimentModel.setUserName("user" + tag);
+        experimentModel.setExperimentName("name" + tag);
+        return experimentModel;
+    }
 
+    @Test
+    public void addProcessStatusRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
         String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
         String processId = processRepository.addProcess(processModel, experimentId);
-        assertTrue(processId != null);
+        assertNotNull(processId);
 
         ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
         String processStatusId = processStatusRepository.addProcessStatus(processStatus, processId);
-        assertTrue(processStatusId != null);
-        assertTrue(processRepository.getProcess(processId).getProcessStatuses().size() == 1);
+        assertNotNull(processStatusId);
+        assertEquals(1, processRepository.getProcess(processId).getProcessStatuses().size());
+
+        ProcessStatus savedProcessStatus = processStatusRepository.getProcessStatus(processId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(processStatus, savedProcessStatus, "__isset_bitfield"));
+    }
+
+    @Test
+    public void updateProcessStatusRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
+
+        ProcessModel processModel = new ProcessModel(null, experimentId);
+        String processId = processRepository.addProcess(processModel, experimentId);
+        assertNotNull(processId);
+
+        ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
+        String processStatusId = processStatusRepository.addProcessStatus(processStatus, processId);
+        assertNotNull(processStatusId);
+        assertEquals(1, processRepository.getProcess(processId).getProcessStatuses().size());
 
         processStatus.setState(ProcessState.EXECUTING);
         processStatusRepository.updateProcessStatus(processStatus, processId);
 
-        ProcessStatus retrievedStatus = processStatusRepository.getProcessStatus(processId);
-        assertEquals(ProcessState.EXECUTING, retrievedStatus.getState());
+        ProcessStatus savedProcessStatus = processStatusRepository.getProcessStatus(processId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(processStatus, savedProcessStatus, "__isset_bitfield"));
+    }
 
-        ProcessStatus updatedStatus = new ProcessStatus(ProcessState.MONITORING);
-        // Verify that ProcessStatus without id can be added with updateProcessStatus
-        String updatedStatusId = processStatusRepository.updateProcessStatus(updatedStatus, processId);
-        retrievedStatus = processStatusRepository.getProcessStatus(processId);
-        assertEquals(ProcessState.MONITORING, retrievedStatus.getState());
-        assertEquals(updatedStatusId, retrievedStatus.getStatusId());
-        assertNull(retrievedStatus.getReason());
+    @Test
+    public void retrieveSingleProcessStatusRepositoryTest() throws RegistryException {
+        List<ProcessStatus> actualProcessStatusList = new ArrayList<>();
+        List<String> processIdList = new ArrayList<>();
 
-        // Verify that updating status with same ProcessState as most recent ProcessStatus will update the most recent ProcessStatus
-        ProcessStatus updatedStatusWithReason = new ProcessStatus(ProcessState.MONITORING);
-        updatedStatusWithReason.setReason("test-reason");
-        String updateStatusWithReasonId = processStatusRepository.updateProcessStatus(updatedStatusWithReason, processId);
-        retrievedStatus = processStatusRepository.getProcessStatus(processId);
-        assertEquals(ProcessState.MONITORING, retrievedStatus.getState());
-        assertEquals(updateStatusWithReasonId, retrievedStatus.getStatusId());
-        assertEquals(updatedStatusId, updateStatusWithReasonId);
-        assertEquals("test-reason", retrievedStatus.getReason());
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
 
+            Project project = createSampleProject("" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
 
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+            assertNotNull(processId);
+
+            ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
+            String processStatusId = processStatusRepository.addProcessStatus(processStatus, processId);
+            assertNotNull(processStatusId);
+            assertEquals(1, processRepository.getProcess(processId).getProcessStatuses().size());
+
+            actualProcessStatusList.add(processStatus);
+            processIdList.add(processId);
+        }
+        for (int j = 0 ; j < 5; j++) {
+            ProcessStatus savedProcessStatus = processStatusRepository.getProcessStatus(processIdList.get(j));
+            ProcessStatus actualProcessStatus = actualProcessStatusList.get(j);
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualProcessStatus, savedProcessStatus, "__isset_bitfield"));
+        }
+    }
+
+    @Test
+    public void retrieveMultipleProcessStatusRepositoryTest() throws RegistryException {
+        List<String> actualProcessIdList = new ArrayList<>();
+        HashMap<String, ProcessStatus> actualProcessStatusMap = new HashMap<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("1" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+            assertNotNull(processId);
+
+            ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
+            String processStatusId = processStatusRepository.addProcessStatus(processStatus, processId);
+            assertNotNull(processStatusId);
+            assertEquals(1, processRepository.getProcess(processId).getProcessStatuses().size());
+
+            actualProcessIdList.add(processId);
+            actualProcessStatusMap.put(processId, processStatus);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            ProcessStatus savedProcess = processStatusRepository.getProcessStatus(actualProcessIdList.get(j));
+            ProcessStatus actualProcess = actualProcessStatusMap.get(actualProcessIdList.get(j));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualProcess, savedProcess, "__isset_bitfield"));
+        }
     }
 
 }

@@ -84,7 +84,7 @@ public class ExperimentErrorRepositoryTest extends TestBase {
         List<ErrorModel> tempErrorModelList = new ArrayList<>();
         for (int k = 0; k < count; k++) {
             ErrorModel errorModel = new ErrorModel();
-            errorModel.setErrorId("error");
+            errorModel.setErrorId("error" + k);
             tempErrorModelList.add(errorModel);
             String experimentErrorId = experimentErrorRepository.addExperimentError(errorModel, experimentId);
             Assert.assertNotNull(experimentErrorId);
@@ -204,16 +204,17 @@ public class ExperimentErrorRepositoryTest extends TestBase {
             Assert.assertNotNull(experimentId);
             experimentIdList.add(experimentId);
 
-            addExperimentErrors(experimentId, actualErrorModelMap, i);
+            addExperimentErrors(experimentId, actualErrorModelMap, i + 1);
         }
 
         for (int j = 0 ; j < 5; j++) {
             List<ErrorModel> retrievedErrorList = experimentErrorRepository.getExperimentErrors(experimentIdList.get(j));
-            Assert.assertEquals(j, retrievedErrorList.size());
+            Assert.assertEquals(j + 1, retrievedErrorList.size());
 
             List<ErrorModel> actualErrorModelList = actualErrorModelMap.get(experimentIdList.get(j));
             List<ErrorModel> savedErrorsList = experimentRepository.getExperiment(experimentIdList.get(j)).getErrors();
             Assert.assertTrue(EqualsBuilder.reflectionEquals(actualErrorModelList, savedErrorsList, "__isset_bitfield"));
             }
     }
+
 }

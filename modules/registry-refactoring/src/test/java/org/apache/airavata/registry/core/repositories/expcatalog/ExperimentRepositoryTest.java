@@ -20,20 +20,28 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -42,9 +50,9 @@ public class ExperimentRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentRepositoryTest.class);
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
+    private GatewayRepository gatewayRepository;
+    private ProjectRepository projectRepository;
+    private ExperimentRepository experimentRepository;
 
     public ExperimentRepositoryTest() {
         super(Database.EXP_CATALOG);
@@ -53,41 +61,88 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentRepository = new ExperimentRepository();
     }
 
-    @Test
-    public void ExperimentRepositoryTest() throws RegistryException {
+    private Gateway createSampleGateway(String tag) {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        gateway.setGatewayId("gateway" + tag);
+        gateway.setDomain("SEAGRID" + tag);
+        gateway.setEmailAddress("abc@d + " + tag + "+.com");
+        return gateway;
+    }
 
+    private Project createSampleProject(String tag) {
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
-        project.setGatewayId(gatewayId);
+        project.setName("projectName" + tag);
+        project.setOwner("user" + tag);
+        return project;
+    }
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+    private ExperimentModel createSampleExperiment(String projectId, String gatewayId, String tag) {
+        InputDataObjectType inputDataObjectTypeExp = new InputDataObjectType();
+        inputDataObjectTypeExp.setName("inputE");
+        inputDataObjectTypeExp.setType(DataType.STRING);
+
+        OutputDataObjectType outputDataObjectTypeExp = new OutputDataObjectType();
+        outputDataObjectTypeExp.setName("outputE");
+        outputDataObjectTypeExp.setType(DataType.STRING);
+
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setErrorId("error");
+
+        ProcessModel processModel = new ProcessModel();
+        processModel.setProcessId("Id");
 
         ExperimentModel experimentModel = new ExperimentModel();
+        experimentModel.addToExperimentInputs(inputDataObjectTypeExp);
+        experimentModel.addToExperimentOutputs(outputDataObjectTypeExp);
+        experimentModel.addToErrors(errorModel);
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
+        experimentModel.addToProcesses(processModel);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
-        experimentModel.setGatewayInstanceId("gateway-instance-id");
+        experimentModel.setUserName("user" + tag);
+        experimentModel.setExperimentName("name" + tag);
+        experimentModel.setGatewayInstanceId("gateway-instance-id" + tag);
+        return experimentModel;
+    }
 
+    @Test
+    public void addExperimentRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
         String experimentId = experimentRepository.addExperiment(experimentModel);
-        assertTrue(experimentId != null);
+        Assert.assertNotNull(experimentId);
 
-        experimentModel.setDescription("description");
-        experimentRepository.updateExperiment(experimentModel, experimentId);
+        ExperimentModel retreivedExperimentModel = experimentRepository.getExperiment(experimentId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel, retreivedExperimentModel,"__isset_bitfield", "experimentInputs", "experimentOutputs", "experimentStatus", "errors", "processes"));
 
-        ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
-        assertEquals("description", retrievedExperimentModel.getDescription());
-        assertEquals(ExperimentType.SINGLE_APPLICATION, retrievedExperimentModel.getExperimentType());
-        assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
-        assertEquals(1, retrievedExperimentModel.getExperimentStatusSize());
-        assertEquals(ExperimentState.CREATED, retrievedExperimentModel.getExperimentStatus().get(0).getState());
+        //Individual Object Comparison for the excluded fields, UserconfigurationData is tested in the updateExperimentRepositoryTest()
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getExperimentInputs(), retreivedExperimentModel.getExperimentInputs(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getExperimentOutputs(), retreivedExperimentModel.getExperimentOutputs(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getErrors(), retreivedExperimentModel.getErrors(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getProcesses(), retreivedExperimentModel.getProcesses(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getExperimentStatus(), retreivedExperimentModel.getExperimentStatus(), "__isset_bitfield"));
+    }
+
+    @Test
+    public void updateExperimentRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);
@@ -105,36 +160,89 @@ public class ExperimentRepositoryTest extends TestBase {
         computationalResourceSchedulingModel.setTotalPhysicalMemory(1333);
         computationalResourceSchedulingModel.setWallTimeLimit(77);
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
-        assertEquals(experimentId, experimentRepository.addUserConfigurationData(userConfigurationDataModel, experimentId));
 
+        experimentRepository.addUserConfigurationData(userConfigurationDataModel, experimentId);
+        experimentModel.setUserConfigurationData(userConfigurationDataModel);
         userConfigurationDataModel.setStorageId("storage2");
         experimentRepository.updateUserConfigurationData(userConfigurationDataModel, experimentId);
 
-        final UserConfigurationDataModel retrievedUserConfigurationDataModel = experimentRepository.getUserConfigurationData(experimentId);
-        assertEquals("storage2", retrievedUserConfigurationDataModel.getStorageId());
-        final ComputationalResourceSchedulingModel retrievedComputationalResourceScheduling = retrievedUserConfigurationDataModel.getComputationalResourceScheduling();
-        assertNotNull(retrievedComputationalResourceScheduling);
-        assertEquals("resource-host-id", retrievedComputationalResourceScheduling.getResourceHostId());
-        assertEquals( 12, retrievedComputationalResourceScheduling.getTotalCPUCount());
-        assertEquals(13, retrievedComputationalResourceScheduling.getNodeCount());
-        assertEquals(14, retrievedComputationalResourceScheduling.getNumberOfThreads());
-        assertEquals("override-project-num", retrievedComputationalResourceScheduling.getOverrideAllocationProjectNumber());
-        assertEquals("override-login-username", retrievedComputationalResourceScheduling.getOverrideLoginUserName());
-        assertEquals("override-scratch-location", retrievedComputationalResourceScheduling.getOverrideScratchLocation());
-        assertEquals("queue-name", retrievedComputationalResourceScheduling.getQueueName());
-        assertEquals("static-working-dir", retrievedComputationalResourceScheduling.getStaticWorkingDir());
-        assertEquals(1333, retrievedComputationalResourceScheduling.getTotalPhysicalMemory());
-        assertEquals(77, retrievedComputationalResourceScheduling.getWallTimeLimit());
+        ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel, retrievedExperimentModel,"__isset_bitfield", "userConfigurationData", "experimentInputs", "experimentOutputs", "experimentStatus", "errors", "processes"));
+        //computationalResourceScheduling
+        //Individual Object Comparison for the excluded fields, UserconfigurationData is tested in the updateExperimentRepositoryTest()
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getExperimentInputs(), retrievedExperimentModel.getExperimentInputs(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getExperimentOutputs(), retrievedExperimentModel.getExperimentOutputs(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getErrors(), retrievedExperimentModel.getErrors(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getProcesses(), retrievedExperimentModel.getProcesses(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getExperimentStatus(), retrievedExperimentModel.getExperimentStatus(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getUserConfigurationData(), retrievedExperimentModel.getUserConfigurationData(), "__isset_bitfield", "computationalResourceScheduling"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(experimentModel.getUserConfigurationData().getComputationalResourceScheduling(), retrievedExperimentModel.getUserConfigurationData().getComputationalResourceScheduling(), "__isset_bitfield"));
+    }
 
-        List<String> experimentIdList = experimentRepository.getExperimentIDs(DBConstants.Experiment.GATEWAY_ID, gatewayId);
-        assertTrue(experimentIdList.size() == 1);
-        assertTrue(experimentIdList.get(0).equals(experimentId));
+    @Test
+    public void retrieveSingleExperimentRepositoryTest() throws RegistryException {
+            List<ExperimentModel> actualexperimentModelList = new ArrayList<>();
+            List<String> experimentIdList = new ArrayList<>();
 
-        experimentRepository.removeExperiment(experimentId);
-        assertFalse(experimentRepository.isExperimentExist(experimentId));
+            for (int i = 0 ; i < 5; i++) {
+                Gateway gateway = createSampleGateway("" + i);
+                String gatewayId = gatewayRepository.addGateway(gateway);
+                Assert.assertNotNull(gatewayId);
 
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+                Project project = createSampleProject("" + i);
+                String projectId = projectRepository.addProject(project, gatewayId);
+                Assert.assertNotNull(projectId);
+
+                ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+                String experimentId = experimentRepository.addExperiment(experimentModel);
+                Assert.assertNotNull(experimentId);
+                experimentIdList.add(experimentId);
+
+                List<String> experimentIdTempList = experimentRepository.getExperimentIDs(DBConstants.Experiment.GATEWAY_ID, gatewayId);
+                assertEquals(1, experimentIdTempList.size());
+
+                actualexperimentModelList.add(experimentModel);
+
+            }
+
+            for (int j = 0 ; j < 5; j++) {
+                ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentIdList.get(j));
+                ExperimentModel actualExperimentModel = actualexperimentModelList.get(j);
+                Assert.assertTrue(EqualsBuilder.reflectionEquals(actualExperimentModel, retrievedExperimentModel,"__isset_bitfield", "experimentInputs", "experimentOutputs", "experimentStatus", "errors", "processes"));
+            }
+    }
+
+    @Test
+    public void retrieveMultipleExperimentRepositoryTest() throws RegistryException {
+        List<String> experimentIdList = new ArrayList<>();
+        HashMap<String, ExperimentModel> actualExperimentModelMap = new HashMap<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+            experimentIdList.add(experimentId);
+
+            List<String> experimentIdTempList = experimentRepository.getExperimentIDs(DBConstants.Experiment.GATEWAY_ID, gatewayId);
+            assertEquals(1, experimentIdTempList.size());
+
+            actualExperimentModelMap.put(experimentId,experimentModel);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            ExperimentModel actualExperimentModel = experimentRepository.getExperiment(experimentIdList.get(j));
+            ExperimentModel savedExperimentModel = actualExperimentModelMap.get(experimentIdList.get(j));
+
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualExperimentModel, savedExperimentModel,"__isset_bitfield", "experimentInputs", "experimentOutputs", "experimentStatus", "errors", "processes"));
+        }
     }
 
 }

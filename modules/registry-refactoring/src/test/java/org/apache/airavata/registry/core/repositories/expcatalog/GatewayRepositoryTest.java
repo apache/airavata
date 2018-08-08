@@ -23,22 +23,23 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 public class GatewayRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayRepositoryTest.class);
 
-    private String testGatewayId = "testGateway";
     GatewayRepository gatewayRepository;
 
     public GatewayRepositoryTest() {
@@ -46,28 +47,96 @@ public class GatewayRepositoryTest extends TestBase {
         gatewayRepository = new GatewayRepository();
     }
 
-    @Test
-    public void GatewayRepositoryTest() throws ApplicationSettingsException, RegistryException {
+    private Gateway createSampleGateway(String tag) {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId(testGatewayId);
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
+        gateway.setGatewayId("gateway" + tag);
+        gateway.setDomain("SEAGRID" + tag);
+        gateway.setEmailAddress("abc@d + " + tag + "+.com");
+        return gateway;
+    }
 
-        String gatewayId = gatewayRepository.addGateway(gateway);
-        assertEquals(testGatewayId, gatewayId);
+    @Test
+    public void addGatewayTest() throws RegistryException {
+        Gateway actualGateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(actualGateway);
+        Assert.assertNotNull(gatewayId);
+        assertEquals(1, gatewayRepository.getAllGateways().size());
 
-        gateway.setGatewayAdminFirstName("ABC");
-        gatewayRepository.updateGateway(testGatewayId, gateway);
+        Gateway savedGateway = gatewayRepository.get(gatewayId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(savedGateway, actualGateway, "__isset_bitfield", "requestCreationTime"));
+    }
 
-        Gateway retrievedGateway = gatewayRepository.getGateway(gatewayId);
-        assertEquals(gateway.getGatewayAdminFirstName(), retrievedGateway.getGatewayAdminFirstName());
-        assertEquals(GatewayApprovalStatus.APPROVED, gateway.getGatewayApprovalStatus());
+    @Test
+    public void updateGatewayTest() throws RegistryException {
+        Gateway actualGateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(actualGateway);
+        Assert.assertNotNull(gatewayId);
 
-        assertTrue(gatewayRepository.getAllGateways().size() == 1);
+        actualGateway.setGatewayAdminFirstName("ABC");
+        String testGatewayId = "testGateway";
+        actualGateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
+
+        gatewayRepository.updateGateway(testGatewayId, actualGateway);
+
+        Gateway savedGateway = gatewayRepository.get(gatewayId);
+        assertEquals(actualGateway.getGatewayAdminFirstName(), savedGateway.getGatewayAdminFirstName());
+        assertEquals(GatewayApprovalStatus.APPROVED, savedGateway.getGatewayApprovalStatus());
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(actualGateway, savedGateway, "__isset_bitfield", "requestCreationTime"));
+    }
+
+    @Test
+    public void retrieveSingleGatewayTest() throws RegistryException {
+        List<Gateway> actualGatewayList = new ArrayList<>();
+        List<String> gatewayIdList = new ArrayList<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+            gatewayIdList.add(gatewayId);
+            actualGatewayList.add(gateway);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            Gateway retrievedGateway = gatewayRepository.get(gatewayIdList.get(j));
+            Gateway expectedGateway = actualGatewayList.get(j);
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(retrievedGateway, expectedGateway,"__isset_bitfield", "requestCreationTime"));
+        }
+    }
+
+    @Test
+    public void removeGatewayTest() throws RegistryException {
+        Gateway actualGateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(actualGateway);
+        Assert.assertNotNull(gatewayId);
+
+        actualGateway.setGatewayAdminFirstName("ABC");
+        String testGatewayId = "testGateway";
+        gatewayRepository.updateGateway(testGatewayId, actualGateway);
 
         gatewayRepository.removeGateway(gatewayId);
-        assertFalse(gatewayRepository.isGatewayExist(gatewayId));
+        gatewayRepository.getAllGateways().size();
+        Assert.assertEquals(0, gatewayRepository.getAllGateways().size());
+    }
+
+    @Test
+    public void retrieveMultipleGatewayTest() throws RegistryException {
+        List<String> gatewayIdList = new ArrayList<>();
+        HashMap<String, Gateway> actualGatewayModelMap = new HashMap<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+            gatewayIdList.add(gatewayId);
+            actualGatewayModelMap.put(gatewayId, gateway);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            Gateway actualGateway = actualGatewayModelMap.get(gatewayIdList.get(j));
+            Gateway expectedGateway = gatewayRepository.get(gatewayIdList.get(j));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualGateway, expectedGateway,"__isset_bitfield", "requestCreationTime"));
+        }
     }
 
 }

@@ -1,4 +1,5 @@
-/**
+/*
+ *
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -29,25 +30,28 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TaskErrorRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskErrorRepositoryTest.class);
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ProcessRepository processRepository;
-    TaskRepository taskRepository;
-    TaskErrorRepository taskErrorRepository;
+    private GatewayRepository gatewayRepository;
+    private ProjectRepository projectRepository;
+    private ExperimentRepository experimentRepository;
+    private ProcessRepository processRepository;
+    private TaskRepository taskRepository;
+    private TaskErrorRepository taskErrorRepository;
 
     public TaskErrorRepositoryTest() {
         super(Database.EXP_CATALOG);
@@ -59,29 +63,44 @@ public class TaskErrorRepositoryTest extends TestBase {
         taskErrorRepository = new TaskErrorRepository();
     }
 
-    @Test
-    public void TaskErrorRepositoryTest() throws RegistryException {
+    private Gateway createSampleGateway(String tag) {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        gateway.setGatewayId("gateway" + tag);
+        gateway.setDomain("SEAGRID" + tag);
+        gateway.setEmailAddress("abc@d + " + tag + "+.com");
+        return gateway;
+    }
 
+    private Project createSampleProject(String tag) {
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
-        project.setGatewayId(gatewayId);
+        project.setName("projectName" + tag);
+        project.setOwner("user" + tag);
+        return project;
+    }
 
-        String projectId = projectRepository.addProject(project, gatewayId);
-
+    private ExperimentModel createSampleExperiment(String projectId, String gatewayId, String tag) {
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
+        experimentModel.setUserName("user" + tag);
+        experimentModel.setExperimentName("name" + tag);
+        return experimentModel;
+    }
 
+    @Test
+    public void addTaskErrorRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
         String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
         String processId = processRepository.addProcess(processModel, experimentId);
@@ -91,27 +110,148 @@ public class TaskErrorRepositoryTest extends TestBase {
         taskModel.setParentProcessId(processId);
 
         String taskId = taskRepository.addTask(taskModel, processId);
-        assertTrue(taskId != null);
+        assertNotNull(taskId);
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");
 
         String taskErrorId = taskErrorRepository.addTaskError(errorModel, taskId);
-        assertTrue(taskErrorId != null);
-        assertTrue(taskRepository.getTask(taskId).getTaskErrors().size() == 1);
+        assertNotNull(taskErrorId);
+        assertEquals(1, taskRepository.getTask(taskId).getTaskErrors().size());
+
+        ErrorModel retrievedErrorModel = taskErrorRepository.getTaskError(taskId).get(0);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(errorModel, retrievedErrorModel, "__isset_bitfield"));
+    }
+
+    @Test
+    public void updateTaskErrorRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
+
+        ProcessModel processModel = new ProcessModel(null, experimentId);
+        String processId = processRepository.addProcess(processModel, experimentId);
+
+        TaskModel taskModel = new TaskModel();
+        taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+        taskModel.setParentProcessId(processId);
+
+        String taskId = taskRepository.addTask(taskModel, processId);
+        assertNotNull(taskId);
+
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setErrorId("error");
+
+        String taskErrorId = taskErrorRepository.addTaskError(errorModel, taskId);
+        assertNotNull(taskErrorId);
+        assertEquals(1, taskRepository.getTask(taskId).getTaskErrors().size());
 
         errorModel.setActualErrorMessage("message");
         taskErrorRepository.updateTaskError(errorModel, taskId);
 
         List<ErrorModel> retrievedErrorList = taskErrorRepository.getTaskError(taskId);
-        assertTrue(retrievedErrorList.size() == 1);
+        assertEquals(1, retrievedErrorList.size());
         assertEquals("message", retrievedErrorList.get(0).getActualErrorMessage());
 
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        taskRepository.removeTask(taskId);
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(errorModel, retrievedErrorList.get(0), "__isset_bitfield"));
+    }
+
+    @Test
+    public void retrieveSingleTaskErrorRepositoryTest() throws RegistryException {
+        List<ErrorModel> actualErrorModelList = new ArrayList<>();
+        List<String> taskIdList = new ArrayList<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("1");
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("1");
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+
+            TaskModel taskModel = new TaskModel();
+            taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+            taskModel.setParentProcessId(processId);
+
+            String taskId = taskRepository.addTask(taskModel, processId);
+            assertNotNull(taskId);
+            taskIdList.add(taskId);
+
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setErrorId("error");
+            actualErrorModelList.add(errorModel);
+
+            String taskErrorId = taskErrorRepository.addTaskError(errorModel, taskId);
+            assertNotNull(taskErrorId);
+            assertEquals(1, taskRepository.getTask(taskId).getTaskErrors().size());
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            ErrorModel savedErrorModel = taskErrorRepository.getTaskError(taskIdList.get(j)).get(0);
+            ErrorModel actualErrorModel = actualErrorModelList.get(j);
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualErrorModel, savedErrorModel, "__isset_bitfield"));
+        }
+    }
+
+    @Test
+    public void retrieveMultipleTaskErrorRepositoryTest() throws RegistryException {
+        List<String> actualTaskIdList = new ArrayList<>();
+        HashMap<String, ErrorModel> actualTaskErrorModelMap = new HashMap<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+
+            TaskModel taskModel = new TaskModel();
+            taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+            taskModel.setParentProcessId(processId);
+
+            String taskId = taskRepository.addTask(taskModel, processId);
+            assertNotNull(taskId);
+            actualTaskIdList.add(taskId);
+
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setErrorId("error");
+            actualTaskErrorModelMap.put(taskId, errorModel);
+
+            String taskErrorId = taskErrorRepository.addTaskError(errorModel, taskId);
+            assertNotNull(taskErrorId);
+            assertEquals(1, taskRepository.getTask(taskId).getTaskErrors().size());
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            ErrorModel savedErrorModel = taskErrorRepository.getTaskError(actualTaskIdList.get(j)).get(0);
+            ErrorModel actualErrorModel = actualTaskErrorModelMap.get(actualTaskIdList.get(j));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualErrorModel, savedErrorModel, "__isset_bitfield"));
+        }
     }
 
 }

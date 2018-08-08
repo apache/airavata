@@ -25,16 +25,21 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.*;
 
 public class ProcessErrorRepositoryTest extends TestBase {
 
@@ -54,53 +59,186 @@ public class ProcessErrorRepositoryTest extends TestBase {
         processRepository = new ProcessRepository();
         processErrorRepository = new ProcessErrorRepository();
     }
-
-    @Test
-    public void ProcessErrorRepositoryTest() throws RegistryException {
+    private Gateway createSampleGateway(String tag) {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        gateway.setGatewayId("gateway" + tag);
+        gateway.setDomain("SEAGRID" + tag);
+        gateway.setEmailAddress("abc@d + " + tag + "+.com");
+        return gateway;
+    }
 
+    private Project createSampleProject(String tag) {
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
-        project.setGatewayId(gatewayId);
+        project.setName("projectName" + tag);
+        project.setOwner("user" + tag);
+        return project;
+    }
 
-        String projectId = projectRepository.addProject(project, gatewayId);
-
+    private ExperimentModel createSampleExperiment(String projectId, String gatewayId, String tag) {
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
+        experimentModel.setUserName("user" + tag);
+        experimentModel.setExperimentName("name" + tag);
+        return experimentModel;
+    }
 
+    @Test
+    public void addProcessRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
         String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
         String processId = processRepository.addProcess(processModel, experimentId);
-        assertTrue(processId != null);
+        assertNotNull(processId);
+
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setErrorId("error");
+        processModel.addToProcessErrors(errorModel);
+
+        String processErrorId = processErrorRepository.addProcessError(errorModel, processId);
+        assertNotNull(processErrorId);
+        assertEquals(1, processRepository.getProcess(processId).getProcessErrors().size());
+
+        List<ErrorModel> processListError = processErrorRepository.getProcessError(processId);
+        ErrorModel savedErrorModel = processListError.get(0);
+
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(errorModel, savedErrorModel, "__isset_bitfield"));
+    }
+
+    @Test
+    public void updateProcessRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
+
+        ProcessModel processModel = new ProcessModel(null, experimentId);
+        String processId = processRepository.addProcess(processModel, experimentId);
+        assertNotNull(processId);
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");
 
+        processModel.addToProcessErrors(errorModel);
+
         String processErrorId = processErrorRepository.addProcessError(errorModel, processId);
-        assertTrue(processErrorId != null);
-        assertTrue(processRepository.getProcess(processId).getProcessErrors().size() == 1);
+        assertNotNull(processErrorId);
+        assertEquals(1, processRepository.getProcess(processId).getProcessErrors().size());
 
         errorModel.setActualErrorMessage("message");
         processErrorRepository.updateProcessError(errorModel, processId);
 
-        List<ErrorModel> retrievedErrorList = processErrorRepository.getProcessError(processId);
-        assertTrue(retrievedErrorList.size() == 1);
-        assertEquals("message", retrievedErrorList.get(0).getActualErrorMessage());
+        List<ErrorModel> processListError = processErrorRepository.getProcessError(processId);
+        ErrorModel savedErrorModel = processListError.get(0);
 
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
-
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(errorModel, savedErrorModel, "__isset_bitfield"));
     }
+
+    @Test
+    public void retrieveSingleProcessRepositoryTest() throws RegistryException {
+        List<ErrorModel> actualProcessErrorList = new ArrayList<>();
+        List<String> actualProcessIdList = new ArrayList<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+            assertNotNull(processId);
+
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setErrorId("error" + i);
+            processModel.addToProcessErrors(errorModel);
+
+            String processErrorId = processErrorRepository.addProcessError(errorModel, processId);
+            assertNotNull(processErrorId);
+            assertEquals(1, processRepository.getProcess(processId).getProcessErrors().size());
+
+            errorModel.setActualErrorMessage("message" + i);
+            processErrorRepository.updateProcessError(errorModel, processId);
+            actualProcessErrorList.add(errorModel);
+            actualProcessIdList.add(processId);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            List<ErrorModel> savedErrorModelList = processErrorRepository.getProcessError(actualProcessIdList.get(j));
+            ErrorModel savedErrorModel = savedErrorModelList.get(0);
+
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualProcessErrorList.get(j), savedErrorModel, "__isset_bitfield"));
+        }
+    }
+
+    @Test
+    public void retrieveMultipleRepositoryTest() throws RegistryException {
+        List<String> actualProcessIdList  = new ArrayList<>();
+        HashMap<String, ErrorModel> actualProcessErrorModelMap = new HashMap<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("1" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+            assertTrue(processId != null);
+
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setErrorId("error" + i);
+            processModel.addToProcessErrors(errorModel);
+
+            String processErrorId = processErrorRepository.addProcessError(errorModel, processId);
+            assertNotNull(processErrorId);
+            assertEquals(1, processRepository.getProcess(processId).getProcessErrors().size());
+
+            errorModel.setActualErrorMessage("message" + i);
+            processErrorRepository.updateProcessError(errorModel, processId);
+
+            actualProcessIdList.add(processId);
+            actualProcessErrorModelMap.put(processId, errorModel);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            List<ErrorModel> savedErrorModelList = processErrorRepository.getProcessError(actualProcessIdList.get(j));
+            ErrorModel savedErrorModel = savedErrorModelList.get(0);
+
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualProcessErrorModelMap.get(actualProcessIdList.get(j)), savedErrorModel, "__isset_bitfield"));
+        }
+    }
+
 }

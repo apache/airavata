@@ -23,18 +23,19 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class QueueStatusRepositoryTest extends TestBase {
 
-    QueueStatusRepository queueStatusRepository;
+    private QueueStatusRepository queueStatusRepository;
     private static final Logger logger = LoggerFactory.getLogger(QueueStatusRepositoryTest.class);
 
     public QueueStatusRepositoryTest() {
@@ -43,7 +44,7 @@ public class QueueStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void QueueStatusRepositoryTest() throws RegistryException {
+    public void createQueueStatusRepositoryTest() throws RegistryException {
         QueueStatusModel queueStatusModel = new QueueStatusModel();
         queueStatusModel.setHostName("host");
         queueStatusModel.setQueueName("queue");
@@ -52,12 +53,42 @@ public class QueueStatusRepositoryTest extends TestBase {
         queueStatusModel.setQueuedJobs(2);
         queueStatusModel.setTime(System.currentTimeMillis());
 
-        boolean returnValue = queueStatusRepository.createQueueStatuses(Arrays.asList(queueStatusModel));
+        List<QueueStatusModel> queueStatusList = new ArrayList<>();
+        queueStatusList.add(queueStatusModel);
+
+        boolean returnValue = queueStatusRepository.createQueueStatuses(queueStatusList);
         assertTrue(returnValue);
 
-        List<QueueStatusModel> queueStatusModelList = queueStatusRepository.getLatestQueueStatuses();
-        assertTrue(queueStatusModelList.size() == 1);
-        assertEquals(queueStatusModel.getHostName(), queueStatusModelList.get(0).getHostName());
+        List<QueueStatusModel> savedQueueStatusList = queueStatusRepository.getLatestQueueStatuses();
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(queueStatusList, savedQueueStatusList, "__isset_bitfield", "creationTime"));
+    }
+
+    @Test
+    public void retrieveQueueStatusRepositoryTest() throws RegistryException {
+        List<QueueStatusModel> actualQueueStatusList = new ArrayList<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            QueueStatusModel queueStatusModel = new QueueStatusModel();
+            queueStatusModel.setHostName("host");
+            queueStatusModel.setQueueName("queue");
+            queueStatusModel.setQueueUp(true);
+            queueStatusModel.setRunningJobs(1);
+            queueStatusModel.setQueuedJobs(2);
+            queueStatusModel.setTime(System.currentTimeMillis());
+
+            List<QueueStatusModel> queueStatusList = new ArrayList<>();
+            queueStatusList.add(queueStatusModel);
+
+            boolean returnValue = queueStatusRepository.createQueueStatuses(queueStatusList);
+            assertTrue(returnValue);
+            actualQueueStatusList.add(queueStatusModel);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            QueueStatusModel retrievedQueueStatusModel = queueStatusRepository.getLatestQueueStatuses().get(j);
+            QueueStatusModel actualQueueStatusModel = actualQueueStatusList.get(j);
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualQueueStatusModel, retrievedQueueStatusModel, "__isset_bitfield"));
+        }
     }
 
 }

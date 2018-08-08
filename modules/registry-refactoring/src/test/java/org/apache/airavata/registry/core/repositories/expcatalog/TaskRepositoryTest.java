@@ -21,8 +21,10 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
@@ -31,13 +33,16 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -46,11 +51,11 @@ public class TaskRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskRepositoryTest.class);
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ProcessRepository processRepository;
-    TaskRepository taskRepository;
+    private GatewayRepository gatewayRepository;
+    private ProjectRepository projectRepository;
+    private ExperimentRepository experimentRepository;
+    private ProcessRepository processRepository;
+    private TaskRepository taskRepository;
 
     public TaskRepositoryTest() {
         super(Database.EXP_CATALOG);
@@ -61,29 +66,44 @@ public class TaskRepositoryTest extends TestBase {
         taskRepository = new TaskRepository();
     }
 
-    @Test
-    public void TaskRepositoryTest() throws RegistryException {
+    private Gateway createSampleGateway(String tag) {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        gateway.setGatewayId("gateway" + tag);
+        gateway.setDomain("SEAGRID" + tag);
+        gateway.setEmailAddress("abc@d + " + tag + "+.com");
+        return gateway;
+    }
 
+    private Project createSampleProject(String tag) {
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
-        project.setGatewayId(gatewayId);
+        project.setName("projectName" + tag);
+        project.setOwner("user" + tag);
+        return project;
+    }
 
-        String projectId = projectRepository.addProject(project, gatewayId);
-
+    private ExperimentModel createSampleExperiment(String projectId, String gatewayId, String tag) {
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
+        experimentModel.setUserName("user" + tag);
+        experimentModel.setExperimentName("name" + tag);
+        return experimentModel;
+    }
 
+    @Test
+    public void addTaskRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
         String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
         String processId = processRepository.addProcess(processModel, experimentId);
@@ -97,9 +117,63 @@ public class TaskRepositoryTest extends TestBase {
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskModel.addToTaskStatuses(taskStatus);
 
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setErrorId("error");
+        taskModel.addToTaskErrors(errorModel);
+
+        JobModel jobModel = new JobModel();
+        jobModel.setJobId("job" + "1");
+        jobModel.setJobDescription("jobDescription" + "1");
+        taskModel.addToJobs(jobModel);
+
         String taskId = taskRepository.addTask(taskModel, processId);
-        assertTrue(taskId != null);
-        assertTrue(processRepository.getProcess(processId).getTasks().size() == 1);
+        assertNotNull(taskId);
+        assertEquals(1, processRepository.getProcess(processId).getTasks().size());
+        TaskModel savedTaskModel =  taskRepository.getTask(taskId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(taskModel, savedTaskModel, "__isset_bitfield", "taskStatuses", "taskErrors", "jobs"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(taskModel.getTaskStatuses(), savedTaskModel.getTaskStatuses(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(taskModel.getTaskErrors(), savedTaskModel.getTaskErrors(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(taskModel.getJobs(), savedTaskModel.getJobs(), "__isset_bitfield"));
+    }
+
+    @Test
+    public void updateTaskRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
+
+        ProcessModel processModel = new ProcessModel(null, experimentId);
+        String processId = processRepository.addProcess(processModel, experimentId);
+
+        TaskModel taskModel = new TaskModel();
+        taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+        taskModel.setParentProcessId(processId);
+        taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
+
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskModel.addToTaskStatuses(taskStatus);
+
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setErrorId("error");
+        taskModel.addToTaskErrors(errorModel);
+
+        JobModel jobModel = new JobModel();
+        jobModel.setJobId("job" + "1");
+        jobModel.setJobDescription("jobDescription" + "1");
+        taskModel.addToJobs(jobModel);
+
+        String taskId = taskRepository.addTask(taskModel, processId);
+        assertNotNull(taskId);
+        assertEquals(1, processRepository.getProcess(processId).getTasks().size());
 
         taskModel.setTaskType(TaskTypes.MONITORING);
         taskRepository.updateTask(taskModel, taskId);
@@ -109,18 +183,125 @@ public class TaskRepositoryTest extends TestBase {
         assertEquals(1, retrievedTask.getTaskStatusesSize());
         assertEquals(TaskState.CREATED, retrievedTask.getTaskStatuses().get(0).getState());
 
-
-        List<String> taskIdList = taskRepository.getTaskIds(DBConstants.Task.PARENT_PROCESS_ID, processId);
-        assertTrue(taskIdList.size() == 1);
-        assertTrue(taskIdList.get(0).equals(taskId));
-
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        taskRepository.removeTask(taskId);
-        assertFalse(taskRepository.isTaskExist(taskId));
-
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        TaskModel savedTaskModel =  taskRepository.getTask(taskId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(taskModel, savedTaskModel, "__isset_bitfield", "taskStatuses", "taskErrors", "jobs"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(taskModel.getTaskStatuses(), savedTaskModel.getTaskStatuses(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(taskModel.getTaskErrors(), savedTaskModel.getTaskErrors(), "__isset_bitfield"));
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(taskModel.getJobs(), savedTaskModel.getJobs(), "__isset_bitfield"));
     }
 
+    @Test
+    public void retrieveSingleTaskRepositoryTest() throws RegistryException {
+        List<TaskModel> actualTaskModelList = new ArrayList<>();
+        List<String> actualTaskIdList = new ArrayList<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+
+            TaskModel taskModel = new TaskModel();
+            taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+            taskModel.setParentProcessId(processId);
+            taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
+
+            TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            taskModel.addToTaskStatuses(taskStatus);
+
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setErrorId("error");
+            taskModel.addToTaskErrors(errorModel);
+
+            JobModel jobModel = new JobModel();
+            jobModel.setJobId("job" + "1");
+            jobModel.setJobDescription("jobDescription" + "1");
+            taskModel.addToJobs(jobModel);
+
+            String taskId = taskRepository.addTask(taskModel, processId);
+            assertNotNull(taskId);
+            assertEquals(1, processRepository.getProcess(processId).getTasks().size());
+
+            actualTaskModelList.add(taskModel);
+            actualTaskIdList.add(taskId);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            TaskModel savedTaskModel = taskRepository.getTask(actualTaskIdList.get(j));
+            TaskModel actualTaskModel = actualTaskModelList.get(j);
+
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel, savedTaskModel, "__isset_bitfield", "taskStatuses", "taskErrors", "jobs"));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel.getTaskStatuses(), savedTaskModel.getTaskStatuses(), "__isset_bitfield"));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel.getTaskErrors(), savedTaskModel.getTaskErrors(), "__isset_bitfield"));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel.getJobs(), savedTaskModel.getJobs(), "__isset_bitfield"));
+        }
+    }
+
+    @Test
+    public void retrieveMultipleTaskRepositoryTest() throws RegistryException {
+        List<String> actualTaskIdList = new ArrayList<>();
+        HashMap<String, TaskModel> actualTaskModelMap = new HashMap<>();
+
+        for (int i = 0; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+
+            TaskModel taskModel = new TaskModel();
+            taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+            taskModel.setParentProcessId(processId);
+            taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
+
+            TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            taskModel.addToTaskStatuses(taskStatus);
+
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setErrorId("error");
+            taskModel.addToTaskErrors(errorModel);
+
+            JobModel jobModel = new JobModel();
+            jobModel.setJobId("job" + "1");
+            jobModel.setJobDescription("jobDescription" + "1");
+            taskModel.addToJobs(jobModel);
+
+            String taskId = taskRepository.addTask(taskModel, processId);
+            assertNotNull(taskId);
+            assertEquals(1, processRepository.getProcess(processId).getTasks().size());
+
+            actualTaskModelMap.put(taskId, taskModel);
+            actualTaskIdList.add(taskId);
+        }
+        for (int j = 0 ; j < 5; j++) {
+            TaskModel savedTaskModel = taskRepository.getTask(actualTaskIdList.get(j));
+            TaskModel actualTaskModel = actualTaskModelMap.get(actualTaskIdList.get(j));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel, savedTaskModel, "__isset_bitfield", "taskStatuses", "subTaskModel", "jobs", "taskErrors"));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel.getTaskStatuses(), savedTaskModel.getTaskStatuses(), "__isset_bitfield"));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel.getSubTaskModel(), savedTaskModel.getSubTaskModel(), "__isset_bitfield"));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel.getJobs(), savedTaskModel.getJobs(), "__isset_bitfield"));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualTaskModel.getTaskErrors(), savedTaskModel.getTaskErrors(), "__isset_bitfield"));
+        }
+    }
 }

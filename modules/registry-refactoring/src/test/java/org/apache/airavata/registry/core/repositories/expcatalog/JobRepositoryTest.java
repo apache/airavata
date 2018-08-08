@@ -34,25 +34,28 @@ import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+
+import static org.junit.Assert.*;
 
 public class JobRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(JobRepositoryTest.class);
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ProcessRepository processRepository;
-    TaskRepository taskRepository;
-    JobRepository jobRepository;
+    private GatewayRepository gatewayRepository;
+    private ProjectRepository projectRepository;
+    private ExperimentRepository experimentRepository;
+    private ProcessRepository processRepository;
+    private TaskRepository taskRepository;
+    private JobRepository jobRepository;
 
     public JobRepositoryTest() {
         super(Database.EXP_CATALOG);
@@ -64,29 +67,44 @@ public class JobRepositoryTest extends TestBase {
         jobRepository = new JobRepository();
     }
 
-    @Test
-    public void JobRepositoryTest() throws RegistryException {
+    private Gateway createSampleGateway(String tag) {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        gateway.setGatewayId("gateway" + tag);
+        gateway.setDomain("SEAGRID" + tag);
+        gateway.setEmailAddress("abc@d + " + tag + "+.com");
+        return gateway;
+    }
 
+    private Project createSampleProject(String tag) {
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
-        project.setGatewayId(gatewayId);
+        project.setName("projectName" + tag);
+        project.setOwner("user" + tag);
+        return project;
+    }
 
-        String projectId = projectRepository.addProject(project, gatewayId);
-
+    private ExperimentModel createSampleExperiment(String projectId, String gatewayId, String tag) {
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
+        experimentModel.setUserName("user" + tag);
+        experimentModel.setExperimentName("name" + tag);
+        return experimentModel;
+    }
 
+    @Test
+    public void addJobRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
         String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
         String processId = processRepository.addProcess(processModel, experimentId);
@@ -96,7 +114,7 @@ public class JobRepositoryTest extends TestBase {
         taskModel.setParentProcessId(processId);
 
         String taskId = taskRepository.addTask(taskModel, processId);
-        assertTrue(taskId != null);
+        assertNotNull(taskId);
 
         taskModel.setTaskType(TaskTypes.MONITORING);
         taskRepository.updateTask(taskModel, taskId);
@@ -110,8 +128,51 @@ public class JobRepositoryTest extends TestBase {
         jobModel.addToJobStatuses(jobStatus);
 
         String jobId = jobRepository.addJob(jobModel, processId);
-        assertTrue(jobId != null);
-        assertTrue(taskRepository.getTask(taskId).getJobs().size() == 1);
+        assertNotNull(jobId);
+        assertEquals(1, taskRepository.getTask(taskId).getJobs().size());
+
+        JobModel savedJob = jobRepository.getJobList(DBConstants.Job.TASK_ID, taskId).get(0);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(jobModel, savedJob,"__isset_bitfield"));
+    }
+
+    @Test
+    public void updateJobRepositoryTest() throws RegistryException {
+        Gateway gateway = createSampleGateway("1");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        Assert.assertNotNull(gatewayId);
+
+        Project project = createSampleProject("1");
+        String projectId = projectRepository.addProject(project, gatewayId);
+        Assert.assertNotNull(projectId);
+
+        ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "1");
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        Assert.assertNotNull(experimentId);
+
+        ProcessModel processModel = new ProcessModel(null, experimentId);
+        String processId = processRepository.addProcess(processModel, experimentId);
+
+        TaskModel taskModel = new TaskModel();
+        taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+        taskModel.setParentProcessId(processId);
+
+        String taskId = taskRepository.addTask(taskModel, processId);
+        assertNotNull(taskId);
+
+        taskModel.setTaskType(TaskTypes.MONITORING);
+        taskRepository.updateTask(taskModel, taskId);
+
+        JobModel jobModel = new JobModel();
+        jobModel.setJobId("job");
+        jobModel.setTaskId(taskId);
+        jobModel.setJobDescription("jobDescription");
+
+        JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
+        jobModel.addToJobStatuses(jobStatus);
+
+        String jobId = jobRepository.addJob(jobModel, processId);
+        assertNotNull(jobId);
+        assertEquals(1, taskRepository.getTask(taskId).getJobs().size());
 
         JobPK jobPK = new JobPK();
         jobPK.setJobId(jobId);
@@ -119,24 +180,128 @@ public class JobRepositoryTest extends TestBase {
 
         jobModel.setJobName("jobName");
         jobRepository.updateJob(jobModel, jobPK);
-        final JobModel retrievedJob = jobRepository.getJob(jobPK);
-        assertEquals("jobName", retrievedJob.getJobName());
-        assertEquals(1, retrievedJob.getJobStatusesSize());
-        assertEquals(JobState.SUBMITTED, retrievedJob.getJobStatuses().get(0).getJobState());
-
 
         List<String> jobIdList = jobRepository.getJobIds(DBConstants.Job.TASK_ID, taskId);
-        assertTrue(jobIdList.size() == 1);
-        assertTrue(jobIdList.get(0).equals(jobId));
+        assertEquals(1, jobIdList.size());
+        assertEquals(jobIdList.get(0), jobId);
 
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        taskRepository.removeTask(taskId);
-        jobRepository.removeJob(jobPK);
-        assertFalse(jobRepository.isJobExist(jobPK));
+        JobModel savedJob = jobRepository.getJobList(DBConstants.Job.TASK_ID, taskId).get(0);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(jobModel, savedJob,"__isset_bitfield"));
+    }
 
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+    @Test
+    public void retrieveSingleJobRepositoryTest() throws RegistryException {
+        List<JobModel> actualJobModelList = new ArrayList<>();
+        List<String> taskIdList = new ArrayList<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+
+            TaskModel taskModel = new TaskModel();
+            taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+            taskModel.setParentProcessId(processId);
+
+            String taskId = taskRepository.addTask(taskModel, processId);
+            assertNotNull(taskId);
+            taskIdList.add(taskId);
+
+            taskModel.setTaskType(TaskTypes.MONITORING);
+            taskRepository.updateTask(taskModel, taskId);
+
+            JobModel jobModel = new JobModel();
+            jobModel.setJobId("job" + i);
+            jobModel.setTaskId(taskId);
+            jobModel.setJobDescription("jobDescription" + i);
+
+            JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
+            jobModel.addToJobStatuses(jobStatus);
+
+            String jobId = jobRepository.addJob(jobModel, processId);
+            assertNotNull(jobId);
+            assertEquals(1, taskRepository.getTask(taskId).getJobs().size());
+
+            actualJobModelList.add(jobModel);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            List<JobModel> savedjobModelList = jobRepository.getJobList(DBConstants.Job.TASK_ID, taskIdList.get(j));
+            Assert.assertEquals(1, savedjobModelList.size());
+
+            JobModel actualJobModel = actualJobModelList.get(j);
+            JobModel savedJobModel = savedjobModelList.get(0);
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualJobModel, savedJobModel, "__isset_bitfield"));
+        }
+    }
+
+    @Test
+    public void retrieveMultipleJobRepositoryTest() throws RegistryException {
+        List<String> taskIdList = new ArrayList<>();
+        HashMap<String, JobModel> actualJobModelMap = new HashMap<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Gateway gateway = createSampleGateway("" + i);
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            Assert.assertNotNull(gatewayId);
+
+            Project project = createSampleProject("" + i);
+            String projectId = projectRepository.addProject(project, gatewayId);
+            Assert.assertNotNull(projectId);
+
+            ExperimentModel experimentModel = createSampleExperiment(projectId, gatewayId, "" + i);
+            String experimentId = experimentRepository.addExperiment(experimentModel);
+            Assert.assertNotNull(experimentId);
+
+            ProcessModel processModel = new ProcessModel(null, experimentId);
+            String processId = processRepository.addProcess(processModel, experimentId);
+
+            TaskModel taskModel = new TaskModel();
+            taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+            taskModel.setParentProcessId(processId);
+
+            String taskId = taskRepository.addTask(taskModel, processId);
+            assertNotNull(taskId);
+            taskIdList.add(taskId);
+
+            taskModel.setTaskType(TaskTypes.MONITORING);
+            taskRepository.updateTask(taskModel, taskId);
+
+            JobModel jobModel = new JobModel();
+            jobModel.setJobId("job" + i);
+            jobModel.setTaskId(taskId);
+            jobModel.setJobDescription("jobDescription" + i);
+
+            JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
+            jobModel.addToJobStatuses(jobStatus);
+
+            String jobId = jobRepository.addJob(jobModel, processId);
+            assertNotNull(jobId);
+            assertEquals(1, taskRepository.getTask(taskId).getJobs().size());
+
+            actualJobModelMap.put(taskId, jobModel);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            List<JobModel> savedJobModelList = jobRepository.getJobList(DBConstants.Job.TASK_ID, taskIdList.get(j));
+            Assert.assertEquals(1, savedJobModelList.size());
+
+            JobModel actualJobModel = actualJobModelMap.get(taskIdList.get(j));
+            JobModel savedJobModel = savedJobModelList.get(0);
+
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualJobModel, savedJobModel,"__isset_bitfield"));
+        }
     }
 
 }

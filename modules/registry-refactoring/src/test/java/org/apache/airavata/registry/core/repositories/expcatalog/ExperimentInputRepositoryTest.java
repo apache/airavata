@@ -220,11 +220,11 @@ public class ExperimentInputRepositoryTest extends TestBase {
             Assert.assertNotNull(experimentId);
             experimentIdList.add(experimentId);
 
-            addExperimentInputObjects(experimentId,actualInputObjectModelMap,i+1);
+            addExperimentInputObjects(experimentId,actualInputObjectModelMap,i + 1);
         }
 
         for (int j = 0 ; j < 5; j++) {
-            int actualSize = j+1;
+            int actualSize = j + 1;
             List<InputDataObjectType> retrievedInputObjectTypeList = experimentRepository.getExperiment(experimentIdList.get(j)).getExperimentInputs();
             Assert.assertEquals(actualSize, retrievedInputObjectTypeList.size());
 
@@ -235,4 +235,5 @@ public class ExperimentInputRepositoryTest extends TestBase {
             Assert.assertTrue(EqualsBuilder.reflectionEquals(actualExperimentInputObjectList, savedExperimentInputObjectList, "__isset_bitfield"));
         }
     }
+
 }

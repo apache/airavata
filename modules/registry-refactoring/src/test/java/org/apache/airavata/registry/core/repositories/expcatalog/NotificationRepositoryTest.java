@@ -24,12 +24,17 @@ import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.NotificationPriority;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class NotificationRepositoryTest extends TestBase {
 
@@ -44,7 +49,22 @@ public class NotificationRepositoryTest extends TestBase {
     }
 
     @Test
-    public void NotificationRepositoryTest() throws RegistryException {
+    public void createNotificationRepositoryTest() throws RegistryException {
+        Notification notification = new Notification();
+        notification.setNotificationId("notificationId");
+        notification.setGatewayId(testGateway);
+        notification.setTitle("notificationTitle");
+        notification.setNotificationMessage("notificationMessage");
+
+        String notificationId = notificationRepository.createNotification(notification);
+        assertEquals(notification.getNotificationId(), notificationId);
+
+        Notification savedNotification = notificationRepository.getNotification(notificationId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(notification, savedNotification, "__isset_bitfield", "creationTime"));
+    }
+
+    @Test
+    public void updateNotificationRepositoryTest() throws RegistryException {
         Notification notification = new Notification();
         notification.setNotificationId("notificationId");
         notification.setGatewayId(testGateway);
@@ -57,12 +77,82 @@ public class NotificationRepositoryTest extends TestBase {
         notification.setPriority(NotificationPriority.NORMAL);
         notificationRepository.updateNotification(notification);
 
-        Notification retrievedNotification = notificationRepository.getNotification(notificationId);
-        assertEquals(NotificationPriority.NORMAL, retrievedNotification.getPriority());
+        Notification savedNotification = notificationRepository.getNotification(notificationId);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(notification, savedNotification, "__isset_bitfield", "creationTime"));
+    }
 
-        assertTrue(notificationRepository.getAllGatewayNotifications(testGateway).size() == 1);
+    @Test
+    public void retrieveSingleNotificationRepositoryTest() throws RegistryException {
+        List<Notification> actualNotificationList = new ArrayList<>();
+        List<String> notificationIdList = new ArrayList<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Notification notification = new Notification();
+            notification.setNotificationId("notificationId");
+            notification.setGatewayId(testGateway);
+            notification.setTitle("notificationTitle");
+            notification.setNotificationMessage("notificationMessage");
+
+            String notificationId = notificationRepository.createNotification(notification);
+            assertEquals(notification.getNotificationId(), notificationId);
+
+            notification.setPriority(NotificationPriority.NORMAL);
+            notificationRepository.updateNotification(notification);
+
+            notificationIdList.add(notificationId);
+            actualNotificationList.add(notification);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            Notification savedNotification = notificationRepository.getNotification(notificationIdList.get(j));
+
+            Notification actualNotification = actualNotificationList.get(j);
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualNotification, savedNotification, "__isset_bitfield", "creationTime"));
+        }
+    }
+
+    @Test
+    public void retrieveMultipleNotificationRepositoryTest() throws RegistryException {
+        List<String> notificationIdList  = new ArrayList<>();
+        HashMap<String, Notification> actualNotificationMap = new HashMap<>();
+
+        for (int i = 0 ; i < 5; i++) {
+            Notification notification = new Notification();
+            notification.setNotificationId("notificationId");
+            notification.setGatewayId(testGateway);
+            notification.setTitle("notificationTitle");
+            notification.setNotificationMessage("notificationMessage");
+
+            String notificationId = notificationRepository.createNotification(notification);
+            assertEquals(notification.getNotificationId(), notificationId);
+
+            notification.setPriority(NotificationPriority.NORMAL);
+            notificationRepository.updateNotification(notification);
+
+            notificationIdList.add(notificationId);
+            actualNotificationMap.put(notificationId, notification);
+        }
+
+        for (int j = 0 ; j < 5; j++) {
+            Notification savedNotification = notificationRepository.getNotification(notificationIdList.get(j));
+            Notification actualNotification = actualNotificationMap.get(notificationIdList.get(j));
+            Assert.assertTrue(EqualsBuilder.reflectionEquals(actualNotification, savedNotification, "__isset_bitfield", "creationTime"));
+        }
+    }
+
+    @Test
+    public void deleteNotificationRepositoryTest() throws RegistryException {
+        Notification notification = new Notification();
+        notification.setNotificationId("notificationId");
+        notification.setGatewayId(testGateway);
+        notification.setTitle("notificationTitle");
+        notification.setNotificationMessage("notificationMessage");
+
+        String notificationId = notificationRepository.createNotification(notification);
+        assertEquals(notification.getNotificationId(), notificationId);
 
         notificationRepository.deleteNotification(notificationId);
+        assertNull(notificationRepository.getNotification(notificationId));
     }
 
 }
