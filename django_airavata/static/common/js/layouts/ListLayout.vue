@@ -1,0 +1,80 @@
+<template>
+    <div>
+        <div class="row">
+            <div class="col">
+                <slot name="title">
+                    <h1 class="h4 mb-4">{{ title }}</h1>
+                </slot>
+            </div>
+            <div id="col-new-item" class="col">
+                <slot name="new-item-button">
+                    <b-btn variant="primary" @click="addNewItem">
+                        {{ newItemButtonText }} <i class="fa fa-plus" aria-hidden="true"></i>
+                    </b-btn>
+                </slot>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <slot name="item-list" :items="itemsList">Item List goes here</slot>
+                        <pager v-if="itemsPaginator" :paginator="itemsPaginator"
+                        next="nextItems" v-on:previous="previousItems"></pager>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+import { utils } from 'django-airavata-api'
+import Pager from '../components/Pager.vue'
+
+export default {
+    props: {
+        items: Array,
+        itemsPaginator: utils.PaginationIterator,
+        title: {
+            type: String,
+            default: "Items"
+        },
+        newItemButtonText: {
+            type: String,
+            default: "New Item",
+        },
+    },
+    name: 'list-layout',
+    data () {
+        return {
+        }
+    },
+    components: {
+        'pager': Pager,
+    },
+    methods: {
+        nextItems: function(event) {
+            this.itemsPaginator.next();
+        },
+        previousItems: function(event) {
+            this.itemsPaginator.previous();
+        },
+        addNewItem: function() {
+            this.$emit('add-new-item');
+        },
+    },
+    computed: {
+        itemsList: function() {
+            return this.itemsPaginator ? this.itemsPaginator.results : this.items;
+        },
+    },
+}
+</script>
+
+<style>
+#col-new-item {
+    text-align: right;
+}
+</style>

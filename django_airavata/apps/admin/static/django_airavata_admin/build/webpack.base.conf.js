@@ -1,4 +1,5 @@
 var path = require('path')
+var webpack = require('webpack')
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
@@ -64,5 +65,9 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins: [
+      // Exclude all but the 'en' locale from moment's locales
+      new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/),
+  ],
 }

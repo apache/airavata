@@ -449,6 +449,13 @@ class GroupResourceProfileSerializer(
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-resource-profile-detail', lookup_field='groupResourceProfileId', lookup_url_kwarg='group_resource_profile_id')
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, groupResourceProfile):
+        request = self.context['request']
+        return request.airavata_client.userHasAccess(
+            request.authz_token, groupResourceProfile.groupResourceProfileId,
+            ResourcePermissionType.WRITE)
 
 
 class SharedGroups(serializers.Serializer):

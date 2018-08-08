@@ -30,6 +30,7 @@ const FIELDS = [
          name: 'updatedTime',
          type: 'date',
      },
+     'userHasWriteAccess', // true if current user has write access
 ];
 
 export default class GroupResourceProfile extends BaseModel {
