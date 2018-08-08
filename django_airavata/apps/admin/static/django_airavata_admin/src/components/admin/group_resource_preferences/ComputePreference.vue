@@ -125,11 +125,20 @@
       newCreation: {
         type: Boolean,
         default: false
+      },
+      id: {
+        type: String,
+      },
+      host_id: {
+        type: String,
       }
     },
     mounted: function () {
-      if (this.value && this.value.computeResourceId) {
-        this.fetchComputeResource(this.value.computeResourceId);
+      if (!this.value && this.id && this.host_id) {
+        // TODO: load the Group Resource Profile and get the compute preferences for this host_id
+      }
+      if (this.host_id) {
+        this.fetchComputeResource(this.host_id);
       } else {
         this.fetchComputeResources();
       }
@@ -141,7 +150,7 @@
         data.computeResourcePolicies = [];
         data.computeResourcePolicies.push(this.createComputeResourcePolicy());
       }
-      if(!data.computeResourceId){
+      if(!this.host_id){
         enablePopup = true;
       }
       return {

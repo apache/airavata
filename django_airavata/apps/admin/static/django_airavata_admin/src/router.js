@@ -5,7 +5,7 @@ import ApplicationDetails from './components/admin/ApplicationDetails.vue'
 import ApplicationInterface from './components/admin/ApplicationInterface.vue'
 import ApplicationDeployments from './components/admin/ApplicationDeployments.vue'
 import GroupComputeResourcePreference from './components/admin/group_resource_preferences/GroupComputeResourcePreference'
-import ComputePreferences from './components/admin/group_resource_preferences/ComputePreferences'
+import ComputePreference from './components/admin/group_resource_preferences/ComputePreference'
 import ComputeResourcePreferenceDashboard from './components/dashboards/ComputeResourcePreferenceDashboard'
 import CredentialStoreDashboard from './components/dashboards/CredentialStoreDashboard'
 import VueRouter from 'vue-router'
@@ -34,15 +34,15 @@ const routes = [
   {path: '/admin', component: AdminDashboard, name: "admin_dashboard"},
   {path: '/experiments', component: ExperimentsDashboard, name: 'experiments_dashboard'},
   {
-    path: '/group/resource/profile', component: GroupComputeResourcePreference, name: 'group_resource_preference',
+    path: '/group-resource-profiles/:id', component: GroupComputeResourcePreference, name: 'group_resource_preference',
     props: true
   },
   {
-    path: '/group/resource/compute/preferences', component: ComputePreferences, name: 'compute_preferences',
+    path: '/group-resource-profiles/:id/compute-preferences/:host_id', component: ComputePreference, name: 'compute_preference',
     props: true
   },
   {
-    path: '/dashboards/group/resource/profiles',
+    path: '/group-resource-profiles',
     component: ComputeResourcePreferenceDashboard,
     name: 'group_resource_preference_dashboard',
   },

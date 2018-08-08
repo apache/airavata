@@ -43,7 +43,9 @@ export function initializeApacheAiravataDashboard(dashboardName) {
       ComputeResourcePreferenceDashboard
     },
     mounted:function () {
-      this.$router.push({name:dashboardName})
+      if (this.$router.currentRoute.path === '/') {
+        this.$router.push({ name: dashboardName })
+      }
     }
 
   })

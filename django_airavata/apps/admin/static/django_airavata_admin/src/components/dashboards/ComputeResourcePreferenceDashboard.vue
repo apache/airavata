@@ -49,7 +49,8 @@
       clickHandler: function (groupResourceProfile) {
         this.$router.push({
           name: 'group_resource_preference', params: {
-            value: groupResourceProfile
+            value: groupResourceProfile,
+            id: groupResourceProfile.groupResourceProfileId
           }
         });
       },

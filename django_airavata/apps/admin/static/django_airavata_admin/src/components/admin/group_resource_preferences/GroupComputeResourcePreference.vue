@@ -15,7 +15,7 @@
         <h4>Compute Preferences</h4>
         <div>
           <a class="list-item" v-for="computePreference,index in data.computePreferences" v-bind:key="index"
-             v-on:click="computePreferenceClickHandler(index)">
+             v-on:click="computePreferenceClickHandler(computePreference.computeResourceId)">
             <span v-if="computePreference.groupResourceProfileId">
               {{getComputeResourceName(computePreference.computeResourceId)}}
             </span>
@@ -72,6 +72,12 @@
     mounted: function () {
       if (this.value.groupResourceProfileId) {
         DjangoAiravataAPI.services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.value.groupResourceProfileId})
+          .then(sharedEntity => this.sharedEntity = sharedEntity);
+      } else if (this.$route.params.id) {
+        // TODO: switch to using props to get the id param
+        DjangoAiravataAPI.services.ServiceFactory.service("GroupResourcePreference").retrieve({lookup: this.$route.params.id})
+          .then(grp => this.data = this.transformData(grp));
+        DjangoAiravataAPI.services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.$route.params.id})
           .then(sharedEntity => this.sharedEntity = sharedEntity);
       }
     },
@@ -206,12 +212,13 @@
           });
         }
       },
-      computePreferenceClickHandler: function (index) {
+      computePreferenceClickHandler: function (computeResourceId) {
+        let computeResourcePreference = this.data.computePreferences.find(pref => pref.computeResourceId === computeResourceId);
         this.$router.push({
-          name: 'compute_preferences', params: {
-            value: this.data,
-            index: index,
-            newCreation: this.newCreation
+          name: 'compute_preference', params: {
+            value: computeResourcePreference,
+            id: this.data.groupResourceProfileId,
+            host_id: computeResourceId,
           }
         });
       },
