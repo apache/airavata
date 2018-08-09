@@ -1,5 +1,6 @@
 import ApplicationDeploymentDescription from './models/ApplicationDeploymentDescription'
 import Group from './models/Group'
+import GroupResourceProfile from './models/GroupResourceProfile'
 import SharedEntity from './models/SharedEntity'
 import UserProfile from './models/UserProfile'
 
@@ -59,9 +60,10 @@ export default {
         }],
         modelClass: ApplicationDeploymentDescription,
     },
-    "GroupResourcePreference": {
+    "GroupResourceProfiles": {
         url: "/api/group-resource-profiles/",
-        viewSet: true
+        viewSet: true,
+        modelClass: GroupResourceProfile,
     },
     "Groups": {
         url: "/api/groups",
