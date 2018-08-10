@@ -1,41 +1,64 @@
 <template>
-  <div class="batch-queue-resource-policy">
-    <div class="entry">
-      <div class="heading">Maximum Allowed Nodes</div>
-      <input v-model="data.maxAllowedNodes" type="number"/>
+  <div class="row">
+    <div class="col">
+      <b-form-group label="Maximum Allowed Nodes" label-for="max-allowed-nodes">
+        <b-form-input id="max-allowed-nodes" type="number"
+          v-model="data.maxAllowedNodes" @input="policyUpdated"
+          min="1" :max="batchQueue.maxNodes"
+          :placeholder="'Max Nodes: ' + batchQueue.maxNodes">
+        </b-form-input>
+      </b-form-group>
     </div>
-    <div class="entry">
-      <div class="heading">Maximum Allowed Cores</div>
-      <input v-model="data.maxAllowedCores" type="number"/>
+    <div class="col">
+      <b-form-group label="Maximum Allowed Cores" label-for="max-allowed-cores">
+        <b-form-input id="max-allowed-cores" type="number"
+          v-model="data.maxAllowedCores" @input="policyUpdated"
+          min="1" :max="batchQueue.maxProcessors"
+          :placeholder="'Max Cores: ' + batchQueue.maxProcessors">
+        </b-form-input>
+      </b-form-group>
     </div>
-    <div class="entry">
-      <div class="heading">Maximum Allowed Wall Time</div>
-      <input v-model="data.maxAllowedWalltime" type="number"/>
+    <div class="col">
+      <b-form-group label="Maximum Allowed Wall Time" label-for="max-allowed-walltime">
+        <b-form-input id="max-allowed-walltime" type="number"
+          v-model="data.maxAllowedWalltime" @input="policyUpdated"
+          min="1" :max="batchQueue.maxRunTime"
+          :placeholder="'Max Wall Time: ' + batchQueue.maxRunTime">
+        </b-form-input>
+      </b-form-group>
     </div>
-  </div>
 </template>
 
 <script>
-  import VModelMixin from '../../commons/vmodel_mixin'
+  import { models } from 'django-airavata-api'
 
   export default {
     name: "batch-queue-resource-policy",
-    mixins: [VModelMixin]
+    props: {
+      value: {
+        required: false,
+        type: models.BatchQueueResourcePolicy
+      },
+      batchQueue: {
+        required: true,
+        type: models.BatchQueue,
+      },
+    },
+    data: function() {
+      const localValue = this.value ? this.value.clone() : new models.BatchQueueResourcePolicy();
+      localValue.queuename = this.batchQueue.queueName;
+      return {
+        data: localValue,
+      }
+    },
+    methods: {
+      policyUpdated: function() {
+        if (this.data.maxAllowedNodes || this.data.maxAllowedCores || this.data.maxAllowedWalltime) {
+          this.$emit('input', this.data);
+        } else {
+          this.$emit('input', null);
+        }
+      }
+    }
   }
 </script>
-
-<style scoped>
-  .batch-queue-resource-policy {
-    border: solid #dddddd 1px;
-    border-radius: 4px;
-    padding: 31px;
-    width: 80%;
-    font-size: small;
-    margin-left: 25px;
-    margin-bottom: 30px;
-  }
-
-  .batch-queue-resource-policy input {
-    height: 30px;
-  }
-</style>

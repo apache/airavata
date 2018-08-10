@@ -105,11 +105,15 @@
       },
       computePreferenceClickHandler: function (computeResourceId) {
         let computeResourcePreference = this.data.computePreferences.find(pref => pref.computeResourceId === computeResourceId);
+        const computeResourcePolicy = this.data.getComputeResourcePolicy(computeResourceId);
+        const batchQueueResourcePolicies = this.data.getBatchQueueResourcePolicies(computeResourceId);
         this.$router.push({
           name: 'compute_preference', params: {
             value: computeResourcePreference,
             id: this.data.groupResourceProfileId,
             host_id: computeResourceId,
+            computeResourcePolicy: computeResourcePolicy,
+            batchQueueResourcePolicies: batchQueueResourcePolicies,
           }
         });
       },

@@ -1,136 +1,83 @@
 <template>
-  <transition name="fade">
-    <div class="new_app">
-      <div class="new_app_header">
-        <h3 style="display: inline-block">Compute Preference</h3>
-        <div class="new-application-tab-main">
-          <popup-component v-model="enablePopup" v-bind:enableClose="false">
-            <div class="entry">
-              <div class="heading">Select Compute Resource</div>
-              <select v-model="selectedComputeResourceIndex" size="4" class="popup-select">
-                <option v-bind:value="index" v-for="computeResource,index in computeResources">{{computeResource.host}}
-                </option>
-              </select>
-            </div>
-            <div class="entry">
-              <input class="vbtn vbtn-default" type="button" value="Continue" v-on:click="continueHandler"/>
-            </div>
-          </popup-component>
-          <div class="entry">
-            <div class="heading">Login User Name</div>
-            <input v-model="data.loginUserName" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">Preferred Batch Queue</div>
-            <select v-model="data.preferredBatchQueue">
-              <option v-bind:value="batchQueue.queueName" v-for="batchQueue,index in computeResource.batchQueues"
-                      v-bind:key="index">{{batchQueue.queueName}}
-              </option>
-            </select>
-          </div>
-          <div class="entry">
-            <div class="heading">Scratch Location</div>
-            <input v-model="data.scratchLocation" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">Allocation Project Number</div>
-            <input v-model="data.allocationProjectNumber" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">Resource Specific Credential Store Token</div>
-            <input v-model="data.resourceSpecificCredentialStoreToken" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">Usage Reporting Gateway ID</div>
-            <input v-model="data.usageReportingGatewayId" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">Quality of Service</div>
-            <input v-model="data.qualityOfService" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">Application argument</div>
-            <input v-model="data.reservation" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">SSH Account Provision Group / SSH Account Provisioner</div>
-            <input v-model="data.sshAccountProvisiogroupSSHAccountProvisionerConfigsner" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">SSH Account Provisioner Additional Info</div>
-            <input v-model="data.sshAccountProvisionerAdditionalInfo" type="text"/>
-          </div>
-          <div class="entry">
-            <div class="heading">Preferred Data Movement Protocol</div>
-            <select v-model="data.preferredDataMovementProtocol">
-              <option v-bind:value="dataMovementProtocol.value" v-for="dataMovementProtocol in dataMovementProtocols"
-                      v-if="dataMovementProtocol.enabled" v-bind:key="index">{{dataMovementProtocol.name}}
-              </option>
-            </select>
-          </div>
-          <div class="entry">
-            <div class="heading">Preferred Job Submission Protocol</div>
-            <select v-model="data.preferredJobSubmissionProtocol">
-              <option v-bind:value="jobSubmissionProtocol.value" v-for="jobSubmissionProtocol in jobSubmissionProtocols"
-                      v-if="jobSubmissionProtocol.enabled" v-bind:key="index">{{jobSubmissionProtocol.name}}
-              </option>
-            </select>
-          </div>
-          <div class="new-application-tab-main">
-            <div class="deployment-entry">
-              <div class="heading">Group SSH Account Provisioner Configs</div>
-              <div class="name_value"
-                   v-for="groupSSHAccountProvisionerConfig,index in data.groupSSHAccountProvisionerConfigs"
-                   v-bind:key="index">
-                <input type="text" placeholder="Name"
-                       v-model="data.groupSSHAccountProvisionerConfigs[index].configName"/>
-                <input type="text" placeholder="Value"
-                       v-model="data.groupSSHAccountProvisionerConfigs[index].configValue"/>
-              </div>
-              <input type="button" class="deployment btn" value="Add Config"
-                     v-on:click="createGroupSSHAccountProvisionerConfigs()"/>
-            </div>
-          </div>
-          <div class="sub-section-1">
-            <h4>Compute Resource Policies</h4>
-            <tab-sub-section v-for="computeResourcePolicy,index in data.computeResourcePolicies" v-bind:key="index"
-                             v-bind:enableDeletion="false" v-bind:section-name="'Compute Resource Policy'">
-              <compute-resource-policy v-model="data.computeResourcePolicies[index]" v-bind:computeResource="computeResource"></compute-resource-policy>
-            </tab-sub-section>
+  <div>
+    <div class="row">
+      <div class="col">
+        <h1 class="h4 mb-4">Compute Preference</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <b-form-group label="Login Username" label-for="login-username">
+              <b-form-input id="login-username" type="text"
+                v-model="data.loginUserName">
+              </b-form-input>
+            </b-form-group>
+            <b-form-group label="Allocation Project Number" label-for="allocation-number">
+              <b-form-input id="allocation-number" type="text"
+                v-model="data.allocationProjectNumber">
+              </b-form-input>
+            </b-form-group>
+            <b-form-group label="Scratch Location" label-for="scratch-location">
+              <b-form-input id="scratch-location" type="text"
+                v-model="data.scratchLocation">
+              </b-form-input>
+            </b-form-group>
           </div>
         </div>
       </div>
     </div>
-  </transition>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Policy</h5>
+            <b-form-group label="Allowed Queues">
+              <div v-for="batchQueue in computeResource.batchQueues" :key="batchQueue.queueName">
+                <b-form-checkbox :checked="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
+                  @input="batchQueueChecked(batchQueue, $event)">
+                  {{ batchQueue.queueName }}
+                </b-form-checkbox>
+                <batch-queue-resource-policy
+                  v-if="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
+                  :batch-queue="batchQueue"
+                  :value="localBatchQueueResourcePolicies.find(pol => pol.queuename === batchQueue.queueName)"
+                  @input="updatedBatchQueueResourcePolicy(batchQueue, $event)"/>
+              </div>
+            </b-form-group>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 
-  import BooleanRadioButton from '../BooleanRadioButton'
-  import TabSubSection from '../../tabs/TabSubSection'
   import DjangoAiravataAPI from 'django-airavata-api'
-  import PopupComponent from '../../commons/PopupComponent'
-  import ComputeResourcePolicy from "./ComputeResourcePolicy";
   import VModelMixin from '../../commons/vmodel_mixin'
+  import BatchQueueResourcePolicy from './BatchQueueResourcePolicy.vue'
+
+  import {models} from 'django-airavata-api'
 
   export default {
     name: "compute-preference",
     components: {
-      PopupComponent,
-      ComputeResourcePolicy,
-      BooleanRadioButton,
-      TabSubSection,
+      BatchQueueResourcePolicy,
     },
     props: {
-      newCreation: {
-        type: Boolean,
-        default: false
-      },
       id: {
         type: String,
       },
       host_id: {
         type: String,
+      },
+      computeResourcePolicy: {
+        type: models.ComputeResourcePolicy
+      },
+      batchQueueResourcePolicies: {
+        type: Array
       }
     },
     mounted: function () {
@@ -144,21 +91,13 @@
       }
     },
     data: function () {
-      let data = this.value;
-      let enablePopup = false;
-      if (!data.computeResourcePolicies || data.computeResourcePolicies.length == 0) {
-        data.computeResourcePolicies = [];
-        data.computeResourcePolicies.push(this.createComputeResourcePolicy());
-      }
-      if(!this.host_id){
-        enablePopup = true;
-      }
       return {
-        enablePopup: enablePopup,
-        data: data,
+        data: this.value.clone(),
         selected: null,
         computeResources: [],
         selectedComputeResourceIndex: null,
+        localComputeResourcePolicy: this.computeResourcePolicy ? this.computeResourcePolicy.clone() : null,
+        localBatchQueueResourcePolicies: this.batchQueueResourcePolicies ? this.batchQueueResourcePolicies.map(pol => pol.clone()) : [],
         dataMovementProtocols: [{
           name: "LOCAL",
           enabled: false,
@@ -211,9 +150,6 @@
     },
     mixins: [VModelMixin],
     methods: {
-      boolValueHandler: function (id, value) {
-        this.data.overridebyAiravata = value
-      },
       fetchComputeResources: function () {
         return DjangoAiravataAPI.utils.FetchUtils.get('/api/compute-resources/all_names_list').then((value) => this.computeResources = value);
       },
@@ -224,6 +160,35 @@
           computeResourceId: null,
           groupResourceProfileId: null,
           resourcePolicyId: null
+        }
+      },
+      batchQueueChecked: function(batchQueue, checked) {
+        if (checked) {
+          this.localComputeResourcePolicy.allowedBatchQueues.push(batchQueue.queueName);
+        } else {
+          const queueIndex = this.localComputeResourcePolicy.allowedBatchQueues.indexOf(batchQueue.queueName);
+          this.localComputeResourcePolicy.allowedBatchQueues.splice(queueIndex, 1);
+          // Remove batchQueueResourcePolicy if it exists
+          const policyIndex = this.localBatchQueueResourcePolicies.findIndex(pol => pol.queuename === batchQueue.queueName);
+          if (policyIndex >= 0) {
+            this.localBatchQueueResourcePolicies.splice(policyIndex, 1);
+          }
+        }
+      },
+      updatedBatchQueueResourcePolicy: function(batchQueue, batchQueueResourcePolicy) {
+        const queueName = batchQueue.queueName;
+        if (batchQueueResourcePolicy) {
+          const existingPolicy = this.localBatchQueueResourcePolicies.find(pol => pol.queuename === queueName);
+          if (existingPolicy) {
+            Object.assign(existingPolicy, batchQueueResourcePolicy);
+          } else {
+            this.localBatchQueueResourcePolicies.push(batchQueueResourcePolicy);
+          }
+        } else {
+          const existingPolicyIndex = this.localBatchQueueResourcePolicies.findIndex(pol => pol.queuename === queueName);
+          if (existingPolicyIndex >= 0) {
+            this.localBatchQueueResourcePolicies.splice(existingPolicyIndex, 1);
+          }
         }
       },
       createGroupSSHAccountProvisionerConfigs: function () {
@@ -246,10 +211,6 @@
             this.computeResource.dataMovementInterfaces.forEach((dataMovementInterface) => {
               this.dataMovementProtocols[dataMovementInterface.dataMovementProtocol].enabled = true;
             });
-            this.data.computeResourceId = value.computeResourceId;
-            this.data.computeResourcePolicies.forEach((value) => {
-              value.computeResourceId = this.data.computeResourceId;
-            })
           });
         }
       },

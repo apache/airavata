@@ -1,6 +1,8 @@
 
 import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition'
 import ApplicationModule from './models/ApplicationModule'
+import BatchQueue from './models/BatchQueue'
+import BatchQueueResourcePolicy from './models/BatchQueueResourcePolicy'
 import DataType from './models/DataType'
 import Experiment from './models/Experiment'
 import ExperimentState from './models/ExperimentState'
@@ -41,6 +43,8 @@ import PaginationIterator from './utils/PaginationIterator'
 exports.models = {
     ApplicationInterfaceDefinition,
     ApplicationModule,
+    BatchQueue,
+    BatchQueueResourcePolicy,
     DataType,
     Experiment,
     ExperimentState,
