@@ -10,8 +10,14 @@
                 <div class="card-body">
                     <h5 class="card-title">Log in with your existing organizational login</h5>
                     {% for external in options.external %}
-                    <a href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}" class="btn btn-primary btn-block mt-3">
-                        Sign in with {{ external.name }}
+                    <a
+                    {% if next %}
+                        href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}?next={{ next | urlencode }}"
+                    {% else %}
+                        href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}"
+                    {% endif %}
+                        class="btn btn-primary btn-block mt-3">
+                            Sign in with {{ external.name }}
                     </a>
                     {% endfor %}
                 </div>

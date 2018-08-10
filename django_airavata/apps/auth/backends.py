@@ -69,18 +69,17 @@ class KeycloakBackend(object):
 
     def _get_token_and_userinfo_redirect_flow(self, request):
         authorization_code_url = request.build_absolute_uri()
-        redirect_url = request.build_absolute_uri(
-            reverse('django_airavata_auth:callback'))
         client_id = settings.KEYCLOAK_CLIENT_ID
         client_secret = settings.KEYCLOAK_CLIENT_SECRET
         token_url = settings.KEYCLOAK_TOKEN_URL
         userinfo_url = settings.KEYCLOAK_USERINFO_URL
         verify_ssl = settings.KEYCLOAK_VERIFY_SSL
         state = request.session['OAUTH2_STATE']
+        redirect_uri = request.session['OAUTH2_REDIRECT_URI']
         logger.debug("state={}".format(state))
         oauth2_session = OAuth2Session(client_id,
                                        scope='openid',
-                                       redirect_uri=redirect_url,
+                                       redirect_uri=redirect_uri,
                                        state=state)
         if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
             oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE

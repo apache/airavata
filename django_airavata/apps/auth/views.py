@@ -21,15 +21,18 @@ def redirect_login(request, idp_alias):
     _validate_idp_alias(idp_alias)
     client_id = settings.KEYCLOAK_CLIENT_ID
     base_authorize_url = settings.KEYCLOAK_AUTHORIZE_URL
+    redirect_uri = request.build_absolute_uri(
+        reverse('django_airavata_auth:callback'))
+    if 'next' in request.GET:
+        redirect_uri += "?next=" + quote(request.GET['next'])
     oauth2_session = OAuth2Session(
-        client_id, scope='openid',
-        redirect_uri=request.build_absolute_uri(
-            reverse('django_airavata_auth:callback')))
+        client_id, scope='openid', redirect_uri=redirect_uri)
     authorization_url, state = oauth2_session.authorization_url(
         base_authorize_url)
     authorization_url += '&kc_idp_hint=' + quote(idp_alias)
     # Store state in session for later validation (see backends.py)
     request.session['OAUTH2_STATE'] = state
+    request.session['OAUTH2_REDIRECT_URI'] = redirect_uri
     return redirect(authorization_url)
 
 
