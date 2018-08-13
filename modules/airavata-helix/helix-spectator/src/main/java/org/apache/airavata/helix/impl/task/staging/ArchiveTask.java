@@ -75,7 +75,7 @@ public class ArchiveTask extends DataStagingTask {
             }
 
             // Fetch and validate storage adaptor
-            StorageResourceAdaptor storageResourceAdaptor = getStorageAdaptor(taskHelper.getAdaptorSupport());
+            StorageResourceAdaptor storageResourceAdaptor = getOutputStorageAdaptor(taskHelper.getAdaptorSupport());
             // Fetch and validate compute resource adaptor
             AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 

@@ -21,15 +21,18 @@ package org.apache.airavata.helix.impl.task.staging;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +75,29 @@ public abstract class DataStagingTask extends AiravataTask {
                     getTaskContext().getStorageResourceId(),
                     getTaskContext().getDataMovementProtocol(),
                     getTaskContext().getStorageResourceCredentialToken(),
-                    getTaskContext().getStorageResourceLoginUserName());
+                    getTaskContext().getStorageResourceLoginUserName(),
+                    getTaskContext().getProcessModel().getUserName());
+
+            if (storageResourceAdaptor == null) {
+                throw new TaskOnFailException("Storage resource adaptor for " + getTaskContext().getStorageResourceId() + " can not be null", true, null);
+            }
+            return storageResourceAdaptor;
+        } catch (AgentException e) {
+            throw new TaskOnFailException("Failed to obtain adaptor for storage resource " + getTaskContext().getStorageResourceId() +
+                    " in task " + getTaskId(), true, e);
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected StorageResourceAdaptor getOutputStorageAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
+        try {
+            StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
+                    getGatewayId(),
+                    getTaskContext().getStorageResourceId(),
+                    getStorageDataMovementProtocol(getTaskContext().getStorageResourceId()),
+                    getTaskContext().getStorageResourceCredentialToken(),
+                    getTaskContext().getStorageResourceLoginUserName(),
+                    getTaskContext().getProcessModel().getUserName());
 
             if (storageResourceAdaptor == null) {
                 throw new TaskOnFailException("Storage resource adaptor for " + getTaskContext().getStorageResourceId() + " can not be null", true, null);
@@ -114,22 +139,35 @@ public abstract class DataStagingTask extends AiravataTask {
         return localDataPath;
     }
 
-    protected String buildDestinationFilePath(String inputPath, String fileName) {
-
+    protected String buildDestinationFilePath(String inputPath, String fileName) throws AgentException {
         inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
         String experimentDataDir = getProcessModel().getExperimentDataDir();
-        String filePath;
-        if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
-            if(!experimentDataDir.endsWith(File.separator)){
-                experimentDataDir += File.separator;
-            }
-            if (experimentDataDir.startsWith(File.separator)) {
-                filePath = experimentDataDir + fileName;
-            } else {
-                filePath = inputPath + experimentDataDir + fileName;
+        String experimentName;
+        String projectName;
+        String currentProjectId;
+        String filePath = null;
+        if (getStorageDataMovementProtocol(getTaskContext().getStorageResourceId()) == DataMovementProtocol.WebDAV) {
+            try {
+                currentProjectId = getTaskContext().getRegistryClient().getExperiment(getTaskContext().getExperimentId()).getProjectId();
+                experimentName = getTaskContext().getRegistryClient().getExperiment(getTaskContext().getExperimentId()).getExperimentName();
+                projectName = getTaskContext().getRegistryClient().getProject(currentProjectId).getName();
+                filePath = File.separator + "Documents" + File.separator + projectName + File.separator + experimentName + File.separator + fileName;
+            } catch (TException e) {
+                e.printStackTrace();
             }
         } else {
-            filePath = inputPath + getProcessId() + File.separator + fileName;
+            if (experimentDataDir != null && !experimentDataDir.isEmpty()) {
+                if (!experimentDataDir.endsWith(File.separator)) {
+                    experimentDataDir += File.separator;
+                }
+                if (experimentDataDir.startsWith(File.separator)) {
+                    filePath = experimentDataDir + fileName;
+                } else {
+                    filePath = inputPath + experimentDataDir + fileName;
+                }
+            } else {
+                filePath = inputPath + getProcessId() + File.separator + fileName;
+            }
         }
         return filePath;
     }
@@ -195,5 +233,17 @@ public abstract class DataStagingTask extends AiravataTask {
         } catch (Exception e) {
             logger.warn("Failed to delete temporary file " + filePath);
         }
+    }
+
+    protected DataMovementProtocol getStorageDataMovementProtocol(String storageResourceId) throws AgentException {
+        DataMovementProtocol protocol;
+        StorageResourceDescription storageResource = null;
+        try {
+            storageResource = AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+        protocol = storageResource.getDataMovementInterfaces().get(0).getDataMovementProtocol();
+        return protocol;
     }
 }

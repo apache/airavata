@@ -36,6 +36,7 @@
     <modules>
         <module>ssh-agent</module>
         <module>sshj-agent</module>
+        <module>webdav-agent</module>
     </modules>
 
     <dependencies>

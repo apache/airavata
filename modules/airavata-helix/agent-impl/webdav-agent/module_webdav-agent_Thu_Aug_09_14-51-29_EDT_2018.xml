@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_webdav-agent" default="compile.module.webdav-agent">
+  <dirname property="module.webdav-agent.basedir" file="${ant.file.module_webdav-agent}"/>
+  
+  <property name="module.jdk.home.webdav-agent" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.webdav-agent" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.webdav-agent" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.webdav-agent" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="webdav-agent.output.dir" value="${module.webdav-agent.basedir}/target/classes"/>
+  <property name="webdav-agent.testoutput.dir" value="${module.webdav-agent.basedir}/target/test-classes"/>
+  
+  <path id="webdav-agent.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="webdav-agent.module.production.classpath">
+    <path refid="${module.jdk.classpath.webdav-agent}"/>
+    <path refid="library.maven:_com.jcraft:jsch:0.1.53.classpath"/>
+    <pathelement location="${airavata-registry-core.output.dir}"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+    <pathelement location="${airavata-commons.output.dir}"/>
+    <pathelement location="${airavata-model-utils.output.dir}"/>
+    <path refid="library.maven:_org.ogce:xpp3:1.1.6.classpath"/>
+    <path refid="library.maven:_jakarta-regexp:jakarta-regexp:1.4.classpath"/>
+    <path refid="library.maven:_org.ogce:xpp5:1.2.8.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:20.0.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derby:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbyclient:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbytools:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.tomcat.embed:tomcat-embed-core:7.0.22.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.2.classpath"/>
+    <path refid="library.maven:_org.apache.curator:curator-framework:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.curator:curator-client:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.zookeeper:zookeeper:3.4.0.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.17.classpath"/>
+    <path refid="library.maven:_jline:jline:0.9.94.classpath"/>
+    <path refid="library.maven:_org.jboss.netty:netty:3.2.2.final.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.3.classpath"/>
+    <path refid="library.maven:_org.apache.kafka:kafka-clients:1.0.0.classpath"/>
+    <path refid="library.maven:_org.lz4:lz4-java:1.4.classpath"/>
+    <path refid="library.maven:_org.xerial.snappy:snappy-java:1.1.4.classpath"/>
+    <path refid="library.maven:_ch.qos.logback:logback-classic:1.2.3.classpath"/>
+    <path refid="library.maven:_ch.qos.logback:logback-core:1.2.3.classpath"/>
+    <path refid="library.maven:_org.apache.openjpa:openjpa:2.2.0.classpath"/>
+    <path refid="library.maven:_commons-lang:commons-lang:2.4.classpath"/>
+    <path refid="library.maven:_commons-collections:commons-collections:3.2.1.classpath"/>
+    <path refid="library.maven:_net.sourceforge.serp:serp:1.13.1.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-pool:commons-pool:1.5.4.classpath"/>
+    <path refid="library.maven:_asm:asm:3.2.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1.classpath"/>
+    <pathelement location="${airavata-data-models.output.dir}"/>
+    <pathelement location="${airavata-registry-cpi.output.dir}"/>
+    <pathelement location="${registry-api-service.output.dir}"/>
+    <pathelement location="${registry-api-stubs.output.dir}"/>
+    <pathelement location="${airavata-messaging-core.output.dir}"/>
+    <pathelement location="${airavata-server-configuration.output.dir}"/>
+    <path refid="library.maven:_com.rabbitmq:amqp-client:3.5.1.classpath"/>
+    <path refid="library.maven:_org.apache.thrift:libthrift:0.10.0.classpath"/>
+    <pathelement location="${airavata-credential-store.output.dir}"/>
+    <pathelement location="${airavata-credential-store-stubs.output.dir}"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:oa4mp-client-api:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-client:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-util:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-common:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-storage:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-servlet:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-core:1.1.3.classpath"/>
+    <path refid="library.maven:_commons-configuration:commons-configuration:1.7.classpath"/>
+    <path refid="library.maven:_commons-digester:commons-digester:1.8.1.classpath"/>
+    <path refid="library.maven:_commons-beanutils:commons-beanutils:1.8.3.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:oa4mp-client-loader-oauth1:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:myproxy-logon:1.7.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-oauth-1.0a:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-server:1.1.3.classpath"/>
+    <path refid="library.maven:_net.oauth.core:oauth:20100527.classpath"/>
+    <path refid="library.maven:_net.oauth.core:oauth-provider:20100527.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbynet:10.13.1.1.classpath"/>
+    <path refid="library.maven:_commons-dbcp:commons-dbcp:1.4.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-email:1.3.2.classpath"/>
+    <path refid="library.maven:_javax.mail:mail:1.4.5.classpath"/>
+    <path refid="library.maven:_javax.activation:activation:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:1.3.2.classpath"/>
+    <pathelement location="${agent-api.output.dir}"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-asl:1.8.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-asl:1.8.5.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpclient:4.5.5.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpcore:4.4.9.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.2.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.10.classpath"/>
+    <path refid="library.maven:_org.json:json:20180130.classpath"/>
+    <path refid="library.maven:_com.github.lookfirst:sardine:5.8.classpath"/>
+  </path>
+  
+  <path id="webdav-agent.runtime.production.module.classpath">
+    <pathelement location="${webdav-agent.output.dir}"/>
+    <path refid="library.maven:_com.jcraft:jsch:0.1.53.classpath"/>
+    <path refid="airavata-registry-core.runtime.production.module.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+    <path refid="airavata-commons.runtime.production.module.classpath"/>
+    <path refid="airavata-model-utils.runtime.production.module.classpath"/>
+    <path refid="library.maven:_org.ogce:xpp3:1.1.6.classpath"/>
+    <path refid="library.maven:_jakarta-regexp:jakarta-regexp:1.4.classpath"/>
+    <path refid="library.maven:_org.ogce:xpp5:1.2.8.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:20.0.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derby:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbyclient:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbytools:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.tomcat.embed:tomcat-embed-core:7.0.22.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.2.classpath"/>
+    <path refid="library.maven:_org.apache.curator:curator-framework:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.curator:curator-client:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.zookeeper:zookeeper:3.4.0.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.17.classpath"/>
+    <path refid="library.maven:_jline:jline:0.9.94.classpath"/>
+    <path refid="library.maven:_org.jboss.netty:netty:3.2.2.final.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.3.classpath"/>
+    <path refid="library.maven:_org.apache.kafka:kafka-clients:1.0.0.classpath"/>
+    <path refid="library.maven:_org.lz4:lz4-java:1.4.classpath"/>
+    <path refid="library.maven:_org.xerial.snappy:snappy-java:1.1.4.classpath"/>
+    <path refid="library.maven:_ch.qos.logback:logback-classic:1.2.3.classpath"/>
+    <path refid="library.maven:_ch.qos.logback:logback-core:1.2.3.classpath"/>
+    <path refid="library.maven:_org.apache.openjpa:openjpa:2.2.0.classpath"/>
+    <path refid="library.maven:_commons-lang:commons-lang:2.4.classpath"/>
+    <path refid="library.maven:_commons-collections:commons-collections:3.2.1.classpath"/>
+    <path refid="library.maven:_net.sourceforge.serp:serp:1.13.1.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-pool:commons-pool:1.5.4.classpath"/>
+    <path refid="library.maven:_asm:asm:3.2.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1.classpath"/>
+    <path refid="airavata-data-models.runtime.production.module.classpath"/>
+    <path refid="airavata-registry-cpi.runtime.production.module.classpath"/>
+    <path refid="registry-api-service.runtime.production.module.classpath"/>
+    <path refid="registry-api-stubs.runtime.production.module.classpath"/>
+    <path refid="airavata-messaging-core.runtime.production.module.classpath"/>
+    <path refid="airavata-server-configuration.runtime.production.module.classpath"/>
+    <path refid="library.maven:_com.rabbitmq:amqp-client:3.5.1.classpath"/>
+    <path refid="library.maven:_org.apache.thrift:libthrift:0.10.0.classpath"/>
+    <path refid="airavata-credential-store.runtime.production.module.classpath"/>
+    <path refid="airavata-credential-store-stubs.runtime.production.module.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:oa4mp-client-api:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-client:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-util:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-common:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-storage:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-servlet:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-core:1.1.3.classpath"/>
+    <path refid="library.maven:_commons-configuration:commons-configuration:1.7.classpath"/>
+    <path refid="library.maven:_commons-digester:commons-digester:1.8.1.classpath"/>
+    <path refid="library.maven:_commons-beanutils:commons-beanutils:1.8.3.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:oa4mp-client-loader-oauth1:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:myproxy-logon:1.7.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-oauth-1.0a:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-server:1.1.3.classpath"/>
+    <path refid="library.maven:_net.oauth.core:oauth:20100527.classpath"/>
+    <path refid="library.maven:_net.oauth.core:oauth-provider:20100527.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbynet:10.13.1.1.classpath"/>
+    <path refid="library.maven:_commons-dbcp:commons-dbcp:1.4.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-email:1.3.2.classpath"/>
+    <path refid="library.maven:_javax.mail:mail:1.4.5.classpath"/>
+    <path refid="library.maven:_javax.activation:activation:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:1.3.2.classpath"/>
+    <path refid="agent-api.runtime.production.module.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-asl:1.8.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-asl:1.8.5.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpclient:4.5.5.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpcore:4.4.9.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.2.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.10.classpath"/>
+    <path refid="library.maven:_org.json:json:20180130.classpath"/>
+    <path refid="library.maven:_com.github.lookfirst:sardine:5.8.classpath"/>
+  </path>
+  
+  <path id="webdav-agent.module.classpath">
+    <path refid="${module.jdk.classpath.webdav-agent}"/>
+    <pathelement location="${webdav-agent.output.dir}"/>
+    <path refid="library.maven:_com.jcraft:jsch:0.1.53.classpath"/>
+    <pathelement location="${airavata-registry-core.testoutput.dir}"/>
+    <pathelement location="${airavata-registry-core.output.dir}"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+    <pathelement location="${airavata-commons.testoutput.dir}"/>
+    <pathelement location="${airavata-commons.output.dir}"/>
+    <pathelement location="${airavata-model-utils.testoutput.dir}"/>
+    <pathelement location="${airavata-model-utils.output.dir}"/>
+    <path refid="library.maven:_org.ogce:xpp3:1.1.6.classpath"/>
+    <path refid="library.maven:_jakarta-regexp:jakarta-regexp:1.4.classpath"/>
+    <path refid="library.maven:_org.ogce:xpp5:1.2.8.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:20.0.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derby:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbyclient:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbytools:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.tomcat.embed:tomcat-embed-core:7.0.22.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.2.classpath"/>
+    <path refid="library.maven:_org.apache.curator:curator-framework:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.curator:curator-client:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.zookeeper:zookeeper:3.4.0.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.17.classpath"/>
+    <path refid="library.maven:_jline:jline:0.9.94.classpath"/>
+    <path refid="library.maven:_org.jboss.netty:netty:3.2.2.final.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.3.classpath"/>
+    <path refid="library.maven:_org.apache.kafka:kafka-clients:1.0.0.classpath"/>
+    <path refid="library.maven:_org.lz4:lz4-java:1.4.classpath"/>
+    <path refid="library.maven:_org.xerial.snappy:snappy-java:1.1.4.classpath"/>
+    <path refid="library.maven:_ch.qos.logback:logback-classic:1.2.3.classpath"/>
+    <path refid="library.maven:_ch.qos.logback:logback-core:1.2.3.classpath"/>
+    <path refid="library.maven:_org.apache.openjpa:openjpa:2.2.0.classpath"/>
+    <path refid="library.maven:_commons-lang:commons-lang:2.4.classpath"/>
+    <path refid="library.maven:_commons-collections:commons-collections:3.2.1.classpath"/>
+    <path refid="library.maven:_net.sourceforge.serp:serp:1.13.1.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-pool:commons-pool:1.5.4.classpath"/>
+    <path refid="library.maven:_asm:asm:3.2.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1.classpath"/>
+    <pathelement location="${airavata-data-models.testoutput.dir}"/>
+    <pathelement location="${airavata-data-models.output.dir}"/>
+    <pathelement location="${airavata-registry-cpi.testoutput.dir}"/>
+    <pathelement location="${airavata-registry-cpi.output.dir}"/>
+    <pathelement location="${registry-api-service.testoutput.dir}"/>
+    <pathelement location="${registry-api-service.output.dir}"/>
+    <pathelement location="${registry-api-stubs.testoutput.dir}"/>
+    <pathelement location="${registry-api-stubs.output.dir}"/>
+    <pathelement location="${airavata-messaging-core.testoutput.dir}"/>
+    <pathelement location="${airavata-messaging-core.output.dir}"/>
+    <pathelement location="${airavata-server-configuration.testoutput.dir}"/>
+    <pathelement location="${airavata-server-configuration.output.dir}"/>
+    <path refid="library.maven:_com.rabbitmq:amqp-client:3.5.1.classpath"/>
+    <path refid="library.maven:_org.apache.thrift:libthrift:0.10.0.classpath"/>
+    <pathelement location="${airavata-credential-store.testoutput.dir}"/>
+    <pathelement location="${airavata-credential-store.output.dir}"/>
+    <pathelement location="${airavata-credential-store-stubs.testoutput.dir}"/>
+    <pathelement location="${airavata-credential-store-stubs.output.dir}"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:oa4mp-client-api:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-client:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-util:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-common:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-storage:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-servlet:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-core:1.1.3.classpath"/>
+    <path refid="library.maven:_commons-configuration:commons-configuration:1.7.classpath"/>
+    <path refid="library.maven:_commons-digester:commons-digester:1.8.1.classpath"/>
+    <path refid="library.maven:_commons-beanutils:commons-beanutils:1.8.3.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:oa4mp-client-loader-oauth1:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:myproxy-logon:1.7.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-oauth-1.0a:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-server:1.1.3.classpath"/>
+    <path refid="library.maven:_net.oauth.core:oauth:20100527.classpath"/>
+    <path refid="library.maven:_net.oauth.core:oauth-provider:20100527.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbynet:10.13.1.1.classpath"/>
+    <path refid="library.maven:_commons-dbcp:commons-dbcp:1.4.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-email:1.3.2.classpath"/>
+    <path refid="library.maven:_javax.mail:mail:1.4.5.classpath"/>
+    <path refid="library.maven:_javax.activation:activation:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:1.3.2.classpath"/>
+    <pathelement location="${agent-api.testoutput.dir}"/>
+    <pathelement location="${agent-api.output.dir}"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-asl:1.8.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-asl:1.8.5.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpclient:4.5.5.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpcore:4.4.9.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.2.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.10.classpath"/>
+    <path refid="library.maven:_org.json:json:20180130.classpath"/>
+    <path refid="library.maven:_com.github.lookfirst:sardine:5.8.classpath"/>
+  </path>
+  
+  <path id="webdav-agent.runtime.module.classpath">
+    <pathelement location="${webdav-agent.testoutput.dir}"/>
+    <pathelement location="${webdav-agent.output.dir}"/>
+    <path refid="library.maven:_com.jcraft:jsch:0.1.53.classpath"/>
+    <path refid="airavata-registry-core.runtime.module.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+    <path refid="airavata-commons.runtime.module.classpath"/>
+    <path refid="airavata-model-utils.runtime.module.classpath"/>
+    <path refid="library.maven:_org.ogce:xpp3:1.1.6.classpath"/>
+    <path refid="library.maven:_jakarta-regexp:jakarta-regexp:1.4.classpath"/>
+    <path refid="library.maven:_org.ogce:xpp5:1.2.8.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:20.0.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derby:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbyclient:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbytools:10.13.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.tomcat.embed:tomcat-embed-core:7.0.22.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.2.classpath"/>
+    <path refid="library.maven:_org.apache.curator:curator-framework:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.curator:curator-client:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.zookeeper:zookeeper:3.4.0.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.17.classpath"/>
+    <path refid="library.maven:_jline:jline:0.9.94.classpath"/>
+    <path refid="library.maven:_org.jboss.netty:netty:3.2.2.final.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.3.classpath"/>
+    <path refid="library.maven:_org.apache.kafka:kafka-clients:1.0.0.classpath"/>
+    <path refid="library.maven:_org.lz4:lz4-java:1.4.classpath"/>
+    <path refid="library.maven:_org.xerial.snappy:snappy-java:1.1.4.classpath"/>
+    <path refid="library.maven:_ch.qos.logback:logback-classic:1.2.3.classpath"/>
+    <path refid="library.maven:_ch.qos.logback:logback-core:1.2.3.classpath"/>
+    <path refid="library.maven:_org.apache.openjpa:openjpa:2.2.0.classpath"/>
+    <path refid="library.maven:_commons-lang:commons-lang:2.4.classpath"/>
+    <path refid="library.maven:_commons-collections:commons-collections:3.2.1.classpath"/>
+    <path refid="library.maven:_net.sourceforge.serp:serp:1.13.1.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-pool:commons-pool:1.5.4.classpath"/>
+    <path refid="library.maven:_asm:asm:3.2.classpath"/>
+    <path refid="library.maven:_org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1.classpath"/>
+    <path refid="airavata-data-models.runtime.module.classpath"/>
+    <path refid="airavata-registry-cpi.runtime.module.classpath"/>
+    <path refid="registry-api-service.runtime.module.classpath"/>
+    <path refid="registry-api-stubs.runtime.module.classpath"/>
+    <path refid="airavata-messaging-core.runtime.module.classpath"/>
+    <path refid="airavata-server-configuration.runtime.module.classpath"/>
+    <path refid="library.maven:_com.rabbitmq:amqp-client:3.5.1.classpath"/>
+    <path refid="library.maven:_org.apache.thrift:libthrift:0.10.0.classpath"/>
+    <path refid="airavata-credential-store.runtime.module.classpath"/>
+    <path refid="airavata-credential-store-stubs.runtime.module.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:oa4mp-client-api:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-client:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-util:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-common:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-storage:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-servlet:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security:ncsa-security-core:1.1.3.classpath"/>
+    <path refid="library.maven:_commons-configuration:commons-configuration:1.7.classpath"/>
+    <path refid="library.maven:_commons-digester:commons-digester:1.8.1.classpath"/>
+    <path refid="library.maven:_commons-beanutils:commons-beanutils:1.8.3.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:oa4mp-client-loader-oauth1:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.myproxy:myproxy-logon:1.7.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-oauth-1.0a:1.1.3.classpath"/>
+    <path refid="library.maven:_edu.uiuc.ncsa.security.delegation:ncsa-security-delegation-server:1.1.3.classpath"/>
+    <path refid="library.maven:_net.oauth.core:oauth:20100527.classpath"/>
+    <path refid="library.maven:_net.oauth.core:oauth-provider:20100527.classpath"/>
+    <path refid="library.maven:_org.apache.derby:derbynet:10.13.1.1.classpath"/>
+    <path refid="library.maven:_commons-dbcp:commons-dbcp:1.4.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-email:1.3.2.classpath"/>
+    <path refid="library.maven:_javax.mail:mail:1.4.5.classpath"/>
+    <path refid="library.maven:_javax.activation:activation:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:1.3.2.classpath"/>
+    <path refid="agent-api.runtime.module.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-asl:1.8.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-asl:1.8.5.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpclient:4.5.5.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpcore:4.4.9.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.2.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.10.classpath"/>
+    <path refid="library.maven:_org.json:json:20180130.classpath"/>
+    <path refid="library.maven:_com.github.lookfirst:sardine:5.8.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.webdav-agent">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.webdav-agent">
+    <patternset refid="excluded.from.module.webdav-agent"/>
+  </patternset>
+  
+  <path id="webdav-agent.module.sourcepath">
+    <dirset dir="${module.webdav-agent.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="webdav-agent.module.test.sourcepath">
+    <dirset dir="${module.webdav-agent.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.webdav-agent" depends="compile.module.webdav-agent.production,compile.module.webdav-agent.tests" description="Compile module webdav-agent"/>
+  
+  <target name="compile.module.webdav-agent.production" depends="compile.module.airavata-registry-core,compile.module.airavata-commons,compile.module.airavata-model-utils,compile.module.airavata-data-models,compile.module.airavata-registry-cpi,compile.module.registry-api-service,compile.module.registry-api-stubs,compile.module.airavata-messaging-core,compile.module.airavata-server-configuration,compile.module.airavata-credential-store,compile.module.airavata-credential-store-stubs,compile.module.agent-api" description="Compile module webdav-agent; production classes">
+    <mkdir dir="${webdav-agent.output.dir}"/>
+    <javac destdir="${webdav-agent.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.webdav-agent}/javac">
+      <compilerarg line="${compiler.args.webdav-agent}"/>
+      <bootclasspath refid="webdav-agent.module.bootclasspath"/>
+      <classpath refid="webdav-agent.module.production.classpath"/>
+      <src refid="webdav-agent.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.webdav-agent"/>
+    </javac>
+    
+    <copy todir="${webdav-agent.output.dir}">
+      <fileset dir="${module.webdav-agent.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.webdav-agent.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.webdav-agent.tests" depends="compile.module.webdav-agent.production" description="compile module webdav-agent; test classes" unless="skip.tests">
+    <mkdir dir="${webdav-agent.testoutput.dir}"/>
+    <javac destdir="${webdav-agent.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.webdav-agent}/javac">
+      <compilerarg line="${compiler.args.webdav-agent}"/>
+      <bootclasspath refid="webdav-agent.module.bootclasspath"/>
+      <classpath refid="webdav-agent.module.classpath"/>
+      <src refid="webdav-agent.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.webdav-agent"/>
+    </javac>
+    
+    <copy todir="${webdav-agent.testoutput.dir}">
+      <fileset dir="${module.webdav-agent.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.webdav-agent" description="cleanup module">
+    <delete dir="${webdav-agent.output.dir}"/>
+    <delete dir="${webdav-agent.testoutput.dir}"/>
+  </target>
+</project>

@@ -49,6 +49,12 @@
             <artifactId>sshj-agent</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>webdav-agent</artifactId>
+            <version>0.17-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <!--<build>

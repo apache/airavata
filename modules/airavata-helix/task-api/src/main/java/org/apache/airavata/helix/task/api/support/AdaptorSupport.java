@@ -35,6 +35,6 @@ public interface AdaptorSupport {
     public void initializeAdaptor();
 
     public AgentAdaptor fetchAdaptor(String gatewayId, String computeResource, JobSubmissionProtocol protocol, String authToken, String userId) throws Exception;
-    public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId) throws AgentException;
+    public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String loginUser, String userName) throws AgentException;
 
 }
