@@ -53,6 +53,7 @@
     <div class="row">
         <div class="col d-flex justify-content-end">
             <b-button variant="primary" @click="save">Save</b-button>
+            <b-button class="ml-2" variant="secondary" @click="cancel">Cancel</b-button>
         </div>
     </div>
   </div>
@@ -189,6 +190,9 @@
               console.log("Error occurred", error);
             });
         }
+      },
+      cancel: function() {
+        this.$router.back();
       }
     },
   }
