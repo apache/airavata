@@ -47,13 +47,13 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     private String queuename;
 
     @Column(name = "MAX_ALLOWED_NODES")
-    private int maxAllowedNodes;
+    private Integer maxAllowedNodes;
 
     @Column(name = "MAX_ALLOWED_CORES")
-    private int maxAllowedCores;
+    private Integer maxAllowedCores;
 
     @Column(name = "MAX_ALLOWED_WALLTIME")
-    private int maxAllowedWalltime;
+    private Integer maxAllowedWalltime;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID")
@@ -94,27 +94,27 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
         this.queuename = queuename;
     }
 
-    public int getMaxAllowedNodes() {
+    public Integer getMaxAllowedNodes() {
         return maxAllowedNodes;
     }
 
-    public void setMaxAllowedNodes(int maxAllowedNodes) {
+    public void setMaxAllowedNodes(Integer maxAllowedNodes) {
         this.maxAllowedNodes = maxAllowedNodes;
     }
 
-    public int getMaxAllowedCores() {
+    public Integer getMaxAllowedCores() {
         return maxAllowedCores;
     }
 
-    public void setMaxAllowedCores(int maxAllowedCores) {
+    public void setMaxAllowedCores(Integer maxAllowedCores) {
         this.maxAllowedCores = maxAllowedCores;
     }
 
-    public int getMaxAllowedWalltime() {
+    public Integer getMaxAllowedWalltime() {
         return maxAllowedWalltime;
     }
 
-    public void setMaxAllowedWalltime(int maxAllowedWalltime) {
+    public void setMaxAllowedWalltime(Integer maxAllowedWalltime) {
         this.maxAllowedWalltime = maxAllowedWalltime;
     }
 
