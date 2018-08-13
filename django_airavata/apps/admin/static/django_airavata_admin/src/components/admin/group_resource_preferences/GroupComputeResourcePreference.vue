@@ -22,7 +22,7 @@
     </div>
     <list-layout :items="data.computePreferences" title="Compute Preferences"
       new-item-button-text="New Compute Preference"
-      @add-new-item="createComputePreferences">
+      @add-new-item="createComputePreference">
       <template slot="item-list" slot-scope="slotProps">
 
         <b-table hover :fields="computePreferencesFields" :items="slotProps.items"
@@ -36,6 +36,12 @@
         </b-table> 
       </template>
     </list-layout>
+    <div class="row">
+        <div class="col d-flex justify-content-end">
+            <b-button variant="primary" @click="saveGroupResourceProfile">Save</b-button>
+            <b-button class="ml-2" variant="secondary" @click="cancel">Cancel</b-button>
+        </div>
+    </div>
   </div>
 </template>
 <script>
@@ -91,17 +97,20 @@
     },
     methods: {
       saveGroupResourceProfile: function () {
+        var persist = null;
         if (this.data.groupResourceProfileId) {
-          DjangoAiravataAPI.utils.FetchUtils.put('/api/group-resource-profiles/' + this.data.groupResourceProfileId + '/', this.data)
-            .then((data) => this.data = data);
+          persist = this.service.update({data: this.data, lookup: this.data.groupResourceProfileId});
         } else {
-          this.service.create({data: this.data})
+          persist = this.service.create({data: this.data})
             .then((data) => {
-              this.data = data;
               // Save sharing settings too
               return this.$refs.shareButton.mergeAndSave(data.groupResourceProfileId);
             });
         }
+        // TODO: handle errors
+        persist.then(data => {
+          this.$router.push('/group-resource-profiles');
+        });
       },
       computePreferenceClickHandler: function (computeResourceId) {
         let computeResourcePreference = this.data.computePreferences.find(pref => pref.computeResourceId === computeResourceId);
@@ -122,6 +131,9 @@
         // TODO: load compute resources to get the real name
         return (computeResourceId && computeResourceId.indexOf("_") > 0) ? computeResourceId.split("_")[0] : computeResourceId;
       },
+      cancel: function() {
+        this.$router.push('/group-resource-profiles');
+      }
     },
   }
 </script>

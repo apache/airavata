@@ -110,6 +110,11 @@ body {
     max-width: 1200px;
 }
 
+/* Add extra padding at the bottom to accommodate for the scrolling under the fixed width header */
+.main-content > :last-child {
+    padding-bottom: 70px;
+}
+
 .sidebar {
     flex-basis: 200px;
     background-color: #ffffff;
