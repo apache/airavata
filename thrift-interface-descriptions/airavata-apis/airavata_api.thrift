@@ -2300,6 +2300,8 @@ service Airavata {
             3: airavata_errors.AiravataSystemException ase,
             4: airavata_errors.AuthorizationException ae)
 
+
+
   /**
    *
    * Update the given scp data movement details
@@ -2337,6 +2339,40 @@ service Airavata {
                             2: airavata_errors.AiravataClientException ace,
                             3: airavata_errors.AiravataSystemException ase,
                             4: airavata_errors.AuthorizationException ae)
+
+
+ /**
+  * Add the WebDAV data movement details to a compute resource
+ */
+  string addWebDAVDataMovementDetails(1: required security_model.AuthzToken authzToken,
+              2: required string productUri,
+              3: required data_movement_models.DMType dataMoveType,
+              4: required i32 priorityOrder,
+              5: required data_movement_models.WebDAVDataMovement davDataMovement)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
+ /**
+   * Update the WebDAV data movement details to a compute resource
+  */
+    bool updateWebDAVDataMovementDetails(1: required security_model.AuthzToken authzToken,
+               2: required string dataMovementInterfaceId,
+               3: required data_movement_models.WebDAVDataMovement davDataMovement)
+     	throws (1: airavata_errors.InvalidRequestException ire,
+               2: airavata_errors.AiravataClientException ace,
+               3: airavata_errors.AiravataSystemException ase,
+               4: airavata_errors.AuthorizationException ae)
+
+   /**
+     * This method returns the WebDAV datamovement object
+    */
+      data_movement_models.WebDAVDataMovement getWebDAVDataMovement(1: required security_model.AuthzToken authzToken, 2: required string dataMovementId)
+                          throws (1: airavata_errors.InvalidRequestException ire,
+                                  2: airavata_errors.AiravataClientException ace,
+                                  3: airavata_errors.AiravataSystemException ase,
+                                  4: airavata_errors.AuthorizationException ae)
 
  /**
    *

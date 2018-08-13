@@ -118,6 +118,57 @@ public class StorageResourceAppCatalogTest {
         }
     }
 
+    @Test
+    public void addWebDavStorageResourceTest() throws AppCatalogException {
+        try {
+        StorageResource storageResource = appcatalog.getStorageResource();
+        StorageResourceDescription description = new StorageResourceDescription();
+
+        description.setHostName("localhost");
+        description.setEnabled(true);
+        description.setStorageResourceDescription("testDescription");
+
+        String davDataMoveID = addWebDavDataMovement();
+        System.out.println("**** WebDAV DataMoveId****** :" + davDataMoveID);
+        WebDAVDataMovement dataMovement = getWebDavDataMovement(davDataMoveID);
+        System.out.println("******getdataMovementId****" + dataMovement.getPort());
+
+        List<DataMovementInterface> dataMovementInterfaces = new ArrayList<DataMovementInterface>();
+        DataMovementInterface davInterface = new DataMovementInterface();
+        davInterface.setDataMovementInterfaceId(davDataMoveID);
+        davInterface.setDataMovementProtocol(DataMovementProtocol.WebDAV);
+        davInterface.setPriorityOrder(1);
+
+        dataMovementInterfaces.add(davInterface);
+        description.setDataMovementInterfaces(dataMovementInterfaces);
+
+        String resourceId = storageResource.addStorageResource(description);
+        System.out.println("**********Resource id ************* : " +  resourceId);
+        StorageResourceDescription storageResourceDescription = null;
+        if (storageResource.isStorageResourceExists(resourceId)){
+            storageResourceDescription = storageResource.getStorageResource(resourceId);
+            List<DataMovementInterface> movementInterfaces = storageResourceDescription.getDataMovementInterfaces();
+            if (movementInterfaces != null && !movementInterfaces.isEmpty()){
+                for (DataMovementInterface dataMovementInterface : movementInterfaces){
+                    System.out.println("Data Movement Interface Id :" + dataMovementInterface.getDataMovementInterfaceId());
+                    System.out.println("Data Movement Protocol :" + dataMovementInterface.getDataMovementProtocol().toString());
+                }
+            }
+        }
+
+        description.setHostName("localhost2");
+        storageResource.updateStorageResource(resourceId, description);
+        if (storageResource.isStorageResourceExists(resourceId)){
+            storageResourceDescription = storageResource.getStorageResource(resourceId);
+            System.out.println("**********Updated Resource name ************* : " + storageResourceDescription.getHostName());
+        }
+        assertTrue("Compute resource save successfully", storageResourceDescription != null);
+    } catch (AppCatalogException e) {
+        System.out.println("Exception" +e.getMessage());
+        logger.error(e.getMessage(), e);
+    }
+    }
+
     public String addSCPDataMovement (){
         try {
             SCPDataMovement dataMovement = new SCPDataMovement();
@@ -128,6 +179,23 @@ public class StorageResourceAppCatalogTest {
             logger.error(e.getMessage(), e);
         }
         return null;
+    }
+
+    public String addWebDavDataMovement (){
+        try {
+            WebDAVDataMovement dataMovement = new WebDAVDataMovement();
+            dataMovement.setPort(80);
+            dataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
+            return appcatalog.getComputeResource().addWebDAVDataMovement(dataMovement);
+        }catch (AppCatalogException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public WebDAVDataMovement getWebDavDataMovement (String dataMoveId) throws AppCatalogException {
+        WebDAVDataMovement dataMovement =  appcatalog.getComputeResource().getWebDavDataMovement(dataMoveId);
+        return dataMovement;
     }
 
     public String addGridFTPDataMovement (){

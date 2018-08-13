@@ -35,6 +35,7 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.HostAlias</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.HostIPAddress</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ScpDataMovement</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.WebDavDataMovement</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.GridftpDataMovement</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.GridftpEndpoint</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.SshJobSubmission</class>

@@ -199,6 +199,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Scp Data Movement.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Scp Data Movement.");
                 }
+            case WEBDAV_DATA_MOVEMENT:
+                if (o instanceof WebDavDataMovement) {
+                    return createWebDavDataMovement((WebDavDataMovement) o);
+                } else {
+                    logger.error("Object should be a WebDAV Data Movement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a WebDAV Data Movement.");
+                }
             case GRIDFTP_DATA_MOVEMENT:
                 if (o instanceof GridftpDataMovement) {
                     return createGridftpDataMovement((GridftpDataMovement) o);
@@ -719,6 +726,22 @@ public class AppCatalogJPAUtils {
             }
         }
         return scpDataMovementResource;
+    }
+
+    private static AppCatalogResource createWebDavDataMovement(WebDavDataMovement o) {
+        WebDavDataMovementResource webDavDataMovementResource = new WebDavDataMovementResource();
+        if (o != null) {
+            webDavDataMovementResource.setQueueDescription(o.getQueueDescription());
+            webDavDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+            webDavDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
+            webDavDataMovementResource.setWebDavHostname(o.getWebDavHostname());
+            webDavDataMovementResource.setPort(o.getPort());
+            webDavDataMovementResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null) {
+                webDavDataMovementResource.setUpdatedTime(o.getUpdateTime());
+            }
+        }
+        return webDavDataMovementResource;
     }
 
     private static AppCatalogResource createGridftpDataMovement(GridftpDataMovement o) {

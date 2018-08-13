@@ -22,6 +22,7 @@ package org.apache.airavata.helix.core.support.adaptor;
 import org.apache.airavata.agents.api.*;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
+import org.apache.airavata.helix.agent.dav.DavAdapter;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
@@ -79,7 +80,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     }
 
     @Override
-    public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId) throws AgentException {
+    public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String loginUser, String userName) throws AgentException {
         Optional<StorageResourceAdaptor> agentAdaptorOp = agentStore.getStorageAdaptor(storageResourceId, protocol, authToken);
         if (agentAdaptorOp.isPresent()) {
             return agentAdaptorOp.get();
@@ -92,12 +93,18 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                     switch (protocol) {
                         case SCP:
                             SSHJStorageAdaptor storageResourceAdaptor = new SSHJStorageAdaptor();
-                            storageResourceAdaptor.init(storageResourceId, gatewayId, userId, authToken);
+                            storageResourceAdaptor.init(storageResourceId, gatewayId, loginUser, userName);
                             agentStore.putStorageAdaptor(storageResourceId, protocol, authToken, storageResourceAdaptor);
                             return storageResourceAdaptor;
+
+                        case WebDAV:
+                            DavAdapter davAdapter = new DavAdapter();
+                            davAdapter.init(storageResourceId, gatewayId, userName, authToken);
+                            return davAdapter;
+
                         default:
                             throw new AgentException("Could not find an storage adaptor for gateway " + gatewayId +
-                                    ", storage resource " + storageResourceId + ", protocol " + protocol + " , user " + userId);
+                                    ", storage resource " + storageResourceId + ", protocol " + protocol + " , user " + loginUser);
                     }
                 }
             }

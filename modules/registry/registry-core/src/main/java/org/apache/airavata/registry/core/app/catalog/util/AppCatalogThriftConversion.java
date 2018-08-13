@@ -37,6 +37,7 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+import org.apache.airavata.registry.core.app.catalog.model.WebDavDataMovement;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 
@@ -506,6 +507,24 @@ public class AppCatalogThriftConversion {
         dataMovement.setAlternativeScpHostname(dataMovementResource.getAlternativeSCPHostName());
         dataMovement.setSecurityProtocol(dataMovementResource.getSecurityProtocol().toString());
         dataMovement.setSshPort(dataMovementResource.getSshPort());
+        return dataMovement;
+    }
+
+    public static WebDAVDataMovement getWebDavDataMovementDescription (WebDavDataMovementResource dataMovementResource) throws AppCatalogException {
+        WebDAVDataMovement dataMovement = new WebDAVDataMovement();
+        dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
+        dataMovement.setWebDavHostName(dataMovementResource.getWebDavHostname());
+        dataMovement.setSecurityProtocol(SecurityProtocol.valueOf(dataMovementResource.getSecurityProtocol()));
+        dataMovement.setPort(dataMovementResource.getPort());
+        return dataMovement;
+    }
+
+    public static WebDavDataMovementResource getWebDavDataMovementDescription (WebDAVDataMovement dataMovementResource) throws AppCatalogException {
+        WebDavDataMovementResource dataMovement = new WebDavDataMovementResource();
+        dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
+        dataMovement.setWebDavHostname(dataMovementResource.getWebDavHostName());
+        dataMovement.setSecurityProtocol(dataMovementResource.getSecurityProtocol().toString());
+        dataMovement.setPort(dataMovementResource.getPort());
         return dataMovement;
     }
 

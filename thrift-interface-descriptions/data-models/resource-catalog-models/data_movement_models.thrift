@@ -75,7 +75,8 @@ enum DataMovementProtocol {
     SCP,
     SFTP,
     GridFTP,
-    UNICORE_STORAGE_SERVICE
+    UNICORE_STORAGE_SERVICE,
+    WebDAV
 }
 
 /**
@@ -92,6 +93,18 @@ struct SCPDataMovement {
     2: required SecurityProtocol securityProtocol,
     3: optional string alternativeSCPHostName,
     4: optional i32 sshPort = 22
+}
+
+/**
+ * Data Movement through the WebDAV
+ *
+ *
+*/
+struct WebDAVDataMovement {
+    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
+    2: required SecurityProtocol securityProtocol,
+    3: optional string webDavHostName,
+    4: optional i32 port = 80
 }
 
 /**
@@ -149,6 +162,7 @@ struct DataMovementInterface {
     2: required DataMovementProtocol dataMovementProtocol,
     3: required i32 priorityOrder = 0,
 }
+
 
 
 

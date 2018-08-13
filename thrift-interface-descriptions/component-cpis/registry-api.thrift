@@ -1617,6 +1617,27 @@ service RegistryService {
               data_movement_models.SCPDataMovement getSCPDataMovement(1: required string dataMovementId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
+              /**
+              * Add WebDAV data movement details
+              **/
+               string addWebDAVDataMovementDetails(1: required string productUri,
+                        2: required data_movement_models.DMType dataMoveType,
+                        3: required i32 priorityOrder,
+                        4: required data_movement_models.WebDAVDataMovement davDataMovement)
+                 throws (1: registry_api_errors.RegistryServiceException rse)
+
+             /**
+             * Update WebDAV Datamovement details
+             **/
+             bool updateWebDAVDataMovementDetails(1: required string dataMovementInterfaceId,
+                                     2: required data_movement_models.WebDAVDataMovement davDataMovement)
+                             throws (1: registry_api_errors.RegistryServiceException rse)
+             /**
+             * This method returns WebDAV datamovement object
+             **/
+             data_movement_models.WebDAVDataMovement getWebDAVDataMovement(1: required string dataMovementId)
+                                             throws (1: registry_api_errors.RegistryServiceException rse)
+
              /**
                *
                * Add a UNICORE data movement details to a compute resource
