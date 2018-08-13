@@ -50,6 +50,11 @@
         </div>
       </div>
     </div>
+    <div class="row">
+        <div class="col d-flex justify-content-end">
+            <b-button variant="primary" @click="save">Save</b-button>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -72,6 +77,9 @@
       },
       host_id: {
         type: String,
+      },
+      groupResourceProfile: {
+        type: models.GroupResourceProfile,
       },
       computeResourcePolicy: {
         type: models.ComputeResourcePolicy
@@ -98,50 +106,6 @@
         selectedComputeResourceIndex: null,
         localComputeResourcePolicy: this.computeResourcePolicy ? this.computeResourcePolicy.clone() : null,
         localBatchQueueResourcePolicies: this.batchQueueResourcePolicies ? this.batchQueueResourcePolicies.map(pol => pol.clone()) : [],
-        dataMovementProtocols: [{
-          name: "LOCAL",
-          enabled: false,
-          value: 0
-        }, {
-          name: "SCP",
-          enabled: false,
-          value: 1
-        }, {
-          name: "GridFTP",
-          enabled: false,
-          value: 2
-        }, {
-          name: "UNICORE_STORAGE_SERVICE",
-          enabled: false,
-          value: 3
-        },],
-        jobSubmissionProtocols: [
-          {
-            name: "Local",
-            enabled: false,
-            value: 0
-          },
-          {
-            name: "SSH",
-            enabled: false,
-            value: 1
-          },
-          {
-            name: "GLOBUS",
-            enabled: false,
-            value: 2
-          },
-          {
-            name: "UNICORE",
-            enabled: false,
-            value: 3
-          },
-          {
-            name: "Cloud",
-            enabled: false,
-            value: 4
-          },
-        ],
         computeResource: {
           batchQueues: [],
           jobSubmissionInterfaces: []
@@ -152,15 +116,6 @@
     methods: {
       fetchComputeResources: function () {
         return DjangoAiravataAPI.utils.FetchUtils.get('/api/compute-resources/all_names_list').then((value) => this.computeResources = value);
-      },
-      createComputeResourcePolicy: function () {
-        return {
-          allowedBatchQueues: [],
-          batchQueueResourcePolicies: [],
-          computeResourceId: null,
-          groupResourceProfileId: null,
-          resourcePolicyId: null
-        }
       },
       batchQueueChecked: function(batchQueue, checked) {
         if (checked) {
@@ -182,6 +137,9 @@
           if (existingPolicy) {
             Object.assign(existingPolicy, batchQueueResourcePolicy);
           } else {
+            // For new BatchQueueResourcePolicy instances, set the parent ids
+            batchQueueResourcePolicy.groupResourceProfileId = this.id;
+            batchQueueResourcePolicy.computeResourceId = this.host_id;
             this.localBatchQueueResourcePolicies.push(batchQueueResourcePolicy);
           }
         } else {
@@ -191,46 +149,47 @@
           }
         }
       },
-      createGroupSSHAccountProvisionerConfigs: function () {
-        this.data.groupSSHAccountProvisionerConfigs.push({
-          resourceId: this.data.computeResourceId,
-          groupResourceProfileId: this.data.groupResourceProfileId,
-          configName: null,
-          configValue: null
+      fetchComputeResource: function (id) {
+        DjangoAiravataAPI.utils.FetchUtils.get("/api/compute-resources/" + encodeURIComponent(id) + "/").then(value => {
+          this.computeResource = value;
         });
       },
-      fetchComputeResource: function (id) {
-        console.log("Fetching compute Resource", id);
-        if (id) {
-          DjangoAiravataAPI.utils.FetchUtils.get("/api/compute-resources/" + encodeURIComponent(id) + "/").then(value => {
-            console.log("Compute  Resource", value);
-            this.computeResource = value;
-            this.computeResource.jobSubmissionInterfaces.forEach((jobSubmissionInterface) => {
-              this.jobSubmissionProtocols[jobSubmissionInterface.jobSubmissionProtocol].enabled = true;
+      save: function() {
+        let groupResourceProfile = this.groupResourceProfile.clone();
+        groupResourceProfile.mergeComputeResourcePreference(this.data, this.localComputeResourcePolicy, this.localBatchQueueResourcePolicies);
+        // TODO: success and error handling are the same so we can just combine those
+        if (groupResourceProfile.groupResourceProfileId) {
+          DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles").update({data: groupResourceProfile, lookup: groupResourceProfile.groupResourceProfileId})
+            .then(groupResourceProfile => {
+              // Navigate back to GroupResourceProfile with success message
+              this.$router.push({
+                name: 'group_resource_preference', params: {
+                  value: groupResourceProfile,
+                  id: groupResourceProfile.groupResourceProfileId
+                }
+              });
+            })
+            .catch(error => {
+              // TODO: handle error
+              console.log("Error occurred", error);
             });
-            this.computeResource.dataMovementInterfaces.forEach((dataMovementInterface) => {
-              this.dataMovementProtocols[dataMovementInterface.dataMovementProtocol].enabled = true;
+        } else {
+          DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles").create({data: groupResourceProfile})
+            .then(groupResourceProfile => {
+              // Navigate back to GroupResourceProfile with success message
+              this.$router.push({
+                name: 'group_resource_preference', params: {
+                  value: groupResourceProfile,
+                  id: groupResourceProfile.groupResourceProfileId
+                }
+              });
+            })
+            .catch(error => {
+              // TODO: handle error
+              console.log("Error occurred", error);
             });
-          });
-        }
-      },
-      continueHandler: function () {
-        this.enablePopup = false;
-        if (this.computeResources && this.computeResources.length > 0) {
-          this.fetchComputeResource(this.computeResources[this.selectedComputeResourceIndex].host_id);
         }
       }
     },
-    watch: {}
   }
 </script>
-
-<style scoped>
-  .batch-queue {
-    margin-top: 10px;
-  }
-
-  .popup-select {
-    height: 100%;
-  }
-</style>

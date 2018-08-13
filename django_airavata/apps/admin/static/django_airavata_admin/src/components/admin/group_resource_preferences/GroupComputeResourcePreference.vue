@@ -112,6 +112,7 @@
             value: computeResourcePreference,
             id: this.data.groupResourceProfileId,
             host_id: computeResourceId,
+            groupResourceProfile: this.data,
             computeResourcePolicy: computeResourcePolicy,
             batchQueueResourcePolicies: batchQueueResourcePolicies,
           }

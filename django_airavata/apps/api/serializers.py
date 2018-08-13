@@ -451,6 +451,22 @@ class GroupResourceProfileSerializer(
     updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
 
+    def update(self, instance, validated_data):
+        result = super().update(instance, validated_data)
+        result._removed_batch_queue_resource_policies = []
+        # Find all batch queue resource policies that were removed
+        for batch_queue_resource_policy in instance.batchQueueResourcePolicies:
+            existing_batch_queue_resource_policy_for_update = next(
+                (bq for bq in result.batchQueueResourcePolicies
+                 if bq.computeResourceId ==
+                    batch_queue_resource_policy.computeResourceId
+                    and bq.queuename == batch_queue_resource_policy.queuename),
+                None)
+            if not existing_batch_queue_resource_policy_for_update:
+                result._removed_batch_queue_resource_policies.append(
+                    batch_queue_resource_policy)
+        return result
+
     def get_userHasWriteAccess(self, groupResourceProfile):
         request = self.context['request']
         return request.airavata_client.userHasAccess(

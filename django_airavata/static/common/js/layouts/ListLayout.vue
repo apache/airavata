@@ -6,7 +6,7 @@
                     <h1 class="h4 mb-4">{{ title }}</h1>
                 </slot>
             </div>
-            <div id="col-new-item" class="col">
+            <div class="col d-flex justify-content-end align-items-baseline">
                 <slot name="new-item-button">
                     <b-btn variant="primary" @click="addNewItem">
                         {{ newItemButtonText }} <i class="fa fa-plus" aria-hidden="true"></i>
@@ -72,9 +72,3 @@ export default {
     },
 }
 </script>
-
-<style>
-#col-new-item {
-    text-align: right;
-}
-</style>

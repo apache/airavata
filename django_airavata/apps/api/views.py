@@ -698,7 +698,15 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
         serializer.instance = group_resource_profile
 
     def perform_update(self, serializer):
-        self.request.airavata_client.updateGroupResourceProfile(self.authz_token, serializer.save())
+        grp = serializer.save()
+        for removed_batch_queue_resource_policy \
+                in grp._removed_batch_queue_resource_policies:
+            self.request.airavata_client.removeGroupBatchQueueResourcePolicy(
+                self.authz_token,
+                removed_batch_queue_resource_policy.resourcePolicyId)
+        log.debug("batch queue res policies: {}".format(grp.batchQueueResourcePolicies))
+        self.request.airavata_client.updateGroupResourceProfile(
+            self.authz_token, grp)
 
 
 class SharedEntityGroups(APIBackedViewSet):
