@@ -51,12 +51,10 @@ export default {
             name: "names",
             url: "/api/compute-resources/all_names/",
             requestType: 'get',
-            modelClass: Object,
         }, {
             name: "namesList",
             url: "/api/compute-resources/all_names_list/",
             requestType: 'get',
-            modelClass: Array,
         }],
         modelClass: ApplicationDeploymentDescription,
     },

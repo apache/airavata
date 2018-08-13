@@ -34,7 +34,8 @@
           <div class="card-body">
             <h5 class="card-title">Policy</h5>
             <b-form-group label="Allowed Queues">
-              <div v-for="batchQueue in computeResource.batchQueues" :key="batchQueue.queueName">
+              <div v-for="batchQueue in computeResource.batchQueues" :key="batchQueue.queueName"
+                  v-if="localComputeResourcePolicy">
                 <b-form-checkbox :checked="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
                   @input="batchQueueChecked(batchQueue, $event)">
                   {{ batchQueue.queueName }}
@@ -94,9 +95,17 @@
         // TODO: load the Group Resource Profile and get the compute preferences for this host_id
       }
       if (this.host_id) {
-        this.fetchComputeResource(this.host_id);
-      } else {
-        this.fetchComputeResources();
+        const computeResourceOperation = this.fetchComputeResource(this.host_id);
+        // If no computeResourcePolicy create a new default one that allows all queues
+        if (!this.computeResourcePolicy) {
+          computeResourceOperation.then(computeResource => {
+            const defaultComputeResourcePolicy = new models.ComputeResourcePolicy();
+            defaultComputeResourcePolicy.computeResourceId = this.host_id;
+            defaultComputeResourcePolicy.groupResourceProfileId = this.id;
+            defaultComputeResourcePolicy.allowedBatchQueues = computeResource.batchQueues.map(queue => queue.queueName);
+            this.localComputeResourcePolicy = defaultComputeResourcePolicy;
+          })
+        }
       }
     },
     data: function () {
@@ -115,9 +124,6 @@
     },
     mixins: [VModelMixin],
     methods: {
-      fetchComputeResources: function () {
-        return DjangoAiravataAPI.utils.FetchUtils.get('/api/compute-resources/all_names_list').then((value) => this.computeResources = value);
-      },
       batchQueueChecked: function(batchQueue, checked) {
         if (checked) {
           this.localComputeResourcePolicy.allowedBatchQueues.push(batchQueue.queueName);
@@ -151,8 +157,8 @@
         }
       },
       fetchComputeResource: function (id) {
-        DjangoAiravataAPI.utils.FetchUtils.get("/api/compute-resources/" + encodeURIComponent(id) + "/").then(value => {
-          this.computeResource = value;
+        return DjangoAiravataAPI.utils.FetchUtils.get("/api/compute-resources/" + encodeURIComponent(id) + "/").then(value => {
+          return this.computeResource = value;
         });
       },
       save: function() {
@@ -192,7 +198,7 @@
         }
       },
       cancel: function() {
-        this.$router.back();
+        this.$router.push({ name: 'group_resource_preference', params: {id: this.id}});
       }
     },
   }

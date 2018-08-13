@@ -4,7 +4,11 @@ import BaseModel from './BaseModel'
 const FIELDS = [
      'computeResourceId',
      'groupResourceProfileId',
-     'overridebyAiravata',
+     {
+         name: 'overridebyAiravata',
+         type: 'boolean',
+         default: true,
+     },
      'loginUserName',
      'preferredJobSubmissionProtocol',
      'preferredDataMovementProtocol',

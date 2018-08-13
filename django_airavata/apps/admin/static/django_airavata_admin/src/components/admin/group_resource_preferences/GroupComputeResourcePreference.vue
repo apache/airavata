@@ -42,39 +42,51 @@
             <b-button class="ml-2" variant="secondary" @click="cancel">Cancel</b-button>
         </div>
     </div>
+    <b-modal id="modal-select-compute-resource" ref="modalSelectComputeResource" title="Select Compute Resource"
+      @ok="onSelectComputeResource" :ok-disabled="modalSelectComputeResourceOkDisabled">
+      <b-form-select v-model="selectedComputeResource" :options="computeResourceOptions">
+        <template slot="first">
+          <option :value="null">Please select compute resource</option>
+        </template>
+      </b-form-select>
+    </b-modal>
   </div>
 </template>
 <script>
   import {components as comps, layouts} from 'django-airavata-common-ui'
-  import DjangoAiravataAPI from 'django-airavata-api'
+  import {models, services} from 'django-airavata-api'
 
   export default {
     name: "group-compute-resource-preference",
     props: {
       value: {
-        type: DjangoAiravataAPI.models.GroupResourceProfile,
+        type: models.GroupResourceProfile,
         default: function () {
-          return new DjangoAiravataAPI.models.GroupResourceProfile()
+          return new models.GroupResourceProfile()
         }
+      },
+      id: {
+        type: String,
       },
     },
     mounted: function () {
       if (this.value.groupResourceProfileId) {
-        DjangoAiravataAPI.services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.value.groupResourceProfileId})
+        services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.value.groupResourceProfileId})
           .then(sharedEntity => this.sharedEntity = sharedEntity);
-      } else if (this.$route.params.id) {
-        // TODO: switch to using props to get the id param
-        DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles").retrieve({lookup: this.$route.params.id})
+      } else if (this.id) {
+        services.ServiceFactory.service("GroupResourceProfiles").retrieve({lookup: this.id})
           .then(grp => this.data = grp);
-        DjangoAiravataAPI.services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.$route.params.id})
+        services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.id})
           .then(sharedEntity => this.sharedEntity = sharedEntity);
       }
+      services.ComputeResourceService.namesList()
+        .then(names => this.computeResources = names);
     },
     data: function () {
       let data = this.value.clone();
       return {
         data: data,
-        service: DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles"),
+        service: services.ServiceFactory.service("GroupResourceProfiles"),
         sharedEntity: null,
         computePreferencesFields: [
           {
@@ -88,12 +100,32 @@
             key: 'action',
           },
         ],
+        computeResources: null,
+        selectedComputeResource: null,
       }
     },
 
     components: {
       "share-button": comps.ShareButton,
       "list-layout": layouts.ListLayout,
+    },
+    computed: {
+      modalSelectComputeResourceOkDisabled: function() {
+        return this.selectedComputeResource == null;
+      },
+      computeResourceOptions: function() {
+        const currentPrefs = this.data.computePreferences ? this.data.computePreferences.map(computePreference => computePreference.computeResourceId) : [];
+        const options = this.computeResources ? this.computeResources
+          .filter(comp => !currentPrefs.includes(comp.host_id))
+          .map(comp => {
+            return {
+              value: comp.host_id,
+              text: comp.host 
+            }
+          }) : [];
+        options.sort((a, b) => a.text.toLowerCase().localeCompare(b.text.toLowerCase()));
+        return options;
+      },
     },
     methods: {
       saveGroupResourceProfile: function () {
@@ -133,6 +165,24 @@
       },
       cancel: function() {
         this.$router.push('/group-resource-profiles');
+      },
+      createComputePreference: function() {
+        this.$refs.modalSelectComputeResource.show();
+      },
+      onSelectComputeResource: function() {
+        const computeResourcePreference = new models.GroupComputeResourcePreference();
+        const computeResourceId = this.selectedComputeResource;
+        computeResourcePreference.computeResourceId = computeResourceId;
+        this.$router.push({
+          name: 'compute_preference', params: {
+            value: computeResourcePreference,
+            id: this.data.groupResourceProfileId,
+            host_id: computeResourceId,
+            groupResourceProfile: this.data,
+            computeResourcePolicy: null,
+            batchQueueResourcePolicies: null,
+          }
+        });
       }
     },
   }

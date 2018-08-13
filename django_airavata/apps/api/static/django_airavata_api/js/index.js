@@ -3,11 +3,13 @@ import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinit
 import ApplicationModule from './models/ApplicationModule'
 import BatchQueue from './models/BatchQueue'
 import BatchQueueResourcePolicy from './models/BatchQueueResourcePolicy'
+import ComputeResourcePolicy from './models/ComputeResourcePolicy'
 import DataType from './models/DataType'
 import Experiment from './models/Experiment'
 import ExperimentState from './models/ExperimentState'
 import FullExperiment from './models/FullExperiment'
 import Group from './models/Group'
+import GroupComputeResourcePreference from './models/GroupComputeResourcePreference'
 import GroupPermission from './models/GroupPermission'
 import GroupResourceProfile from './models/GroupResourceProfile'
 import InputDataObjectType from './models/InputDataObjectType'
@@ -45,11 +47,13 @@ exports.models = {
     ApplicationModule,
     BatchQueue,
     BatchQueueResourcePolicy,
+    ComputeResourcePolicy,
     DataType,
     Experiment,
     ExperimentState,
     FullExperiment,
     Group,
+    GroupComputeResourcePreference,
     GroupPermission,
     GroupResourceProfile,
     InputDataObjectType,
@@ -71,7 +75,7 @@ exports.services = {
     GroupService,
     GroupResourceProfileService,
     UserProfileService,
-    ComputeResourceService,
+    ComputeResourceService: ServiceFactory.service("ComputeResources"),
     CloudJobSubmissionService,
     GlobusJobSubmissionService,
     LocaJobSubmissionService,
