@@ -42,6 +42,10 @@ export default class GroupResourceProfile extends BaseModel {
         super(FIELDS, data);
     }
 
+    getComputePreference(computeResourceId) {
+        return this.computePreferences.find(pref => pref.computeResourceId === computeResourceId);
+    }
+
     getComputeResourcePolicy(computeResourceId) {
         return this.computeResourcePolicies.find(pol => pol.computeResourceId === computeResourceId);
     }

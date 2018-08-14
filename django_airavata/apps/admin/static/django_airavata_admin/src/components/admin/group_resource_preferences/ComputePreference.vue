@@ -67,7 +67,7 @@
   import VModelMixin from '../../commons/vmodel_mixin'
   import BatchQueueResourcePolicy from './BatchQueueResourcePolicy.vue'
 
-  import {models} from 'django-airavata-api'
+  import {models, services} from 'django-airavata-api'
 
   export default {
     name: "compute-preference",
@@ -80,6 +80,7 @@
       },
       host_id: {
         type: String,
+        required: true,
       },
       groupResourceProfile: {
         type: models.GroupResourceProfile,
@@ -92,29 +93,31 @@
       }
     },
     mounted: function () {
+      const computeResourcePromise = this.fetchComputeResource(this.host_id);
       if (!this.value && this.id && this.host_id) {
-        // TODO: load the Group Resource Profile and get the compute preferences for this host_id
-      }
-      if (this.host_id) {
-        const computeResourceOperation = this.fetchComputeResource(this.host_id);
-        // If no computeResourcePolicy create a new default one that allows all queues
-        if (!this.computeResourcePolicy) {
-          computeResourceOperation.then(computeResource => {
-            const defaultComputeResourcePolicy = new models.ComputeResourcePolicy();
-            defaultComputeResourcePolicy.computeResourceId = this.host_id;
-            defaultComputeResourcePolicy.groupResourceProfileId = this.id;
-            defaultComputeResourcePolicy.allowedBatchQueues = computeResource.batchQueues.map(queue => queue.queueName);
-            this.localComputeResourcePolicy = defaultComputeResourcePolicy;
-          })
-        }
+        services.GroupResourceProfileService.retrieve({lookup: this.id})
+          .then(groupResourceProfile => {
+            this.localGroupResourceProfile = groupResourceProfile;
+            const computeResourcePreference = groupResourceProfile.getComputePreference(this.host_id);
+            if (computeResourcePreference) {
+              this.data = computeResourcePreference;
+            }
+            const computeResourcePolicy = groupResourceProfile.getComputeResourcePolicy(this.host_id);
+            if (computeResourcePolicy) {
+              this.localComputeResourcePolicy = computeResourcePolicy;
+            } else {
+              this.createDefaultComputeResourcePolicy(computeResourcePromise);
+            }
+            this.localBatchQueueResourcePolicies = groupResourceProfile.getBatchQueueResourcePolicies(this.host_id);
+          });
+      } else if (!this.computeResourcePolicy) {
+        this.createDefaultComputeResourcePolicy(computeResourcePromise);
       }
     },
     data: function () {
       return {
-        data: this.value.clone(),
-        selected: null,
-        computeResources: [],
-        selectedComputeResourceIndex: null,
+        data: this.value ? this.value.clone() : new models.GroupComputeResourcePreference({computeResourceId: this.host_id}),
+        localGroupResourceProfile: this.groupResourceProfile ? this.groupResourceProfile.clone() : null,
         localComputeResourcePolicy: this.computeResourcePolicy ? this.computeResourcePolicy.clone() : null,
         localBatchQueueResourcePolicies: this.batchQueueResourcePolicies ? this.batchQueueResourcePolicies.map(pol => pol.clone()) : [],
         computeResource: {
@@ -163,7 +166,7 @@
         });
       },
       save: function() {
-        let groupResourceProfile = this.groupResourceProfile.clone();
+        let groupResourceProfile = this.localGroupResourceProfile.clone();
         groupResourceProfile.mergeComputeResourcePreference(this.data, this.localComputeResourcePolicy, this.localBatchQueueResourcePolicies);
         // TODO: success and error handling are the same so we can just combine those
         if (this.id) {
@@ -200,7 +203,7 @@
       },
       remove: function() {
 
-        let groupResourceProfile = this.groupResourceProfile.clone();
+        let groupResourceProfile = this.localGroupResourceProfile.clone();
         const removedChildren = groupResourceProfile.removeComputeResource(this.host_id);
         if (removedChildren) {
           DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles").update({data: groupResourceProfile, lookup: this.id})
@@ -226,8 +229,17 @@
         if (this.id) {
           this.$router.push({ name: 'group_resource_preference', params: {id: this.id}});
         } else {
-          this.$router.push({ name: 'new_group_resource_preference', params: {value: this.groupResourceProfile}});
+          this.$router.push({ name: 'new_group_resource_preference', params: {value: this.localGroupResourceProfile}});
         }
+      },
+      createDefaultComputeResourcePolicy: function(computeResourcePromise) {
+        computeResourcePromise.then(computeResource => {
+          const defaultComputeResourcePolicy = new models.ComputeResourcePolicy();
+          defaultComputeResourcePolicy.computeResourceId = this.host_id;
+          defaultComputeResourcePolicy.groupResourceProfileId = this.id;
+          defaultComputeResourcePolicy.allowedBatchQueues = computeResource.batchQueues.map(queue => queue.queueName);
+          this.localComputeResourcePolicy = defaultComputeResourcePolicy;
+        })
       }
     },
     beforeRouteEnter: function(to, from, next) {
