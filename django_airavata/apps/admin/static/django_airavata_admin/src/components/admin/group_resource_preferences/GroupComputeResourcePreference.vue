@@ -43,6 +43,7 @@
     <div class="row">
         <div class="col d-flex justify-content-end">
             <b-button variant="primary" @click="saveGroupResourceProfile">Save</b-button>
+            <b-button v-if="id" class="ml-2" variant="danger" @click="removeGroupResourceProfile">Delete</b-button>
             <b-button class="ml-2" variant="secondary" @click="cancel">Cancel</b-button>
         </div>
     </div>
@@ -193,6 +194,21 @@
             // TODO: handle error
             console.log("Error occurred", error);
           });
+      },
+      removeGroupResourceProfile: function() {
+        if (this.id) {
+          this.service.delete({lookup: this.id})
+            .then(() => {
+              this.$router.push('/group-resource-profiles');
+            })
+            .catch(error => {
+              // TODO: handle error
+              console.log("Error occurred", error);
+            });
+        } else {
+          // Nothing to delete so just treat like a cancel
+          this.cancel();
+        }
       }
     },
   }

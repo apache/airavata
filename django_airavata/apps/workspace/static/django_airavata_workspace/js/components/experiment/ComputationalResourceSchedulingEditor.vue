@@ -139,7 +139,7 @@ export default {
         },
         loadGroupResourceProfile: function() {
             this.loadingCount++;
-            services.GroupResourceProfileService.get(this.groupResourceProfileId)
+            services.GroupResourceProfileService.retrieve({lookup: this.groupResourceProfileId})
                 .then(groupResourceProfile => {
                     this.selectedGroupResourceProfileData = groupResourceProfile;
                 })

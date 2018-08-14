@@ -718,6 +718,10 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
         self.request.airavata_client.updateGroupResourceProfile(
             self.authz_token, grp)
 
+    def perform_destroy(self, instance):
+        self.request.airavata_client.removeGroupResourceProfile(
+            self.authz_token, instance.groupResourceProfileId)
+
 
 class SharedEntityGroups(APIBackedViewSet):
     serializer_class = serializers.SharedGroups

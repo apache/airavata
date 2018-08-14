@@ -9,6 +9,10 @@
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </a>
+          <a href="#" class="text-danger" @click.prevent="removeGroupResourceProfile(data.item)" v-if="data.item.userHasWriteAccess">
+            Delete
+            <i class="fa fa-trash" aria-hidden="true"></i>
+          </a>
         </template>
       </b-table> 
     </template>
@@ -65,6 +69,16 @@
             this.groupResourceProfiles = groupResourceProfiles;
           });
       },
+      removeGroupResourceProfile: function(groupResourceProfile) {
+
+        services.GroupResourceProfileService.delete({lookup: groupResourceProfile.groupResourceProfileId})
+          .then(() => services.GroupResourceProfileService.list())
+          .then(groupResourceProfiles => this.groupResourceProfiles = groupResourceProfiles)
+          .catch(error => {
+            // TODO: handle error
+            console.log("Error occurred", error);
+          });
+      }
     },
     mounted: function () {
       this.loadGroupResourceProfiles();

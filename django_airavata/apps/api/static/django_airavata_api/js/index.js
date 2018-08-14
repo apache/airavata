@@ -29,7 +29,6 @@ import ProjectService from './services/ProjectService'
 import GroupService from './services/GroupService'
 import GroupResourceProfileService from './services/GroupResourceProfileService'
 import UserProfileService from './services/UserProfileService'
-import ComputeResourceService from './services/ComputeResourceService'
 import CloudJobSubmissionService from './services/CloudJobSubmissionService'
 import GlobusJobSubmissionService from './services/GlobusJobSubmissionService'
 import LocaJobSubmissionService from './services/LocaJobSubmissionService'
@@ -73,7 +72,7 @@ exports.services = {
     FullExperimentService,
     ProjectService,
     GroupService,
-    GroupResourceProfileService,
+    GroupResourceProfileService: ServiceFactory.service("GroupResourceProfiles"),
     UserProfileService,
     ComputeResourceService: ServiceFactory.service("ComputeResources"),
     CloudJobSubmissionService,
