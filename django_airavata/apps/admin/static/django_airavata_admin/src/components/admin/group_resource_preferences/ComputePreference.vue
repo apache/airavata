@@ -165,14 +165,14 @@
         let groupResourceProfile = this.groupResourceProfile.clone();
         groupResourceProfile.mergeComputeResourcePreference(this.data, this.localComputeResourcePolicy, this.localBatchQueueResourcePolicies);
         // TODO: success and error handling are the same so we can just combine those
-        if (groupResourceProfile.groupResourceProfileId) {
-          DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles").update({data: groupResourceProfile, lookup: groupResourceProfile.groupResourceProfileId})
+        if (this.id) {
+          DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles").update({data: groupResourceProfile, lookup: this.id})
             .then(groupResourceProfile => {
               // Navigate back to GroupResourceProfile with success message
               this.$router.push({
                 name: 'group_resource_preference', params: {
                   value: groupResourceProfile,
-                  id: groupResourceProfile.groupResourceProfileId
+                  id: this.id
                 }
               });
             })
@@ -198,8 +198,22 @@
         }
       },
       cancel: function() {
-        this.$router.push({ name: 'group_resource_preference', params: {id: this.id}});
+        if (this.id) {
+          this.$router.push({ name: 'group_resource_preference', params: {id: this.id}});
+        } else {
+          this.$router.push({ name: 'new_group_resource_preference', params: {value: this.groupResourceProfile}});
+        }
       }
     },
+    beforeRouteEnter: function(to, from, next) {
+      // If we don't have the Group Resource Profile id or instance, then the
+      // Group Resource Profile wasn't created and we need to just go back to
+      // the dashboard
+      if (!to.params.id && !to.params.groupResourceProfile) {
+        next({name: 'group_resource_preference_dashboard'});
+      } else {
+        next();
+      }
+    }
   }
 </script>

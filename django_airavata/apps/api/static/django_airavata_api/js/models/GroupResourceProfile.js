@@ -11,16 +11,19 @@ const FIELDS = [
          name: 'computePreferences',
          type: GroupComputeResourcePreference,
          list: true,
+         default: BaseModel.defaultNewInstance(Array),
      },
      {
          name: 'computeResourcePolicies',
          type: ComputeResourcePolicy,
          list: true,
+         default: BaseModel.defaultNewInstance(Array),
      },
      {
          name: 'batchQueueResourcePolicies',
          type: BatchQueueResourcePolicy,
-         list: true
+         list: true,
+         default: BaseModel.defaultNewInstance(Array),
      },
      {
          name: 'creationTime',
@@ -43,28 +46,8 @@ export default class GroupResourceProfile extends BaseModel {
         return this.computeResourcePolicies.find(pol => pol.computeResourceId === computeResourceId);
     }
 
-    setComputeResourcePolicy(computeResourcePolicy) {
-        const currentPolicy = this.getComputeResourcePolicy(computeResourcePolicy.computeResourceId);
-        if (currentPolicy) {
-            Object.assign(currentPolicy, computeResourcePolicy);
-        } else {
-            this.computeResourcePolicies.push(computeResourcePolicy);
-        }
-    }
-
     getBatchQueueResourcePolicies(computeResourceId) {
         return this.batchQueueResourcePolicies.filter(pol => pol.computeResourceId === computeResourceId);
-    }
-
-    setComputeResourcePolicy(batchQueueResourcePolicies) {
-        for (let newPolicy of batchQueueResourcePolicies) {
-            const currentPolicy = this.batchQueueResourcePolicies.find(pol => pol.resourcePolicyId === newPolicy.resourcePolicyId);
-            if (currentPolicy) {
-                Object.assign(currentPolicy, newPolicy);
-            } else {
-                this.batchQueueResourcePolicies.push(newPolicy);
-            }
-        }
     }
 
     mergeComputeResourcePreference(computeResourcePreference, computeResourcePolicy, batchQueueResourcePolicies) {

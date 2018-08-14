@@ -70,12 +70,11 @@
       },
     },
     mounted: function () {
-      if (this.value.groupResourceProfileId) {
-        services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.value.groupResourceProfileId})
-          .then(sharedEntity => this.sharedEntity = sharedEntity);
-      } else if (this.id) {
-        services.ServiceFactory.service("GroupResourceProfiles").retrieve({lookup: this.id})
-          .then(grp => this.data = grp);
+      if (this.id) {
+        if (!this.value.groupResourceProfileId) {
+          services.ServiceFactory.service("GroupResourceProfiles").retrieve({lookup: this.id})
+            .then(grp => this.data = grp);
+        }
         services.ServiceFactory.service("SharedEntities").retrieve({lookup: this.id})
           .then(sharedEntity => this.sharedEntity = sharedEntity);
       }
@@ -130,13 +129,14 @@
     methods: {
       saveGroupResourceProfile: function () {
         var persist = null;
-        if (this.data.groupResourceProfileId) {
-          persist = this.service.update({data: this.data, lookup: this.data.groupResourceProfileId});
+        if (this.id) {
+          persist = this.service.update({data: this.data, lookup: this.id});
         } else {
           persist = this.service.create({data: this.data})
             .then((data) => {
               // Save sharing settings too
-              return this.$refs.shareButton.mergeAndSave(data.groupResourceProfileId);
+              const groupResourceProfileId = data.groupResourceProfileId;
+              return this.$refs.shareButton.mergeAndSave(groupResourceProfileId);
             });
         }
         // TODO: handle errors
@@ -148,16 +148,7 @@
         let computeResourcePreference = this.data.computePreferences.find(pref => pref.computeResourceId === computeResourceId);
         const computeResourcePolicy = this.data.getComputeResourcePolicy(computeResourceId);
         const batchQueueResourcePolicies = this.data.getBatchQueueResourcePolicies(computeResourceId);
-        this.$router.push({
-          name: 'compute_preference', params: {
-            value: computeResourcePreference,
-            id: this.data.groupResourceProfileId,
-            host_id: computeResourceId,
-            groupResourceProfile: this.data,
-            computeResourcePolicy: computeResourcePolicy,
-            batchQueueResourcePolicies: batchQueueResourcePolicies,
-          }
-        });
+        this.navigateToComputeResourcePreference(computeResourcePreference, computeResourcePolicy, batchQueueResourcePolicies);
       },
       getComputeResourceName: function (computeResourceId) {
         // TODO: load compute resources to get the real name
@@ -173,14 +164,18 @@
         const computeResourcePreference = new models.GroupComputeResourcePreference();
         const computeResourceId = this.selectedComputeResource;
         computeResourcePreference.computeResourceId = computeResourceId;
+        this.navigateToComputeResourcePreference(computeResourcePreference);
+      },
+      navigateToComputeResourcePreference: function(computeResourcePreference, computeResourcePolicy=null, batchQueueResourcePolicies=null) {
+        const routeName = (this.id) ? 'compute_preference' : 'compute_preference_for_new_group_resource_profile';
         this.$router.push({
-          name: 'compute_preference', params: {
+          name: routeName, params: {
             value: computeResourcePreference,
-            id: this.data.groupResourceProfileId,
-            host_id: computeResourceId,
+            id: this.id,
+            host_id: computeResourcePreference.computeResourceId,
             groupResourceProfile: this.data,
-            computeResourcePolicy: null,
-            batchQueueResourcePolicies: null,
+            computeResourcePolicy: computeResourcePolicy,
+            batchQueueResourcePolicies: batchQueueResourcePolicies,
           }
         });
       }

@@ -56,10 +56,8 @@
       },
       newGroupResourcePreference: function () {
         this.$router.push({
-          name: 'group_resource_preference', params: {
-            newCreation: true
-          }
-        })
+          name: 'new_group_resource_preference'
+        });
       },
       loadGroupResourceProfiles: function () {
         services.GroupResourceProfileService.list()

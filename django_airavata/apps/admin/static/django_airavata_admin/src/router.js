@@ -34,7 +34,15 @@ const routes = [
   {path: '/admin', component: AdminDashboard, name: "admin_dashboard"},
   {path: '/experiments', component: ExperimentsDashboard, name: 'experiments_dashboard'},
   {
+    path: '/group-resource-profiles/new', component: GroupComputeResourcePreference, name: 'new_group_resource_preference',
+    props: true
+  },
+  {
     path: '/group-resource-profiles/:id', component: GroupComputeResourcePreference, name: 'group_resource_preference',
+    props: true
+  },
+  {
+    path: '/group-resource-profiles/new/compute-preferences/:host_id', component: ComputePreference, name: 'compute_preference_for_new_group_resource_profile',
     props: true
   },
   {
