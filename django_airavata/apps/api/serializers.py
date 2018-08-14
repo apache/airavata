@@ -453,14 +453,35 @@ class GroupResourceProfileSerializer(
 
     def update(self, instance, validated_data):
         result = super().update(instance, validated_data)
+        result._removed_compute_resource_preferences = []
+        result._removed_compute_resource_policies = []
         result._removed_batch_queue_resource_policies = []
+        # Find all compute resource preferences that were removed
+        for compute_resource_preference in instance.computePreferences:
+            existing_compute_resource_preference = next(
+                (pref for pref in result.computePreferences
+                 if pref.computeResourceId ==
+                    compute_resource_preference.computeResourceId),
+                None)
+            if not existing_compute_resource_preference:
+                result._removed_compute_resource_preferences.append(
+                    compute_resource_preference)
+        # Find all compute resource policies that were removed
+        for compute_resource_policy in instance.computeResourcePolicies:
+            existing_compute_resource_policy = next(
+                (pol for pol in result.computeResourcePolicies
+                 if pol.resourcePolicyId ==
+                    compute_resource_policy.resourcePolicyId),
+                None)
+            if not existing_compute_resource_policy:
+                result._removed_compute_resource_policies.append(
+                    compute_resource_policy)
         # Find all batch queue resource policies that were removed
         for batch_queue_resource_policy in instance.batchQueueResourcePolicies:
             existing_batch_queue_resource_policy_for_update = next(
                 (bq for bq in result.batchQueueResourcePolicies
-                 if bq.computeResourceId ==
-                    batch_queue_resource_policy.computeResourceId
-                    and bq.queuename == batch_queue_resource_policy.queuename),
+                 if bq.resourcePolicyId ==
+                    batch_queue_resource_policy.resourcePolicyId),
                 None)
             if not existing_batch_queue_resource_policy_for_update:
                 result._removed_batch_queue_resource_policies.append(

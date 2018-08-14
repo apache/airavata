@@ -86,4 +86,32 @@ export default class GroupResourceProfile extends BaseModel {
             }
         }
     }
+
+    /**
+     * Remove compute resource preference, compute resource policy and batch queue policies.
+     * @param {string} computeResourceId 
+     * @returns {boolean} true if this GroupResourceProfile was changed
+     */
+    removeComputeResource(computeResourceId) {
+
+        let removedChildren = false;
+        const existingComputeResourcePreferenceIndex = this.computePreferences.findIndex(pref => pref.computeResourceId === computeResourceId);
+        if (existingComputeResourcePreferenceIndex >= 0) {
+            this.computePreferences.splice(existingComputeResourcePreferenceIndex, 1);
+            removedChildren = true;
+        }
+        const existingComputeResourcePolicyIndex = this.computeResourcePolicies.findIndex(pol => pol.computeResourceId === computeResourceId);
+        if (existingComputeResourcePolicyIndex >= 0) {
+            this.computeResourcePolicies.splice(existingComputeResourcePolicyIndex, 1);
+            removedChildren = true;
+        }
+        const existingBatchQueueResourcePolicies = this.batchQueueResourcePolicies.filter(pol => pol.computeResourceId === computeResourceId);
+        for (const existingBatchQueueResourcePolicy of existingBatchQueueResourcePolicies) {
+            const existingBatchQueueResourcePolicyIndex = this.batchQueueResourcePolicies.indexOf(existingBatchQueueResourcePolicy);
+            this.batchQueueResourcePolicies.splice(existingBatchQueueResourcePolicyIndex, 1);
+            removedChildren = true;
+        }
+
+        return removedChildren;
+    }
 }

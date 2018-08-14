@@ -54,6 +54,7 @@
     <div class="row">
         <div class="col d-flex justify-content-end">
             <b-button variant="primary" @click="save">Save</b-button>
+            <b-button class="ml-2" variant="danger" @click="remove">Delete</b-button>
             <b-button class="ml-2" variant="secondary" @click="cancel">Cancel</b-button>
         </div>
     </div>
@@ -195,6 +196,30 @@
               // TODO: handle error
               console.log("Error occurred", error);
             });
+        }
+      },
+      remove: function() {
+
+        let groupResourceProfile = this.groupResourceProfile.clone();
+        const removedChildren = groupResourceProfile.removeComputeResource(this.host_id);
+        if (removedChildren) {
+          DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles").update({data: groupResourceProfile, lookup: this.id})
+            .then(groupResourceProfile => {
+              // Navigate back to GroupResourceProfile with success message
+              this.$router.push({
+                name: 'group_resource_preference', params: {
+                  value: groupResourceProfile,
+                  id: this.id
+                }
+              });
+            })
+            .catch(error => {
+              // TODO: handle error
+              console.log("Error occurred", error);
+            });
+        } else {
+          // Since nothing was removed, just handle this like a cancel
+          this.cancel();
         }
       },
       cancel: function() {

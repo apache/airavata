@@ -32,6 +32,10 @@
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </a>
+            <a href="#" class="text-danger" @click.prevent="removeComputePreference(data.item.computeResourceId)">
+              Delete
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            </a>
           </template>
         </b-table> 
       </template>
@@ -178,6 +182,17 @@
             batchQueueResourcePolicies: batchQueueResourcePolicies,
           }
         });
+      },
+      removeComputePreference: function(computeResourceId) {
+
+        let groupResourceProfile = this.data.clone();
+        groupResourceProfile.removeComputeResource(computeResourceId);
+        this.service.update({data: groupResourceProfile, lookup: this.id})
+          .then(groupResourceProfile => this.data = groupResourceProfile)
+          .catch(error => {
+            // TODO: handle error
+            console.log("Error occurred", error);
+          });
       }
     },
   }

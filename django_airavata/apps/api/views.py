@@ -699,12 +699,22 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
 
     def perform_update(self, serializer):
         grp = serializer.save()
+        for removed_compute_resource_preference \
+                in grp._removed_compute_resource_preferences:
+            self.request.airavata_client.removeGroupComputePrefs(
+                self.authz_token,
+                removed_compute_resource_preference.computeResourceId,
+                removed_compute_resource_preference.groupResourceProfileId)
+        for removed_compute_resource_policy \
+                in grp._removed_compute_resource_policies:
+            self.request.airavata_client.removeGroupComputeResourcePolicy(
+                self.authz_token,
+                removed_compute_resource_policy.resourcePolicyId)
         for removed_batch_queue_resource_policy \
                 in grp._removed_batch_queue_resource_policies:
             self.request.airavata_client.removeGroupBatchQueueResourcePolicy(
                 self.authz_token,
                 removed_batch_queue_resource_policy.resourcePolicyId)
-        log.debug("batch queue res policies: {}".format(grp.batchQueueResourcePolicies))
         self.request.airavata_client.updateGroupResourceProfile(
             self.authz_token, grp)
 
