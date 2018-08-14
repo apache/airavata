@@ -53,7 +53,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     private final static Logger logger = LoggerFactory.getLogger(SSHJAgentAdaptor.class);
 
-    private PoolingSSHJClient sshjClient;
+    protected PoolingSSHJClient sshjClient;
 
     protected void createPoolingSSHJClient(String user, String host, String publicKey, String privateKey, String passphrase) throws IOException {
         DefaultConfig defaultConfig = new DefaultConfig();

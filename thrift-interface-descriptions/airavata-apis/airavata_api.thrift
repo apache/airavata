@@ -44,6 +44,7 @@ include "../data-models/resource-catalog-models/group_resource_profile_model.thr
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
+include "../data-models/resource-catalog-models/data_storage_model.thrift"
 include "../data-models/workflow-catalog-models/airavata_workflow_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../data-models/user-tenant-group-models/group_manager_model.thrift"
@@ -3663,6 +3664,72 @@ service Airavata {
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
+
+  void uploadFileToStorage(1: required security_model.AuthzToken authzToken,
+                            2: required  string gatewayId, 3: string storageResourceId, 4: string userId,
+                            5: binary content, 6: string path, 7: string type) throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
+  data_storage_model.FileStructure downloadFileFromStorage(1: required security_model.AuthzToken authzToken,
+                            2: required  string gatewayId, 3: string storageResourceId, 4: string userId, 5: string path) throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
+  list<data_storage_model.FileStructure> listDirectoryFromStorage(1: required security_model.AuthzToken authzToken,
+                            2: required  string gatewayId, 3: string storageResourceId, 4: string userId, 5: string dirPath)  throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
+  void deleteFileFromStorage(1: required security_model.AuthzToken authzToken, 2: required  string gatewayId,
+                            3: string storageResourceId, 4: string userId, 5: string path)  throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
+  void deleteDirectoryFromStorage(1: required security_model.AuthzToken authzToken, 2: required  string gatewayId,
+                            3: string storageResourceId, 4: string userId, 5: string path)  throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
+  bool isExistInStorage(1: required security_model.AuthzToken authzToken, 2: required  string gatewayId,
+                            3: string storageResourceId, 4: string userId, 5: string path)  throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
+  void createDirectoryInStorage(1: required security_model.AuthzToken authzToken, 2: required  string gatewayId,
+                            3: string storageResourceId, 4: string userId, 5: string dirPath)  throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
+  bool checkIsFileInStorage(1: required security_model.AuthzToken authzToken, 2: required  string gatewayId,
+                            3: string storageResourceId, 4: string userId, 5: string path)  throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
+
+  void renameFileInStorage(1: required security_model.AuthzToken authzToken, 2: required  string gatewayId,
+                            3: string storageResourceId, 4: string userId, 5: string oldPath, 6: string newPath)  throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
  //
  //End of API
  }

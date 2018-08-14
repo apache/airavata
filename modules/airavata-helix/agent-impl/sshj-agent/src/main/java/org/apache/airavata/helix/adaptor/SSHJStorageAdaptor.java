@@ -19,14 +19,16 @@
  */
 package org.apache.airavata.helix.adaptor;
 
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import net.schmizz.sshj.sftp.FileAttributes;
+import net.schmizz.sshj.sftp.FileMode;
+import net.schmizz.sshj.sftp.SFTPClient;
+import org.apache.airavata.agents.api.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResourceAdaptor {
 
@@ -67,7 +69,54 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
     }
 
     @Override
+    public void deleteFile(String path) throws AgentException {
+        try(SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
+            sftpClient.rm(path);
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
+
+    @Override
+    public void deleteDirectory(String path) throws AgentException {
+        try(SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
+            sftpClient.rmdir(path);
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
+
+    @Override
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
         return super.executeCommand(command, workingDirectory);
+    }
+
+    @Override
+    public FileInfo getFileInfo(String path) throws AgentException {
+        try(SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
+            FileAttributes existence = sftpClient.statExistence(path);
+            FileInfo fileInfo = new FileInfo();
+            if (existence == null) {
+                fileInfo.setExist(false);
+            } else {
+                fileInfo.setExist(true);
+                fileInfo.setCreatedDate(existence.getAtime());
+                fileInfo.setModifiedDate(existence.getMtime());
+                fileInfo.setFile(existence.getType() != FileMode.Type.DIRECTORY);
+                fileInfo.setSize(existence.getSize());
+            }
+            return fileInfo;
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
+
+    @Override
+    public void moveFile(String oldPath, String newPath) throws AgentException {
+        try(SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
+            sftpClient.rename(oldPath, newPath);
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
     }
 }

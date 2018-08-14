@@ -19,10 +19,7 @@
  */
 package org.apache.airavata.helix.agent.storage;
 
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.agents.api.*;
 import org.apache.airavata.helix.agent.ssh.SshAdaptorParams;
 import org.apache.airavata.helix.agent.ssh.SshAgentAdaptor;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -76,7 +73,27 @@ public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements Stora
     }
 
     @Override
+    public void deleteFile(String path) throws AgentException {
+
+    }
+
+    @Override
+    public void deleteDirectory(String path) throws AgentException {
+
+    }
+
+    @Override
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
         return super.executeCommand(command, workingDirectory);
+    }
+
+    @Override
+    public FileInfo getFileInfo(String path) throws AgentException {
+        return null;
+    }
+
+    @Override
+    public void moveFile(String oldPath, String newPath) throws AgentException {
+
     }
 }

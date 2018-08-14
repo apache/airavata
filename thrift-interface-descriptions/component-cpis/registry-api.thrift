@@ -42,6 +42,7 @@ include "../data-models/resource-catalog-models/gateway_resource_profile_model.t
 include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
+include "../data-models/resource-catalog-models/data_storage_model.thrift"
 include "../data-models/workflow-catalog-models/airavata_workflow_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../airavata-apis/airavata_errors.thrift"
@@ -2666,4 +2667,18 @@ service RegistryService {
             throws (1: registry_api_errors.RegistryServiceException rse)
     gateway_groups_model.GatewayGroups getGatewayGroups(1: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse)
+
+    /*
+    * Gateway storage handling API methods
+    */
+    void uploadFileToStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: binary content, 5: string path, 6: string type)
+    data_storage_model.FileStructure downloadFileFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
+    list<data_storage_model.FileStructure> listDirectoryFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string dirPath)
+    void deleteFileFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
+    void deleteDirectoryFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
+    bool isExistInStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
+    void createDirectoryInStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string dirPath)
+    bool checkIsFileInStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
+    void renameFileInStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string oldPath, 5: string newPath)
+
 }

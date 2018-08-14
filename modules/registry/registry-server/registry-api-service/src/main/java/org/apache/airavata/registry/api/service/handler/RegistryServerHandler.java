@@ -19,8 +19,12 @@
  */
 package org.apache.airavata.registry.api.service.handler;
 
+import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.agents.api.FileInfo;
+import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -32,6 +36,7 @@ import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.datamodels.FileStructure;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -121,16 +126,23 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.commons.io.IOUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.apache.airavata.model.data.movement.DataMovementProtocol.SCP;
 
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
@@ -3093,7 +3105,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
             String movementInterface = addDataMovementInterface(computeResourceRepository, resourceId, dmType,
-                    computeResourceRepository.addScpDataMovement(scpDataMovement), DataMovementProtocol.SCP, priorityOrder);
+                    computeResourceRepository.addScpDataMovement(scpDataMovement), SCP, priorityOrder);
             logger.debug("Airavata registered SCP data movement for resource Id: " + resourceId);
             return movementInterface;
         } catch (AppCatalogException e) {
@@ -4942,6 +4954,170 @@ public class RegistryServerHandler implements RegistryService.Iface {
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + " More info: " + e.getMessage());
             throw rse;
+        }
+    }
+
+    private StorageResourceAdaptor fetchAdaptorForStorageResource(String storageResourceId, String gatewayId) throws TException {
+        StorageResourceDescription storageResource = getStorageResource(storageResourceId);
+        DataMovementProtocol dataMovementProtocol = storageResource.getDataMovementInterfaces().get(0).getDataMovementProtocol();
+
+        StoragePreference gatewayStoragePreference = getGatewayStoragePreference(gatewayId, storageResourceId);
+        String resourceSpecificCredentialStoreToken = gatewayStoragePreference.getResourceSpecificCredentialStoreToken();
+        String gatewayCredentialStoreToken = getGatewayResourceProfile(gatewayId).getCredentialStoreToken();
+
+        String credentialStoreToken = resourceSpecificCredentialStoreToken != null ? resourceSpecificCredentialStoreToken : gatewayCredentialStoreToken;
+        String storageLoginUserName = gatewayStoragePreference.getLoginUserName();
+
+        switch (dataMovementProtocol) {
+
+            case SCP:
+                SCPDataMovement scpDataMovement = getSCPDataMovement(storageResource.getDataMovementInterfaces().get(0).getDataMovementInterfaceId());
+                SSHJStorageAdaptor storageAdaptor = new SSHJStorageAdaptor();
+                try {
+                    storageAdaptor.init(storageResourceId, gatewayId, storageLoginUserName, credentialStoreToken);
+                    return storageAdaptor;
+                } catch (AgentException e) {
+                    e.printStackTrace();
+                }
+        }
+
+        return null;
+    }
+    @Override
+    public void uploadFileToStorage(String gatewayId, String storageResourceId, String userId, ByteBuffer content, String path, String type) throws TException {
+
+        File tmpFile;
+
+        try {
+            tmpFile = File.createTempFile("file", "upload");
+            FileChannel fileChannel = new FileOutputStream(tmpFile, false).getChannel();
+            fileChannel.write(content);
+        } catch (IOException e) {
+            logger.error("Failed to create a temp file to store upload file content for path " + path, e);
+            throw new TException("Failed to create a temp file to store file content for path " + path);
+        }
+
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+        try {
+            storageResourceAdaptor.uploadFile(tmpFile.getAbsolutePath(), path);
+        } catch (AgentException e) {
+            logger.error("Failed to upload file " + tmpFile.getAbsolutePath() + " to remote path " + path + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to upload file " + tmpFile.getAbsolutePath() + " to remote path " + path + " on storage resource " + storageResourceId);
+        }
+    }
+
+    @Override
+    public FileStructure downloadFileFromStorage(String gatewayId, String storageResourceId, String userId, String path) throws TException {
+
+        File tmpFile;
+        try {
+            tmpFile = File.createTempFile("file", "download");
+        } catch (IOException e) {
+            logger.error("Failed to create a temp file to store download file content for path " + path, e);
+            throw new TException("Failed to create a temp file to store download file content for path " + path);
+        }
+
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+
+        try {
+            storageResourceAdaptor.downloadFile(path, tmpFile.getAbsolutePath());
+        } catch (AgentException e) {
+            logger.error("Failed to download remote file " + path + " to loacal path " + tmpFile.getAbsolutePath() + " from storage resource " + storageResourceId, e);
+        }
+
+        FileStructure structure = new FileStructure();
+        structure.setName(new File(path).getName());
+        try {
+            structure.setContent(IOUtils.toByteArray(new FileInputStream(tmpFile)));
+        } catch (IOException e) {
+            logger.error("Failed to read download file " + tmpFile.getAbsolutePath() + " to byte array", e);
+            throw new TException("Failed to read download file " + tmpFile.getAbsolutePath() + " to byte array");
+        }
+
+        return structure;
+    }
+
+    @Override
+    public List<FileStructure> listDirectoryFromStorage(String gatewayId, String storageResourceId, String userId, String dirPath) throws TException {
+
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+
+        try {
+            return storageResourceAdaptor.listDirectory(dirPath).stream().map(path -> {
+                FileStructure structure = new FileStructure();
+                structure.setName(path);
+                return structure;
+            }).collect(Collectors.toList());
+        } catch (AgentException e) {
+            logger.error("Failed to list directories for path " + dirPath + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to list directories for path " + dirPath + " on storage resource " + storageResourceId);
+        }
+    }
+
+    @Override
+    public void deleteFileFromStorage(String gatewayId, String storageResourceId, String userId, String path) throws TException {
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+        try {
+            storageResourceAdaptor.deleteFile(path);
+        } catch (AgentException e) {
+            logger.error("Failed to delete file on path " + path + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to delete file on path " + path + " on storage resource " + storageResourceId);
+        }
+    }
+
+    @Override
+    public void deleteDirectoryFromStorage(String gatewayId, String storageResourceId, String userId, String path) throws TException {
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+        try {
+            storageResourceAdaptor.deleteDirectory(path);
+        } catch (AgentException e) {
+            logger.error("Failed to delete directory on path " + path + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to delete directory on path " + path + " on storage resource " + storageResourceId);
+        }
+    }
+
+    @Override
+    public boolean isExistInStorage(String gatewayId, String storageResourceId, String userId, String path) throws TException {
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+        try {
+            return storageResourceAdaptor.doesFileExist(path);
+        } catch (AgentException e) {
+            logger.error("Failed to check existance of file on path " + path + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to check existance of file on path " + path + " on storage resource " + storageResourceId);
+        }
+    }
+
+    @Override
+    public void createDirectoryInStorage(String gatewayId, String storageResourceId, String userId, String dirPath) throws TException {
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+        try {
+            storageResourceAdaptor.createDirectory(dirPath, true);
+        } catch (AgentException e) {
+            logger.error("Failed to create the directory on path " + dirPath + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to create the directory on path " + dirPath + " on storage resource " + storageResourceId);
+        }
+    }
+
+    @Override
+    public boolean checkIsFileInStorage(String gatewayId, String storageResourceId, String userId, String path) throws TException {
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+        try {
+            FileInfo fileInfo = storageResourceAdaptor.getFileInfo(path);
+            return fileInfo.isFile();
+        } catch (AgentException e) {
+            logger.error("Failed to check is file for path " + path + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to check is file for path " + path + " on storage resource " + storageResourceId);
+        }
+    }
+
+    @Override
+    public void renameFileInStorage(String gatewayId, String storageResourceId, String userId, String oldPath, String newPath) throws TException {
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+        try {
+            storageResourceAdaptor.moveFile(oldPath, newPath);
+        } catch (AgentException e) {
+            logger.error("Failed to move file from old path " + oldPath + " to new path " + newPath + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to move file from old path " + oldPath + " to new path " + newPath + " on storage resource " + storageResourceId);
         }
     }
 }
