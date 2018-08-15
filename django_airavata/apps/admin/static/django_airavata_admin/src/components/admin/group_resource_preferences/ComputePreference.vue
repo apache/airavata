@@ -2,7 +2,10 @@
   <div>
     <div class="row">
       <div class="col">
-        <h1 class="h4 mb-4">Compute Preference</h1>
+        <h1 class="h4 mb-4">
+          <div v-if="localGroupResourceProfile" class="group-resource-profile-name text-muted text-uppercase"><i class="fa fa-server" aria-hidden="true"></i> {{ localGroupResourceProfile.groupResourceProfileName }}</div>
+          {{ computeResource.hostName }}
+        </h1>
       </div>
     </div>
     <div class="row">
@@ -254,3 +257,9 @@
     }
   }
 </script>
+
+<style scoped>
+.group-resource-profile-name {
+  font-size: 12px;
+}
+</style>

@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <div class="col">
-        <h1 class="h4 mb-4">Group Resource Profile</h1>
+        <h1 class="h4 mb-4">{{ title }}</h1>
       </div>
     </div>
     <div class="row">
@@ -130,6 +130,9 @@
         options.sort((a, b) => a.text.toLowerCase().localeCompare(b.text.toLowerCase()));
         return options;
       },
+      title: function() {
+        return this.id ? this.data.groupResourceProfileName : "New Group Resource Profile";
+      }
     },
     methods: {
       saveGroupResourceProfile: function () {
