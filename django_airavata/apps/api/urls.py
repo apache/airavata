@@ -26,6 +26,8 @@ router.register(r'shared-entities', views.SharedEntityViewSet,
                 base_name='shared-entity')
 router.register(r'compute-resources', views.ComputeResourceViewSet,
                 base_name='compute-resource')
+router.register(r'credential-summaries', views.CredentialSummaryViewSet,
+                base_name='credential-summary')
 
 app_name = 'django_airavata_api'
 urlpatterns = [

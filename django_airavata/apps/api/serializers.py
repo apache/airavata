@@ -15,13 +15,14 @@ from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymen
                                                             SetEnvPaths)
 from airavata.model.appcatalog.appinterface.ttypes import \
     ApplicationInterfaceDescription
-from airavata.model.appcatalog.computeresource.ttypes \
-    import (BatchQueue,
-            ComputeResourceDescription)
+from airavata.model.appcatalog.computeresource.ttypes import (BatchQueue,
+                                                              ComputeResourceDescription)
 from airavata.model.appcatalog.groupresourceprofile.ttypes import \
     GroupResourceProfile
 from airavata.model.application.io.ttypes import (InputDataObjectType,
                                                   OutputDataObjectType)
+from airavata.model.credential.store.ttypes import (CredentialSummary,
+                                                    SummaryType)
 from airavata.model.data.replica.ttypes import (DataProductModel,
                                                 DataReplicaLocationModel)
 from airavata.model.experiment.ttypes import (ExperimentModel,
@@ -32,8 +33,7 @@ from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import Project
 
-from . import datastore
-from . import thrift_utils
+from . import datastore, thrift_utils
 
 log = logging.getLogger(__name__)
 
@@ -615,3 +615,9 @@ class SharedEntitySerializer(serializers.Serializer):
     def get_isOwner(self, shared_entity):
         request = self.context['request']
         return shared_entity['owner'].userId == request.user.username
+
+
+class CredentialSummarySerializer(
+        thrift_utils.create_serializer_class(CredentialSummary)):
+    type = thrift_utils.ThriftEnumField(SummaryType)
+    persistedTime = UTCPosixTimestampDateTimeField()

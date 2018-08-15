@@ -17,6 +17,15 @@
                 v-model="data.loginUserName">
               </b-form-input>
             </b-form-group>
+            <b-form-group label="SSH Credential" label-for="credential-store-token">
+              <b-form-select id="credential-store-token"
+                v-model="data.resourceSpecificCredentialStoreToken"
+                :options="credentialStoreTokenOptions">
+                <template slot="first">
+                  <option :value="null"><em>Use this profile's default SSH credential</em></option>
+                </template>
+              </b-form-select>
+            </b-form-group>
             <b-form-group label="Allocation Project Number" label-for="allocation-number">
               <b-form-input id="allocation-number" type="text"
                 v-model="data.allocationProjectNumber">
@@ -116,6 +125,7 @@
       } else if (!this.computeResourcePolicy) {
         this.createDefaultComputeResourcePolicy(computeResourcePromise);
       }
+      this.fetchCredentialSummaries();
     },
     data: function () {
       return {
@@ -126,7 +136,22 @@
         computeResource: {
           batchQueues: [],
           jobSubmissionInterfaces: []
-        }
+        },
+        credentialSummaries: [],
+      }
+    },
+    computed: {
+      credentialStoreTokenOptions: function() {
+        const options = this.credentialSummaries
+          .filter(summary => summary.type === models.SummaryType.SSH)
+          .map(summary => {
+            return {
+              value: summary.token,
+              text: summary.description
+            }
+          });
+        options.sort((a, b) => a.text.toLowerCase().localeCompare(b.text.toLowerCase()));
+        return options;
       }
     },
     mixins: [VModelMixin],
@@ -167,6 +192,10 @@
         return DjangoAiravataAPI.utils.FetchUtils.get("/api/compute-resources/" + encodeURIComponent(id) + "/").then(value => {
           return this.computeResource = value;
         });
+      },
+      fetchCredentialSummaries: function() {
+        return services.CredentialSummaryService.list()
+          .then(summaries => this.credentialSummaries = summaries);
       },
       save: function() {
         let groupResourceProfile = this.localGroupResourceProfile.clone();

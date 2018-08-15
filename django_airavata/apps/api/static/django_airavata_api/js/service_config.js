@@ -1,4 +1,5 @@
 import ApplicationDeploymentDescription from './models/ApplicationDeploymentDescription'
+import CredentialSummary from './models/CredentialSummary'
 import Group from './models/Group'
 import GroupResourceProfile from './models/GroupResourceProfile'
 import SharedEntity from './models/SharedEntity'
@@ -57,6 +58,13 @@ export default {
             requestType: 'get',
         }],
         modelClass: ApplicationDeploymentDescription,
+    },
+    "CredentialSummaries": {
+        url: "/api/credential-summaries/",
+        viewSet: [{
+            name: "list"
+        }],
+        modelClass: CredentialSummary,
     },
     "GroupResourceProfiles": {
         url: "/api/group-resource-profiles/",

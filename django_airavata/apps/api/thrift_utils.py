@@ -5,8 +5,10 @@ import copy
 import datetime
 
 from django.utils import six
-from rest_framework.serializers import CharField, BooleanField, DecimalField, IntegerField, Serializer, \
-    DictField, SerializerMetaclass, ListField, DateTimeField
+from rest_framework.serializers import (BooleanField, CharField, DateTimeField,
+                                        DecimalField, DictField, Field,
+                                        IntegerField, ListField, Serializer,
+                                        SerializerMetaclass, ValidationError)
 from thrift.Thrift import TType
 
 # used to map apache thrift data types to django serializer fields
@@ -44,6 +46,27 @@ class UTCPosixTimestampDateTimeField(DateTimeField):
 
     def current_time_ms(self):
         return int(datetime.datetime.utcnow().timestamp() * 1000)
+
+
+class ThriftEnumField(Field):
+
+    def __init__(self, enumClass, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.enumClass = enumClass
+
+    def to_representation(self, obj):
+        if obj is None:
+            return None
+        return self.enumClass._VALUES_TO_NAMES[obj]
+
+    def to_internal_value(self, data):
+        if self.allow_null and data is None:
+            return None
+        if data not in self.enumClass._NAMES_TO_VALUES:
+            raise ValidationError(
+                "Not an allowed name of enum {}".format(
+                    self.enumClass.__name__))
+        return self.enumClass._NAMES_TO_VALUES.get(data, None)
 
 
 def create_serializer(thrift_data_type, enable_date_time_conversion=False, **kwargs):

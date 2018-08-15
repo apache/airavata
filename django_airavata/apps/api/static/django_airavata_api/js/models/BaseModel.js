@@ -60,8 +60,13 @@ export default class BaseModel {
                 if (fieldValue instanceof BaseEnum){
                     return fieldValue;
                 }
-                // Otherwise it is an integer that we need to convert to enum
-                return modelClass.byValue(fieldValue);
+                if (typeof fieldValue === 'string') {
+                    // convert by name if type is string
+                    return modelClass.byName(fieldValue);
+                } else {
+                    // Otherwise it is an integer that we need to convert to enum
+                    return modelClass.byValue(fieldValue);
+                }
             } else {
                 return new modelClass(fieldValue);
             }

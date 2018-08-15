@@ -17,6 +17,7 @@ import OutputDataObjectType from './models/OutputDataObjectType'
 import Project from './models/Project'
 import ResourcePermissionType from './models/ResourcePermissionType'
 import SharedEntity from './models/SharedEntity'
+import SummaryType from './models/SummaryType'
 import UserPermission from './models/UserPermission'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
@@ -60,6 +61,7 @@ exports.models = {
     Project,
     ResourcePermissionType,
     SharedEntity,
+    SummaryType,
     UserPermission,
 }
 
@@ -67,6 +69,7 @@ exports.services = {
     ApplicationDeploymentService,
     ApplicationInterfaceService,
     ApplicationModuleService,
+    CredentialSummaryService: ServiceFactory.service("CredentialSummaries"),
     ExperimentService,
     ExperimentSearchService,
     FullExperimentService,

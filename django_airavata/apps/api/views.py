@@ -869,3 +869,13 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
         self.request.airavata_client.revokeSharingOfResourceFromGroups(
             self.authz_token, entity_id,
             {group_id: permission_type for group_id in group_ids})
+
+
+class CredentialSummaryViewSet(mixins.ListModelMixin,
+                               GenericAPIBackedViewSet):
+    serializer_class = serializers.CredentialSummarySerializer
+
+    def get_list(self):
+        # NOTE: only supported SummaryType is SSH for now
+        return self.request.airavata_client.getAllCredentialSummaryForGateway(
+            self.authz_token, SummaryType.SSH, settings.GATEWAY_ID)
