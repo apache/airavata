@@ -5,6 +5,7 @@
         <b-form-input id="max-allowed-nodes" type="number"
           v-model="data.maxAllowedNodes" @input="policyUpdated"
           min="1" :max="batchQueue.maxNodes"
+          :formatter="numberFormatter"
           :placeholder="'Max Nodes: ' + batchQueue.maxNodes">
         </b-form-input>
       </b-form-group>
@@ -14,6 +15,7 @@
         <b-form-input id="max-allowed-cores" type="number"
           v-model="data.maxAllowedCores" @input="policyUpdated"
           min="1" :max="batchQueue.maxProcessors"
+          :formatter="numberFormatter"
           :placeholder="'Max Cores: ' + batchQueue.maxProcessors">
         </b-form-input>
       </b-form-group>
@@ -23,6 +25,7 @@
         <b-form-input id="max-allowed-walltime" type="number"
           v-model="data.maxAllowedWalltime" @input="policyUpdated"
           min="1" :max="batchQueue.maxRunTime"
+          :formatter="numberFormatter"
           :placeholder="'Max Wall Time: ' + batchQueue.maxRunTime">
         </b-form-input>
       </b-form-group>
@@ -58,6 +61,10 @@
         } else {
           this.$emit('input', null);
         }
+      },
+      numberFormatter: function(value, event) {
+        const num = parseInt(value);
+        return !isNaN(num) ? num : null;
       }
     }
   }
