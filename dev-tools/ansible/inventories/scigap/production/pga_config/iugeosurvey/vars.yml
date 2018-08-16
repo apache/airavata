@@ -25,6 +25,7 @@ user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 vhost_servername: "simccs.org"
+vhost_server_redirect: "geosurveyiu.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
 ssl_certificate_file: "/etc/letsencrypt/live/simccs.org/cert.pem"
