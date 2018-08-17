@@ -4,6 +4,7 @@ import logging
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
+from thrift.Thrift import TException
 
 from airavata.api.error.ttypes import AiravataSystemException
 
@@ -15,8 +16,10 @@ def custom_exception_handler(exc, context):
     # to get the standard error response.
     response = exception_handler(exc, context)
 
-    if isinstance(exc, AiravataSystemException):
-        log.error("AiravataSystemException", exc_info=exc)
+    # Default TException handler, should come after more specific subclasses of
+    # TException
+    if isinstance(exc, TException):
+        log.error("TException", exc_info=exc)
         return Response(
             {'detail': str(exc)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

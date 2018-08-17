@@ -47,7 +47,7 @@ export default {
             NotificationList.remove(notification);
         },
         dismissedError: function(error) {
-            errors.UnhandledErrorList.remove(error.details);
+            errors.UnhandledErrorDisplayList.remove(error.details);
         },
         variant: function(notification) {
             if (notification.type === "SUCCESS") {
