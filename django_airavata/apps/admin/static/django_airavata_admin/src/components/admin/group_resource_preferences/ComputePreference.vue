@@ -211,10 +211,6 @@
                   id: this.id
                 }
               });
-            })
-            .catch(error => {
-              // TODO: handle error
-              console.log("Error occurred", error);
             });
         } else {
           DjangoAiravataAPI.services.ServiceFactory.service("GroupResourceProfiles").create({data: groupResourceProfile})
@@ -226,10 +222,6 @@
                   id: groupResourceProfile.groupResourceProfileId
                 }
               });
-            })
-            .catch(error => {
-              // TODO: handle error
-              console.log("Error occurred", error);
             });
         }
       },
@@ -247,10 +239,6 @@
                   id: this.id
                 }
               });
-            })
-            .catch(error => {
-              // TODO: handle error
-              console.log("Error occurred", error);
             });
         } else {
           // Since nothing was removed, just handle this like a cancel

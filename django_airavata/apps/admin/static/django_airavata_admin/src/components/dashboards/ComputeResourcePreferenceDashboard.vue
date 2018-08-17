@@ -73,11 +73,7 @@
 
         services.GroupResourceProfileService.delete({lookup: groupResourceProfile.groupResourceProfileId})
           .then(() => services.GroupResourceProfileService.list())
-          .then(groupResourceProfiles => this.groupResourceProfiles = groupResourceProfiles)
-          .catch(error => {
-            // TODO: handle error
-            console.log("Error occurred", error);
-          });
+          .then(groupResourceProfiles => this.groupResourceProfiles = groupResourceProfiles);
       }
     },
     mounted: function () {

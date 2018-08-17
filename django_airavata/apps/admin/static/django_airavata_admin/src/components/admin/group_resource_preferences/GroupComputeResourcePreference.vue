@@ -147,7 +147,6 @@
               return this.$refs.shareButton.mergeAndSave(groupResourceProfileId);
             });
         }
-        // TODO: handle errors
         persist.then(data => {
           this.$router.push('/group-resource-profiles');
         });
@@ -192,21 +191,13 @@
         let groupResourceProfile = this.data.clone();
         groupResourceProfile.removeComputeResource(computeResourceId);
         this.service.update({data: groupResourceProfile, lookup: this.id})
-          .then(groupResourceProfile => this.data = groupResourceProfile)
-          .catch(error => {
-            // TODO: handle error
-            console.log("Error occurred", error);
-          });
+          .then(groupResourceProfile => this.data = groupResourceProfile);
       },
       removeGroupResourceProfile: function() {
         if (this.id) {
           this.service.delete({lookup: this.id})
             .then(() => {
               this.$router.push('/group-resource-profiles');
-            })
-            .catch(error => {
-              // TODO: handle error
-              console.log("Error occurred", error);
             });
         } else {
           // Nothing to delete so just treat like a cancel
