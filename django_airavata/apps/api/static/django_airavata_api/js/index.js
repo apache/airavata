@@ -1,5 +1,5 @@
-import GlobalErrorHandler from './errors/GlobalErrorHandler'
 import UnhandledError from './errors/UnhandledError'
+import UnhandledErrorDispatcher from './errors/UnhandledErrorDispatcher'
 import UnhandledErrorDisplayList from './errors/UnhandledErrorDisplayList'
 
 import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition'
@@ -45,8 +45,8 @@ import FetchUtils from './utils/FetchUtils'
 import PaginationIterator from './utils/PaginationIterator'
 
 exports.errors = {
-    GlobalErrorHandler,
     UnhandledError,
+    UnhandledErrorDispatcher,
     UnhandledErrorDisplayList,
 }
 

@@ -1,16 +1,17 @@
-// import StackTrace from 'stacktrace-js'
 
-import UnhandledErrorDispatcher from './UnhandledErrorDispatcher'
+import Vue from 'vue'
+import { errors } from 'django-airavata-api'
 
 class GlobalErrorHandler {
 
     init() {
         console.log("Initializing GlobalErrorHandler...");
         window.onerror = this.handleGlobalError;
+        Vue.config.errorHandler = this.vueGlobalErrorHandler;
     }
 
     handleGlobalError(msg, url, lineNo, columnNo, error) {
-        UnhandledErrorDispatcher.reportError({
+        errors.UnhandledErrorDispatcher.reportError({
             message: msg,
             error: error,
             details: {
@@ -21,6 +22,15 @@ class GlobalErrorHandler {
         });
 
         return false;
+    }
+
+    vueGlobalErrorHandler(err, vm, info) {
+        console.log("Vue Global Error Handler", err, vm, info);
+        errors.UnhandledErrorDispatcher.reportError({
+            message: err.message,
+            error: err,
+            details: info,
+        });
     }
 }
 

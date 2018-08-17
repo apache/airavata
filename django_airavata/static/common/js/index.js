@@ -5,6 +5,8 @@ import NotificationsDisplay from './components/NotificationsDisplay.vue'
 import Pager from './components/Pager.vue'
 import ShareButton from './components/ShareButton.vue'
 
+import GlobalErrorHandler from './errors/GlobalErrorHandler'
+
 import ListLayout from './layouts/ListLayout.vue'
 
 import * as utils from './utils'
@@ -16,6 +18,10 @@ exports.components = {
     AutocompleteTextInput,
     NotificationsDisplay,
     ShareButton,
+}
+
+exports.errors = {
+    GlobalErrorHandler,
 }
 
 exports.layouts = {

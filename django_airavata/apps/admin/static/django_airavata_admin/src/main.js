@@ -11,8 +11,7 @@ import ComputeResourcePreferenceDashboard from './components/dashboards/ComputeR
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import { components } from 'django-airavata-common-ui'
-import { errors } from 'django-airavata-api'
+import { components, errors } from 'django-airavata-common-ui'
 
 import router from './router';
 import store from './store/store';
