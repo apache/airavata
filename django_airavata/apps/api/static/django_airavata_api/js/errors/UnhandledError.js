@@ -10,10 +10,6 @@ class UnhandledError {
         this.suppressLogging = suppressLogging;
         this.createdDate = new Date();
     }
-
-    get displayMessage() {
-        return this.error && this.error.message ? this.error.message : this.message;
-    }
 }
 
 export default UnhandledError;

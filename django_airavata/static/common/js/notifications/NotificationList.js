@@ -1,8 +1,3 @@
-import { errors } from 'django-airavata-api'
-
-import Notification from './Notification'
-
-let notificationIdSequence = 0;
 
 class NotificationList {
 
@@ -21,10 +16,6 @@ class NotificationList {
 
     get list() {
         return this.notifications;
-    }
-
-    getNextId() {
-        return "NOTIFICATION-" + notificationIdSequence++;
     }
 }
 

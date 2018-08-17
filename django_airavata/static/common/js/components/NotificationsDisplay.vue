@@ -1,10 +1,10 @@
 <template>
     <div id="notifications-display">
         <transition-group name="fade" tag="div">
-            <b-alert v-for="error in errors"
-                    :variant="variant(error)" :key="error.id"
-                    show dismissible @dismissed="dismissedError(error)">
-                {{ error.message }}
+            <b-alert v-for="unhandledError in unhandledErrors"
+                    variant="danger" :key="unhandledError.id"
+                    show dismissible @dismissed="dismissedUnhandledError(unhandledError)">
+                {{ unhandledError.message }}
             </b-alert>
             <b-alert v-for="notification in notifications"
                     :variant="variant(notification)" :key="notification.id"
@@ -29,25 +29,12 @@ export default {
             unhandledErrors: errors.UnhandledErrorDisplayList.list,
         }
     },
-    computed: {
-        errors: function() {
-
-            return this.unhandledErrors.map(unhandledError => {
-                return new Notification("UNHANDLED-ERROR-" + unhandledError.id, {
-                    type: "ERROR",
-                    message: unhandledError.displayMessage,
-                    details: unhandledError,
-                    createdDate: unhandledError.createdDate,
-                });
-            })
-        }
-    },
     methods: {
         dismissedNotification: function(notification) {
             NotificationList.remove(notification);
         },
-        dismissedError: function(error) {
-            errors.UnhandledErrorDisplayList.remove(error.details);
+        dismissUnhandledError: function(unhandledError) {
+            errors.UnhandledErrorDisplayList.remove(unhandledError);
         },
         variant: function(notification) {
             if (notification.type === "SUCCESS") {
