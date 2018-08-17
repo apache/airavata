@@ -11,8 +11,13 @@ import ComputeResourcePreferenceDashboard from './components/dashboards/ComputeR
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+import { components } from 'django-airavata-common-ui'
+import { errors } from 'django-airavata-api'
+
 import router from './router';
 import store from './store/store';
+
+errors.GlobalErrorHandler.init();
 
 Vue.config.productionTip = false;
 
@@ -23,7 +28,7 @@ Vue.use(VueRouter);
 
 export function initializeApacheAiravataDashboard(dashboardName) {
   var template = `
-    <div class="vmain"><Loading/> 
+    <div class="vmain"><notifications-display/><Loading/> 
         <transition name="fade">
             <router-view>
             </router-view>
@@ -40,7 +45,8 @@ export function initializeApacheAiravataDashboard(dashboardName) {
       CredentialStore,
       Loading,
       ComputeResourceDashboard,
-      ComputeResourcePreferenceDashboard
+      ComputeResourcePreferenceDashboard,
+      'notifications-display': components.NotificationsDisplay,
     },
     mounted:function () {
       if (this.$router.currentRoute.path === '/') {

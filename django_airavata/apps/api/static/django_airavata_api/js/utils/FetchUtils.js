@@ -1,3 +1,5 @@
+import UnhandledErrorDispatcher from "../errors/UnhandledErrorDispatcher";
+
 var count = 0;
 const parseQueryParams = function (url, queryParams = "") {
     if (queryParams && typeof(queryParams) != "string") {
@@ -56,61 +58,31 @@ export default {
         }
         return headers;
     },
-    post: function (url, body, queryParams = "", mediaType = "application/json") {
+    post: function (url, body, queryParams = "", {mediaType = "application/json", ignoreErrors = false } = {}) {
         var headers = this.createHeaders(mediaType)
         // Browsers automatically handle content type for FormData request bodies
         if (body instanceof FormData) {
             headers.delete("Content-Type");
         }
-        console.log("post body", body);
         url = parseQueryParams(url, queryParams);
-        incrementCount();
-        return fetch(url, {
+        return this.processFetch(url, {
             method: 'post',
             body: (body instanceof FormData || typeof body === 'string') ? body : JSON.stringify(body),
             headers: headers,
-            credentials: "same-origin"
-        }).then((response) => {
-            decrementCount();
-            if (response.ok) {
-                return Promise.resolve(response.json())
-            } else {
-                let error = new Error(response.statusText);
-                return response.json().then(json => {
-                    error.data = json;
-                })
-                    .then(() => Promise.reject(error), () => Promise.reject(error));
-            }
-        }, (response) => {
-            decrementCount();
-            return Promise.reject(response);
-        })
+            credentials: "same-origin",
+            ignoreErrors
+        });
     },
-    put: function (url, body, mediaType = "application/json") {
+    put: function (url, body, { mediaType = "application/json", ignoreErrors = false } = {}) {
         var headers = this.createHeaders(mediaType);
-        incrementCount();
-        return fetch(url, {
+        return this.processFetch(url, {
             method: 'put',
             body: (body instanceof FormData || typeof body === 'string') ? body : JSON.stringify(body),
             headers: headers,
             credentials: "same-origin"
-        }).then((response) => {
-            decrementCount();
-            if (response.ok) {
-                return Promise.resolve(response.json())
-            } else {
-                let error = new Error(response.statusText);
-                return response.json().then(json => {
-                    error.data = json;
-                })
-                    .then(() => Promise.reject(error), () => Promise.reject(error));
-            }
-        }, (response) => {
-            decrementCount();
-            return Promise.reject(response);
-        })
+        });
     },
-    get: function (url, queryParams = "", mediaType = "application/json") {
+    get: function (url, queryParams = "", { mediaType = "application/json", ignoreErrors = false } = {}) {
         if (queryParams && typeof(queryParams) != "string") {
             queryParams = Object.keys(queryParams).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(queryParams[key])).join("&")
         }
@@ -118,46 +90,73 @@ export default {
             url = url + "?" + queryParams
         }
         var headers = this.createHeaders(mediaType);
-        incrementCount();
-        return fetch(url, {
+        return this.processFetch(url, {
             method: 'get',
             headers: headers,
             credentials: "same-origin"
-        }).then((response) => {
-            decrementCount();
-            if (response.ok) {
-                return Promise.resolve(response.json())
-            } else {
-                let error = new Error(response.statusText);
-                return response.json().then(json => {
-                    error.data = json;
-                })
-                    .then(() => Promise.reject(error), () => Promise.reject(error));
-            }
-        }, (response) => {
-            decrementCount();
-            return Promise.reject(response);
-        })
+        });
     },
-    delete: function (url) {
+    delete: function (url, { ignoreErrors = false } = {}) {
         var headers = this.createHeaders();
-        incrementCount();
-        return fetch(url, {
+        return this.processFetch(url, {
             method: 'delete',
             headers: headers,
             credentials: "same-origin"
-        }).then((response) => {
+        });
+    },
+    processFetch: function(url, {method = 'get', headers, credentials = 'same-origin', body, ignoreErrors = false}) {
+
+        const fetchConfig = {
+            method,
+            headers,
+            credentials,
+        };
+        if (body) {
+            fetchConfig.body = body;
+        }
+        incrementCount();
+        return fetch(url, fetchConfig).then((response) => {
             decrementCount();
-            // Not expecting a response body
-            if (response.ok && response.status === 204) {
-                return Promise.resolve();
+            if (response.ok) {
+                // No response body
+                if (response.status === 204) {
+                    return Promise.resolve();
+                } else {
+                    return Promise.resolve(response.json())
+                }
             } else {
-                let error = new Error(response.statusText);
                 return response.json().then(json => {
-                    error.data = json;
-                })
-                    .then(() => Promise.reject(error), () => Promise.reject(error));
+                    const error = new Error(json.detail ? json.detail : response.statusText);
+                    error.details = this.createErrorDetails({url, body, status: response.status, responseBody: json})
+                    throw error;
+                }, e => { // In case JSON parsing fails
+                    const error = new Error(response.statusText);
+                    error.details = this.createErrorDetails({url, body, status: response.status})
+                    throw error;
+                });
             }
+        }, (error) => {
+            decrementCount();
+            error.details = this.createErrorDetails({url, body});
+            throw error;
+        }).catch(error => {
+
+            if (!ignoreErrors) {
+                UnhandledErrorDispatcher.reportError({
+                    message: error.message,
+                    error: error,
+                    details: error.details,
+                })
+            }
+            throw error;
         })
+    },
+    createErrorDetails: function({url, body, status = null, responseBody = null}={}) {
+        return {
+            url,
+            body,
+            status,
+            response: responseBody
+        }
     }
 }

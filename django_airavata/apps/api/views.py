@@ -693,9 +693,7 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
         group_resource_profile.gatewayId = self.gateway_id
         group_resource_profile_id = self.request.airavata_client.createGroupResourceProfile(authzToken=self.authz_token,
                                                                                             groupResourceProfile=group_resource_profile)
-        group_resource_profile = self.request.airavata_client.getGroupResourceProfile(
-            self.authz_token, group_resource_profile_id)
-        serializer.instance = group_resource_profile
+        group_resource_profile.groupResourceProfileId = group_resource_profile_id
 
     def perform_update(self, serializer):
         grp = serializer.save()

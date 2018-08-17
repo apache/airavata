@@ -1,3 +1,6 @@
+import GlobalErrorHandler from './errors/GlobalErrorHandler'
+import UnhandledError from './errors/UnhandledError'
+import UnhandledErrorDisplayList from './errors/UnhandledErrorDisplayList'
 
 import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition'
 import ApplicationModule from './models/ApplicationModule'
@@ -28,7 +31,6 @@ import ExperimentSearchService from './services/ExperimentSearchService'
 import FullExperimentService from './services/FullExperimentService'
 import ProjectService from './services/ProjectService'
 import GroupService from './services/GroupService'
-import GroupResourceProfileService from './services/GroupResourceProfileService'
 import UserProfileService from './services/UserProfileService'
 import CloudJobSubmissionService from './services/CloudJobSubmissionService'
 import GlobusJobSubmissionService from './services/GlobusJobSubmissionService'
@@ -41,6 +43,12 @@ import UnicoreDataMovementService from './services/UnicoreDataMovementService'
 import ServiceFactory from './services/ServiceFactory'
 import FetchUtils from './utils/FetchUtils'
 import PaginationIterator from './utils/PaginationIterator'
+
+exports.errors = {
+    GlobalErrorHandler,
+    UnhandledError,
+    UnhandledErrorDisplayList,
+}
 
 exports.models = {
     ApplicationInterfaceDefinition,
@@ -86,7 +94,7 @@ exports.services = {
     GridFTPDataMovementService,
     SCPDataMovementService,
     UnicoreDataMovementService,
-    ServiceFactory
+    ServiceFactory,
 }
 
 exports.utils = {

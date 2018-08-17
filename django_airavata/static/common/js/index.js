@@ -1,6 +1,7 @@
 import ApplicationCard from './components/ApplicationCard.vue'
 import Autocomplete from './components/Autocomplete.vue'
 import AutocompleteTextInput from './components/AutocompleteTextInput.vue'
+import NotificationsDisplay from './components/NotificationsDisplay.vue'
 import Pager from './components/Pager.vue'
 import ShareButton from './components/ShareButton.vue'
 
@@ -13,6 +14,7 @@ exports.components = {
     ApplicationCard,
     Autocomplete,
     AutocompleteTextInput,
+    NotificationsDisplay,
     ShareButton,
 }
 

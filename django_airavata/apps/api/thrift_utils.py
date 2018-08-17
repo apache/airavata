@@ -90,8 +90,12 @@ def create_serializer_class(thrift_data_type, enable_date_time_conversion=False)
             for field in thrift_spec:
                 # Don't replace existing attrs to allow subclasses to override
                 if field and field[2] not in attrs:
-                    required = field[2] in meta.required if meta else False
-                    read_only = field[2] in meta.read_only if meta else False
+                    required = (field[2] in meta.required
+                                if meta and hasattr(meta, 'required')
+                                else False)
+                    read_only = (field[2] in meta.read_only
+                                 if meta and hasattr(meta, 'read_only')
+                                 else False)
                     allow_null = not required
                     field_serializer = process_field(
                         field, enable_date_time_conversion, required=required, read_only=read_only,

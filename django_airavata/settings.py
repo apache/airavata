@@ -174,6 +174,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'EXCEPTION_HANDLER':
+        'django_airavata.apps.api.exceptions.custom_exception_handler',
 }
 
 AUTHENTICATION_BACKENDS = [

@@ -44,7 +44,14 @@ class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField)
             lookup_value = getattr(obj, self.lookup_field)
         else:
             lookup_value = obj.get(self.lookup_field)
-        encoded_lookup_value = quote(lookup_value, safe="")
+        try:
+            encoded_lookup_value = quote(lookup_value, safe="")
+        except Exception as e:
+            log.warning(
+                "Failed to encode lookup_value [{}] for lookup_field "
+                "[{}] of object [{}]".format(
+                    lookup_value, self.lookup_field, obj))
+            raise
         # Bit of a hack. Django's URL reversing does URL encoding but it doesn't
         # encode all characters including some like '/' that are used in URL
         # mappings.
@@ -450,6 +457,9 @@ class GroupResourceProfileSerializer(
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
+
+    class Meta:
+        required = ('groupResourceProfileName',)
 
     def update(self, instance, validated_data):
         result = super().update(instance, validated_data)
