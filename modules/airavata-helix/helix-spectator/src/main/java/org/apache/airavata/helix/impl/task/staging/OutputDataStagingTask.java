@@ -124,7 +124,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                     }
 
                 } catch (AgentException e) {
-                    throw new TaskOnFailException("Failed to fetch the file list from extension " + sourceFileName, true, e);
+                    throw new TaskOnFailException("Failed to fetch the file list from extension " + sourceFileName, false, e);
                 }
 
                 for (String temp : fileNames) {

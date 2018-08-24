@@ -100,7 +100,7 @@ public class InputDataStagingTask extends DataStagingTask {
                     storageResourceAdaptor.downloadFile(sourceURI.getPath(), localSourceFilePath);
                     logger.info("Input file downloaded to " + localSourceFilePath);
                 } catch (AgentException e) {
-                    throw new TaskOnFailException("Failed downloading input file " + sourceFileName + " to the local path " + localSourceFilePath, true, e);
+                    throw new TaskOnFailException("Failed downloading input file " + sourceFileName + " to the local path " + localSourceFilePath, false, e);
                 }
 
                 File localFile = new File(localSourceFilePath);
@@ -110,7 +110,7 @@ public class InputDataStagingTask extends DataStagingTask {
                         return onFail("Input staging has failed as file " + localSourceFilePath + " size is 0", true, null);
                     }
                 } else {
-                    throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, true, null);
+                    throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, false, null);
                 }
 
                 // Uploading input file to the compute resource
@@ -119,7 +119,7 @@ public class InputDataStagingTask extends DataStagingTask {
                     adaptor.copyFileTo(localSourceFilePath, destinationURI.getPath());
                     logger.info("Input file uploaded to " + destinationURI.getPath());
                 } catch (AgentException e) {
-                    throw new TaskOnFailException("Failed uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath, true, e);
+                    throw new TaskOnFailException("Failed uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath, false, e);
                 }
 
             } finally {

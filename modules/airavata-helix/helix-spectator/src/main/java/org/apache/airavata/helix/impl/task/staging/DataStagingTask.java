@@ -145,7 +145,7 @@ public abstract class DataStagingTask extends AiravataTask {
             }
         } catch (AgentException e) {
             logger.error("Error while checking the file " + sourcePath + " existence");
-            throw new TaskOnFailException("Error while checking the file " + sourcePath + " existence", true, e);
+            throw new TaskOnFailException("Error while checking the file " + sourcePath + " existence", false, e);
         }
 
         String localSourceFilePath = getLocalDataPath(fileName);
@@ -157,7 +157,7 @@ public abstract class DataStagingTask extends AiravataTask {
                 logger.info("Output file downloaded to " + localSourceFilePath);
             } catch (AgentException e) {
                 throw new TaskOnFailException("Failed downloading output file " + sourcePath + " to the local path " +
-                        localSourceFilePath, true, e);
+                        localSourceFilePath, false, e);
             }
 
             File localFile = new File(localSourceFilePath);
@@ -167,7 +167,7 @@ public abstract class DataStagingTask extends AiravataTask {
                     return false;
                 }
             } else {
-                throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, true, null);
+                throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, false, null);
             }
             // Uploading output file to the storage resource
             try {
@@ -176,7 +176,7 @@ public abstract class DataStagingTask extends AiravataTask {
                 logger.info("Output file uploaded to " + destPath);
             } catch (AgentException e) {
                 throw new TaskOnFailException("Failed uploading the output file to " + destPath + " from local path " +
-                        localSourceFilePath, true, e);
+                        localSourceFilePath, false, e);
             }
 
             return true;
