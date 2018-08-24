@@ -176,13 +176,12 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     }
 
     protected int getCurrentRetryCount() throws Exception {
-        return MonitoringUtil.getTaskRetryCount(curatorClient, taskId);
+        return MonitoringUtil.getTaskRetryCount(getCuratorClient(), taskId);
     }
 
     protected void markNewRetry() throws Exception {
-        MonitoringUtil.increaseTaskRetryCount(curatorClient, taskId);
+        MonitoringUtil.increaseTaskRetryCount(getCuratorClient(), taskId);
     }
-
 
     public int getRetryCount() {
         return retryCount;
