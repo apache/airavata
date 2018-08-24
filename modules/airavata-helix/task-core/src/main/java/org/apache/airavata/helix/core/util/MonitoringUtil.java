@@ -17,7 +17,7 @@ public class MonitoringUtil {
     private static final String REGISTRY = "/registry/";
 
     private static final String EXPERIMENT = "/experiment";
-    private static final String TASK = "/task";
+    private static final String TASK = "/task/";
     private static final String PROCESS = "/process";
     private static final String GATEWAY = "/gateway";
     private static final String LOCK = "/lock";
