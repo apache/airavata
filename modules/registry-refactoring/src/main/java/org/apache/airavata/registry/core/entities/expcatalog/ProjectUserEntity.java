@@ -43,6 +43,10 @@ public class ProjectUserEntity implements Serializable {
     public ProjectUserEntity() {
     }
 
+    @ManyToOne(targetEntity = UsersEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME")
+    private UsersEntity user;
+
     public String getProjectID() {
         return projectID;
     }
@@ -57,5 +61,13 @@ public class ProjectUserEntity implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public UsersEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UsersEntity user) {
+        this.user = user;
     }
 }
