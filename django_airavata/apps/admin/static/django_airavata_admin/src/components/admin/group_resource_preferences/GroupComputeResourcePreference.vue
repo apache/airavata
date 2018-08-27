@@ -27,12 +27,16 @@
 
         <b-table hover :fields="computePreferencesFields" :items="slotProps.items"
           sort-by="computeResourceId">
-          <template slot="action" slot-scope="data">
-            <a href="#" @click.prevent="computePreferenceClickHandler(data.item.computeResourceId)">
+          <template slot="policy" slot-scope="row">
+            <compute-resource-policy-summary :compute-resource-id="row.item.computeResourceId"
+              :group-resource-profile="data"/>
+          </template>
+          <template slot="action" slot-scope="row">
+            <a href="#" @click.prevent="computePreferenceClickHandler(row.item.computeResourceId)">
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </a>
-            <a href="#" class="text-danger" @click.prevent="removeComputePreference(data.item.computeResourceId)">
+            <a href="#" class="text-danger" @click.prevent="removeComputePreference(row.item.computeResourceId)">
               Delete
               <i class="fa fa-trash" aria-hidden="true"></i>
             </a>
@@ -60,6 +64,7 @@
 <script>
   import {components as comps, layouts} from 'django-airavata-common-ui'
   import {models, services} from 'django-airavata-api'
+  import ComputeResourcePolicySummary from './ComputeResourcePolicySummary.vue'
 
   export default {
     name: "group-compute-resource-preference",
@@ -100,6 +105,18 @@
             formatter: (value) => this.getComputeResourceName(value),
           },
           {
+            label: 'Username',
+            key: 'loginUserName'
+          },
+          {
+            label: 'Allocation',
+            key: 'allocationProjectNumber'
+          },
+          {
+            label: 'Policy',
+            key: 'policy', // custom rendering
+          },
+          {
             label: 'Action',
             key: 'action',
           },
@@ -112,6 +129,7 @@
     components: {
       "share-button": comps.ShareButton,
       "list-layout": layouts.ListLayout,
+      ComputeResourcePolicySummary,
     },
     computed: {
       modalSelectComputeResourceOkDisabled: function() {
