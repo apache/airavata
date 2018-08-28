@@ -64,7 +64,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .new_app {
     margin: 45px;
     width: 70%;

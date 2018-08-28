@@ -61,7 +61,7 @@
         this.setTitle("Edit Application")
         this.resetApplication()
         this.setModule(item)
-        this.$router.push({name: 'details'})
+        this.$router.push({name: 'application_module', params: {id: item.appModuleId}})
       },
       resetApplication:function () {
         console.log("Resetting")
