@@ -101,8 +101,8 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         if (filters.get(DBConstants.ExperimentSummary.FROM_DATE) != null
                 && filters.get(DBConstants.ExperimentSummary.TO_DATE) != null) {
 
-            Timestamp fromDate = Timestamp.valueOf(filters.get(DBConstants.ExperimentSummary.FROM_DATE));
-            Timestamp toDate = Timestamp.valueOf(filters.get(DBConstants.ExperimentSummary.TO_DATE));
+            Timestamp fromDate = new Timestamp(Long.valueOf(filters.get(DBConstants.ExperimentSummary.FROM_DATE)));
+            Timestamp toDate = new Timestamp(Long.valueOf(filters.get(DBConstants.ExperimentSummary.TO_DATE)));
 
             if (toDate.after(fromDate)) {
                 logger.debug("Filter Experiments by CreationTime");
@@ -174,12 +174,12 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
                 if (field.equals(DBConstants.ExperimentSummary.FROM_DATE)) {
                     logger.debug("Set the FromDate");
-                    fromDate = Timestamp.valueOf(filters.get(field));
+                    fromDate = new Timestamp(Long.parseLong(filters.get(field)));
                 }
 
                 if (field.equals(DBConstants.ExperimentSummary.TO_DATE)) {
                     logger.debug("Set the ToDate");
-                    toDate = Timestamp.valueOf(filters.get(field));
+                    toDate = new Timestamp(Long.parseLong(filters.get(field)));
                 }
 
             }
