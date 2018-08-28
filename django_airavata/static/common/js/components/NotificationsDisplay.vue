@@ -3,12 +3,12 @@
         <transition-group name="fade" tag="div">
             <b-alert v-for="unhandledError in unhandledErrors"
                     variant="danger" :key="unhandledError.id"
-                    show dismissible @dismissed="dismissedUnhandledError(unhandledError)">
+                    show dismissible @dismissed="dismissUnhandledError(unhandledError)">
                 {{ unhandledError.message }}
             </b-alert>
             <b-alert v-for="notification in notifications"
                     :variant="variant(notification)" :key="notification.id"
-                    show dismissible @dismissed="dismissedNotification(notification)">
+                    show dismissible @dismissed="dismissNotification(notification)">
                 {{ notification.message }}
             </b-alert>
         </transition-group>
@@ -30,7 +30,7 @@ export default {
         }
     },
     methods: {
-        dismissedNotification: function(notification) {
+        dismissNotification: function(notification) {
             NotificationList.remove(notification);
         },
         dismissUnhandledError: function(unhandledError) {
