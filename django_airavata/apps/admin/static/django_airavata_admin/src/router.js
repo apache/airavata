@@ -1,4 +1,4 @@
-import AdminDashboard from './components/dashboards/AdminDashboard.vue'
+import ApplicationsDashboard from './components/dashboards/ApplicationsDashboard.vue'
 import NewApplication from './components/admin/NewApplication.vue'
 import ExperimentsDashboard from './components/dashboards/ExperimentDashboard.vue'
 import ApplicationDetails from './components/admin/ApplicationDetails.vue'
@@ -31,7 +31,7 @@ const routes = [
       }
     ]
   },
-  {path: '/admin', component: AdminDashboard, name: "admin_dashboard"},
+  {path: '/applications', component: ApplicationsDashboard},
   {path: '/experiments', component: ExperimentsDashboard, name: 'experiments_dashboard'},
   {
     path: '/group-resource-profiles/new', component: GroupComputeResourcePreference, name: 'new_group_resource_preference',
@@ -61,5 +61,7 @@ const routes = [
   },
 ];
 export default new VueRouter({
-  routes: routes
+  mode: 'history',
+  base: '/admin/',
+  routes: routes,
 });

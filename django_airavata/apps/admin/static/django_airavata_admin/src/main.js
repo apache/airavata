@@ -3,7 +3,6 @@ import VueResource from 'vue-resource';
 import VueRouter from 'vue-router';
 
 import ExperimentsDashboard from './components/dashboards/ExperimentDashboard.vue';
-import AdminDashboard from './components/dashboards/AdminDashboard.vue';
 import CredentialStore from './components/dashboards/CredentialStoreDashboard.vue'
 import Loading from './components/Loading.vue'
 import ComputeResourceDashboard from './components/dashboards/ComputeResourceDashboard'
@@ -40,19 +39,13 @@ export function initializeApacheAiravataDashboard(dashboardName) {
     template: template,
     components: {
       ExperimentsDashboard,
-      AdminDashboard,
+      // AdminDashboard,
       CredentialStore,
       Loading,
       ComputeResourceDashboard,
       ComputeResourcePreferenceDashboard,
       'notifications-display': components.NotificationsDisplay,
-    },
-    mounted:function () {
-      if (this.$router.currentRoute.path === '/') {
-        this.$router.push({ name: dashboardName })
-      }
     }
-
   })
   Vue.config.devtools = true
   Vue.config.debug = true

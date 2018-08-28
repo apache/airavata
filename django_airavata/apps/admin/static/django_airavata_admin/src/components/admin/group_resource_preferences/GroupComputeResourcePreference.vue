@@ -32,10 +32,20 @@
               :group-resource-profile="data"/>
           </template>
           <template slot="action" slot-scope="row">
-            <a href="#" @click.prevent="computePreferenceClickHandler(row.item.computeResourceId)">
+            <router-link :to="{
+                name: 'compute_preference',
+                params: {
+                  value: row.item,
+                  id: id,
+                  host_id: row.item.computeResourceId,
+                  groupResourceProfile: data,
+                  computeResourcePolicy: data.getComputeResourcePolicy(row.item.computeResourceId),
+                  batchQueueResourcePolicies: data.getBatchQueueResourcePolicies(row.item.computeResourceId)
+                }
+              }">
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
-            </a>
+            </router-link>
             <a href="#" class="text-danger" @click.prevent="removeComputePreference(row.item.computeResourceId)">
               Delete
               <i class="fa fa-trash" aria-hidden="true"></i>
@@ -169,12 +179,6 @@
           this.$router.push('/group-resource-profiles');
         });
       },
-      computePreferenceClickHandler: function (computeResourceId) {
-        let computeResourcePreference = this.data.computePreferences.find(pref => pref.computeResourceId === computeResourceId);
-        const computeResourcePolicy = this.data.getComputeResourcePolicy(computeResourceId);
-        const batchQueueResourcePolicies = this.data.getBatchQueueResourcePolicies(computeResourceId);
-        this.navigateToComputeResourcePreference(computeResourcePreference, computeResourcePolicy, batchQueueResourcePolicies);
-      },
       getComputeResourceName: function (computeResourceId) {
         // TODO: load compute resources to get the real name
         return (computeResourceId && computeResourceId.indexOf("_") > 0) ? computeResourceId.split("_")[0] : computeResourceId;
@@ -189,18 +193,12 @@
         const computeResourcePreference = new models.GroupComputeResourcePreference();
         const computeResourceId = this.selectedComputeResource;
         computeResourcePreference.computeResourceId = computeResourceId;
-        this.navigateToComputeResourcePreference(computeResourcePreference);
-      },
-      navigateToComputeResourcePreference: function(computeResourcePreference, computeResourcePolicy=null, batchQueueResourcePolicies=null) {
-        const routeName = (this.id) ? 'compute_preference' : 'compute_preference_for_new_group_resource_profile';
         this.$router.push({
-          name: routeName, params: {
+          name: 'compute_preference_for_new_group_resource_profile', params: {
             value: computeResourcePreference,
             id: this.id,
             host_id: computeResourcePreference.computeResourceId,
             groupResourceProfile: this.data,
-            computeResourcePolicy: computeResourcePolicy,
-            batchQueueResourcePolicies: batchQueueResourcePolicies,
           }
         });
       },

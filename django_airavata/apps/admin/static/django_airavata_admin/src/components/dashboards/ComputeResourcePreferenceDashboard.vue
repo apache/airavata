@@ -5,10 +5,10 @@
 
       <b-table striped hover :fields="fields" :items="slotProps.items">
         <template slot="action" slot-scope="data">
-          <a href="#" @click.prevent="clickHandler(data.item)" v-if="data.item.userHasWriteAccess">
+          <router-link :to="{name: 'group_resource_preference', params: {value: data.item, id: data.item.groupResourceProfileId}}">
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
-          </a>
+          </router-link>
           <a href="#" class="text-danger" @click.prevent="removeGroupResourceProfile(data.item)" v-if="data.item.userHasWriteAccess">
             Delete
             <i class="fa fa-trash" aria-hidden="true"></i>
@@ -50,14 +50,6 @@
       }
     },
     methods: {
-      clickHandler: function (groupResourceProfile) {
-        this.$router.push({
-          name: 'group_resource_preference', params: {
-            value: groupResourceProfile,
-            id: groupResourceProfile.groupResourceProfileId
-          }
-        });
-      },
       newGroupResourcePreference: function () {
         this.$router.push({
           name: 'new_group_resource_preference'
