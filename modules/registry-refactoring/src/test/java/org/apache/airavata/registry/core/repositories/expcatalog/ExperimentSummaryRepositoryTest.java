@@ -126,8 +126,8 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         assertTrue(experimentSummaryModelList.size() == 1);
         assertEquals(expertimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
 
-        String fromDate = String.valueOf(Timestamp.valueOf("2010-10-10 09:00:00"));
-        String toDate = String.valueOf(new Timestamp(System.currentTimeMillis()));
+        String fromDate = String.valueOf(Timestamp.valueOf("2010-10-10 09:00:00").getTime());
+        String toDate = String.valueOf(System.currentTimeMillis());
 
         filters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
         filters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
