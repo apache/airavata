@@ -20,12 +20,30 @@
 package org.apache.airavata.agents.api;
 
 public class FileInfo {
+    private String name;
+    private String path;
     private boolean isExist;
     private boolean isFile;
     private long size;
     private long createdDate;
     private long modifiedDate;
     private String owner;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public boolean isExist() {
         return isExist;

@@ -455,6 +455,11 @@ public class SshAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
+    public List<FileInfo> listDirectoryWithInfo(String path) throws AgentException {
+        throw new AgentException("Operation not implemented");
+    }
+
+    @Override
     public Boolean doesFileExist(String filePath) throws AgentException {
         String command = "ls " + filePath;
         ChannelExec channelExec = null;

@@ -31,10 +31,7 @@ import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.PasswordUtils;
 import net.schmizz.sshj.userauth.password.Resource;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.agents.api.*;
 import org.apache.airavata.helix.adaptor.wrapper.SCPFileTransferWrapper;
 import org.apache.airavata.helix.agent.ssh.StandardOutReader;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -202,6 +199,28 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         try (SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
             List<RemoteResourceInfo> ls = sftpClient.ls(path);
             return ls.stream().map(RemoteResourceInfo::getName).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
+
+    @Override
+    public List<FileInfo> listDirectoryWithInfo(String path) throws AgentException {
+        try (SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
+            List<RemoteResourceInfo> ls = sftpClient.ls(path);
+
+            return ls.stream().map(rInfo -> {
+                FileInfo fileInfo = new FileInfo();
+                fileInfo.setName(rInfo.getName());
+                fileInfo.setPath(rInfo.getPath());
+                fileInfo.setExist(true);
+                fileInfo.setCreatedDate(rInfo.getAttributes().getAtime());
+                fileInfo.setModifiedDate(rInfo.getAttributes().getMtime());
+                fileInfo.setFile(rInfo.getAttributes().getType() != FileMode.Type.DIRECTORY);
+                fileInfo.setSize(rInfo.getAttributes().getSize());
+                return fileInfo;
+            }).collect(Collectors.toList());
+
         } catch (Exception e) {
             throw new AgentException(e);
         }

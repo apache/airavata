@@ -46,6 +46,8 @@ public interface AgentAdaptor {
 
     public List<String> listDirectory(String path) throws AgentException;
 
+    public List<FileInfo> listDirectoryWithInfo(String path) throws AgentException;
+
     public Boolean doesFileExist(String filePath) throws AgentException;
 
     public List<String> getFileNameFromExtension(String fileName, String parentPath) throws AgentException;

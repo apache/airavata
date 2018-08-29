@@ -5044,10 +5044,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
         try {
             List<FileStructure> fileStructures = new ArrayList<>();
-            List<String> fileNames = storageResourceAdaptor.listDirectory(dirPath);
-            for (String fileName : fileNames) {
-                String filePath = dirPath.endsWith(File.separator) ? dirPath + fileName : dirPath + File.separator + fileName;
-                fileStructures.add(getFileDetailsFromStorage(gatewayId, storageResourceId, userId, filePath));
+            List<FileInfo> fileInfos = storageResourceAdaptor.listDirectoryWithInfo(dirPath);
+            for (FileInfo fileInfo : fileInfos) {
+
+                FileStructure fileStructure = new FileStructure();
+                fileStructure.setName(fileInfo.getName());
+                fileStructure.setPath(fileInfo.getPath());
+                fileStructure.setCreatedDate(fileInfo.getCreatedDate());
+                fileStructure.setModifiedDate(fileInfo.getModifiedDate());
+                fileStructure.setIsFile(fileInfo.isFile());
+                fileStructures.add(fileStructure);
             }
             return  fileStructures;
         } catch (AgentException e) {

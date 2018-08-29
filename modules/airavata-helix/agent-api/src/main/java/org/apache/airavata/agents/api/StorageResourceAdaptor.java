@@ -26,6 +26,7 @@ public interface StorageResourceAdaptor {
     public void uploadFile(String sourceFile, String destFile) throws AgentException;
     public void downloadFile(String sourceFile, String destFile) throws AgentException;
     public List<String> listDirectory(String path) throws AgentException;
+    public List<FileInfo> listDirectoryWithInfo(String path) throws AgentException;
     public void deleteFile(String path) throws AgentException;
     public void deleteDirectory(String path) throws AgentException;
     public Boolean doesFileExist(String filePath) throws AgentException;
