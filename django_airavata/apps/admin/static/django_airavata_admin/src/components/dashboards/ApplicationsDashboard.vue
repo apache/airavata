@@ -8,7 +8,7 @@
       <h6 style="color: #666666;">APPLICATIONS</h6>
       <div class="container-fluid">
         <div class="row">
-            <application-card v-for="item in applications" v-bind:app-module="item"
+            <application-card v-for="item in modules" v-bind:app-module="item"
                 v-bind:key="item.appModuleId" v-on:app-selected="clickHandler(item)">
             </application-card>
         </div>
@@ -21,42 +21,22 @@
   import Loading from '../Loading.vue'
 
   import Utils from '../../utils'
-  import {mapActions} from 'vuex'
+  import {mapActions, mapState} from 'vuex'
 
   import { components as comps } from 'django-airavata-common-ui'
 
   export default {
-    data:function () {
-      return {
-        "applications":[
-
-            {
-            "appModuleId": "",
-            "appModuleName": "No Applications Found",
-            "appModuleDescription": "",
-            "appModuleVersion": ""
-
-          }
-        ]
-      };
-    },
     components:{
       NewApplication, Loading,
       'application-card': comps.ApplicationCard,
     },
     mounted:function () {
-      this.fetchApplications();
+      this.loadApplications();
+    },
+    computed: {
+      ...mapState('applications/modules', ['modules']),
     },
     methods:{
-      fetchApplications:function () {
-          Utils.get('/api/applications',{success:(value)=>this.applications=value,failure:value => {
-          this.applications=[{
-            "appModuleId": "",
-            "appModuleName": "No Applications Found",
-            "appModuleDescription": "",
-            "appModuleVersion": ""
-          }]}})
-      },
       clickHandler: function (item) {
         this.setTitle("Edit Application")
         this.resetApplication()
@@ -75,7 +55,7 @@
         this.$router.push({name: 'details'})
       }
       ,
-      ...mapActions({setModule:'newApplication/setModule',setTitle:'newApplication/setTitle',restInterface:'newApplication/appInterfaceTab/resetState',resetDetails:'newApplication/appDetailsTab/resetState',resetDeployment:'newApplication/appDeploymentsTab/resetState'}),
+      ...mapActions({loadApplications: 'applications/modules/loadApplicationModules', setModule:'newApplication/setModule',setTitle:'newApplication/setTitle',restInterface:'newApplication/appInterfaceTab/resetState',resetDetails:'newApplication/appDetailsTab/resetState',resetDeployment:'newApplication/appDeploymentsTab/resetState'}),
     }
   }
 </script>

@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import {mapActions, mapState} from 'vuex'
+
 export default {
     name: 'application-editor-container',
     props: {
@@ -45,6 +47,31 @@ export default {
             } else {
                 return "Create a New Application";
             }
+        },
+        ...mapState('applications/modules', [
+            'currentModule',
+        ]),
+    },
+    created () {
+        this.initialize();
+    },
+    methods: {
+        ...mapActions('applications/modules', [
+            'loadApplicationModule',
+        ]),
+        initialize() {
+            if (this.id) {
+                this.loadApplicationModule(this.id);
+            } else {
+                this.module = new models.ApplicationModule();
+            }
+        }
+    },
+    watch: {
+        '$route': 'initialize',
+        'currentModule': function(newModule) {
+            // Clone the module from the store so we can modify it locally
+            this.module = newModule.clone();
         }
     }
 }

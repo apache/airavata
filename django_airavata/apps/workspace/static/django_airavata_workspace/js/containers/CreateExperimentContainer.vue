@@ -42,8 +42,7 @@ export default {
     },
     mounted: function () {
         const experiment = new models.Experiment();
-        // TODO: integrate loading spinner
-        const loadAppModule = services.ApplicationModuleService.get(this.appModuleId)
+        const loadAppModule = services.ApplicationModuleService.retrieve({lookup: this.appModuleId})
             .then(appModule => {
                 experiment.experimentName = appModule.appModuleName + ' on ' + moment().format('lll');
                 this.appModule = appModule;

@@ -1,4 +1,5 @@
 import ApplicationDeploymentDescription from './models/ApplicationDeploymentDescription'
+import ApplicationModule from './models/ApplicationModule';
 import CredentialSummary from './models/CredentialSummary'
 import Group from './models/Group'
 import GroupResourceProfile from './models/GroupResourceProfile'
@@ -43,6 +44,11 @@ export default {
         viewSet: true,
         queryParams: ['appModuleId', 'groupResourceProfileId'],
         modelClass: ApplicationDeploymentDescription,
+    },
+    "ApplicationModules": {
+        url: "/api/applications",
+        viewSet: true,
+        modelClass: ApplicationModule,
     },
     "ComputeResources": {
         url: "/api/compute-resources",
