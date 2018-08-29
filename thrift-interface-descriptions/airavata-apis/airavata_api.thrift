@@ -3680,6 +3680,13 @@ service Airavata {
                             3: airavata_errors.AiravataSystemException ase,
                             4: airavata_errors.AuthorizationException ae)
 
+  data_storage_model.FileStructure getFileDetailsFromStorage(1: required security_model.AuthzToken authzToken,
+                            2: required  string gatewayId, 3: string storageResourceId, 4: string userId, 5: string filePath)  throws (
+                            1: airavata_errors.InvalidRequestException ire,
+                            2: airavata_errors.AiravataClientException ace,
+                            3: airavata_errors.AiravataSystemException ase,
+                            4: airavata_errors.AuthorizationException ae)
+
   list<data_storage_model.FileStructure> listDirectoryFromStorage(1: required security_model.AuthzToken authzToken,
                             2: required  string gatewayId, 3: string storageResourceId, 4: string userId, 5: string dirPath)  throws (
                             1: airavata_errors.InvalidRequestException ire,

@@ -5022,7 +5022,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             storageResourceAdaptor.downloadFile(path, tmpFile.getAbsolutePath());
         } catch (AgentException e) {
-            logger.error("Failed to download remote file " + path + " to loacal path " + tmpFile.getAbsolutePath() + " from storage resource " + storageResourceId, e);
+            logger.error("Failed to download remote file " + path + " to local path " + tmpFile.getAbsolutePath() + " from storage resource " + storageResourceId, e);
         }
 
         FileStructure structure = new FileStructure();
@@ -5043,14 +5043,35 @@ public class RegistryServerHandler implements RegistryService.Iface {
         StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
 
         try {
-            return storageResourceAdaptor.listDirectory(dirPath).stream().map(path -> {
-                FileStructure structure = new FileStructure();
-                structure.setName(path);
-                return structure;
-            }).collect(Collectors.toList());
+            List<FileStructure> fileStructures = new ArrayList<>();
+            List<String> fileNames = storageResourceAdaptor.listDirectory(dirPath);
+            for (String fileName : fileNames) {
+                String filePath = dirPath.endsWith(File.separator) ? dirPath + fileName : dirPath + File.separator + fileName;
+                fileStructures.add(getFileDetailsFromStorage(gatewayId, storageResourceId, userId, filePath));
+            }
+            return  fileStructures;
         } catch (AgentException e) {
             logger.error("Failed to list directories for path " + dirPath + " on storage resource " + storageResourceId, e);
             throw new TException("Failed to list directories for path " + dirPath + " on storage resource " + storageResourceId);
+        }
+    }
+
+    @Override
+    public FileStructure getFileDetailsFromStorage(String gatewayId, String storageResourceId, String userId, String filePath) throws TException {
+        StorageResourceAdaptor storageResourceAdaptor = fetchAdaptorForStorageResource(storageResourceId, gatewayId);
+
+        try {
+            FileInfo fileInfo = storageResourceAdaptor.getFileInfo(filePath);
+            FileStructure fileStructure = new FileStructure();
+            fileStructure.setPath(filePath);
+            fileStructure.setName(new File(filePath).getName());
+            fileStructure.setCreatedDate(fileInfo.getCreatedDate());
+            fileStructure.setModifiedDate(fileInfo.getModifiedDate());
+            fileStructure.setIsFile(fileInfo.isFile());
+            return fileStructure;
+        } catch (AgentException e) {
+            logger.error("Failed to fetch file info for path " + filePath + " on storage resource " + storageResourceId, e);
+            throw new TException("Failed to fetch file info for path " + filePath + " on storage resource " + storageResourceId);
         }
     }
 

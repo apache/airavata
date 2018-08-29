@@ -5833,6 +5833,20 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    public FileStructure getFileDetailsFromStorage(AuthzToken authzToken, String gatewayId, String storageResourceId, String userId, String filePath) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            return regClient.getFileDetailsFromStorage(gatewayId, storageResourceId, userId, filePath);
+        } catch (Exception e) {
+            String msg = "Error fetching file info from storage resource: " + storageResourceId + " for  path : " + filePath;
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            registryClientPool.returnBrokenResource(regClient);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
     public List<FileStructure> listDirectoryFromStorage(AuthzToken authzToken, String gatewayId, String storageResourceId, String userId, String dirPath) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {

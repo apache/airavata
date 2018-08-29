@@ -26,7 +26,7 @@ namespace py airavata.model.appcatalog.datamodels
 struct FileStructure {
     1: required string name;
     2: required string path;
-    3: required string isFile;
+    3: required bool isFile;
     4: required i64 createdDate;
     5: required i64 modifiedDate;
     6: required string owner;

@@ -30,7 +30,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
 
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField IS_FILE_FIELD_DESC = new org.apache.thrift.protocol.TField("isFile", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField IS_FILE_FIELD_DESC = new org.apache.thrift.protocol.TField("isFile", org.apache.thrift.protocol.TType.BOOL, (short)3);
   private static final org.apache.thrift.protocol.TField CREATED_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("createdDate", org.apache.thrift.protocol.TType.I64, (short)4);
   private static final org.apache.thrift.protocol.TField MODIFIED_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("modifiedDate", org.apache.thrift.protocol.TType.I64, (short)5);
   private static final org.apache.thrift.protocol.TField OWNER_FIELD_DESC = new org.apache.thrift.protocol.TField("owner", org.apache.thrift.protocol.TType.STRING, (short)6);
@@ -42,7 +42,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
 
   private java.lang.String name; // required
   private java.lang.String path; // required
-  private java.lang.String isFile; // required
+  private boolean isFile; // required
   private long createdDate; // required
   private long modifiedDate; // required
   private java.lang.String owner; // required
@@ -129,9 +129,10 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   }
 
   // isset id assignments
-  private static final int __CREATEDDATE_ISSET_ID = 0;
-  private static final int __MODIFIEDDATE_ISSET_ID = 1;
-  private static final int __SIZE_ISSET_ID = 2;
+  private static final int __ISFILE_ISSET_ID = 0;
+  private static final int __CREATEDDATE_ISSET_ID = 1;
+  private static final int __MODIFIEDDATE_ISSET_ID = 2;
+  private static final int __SIZE_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -141,7 +142,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.IS_FILE, new org.apache.thrift.meta_data.FieldMetaData("isFile", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.CREATED_DATE, new org.apache.thrift.meta_data.FieldMetaData("createdDate", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.MODIFIED_DATE, new org.apache.thrift.meta_data.FieldMetaData("modifiedDate", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -162,7 +163,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   public FileStructure(
     java.lang.String name,
     java.lang.String path,
-    java.lang.String isFile,
+    boolean isFile,
     long createdDate,
     long modifiedDate,
     java.lang.String owner,
@@ -173,6 +174,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     this.name = name;
     this.path = path;
     this.isFile = isFile;
+    setIsFileIsSet(true);
     this.createdDate = createdDate;
     setCreatedDateIsSet(true);
     this.modifiedDate = modifiedDate;
@@ -194,9 +196,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     if (other.isSetPath()) {
       this.path = other.path;
     }
-    if (other.isSetIsFile()) {
-      this.isFile = other.isFile;
-    }
+    this.isFile = other.isFile;
     this.createdDate = other.createdDate;
     this.modifiedDate = other.modifiedDate;
     if (other.isSetOwner()) {
@@ -216,7 +216,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   public void clear() {
     this.name = null;
     this.path = null;
-    this.isFile = null;
+    setIsFileIsSet(false);
+    this.isFile = false;
     setCreatedDateIsSet(false);
     this.createdDate = 0;
     setModifiedDateIsSet(false);
@@ -273,27 +274,26 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     }
   }
 
-  public java.lang.String getIsFile() {
+  public boolean isIsFile() {
     return this.isFile;
   }
 
-  public void setIsFile(java.lang.String isFile) {
+  public void setIsFile(boolean isFile) {
     this.isFile = isFile;
+    setIsFileIsSet(true);
   }
 
   public void unsetIsFile() {
-    this.isFile = null;
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __ISFILE_ISSET_ID);
   }
 
   /** Returns true if field isFile is set (has been assigned a value) and false otherwise */
   public boolean isSetIsFile() {
-    return this.isFile != null;
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __ISFILE_ISSET_ID);
   }
 
   public void setIsFileIsSet(boolean value) {
-    if (!value) {
-      this.isFile = null;
-    }
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __ISFILE_ISSET_ID, value);
   }
 
   public long getCreatedDate() {
@@ -439,7 +439,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       if (value == null) {
         unsetIsFile();
       } else {
-        setIsFile((java.lang.String)value);
+        setIsFile((java.lang.Boolean)value);
       }
       break;
 
@@ -499,7 +499,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       return getPath();
 
     case IS_FILE:
-      return getIsFile();
+      return isIsFile();
 
     case CREATED_DATE:
       return getCreatedDate();
@@ -580,12 +580,12 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
         return false;
     }
 
-    boolean this_present_isFile = true && this.isSetIsFile();
-    boolean that_present_isFile = true && that.isSetIsFile();
+    boolean this_present_isFile = true;
+    boolean that_present_isFile = true;
     if (this_present_isFile || that_present_isFile) {
       if (!(this_present_isFile && that_present_isFile))
         return false;
-      if (!this.isFile.equals(that.isFile))
+      if (this.isFile != that.isFile)
         return false;
     }
 
@@ -649,9 +649,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     if (isSetPath())
       hashCode = hashCode * 8191 + path.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetIsFile()) ? 131071 : 524287);
-    if (isSetIsFile())
-      hashCode = hashCode * 8191 + isFile.hashCode();
+    hashCode = hashCode * 8191 + ((isFile) ? 131071 : 524287);
 
     hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(createdDate);
 
@@ -795,11 +793,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     first = false;
     if (!first) sb.append(", ");
     sb.append("isFile:");
-    if (this.isFile == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.isFile);
-    }
+    sb.append(this.isFile);
     first = false;
     if (!first) sb.append(", ");
     sb.append("createdDate:");
@@ -923,8 +917,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
             }
             break;
           case 3: // IS_FILE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.isFile = iprot.readString();
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.isFile = iprot.readBool();
               struct.setIsFileIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -993,11 +987,9 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
         oprot.writeString(struct.path);
         oprot.writeFieldEnd();
       }
-      if (struct.isFile != null) {
-        oprot.writeFieldBegin(IS_FILE_FIELD_DESC);
-        oprot.writeString(struct.isFile);
-        oprot.writeFieldEnd();
-      }
+      oprot.writeFieldBegin(IS_FILE_FIELD_DESC);
+      oprot.writeBool(struct.isFile);
+      oprot.writeFieldEnd();
       oprot.writeFieldBegin(CREATED_DATE_FIELD_DESC);
       oprot.writeI64(struct.createdDate);
       oprot.writeFieldEnd();
@@ -1036,7 +1028,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.name);
       oprot.writeString(struct.path);
-      oprot.writeString(struct.isFile);
+      oprot.writeBool(struct.isFile);
       oprot.writeI64(struct.createdDate);
       oprot.writeI64(struct.modifiedDate);
       oprot.writeString(struct.owner);
@@ -1051,7 +1043,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       struct.setNameIsSet(true);
       struct.path = iprot.readString();
       struct.setPathIsSet(true);
-      struct.isFile = iprot.readString();
+      struct.isFile = iprot.readBool();
       struct.setIsFileIsSet(true);
       struct.createdDate = iprot.readI64();
       struct.setCreatedDateIsSet(true);

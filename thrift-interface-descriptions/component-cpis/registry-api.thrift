@@ -2674,6 +2674,7 @@ service RegistryService {
     void uploadFileToStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: binary content, 5: string path, 6: string type)
     data_storage_model.FileStructure downloadFileFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
     list<data_storage_model.FileStructure> listDirectoryFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string dirPath)
+    data_storage_model.FileStructure getFileDetailsFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string filePath)
     void deleteFileFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
     void deleteDirectoryFromStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
     bool isExistInStorage(1: required  string gatewayId, 2: string storageResourceId, 3: string userId, 4: string path)
