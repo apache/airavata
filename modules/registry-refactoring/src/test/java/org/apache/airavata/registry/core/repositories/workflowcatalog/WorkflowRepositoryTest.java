@@ -20,7 +20,6 @@
 package org.apache.airavata.registry.core.repositories.workflowcatalog;
 
 import org.apache.airavata.model.workflow.*;
-import org.apache.airavata.model.workflow.core.ComponentType;
 import org.apache.airavata.registry.core.repositories.workflowcatalog.util.Initialize;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.junit.After;

@@ -44,10 +44,10 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
 
   private java.lang.String id; // required
   private boolean belongsToMainWorkflow; // required
-  private org.apache.airavata.model.workflow.core.ComponentType fromType; // required
+  private ComponentType fromType; // required
   private java.lang.String fromId; // required
   private java.lang.String fromOutputName; // required
-  private org.apache.airavata.model.workflow.core.ComponentType toType; // required
+  private ComponentType toType; // required
   private java.lang.String toId; // required
   private java.lang.String toInputName; // required
   private long createdAt; // optional
@@ -57,17 +57,9 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
     BELONGS_TO_MAIN_WORKFLOW((short)2, "belongsToMainWorkflow"),
-    /**
-     * 
-     * @see org.apache.airavata.model.workflow.core.ComponentType
-     */
     FROM_TYPE((short)3, "fromType"),
     FROM_ID((short)4, "fromId"),
     FROM_OUTPUT_NAME((short)5, "fromOutputName"),
-    /**
-     * 
-     * @see org.apache.airavata.model.workflow.core.ComponentType
-     */
     TO_TYPE((short)6, "toType"),
     TO_ID((short)7, "toId"),
     TO_INPUT_NAME((short)8, "toInputName"),
@@ -160,13 +152,13 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     tmpMap.put(_Fields.BELONGS_TO_MAIN_WORKFLOW, new org.apache.thrift.meta_data.FieldMetaData("belongsToMainWorkflow", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.FROM_TYPE, new org.apache.thrift.meta_data.FieldMetaData("fromType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.workflow.core.ComponentType.class)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.ENUM        , "ComponentType")));
     tmpMap.put(_Fields.FROM_ID, new org.apache.thrift.meta_data.FieldMetaData("fromId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.FROM_OUTPUT_NAME, new org.apache.thrift.meta_data.FieldMetaData("fromOutputName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TO_TYPE, new org.apache.thrift.meta_data.FieldMetaData("toType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.workflow.core.ComponentType.class)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.ENUM        , "ComponentType")));
     tmpMap.put(_Fields.TO_ID, new org.apache.thrift.meta_data.FieldMetaData("toId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TO_INPUT_NAME, new org.apache.thrift.meta_data.FieldMetaData("toInputName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -187,10 +179,10 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   public WorkflowConnection(
     java.lang.String id,
     boolean belongsToMainWorkflow,
-    org.apache.airavata.model.workflow.core.ComponentType fromType,
+    ComponentType fromType,
     java.lang.String fromId,
     java.lang.String fromOutputName,
-    org.apache.airavata.model.workflow.core.ComponentType toType,
+    ComponentType toType,
     java.lang.String toId,
     java.lang.String toInputName)
   {
@@ -304,19 +296,11 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID, value);
   }
 
-  /**
-   * 
-   * @see org.apache.airavata.model.workflow.core.ComponentType
-   */
-  public org.apache.airavata.model.workflow.core.ComponentType getFromType() {
+  public ComponentType getFromType() {
     return this.fromType;
   }
 
-  /**
-   * 
-   * @see org.apache.airavata.model.workflow.core.ComponentType
-   */
-  public void setFromType(org.apache.airavata.model.workflow.core.ComponentType fromType) {
+  public void setFromType(ComponentType fromType) {
     this.fromType = fromType;
   }
 
@@ -381,19 +365,11 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     }
   }
 
-  /**
-   * 
-   * @see org.apache.airavata.model.workflow.core.ComponentType
-   */
-  public org.apache.airavata.model.workflow.core.ComponentType getToType() {
+  public ComponentType getToType() {
     return this.toType;
   }
 
-  /**
-   * 
-   * @see org.apache.airavata.model.workflow.core.ComponentType
-   */
-  public void setToType(org.apache.airavata.model.workflow.core.ComponentType toType) {
+  public void setToType(ComponentType toType) {
     this.toType = toType;
   }
 
@@ -524,7 +500,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       if (value == null) {
         unsetFromType();
       } else {
-        setFromType((org.apache.airavata.model.workflow.core.ComponentType)value);
+        setFromType((ComponentType)value);
       }
       break;
 
@@ -548,7 +524,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       if (value == null) {
         unsetToType();
       } else {
-        setToType((org.apache.airavata.model.workflow.core.ComponentType)value);
+        setToType((ComponentType)value);
       }
       break;
 
@@ -1101,7 +1077,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
             break;
           case 3: // FROM_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.fromType = org.apache.airavata.model.workflow.core.ComponentType.findByValue(iprot.readI32());
+              struct.fromType = org.apache.airavata.model.workflow.ComponentType.findByValue(iprot.readI32());
               struct.setFromTypeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -1125,7 +1101,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
             break;
           case 6: // TO_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.toType = org.apache.airavata.model.workflow.core.ComponentType.findByValue(iprot.readI32());
+              struct.toType = org.apache.airavata.model.workflow.ComponentType.findByValue(iprot.readI32());
               struct.setToTypeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -1272,13 +1248,13 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       struct.setIdIsSet(true);
       struct.belongsToMainWorkflow = iprot.readBool();
       struct.setBelongsToMainWorkflowIsSet(true);
-      struct.fromType = org.apache.airavata.model.workflow.core.ComponentType.findByValue(iprot.readI32());
+      struct.fromType = org.apache.airavata.model.workflow.ComponentType.findByValue(iprot.readI32());
       struct.setFromTypeIsSet(true);
       struct.fromId = iprot.readString();
       struct.setFromIdIsSet(true);
       struct.fromOutputName = iprot.readString();
       struct.setFromOutputNameIsSet(true);
-      struct.toType = org.apache.airavata.model.workflow.core.ComponentType.findByValue(iprot.readI32());
+      struct.toType = org.apache.airavata.model.workflow.ComponentType.findByValue(iprot.readI32());
       struct.setToTypeIsSet(true);
       struct.toId = iprot.readString();
       struct.setToIdIsSet(true);
