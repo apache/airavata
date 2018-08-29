@@ -14,7 +14,7 @@
                     <b-nav-item exact-active-class="active" exact :to="{name: 'application_interface', params: {id: id}}" :disabled="!id">Interface</b-nav-item>
                     <b-nav-item active-class="active" :to="{name: 'application_deployments', params: {id: id}}" :disabled="!id">Deployments</b-nav-item>
                 </b-nav>
-                <router-view name="module"/>
+                <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule"/>
                 <router-view name="interface"/>
                 <router-view name="deployments"/>
                 <router-view name="deployment"/>
@@ -64,6 +64,19 @@ export default {
                 this.loadApplicationModule(this.id);
             } else {
                 this.module = new models.ApplicationModule();
+            }
+        },
+        saveModule() {
+            if (this.id) {
+                this.updateApplicationModule(this.module)
+                    .then(() => {
+                        this.$router.push({path: '/applications'});
+                    });
+            } else {
+                this.createApplicationModule(this.module)
+                    .then(appModule => {
+                        this.$router.push({name: 'application', params: {id: appModule.appModuleId}});
+                    });
             }
         }
     },
