@@ -25,6 +25,7 @@
 
 <script>
 import {mapActions, mapState} from 'vuex'
+import {models} from 'django-airavata-api'
 
 export default {
     name: 'application-editor-container',
@@ -58,9 +59,13 @@ export default {
     methods: {
         ...mapActions('applications/modules', [
             'loadApplicationModule',
+            'createApplicationModule',
+            'updateApplicationModule',
         ]),
         initialize() {
-            if (this.id) {
+            if (this.currentModule && this.currentModule.appModuleId === this.id) {
+                this.module = this.currentModule.clone();
+            } else if (this.id) {
                 this.loadApplicationModule(this.id);
             } else {
                 this.module = new models.ApplicationModule();
@@ -75,10 +80,13 @@ export default {
             } else {
                 this.createApplicationModule(this.module)
                     .then(appModule => {
-                        this.$router.push({name: 'application', params: {id: appModule.appModuleId}});
+                        this.$router.push({name: 'application_module', params: {id: appModule.appModuleId}});
                     });
             }
-        }
+        },
+        cancelModule() {
+            this.$router.push({path: '/applications'});
+        },
     },
     watch: {
         '$route': 'initialize',

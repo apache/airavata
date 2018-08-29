@@ -25,7 +25,6 @@ import UserPermission from './models/UserPermission'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
-import ApplicationModuleService from './services/ApplicationModuleService'
 import ExperimentService from './services/ExperimentService'
 import ExperimentSearchService from './services/ExperimentSearchService'
 import FullExperimentService from './services/FullExperimentService'
@@ -41,8 +40,10 @@ import SCPDataMovementService from './services/SCPDataMovementService'
 import GridFTPDataMovementService from './services/GridFTPDataMovementService'
 import UnicoreDataMovementService from './services/UnicoreDataMovementService'
 import ServiceFactory from './services/ServiceFactory'
+
 import FetchUtils from './utils/FetchUtils'
 import PaginationIterator from './utils/PaginationIterator'
+import StringUtils from './utils/StringUtils'
 
 exports.errors = {
     UnhandledError,
@@ -100,4 +101,5 @@ exports.services = {
 exports.utils = {
     FetchUtils,
     PaginationIterator,
+    StringUtils,
 }

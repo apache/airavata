@@ -61,6 +61,11 @@ export default {
         cancel() {
             this.$emit('cancel');
         }
+    },
+    watch: {
+        value: function(newValue) {
+            this.appModule = newValue.clone();
+        }
     }
 }
 </script>

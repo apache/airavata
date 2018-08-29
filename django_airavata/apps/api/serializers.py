@@ -226,21 +226,17 @@ class ProjectSerializer(serializers.Serializer):
         return instance
 
 
-class ApplicationModuleSerializer(serializers.Serializer):
+class ApplicationModuleSerializer(
+        thrift_utils.create_serializer_class(ApplicationModule)):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-detail', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
-    appModuleId = serializers.CharField(required=True)
-    appModuleName = serializers.CharField(required=True)
-    appModuleDescription = serializers.CharField()
-    appModuleVersion = serializers.CharField()
     applicationInterface = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-interface', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
     applicationDeployments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-deployments', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
-
 
     def create(self, validated_data):
         return ApplicationModule(**validated_data)
 
     def update(self, instance, validated_data):
-        raise Exception("Not implemented")
+        return self.create(validated_data)
 
 
 class InputDataObjectTypeSerializer(serializers.Serializer):

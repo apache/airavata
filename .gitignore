@@ -7,3 +7,4 @@ dist/
 ENV
 venv/
 .vscode/
+jsconfig.json

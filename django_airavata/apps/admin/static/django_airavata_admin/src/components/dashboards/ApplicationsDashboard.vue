@@ -8,7 +8,7 @@
       <h6 style="color: #666666;">APPLICATIONS</h6>
       <div class="container-fluid">
         <div class="row">
-            <application-card v-for="item in modules" v-bind:app-module="item"
+            <application-card v-for="item in sortedModules" v-bind:app-module="item"
                 v-bind:key="item.appModuleId" v-on:app-selected="clickHandler(item)">
             </application-card>
         </div>
@@ -20,10 +20,11 @@
   import NewApplication from '../admin/NewApplication.vue'
   import Loading from '../Loading.vue'
 
-  import Utils from '../../utils'
   import {mapActions, mapState} from 'vuex'
 
   import { components as comps } from 'django-airavata-common-ui'
+
+  import { utils } from 'django-airavata-api'
 
   export default {
     components:{
@@ -31,10 +32,19 @@
       'application-card': comps.ApplicationCard,
     },
     mounted:function () {
-      this.loadApplications();
+      if (!this.modules) {
+        this.loadApplications();
+      }
     },
     computed: {
       ...mapState('applications/modules', ['modules']),
+      sortedModules() {
+        if (this.modules) {
+          return utils.StringUtils.sortIgnoreCase(this.modules.slice(), a => a.appModuleName);
+        } else {
+          return [];
+        }
+      }
     },
     methods:{
       clickHandler: function (item) {
@@ -52,7 +62,7 @@
       newApplicationHandler:function () {
         this.setTitle('Create New Application')
         this.resetApplication()
-        this.$router.push({name: 'details'})
+        this.$router.push({name: 'new_application_module'})
       }
       ,
       ...mapActions({loadApplications: 'applications/modules/loadApplicationModules', setModule:'newApplication/setModule',setTitle:'newApplication/setTitle',restInterface:'newApplication/appInterfaceTab/resetState',resetDetails:'newApplication/appDetailsTab/resetState',resetDeployment:'newApplication/appDeploymentsTab/resetState'}),
