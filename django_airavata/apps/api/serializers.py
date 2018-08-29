@@ -232,6 +232,9 @@ class ApplicationModuleSerializer(
     applicationInterface = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-interface', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
     applicationDeployments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-deployments', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
 
+    class Meta:
+        required = ('appModuleName',)
+
     def create(self, validated_data):
         return ApplicationModule(**validated_data)
 
