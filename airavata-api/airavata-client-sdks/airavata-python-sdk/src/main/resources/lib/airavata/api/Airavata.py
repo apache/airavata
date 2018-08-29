@@ -3394,7 +3394,7 @@ class Iface(object):
         """
         pass
 
-    def getWorkflow(self, authzToken, workflowTemplateId):
+    def getWorkflow(self, authzToken, workflowId):
         """
 
         API Methods Related for Work-Flow Submission Features.
@@ -3402,15 +3402,15 @@ class Iface(object):
 
         Parameters:
          - authzToken
-         - workflowTemplateId
+         - workflowId
         """
         pass
 
-    def deleteWorkflow(self, authzToken, workflowTemplateId):
+    def deleteWorkflow(self, authzToken, workflowId):
         """
         Parameters:
          - authzToken
-         - workflowTemplateId
+         - workflowId
         """
         pass
 
@@ -3423,16 +3423,16 @@ class Iface(object):
         """
         pass
 
-    def updateWorkflow(self, authzToken, workflowTemplateId, workflow):
+    def updateWorkflow(self, authzToken, workflowId, workflow):
         """
         Parameters:
          - authzToken
-         - workflowTemplateId
+         - workflowId
          - workflow
         """
         pass
 
-    def getWorkflowTemplateId(self, authzToken, workflowName):
+    def getWorkflowId(self, authzToken, workflowName):
         """
         Parameters:
          - authzToken
@@ -12379,7 +12379,7 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getLatestQueueStatuses failed: unknown result")
 
-    def getWorkflow(self, authzToken, workflowTemplateId):
+    def getWorkflow(self, authzToken, workflowId):
         """
 
         API Methods Related for Work-Flow Submission Features.
@@ -12387,16 +12387,16 @@ class Client(Iface):
 
         Parameters:
          - authzToken
-         - workflowTemplateId
+         - workflowId
         """
-        self.send_getWorkflow(authzToken, workflowTemplateId)
+        self.send_getWorkflow(authzToken, workflowId)
         return self.recv_getWorkflow()
 
-    def send_getWorkflow(self, authzToken, workflowTemplateId):
+    def send_getWorkflow(self, authzToken, workflowId):
         self._oprot.writeMessageBegin('getWorkflow', TMessageType.CALL, self._seqid)
         args = getWorkflow_args()
         args.authzToken = authzToken
-        args.workflowTemplateId = workflowTemplateId
+        args.workflowId = workflowId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -12424,20 +12424,20 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getWorkflow failed: unknown result")
 
-    def deleteWorkflow(self, authzToken, workflowTemplateId):
+    def deleteWorkflow(self, authzToken, workflowId):
         """
         Parameters:
          - authzToken
-         - workflowTemplateId
+         - workflowId
         """
-        self.send_deleteWorkflow(authzToken, workflowTemplateId)
+        self.send_deleteWorkflow(authzToken, workflowId)
         self.recv_deleteWorkflow()
 
-    def send_deleteWorkflow(self, authzToken, workflowTemplateId):
+    def send_deleteWorkflow(self, authzToken, workflowId):
         self._oprot.writeMessageBegin('deleteWorkflow', TMessageType.CALL, self._seqid)
         args = deleteWorkflow_args()
         args.authzToken = authzToken
-        args.workflowTemplateId = workflowTemplateId
+        args.workflowId = workflowId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -12506,21 +12506,21 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "registerWorkflow failed: unknown result")
 
-    def updateWorkflow(self, authzToken, workflowTemplateId, workflow):
+    def updateWorkflow(self, authzToken, workflowId, workflow):
         """
         Parameters:
          - authzToken
-         - workflowTemplateId
+         - workflowId
          - workflow
         """
-        self.send_updateWorkflow(authzToken, workflowTemplateId, workflow)
+        self.send_updateWorkflow(authzToken, workflowId, workflow)
         self.recv_updateWorkflow()
 
-    def send_updateWorkflow(self, authzToken, workflowTemplateId, workflow):
+    def send_updateWorkflow(self, authzToken, workflowId, workflow):
         self._oprot.writeMessageBegin('updateWorkflow', TMessageType.CALL, self._seqid)
         args = updateWorkflow_args()
         args.authzToken = authzToken
-        args.workflowTemplateId = workflowTemplateId
+        args.workflowId = workflowId
         args.workflow = workflow
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -12547,25 +12547,25 @@ class Client(Iface):
             raise result.ae
         return
 
-    def getWorkflowTemplateId(self, authzToken, workflowName):
+    def getWorkflowId(self, authzToken, workflowName):
         """
         Parameters:
          - authzToken
          - workflowName
         """
-        self.send_getWorkflowTemplateId(authzToken, workflowName)
-        return self.recv_getWorkflowTemplateId()
+        self.send_getWorkflowId(authzToken, workflowName)
+        return self.recv_getWorkflowId()
 
-    def send_getWorkflowTemplateId(self, authzToken, workflowName):
-        self._oprot.writeMessageBegin('getWorkflowTemplateId', TMessageType.CALL, self._seqid)
-        args = getWorkflowTemplateId_args()
+    def send_getWorkflowId(self, authzToken, workflowName):
+        self._oprot.writeMessageBegin('getWorkflowId', TMessageType.CALL, self._seqid)
+        args = getWorkflowId_args()
         args.authzToken = authzToken
         args.workflowName = workflowName
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
 
-    def recv_getWorkflowTemplateId(self):
+    def recv_getWorkflowId(self):
         iprot = self._iprot
         (fname, mtype, rseqid) = iprot.readMessageBegin()
         if mtype == TMessageType.EXCEPTION:
@@ -12573,7 +12573,7 @@ class Client(Iface):
             x.read(iprot)
             iprot.readMessageEnd()
             raise x
-        result = getWorkflowTemplateId_result()
+        result = getWorkflowId_result()
         result.read(iprot)
         iprot.readMessageEnd()
         if result.success is not None:
@@ -12586,7 +12586,7 @@ class Client(Iface):
             raise result.ase
         if result.ae is not None:
             raise result.ae
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getWorkflowTemplateId failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getWorkflowId failed: unknown result")
 
     def isWorkflowExistWithName(self, authzToken, workflowName):
         """
@@ -13924,7 +13924,7 @@ class Processor(Iface, TProcessor):
         self._processMap["deleteWorkflow"] = Processor.process_deleteWorkflow
         self._processMap["registerWorkflow"] = Processor.process_registerWorkflow
         self._processMap["updateWorkflow"] = Processor.process_updateWorkflow
-        self._processMap["getWorkflowTemplateId"] = Processor.process_getWorkflowTemplateId
+        self._processMap["getWorkflowId"] = Processor.process_getWorkflowId
         self._processMap["isWorkflowExistWithName"] = Processor.process_isWorkflowExistWithName
         self._processMap["registerDataProduct"] = Processor.process_registerDataProduct
         self._processMap["getDataProduct"] = Processor.process_getDataProduct
@@ -18857,7 +18857,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = getWorkflow_result()
         try:
-            result.success = self._handler.getWorkflow(args.authzToken, args.workflowTemplateId)
+            result.success = self._handler.getWorkflow(args.authzToken, args.workflowId)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -18888,7 +18888,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = deleteWorkflow_result()
         try:
-            self._handler.deleteWorkflow(args.authzToken, args.workflowTemplateId)
+            self._handler.deleteWorkflow(args.authzToken, args.workflowId)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -18950,7 +18950,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = updateWorkflow_result()
         try:
-            self._handler.updateWorkflow(args.authzToken, args.workflowTemplateId, args.workflow)
+            self._handler.updateWorkflow(args.authzToken, args.workflowId, args.workflow)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -18975,13 +18975,13 @@ class Processor(Iface, TProcessor):
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
-    def process_getWorkflowTemplateId(self, seqid, iprot, oprot):
-        args = getWorkflowTemplateId_args()
+    def process_getWorkflowId(self, seqid, iprot, oprot):
+        args = getWorkflowId_args()
         args.read(iprot)
         iprot.readMessageEnd()
-        result = getWorkflowTemplateId_result()
+        result = getWorkflowId_result()
         try:
-            result.success = self._handler.getWorkflowTemplateId(args.authzToken, args.workflowName)
+            result.success = self._handler.getWorkflowId(args.authzToken, args.workflowName)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -19001,7 +19001,7 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.EXCEPTION
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getWorkflowTemplateId", msg_type, seqid)
+        oprot.writeMessageBegin("getWorkflowId", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -51703,18 +51703,18 @@ class getWorkflow_args(object):
     """
     Attributes:
      - authzToken
-     - workflowTemplateId
+     - workflowId
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.STRING, 'workflowTemplateId', 'UTF8', None, ),  # 2
+        (2, TType.STRING, 'workflowId', 'UTF8', None, ),  # 2
     )
 
-    def __init__(self, authzToken=None, workflowTemplateId=None,):
+    def __init__(self, authzToken=None, workflowId=None,):
         self.authzToken = authzToken
-        self.workflowTemplateId = workflowTemplateId
+        self.workflowId = workflowId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -51733,7 +51733,7 @@ class getWorkflow_args(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.STRING:
-                    self.workflowTemplateId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.workflowId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -51750,9 +51750,9 @@ class getWorkflow_args(object):
             oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
             self.authzToken.write(oprot)
             oprot.writeFieldEnd()
-        if self.workflowTemplateId is not None:
-            oprot.writeFieldBegin('workflowTemplateId', TType.STRING, 2)
-            oprot.writeString(self.workflowTemplateId.encode('utf-8') if sys.version_info[0] == 2 else self.workflowTemplateId)
+        if self.workflowId is not None:
+            oprot.writeFieldBegin('workflowId', TType.STRING, 2)
+            oprot.writeString(self.workflowId.encode('utf-8') if sys.version_info[0] == 2 else self.workflowId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -51760,8 +51760,8 @@ class getWorkflow_args(object):
     def validate(self):
         if self.authzToken is None:
             raise TProtocolException(message='Required field authzToken is unset!')
-        if self.workflowTemplateId is None:
-            raise TProtocolException(message='Required field workflowTemplateId is unset!')
+        if self.workflowId is None:
+            raise TProtocolException(message='Required field workflowId is unset!')
         return
 
     def __repr__(self):
@@ -51787,7 +51787,7 @@ class getWorkflow_result(object):
     """
 
     thrift_spec = (
-        (0, TType.STRUCT, 'success', (airavata.model.workflow.ttypes.WorkflowModel, airavata.model.workflow.ttypes.WorkflowModel.thrift_spec), None, ),  # 0
+        (0, TType.STRUCT, 'success', (airavata.model.workflow.ttypes.AiravataWorkflow, airavata.model.workflow.ttypes.AiravataWorkflow.thrift_spec), None, ),  # 0
         (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
         (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
         (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
@@ -51812,7 +51812,7 @@ class getWorkflow_result(object):
                 break
             if fid == 0:
                 if ftype == TType.STRUCT:
-                    self.success = airavata.model.workflow.ttypes.WorkflowModel()
+                    self.success = airavata.model.workflow.ttypes.AiravataWorkflow()
                     self.success.read(iprot)
                 else:
                     iprot.skip(ftype)
@@ -51892,18 +51892,18 @@ class deleteWorkflow_args(object):
     """
     Attributes:
      - authzToken
-     - workflowTemplateId
+     - workflowId
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.STRING, 'workflowTemplateId', 'UTF8', None, ),  # 2
+        (2, TType.STRING, 'workflowId', 'UTF8', None, ),  # 2
     )
 
-    def __init__(self, authzToken=None, workflowTemplateId=None,):
+    def __init__(self, authzToken=None, workflowId=None,):
         self.authzToken = authzToken
-        self.workflowTemplateId = workflowTemplateId
+        self.workflowId = workflowId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -51922,7 +51922,7 @@ class deleteWorkflow_args(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.STRING:
-                    self.workflowTemplateId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.workflowId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -51939,9 +51939,9 @@ class deleteWorkflow_args(object):
             oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
             self.authzToken.write(oprot)
             oprot.writeFieldEnd()
-        if self.workflowTemplateId is not None:
-            oprot.writeFieldBegin('workflowTemplateId', TType.STRING, 2)
-            oprot.writeString(self.workflowTemplateId.encode('utf-8') if sys.version_info[0] == 2 else self.workflowTemplateId)
+        if self.workflowId is not None:
+            oprot.writeFieldBegin('workflowId', TType.STRING, 2)
+            oprot.writeString(self.workflowId.encode('utf-8') if sys.version_info[0] == 2 else self.workflowId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -51949,8 +51949,8 @@ class deleteWorkflow_args(object):
     def validate(self):
         if self.authzToken is None:
             raise TProtocolException(message='Required field authzToken is unset!')
-        if self.workflowTemplateId is None:
-            raise TProtocolException(message='Required field workflowTemplateId is unset!')
+        if self.workflowId is None:
+            raise TProtocolException(message='Required field workflowId is unset!')
         return
 
     def __repr__(self):
@@ -52077,7 +52077,7 @@ class registerWorkflow_args(object):
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 2
-        (3, TType.STRUCT, 'workflow', (airavata.model.workflow.ttypes.WorkflowModel, airavata.model.workflow.ttypes.WorkflowModel.thrift_spec), None, ),  # 3
+        (3, TType.STRUCT, 'workflow', (airavata.model.workflow.ttypes.AiravataWorkflow, airavata.model.workflow.ttypes.AiravataWorkflow.thrift_spec), None, ),  # 3
     )
 
     def __init__(self, authzToken=None, gatewayId=None, workflow=None,):
@@ -52107,7 +52107,7 @@ class registerWorkflow_args(object):
                     iprot.skip(ftype)
             elif fid == 3:
                 if ftype == TType.STRUCT:
-                    self.workflow = airavata.model.workflow.ttypes.WorkflowModel()
+                    self.workflow = airavata.model.workflow.ttypes.AiravataWorkflow()
                     self.workflow.read(iprot)
                 else:
                     iprot.skip(ftype)
@@ -52272,20 +52272,20 @@ class updateWorkflow_args(object):
     """
     Attributes:
      - authzToken
-     - workflowTemplateId
+     - workflowId
      - workflow
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.STRING, 'workflowTemplateId', 'UTF8', None, ),  # 2
-        (3, TType.STRUCT, 'workflow', (airavata.model.workflow.ttypes.WorkflowModel, airavata.model.workflow.ttypes.WorkflowModel.thrift_spec), None, ),  # 3
+        (2, TType.STRING, 'workflowId', 'UTF8', None, ),  # 2
+        (3, TType.STRUCT, 'workflow', (airavata.model.workflow.ttypes.AiravataWorkflow, airavata.model.workflow.ttypes.AiravataWorkflow.thrift_spec), None, ),  # 3
     )
 
-    def __init__(self, authzToken=None, workflowTemplateId=None, workflow=None,):
+    def __init__(self, authzToken=None, workflowId=None, workflow=None,):
         self.authzToken = authzToken
-        self.workflowTemplateId = workflowTemplateId
+        self.workflowId = workflowId
         self.workflow = workflow
 
     def read(self, iprot):
@@ -52305,12 +52305,12 @@ class updateWorkflow_args(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.STRING:
-                    self.workflowTemplateId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.workflowId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 3:
                 if ftype == TType.STRUCT:
-                    self.workflow = airavata.model.workflow.ttypes.WorkflowModel()
+                    self.workflow = airavata.model.workflow.ttypes.AiravataWorkflow()
                     self.workflow.read(iprot)
                 else:
                     iprot.skip(ftype)
@@ -52328,9 +52328,9 @@ class updateWorkflow_args(object):
             oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
             self.authzToken.write(oprot)
             oprot.writeFieldEnd()
-        if self.workflowTemplateId is not None:
-            oprot.writeFieldBegin('workflowTemplateId', TType.STRING, 2)
-            oprot.writeString(self.workflowTemplateId.encode('utf-8') if sys.version_info[0] == 2 else self.workflowTemplateId)
+        if self.workflowId is not None:
+            oprot.writeFieldBegin('workflowId', TType.STRING, 2)
+            oprot.writeString(self.workflowId.encode('utf-8') if sys.version_info[0] == 2 else self.workflowId)
             oprot.writeFieldEnd()
         if self.workflow is not None:
             oprot.writeFieldBegin('workflow', TType.STRUCT, 3)
@@ -52342,8 +52342,8 @@ class updateWorkflow_args(object):
     def validate(self):
         if self.authzToken is None:
             raise TProtocolException(message='Required field authzToken is unset!')
-        if self.workflowTemplateId is None:
-            raise TProtocolException(message='Required field workflowTemplateId is unset!')
+        if self.workflowId is None:
+            raise TProtocolException(message='Required field workflowId is unset!')
         if self.workflow is None:
             raise TProtocolException(message='Required field workflow is unset!')
         return
@@ -52460,7 +52460,7 @@ class updateWorkflow_result(object):
         return not (self == other)
 
 
-class getWorkflowTemplateId_args(object):
+class getWorkflowId_args(object):
     """
     Attributes:
      - authzToken
@@ -52506,7 +52506,7 @@ class getWorkflowTemplateId_args(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
-        oprot.writeStructBegin('getWorkflowTemplateId_args')
+        oprot.writeStructBegin('getWorkflowId_args')
         if self.authzToken is not None:
             oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
             self.authzToken.write(oprot)
@@ -52537,7 +52537,7 @@ class getWorkflowTemplateId_args(object):
         return not (self == other)
 
 
-class getWorkflowTemplateId_result(object):
+class getWorkflowId_result(object):
     """
     Attributes:
      - success
@@ -52609,7 +52609,7 @@ class getWorkflowTemplateId_result(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
-        oprot.writeStructBegin('getWorkflowTemplateId_result')
+        oprot.writeStructBegin('getWorkflowId_result')
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.STRING, 0)
             oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)

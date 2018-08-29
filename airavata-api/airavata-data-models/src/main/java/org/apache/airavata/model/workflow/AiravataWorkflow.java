@@ -55,9 +55,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
   private java.lang.String description; // optional
   private boolean enableEmailNotification; // optional
   private java.util.List<NotificationEmail> notificationEmails; // optional
-  private java.util.List<org.apache.airavata.model.workflow.WorkflowApplication> applications; // optional
-  private java.util.List<org.apache.airavata.model.workflow.WorkflowHandler> handlers; // optional
-  private java.util.List<org.apache.airavata.model.workflow.WorkflowConnection> connections; // optional
+  private java.util.List<WorkflowApplication> applications; // optional
+  private java.util.List<WorkflowHandler> handlers; // optional
+  private java.util.List<WorkflowConnection> connections; // optional
   private java.util.List<WorkflowStatus> statuses; // optional
   private java.util.List<org.apache.airavata.model.commons.ErrorModel> errors; // optional
   private long createdAt; // optional
@@ -191,13 +191,13 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, NotificationEmail.class))));
     tmpMap.put(_Fields.APPLICATIONS, new org.apache.thrift.meta_data.FieldMetaData("applications", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workflow.WorkflowApplication.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowApplication.class))));
     tmpMap.put(_Fields.HANDLERS, new org.apache.thrift.meta_data.FieldMetaData("handlers", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workflow.WorkflowHandler.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowHandler.class))));
     tmpMap.put(_Fields.CONNECTIONS, new org.apache.thrift.meta_data.FieldMetaData("connections", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workflow.WorkflowConnection.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowConnection.class))));
     tmpMap.put(_Fields.STATUSES, new org.apache.thrift.meta_data.FieldMetaData("statuses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowStatus.class))));
@@ -264,23 +264,23 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       this.notificationEmails = __this__notificationEmails;
     }
     if (other.isSetApplications()) {
-      java.util.List<org.apache.airavata.model.workflow.WorkflowApplication> __this__applications = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowApplication>(other.applications.size());
-      for (org.apache.airavata.model.workflow.WorkflowApplication other_element : other.applications) {
-        __this__applications.add(new org.apache.airavata.model.workflow.WorkflowApplication(other_element));
+      java.util.List<WorkflowApplication> __this__applications = new java.util.ArrayList<WorkflowApplication>(other.applications.size());
+      for (WorkflowApplication other_element : other.applications) {
+        __this__applications.add(new WorkflowApplication(other_element));
       }
       this.applications = __this__applications;
     }
     if (other.isSetHandlers()) {
-      java.util.List<org.apache.airavata.model.workflow.WorkflowHandler> __this__handlers = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowHandler>(other.handlers.size());
-      for (org.apache.airavata.model.workflow.WorkflowHandler other_element : other.handlers) {
-        __this__handlers.add(new org.apache.airavata.model.workflow.WorkflowHandler(other_element));
+      java.util.List<WorkflowHandler> __this__handlers = new java.util.ArrayList<WorkflowHandler>(other.handlers.size());
+      for (WorkflowHandler other_element : other.handlers) {
+        __this__handlers.add(new WorkflowHandler(other_element));
       }
       this.handlers = __this__handlers;
     }
     if (other.isSetConnections()) {
-      java.util.List<org.apache.airavata.model.workflow.WorkflowConnection> __this__connections = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowConnection>(other.connections.size());
-      for (org.apache.airavata.model.workflow.WorkflowConnection other_element : other.connections) {
-        __this__connections.add(new org.apache.airavata.model.workflow.WorkflowConnection(other_element));
+      java.util.List<WorkflowConnection> __this__connections = new java.util.ArrayList<WorkflowConnection>(other.connections.size());
+      for (WorkflowConnection other_element : other.connections) {
+        __this__connections.add(new WorkflowConnection(other_element));
       }
       this.connections = __this__connections;
     }
@@ -531,22 +531,22 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     return (this.applications == null) ? 0 : this.applications.size();
   }
 
-  public java.util.Iterator<org.apache.airavata.model.workflow.WorkflowApplication> getApplicationsIterator() {
+  public java.util.Iterator<WorkflowApplication> getApplicationsIterator() {
     return (this.applications == null) ? null : this.applications.iterator();
   }
 
-  public void addToApplications(org.apache.airavata.model.workflow.WorkflowApplication elem) {
+  public void addToApplications(WorkflowApplication elem) {
     if (this.applications == null) {
-      this.applications = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowApplication>();
+      this.applications = new java.util.ArrayList<WorkflowApplication>();
     }
     this.applications.add(elem);
   }
 
-  public java.util.List<org.apache.airavata.model.workflow.WorkflowApplication> getApplications() {
+  public java.util.List<WorkflowApplication> getApplications() {
     return this.applications;
   }
 
-  public void setApplications(java.util.List<org.apache.airavata.model.workflow.WorkflowApplication> applications) {
+  public void setApplications(java.util.List<WorkflowApplication> applications) {
     this.applications = applications;
   }
 
@@ -569,22 +569,22 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     return (this.handlers == null) ? 0 : this.handlers.size();
   }
 
-  public java.util.Iterator<org.apache.airavata.model.workflow.WorkflowHandler> getHandlersIterator() {
+  public java.util.Iterator<WorkflowHandler> getHandlersIterator() {
     return (this.handlers == null) ? null : this.handlers.iterator();
   }
 
-  public void addToHandlers(org.apache.airavata.model.workflow.WorkflowHandler elem) {
+  public void addToHandlers(WorkflowHandler elem) {
     if (this.handlers == null) {
-      this.handlers = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowHandler>();
+      this.handlers = new java.util.ArrayList<WorkflowHandler>();
     }
     this.handlers.add(elem);
   }
 
-  public java.util.List<org.apache.airavata.model.workflow.WorkflowHandler> getHandlers() {
+  public java.util.List<WorkflowHandler> getHandlers() {
     return this.handlers;
   }
 
-  public void setHandlers(java.util.List<org.apache.airavata.model.workflow.WorkflowHandler> handlers) {
+  public void setHandlers(java.util.List<WorkflowHandler> handlers) {
     this.handlers = handlers;
   }
 
@@ -607,22 +607,22 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     return (this.connections == null) ? 0 : this.connections.size();
   }
 
-  public java.util.Iterator<org.apache.airavata.model.workflow.WorkflowConnection> getConnectionsIterator() {
+  public java.util.Iterator<WorkflowConnection> getConnectionsIterator() {
     return (this.connections == null) ? null : this.connections.iterator();
   }
 
-  public void addToConnections(org.apache.airavata.model.workflow.WorkflowConnection elem) {
+  public void addToConnections(WorkflowConnection elem) {
     if (this.connections == null) {
-      this.connections = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowConnection>();
+      this.connections = new java.util.ArrayList<WorkflowConnection>();
     }
     this.connections.add(elem);
   }
 
-  public java.util.List<org.apache.airavata.model.workflow.WorkflowConnection> getConnections() {
+  public java.util.List<WorkflowConnection> getConnections() {
     return this.connections;
   }
 
-  public void setConnections(java.util.List<org.apache.airavata.model.workflow.WorkflowConnection> connections) {
+  public void setConnections(java.util.List<WorkflowConnection> connections) {
     this.connections = connections;
   }
 
@@ -831,7 +831,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       if (value == null) {
         unsetApplications();
       } else {
-        setApplications((java.util.List<org.apache.airavata.model.workflow.WorkflowApplication>)value);
+        setApplications((java.util.List<WorkflowApplication>)value);
       }
       break;
 
@@ -839,7 +839,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       if (value == null) {
         unsetHandlers();
       } else {
-        setHandlers((java.util.List<org.apache.airavata.model.workflow.WorkflowHandler>)value);
+        setHandlers((java.util.List<WorkflowHandler>)value);
       }
       break;
 
@@ -847,7 +847,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       if (value == null) {
         unsetConnections();
       } else {
-        setConnections((java.util.List<org.apache.airavata.model.workflow.WorkflowConnection>)value);
+        setConnections((java.util.List<WorkflowConnection>)value);
       }
       break;
 
@@ -1627,14 +1627,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           case 8: // NOTIFICATION_EMAILS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.notificationEmails = new java.util.ArrayList<NotificationEmail>(_list0.size);
-                NotificationEmail _elem1;
-                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                org.apache.thrift.protocol.TList _list64 = iprot.readListBegin();
+                struct.notificationEmails = new java.util.ArrayList<NotificationEmail>(_list64.size);
+                NotificationEmail _elem65;
+                for (int _i66 = 0; _i66 < _list64.size; ++_i66)
                 {
-                  _elem1 = new NotificationEmail();
-                  _elem1.read(iprot);
-                  struct.notificationEmails.add(_elem1);
+                  _elem65 = new NotificationEmail();
+                  _elem65.read(iprot);
+                  struct.notificationEmails.add(_elem65);
                 }
                 iprot.readListEnd();
               }
@@ -1646,14 +1646,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           case 9: // APPLICATIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.applications = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowApplication>(_list3.size);
-                org.apache.airavata.model.workflow.WorkflowApplication _elem4;
-                for (int _i5 = 0; _i5 < _list3.size; ++_i5)
+                org.apache.thrift.protocol.TList _list67 = iprot.readListBegin();
+                struct.applications = new java.util.ArrayList<WorkflowApplication>(_list67.size);
+                WorkflowApplication _elem68;
+                for (int _i69 = 0; _i69 < _list67.size; ++_i69)
                 {
-                  _elem4 = new org.apache.airavata.model.workflow.WorkflowApplication();
-                  _elem4.read(iprot);
-                  struct.applications.add(_elem4);
+                  _elem68 = new WorkflowApplication();
+                  _elem68.read(iprot);
+                  struct.applications.add(_elem68);
                 }
                 iprot.readListEnd();
               }
@@ -1665,14 +1665,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           case 10: // HANDLERS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
-                struct.handlers = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowHandler>(_list6.size);
-                org.apache.airavata.model.workflow.WorkflowHandler _elem7;
-                for (int _i8 = 0; _i8 < _list6.size; ++_i8)
+                org.apache.thrift.protocol.TList _list70 = iprot.readListBegin();
+                struct.handlers = new java.util.ArrayList<WorkflowHandler>(_list70.size);
+                WorkflowHandler _elem71;
+                for (int _i72 = 0; _i72 < _list70.size; ++_i72)
                 {
-                  _elem7 = new org.apache.airavata.model.workflow.WorkflowHandler();
-                  _elem7.read(iprot);
-                  struct.handlers.add(_elem7);
+                  _elem71 = new WorkflowHandler();
+                  _elem71.read(iprot);
+                  struct.handlers.add(_elem71);
                 }
                 iprot.readListEnd();
               }
@@ -1684,14 +1684,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           case 11: // CONNECTIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
-                struct.connections = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowConnection>(_list9.size);
-                org.apache.airavata.model.workflow.WorkflowConnection _elem10;
-                for (int _i11 = 0; _i11 < _list9.size; ++_i11)
+                org.apache.thrift.protocol.TList _list73 = iprot.readListBegin();
+                struct.connections = new java.util.ArrayList<WorkflowConnection>(_list73.size);
+                WorkflowConnection _elem74;
+                for (int _i75 = 0; _i75 < _list73.size; ++_i75)
                 {
-                  _elem10 = new org.apache.airavata.model.workflow.WorkflowConnection();
-                  _elem10.read(iprot);
-                  struct.connections.add(_elem10);
+                  _elem74 = new WorkflowConnection();
+                  _elem74.read(iprot);
+                  struct.connections.add(_elem74);
                 }
                 iprot.readListEnd();
               }
@@ -1703,14 +1703,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           case 12: // STATUSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list12 = iprot.readListBegin();
-                struct.statuses = new java.util.ArrayList<WorkflowStatus>(_list12.size);
-                WorkflowStatus _elem13;
-                for (int _i14 = 0; _i14 < _list12.size; ++_i14)
+                org.apache.thrift.protocol.TList _list76 = iprot.readListBegin();
+                struct.statuses = new java.util.ArrayList<WorkflowStatus>(_list76.size);
+                WorkflowStatus _elem77;
+                for (int _i78 = 0; _i78 < _list76.size; ++_i78)
                 {
-                  _elem13 = new WorkflowStatus();
-                  _elem13.read(iprot);
-                  struct.statuses.add(_elem13);
+                  _elem77 = new WorkflowStatus();
+                  _elem77.read(iprot);
+                  struct.statuses.add(_elem77);
                 }
                 iprot.readListEnd();
               }
@@ -1722,14 +1722,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           case 13: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list15 = iprot.readListBegin();
-                struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list15.size);
-                org.apache.airavata.model.commons.ErrorModel _elem16;
-                for (int _i17 = 0; _i17 < _list15.size; ++_i17)
+                org.apache.thrift.protocol.TList _list79 = iprot.readListBegin();
+                struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list79.size);
+                org.apache.airavata.model.commons.ErrorModel _elem80;
+                for (int _i81 = 0; _i81 < _list79.size; ++_i81)
                 {
-                  _elem16 = new org.apache.airavata.model.commons.ErrorModel();
-                  _elem16.read(iprot);
-                  struct.errors.add(_elem16);
+                  _elem80 = new org.apache.airavata.model.commons.ErrorModel();
+                  _elem80.read(iprot);
+                  struct.errors.add(_elem80);
                 }
                 iprot.readListEnd();
               }
@@ -1809,9 +1809,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(NOTIFICATION_EMAILS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.notificationEmails.size()));
-            for (NotificationEmail _iter18 : struct.notificationEmails)
+            for (NotificationEmail _iter82 : struct.notificationEmails)
             {
-              _iter18.write(oprot);
+              _iter82.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1823,9 +1823,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(APPLICATIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.applications.size()));
-            for (org.apache.airavata.model.workflow.WorkflowApplication _iter19 : struct.applications)
+            for (WorkflowApplication _iter83 : struct.applications)
             {
-              _iter19.write(oprot);
+              _iter83.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1837,9 +1837,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(HANDLERS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.handlers.size()));
-            for (org.apache.airavata.model.workflow.WorkflowHandler _iter20 : struct.handlers)
+            for (WorkflowHandler _iter84 : struct.handlers)
             {
-              _iter20.write(oprot);
+              _iter84.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1851,9 +1851,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(CONNECTIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.connections.size()));
-            for (org.apache.airavata.model.workflow.WorkflowConnection _iter21 : struct.connections)
+            for (WorkflowConnection _iter85 : struct.connections)
             {
-              _iter21.write(oprot);
+              _iter85.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1865,9 +1865,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(STATUSES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.statuses.size()));
-            for (WorkflowStatus _iter22 : struct.statuses)
+            for (WorkflowStatus _iter86 : struct.statuses)
             {
-              _iter22.write(oprot);
+              _iter86.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1879,9 +1879,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(ERRORS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.errors.size()));
-            for (org.apache.airavata.model.commons.ErrorModel _iter23 : struct.errors)
+            for (org.apache.airavata.model.commons.ErrorModel _iter87 : struct.errors)
             {
-              _iter23.write(oprot);
+              _iter87.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1961,54 +1961,54 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       if (struct.isSetNotificationEmails()) {
         {
           oprot.writeI32(struct.notificationEmails.size());
-          for (NotificationEmail _iter24 : struct.notificationEmails)
+          for (NotificationEmail _iter88 : struct.notificationEmails)
           {
-            _iter24.write(oprot);
+            _iter88.write(oprot);
           }
         }
       }
       if (struct.isSetApplications()) {
         {
           oprot.writeI32(struct.applications.size());
-          for (org.apache.airavata.model.workflow.WorkflowApplication _iter25 : struct.applications)
+          for (WorkflowApplication _iter89 : struct.applications)
           {
-            _iter25.write(oprot);
+            _iter89.write(oprot);
           }
         }
       }
       if (struct.isSetHandlers()) {
         {
           oprot.writeI32(struct.handlers.size());
-          for (org.apache.airavata.model.workflow.WorkflowHandler _iter26 : struct.handlers)
+          for (WorkflowHandler _iter90 : struct.handlers)
           {
-            _iter26.write(oprot);
+            _iter90.write(oprot);
           }
         }
       }
       if (struct.isSetConnections()) {
         {
           oprot.writeI32(struct.connections.size());
-          for (org.apache.airavata.model.workflow.WorkflowConnection _iter27 : struct.connections)
+          for (WorkflowConnection _iter91 : struct.connections)
           {
-            _iter27.write(oprot);
+            _iter91.write(oprot);
           }
         }
       }
       if (struct.isSetStatuses()) {
         {
           oprot.writeI32(struct.statuses.size());
-          for (WorkflowStatus _iter28 : struct.statuses)
+          for (WorkflowStatus _iter92 : struct.statuses)
           {
-            _iter28.write(oprot);
+            _iter92.write(oprot);
           }
         }
       }
       if (struct.isSetErrors()) {
         {
           oprot.writeI32(struct.errors.size());
-          for (org.apache.airavata.model.commons.ErrorModel _iter29 : struct.errors)
+          for (org.apache.airavata.model.commons.ErrorModel _iter93 : struct.errors)
           {
-            _iter29.write(oprot);
+            _iter93.write(oprot);
           }
         }
       }
@@ -2044,84 +2044,84 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list30 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.notificationEmails = new java.util.ArrayList<NotificationEmail>(_list30.size);
-          NotificationEmail _elem31;
-          for (int _i32 = 0; _i32 < _list30.size; ++_i32)
+          org.apache.thrift.protocol.TList _list94 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.notificationEmails = new java.util.ArrayList<NotificationEmail>(_list94.size);
+          NotificationEmail _elem95;
+          for (int _i96 = 0; _i96 < _list94.size; ++_i96)
           {
-            _elem31 = new NotificationEmail();
-            _elem31.read(iprot);
-            struct.notificationEmails.add(_elem31);
+            _elem95 = new NotificationEmail();
+            _elem95.read(iprot);
+            struct.notificationEmails.add(_elem95);
           }
         }
         struct.setNotificationEmailsIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list33 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.applications = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowApplication>(_list33.size);
-          org.apache.airavata.model.workflow.WorkflowApplication _elem34;
-          for (int _i35 = 0; _i35 < _list33.size; ++_i35)
+          org.apache.thrift.protocol.TList _list97 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.applications = new java.util.ArrayList<WorkflowApplication>(_list97.size);
+          WorkflowApplication _elem98;
+          for (int _i99 = 0; _i99 < _list97.size; ++_i99)
           {
-            _elem34 = new org.apache.airavata.model.workflow.WorkflowApplication();
-            _elem34.read(iprot);
-            struct.applications.add(_elem34);
+            _elem98 = new WorkflowApplication();
+            _elem98.read(iprot);
+            struct.applications.add(_elem98);
           }
         }
         struct.setApplicationsIsSet(true);
       }
       if (incoming.get(4)) {
         {
-          org.apache.thrift.protocol.TList _list36 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.handlers = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowHandler>(_list36.size);
-          org.apache.airavata.model.workflow.WorkflowHandler _elem37;
-          for (int _i38 = 0; _i38 < _list36.size; ++_i38)
+          org.apache.thrift.protocol.TList _list100 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.handlers = new java.util.ArrayList<WorkflowHandler>(_list100.size);
+          WorkflowHandler _elem101;
+          for (int _i102 = 0; _i102 < _list100.size; ++_i102)
           {
-            _elem37 = new org.apache.airavata.model.workflow.WorkflowHandler();
-            _elem37.read(iprot);
-            struct.handlers.add(_elem37);
+            _elem101 = new WorkflowHandler();
+            _elem101.read(iprot);
+            struct.handlers.add(_elem101);
           }
         }
         struct.setHandlersIsSet(true);
       }
       if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list39 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.connections = new java.util.ArrayList<org.apache.airavata.model.workflow.WorkflowConnection>(_list39.size);
-          org.apache.airavata.model.workflow.WorkflowConnection _elem40;
-          for (int _i41 = 0; _i41 < _list39.size; ++_i41)
+          org.apache.thrift.protocol.TList _list103 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.connections = new java.util.ArrayList<WorkflowConnection>(_list103.size);
+          WorkflowConnection _elem104;
+          for (int _i105 = 0; _i105 < _list103.size; ++_i105)
           {
-            _elem40 = new org.apache.airavata.model.workflow.WorkflowConnection();
-            _elem40.read(iprot);
-            struct.connections.add(_elem40);
+            _elem104 = new WorkflowConnection();
+            _elem104.read(iprot);
+            struct.connections.add(_elem104);
           }
         }
         struct.setConnectionsIsSet(true);
       }
       if (incoming.get(6)) {
         {
-          org.apache.thrift.protocol.TList _list42 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.statuses = new java.util.ArrayList<WorkflowStatus>(_list42.size);
-          WorkflowStatus _elem43;
-          for (int _i44 = 0; _i44 < _list42.size; ++_i44)
+          org.apache.thrift.protocol.TList _list106 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.statuses = new java.util.ArrayList<WorkflowStatus>(_list106.size);
+          WorkflowStatus _elem107;
+          for (int _i108 = 0; _i108 < _list106.size; ++_i108)
           {
-            _elem43 = new WorkflowStatus();
-            _elem43.read(iprot);
-            struct.statuses.add(_elem43);
+            _elem107 = new WorkflowStatus();
+            _elem107.read(iprot);
+            struct.statuses.add(_elem107);
           }
         }
         struct.setStatusesIsSet(true);
       }
       if (incoming.get(7)) {
         {
-          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list45.size);
-          org.apache.airavata.model.commons.ErrorModel _elem46;
-          for (int _i47 = 0; _i47 < _list45.size; ++_i47)
+          org.apache.thrift.protocol.TList _list109 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list109.size);
+          org.apache.airavata.model.commons.ErrorModel _elem110;
+          for (int _i111 = 0; _i111 < _list109.size; ++_i111)
           {
-            _elem46 = new org.apache.airavata.model.commons.ErrorModel();
-            _elem46.read(iprot);
-            struct.errors.add(_elem46);
+            _elem110 = new org.apache.airavata.model.commons.ErrorModel();
+            _elem110.read(iprot);
+            struct.errors.add(_elem110);
           }
         }
         struct.setErrorsIsSet(true);
