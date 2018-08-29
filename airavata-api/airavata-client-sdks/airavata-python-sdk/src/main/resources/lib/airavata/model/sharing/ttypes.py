@@ -563,6 +563,7 @@ class UserGroup(object):
      <li><b>groupCardinality</b> : Group cardinality (SINGLE_USER, MULTI_USER)</li>
      <li>createdTime : Will be set by the system</li>
      <li>updatedTime : Will be set by the system</li>
+     <li>groupAdmins : Admins for the group</li>
      
 
     Attributes:
@@ -575,6 +576,7 @@ class UserGroup(object):
      - groupCardinality
      - createdTime
      - updatedTime
+     - groupAdmins
     """
 
     thrift_spec = (
@@ -588,9 +590,10 @@ class UserGroup(object):
         (7, TType.I32, 'groupCardinality', None, None, ),  # 7
         (8, TType.I64, 'createdTime', None, None, ),  # 8
         (9, TType.I64, 'updatedTime', None, None, ),  # 9
+        (10, TType.LIST, 'groupAdmins', (TType.STRUCT, (GroupAdmin, GroupAdmin.thrift_spec), False), None, ),  # 10
     )
 
-    def __init__(self, groupId=None, domainId=None, name=None, description=None, ownerId=None, groupType=None, groupCardinality=None, createdTime=None, updatedTime=None,):
+    def __init__(self, groupId=None, domainId=None, name=None, description=None, ownerId=None, groupType=None, groupCardinality=None, createdTime=None, updatedTime=None, groupAdmins=None,):
         self.groupId = groupId
         self.domainId = domainId
         self.name = name
@@ -600,6 +603,7 @@ class UserGroup(object):
         self.groupCardinality = groupCardinality
         self.createdTime = createdTime
         self.updatedTime = updatedTime
+        self.groupAdmins = groupAdmins
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -655,6 +659,17 @@ class UserGroup(object):
                     self.updatedTime = iprot.readI64()
                 else:
                     iprot.skip(ftype)
+            elif fid == 10:
+                if ftype == TType.LIST:
+                    self.groupAdmins = []
+                    (_etype3, _size0) = iprot.readListBegin()
+                    for _i4 in range(_size0):
+                        _elem5 = GroupAdmin()
+                        _elem5.read(iprot)
+                        self.groupAdmins.append(_elem5)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -700,6 +715,13 @@ class UserGroup(object):
         if self.updatedTime is not None:
             oprot.writeFieldBegin('updatedTime', TType.I64, 9)
             oprot.writeI64(self.updatedTime)
+            oprot.writeFieldEnd()
+        if self.groupAdmins is not None:
+            oprot.writeFieldBegin('groupAdmins', TType.LIST, 10)
+            oprot.writeListBegin(TType.STRUCT, len(self.groupAdmins))
+            for iter6 in self.groupAdmins:
+                iter6.write(oprot)
+            oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

@@ -181,11 +181,11 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool deleteUserStoragePreference(AuthzToken authzToken, string userId, string gatewayID, string userStorageId)')
     print('   getAllWorkflows(AuthzToken authzToken, string gatewayId)')
     print('   getLatestQueueStatuses(AuthzToken authzToken)')
-    print('  WorkflowModel getWorkflow(AuthzToken authzToken, string workflowTemplateId)')
-    print('  void deleteWorkflow(AuthzToken authzToken, string workflowTemplateId)')
-    print('  string registerWorkflow(AuthzToken authzToken, string gatewayId, WorkflowModel workflow)')
-    print('  void updateWorkflow(AuthzToken authzToken, string workflowTemplateId, WorkflowModel workflow)')
-    print('  string getWorkflowTemplateId(AuthzToken authzToken, string workflowName)')
+    print('  AiravataWorkflow getWorkflow(AuthzToken authzToken, string workflowId)')
+    print('  void deleteWorkflow(AuthzToken authzToken, string workflowId)')
+    print('  string registerWorkflow(AuthzToken authzToken, string gatewayId, AiravataWorkflow workflow)')
+    print('  void updateWorkflow(AuthzToken authzToken, string workflowId, AiravataWorkflow workflow)')
+    print('  string getWorkflowId(AuthzToken authzToken, string workflowName)')
     print('  bool isWorkflowExistWithName(AuthzToken authzToken, string workflowName)')
     print('  string registerDataProduct(AuthzToken authzToken, DataProductModel dataProductModel)')
     print('  DataProductModel getDataProduct(AuthzToken authzToken, string dataProductUri)')
@@ -1259,11 +1259,11 @@ elif cmd == 'updateWorkflow':
         sys.exit(1)
     pp.pprint(client.updateWorkflow(eval(args[0]), args[1], eval(args[2]),))
 
-elif cmd == 'getWorkflowTemplateId':
+elif cmd == 'getWorkflowId':
     if len(args) != 2:
-        print('getWorkflowTemplateId requires 2 args')
+        print('getWorkflowId requires 2 args')
         sys.exit(1)
-    pp.pprint(client.getWorkflowTemplateId(eval(args[0]), args[1],))
+    pp.pprint(client.getWorkflowId(eval(args[0]), args[1],))
 
 elif cmd == 'isWorkflowExistWithName':
     if len(args) != 2:
