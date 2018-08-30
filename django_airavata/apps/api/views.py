@@ -289,13 +289,15 @@ class ApplicationModuleViewSet(APIBackedViewSet):
             return Response(serializer.data)
         elif len(app_interfaces) > 1:
             log.error(
-                "More than one application interface found for module {}: {}".format(app_module_id, app_interfaces))
-            return Response(
-                {'error': 'More than one application interface found for module id {}'.format(app_module_id)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                "More than one application interface found for module {}: {}"
+                .format(app_module_id, app_interfaces))
+            raise Exception(
+                'More than one application interface found for module {}'
+                .format(app_module_id)
+            )
         else:
-            return Response({'error': 'No application interface found for module id {}'.format(app_module_id)},
-                            status=status.HTTP_404_NOT_FOUND)
+            raise Http404("No application interface found for module id {}"
+                          .format(app_module_id))
 
     @detail_route()
     def application_deployments(self, request, app_module_id):

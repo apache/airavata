@@ -9,23 +9,31 @@ import GlobalErrorHandler from './errors/GlobalErrorHandler'
 
 import ListLayout from './layouts/ListLayout.vue'
 
+import Notification from './notifications/Notification'
+import NotificationList from './notifications/NotificationList'
+
 import * as utils from './utils'
 
 exports.components = {
-    Pager,
-    ApplicationCard,
-    Autocomplete,
-    AutocompleteTextInput,
-    NotificationsDisplay,
-    ShareButton,
+  Pager,
+  ApplicationCard,
+  Autocomplete,
+  AutocompleteTextInput,
+  NotificationsDisplay,
+  ShareButton,
 }
 
 exports.errors = {
-    GlobalErrorHandler,
+  GlobalErrorHandler,
 }
 
 exports.layouts = {
-    ListLayout,
+  ListLayout,
+}
+
+exports.notifications = {
+  Notification,
+  NotificationList,
 }
 
 exports.utils = utils;

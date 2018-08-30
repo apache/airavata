@@ -235,12 +235,6 @@ class ApplicationModuleSerializer(
     class Meta:
         required = ('appModuleName',)
 
-    def create(self, validated_data):
-        return ApplicationModule(**validated_data)
-
-    def update(self, instance, validated_data):
-        return self.create(validated_data)
-
 
 class InputDataObjectTypeSerializer(serializers.Serializer):
     name = serializers.CharField(required=False)
@@ -293,23 +287,13 @@ class CustomSerializer(serializers.Serializer):
         return params
 
 
-class ApplicationInterfaceDescriptionSerializer(CustomSerializer):
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-interface-detail', lookup_field='applicationInterfaceId', lookup_url_kwarg='app_interface_id')
-    applicationInterfaceId = serializers.CharField(read_only=True)
-    applicationName = serializers.CharField(required=False)
-    applicationDescription = serializers.CharField(required=False)
-    archiveWorkingDirectory = serializers.BooleanField(required=False)
-    hasOptionalFileInputs = serializers.BooleanField(required=False)
-    applicationOutputs = serializers.ListSerializer(child=OutputDataObjectTypeSerializer())
-    applicationInputs = serializers.ListSerializer(child=InputDataObjectTypeSerializer())
-    applicationModules = serializers.ListSerializer(child=serializers.CharField())
+class ApplicationInterfaceDescriptionSerializer(
+        thrift_utils.create_serializer_class(ApplicationInterfaceDescription)):
 
-    def create(self, validated_data):
-        params=self.process_list_fields(validated_data)
-        return ApplicationInterfaceDescription(**params)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not implemented")
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:application-interface-detail',
+        lookup_field='applicationInterfaceId',
+        lookup_url_kwarg='app_interface_id')
 
 
 class CommandObjectSerializer(CustomSerializer):

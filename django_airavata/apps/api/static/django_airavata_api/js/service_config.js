@@ -5,6 +5,7 @@ import Group from './models/Group'
 import GroupResourceProfile from './models/GroupResourceProfile'
 import SharedEntity from './models/SharedEntity'
 import UserProfile from './models/UserProfile'
+import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition';
 
 const post = "post";
 const get = "get";
@@ -39,61 +40,81 @@ pagination:true # whether to treat the response as a paginated response
  */
 
 export default {
-    "ApplicationDeployments": {
-        url: "/api/application-deployments",
-        viewSet: true,
-        queryParams: ['appModuleId', 'groupResourceProfileId'],
-        modelClass: ApplicationDeploymentDescription,
-    },
-    "ApplicationModules": {
-        url: "/api/applications",
-        viewSet: true,
-        modelClass: ApplicationModule,
-    },
-    "ComputeResources": {
-        url: "/api/compute-resources",
-        viewSet: [{
-            name: "list"
-        }, {
-            name: "names",
-            url: "/api/compute-resources/all_names/",
-            requestType: 'get',
-        }, {
-            name: "namesList",
-            url: "/api/compute-resources/all_names_list/",
-            requestType: 'get',
-        }],
-        modelClass: ApplicationDeploymentDescription,
-    },
-    "CredentialSummaries": {
-        url: "/api/credential-summaries/",
-        viewSet: [{
-            name: "list"
-        }],
-        modelClass: CredentialSummary,
-    },
-    "GroupResourceProfiles": {
-        url: "/api/group-resource-profiles/",
-        viewSet: true,
-        modelClass: GroupResourceProfile,
-    },
-    "Groups": {
-        url: "/api/groups",
-        viewSet: true,
-        pagination: true,
-        queryParams: ['limit', 'offset'],
-        modelClass: Group,
-    },
-    "SharedEntities": {
-        url: "/api/shared-entities",
-        viewSet: true,
-        modelClass: SharedEntity,
-    },
-    "UserProfiles": {
-        url: "/api/user-profiles",
-        viewSet: [{
-            name: "list"
-        }],
-        modelClass: UserProfile,
-    },
+  "ApplicationDeployments": {
+    url: "/api/application-deployments",
+    viewSet: true,
+    queryParams: ['appModuleId', 'groupResourceProfileId'],
+    modelClass: ApplicationDeploymentDescription,
+  },
+  "ApplicationInterfaces": {
+    url: "/api/application-interfaces",
+    viewSet: true,
+    modelClass: ApplicationInterfaceDefinition,
+  },
+  "ApplicationModules": {
+    url: "/api/applications",
+    viewSet: [{
+      name: "list"
+    }, {
+      name: "create"
+    }, {
+      name: "retrieve"
+    }, {
+      name: "update"
+    }, {
+      name: "delete"
+    }, {
+      name: "getApplicationInterface",
+      url: "/api/applications/<lookup>/application_interface/",
+      requestType: 'get',
+      modelClass: ApplicationInterfaceDefinition
+    }],
+    modelClass: ApplicationModule,
+  },
+  "ComputeResources": {
+    url: "/api/compute-resources",
+    viewSet: [{
+      name: "list"
+    }, {
+      name: "names",
+      url: "/api/compute-resources/all_names/",
+      requestType: 'get',
+    }, {
+      name: "namesList",
+      url: "/api/compute-resources/all_names_list/",
+      requestType: 'get',
+    }],
+    modelClass: ApplicationDeploymentDescription,
+  },
+  "CredentialSummaries": {
+    url: "/api/credential-summaries/",
+    viewSet: [{
+      name: "list"
+    }],
+    modelClass: CredentialSummary,
+  },
+  "GroupResourceProfiles": {
+    url: "/api/group-resource-profiles/",
+    viewSet: true,
+    modelClass: GroupResourceProfile,
+  },
+  "Groups": {
+    url: "/api/groups",
+    viewSet: true,
+    pagination: true,
+    queryParams: ['limit', 'offset'],
+    modelClass: Group,
+  },
+  "SharedEntities": {
+    url: "/api/shared-entities",
+    viewSet: true,
+    modelClass: SharedEntity,
+  },
+  "UserProfiles": {
+    url: "/api/user-profiles",
+    viewSet: [{
+      name: "list"
+    }],
+    modelClass: UserProfile,
+  },
 }

@@ -1,22 +1,31 @@
+import Notification from './Notification'
 
 class NotificationList {
 
-    constructor() {
-        this.notifications = [];
-    }
+  constructor() {
+    this.notifications = [];
+  }
 
-    add(notification) {
-        this.notifications.push(notification);
-    }
+  add(notification) {
+    this.notifications.push(notification);
+  }
 
-    remove(notification) {
-        const i = this.notifications.indexOf(notification);
-        this.notifications.splice(i, 1);
-    }
+  // Convenience method for adding an error
+  addError(error) {
+    this.notifications.push(new Notification({
+      type: "ERROR",
+      message: error.message
+    }))
+  }
 
-    get list() {
-        return this.notifications;
-    }
+  remove(notification) {
+    const i = this.notifications.indexOf(notification);
+    this.notifications.splice(i, 1);
+  }
+
+  get list() {
+    return this.notifications;
+  }
 }
 
 export default new NotificationList();

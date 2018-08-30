@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 
 def custom_exception_handler(exc, context):
+    log.debug("API exception", exc_info=exc)
     # Call REST framework's default exception handler first,
     # to get the standard error response.
     response = exception_handler(exc, context)
@@ -24,10 +25,16 @@ def custom_exception_handler(exc, context):
             {'detail': str(exc)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # Generic handler
+    if response is None:
+        return Response(
+            {'detail': str(exc)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
     if isinstance(exc, serializers.ValidationError):
         # Create a default error message for the validation error
         response.data['detail'] = "ValidationError: {}".format(
             json.dumps(response.data))
 
-    log.debug("API exception", exc_info=exc)
     return response
