@@ -29,7 +29,6 @@ struct FileStructure {
     3: required bool isFile;
     4: required i64 createdDate;
     5: required i64 modifiedDate;
-    6: required string owner;
-    7: required binary content;
-    8: required i64 size;
+    6: optional binary content;
+    7: required i64 size;
 }

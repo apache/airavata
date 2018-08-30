@@ -5053,6 +5053,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 fileStructure.setCreatedDate(fileInfo.getCreatedDate());
                 fileStructure.setModifiedDate(fileInfo.getModifiedDate());
                 fileStructure.setIsFile(fileInfo.isFile());
+                fileStructure.setSize(fileInfo.getSize());
                 fileStructures.add(fileStructure);
             }
             return  fileStructures;
@@ -5073,6 +5074,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             fileStructure.setName(new File(filePath).getName());
             fileStructure.setCreatedDate(fileInfo.getCreatedDate());
             fileStructure.setModifiedDate(fileInfo.getModifiedDate());
+            fileStructure.setSize(fileInfo.getSize());
             fileStructure.setIsFile(fileInfo.isFile());
             return fileStructure;
         } catch (AgentException e) {

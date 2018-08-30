@@ -33,9 +33,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   private static final org.apache.thrift.protocol.TField IS_FILE_FIELD_DESC = new org.apache.thrift.protocol.TField("isFile", org.apache.thrift.protocol.TType.BOOL, (short)3);
   private static final org.apache.thrift.protocol.TField CREATED_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("createdDate", org.apache.thrift.protocol.TType.I64, (short)4);
   private static final org.apache.thrift.protocol.TField MODIFIED_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("modifiedDate", org.apache.thrift.protocol.TType.I64, (short)5);
-  private static final org.apache.thrift.protocol.TField OWNER_FIELD_DESC = new org.apache.thrift.protocol.TField("owner", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField CONTENT_FIELD_DESC = new org.apache.thrift.protocol.TField("content", org.apache.thrift.protocol.TType.STRING, (short)7);
-  private static final org.apache.thrift.protocol.TField SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("size", org.apache.thrift.protocol.TType.I64, (short)8);
+  private static final org.apache.thrift.protocol.TField CONTENT_FIELD_DESC = new org.apache.thrift.protocol.TField("content", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("size", org.apache.thrift.protocol.TType.I64, (short)7);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new FileStructureStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new FileStructureTupleSchemeFactory();
@@ -45,8 +44,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   private boolean isFile; // required
   private long createdDate; // required
   private long modifiedDate; // required
-  private java.lang.String owner; // required
-  private java.nio.ByteBuffer content; // required
+  private java.nio.ByteBuffer content; // optional
   private long size; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -56,9 +54,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     IS_FILE((short)3, "isFile"),
     CREATED_DATE((short)4, "createdDate"),
     MODIFIED_DATE((short)5, "modifiedDate"),
-    OWNER((short)6, "owner"),
-    CONTENT((short)7, "content"),
-    SIZE((short)8, "size");
+    CONTENT((short)6, "content"),
+    SIZE((short)7, "size");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -83,11 +80,9 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
           return CREATED_DATE;
         case 5: // MODIFIED_DATE
           return MODIFIED_DATE;
-        case 6: // OWNER
-          return OWNER;
-        case 7: // CONTENT
+        case 6: // CONTENT
           return CONTENT;
-        case 8: // SIZE
+        case 7: // SIZE
           return SIZE;
         default:
           return null;
@@ -134,6 +129,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   private static final int __MODIFIEDDATE_ISSET_ID = 2;
   private static final int __SIZE_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
+  private static final _Fields optionals[] = {_Fields.CONTENT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -147,9 +143,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.MODIFIED_DATE, new org.apache.thrift.meta_data.FieldMetaData("modifiedDate", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
-    tmpMap.put(_Fields.OWNER, new org.apache.thrift.meta_data.FieldMetaData("owner", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.CONTENT, new org.apache.thrift.meta_data.FieldMetaData("content", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.CONTENT, new org.apache.thrift.meta_data.FieldMetaData("content", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     tmpMap.put(_Fields.SIZE, new org.apache.thrift.meta_data.FieldMetaData("size", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -166,8 +160,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     boolean isFile,
     long createdDate,
     long modifiedDate,
-    java.lang.String owner,
-    java.nio.ByteBuffer content,
     long size)
   {
     this();
@@ -179,8 +171,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     setCreatedDateIsSet(true);
     this.modifiedDate = modifiedDate;
     setModifiedDateIsSet(true);
-    this.owner = owner;
-    this.content = org.apache.thrift.TBaseHelper.copyBinary(content);
     this.size = size;
     setSizeIsSet(true);
   }
@@ -199,9 +189,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     this.isFile = other.isFile;
     this.createdDate = other.createdDate;
     this.modifiedDate = other.modifiedDate;
-    if (other.isSetOwner()) {
-      this.owner = other.owner;
-    }
     if (other.isSetContent()) {
       this.content = org.apache.thrift.TBaseHelper.copyBinary(other.content);
     }
@@ -222,7 +209,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     this.createdDate = 0;
     setModifiedDateIsSet(false);
     this.modifiedDate = 0;
-    this.owner = null;
     this.content = null;
     setSizeIsSet(false);
     this.size = 0;
@@ -340,29 +326,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __MODIFIEDDATE_ISSET_ID, value);
   }
 
-  public java.lang.String getOwner() {
-    return this.owner;
-  }
-
-  public void setOwner(java.lang.String owner) {
-    this.owner = owner;
-  }
-
-  public void unsetOwner() {
-    this.owner = null;
-  }
-
-  /** Returns true if field owner is set (has been assigned a value) and false otherwise */
-  public boolean isSetOwner() {
-    return this.owner != null;
-  }
-
-  public void setOwnerIsSet(boolean value) {
-    if (!value) {
-      this.owner = null;
-    }
-  }
-
   public byte[] getContent() {
     setContent(org.apache.thrift.TBaseHelper.rightSize(content));
     return content == null ? null : content.array();
@@ -459,14 +422,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       }
       break;
 
-    case OWNER:
-      if (value == null) {
-        unsetOwner();
-      } else {
-        setOwner((java.lang.String)value);
-      }
-      break;
-
     case CONTENT:
       if (value == null) {
         unsetContent();
@@ -507,9 +462,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     case MODIFIED_DATE:
       return getModifiedDate();
 
-    case OWNER:
-      return getOwner();
-
     case CONTENT:
       return getContent();
 
@@ -537,8 +489,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       return isSetCreatedDate();
     case MODIFIED_DATE:
       return isSetModifiedDate();
-    case OWNER:
-      return isSetOwner();
     case CONTENT:
       return isSetContent();
     case SIZE:
@@ -607,15 +557,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
         return false;
     }
 
-    boolean this_present_owner = true && this.isSetOwner();
-    boolean that_present_owner = true && that.isSetOwner();
-    if (this_present_owner || that_present_owner) {
-      if (!(this_present_owner && that_present_owner))
-        return false;
-      if (!this.owner.equals(that.owner))
-        return false;
-    }
-
     boolean this_present_content = true && this.isSetContent();
     boolean that_present_content = true && that.isSetContent();
     if (this_present_content || that_present_content) {
@@ -654,10 +595,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(createdDate);
 
     hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(modifiedDate);
-
-    hashCode = hashCode * 8191 + ((isSetOwner()) ? 131071 : 524287);
-    if (isSetOwner())
-      hashCode = hashCode * 8191 + owner.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetContent()) ? 131071 : 524287);
     if (isSetContent())
@@ -722,16 +659,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     }
     if (isSetModifiedDate()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.modifiedDate, other.modifiedDate);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = java.lang.Boolean.valueOf(isSetOwner()).compareTo(other.isSetOwner());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetOwner()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.owner, other.owner);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -803,22 +730,16 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     sb.append("modifiedDate:");
     sb.append(this.modifiedDate);
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("owner:");
-    if (this.owner == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.owner);
+    if (isSetContent()) {
+      if (!first) sb.append(", ");
+      sb.append("content:");
+      if (this.content == null) {
+        sb.append("null");
+      } else {
+        org.apache.thrift.TBaseHelper.toString(this.content, sb);
+      }
+      first = false;
     }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("content:");
-    if (this.content == null) {
-      sb.append("null");
-    } else {
-      org.apache.thrift.TBaseHelper.toString(this.content, sb);
-    }
-    first = false;
     if (!first) sb.append(", ");
     sb.append("size:");
     sb.append(this.size);
@@ -847,14 +768,6 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
 
     if (!isSetModifiedDate()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'modifiedDate' is unset! Struct:" + toString());
-    }
-
-    if (!isSetOwner()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'owner' is unset! Struct:" + toString());
-    }
-
-    if (!isSetContent()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'content' is unset! Struct:" + toString());
     }
 
     if (!isSetSize()) {
@@ -940,15 +853,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // OWNER
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.owner = iprot.readString();
-              struct.setOwnerIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 7: // CONTENT
+          case 6: // CONTENT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.content = iprot.readBinary();
               struct.setContentIsSet(true);
@@ -956,7 +861,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // SIZE
+          case 7: // SIZE
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.size = iprot.readI64();
               struct.setSizeIsSet(true);
@@ -996,15 +901,12 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       oprot.writeFieldBegin(MODIFIED_DATE_FIELD_DESC);
       oprot.writeI64(struct.modifiedDate);
       oprot.writeFieldEnd();
-      if (struct.owner != null) {
-        oprot.writeFieldBegin(OWNER_FIELD_DESC);
-        oprot.writeString(struct.owner);
-        oprot.writeFieldEnd();
-      }
       if (struct.content != null) {
-        oprot.writeFieldBegin(CONTENT_FIELD_DESC);
-        oprot.writeBinary(struct.content);
-        oprot.writeFieldEnd();
+        if (struct.isSetContent()) {
+          oprot.writeFieldBegin(CONTENT_FIELD_DESC);
+          oprot.writeBinary(struct.content);
+          oprot.writeFieldEnd();
+        }
       }
       oprot.writeFieldBegin(SIZE_FIELD_DESC);
       oprot.writeI64(struct.size);
@@ -1031,9 +933,15 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       oprot.writeBool(struct.isFile);
       oprot.writeI64(struct.createdDate);
       oprot.writeI64(struct.modifiedDate);
-      oprot.writeString(struct.owner);
-      oprot.writeBinary(struct.content);
       oprot.writeI64(struct.size);
+      java.util.BitSet optionals = new java.util.BitSet();
+      if (struct.isSetContent()) {
+        optionals.set(0);
+      }
+      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetContent()) {
+        oprot.writeBinary(struct.content);
+      }
     }
 
     @Override
@@ -1049,12 +957,13 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       struct.setCreatedDateIsSet(true);
       struct.modifiedDate = iprot.readI64();
       struct.setModifiedDateIsSet(true);
-      struct.owner = iprot.readString();
-      struct.setOwnerIsSet(true);
-      struct.content = iprot.readBinary();
-      struct.setContentIsSet(true);
       struct.size = iprot.readI64();
       struct.setSizeIsSet(true);
+      java.util.BitSet incoming = iprot.readBitSet(1);
+      if (incoming.get(0)) {
+        struct.content = iprot.readBinary();
+        struct.setContentIsSet(true);
+      }
     }
   }
 
