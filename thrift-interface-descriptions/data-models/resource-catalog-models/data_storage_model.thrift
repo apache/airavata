@@ -31,4 +31,5 @@ struct FileStructure {
     5: required i64 modifiedDate;
     6: optional binary content;
     7: required i64 size;
+    8: required bool isExist
 }
