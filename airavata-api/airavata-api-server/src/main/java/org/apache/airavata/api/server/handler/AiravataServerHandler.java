@@ -5809,6 +5809,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             regClient.uploadFileToStorage(gatewayId, storageResourceId, userId, content, path, type);
+            registryClientPool.returnResource(regClient);
         } catch (Exception e) {
             String msg = "Error uploading file to storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5822,7 +5823,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public FileStructure downloadFileFromStorage(AuthzToken authzToken, String gatewayId, String storageResourceId, String userId, String path) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            return regClient.downloadFileFromStorage(gatewayId, storageResourceId, userId, path);
+            FileStructure structure = regClient.downloadFileFromStorage(gatewayId, storageResourceId, userId, path);
+            registryClientPool.returnResource(regClient);
+            return structure;
         } catch (Exception e) {
             String msg = "Error downloading file from storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5836,7 +5839,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public FileStructure getFileDetailsFromStorage(AuthzToken authzToken, String gatewayId, String storageResourceId, String userId, String filePath) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            return regClient.getFileDetailsFromStorage(gatewayId, storageResourceId, userId, filePath);
+            FileStructure structure = regClient.getFileDetailsFromStorage(gatewayId, storageResourceId, userId, filePath);
+            registryClientPool.returnResource(regClient);
+            return structure;
         } catch (Exception e) {
             String msg = "Error fetching file info from storage resource: " + storageResourceId + " for  path : " + filePath;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5850,7 +5855,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<FileStructure> listDirectoryFromStorage(AuthzToken authzToken, String gatewayId, String storageResourceId, String userId, String dirPath) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            return  regClient.listDirectoryFromStorage(gatewayId, storageResourceId, userId, dirPath);
+            List<FileStructure> fileStructures = regClient.listDirectoryFromStorage(gatewayId, storageResourceId, userId, dirPath);
+            registryClientPool.returnResource(regClient);
+            return fileStructures;
         } catch (Exception e) {
             String msg = "Error listing directory " + dirPath + " of storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5865,6 +5872,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             regClient.deleteFileFromStorage(gatewayId, storageResourceId, userId, path);
+            registryClientPool.returnResource(regClient);
         } catch (Exception e) {
             String msg = "Error deleting file " + path + " form storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5879,6 +5887,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             regClient.deleteDirectoryFromStorage(gatewayId, storageResourceId, userId, path);
+            registryClientPool.returnResource(regClient);
         } catch (Exception e) {
             String msg = "Error deleting directory " + path + " form storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5892,7 +5901,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean isExistInStorage(AuthzToken authzToken, String gatewayId, String storageResourceId, String userId, String path) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            return regClient.isExistInStorage(gatewayId, storageResourceId, userId, path);
+            boolean existInStorage = regClient.isExistInStorage(gatewayId, storageResourceId, userId, path);
+            registryClientPool.returnResource(regClient);
+            return existInStorage;
         } catch (Exception e) {
             String msg = "Error checking file " + path + " existance in storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5907,6 +5918,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             regClient.createDirectoryInStorage(gatewayId, storageResourceId, userId, dirPath);
+            registryClientPool.returnResource(regClient);
         } catch (Exception e) {
             String msg = "Error creating directory " + dirPath +  " in storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5920,7 +5932,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean checkIsFileInStorage(AuthzToken authzToken, String gatewayId, String storageResourceId, String userId, String path) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            return regClient.checkIsFileInStorage(gatewayId, storageResourceId, userId, path);
+            boolean isFileInStorage = regClient.checkIsFileInStorage(gatewayId, storageResourceId, userId, path);
+            registryClientPool.returnResource(regClient);
+            return isFileInStorage;
         } catch (Exception e) {
             String msg = "Error checking is file " + path + " in storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -5935,6 +5949,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             regClient.renameFileInStorage(gatewayId, storageResourceId, userId, oldPath, newPath);
+            registryClientPool.returnResource(regClient);
         } catch (Exception e) {
             String msg = "Error renaming file from " + oldPath + " to " + newPath + " in storage resource: " + storageResourceId;
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);

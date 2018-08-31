@@ -24,7 +24,7 @@ import org.apache.airavata.agents.api.FileInfo;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
+import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -4968,21 +4968,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
         String credentialStoreToken = resourceSpecificCredentialStoreToken != null ? resourceSpecificCredentialStoreToken : gatewayCredentialStoreToken;
         String storageLoginUserName = gatewayStoragePreference.getLoginUserName();
 
-        switch (dataMovementProtocol) {
-
-            case SCP:
-                SCPDataMovement scpDataMovement = getSCPDataMovement(storageResource.getDataMovementInterfaces().get(0).getDataMovementInterfaceId());
-                SSHJStorageAdaptor storageAdaptor = new SSHJStorageAdaptor();
-                try {
-                    storageAdaptor.init(storageResourceId, gatewayId, storageLoginUserName, credentialStoreToken);
-                    return storageAdaptor;
-                } catch (AgentException e) {
-                    e.printStackTrace();
-                }
+        try {
+            return AdaptorSupportImpl.getInstance().fetchStorageAdaptor(gatewayId, storageResourceId, dataMovementProtocol, credentialStoreToken, storageLoginUserName);
+        } catch (AgentException e) {
+            logger.error("Failed to fetch storage resource adaptor for storage resource " + storageResourceId, e);
+            throw new TException("Failed to fetch storage resource adaptor for storage resource " + storageResourceId);
         }
-
-        return null;
     }
+
     @Override
     public void uploadFileToStorage(String gatewayId, String storageResourceId, String userId, ByteBuffer content, String path, String type) throws TException {
 
@@ -5009,6 +5002,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public FileStructure downloadFileFromStorage(String gatewayId, String storageResourceId, String userId, String path) throws TException {
 
+        FileStructure structure = getFileDetailsFromStorage(gatewayId, storageResourceId, userId, path);
+
         File tmpFile;
         try {
             tmpFile = File.createTempFile("file", "download");
@@ -5025,8 +5020,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
             logger.error("Failed to download remote file " + path + " to local path " + tmpFile.getAbsolutePath() + " from storage resource " + storageResourceId, e);
         }
 
-        FileStructure structure = new FileStructure();
-        structure.setName(new File(path).getName());
         try {
             structure.setContent(IOUtils.toByteArray(new FileInputStream(tmpFile)));
         } catch (IOException e) {
@@ -5048,6 +5041,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             for (FileInfo fileInfo : fileInfos) {
 
                 FileStructure fileStructure = new FileStructure();
+                fileStructure.setIsExist(fileInfo.isExist());
                 fileStructure.setName(fileInfo.getName());
                 fileStructure.setPath(fileInfo.getPath());
                 fileStructure.setCreatedDate(fileInfo.getCreatedDate());
@@ -5070,6 +5064,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             FileInfo fileInfo = storageResourceAdaptor.getFileInfo(filePath);
             FileStructure fileStructure = new FileStructure();
+            fileStructure.setIsExist(fileInfo.isExist());
             fileStructure.setPath(filePath);
             fileStructure.setName(new File(filePath).getName());
             fileStructure.setCreatedDate(fileInfo.getCreatedDate());

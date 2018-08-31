@@ -35,6 +35,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   private static final org.apache.thrift.protocol.TField MODIFIED_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("modifiedDate", org.apache.thrift.protocol.TType.I64, (short)5);
   private static final org.apache.thrift.protocol.TField CONTENT_FIELD_DESC = new org.apache.thrift.protocol.TField("content", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("size", org.apache.thrift.protocol.TType.I64, (short)7);
+  private static final org.apache.thrift.protocol.TField IS_EXIST_FIELD_DESC = new org.apache.thrift.protocol.TField("isExist", org.apache.thrift.protocol.TType.BOOL, (short)8);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new FileStructureStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new FileStructureTupleSchemeFactory();
@@ -46,6 +47,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   private long modifiedDate; // required
   private java.nio.ByteBuffer content; // optional
   private long size; // required
+  private boolean isExist; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -55,7 +57,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     CREATED_DATE((short)4, "createdDate"),
     MODIFIED_DATE((short)5, "modifiedDate"),
     CONTENT((short)6, "content"),
-    SIZE((short)7, "size");
+    SIZE((short)7, "size"),
+    IS_EXIST((short)8, "isExist");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -84,6 +87,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
           return CONTENT;
         case 7: // SIZE
           return SIZE;
+        case 8: // IS_EXIST
+          return IS_EXIST;
         default:
           return null;
       }
@@ -128,6 +133,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
   private static final int __CREATEDDATE_ISSET_ID = 1;
   private static final int __MODIFIEDDATE_ISSET_ID = 2;
   private static final int __SIZE_ISSET_ID = 3;
+  private static final int __ISEXIST_ISSET_ID = 4;
   private byte __isset_bitfield = 0;
   private static final _Fields optionals[] = {_Fields.CONTENT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
@@ -147,6 +153,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     tmpMap.put(_Fields.SIZE, new org.apache.thrift.meta_data.FieldMetaData("size", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.IS_EXIST, new org.apache.thrift.meta_data.FieldMetaData("isExist", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FileStructure.class, metaDataMap);
   }
@@ -160,7 +168,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     boolean isFile,
     long createdDate,
     long modifiedDate,
-    long size)
+    long size,
+    boolean isExist)
   {
     this();
     this.name = name;
@@ -173,6 +182,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     setModifiedDateIsSet(true);
     this.size = size;
     setSizeIsSet(true);
+    this.isExist = isExist;
+    setIsExistIsSet(true);
   }
 
   /**
@@ -193,6 +204,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       this.content = org.apache.thrift.TBaseHelper.copyBinary(other.content);
     }
     this.size = other.size;
+    this.isExist = other.isExist;
   }
 
   public FileStructure deepCopy() {
@@ -212,6 +224,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     this.content = null;
     setSizeIsSet(false);
     this.size = 0;
+    setIsExistIsSet(false);
+    this.isExist = false;
   }
 
   public java.lang.String getName() {
@@ -380,6 +394,28 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __SIZE_ISSET_ID, value);
   }
 
+  public boolean isIsExist() {
+    return this.isExist;
+  }
+
+  public void setIsExist(boolean isExist) {
+    this.isExist = isExist;
+    setIsExistIsSet(true);
+  }
+
+  public void unsetIsExist() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __ISEXIST_ISSET_ID);
+  }
+
+  /** Returns true if field isExist is set (has been assigned a value) and false otherwise */
+  public boolean isSetIsExist() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __ISEXIST_ISSET_ID);
+  }
+
+  public void setIsExistIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __ISEXIST_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case NAME:
@@ -442,6 +478,14 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       }
       break;
 
+    case IS_EXIST:
+      if (value == null) {
+        unsetIsExist();
+      } else {
+        setIsExist((java.lang.Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -468,6 +512,9 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     case SIZE:
       return getSize();
 
+    case IS_EXIST:
+      return isIsExist();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -493,6 +540,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       return isSetContent();
     case SIZE:
       return isSetSize();
+    case IS_EXIST:
+      return isSetIsExist();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -575,6 +624,15 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
         return false;
     }
 
+    boolean this_present_isExist = true;
+    boolean that_present_isExist = true;
+    if (this_present_isExist || that_present_isExist) {
+      if (!(this_present_isExist && that_present_isExist))
+        return false;
+      if (this.isExist != that.isExist)
+        return false;
+    }
+
     return true;
   }
 
@@ -601,6 +659,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       hashCode = hashCode * 8191 + content.hashCode();
 
     hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(size);
+
+    hashCode = hashCode * 8191 + ((isExist) ? 131071 : 524287);
 
     return hashCode;
   }
@@ -683,6 +743,16 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetIsExist()).compareTo(other.isSetIsExist());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetIsExist()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isExist, other.isExist);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -744,6 +814,10 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
     sb.append("size:");
     sb.append(this.size);
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("isExist:");
+    sb.append(this.isExist);
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -772,6 +846,10 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
 
     if (!isSetSize()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'size' is unset! Struct:" + toString());
+    }
+
+    if (!isSetIsExist()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'isExist' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -869,6 +947,14 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 8: // IS_EXIST
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.isExist = iprot.readBool();
+              struct.setIsExistIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -911,6 +997,9 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       oprot.writeFieldBegin(SIZE_FIELD_DESC);
       oprot.writeI64(struct.size);
       oprot.writeFieldEnd();
+      oprot.writeFieldBegin(IS_EXIST_FIELD_DESC);
+      oprot.writeBool(struct.isExist);
+      oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -934,6 +1023,7 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       oprot.writeI64(struct.createdDate);
       oprot.writeI64(struct.modifiedDate);
       oprot.writeI64(struct.size);
+      oprot.writeBool(struct.isExist);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetContent()) {
         optionals.set(0);
@@ -959,6 +1049,8 @@ public class FileStructure implements org.apache.thrift.TBase<FileStructure, Fil
       struct.setModifiedDateIsSet(true);
       struct.size = iprot.readI64();
       struct.setSizeIsSet(true);
+      struct.isExist = iprot.readBool();
+      struct.setIsExistIsSet(true);
       java.util.BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         struct.content = iprot.readBinary();
