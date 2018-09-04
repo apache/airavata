@@ -65,11 +65,11 @@ public class ApplicationInterfaceEntity implements Serializable {
 	@Column(name = "MODULE_ID")
 	private List<String> applicationModules;
 
-	@OneToMany(targetEntity = ApplicationInputEntity.class, cascade = CascadeType.ALL,
+	@OneToMany(targetEntity = ApplicationInputEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
 			mappedBy = "applicationInterface", fetch = FetchType.EAGER)
 	private List<ApplicationInputEntity> applicationInputs;
 
-	@OneToMany(targetEntity = ApplicationOutputEntity.class, cascade = CascadeType.ALL,
+	@OneToMany(targetEntity = ApplicationOutputEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
 			mappedBy = "applicationInterface", fetch = FetchType.EAGER)
 	private List<ApplicationOutputEntity> applicationOutputs;
 

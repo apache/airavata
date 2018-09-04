@@ -244,6 +244,67 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
     }
 
     @Test
+    public void addAndRemoveInputsOutputsToInterfaceTest() throws AppCatalogException {
+
+        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+        applicationInterfaceDescription.setApplicationInterfaceId("interface1");
+        applicationInterfaceDescription.setApplicationName("app interface 1");
+
+        String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
+
+        InputDataObjectType input = new InputDataObjectType();
+        input.setName("input1");
+        input.setApplicationArgument("Arg");
+        input.setDataStaged(true);
+        input.setInputOrder(0);
+        input.setIsReadOnly(true);
+        input.setIsRequired(true);
+        input.setRequiredToAddedToCommandLine(true);
+        input.setType(DataType.FLOAT);
+        input.setUserFriendlyDescription("User friendly description");
+        input.setValue("113");
+        input.setMetaData("Metadata");
+        input.setStandardInput(true);
+
+        InputDataObjectType input2 = new InputDataObjectType();
+        input2.setName("input2");
+        input2.setInputOrder(1);
+
+        OutputDataObjectType output = new OutputDataObjectType();
+        output.setName("output1");
+        output.setValue("value");
+        output.setType(DataType.FLOAT);
+        output.setApplicationArgument("Argument");
+        output.setDataMovement(true);
+        output.setIsRequired(true);
+        output.setLocation("/home/");
+        output.setSearchQuery("Search query");
+        output.setRequiredToAddedToCommandLine(true);
+        output.setOutputStreaming(true);
+
+        OutputDataObjectType output2 = new OutputDataObjectType();
+        output2.setName("output2");
+
+        applicationInterfaceDescription.setApplicationInputs(Arrays.asList(input, input2));
+        applicationInterfaceDescription.setApplicationOutputs(Arrays.asList(output, output2));
+
+        applicationInterfaceRepository.updateApplicationInterface(interfaceId, applicationInterfaceDescription);
+
+        ApplicationInterfaceDescription savedInterface = applicationInterfaceRepository.getApplicationInterface(interfaceId);
+        Assert.assertEquals(2, savedInterface.getApplicationInputsSize());
+        Assert.assertEquals(2, savedInterface.getApplicationOutputsSize());
+
+        savedInterface.setApplicationInputs(Arrays.asList(input));
+        savedInterface.setApplicationOutputs(Arrays.asList(output));
+
+        applicationInterfaceRepository.updateApplicationInterface(interfaceId, savedInterface);
+        ApplicationInterfaceDescription updatedInterface = applicationInterfaceRepository.getApplicationInterface(interfaceId);
+        Assert.assertEquals(1, updatedInterface.getApplicationInputsSize());
+        Assert.assertEquals(1, updatedInterface.getApplicationOutputsSize());
+
+    }
+
+    @Test
     public void filterApplicationInterfacesTest() throws AppCatalogException {
 
         List<ApplicationInterfaceDescription> interfaces = new ArrayList<>();
