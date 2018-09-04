@@ -295,6 +295,22 @@ class ApplicationInterfaceDescriptionSerializer(
         lookup_field='applicationInterfaceId',
         lookup_url_kwarg='app_interface_id')
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        # Sort applicationInputs by 'inputOrder'
+        rep['applicationInputs'].sort(key=lambda input: input['inputOrder'])
+        return rep
+
+    def to_internal_value(self, data):
+        validated_data = super().to_internal_value(data)
+        # Update application input order based on order in array
+        app_inputs = validated_data.get('applicationInputs', [])
+        log.debug('app_inputs={}'.format(app_inputs))
+        for i in range(len(app_inputs)):
+            app_inputs[i]['inputOrder'] = i
+        log.debug('app_inputs={}'.format(app_inputs))
+        return validated_data
+
 
 class CommandObjectSerializer(CustomSerializer):
     command = serializers.CharField()

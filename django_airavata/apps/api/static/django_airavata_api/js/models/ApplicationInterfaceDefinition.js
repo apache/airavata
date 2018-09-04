@@ -12,6 +12,9 @@ const FIELDS = [
     type: 'string',
     list: true,
   },
+  // When saving/updating, the order of the inputs in the applicationInputs
+  // array determines the 'inputOrder' that will be applied to each input on the
+  // backend. Updating 'inputOrder' will have no effect.
   {
     name: 'applicationInputs',
     type: InputDataObjectType,
@@ -38,6 +41,8 @@ export default class ApplicationInterfaceDefinition extends BaseModel {
 
   constructor(data = {}) {
     super(FIELDS, data);
+    // Order application inputs
+    this.applicationInputs = this.getOrderedApplicationInputs();
   }
 
   getOrderedApplicationInputs() {
