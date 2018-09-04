@@ -25,7 +25,6 @@ import SummaryType from './models/SummaryType'
 import UserPermission from './models/UserPermission'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
-import ApplicationInterfaceService from './services/ApplicationInterfaceService'
 import ExperimentService from './services/ExperimentService'
 import ExperimentSearchService from './services/ExperimentSearchService'
 import FullExperimentService from './services/FullExperimentService'

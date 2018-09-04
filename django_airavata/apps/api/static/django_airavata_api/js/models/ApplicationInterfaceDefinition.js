@@ -41,12 +41,5 @@ export default class ApplicationInterfaceDefinition extends BaseModel {
 
   constructor(data = {}) {
     super(FIELDS, data);
-    // Order application inputs
-    this.applicationInputs = this.getOrderedApplicationInputs();
-  }
-
-  getOrderedApplicationInputs() {
-    // Use slice() to make a copy and sort that copy
-    return this.applicationInputs ? this.applicationInputs.slice().sort((a, b) => a.inputOrder - b.inputOrder) : [];
   }
 }

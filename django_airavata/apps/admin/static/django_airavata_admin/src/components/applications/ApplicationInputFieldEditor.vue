@@ -1,7 +1,7 @@
 <template>
   <b-card header="Input Field">
     <b-form-group label="Name" :label-for="id+'-name'">
-      <b-form-input :id="id+'-name'" type="text" v-model="data.name" required></b-form-input>
+      <b-form-input :id="id+'-name'" type="text" v-model="data.name" ref="nameInput" required></b-form-input>
     </b-form-group>
     <b-form-group label="Initial Value" :label-for="id+'-value'">
       <b-form-input :id="id+'-value'" type="text" v-model="data.value"></b-form-input>
@@ -55,6 +55,10 @@ export default {
     },
     id: {
       required: true
+    },
+    // Whether to put focus on the name field when mounting component
+    focus: {
+      type: Boolean
     }
   },
   computed: {
@@ -73,6 +77,15 @@ export default {
   methods: {
     copyValue() {
       return this.value.clone();
+    },
+    doFocus() {
+      this.$refs.nameInput.focus();
+      this.$el.scrollIntoView();
+    }
+  },
+  mounted() {
+    if (this.focus) {
+      this.doFocus();
     }
   }
 };

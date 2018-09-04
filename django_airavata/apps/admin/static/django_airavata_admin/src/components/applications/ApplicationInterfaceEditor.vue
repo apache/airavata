@@ -26,7 +26,14 @@
         <h1 class="h5 mb-4">
           Input Fields
         </h1>
-        <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index" @input="updatedInput($event, index)" />
+        <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index" :focus="index === focusApplicationInputIndex" @input="updatedInput($event, index)" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <b-button variant="secondary" @click="addApplicationInput">
+          Add application input
+        </b-button>
       </div>
     </div>
     <div class="row">
@@ -63,6 +70,11 @@ export default {
       return [{ text: "True", value: true }, { text: "False", value: false }];
     }
   },
+  data() {
+    return {
+      focusApplicationInputIndex: null
+    };
+  },
   methods: {
     save() {
       this.$emit("save");
@@ -73,6 +85,10 @@ export default {
     updatedInput(newValue, index) {
       Object.assign(this.data.applicationInputs[index], newValue);
       this.$emit("input", this.data);
+    },
+    addApplicationInput() {
+      this.data.applicationInputs.push(new models.InputDataObjectType());
+      this.focusApplicationInputIndex = this.data.applicationInputs.length - 1;
     }
   }
 };
