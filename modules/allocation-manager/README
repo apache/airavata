@@ -1,0 +1,59 @@
+The Allocation Manager enables tenant gateways define allocation policies and available resources. Users of gateways (typically researchers and educators) can request appropriate resources to accomplish their research objectives by providing a justification.
+Notification Manager. https://issues.apache.org/jira/browse/AIRAVATA-1893 
+
+The allocation manager feauture consists of three types of users:
+* User - Requests for an allocation
+* Reviewer - reviews the request and makes decision for allocation
+* Admin - Initiates and manages the review process
+
+The allocation manager consists of the basic setup for the feature which will be continuously built on : 
+The airvata-allocation-manager is a multi-module consists of the the following modules:
+* airvata-allocation-manager-server -  This consists of details of the database connections and the entity classes.
+* airvata-allocation-manager-stubs - This consists of the models which represent the database table entities and also the servicehandler.
+The service handler (AllocationManagerServerHandler) functions interact with the database repository functions.
+The stubs consists of the client files which will be used to communicate to the micro-services.
+
+The AllocationManagerServerHandler.java file consists of all the functions which represent action by different roles involved in the feature.
+
+The allocation manager current consists of :
+
+* A user client and server
+* An admin client and server
+* An reviewer client and server.
+* A notification manager.
+
+The clients (present in stubs module) and server(present in server module) communicate using Apache Thrift with AllocationManagerServerHandler being the common part.
+
+Presently , The  reviewer and admin are performing the following functions:
+
+* The reviewer performs can view the details of the request using the getAllocationRequest() function and thereby approve or deny. 
+ The status is updated using updateAllocationRequestStatus().
+ 
+ * The admin performs can view the details of the request using the getAllocationRequest() function and the reviewers decision using getAllocationRequestStatus() and thereby approve or deny. 
+ The status is updated using updateAllocationRequestStatus().
+ 
+
+1. The reviewer fetches 
+Currently, the implementation consists of a notification- manager
+
+The notification manager of Allocation manager performs the functions of notifying the user/admin/reviewer the status of a request.
+* Send notification/email to admin, reviewers about a new process.
+* Notify updates of the requests to the users.
+
+Implemenation of the notification - manager is as follows:
+
+The notification manager is a maven multi module project. The modules are as follows:
+
+* Notification-Receiver - This module accepts the request from a microservice. The request sent is the Project ID. 
+ The project id is queued using the RabbitMq message broker. The project ID is accepted and forwarded to then Notification-Authenticator Module.
+ 
+ 
+ * Notification-Authenticator - This module consists of the methods which connecg to the database through Apache Thrift. The NotificationDetails.java
+ consists of methods which calls the functions in the AllocationManagerServerHandler which connect to database functions and fetch the necessary details.
+ 
+ * Notification-Sender - This module contains method which is called by the Notification-Receiver. The method sends email to the specified sender.
+ The method reads messages to be sent to the user from a messages.properties resource file. The email server details should be stored in a
+ config.properties file which should be stored directly under the Notification-Receiver project.
+ 
+ 
+ 

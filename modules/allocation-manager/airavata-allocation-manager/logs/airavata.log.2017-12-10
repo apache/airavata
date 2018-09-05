@@ -1,0 +1,145 @@
+2017-12-10 16:47:03,315 [main] INFO  o.a.a.a.m.db.utils.JPAUtils  - Database already created for Sharing Catalog !!!
+2017-12-10 16:47:43,049 [main] INFO  o.dozer.config.GlobalSettings  - Trying to find Dozer configuration file: dozer.properties
+2017-12-10 16:47:43,058 [main] WARN  o.dozer.config.GlobalSettings  - Dozer configuration file not found: dozer.properties.  Using defaults for all Dozer global properties.
+2017-12-10 16:47:43,061 [main] INFO  org.dozer.DozerInitializer  - Initializing Dozer. Version: 5.4.0, Thread Name: main
+2017-12-10 16:47:43,135 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerStatisticsController] auto registered with the Platform MBean Server
+2017-12-10 16:47:43,136 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerAdminController] auto registered with the Platform MBean Server
+2017-12-10 16:47:43,141 [main] INFO  org.dozer.DozerBeanMapper  - Initializing a new instance of dozer bean mapper.
+2017-12-10 16:47:45,362 [main] ERROR o.a.a.a.m.s.AllocationManagerServerHandler  - This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent: "
+org.apache.airavata.allocation.manager.db.entities.UserDetailEntity".
+org.apache.openjpa.persistence.ArgumentException: This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent: "
+org.apache.airavata.allocation.manager.db.entities.UserDetailEntity".
+	at org.apache.openjpa.enhance.ManagedClassSubclasser.prepareUnenhancedClasses(ManagedClassSubclasser.java:115)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.loadPersistentTypes(AbstractBrokerFactory.java:314)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.initializeBroker(AbstractBrokerFactory.java:238)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.newBroker(AbstractBrokerFactory.java:212)
+	at org.apache.openjpa.kernel.DelegatingBrokerFactory.newBroker(DelegatingBrokerFactory.java:156)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:227)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:154)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:60)
+	at org.apache.airavata.allocation.manager.db.utils.JPAUtils.getEntityManager(JPAUtils.java:74)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.execute(AbstractRepository.java:153)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.update(AbstractRepository.java:60)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.create(AbstractRepository.java:49)
+	at org.apache.airavata.allocation.manager.server.AllocationManagerServerHandler.createUser(AllocationManagerServerHandler.java:428)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2205)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2185)
+	at org.apache.thrift.ProcessFunction.process(ProcessFunction.java:39)
+	at org.apache.thrift.TBaseProcessor.process(TBaseProcessor.java:39)
+	at org.apache.thrift.server.TSimpleServer.serve(TSimpleServer.java:80)
+	at org.apache.airavata.allocation.manager.server.TestServer.StartsimpleServer(TestServer.java:26)
+	at org.apache.airavata.allocation.manager.server.TestServer.main(TestServer.java:34)
+2017-12-10 16:47:45,370 [main] ERROR o.a.thrift.ProcessFunction  - Internal error processing createUser
+org.apache.airavata.allocation.manager.models.AllocationManagerException: This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent: "
+org.apache.airavata.allocation.manager.db.entities.UserDetailEntity". Stack trace:<openjpa-2.2.0-r422266:1244990 nonfatal user error> org.apache.openjpa.persistence.ArgumentException: This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent: "
+org.apache.airavata.allocation.manager.db.entities.UserDetailEntity".
+	at org.apache.openjpa.enhance.ManagedClassSubclasser.prepareUnenhancedClasses(ManagedClassSubclasser.java:115)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.loadPersistentTypes(AbstractBrokerFactory.java:314)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.initializeBroker(AbstractBrokerFactory.java:238)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.newBroker(AbstractBrokerFactory.java:212)
+	at org.apache.openjpa.kernel.DelegatingBrokerFactory.newBroker(DelegatingBrokerFactory.java:156)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:227)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:154)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:60)
+	at org.apache.airavata.allocation.manager.db.utils.JPAUtils.getEntityManager(JPAUtils.java:74)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.execute(AbstractRepository.java:153)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.update(AbstractRepository.java:60)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.create(AbstractRepository.java:49)
+	at org.apache.airavata.allocation.manager.server.AllocationManagerServerHandler.createUser(AllocationManagerServerHandler.java:428)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2205)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2185)
+	at org.apache.thrift.ProcessFunction.process(ProcessFunction.java:39)
+	at org.apache.thrift.TBaseProcessor.process(TBaseProcessor.java:39)
+	at org.apache.thrift.server.TSimpleServer.serve(TSimpleServer.java:80)
+	at org.apache.airavata.allocation.manager.server.TestServer.StartsimpleServer(TestServer.java:26)
+	at org.apache.airavata.allocation.manager.server.TestServer.main(TestServer.java:34)
+
+	at org.apache.airavata.allocation.manager.server.AllocationManagerServerHandler.createUser(AllocationManagerServerHandler.java:432)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2205)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2185)
+	at org.apache.thrift.ProcessFunction.process(ProcessFunction.java:39)
+	at org.apache.thrift.TBaseProcessor.process(TBaseProcessor.java:39)
+	at org.apache.thrift.server.TSimpleServer.serve(TSimpleServer.java:80)
+	at org.apache.airavata.allocation.manager.server.TestServer.StartsimpleServer(TestServer.java:26)
+	at org.apache.airavata.allocation.manager.server.TestServer.main(TestServer.java:34)
+2017-12-10 16:53:15,913 [main] INFO  o.a.a.a.m.db.utils.JPAUtils  - Database already created for Sharing Catalog !!!
+2017-12-10 16:53:32,861 [main] INFO  o.dozer.config.GlobalSettings  - Trying to find Dozer configuration file: dozer.properties
+2017-12-10 16:53:32,869 [main] WARN  o.dozer.config.GlobalSettings  - Dozer configuration file not found: dozer.properties.  Using defaults for all Dozer global properties.
+2017-12-10 16:53:32,871 [main] INFO  org.dozer.DozerInitializer  - Initializing Dozer. Version: 5.4.0, Thread Name: main
+2017-12-10 16:53:32,919 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerStatisticsController] auto registered with the Platform MBean Server
+2017-12-10 16:53:32,921 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerAdminController] auto registered with the Platform MBean Server
+2017-12-10 16:53:32,924 [main] INFO  org.dozer.DozerBeanMapper  - Initializing a new instance of dozer bean mapper.
+2017-12-10 16:53:34,953 [main] ERROR o.a.a.a.m.s.AllocationManagerServerHandler  - This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent: "
+org.apache.airavata.allocation.manager.db.entities.UserDetailEntity".
+org.apache.openjpa.persistence.ArgumentException: This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent: "
+org.apache.airavata.allocation.manager.db.entities.UserDetailEntity".
+	at org.apache.openjpa.enhance.ManagedClassSubclasser.prepareUnenhancedClasses(ManagedClassSubclasser.java:115)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.loadPersistentTypes(AbstractBrokerFactory.java:314)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.initializeBroker(AbstractBrokerFactory.java:238)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.newBroker(AbstractBrokerFactory.java:212)
+	at org.apache.openjpa.kernel.DelegatingBrokerFactory.newBroker(DelegatingBrokerFactory.java:156)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:227)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:154)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:60)
+	at org.apache.airavata.allocation.manager.db.utils.JPAUtils.getEntityManager(JPAUtils.java:74)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.execute(AbstractRepository.java:153)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.update(AbstractRepository.java:60)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.create(AbstractRepository.java:49)
+	at org.apache.airavata.allocation.manager.server.AllocationManagerServerHandler.createUser(AllocationManagerServerHandler.java:428)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2205)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:1)
+	at org.apache.thrift.ProcessFunction.process(ProcessFunction.java:39)
+	at org.apache.thrift.TBaseProcessor.process(TBaseProcessor.java:39)
+	at org.apache.thrift.server.TSimpleServer.serve(TSimpleServer.java:80)
+	at org.apache.airavata.allocation.manager.server.TestServer.StartsimpleServer(TestServer.java:26)
+	at org.apache.airavata.allocation.manager.server.TestServer.main(TestServer.java:34)
+2017-12-10 16:53:34,956 [main] ERROR o.a.thrift.ProcessFunction  - Internal error processing createUser
+org.apache.airavata.allocation.manager.models.AllocationManagerException: This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent: "
+org.apache.airavata.allocation.manager.db.entities.UserDetailEntity". Stack trace:<openjpa-2.2.0-r422266:1244990 nonfatal user error> org.apache.openjpa.persistence.ArgumentException: This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent: "
+org.apache.airavata.allocation.manager.db.entities.UserDetailEntity".
+	at org.apache.openjpa.enhance.ManagedClassSubclasser.prepareUnenhancedClasses(ManagedClassSubclasser.java:115)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.loadPersistentTypes(AbstractBrokerFactory.java:314)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.initializeBroker(AbstractBrokerFactory.java:238)
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.newBroker(AbstractBrokerFactory.java:212)
+	at org.apache.openjpa.kernel.DelegatingBrokerFactory.newBroker(DelegatingBrokerFactory.java:156)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:227)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:154)
+	at org.apache.openjpa.persistence.EntityManagerFactoryImpl.createEntityManager(EntityManagerFactoryImpl.java:60)
+	at org.apache.airavata.allocation.manager.db.utils.JPAUtils.getEntityManager(JPAUtils.java:74)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.execute(AbstractRepository.java:153)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.update(AbstractRepository.java:60)
+	at org.apache.airavata.allocation.manager.db.repositories.AbstractRepository.create(AbstractRepository.java:49)
+	at org.apache.airavata.allocation.manager.server.AllocationManagerServerHandler.createUser(AllocationManagerServerHandler.java:428)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2205)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:1)
+	at org.apache.thrift.ProcessFunction.process(ProcessFunction.java:39)
+	at org.apache.thrift.TBaseProcessor.process(TBaseProcessor.java:39)
+	at org.apache.thrift.server.TSimpleServer.serve(TSimpleServer.java:80)
+	at org.apache.airavata.allocation.manager.server.TestServer.StartsimpleServer(TestServer.java:26)
+	at org.apache.airavata.allocation.manager.server.TestServer.main(TestServer.java:34)
+
+	at org.apache.airavata.allocation.manager.server.AllocationManagerServerHandler.createUser(AllocationManagerServerHandler.java:432)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:2205)
+	at org.apache.airavata.allocation.manager.service.cpi.AllocationRegistryService$Processor$createUser.getResult(AllocationRegistryService.java:1)
+	at org.apache.thrift.ProcessFunction.process(ProcessFunction.java:39)
+	at org.apache.thrift.TBaseProcessor.process(TBaseProcessor.java:39)
+	at org.apache.thrift.server.TSimpleServer.serve(TSimpleServer.java:80)
+	at org.apache.airavata.allocation.manager.server.TestServer.StartsimpleServer(TestServer.java:26)
+	at org.apache.airavata.allocation.manager.server.TestServer.main(TestServer.java:34)
+2017-12-10 16:55:32,884 [main] INFO  o.a.a.a.m.db.utils.JPAUtils  - Database already created for Sharing Catalog !!!
+2017-12-10 16:55:42,795 [main] INFO  o.dozer.config.GlobalSettings  - Trying to find Dozer configuration file: dozer.properties
+2017-12-10 16:55:42,801 [main] WARN  o.dozer.config.GlobalSettings  - Dozer configuration file not found: dozer.properties.  Using defaults for all Dozer global properties.
+2017-12-10 16:55:42,802 [main] INFO  org.dozer.DozerInitializer  - Initializing Dozer. Version: 5.4.0, Thread Name: main
+2017-12-10 16:55:42,837 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerStatisticsController] auto registered with the Platform MBean Server
+2017-12-10 16:55:42,837 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerAdminController] auto registered with the Platform MBean Server
+2017-12-10 16:55:42,840 [main] INFO  org.dozer.DozerBeanMapper  - Initializing a new instance of dozer bean mapper.
+2017-12-10 22:17:05,248 [main] INFO  o.a.a.a.m.db.utils.JPAUtils  - Database already created for Sharing Catalog !!!
+2017-12-10 22:23:30,425 [main] INFO  o.a.a.a.m.db.utils.JPAUtils  - Database already created for Sharing Catalog !!!
+2017-12-10 22:27:30,157 [main] INFO  o.a.a.a.m.db.utils.JPAUtils  - Database already created for Sharing Catalog !!!
+2017-12-10 22:32:40,249 [main] INFO  o.a.a.a.m.db.utils.JPAUtils  - Database already created for Sharing Catalog !!!
+2017-12-10 22:33:34,930 [main] INFO  o.dozer.config.GlobalSettings  - Trying to find Dozer configuration file: dozer.properties
+2017-12-10 22:33:34,939 [main] WARN  o.dozer.config.GlobalSettings  - Dozer configuration file not found: dozer.properties.  Using defaults for all Dozer global properties.
+2017-12-10 22:33:34,941 [main] INFO  org.dozer.DozerInitializer  - Initializing Dozer. Version: 5.4.0, Thread Name: main
+2017-12-10 22:33:34,995 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerStatisticsController] auto registered with the Platform MBean Server
+2017-12-10 22:33:34,997 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerAdminController] auto registered with the Platform MBean Server
+2017-12-10 22:33:35,001 [main] INFO  org.dozer.DozerBeanMapper  - Initializing a new instance of dozer bean mapper.
