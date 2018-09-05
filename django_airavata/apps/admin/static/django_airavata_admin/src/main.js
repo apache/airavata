@@ -8,6 +8,8 @@ import Loading from './components/Loading.vue'
 import ComputeResourceDashboard from './components/dashboards/ComputeResourceDashboard'
 import ComputeResourcePreferenceDashboard from './components/dashboards/ComputeResourcePreferenceDashboard'
 import BootstrapVue from 'bootstrap-vue'
+// TODO: load the latest bootstrap css globally
+import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import { components, errors } from 'django-airavata-common-ui'
@@ -26,7 +28,7 @@ Vue.use(VueRouter);
 
 export function initializeApacheAiravataDashboard(dashboardName) {
   var template = `
-    <div class="vmain"><notifications-display/><Loading/> 
+    <div class="vmain"><notifications-display/><Loading/>
         <transition name="fade">
             <router-view>
             </router-view>

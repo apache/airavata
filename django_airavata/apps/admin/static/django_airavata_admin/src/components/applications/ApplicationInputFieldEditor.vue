@@ -1,5 +1,12 @@
 <template>
-  <b-card header="Input Field">
+  <b-card>
+    <div class="d-flex align-items-center" slot="header">
+      <div class="mr-auto">Input Field: {{ data.name }}</div>
+      <b-link class="text-secondary" @click="deleteApplicationInput">
+        <i class="fa fa-trash"></i>
+        <span class="sr-only">Delete</span>
+      </b-link>
+    </div>
     <b-form-group label="Name" :label-for="id+'-name'">
       <b-form-input :id="id+'-name'" type="text" v-model="data.name" ref="nameInput" required></b-form-input>
     </b-form-group>
@@ -81,6 +88,9 @@ export default {
     doFocus() {
       this.$refs.nameInput.focus();
       this.$el.scrollIntoView();
+    },
+    deleteApplicationInput() {
+      this.$emit("delete");
     }
   },
   mounted() {

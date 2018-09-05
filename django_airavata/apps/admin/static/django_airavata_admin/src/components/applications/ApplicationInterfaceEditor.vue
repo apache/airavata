@@ -26,7 +26,7 @@
         <h1 class="h5 mb-4">
           Input Fields
         </h1>
-        <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index" :focus="index === focusApplicationInputIndex" @input="updatedInput($event, index)" />
+        <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index" :focus="index === focusApplicationInputIndex" @input="updatedInput($event, index)" @delete="deleteInput($event, index)" />
       </div>
     </div>
     <div class="row">
@@ -89,6 +89,9 @@ export default {
     addApplicationInput() {
       this.data.applicationInputs.push(new models.InputDataObjectType());
       this.focusApplicationInputIndex = this.data.applicationInputs.length - 1;
+    },
+    deleteInput(e, index) {
+      this.data.applicationInputs.splice(index, 1);
     }
   }
 };
