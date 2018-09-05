@@ -26,7 +26,9 @@
         <h1 class="h5 mb-4">
           Input Fields
         </h1>
-        <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index" :focus="index === focusApplicationInputIndex" @input="updatedInput($event, index)" @delete="deleteInput($event, index)" />
+        <draggable v-model="data.applicationInputs">
+          <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index" :focus="index === focusApplicationInputIndex" @input="updatedInput($event, index)" @delete="deleteInput($event, index)" />
+        </draggable>
       </div>
     </div>
     <div class="row">
@@ -54,6 +56,8 @@ import { models } from "django-airavata-api";
 import vmodel_mixin from "../commons/vmodel_mixin";
 import ApplicationInputFieldEditor from "./ApplicationInputFieldEditor.vue";
 
+import draggable from "vuedraggable";
+
 export default {
   name: "application-interface-editor",
   mixins: [vmodel_mixin],
@@ -63,7 +67,8 @@ export default {
     }
   },
   components: {
-    ApplicationInputFieldEditor
+    ApplicationInputFieldEditor,
+    draggable
   },
   computed: {
     trueFalseOptions() {
