@@ -26,8 +26,10 @@
         <h1 class="h5 mb-4">
           Input Fields
         </h1>
-        <draggable v-model="data.applicationInputs" :options="dragOptions" @start="onDragStart" @end="onDragEnd">
-          <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index" :focus="index === focusApplicationInputIndex" :collapse="collapseApplicationInputs" @input="updatedInput($event, index)" @delete="deleteInput($event, index)" />
+        <draggable v-model="data.applicationInputs" :options="dragOptions" @start="onDragStart" @end="onDragEnd" @input="emitChanged">
+          <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index"
+            :focus="index === focusApplicationInputIndex" :collapse="collapseApplicationInputs" @input="updatedInput($event, index)"
+            @delete="deleteInput($event, index)" />
         </draggable>
       </div>
     </div>
@@ -93,7 +95,7 @@ export default {
     },
     updatedInput(newValue, index) {
       Object.assign(this.data.applicationInputs[index], newValue);
-      this.$emit("input", this.data);
+      this.emitChanged();
     },
     addApplicationInput() {
       this.data.applicationInputs.push(new models.InputDataObjectType());
@@ -107,8 +109,10 @@ export default {
     },
     onDragEnd() {
       this.collapseApplicationInputs = false;
+    },
+    emitChanged() {
+      this.$emit("input", this.data);
     }
   }
 };
 </script>
-
