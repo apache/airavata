@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.helix.impl.task.parsing;
 
+import java.util.List;
+
 /**
  * Request format for Data Parsing
  *
@@ -30,6 +32,7 @@ public class ParserRequest {
     private String outputFileName;
     private String application;
     private String workingDir;
+    private List<String> operationList;
 
     public String getInputFileName() {
         return inputFileName;
@@ -63,8 +66,16 @@ public class ParserRequest {
         this.workingDir = workingDir;
     }
 
+    public List<String> getOperationList() {
+        return operationList;
+    }
+
+    public void setOperationList(List<String> operationList) {
+        this.operationList = operationList;
+    }
+
     public String inputFileType() {
-        return inputFileName.substring(inputFileName.indexOf('.')) + (application == null ? "" : "/" + application);
+        return inputFileName.substring(inputFileName.indexOf('.'));
     }
 
     public String outputFileType() {

@@ -31,12 +31,14 @@ public class Edge {
     private final Vertex sourceVertex;
     private final Vertex targetVertex;
     private final CatalogEntry entry;
+    private final boolean selfEdge;
     private final int weight;
 
     public Edge(Vertex sourceVertex, Vertex targetVertex, CatalogEntry entry) {
         this.sourceVertex = sourceVertex;
         this.targetVertex = targetVertex;
         this.entry = entry;
+        this.selfEdge = sourceVertex.equals(targetVertex);
         this.weight = 1;
     }
 
@@ -56,4 +58,7 @@ public class Edge {
         return weight;
     }
 
+    public boolean isSelfEdge() {
+        return selfEdge;
+    }
 }

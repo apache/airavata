@@ -25,7 +25,6 @@ import org.apache.airavata.helix.impl.task.parsing.shortestpath.Edge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,28 +41,18 @@ public class CatalogGraph {
     private final static Logger logger = LoggerFactory.getLogger(CatalogGraph.class);
 
     private DijkstraShortestPath dsp;
-    private String inputFileType;
 
-    public CatalogGraph(String inputFileType, String catalogPath) throws FileNotFoundException {
-        this.inputFileType = inputFileType;
+    public CatalogGraph(ParserRequest request, String catalogPath) throws Exception {
         DirectedGraph directedGraph = new DirectedGraph();
 
         for (CatalogEntry e : CatalogUtil.catalogLookup(catalogPath)) {
-            // If an application is found "Source Vertex" will be
-            // inserted as [fileType]/[application] (eg. ".out/gaussian") else [fileType].
-            String sourceVertex = e.getApplicationType().isEmpty()
-                    ? e.getInputFileExtension()
-                    : e.getInputFileExtension() + '/' + e.getApplicationType();
-
             // Insert the edge and the two vertices
-            boolean success = directedGraph.addEdge(sourceVertex, e.getOutputFileExtension(), e);
-            logger.info(String.format((success ? "Successfully inserted " : "Couldn't insert ")
-                            + "the source vertex: %s, target vertex: %s, and the edge: %s",
-                    sourceVertex, e.getOutputFileExtension(), e.getDockerImageName()));
+            directedGraph.addEdge(e.getInputFileExtension(), e.getOutputFileExtension(), e);
+            logger.info(String.format("Successfully inserted the source vertex: " +
+                            "%s, target vertex: %s, and the edge: %s",
+                    e.getInputFileExtension(), e.getOutputFileExtension(), e.getDockerImageName()));
         }
-
-        dsp = new DijkstraShortestPath(directedGraph);
-        dsp.execute(inputFileType);
+        dsp = new DijkstraShortestPath(directedGraph, request);
     }
 
     /**
@@ -83,7 +72,7 @@ public class CatalogGraph {
 
         } else {
             throw new Exception(String.format("A path could not be found in between " +
-                    "input file type: %s and output file type: %s", inputFileType, outputFileType));
+                    "input file type: %s and output file type: %s", dsp.getSource(), outputFileType));
         }
     }
 }
