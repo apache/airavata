@@ -41,20 +41,24 @@ export default {
       return services.ApplicationModuleService.create({ data: appModule })
         .then(appModule => {
           commit('setModule', appModule);
-          const appModulesCopy = state.modules.slice();
-          appModulesCopy.push(appModule);
-          commit('setModules', appModulesCopy);
-          return appModule;
+          if (state.modules) {
+            const appModulesCopy = state.modules.slice();
+            appModulesCopy.push(appModule);
+            commit('setModules', appModulesCopy);
+            return appModule;
+          }
         });
     },
     updateApplicationModule({ commit, state }, appModule) {
       return services.ApplicationModuleService.update({ lookup: appModule.appModuleId, data: appModule })
         .then(appModule => {
           commit('setModule', appModule);
-          const appModules = state.modules.filter(mod => mod.appModuleId !== appModule.appModuleId)
-          appModules.push(appModule);
-          commit('setModules', appModules);
-          return appModule;
+          if (state.modules) {
+            const appModules = state.modules.filter(mod => mod.appModuleId !== appModule.appModuleId)
+            appModules.push(appModule);
+            commit('setModules', appModules);
+            return appModule;
+          }
         })
     }
   }

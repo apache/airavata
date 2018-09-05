@@ -15,7 +15,8 @@
           <b-nav-item active-class="active" :to="{name: 'application_deployments', params: {id: id}}" :disabled="!id">Deployments</b-nav-item>
         </b-nav>
         <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule" />
-        <router-view name="interface" v-if="appInterface" v-model="appInterface" @save="saveInterface" @cancel="cancelInterface" />
+        <router-view name="interface" v-if="appInterface" v-model="appInterface" @save="saveInterface" @cancel="cancelInterface"
+        />
         <router-view name="deployments" />
         <router-view name="deployment" />
       </div>
@@ -103,18 +104,24 @@ export default {
       this.appInterface.applicationName = this.module.appModuleName;
       this.appInterface.applicationDescription = this.module.appModuleDescription;
 
-      this.updateApplicationModule(this.module).then(appModule => {
-        if (this.appInterface.applicationInterfaceId) {
-          return this.updateApplicationInterface(this.appInterface).then(() => {
-            this.$router.push({ path: "/applications" });
-          });
-        } else {
-          this.appInterface.applicationModules = [this.id];
-          return this.createApplicationInterface(this.appInterface).then(() => {
-            this.$router.push({ path: "/applications" });
-          });
-        }
-      });
+      this.updateApplicationModule(this.module)
+        .then(appModule => {
+          if (this.appInterface.applicationInterfaceId) {
+            return this.updateApplicationInterface(this.appInterface).then(
+              () => {
+                this.$router.push({ path: "/applications" });
+              }
+            );
+          } else {
+            this.appInterface.applicationModules = [this.id];
+            return this.createApplicationInterface(this.appInterface).then(
+              () => {
+                this.$router.push({ path: "/applications" });
+              }
+            );
+          }
+        })
+        .catch(error => notifications.NotificationList.addError(error));
     },
     cancelModule() {
       this.$router.push({ path: "/applications" });
