@@ -73,7 +73,7 @@ public class ParserWorkflowManager extends WorkflowManager {
 
         try {
             final List<AbstractTask> allTasks = new ArrayList<>();
-            CatalogGraph catalogGraph = new CatalogGraph(parserRequest.inputFileType(), ServerSettings.getSetting("parser.catalog.path"));
+            CatalogGraph catalogGraph = new CatalogGraph(parserRequest, ServerSettings.getSetting("parser.catalog.path"));
             List<CatalogEntry> catalogEntries = catalogGraph.getSPCatalogEntries(parserRequest.outputFileType());
             String processId = "ID-" + UUID.randomUUID().toString();
 

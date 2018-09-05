@@ -21,10 +21,7 @@ package org.apache.airavata.helix.impl.task.parsing.shortestpath;
 
 import org.apache.airavata.helix.impl.task.parsing.CatalogEntry;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation of a directed graph
@@ -53,43 +50,14 @@ public class DirectedGraph {
      * @return true if <code>sourceVertex</code>, <code>targetVertex</code> and edge
      * were successfully inserted or false otherwise
      */
-    public boolean addEdge(String sourceVertex, String targetVertex, CatalogEntry entry) {
+    public void addEdge(String sourceVertex, String targetVertex, CatalogEntry entry) {
         Vertex sv = new Vertex(sourceVertex);
         Vertex tv = new Vertex(targetVertex);
-        if (!containsEdge(sv, tv)) {
-            addVertex(sv);
-            addVertex(tv);
-            Edge e = new Edge(sv, tv, entry);
-            edges.add(e);
-            vertexMap.get(sv).add(e);
-            return true;
-        }
-
-        return false;
-    }
-
-    public Set<Edge> getEdgeSet() {
-        return edges;
-    }
-
-    /**
-     * Returns the edge in between <code>sourceVertex</code>
-     * and <code>targetVertex</code>
-     *
-     * @param sourceVertex starting vertex
-     * @param targetVertex ending vertex
-     * @return {@link Edge} in between <code>sourceVertex</code>
-     * and <code>targetVertex</code>
-     */
-    public Edge getEdge(Vertex sourceVertex, Vertex targetVertex) {
-        if (vertices.contains(sourceVertex) && vertices.contains(targetVertex)) {
-            for (Edge e : vertexMap.get(sourceVertex)) {
-                if (e.getTarget().equals(targetVertex)) {
-                    return e;
-                }
-            }
-        }
-        return null;
+        addVertex(sv);
+        addVertex(tv);
+        Edge e = new Edge(sv, tv, entry);
+        edges.add(e);
+        vertexMap.get(sv).add(e);
     }
 
     private void addVertex(Vertex v) {
@@ -99,8 +67,7 @@ public class DirectedGraph {
         }
     }
 
-    private boolean containsEdge(Vertex sourceVertex, Vertex targetVertex) {
-        return getEdge(sourceVertex, targetVertex) != null;
+    public List<Edge> getOutgoingEdges(Vertex sourceVertex) {
+        return new ArrayList<>(vertexMap.get(sourceVertex));
     }
-
 }

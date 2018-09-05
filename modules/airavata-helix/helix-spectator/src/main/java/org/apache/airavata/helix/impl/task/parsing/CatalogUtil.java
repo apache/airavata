@@ -23,6 +23,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -35,6 +37,8 @@ import java.util.List;
  * @since 1.0.0-SNAPSHOT
  */
 public class CatalogUtil {
+
+    private final static Logger logger = LoggerFactory.getLogger(CatalogUtil.class);
 
     /**
      * Creates list of {@link CatalogEntry}s using the catalog DB
@@ -55,6 +59,7 @@ public class CatalogUtil {
                     obj.get("executableBinary").getAsString(), obj.get("executingFile").getAsString(),
                     obj.get("inputFileExtension").getAsString(), obj.get("outputFileName").getAsString())
                     .applicationType(obj.get("applicationType").getAsString())
+                    .operation(obj.get("operation").getAsString())
                     .runInDetachedMode(obj.get("runInDetachedMode").getAsString())
                     .automaticallyRmContainer(obj.get("automaticallyRmContainer").getAsString())
                     .runInDetachedMode(obj.get("runInDetachedMode").getAsString())
@@ -66,7 +71,14 @@ public class CatalogUtil {
                     .label(obj.get("label").getAsString())
                     .build();
 
-            entries.add(entry);
+            // Catalog entry should hold either an operation or application
+            if (entry.getOperation().isEmpty() || entry.getApplicationType().isEmpty()) {
+                entries.add(entry);
+
+            } else {
+                logger.warn("Avoid adding the Docker entry: " + entry.getDockerImageName() +
+                        " as the catalog entry contains both operation and application");
+            }
         }
         return entries;
     }

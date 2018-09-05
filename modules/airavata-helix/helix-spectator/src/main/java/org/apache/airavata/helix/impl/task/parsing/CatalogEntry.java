@@ -42,6 +42,7 @@ public class CatalogEntry {
     private String inputFileExtension;
     private String outputFileName;
     private String applicationType;
+    private String operation;
 
     /*
      * Following variables are declared according to the parameters
@@ -71,6 +72,7 @@ public class CatalogEntry {
         outputFileName = builder.outputFileName;
 
         applicationType = builder.applicationType;
+        operation = builder.operation;
         runInDetachedMode = builder.runInDetachedMode;
         automaticallyRmContainer = builder.automaticallyRmContainer;
         securityOpt = builder.securityOpt;
@@ -127,6 +129,10 @@ public class CatalogEntry {
         return applicationType;
     }
 
+    public String getOperation() {
+        return operation;
+    }
+
     public String getRunInDetachedMode() {
         return runInDetachedMode;
     }
@@ -162,6 +168,7 @@ public class CatalogEntry {
 
         // Optional parameters. Initialized to default values
         private String applicationType = "";
+        private String operation = "";
         private String runInDetachedMode = "";
         private String automaticallyRmContainer = "--rm=true";
         private String securityOpt = "";
@@ -182,6 +189,13 @@ public class CatalogEntry {
         public Builder applicationType(String val) {
             if (!val.isEmpty()) {
                 applicationType = val;
+            }
+            return this;
+        }
+
+        public Builder operation(String val) {
+            if (!val.isEmpty()) {
+                operation = val;
             }
             return this;
         }
