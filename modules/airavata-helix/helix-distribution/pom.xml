@@ -106,6 +106,21 @@
                             <attach>false</attach>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>parser-wm-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${parser.wm.archive.name}-${project.version}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/parser-wm-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -116,5 +131,6 @@
         <participant.archieve.name>helix-participant</participant.archieve.name>
         <pre.wm.archieve.name>helix-pre-wm</pre.wm.archieve.name>
         <post.wm.archieve.name>helix-post-wm</post.wm.archieve.name>
+        <parser.wm.archive.name>helix-parser-wm</parser.wm.archive.name>
     </properties>
 </project>
