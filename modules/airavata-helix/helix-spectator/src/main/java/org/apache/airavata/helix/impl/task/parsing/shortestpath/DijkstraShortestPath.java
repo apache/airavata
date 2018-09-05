@@ -95,6 +95,7 @@ public class DijkstraShortestPath {
         Vertex step = new Vertex(target);
         LinkedList<Vertex> path = new LinkedList<>();
         List<Edge> edges = new ArrayList<>();
+        boolean sourceVertexSelfLoop = false;
 
         // Check whether a path exists or not
         if (predecessors.get(step) != null) {
@@ -102,10 +103,19 @@ public class DijkstraShortestPath {
             while (predecessors.get(step) != null) {
                 for (Edge e : predecessors.get(step)) {
                     if (e.isSelfEdge()) {
+                        if (source.equals(e.getCatalogEntry().getInputFileExtension())) {
+                            step = e.getSource();
+                            path.add(step);
+                            sourceVertexSelfLoop = true;
+                        }
                         continue;
                     }
                     step = e.getSource();
                     path.add(step);
+                }
+
+                if (sourceVertexSelfLoop) {
+                    break;
                 }
             }
             // Arrange in the correct order
@@ -141,19 +151,11 @@ public class DijkstraShortestPath {
 
             if (getShortestDistance(target) > getShortestDistance(vertex) + getDistance(vertex, target)) {
                 distance.put(target, getShortestDistance(vertex) + getDistance(vertex, target));
-
-                if (predecessors.get(target) != null) {
-                    predecessors.get(target).add(edge);
-
-                } else {
-                    LinkedList<Edge> list = new LinkedList<>();
-                    list.add(edge);
-                    predecessors.put(target, list);
-                }
+                updatePredecessors(edge, target);
                 unSettledNodes.add(target);
             }
             if (edge.isSelfEdge() && !operation.isEmpty() && settleOperations.get(operation) != null) {
-                predecessors.get(target).add(edge);
+                updatePredecessors(edge, target);
             }
         }
     }
@@ -241,5 +243,16 @@ public class DijkstraShortestPath {
 
     public String getSource() {
         return source;
+    }
+
+    private void updatePredecessors(Edge edge, Vertex target) {
+        if (predecessors.get(target) != null) {
+            predecessors.get(target).add(edge);
+
+        } else {
+            LinkedList<Edge> list = new LinkedList<>();
+            list.add(edge);
+            predecessors.put(target, list);
+        }
     }
 }
