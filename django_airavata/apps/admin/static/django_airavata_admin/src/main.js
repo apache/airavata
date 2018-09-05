@@ -11,6 +11,14 @@ import BootstrapVue from 'bootstrap-vue'
 // TODO: load the latest bootstrap css globally
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import { library as faLibrary } from '@fortawesome/fontawesome-svg-core'
+import { faGripVertical } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+faLibrary.add(faGripVertical)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
 
 import { components, errors } from 'django-airavata-common-ui'
 
