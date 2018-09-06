@@ -1,6 +1,7 @@
 import BaseModel from './BaseModel'
 import InputDataObjectType from './InputDataObjectType'
 import OutputDataObjectType from './OutputDataObjectType'
+import DataType from './DataType';
 
 
 const FIELDS = [
@@ -41,5 +42,22 @@ export default class ApplicationInterfaceDefinition extends BaseModel {
 
   constructor(data = {}) {
     super(FIELDS, data);
+  }
+
+  addStandardOutAndStandardErrorOutputs() {
+    const stdout = new OutputDataObjectType({
+      name: "Standard-Out",
+      type: DataType.STDOUT,
+      isRequired: true,
+    });
+    const stderr = new OutputDataObjectType({
+      name: "Standard-Error",
+      type: DataType.STDERR,
+      isRequired: true,
+    });
+    if (!this.applicationOutputs) {
+      this.applicationOutputs = [];
+    }
+    this.applicationOutputs.push(stdout, stderr);
   }
 }

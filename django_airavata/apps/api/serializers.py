@@ -298,17 +298,18 @@ class ApplicationInterfaceDescriptionSerializer(
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         # Sort applicationInputs by 'inputOrder'
-        rep['applicationInputs'].sort(key=lambda input: input['inputOrder'])
+        if rep['applicationInputs'] is not None:
+            rep['applicationInputs'].sort(
+                key=lambda input: input['inputOrder'])
         return rep
 
     def to_internal_value(self, data):
         validated_data = super().to_internal_value(data)
         # Update application input order based on order in array
         app_inputs = validated_data.get('applicationInputs', [])
-        log.debug('app_inputs={}'.format(app_inputs))
-        for i in range(len(app_inputs)):
-            app_inputs[i]['inputOrder'] = i
-        log.debug('app_inputs={}'.format(app_inputs))
+        if app_inputs is not None:
+            for i in range(len(app_inputs)):
+                app_inputs[i]['inputOrder'] = i
         return validated_data
 
 
