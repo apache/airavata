@@ -91,9 +91,6 @@ export default {
     }
   },
   methods: {
-    copyValue() {
-      return this.value.clone();
-    },
     doFocus() {
       this.$refs.nameInput.focus();
       this.$el.scrollIntoView();

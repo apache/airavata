@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "url-parse": "^1.4.3"
+    "url-parse": "^1.4.3",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

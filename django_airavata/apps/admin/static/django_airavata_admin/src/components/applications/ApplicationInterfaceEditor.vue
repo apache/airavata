@@ -26,14 +26,14 @@
         <h1 class="h5 mb-4">
           Input Fields
         </h1>
-        <draggable v-model="data.applicationInputs" :options="dragOptions" @start="onDragStart" @end="onDragEnd" @input="emitChanged">
+        <draggable v-model="data.applicationInputs" :options="dragOptions" @start="onDragStart" @end="onDragEnd">
           <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index"
             :focus="index === focusApplicationInputIndex" :collapse="collapseApplicationInputs" @input="updatedInput($event, index)"
             @delete="deleteInput($event, index)" />
         </draggable>
       </div>
     </div>
-    <div class="row">
+    <div class="row mb-4">
       <div class="col">
         <b-button variant="secondary" @click="addApplicationInput">
           Add application input
@@ -41,6 +41,22 @@
       </div>
     </div>
     <div class="row">
+      <div class="col">
+        <h1 class="h5 mb-4">
+          Output Fields
+        </h1>
+        <application-output-field-editor v-for="output in data.applicationOutputs" :value="output" :key="output.key" :focus="output.key === focusApplicationOutputKey"
+          @input="updatedOutput" @delete="deleteOutput(output)" />
+      </div>
+    </div>
+    <div class="row mb-4">
+      <div class="col">
+        <b-button variant="secondary" @click="addApplicationOutput">
+          Add application output
+        </b-button>
+      </div>
+    </div>
+    <div class="row mb-4">
       <div class="col">
         <b-button variant="primary" @click="save">
           Save
@@ -57,6 +73,7 @@
 import { models } from "django-airavata-api";
 import vmodel_mixin from "../commons/vmodel_mixin";
 import ApplicationInputFieldEditor from "./ApplicationInputFieldEditor.vue";
+import ApplicationOutputFieldEditor from "./ApplicationOutputFieldEditor.vue";
 
 import draggable from "vuedraggable";
 
@@ -70,6 +87,7 @@ export default {
   },
   components: {
     ApplicationInputFieldEditor,
+    ApplicationOutputFieldEditor,
     draggable
   },
   computed: {
@@ -80,6 +98,7 @@ export default {
   data() {
     return {
       focusApplicationInputIndex: null,
+      focusApplicationOutputKey: null,
       dragOptions: {
         handle: ".drag-handle"
       },
@@ -95,7 +114,6 @@ export default {
     },
     updatedInput(newValue, index) {
       Object.assign(this.data.applicationInputs[index], newValue);
-      this.emitChanged();
     },
     addApplicationInput() {
       this.data.applicationInputs.push(new models.InputDataObjectType());
@@ -104,14 +122,28 @@ export default {
     deleteInput(e, index) {
       this.data.applicationInputs.splice(index, 1);
     },
+    updatedOutput(newValue) {
+      const output = this.data.applicationOutputs.find(
+        o => o.key === newValue.key
+      );
+      Object.assign(output, newValue);
+    },
+    addApplicationOutput() {
+      const newOutput = new models.OutputDataObjectType();
+      this.data.applicationOutputs.push(newOutput);
+      this.focusApplicationOutputKey = newOutput.key;
+    },
+    deleteOutput(output) {
+      const outputIndex = this.data.applicationOutputs.findIndex(
+        o => o.key === output.key
+      );
+      this.data.applicationOutputs.splice(outputIndex, 1);
+    },
     onDragStart() {
       this.collapseApplicationInputs = true;
     },
     onDragEnd() {
       this.collapseApplicationInputs = false;
-    },
-    emitChanged() {
-      this.$emit("input", this.data);
     }
   }
 };
