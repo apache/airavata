@@ -66,9 +66,6 @@ export default {
     value: {
       type: models.InputDataObjectType
     },
-    id: {
-      required: true
-    },
     // Whether to put focus on the name field when mounting component
     focus: {
       type: Boolean
@@ -88,6 +85,9 @@ export default {
     },
     trueFalseOptions() {
       return [{ text: "True", value: true }, { text: "False", value: false }];
+    },
+    id() {
+      return "id-" + this.data.key;
     }
   },
   methods: {

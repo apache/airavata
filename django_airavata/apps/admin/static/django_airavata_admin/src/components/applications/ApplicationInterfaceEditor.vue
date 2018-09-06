@@ -27,9 +27,8 @@
           Input Fields
         </h1>
         <draggable v-model="data.applicationInputs" :options="dragOptions" @start="onDragStart" @end="onDragEnd">
-          <application-input-field-editor v-for="(input, index) in data.applicationInputs" :value="input" :key="index" :id="'app-input-'+index"
-            :focus="index === focusApplicationInputIndex" :collapse="collapseApplicationInputs" @input="updatedInput($event, index)"
-            @delete="deleteInput($event, index)" />
+          <application-input-field-editor v-for="input in data.applicationInputs" :value="input" :key="input.key" :focus="input.key === focusApplicationInputKey"
+            :collapse="collapseApplicationInputs" @input="updatedInput" @delete="deleteInput(input)" />
         </draggable>
       </div>
     </div>
@@ -112,15 +111,21 @@ export default {
     cancel() {
       this.$emit("cancel");
     },
-    updatedInput(newValue, index) {
-      Object.assign(this.data.applicationInputs[index], newValue);
+    updatedInput(newValue) {
+      const input = this.data.applicationInputs.find(
+        input => input.key === newValue.key
+      );
+      Object.assign(input, newValue);
     },
     addApplicationInput() {
       this.data.applicationInputs.push(new models.InputDataObjectType());
       this.focusApplicationInputIndex = this.data.applicationInputs.length - 1;
     },
-    deleteInput(e, index) {
-      this.data.applicationInputs.splice(index, 1);
+    deleteInput(input) {
+      const inputIndex = this.data.applicationInputs.findIndex(
+        inp => inp.key === input.key
+      );
+      this.data.applicationInputs.splice(inputIndex, 1);
     },
     updatedOutput(newValue) {
       const output = this.data.applicationOutputs.find(
