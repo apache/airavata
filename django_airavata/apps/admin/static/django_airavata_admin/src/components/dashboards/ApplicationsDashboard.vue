@@ -1,113 +1,58 @@
 <template>
-  <div class="new_app">
-    <div class="new_app_header">
-      <h4 style="display: inline-block">Application Catalog</h4>
-      <label v-on:click="newApplicationHandler()">New Application <span>+</span></label>
-    </div>
-    <div class="applications">
-      <h6 style="color: #666666;">APPLICATIONS</h6>
-      <div class="container-fluid">
-        <div class="row">
-            <application-card v-for="item in sortedModules" v-bind:app-module="item"
-                v-bind:key="item.appModuleId" v-on:app-selected="clickHandler(item)">
-            </application-card>
-        </div>
+  <list-layout @add-new-item="newApplicationHandler" :items="sortedModules" title="Application Catalog" subtitle="Applications"
+    new-item-button-text="New Application">
+    <template slot="item-list" slot-scope="slotProps">
+
+      <div class="row">
+        <application-card v-for="item in slotProps.items" v-bind:app-module="item" v-bind:key="item.appModuleId" v-on:app-selected="clickHandler(item)">
+        </application-card>
       </div>
-    </div>
-  </div>
+    </template>
+  </list-layout>
 </template>
 <script>
-  import NewApplication from '../admin/NewApplication.vue'
-  import Loading from '../Loading.vue'
+import { mapActions, mapState } from "vuex";
 
-  import {mapActions, mapState} from 'vuex'
+import { layouts, components as comps } from "django-airavata-common-ui";
 
-  import { components as comps } from 'django-airavata-common-ui'
+import { utils } from "django-airavata-api";
 
-  import { utils } from 'django-airavata-api'
-
-  export default {
-    components:{
-      NewApplication, Loading,
-      'application-card': comps.ApplicationCard,
-    },
-    mounted:function () {
-      if (!this.modules) {
-        this.loadApplications();
-      }
-    },
-    computed: {
-      ...mapState('applications/modules', ['modules']),
-      sortedModules() {
-        if (this.modules) {
-          return utils.StringUtils.sortIgnoreCase(this.modules.slice(), a => a.appModuleName);
-        } else {
-          return [];
-        }
-      }
-    },
-    methods:{
-      clickHandler: function (item) {
-        this.setTitle("Edit Application")
-        this.resetApplication()
-        this.setModule(item)
-        this.$router.push({name: 'application_module', params: {id: item.appModuleId}})
-      },
-      resetApplication:function () {
-        console.log("Resetting")
-        this.restInterface()
-        this.resetDetails()
-        this.resetDeployment()
-      },
-      newApplicationHandler:function () {
-        this.setTitle('Create New Application')
-        this.resetApplication()
-        this.$router.push({name: 'new_application_module'})
-      }
-      ,
-      ...mapActions({loadApplications: 'applications/modules/loadApplicationModules', setModule:'newApplication/setModule',setTitle:'newApplication/setTitle',restInterface:'newApplication/appInterfaceTab/resetState',resetDetails:'newApplication/appDetailsTab/resetState',resetDeployment:'newApplication/appDeploymentsTab/resetState'}),
+export default {
+  components: {
+    "application-card": comps.ApplicationCard,
+    "list-layout": layouts.ListLayout
+  },
+  mounted: function() {
+    if (!this.modules) {
+      this.loadApplications();
     }
+  },
+  computed: {
+    ...mapState("applications/modules", ["modules"]),
+    sortedModules() {
+      if (this.modules) {
+        return utils.StringUtils.sortIgnoreCase(
+          this.modules.slice(),
+          a => a.appModuleName
+        );
+      } else {
+        return [];
+      }
+    }
+  },
+  methods: {
+    clickHandler: function(item) {
+      this.$router.push({
+        name: "application_module",
+        params: { id: item.appModuleId }
+      });
+    },
+    newApplicationHandler: function() {
+      this.$router.push({ name: "new_application_module" });
+    },
+    ...mapActions({
+      loadApplications: "applications/modules/loadApplicationModules"
+    })
   }
+};
 </script>
-<style scoped>
-  .new_app {
-    margin: 45px;
-    width: 100%;
-    background-color: #f7f7f7;
-  }
-
-  .new_app_header{
-    width: 100%;
-    display: inline;
-  }
-
-  .new_app_header label{
-    background-color: #2e73bc;
-    color: white;
-    border: solid #2e73bc 1px ;
-    border-radius: 3px;
-    float: right;
-    padding-right: 15px;
-    padding-left: 15px;
-    padding-bottom: 8px;
-    padding-top: 3px;
-    text-align: center;
-  }
-
-  .new_app_header label:hover{
-    cursor: pointer;
-  }
-
-  .new_app_header label span{
-    font-weight: 900;
-    font-size: 25px;
-  }
-
-  .applications{
-    margin-top: 50px;
-  }
-
-  .ssh,.generate input{
-      text-align: center;
-  }
-</style>
