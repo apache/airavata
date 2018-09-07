@@ -9,7 +9,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <b-nav tabs>
+        <b-nav tabs class="mb-3">
           <b-nav-item exact-active-class="active" exact :to="{name: id ? 'application_module' : 'new_application_module', params: {id: id}}">Details</b-nav-item>
           <b-nav-item exact-active-class="active" exact :to="{name: 'application_interface', params: {id: id}}" :disabled="!id">Interface</b-nav-item>
           <b-nav-item active-class="active" :to="{name: 'application_deployments', params: {id: id}}" :disabled="!id">Deployments</b-nav-item>
@@ -17,8 +17,8 @@
         <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule" />
         <router-view name="interface" v-if="appInterface" v-model="appInterface" @save="saveInterface" @cancel="cancelInterface"
         />
-        <router-view name="deployments" />
-        <router-view name="deployment" />
+        <router-view name="deployments" v-if="deployments" :deployments="deployments" />
+        <router-view name="deployment" v-if="deployment" v-model="deployment" @save="saveDeployment" @cancel="cancelDeployment" />
       </div>
     </div>
   </div>
@@ -38,7 +38,6 @@ export default {
     return {
       module: null,
       appInterface: null,
-      deployments: null,
       deployment: null
     };
   },
@@ -53,7 +52,11 @@ export default {
       }
     },
     ...mapState("applications/modules", ["currentModule"]),
-    ...mapState("applications/interfaces", ["currentInterface"])
+    ...mapState("applications/interfaces", ["currentInterface"]),
+    ...mapState("applications/deployments", [
+      "currentDeployment",
+      "deployments"
+    ])
   },
   created() {
     this.initialize();
@@ -69,6 +72,12 @@ export default {
       "createApplicationInterface",
       "updateApplicationInterface"
     ]),
+    ...mapActions("applications/deployments", [
+      "loadApplicationDeployments",
+      "loadApplicationDeployment",
+      "createApplicationDeployment",
+      "updateApplicationDeployment"
+    ]),
     initialize() {
       // TODO: move this to applications store?
       if (this.currentModule && this.currentModule.appModuleId === this.id) {
@@ -76,11 +85,13 @@ export default {
         this.loadApplicationInterface(this.id).catch(error => {
           notifications.NotificationList.addError(error);
         });
+        this.loadApplicationDeployments(this.id);
       } else if (this.id) {
         this.loadApplicationModule(this.id);
         this.loadApplicationInterface(this.id).catch(error => {
           notifications.NotificationList.addError(error);
         });
+        this.loadApplicationDeployments(this.id);
       } else {
         this.module = new models.ApplicationModule();
       }
@@ -142,6 +153,9 @@ export default {
     },
     currentInterface: function(newInterface) {
       this.appInterface = newInterface.clone();
+    },
+    currentDeployment: function(newDeployment) {
+      this.deployment = newDeployment.clone();
     }
   }
 };

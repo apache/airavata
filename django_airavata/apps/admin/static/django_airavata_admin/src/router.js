@@ -69,19 +69,24 @@ const routes = [
         path: 'deployments', components: {
           deployments: ApplicationDeploymentsList
         },
-        name: 'application_deployments'
+        name: 'application_deployments',
+        props: {
+          deployments: true
+        }
       },
       {
         path: 'deployments/:deployment_id', components: {
           deployment: ApplicationDeploymentEditor
         },
         name: 'application_deployment',
-        props: true
+        props: {
+          deployment: true
+        }
       },
     ]
   },
-  {path: '/applications', component: ApplicationsDashboard},
-  {path: '/experiments', component: ExperimentsDashboard, name: 'experiments_dashboard'},
+  { path: '/applications', component: ApplicationsDashboard },
+  { path: '/experiments', component: ExperimentsDashboard, name: 'experiments_dashboard' },
   {
     path: '/group-resource-profiles/new', component: GroupComputeResourcePreference, name: 'new_group_resource_preference',
     props: true

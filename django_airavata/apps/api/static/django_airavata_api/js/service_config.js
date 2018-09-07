@@ -6,6 +6,7 @@ import GroupResourceProfile from './models/GroupResourceProfile'
 import SharedEntity from './models/SharedEntity'
 import UserProfile from './models/UserProfile'
 import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition';
+import BatchQueue from './models/BatchQueue';
 
 const post = "post";
 const get = "get";
@@ -42,7 +43,22 @@ pagination:true # whether to treat the response as a paginated response
 export default {
   "ApplicationDeployments": {
     url: "/api/application-deployments",
-    viewSet: true,
+    viewSet: [{
+      name: "list"
+    }, {
+      name: "create"
+    }, {
+      name: "retrieve"
+    }, {
+      name: "update"
+    }, {
+      name: "delete"
+    }, {
+      name: "getQueues",
+      url: "/api/application-deployments/<lookup>/queues/",
+      requestType: 'get',
+      modelClass: BatchQueue
+    }],
     queryParams: ['appModuleId', 'groupResourceProfileId'],
     modelClass: ApplicationDeploymentDescription,
   },
@@ -68,6 +84,11 @@ export default {
       url: "/api/applications/<lookup>/application_interface/",
       requestType: 'get',
       modelClass: ApplicationInterfaceDefinition
+    }, {
+      name: "getApplicationDeployments",
+      url: "/api/applications/<lookup>/application_deployments/",
+      requestType: 'get',
+      modelClass: ApplicationDeploymentDescription
     }],
     modelClass: ApplicationModule,
   },

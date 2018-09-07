@@ -76,7 +76,7 @@ exports.models = {
 }
 
 exports.services = {
-  ApplicationDeploymentService,
+  ApplicationDeploymentService: ServiceFactory.service("ApplicationDeployments"),
   ApplicationInterfaceService: ServiceFactory.service("ApplicationInterfaces"),
   ApplicationModuleService: ServiceFactory.service("ApplicationModules"),
   CredentialSummaryService: ServiceFactory.service("CredentialSummaries"),
