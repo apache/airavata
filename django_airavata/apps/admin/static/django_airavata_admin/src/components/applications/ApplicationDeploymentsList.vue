@@ -4,7 +4,11 @@
 
       <b-table striped hover :fields="fields" :items="slotProps.items" sort-by="computeHostId">
         <template slot="action" slot-scope="data">
-          <router-link :to="{name: 'application_deployment', params: {id: id, deployment_id: data.item.appDeploymentId}}">
+          <router-link v-if="!data.item.userHasWriteAccess" :to="{name: 'application_deployment', params: {id: id, deployment_id: data.item.appDeploymentId}}">
+            View
+            <i class="fa fa-eye" aria-hidden="true"></i>
+          </router-link>
+          <router-link v-if="data.item.userHasWriteAccess" :to="{name: 'application_deployment', params: {id: id, deployment_id: data.item.appDeploymentId}}">
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </router-link>

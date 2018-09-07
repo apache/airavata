@@ -336,10 +336,26 @@ class SetEnvPathsSerializer(CustomSerializer):
         raise Exception("Not implemented")
 
 
-class ApplicationDeploymentDescriptionSerializer(thrift_utils.create_serializer_class(ApplicationDeploymentDescription)):
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-deployment-detail', lookup_field='appDeploymentId', lookup_url_kwarg='app_deployment_id')
-    # Default values returned in these results have been overridden with app deployment defaults for any that exist
-    queues = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-deployment-queues', lookup_field='appDeploymentId', lookup_url_kwarg='app_deployment_id')
+class ApplicationDeploymentDescriptionSerializer(
+        thrift_utils.create_serializer_class(
+            ApplicationDeploymentDescription)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:application-deployment-detail',
+        lookup_field='appDeploymentId',
+        lookup_url_kwarg='app_deployment_id')
+    # Default values returned in these results have been overridden with app
+    # deployment defaults for any that exist
+    queues = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:application-deployment-queues',
+        lookup_field='appDeploymentId',
+        lookup_url_kwarg='app_deployment_id')
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, appDeployment):
+        request = self.context['request']
+        return request.airavata_client.userHasAccess(
+            request.authz_token, appDeployment.appDeploymentId,
+            ResourcePermissionType.WRITE)
 
 
 class ComputeResourceDescriptionSerializer(thrift_utils.create_serializer_class(ComputeResourceDescription)):

@@ -32,7 +32,8 @@ import { notifications } from "django-airavata-common-ui";
 export default {
   name: "application-editor-container",
   props: {
-    id: String
+    id: String,
+    deployment_id: String
   },
   data: function() {
     return {
@@ -60,6 +61,9 @@ export default {
   },
   created() {
     this.initialize();
+    if (this.deployment_id) {
+      this.loadApplicationDeployment(this.deployment_id);
+    }
   },
   methods: {
     ...mapActions("applications/modules", [
@@ -145,6 +149,9 @@ export default {
     $route: function(to, from) {
       if (to.params.id !== from.params.id) {
         this.initialize();
+      }
+      if (this.deployment_id) {
+        this.loadApplicationDeployment(this.deployment_id);
       }
     },
     currentModule: function(newModule) {
