@@ -95,7 +95,7 @@ export default {
   "ComputeResources": {
     url: "/api/compute-resources",
     viewSet: [{
-      name: "list"
+      name: "retrieve"
     }, {
       name: "names",
       url: "/api/compute-resources/all_names/",

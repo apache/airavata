@@ -313,29 +313,6 @@ class ApplicationInterfaceDescriptionSerializer(
         return validated_data
 
 
-class CommandObjectSerializer(CustomSerializer):
-    command = serializers.CharField()
-    commandOrder = serializers.IntegerField()
-
-    def create(self, validated_data):
-        return CommandObject(**validated_data)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not implemented")
-
-
-class SetEnvPathsSerializer(CustomSerializer):
-    name=serializers.CharField(required=False)
-    value=serializers.CharField(required=False)
-    envPathOrder=serializers.IntegerField(required=False)
-
-    def create(self, validated_data):
-        return SetEnvPaths(**validated_data)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not implemented")
-
-
 class ApplicationDeploymentDescriptionSerializer(
         thrift_utils.create_serializer_class(
             ApplicationDeploymentDescription)):
@@ -356,6 +333,22 @@ class ApplicationDeploymentDescriptionSerializer(
         return request.airavata_client.userHasAccess(
             request.authz_token, appDeployment.appDeploymentId,
             ResourcePermissionType.WRITE)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        if rep['moduleLoadCmds'] is not None:
+            rep['moduleLoadCmds'].sort(
+                key=lambda cmd: cmd['commandOrder'])
+        return rep
+
+    def to_internal_value(self, data):
+        validated_data = super().to_internal_value(data)
+        # Update application input order based on order in array
+        module_load_cmds = validated_data.get('moduleLoadCmds', [])
+        if module_load_cmds is not None:
+            for i in range(len(module_load_cmds)):
+                module_load_cmds[i]['commandOrder'] = i
+        return validated_data
 
 
 class ComputeResourceDescriptionSerializer(thrift_utils.create_serializer_class(ComputeResourceDescription)):

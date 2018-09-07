@@ -7,6 +7,7 @@ import ApplicationModule from './models/ApplicationModule'
 import BaseModel from './models/BaseModel'
 import BatchQueue from './models/BatchQueue'
 import BatchQueueResourcePolicy from './models/BatchQueueResourcePolicy'
+import CommandObject from './models/CommandObject'
 import ComputeResourcePolicy from './models/ComputeResourcePolicy'
 import DataType from './models/DataType'
 import Experiment from './models/Experiment'
@@ -18,13 +19,14 @@ import GroupPermission from './models/GroupPermission'
 import GroupResourceProfile from './models/GroupResourceProfile'
 import InputDataObjectType from './models/InputDataObjectType'
 import OutputDataObjectType from './models/OutputDataObjectType'
+import ParallelismType from './models/ParallelismType'
 import Project from './models/Project'
 import ResourcePermissionType from './models/ResourcePermissionType'
+import SetEnvPath from './models/SetEnvPath'
 import SharedEntity from './models/SharedEntity'
 import SummaryType from './models/SummaryType'
 import UserPermission from './models/UserPermission'
 
-import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ExperimentService from './services/ExperimentService'
 import ExperimentSearchService from './services/ExperimentSearchService'
 import FullExperimentService from './services/FullExperimentService'
@@ -57,6 +59,7 @@ exports.models = {
   BaseModel,
   BatchQueue,
   BatchQueueResourcePolicy,
+  CommandObject,
   ComputeResourcePolicy,
   DataType,
   Experiment,
@@ -68,8 +71,10 @@ exports.models = {
   GroupResourceProfile,
   InputDataObjectType,
   OutputDataObjectType,
+  ParallelismType,
   Project,
   ResourcePermissionType,
+  SetEnvPath,
   SharedEntity,
   SummaryType,
   UserPermission,

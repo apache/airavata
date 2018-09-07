@@ -1,4 +1,7 @@
 import BaseModel from './BaseModel'
+import ParallelismType from './ParallelismType';
+import CommandObject from './CommandObject';
+import SetEnvPath from './SetEnvPath';
 
 
 const FIELDS = [
@@ -6,15 +9,42 @@ const FIELDS = [
   'appModuleId',
   'computeHostId',
   'executablePath',
-  'parallelism',
+  {
+    name: 'parallelism',
+    type: ParallelismType,
+    default: ParallelismType.SERIAL,
+  },
   'appDeploymentDescription',
-  // TODO: map these
-  // 'moduleLoadCmds',
-  // 'libPrependPaths',
-  // 'libAppendPaths',
-  // 'setEnvironment',
-  // 'preJobCommands',
-  // 'postJobCommands',
+  {
+    name: 'moduleLoadCmds',
+    type: CommandObject,
+    list: true,
+  },
+  {
+    name: 'libPrependPaths',
+    type: SetEnvPath,
+    list: true,
+  },
+  {
+    name: 'libAppendPaths',
+    type: SetEnvPath,
+    list: true,
+  },
+  {
+    name: 'setEnvironment',
+    type: SetEnvPath,
+    list: true,
+  },
+  {
+    name: 'preJobCommands',
+    type: CommandObject,
+    list: true,
+  },
+  {
+    name: 'postJobCommands',
+    type: CommandObject,
+    list: true,
+  },
   'defaultQueueName',
   'defaultNodeCount',
   'defaultCPUCount',

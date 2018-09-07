@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404, JsonResponse
+from django.urls import reverse
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework.decorators import detail_route
@@ -521,18 +522,30 @@ class ComputeResourceViewSet(mixins.RetrieveModelMixin,
     lookup_value_regex = '[^/]+'
 
     def get_instance(self, lookup_value, format=None):
-        return self.request.airavata_client.getComputeResource(self.authz_token, lookup_value)
+        return self.request.airavata_client.getComputeResource(
+            self.authz_token, lookup_value)
 
     @list_route()
     def all_names(self, request, format=None):
         """Return a map of compute resource names keyed by resource id."""
-        return Response(request.airavata_client.getAllComputeResourceNames(request.authz_token))
+        return Response(
+            request.airavata_client.getAllComputeResourceNames(
+                request.authz_token))
 
     @list_route()
     def all_names_list(self, request, format=None):
         """Return a list of compute resource names keyed by resource id."""
-        all_names = request.airavata_client.getAllComputeResourceNames(request.authz_token)
-        return Response([{'host_id': host_id, 'host': host} for host_id, host in all_names.items()])
+        all_names = request.airavata_client.getAllComputeResourceNames(
+            request.authz_token)
+        return Response([
+            {
+                'host_id': host_id,
+                'host': host,
+                'url': request.build_absolute_uri(
+                    reverse('django_airavata_api:compute-resource-detail',
+                            args=[host_id]))
+            } for host_id, host in all_names.items()
+        ])
 
     @detail_route()
     def queues(self, request, compute_resource_id, format=None):
