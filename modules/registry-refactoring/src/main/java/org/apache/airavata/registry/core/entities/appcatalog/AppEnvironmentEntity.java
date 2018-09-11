@@ -28,6 +28,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "APP_ENVIRONMENT")
+@IdClass(AppEnvironmentPK.class)
 public class AppEnvironmentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -38,6 +39,7 @@ public class AppEnvironmentEntity implements Serializable {
     @Column(name = "VALUE")
     private String value;
 
+    @Id
     @Column(name = "NAME")
     private String name;
 
@@ -75,9 +77,13 @@ public class AppEnvironmentEntity implements Serializable {
         this.name = name;
     }
 
-    public int getEnvOrder() { return envPathOrder; }
+    public int getEnvPathOrder() {
+        return envPathOrder;
+    }
 
-    public void setEnvOrder(int envPathOrder) { this.envPathOrder = envPathOrder; }
+    public void setEnvPathOrder(int envPathOrder) {
+        this.envPathOrder = envPathOrder;
+    }
 
     public ApplicationDeploymentEntity getApplicationDeployment() {
         return applicationDeployment;
