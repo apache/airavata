@@ -8,7 +8,7 @@ const FIELDS = [
   'envPathOrder',
 ];
 
-export default class SetEnvPath extends BaseModel {
+export default class SetEnvPaths extends BaseModel {
 
   constructor(data = {}) {
     super(FIELDS, data);

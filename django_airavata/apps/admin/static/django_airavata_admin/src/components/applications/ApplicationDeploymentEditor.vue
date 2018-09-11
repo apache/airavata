@@ -14,18 +14,33 @@
         <b-form-group label="Application Deployment Description" label-for="deployment-description">
           <b-form-textarea id="deployment-description" v-model="data.appDeploymentDescription" :rows="3"></b-form-textarea>
         </b-form-group>
-        <b-card title="Module Load Commands">
-          <b-input-group v-for="moduleLoadCmd in data.moduleLoadCmds" :key="moduleLoadCmd.key" class="mb-1">
-            <b-form-input type="text" v-model="moduleLoadCmd.command" required ref="moduleLoadCmdInputs" />
-            <b-input-group-append>
-              <b-button variant="secondary" @click="deleteModuleLoadCmd(moduleLoadCmd)">
-                <i class="fa fa-trash"></i>
-                <span class="sr-only">Delete</span>
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
-          <b-button variant="secondary" @click="addModuleLoadCmd">Add Module Load Command</b-button>
-        </b-card>
+        <command-objects-editor title="Module Load Commands" add-button-label="Add Module Load Command" v-model="data.moduleLoadCmds"
+        />
+        <set-env-paths-editor title="Library Prepend Paths" add-button-label="Add a Library Prepend Path" v-model="data.libPrependPaths"
+        />
+        <set-env-paths-editor title="Library Append Paths" add-button-label="Add a Library Append Path" v-model="data.libAppendPaths"
+        />
+        <set-env-paths-editor title="Environment Variables" add-button-label="Add Environment Variable" v-model="data.setEnvironment"
+        />
+        <command-objects-editor title="Pre Job Commands" add-button-label="Add Pre Job Command" v-model="data.preJobCommands" />
+        <command-objects-editor title="Post Job Commands" add-button-label="Add Post Job Command" v-model="data.postJobCommands"
+        />
+        <b-form-group label="Default Queue Name" label-for="default-queue-name">
+          <b-form-select id="default-queue-name" v-model="data.defaultQueueName" :options="queueNameOptions" @change="defaultQueueChanged">
+            <template slot="first">
+              <option :value="null">Select a Default Queue</option>
+            </template>
+          </b-form-select>
+        </b-form-group>
+        <b-form-group label="Default Node Count" label-for="default-node-count">
+          <b-form-input id="default-node-count" type="number" v-model="data.defaultNodeCount" min="0" :max="maxNodes" :disabled="defaultQueueAttributesDisabled"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Default CPU Count" label-for="default-cpu-count">
+          <b-form-input id="default-cpu-count" type="number" v-model="data.defaultCPUCount" min="0" :max="maxCPUCount" :disabled="defaultQueueAttributesDisabled"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Default Walltime" label-for="default-walltime">
+          <b-form-input id="default-walltime" type="number" v-model="data.defaultWalltime" min="0" :max="maxWalltime" :disabled="defaultQueueAttributesDisabled"></b-form-input>
+        </b-form-group>
       </div>
     </div>
     <div class="row mb-4">
@@ -44,6 +59,8 @@
 <script>
 import { models, services } from "django-airavata-api";
 import vmodel_mixin from "../commons/vmodel_mixin";
+import CommandObjectsEditor from "./CommandObjectsEditor.vue";
+import SetEnvPathsEditor from "./SetEnvPathsEditor.vue";
 
 export default {
   name: "application-deployment-editor",
@@ -56,6 +73,10 @@ export default {
       type: String,
       required: true
     }
+  },
+  components: {
+    CommandObjectsEditor,
+    SetEnvPathsEditor
   },
   data() {
     return {
@@ -77,12 +98,52 @@ export default {
           text: parType.name
         };
       });
+    },
+    queueNameOptions() {
+      if (!this.computeResource) {
+        return [];
+      }
+      return this.computeResource.batchQueues.map(queue => {
+        return {
+          value: queue.queueName,
+          text: queue.queueName
+        };
+      });
+    },
+    maxNodes() {
+      const queue = this.computeResource
+        ? this.computeResource.batchQueues.find(
+            q => q.queueName === this.data.defaultQueueName
+          )
+        : null;
+      return queue ? queue.maxNodes : 0;
+    },
+    maxCPUCount() {
+      const queue = this.computeResource
+        ? this.computeResource.batchQueues.find(
+            q => q.queueName === this.data.defaultQueueName
+          )
+        : null;
+      return queue ? queue.maxProcessors : 0;
+    },
+    maxWalltime() {
+      const queue = this.computeResource
+        ? this.computeResource.batchQueues.find(
+            q => q.queueName === this.data.defaultQueueName
+          )
+        : null;
+      return queue ? queue.maxRuntime : 0;
+    },
+    defaultQueueAttributesDisabled() {
+      return !this.data.defaultQueueName;
     }
   },
   created() {
     services.ComputeResourceService.retrieve({
       lookup: this.data.computeHostId
-    }).then(computeResource => (this.computeResource = computeResource));
+    }).then(computeResource => {
+      this.computeResource = computeResource;
+    });
   },
   methods: {
     save() {
@@ -91,22 +152,13 @@ export default {
     cancel() {
       this.$emit("cancel");
     },
-    addModuleLoadCmd() {
-      if (!this.data.moduleLoadCmds) {
-        this.data.moduleLoadCmds = [];
-      }
-      this.data.moduleLoadCmds.push(new models.CommandObject());
-      this.$nextTick(() =>
-        this.$refs.moduleLoadCmdInputs[
-          this.$refs.moduleLoadCmdInputs.length - 1
-        ].focus()
+    defaultQueueChanged(queueName) {
+      const queue = this.computeResource.batchQueues.find(
+        q => q.queueName === queueName
       );
-    },
-    deleteModuleLoadCmd(moduleLoadCmd) {
-      const index = this.data.moduleLoadCmds.findIndex(
-        cmd => cmd.key === moduleLoadCmd.key
-      );
-      this.data.moduleLoadCmds.splice(index, 1);
+      this.data.defaultNodeCount = queue.defaultNodeCount;
+      this.data.defaultCPUCount = queue.defaultCPUCount;
+      this.data.defaultWalltime = queue.defaultWalltime;
     }
   }
 };

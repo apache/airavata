@@ -20,11 +20,15 @@ export default {
     }
   },
   methods: {
-    copyValue() {
-      if (this.value instanceof models.BaseModel) {
-        return this.value.clone();
-      } else if (typeof this.value === 'object') {
-        return JSON.parse(JSON.stringify(this.value));
+    copyValue(value) {
+      if (value instanceof Array) {
+        return value.map(item => this.copyValue(item))
+      } else {
+        if (value instanceof models.BaseModel) {
+          return value.clone();
+        } else if (typeof value === 'object') {
+          return JSON.parse(JSON.stringify(value));
+        }
       }
     }
   },

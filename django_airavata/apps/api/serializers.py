@@ -140,6 +140,27 @@ class StoredJSONField(serializers.JSONField):
             return value
 
 
+class OrderedListField(serializers.ListField):
+
+    def __init__(self, *args, **kwargs):
+        self.order_by = kwargs.pop('order_by', None)
+        super().__init__(*args, **kwargs)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        if rep is not None:
+            rep.sort(key=lambda item: item[self.order_by])
+        return rep
+
+    def to_internal_value(self, data):
+        validated_data = super().to_internal_value(data)
+        # Update order field based on order in array
+        items = validated_data if validated_data else []
+        for i in range(len(items)):
+            items[i][self.order_by] = i
+        return validated_data
+
+
 class GroupSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
     id = serializers.CharField(default=GroupModel.thrift_spec[1][4], allow_null=True)
@@ -236,55 +257,9 @@ class ApplicationModuleSerializer(
         required = ('appModuleName',)
 
 
-class InputDataObjectTypeSerializer(serializers.Serializer):
-    name = serializers.CharField(required=False)
-    value = serializers.CharField(required=False)
-    type = serializers.IntegerField(required=False)
-    applicationArgument = serializers.CharField(required=False)
-    standardInput = serializers.BooleanField(required=False)
-    metaData = StoredJSONField(required=False)
-    inputOrder = serializers.IntegerField(required=False)
-    isRequired = serializers.BooleanField(required=False)
-    requiredToAddedToCommandLine = serializers.BooleanField(required=False)
-    dataStaged = serializers.BooleanField(required=False)
-    storageResourceId = serializers.CharField(required=False)
-    isReadOnly = serializers.BooleanField(required=False)
-
-    def create(self, validated_data):
-        return InputDataObjectType(**validated_data)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not implemented")
-
-
-class OutputDataObjectTypeSerializer(serializers.Serializer):
-    name = serializers.CharField(required=False)
-    value = serializers.CharField(required=False)
-    type = serializers.IntegerField(required=False)
-    applicationArgument = serializers.CharField(required=False)
-    isRequired = serializers.BooleanField(required=False)
-    requiredToAddedToCommandLine = serializers.BooleanField(required=False)
-    dataMovement = serializers.CharField(required=False)
-    location = serializers.CharField(required=False)
-    searchQuery = serializers.CharField(required=False)
-    outputStreaming = serializers.BooleanField(required=False)
-    storageResourceId = serializers.CharField(required=False)
-
-    def create(self, validated_data):
-        return OutputDataObjectType(**validated_data)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not implemented")
-
-
-class CustomSerializer(serializers.Serializer):
-    def process_list_fields(self, validated_data):
-        fields = self.fields
-        params = copy.deepcopy(validated_data)
-        for field_name, serializer in fields.items():
-            if isinstance(serializer, serializers.ListSerializer):
-                   params[field_name] = serializer.create(params[field_name])
-        return params
+class InputDataObjectTypeSerializer(
+        thrift_utils.create_serializer_class(InputDataObjectType)):
+    pass
 
 
 class ApplicationInterfaceDescriptionSerializer(
@@ -294,23 +269,19 @@ class ApplicationInterfaceDescriptionSerializer(
         view_name='django_airavata_api:application-interface-detail',
         lookup_field='applicationInterfaceId',
         lookup_url_kwarg='app_interface_id')
+    applicationInputs = OrderedListField(
+        order_by='inputOrder',
+        child=InputDataObjectTypeSerializer())
 
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        # Sort applicationInputs by 'inputOrder'
-        if rep['applicationInputs'] is not None:
-            rep['applicationInputs'].sort(
-                key=lambda input: input['inputOrder'])
-        return rep
 
-    def to_internal_value(self, data):
-        validated_data = super().to_internal_value(data)
-        # Update application input order based on order in array
-        app_inputs = validated_data.get('applicationInputs', [])
-        if app_inputs is not None:
-            for i in range(len(app_inputs)):
-                app_inputs[i]['inputOrder'] = i
-        return validated_data
+class CommandObjectSerializer(
+        thrift_utils.create_serializer_class(CommandObject)):
+    pass
+
+
+class SetEnvPathsSerializer(
+        thrift_utils.create_serializer_class(SetEnvPaths)):
+    pass
 
 
 class ApplicationDeploymentDescriptionSerializer(
@@ -327,28 +298,30 @@ class ApplicationDeploymentDescriptionSerializer(
         lookup_field='appDeploymentId',
         lookup_url_kwarg='app_deployment_id')
     userHasWriteAccess = serializers.SerializerMethodField()
+    moduleLoadCmds = OrderedListField(
+        order_by='commandOrder',
+        child=CommandObjectSerializer())
+    preJobCommands = OrderedListField(
+        order_by='commandOrder',
+        child=CommandObjectSerializer())
+    postJobCommands = OrderedListField(
+        order_by='commandOrder',
+        child=CommandObjectSerializer())
+    libPrependPaths = OrderedListField(
+        order_by='envPathOrder',
+        child=SetEnvPathsSerializer())
+    libAppendPaths = OrderedListField(
+        order_by='envPathOrder',
+        child=SetEnvPathsSerializer())
+    setEnvironment = OrderedListField(
+        order_by='envPathOrder',
+        child=SetEnvPathsSerializer())
 
     def get_userHasWriteAccess(self, appDeployment):
         request = self.context['request']
         return request.airavata_client.userHasAccess(
             request.authz_token, appDeployment.appDeploymentId,
             ResourcePermissionType.WRITE)
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        if rep['moduleLoadCmds'] is not None:
-            rep['moduleLoadCmds'].sort(
-                key=lambda cmd: cmd['commandOrder'])
-        return rep
-
-    def to_internal_value(self, data):
-        validated_data = super().to_internal_value(data)
-        # Update application input order based on order in array
-        module_load_cmds = validated_data.get('moduleLoadCmds', [])
-        if module_load_cmds is not None:
-            for i in range(len(module_load_cmds)):
-                module_load_cmds[i]['commandOrder'] = i
-        return validated_data
 
 
 class ComputeResourceDescriptionSerializer(thrift_utils.create_serializer_class(ComputeResourceDescription)):

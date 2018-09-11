@@ -35,7 +35,7 @@ const FIELDS = [
     'defaultWalltime',
 ]
 
-export default class FullExperiment extends BaseModel {
+export default class ComputeResourceDescription extends BaseModel {
     constructor(data = {}) {
         super(FIELDS, data);
     }

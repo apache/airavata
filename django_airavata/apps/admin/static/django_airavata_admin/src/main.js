@@ -12,10 +12,10 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import { library as faLibrary } from '@fortawesome/fontawesome-svg-core'
-import { faGripVertical } from '@fortawesome/free-solid-svg-icons'
+import { faGripVertical, faEquals } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-faLibrary.add(faGripVertical)
+faLibrary.add(faGripVertical, faEquals)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

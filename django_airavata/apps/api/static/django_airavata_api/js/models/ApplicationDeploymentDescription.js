@@ -1,7 +1,7 @@
 import BaseModel from './BaseModel'
 import ParallelismType from './ParallelismType';
 import CommandObject from './CommandObject';
-import SetEnvPath from './SetEnvPath';
+import SetEnvPaths from './SetEnvPaths';
 
 
 const FIELDS = [
@@ -22,17 +22,17 @@ const FIELDS = [
   },
   {
     name: 'libPrependPaths',
-    type: SetEnvPath,
+    type: SetEnvPaths,
     list: true,
   },
   {
     name: 'libAppendPaths',
-    type: SetEnvPath,
+    type: SetEnvPaths,
     list: true,
   },
   {
     name: 'setEnvironment',
-    type: SetEnvPath,
+    type: SetEnvPaths,
     list: true,
   },
   {

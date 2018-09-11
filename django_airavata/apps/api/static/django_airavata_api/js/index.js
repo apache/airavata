@@ -23,7 +23,7 @@ import OutputDataObjectType from './models/OutputDataObjectType'
 import ParallelismType from './models/ParallelismType'
 import Project from './models/Project'
 import ResourcePermissionType from './models/ResourcePermissionType'
-import SetEnvPath from './models/SetEnvPath'
+import SetEnvPaths from './models/SetEnvPaths'
 import SharedEntity from './models/SharedEntity'
 import SummaryType from './models/SummaryType'
 import UserPermission from './models/UserPermission'
@@ -76,7 +76,7 @@ exports.models = {
   ParallelismType,
   Project,
   ResourcePermissionType,
-  SetEnvPath,
+  SetEnvPaths,
   SharedEntity,
   SummaryType,
   UserPermission,
