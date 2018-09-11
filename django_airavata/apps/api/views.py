@@ -308,6 +308,14 @@ class ApplicationModuleViewSet(APIBackedViewSet):
                                                                             context={'request': request})
         return Response(serializer.data)
 
+    @list_route()
+    def list_all(self, request, format=None):
+        all_modules = self.request.airavata_client.getAllAppModules(
+            self.authz_token, self.gateway_id)
+        serializer = self.serializer_class(
+            all_modules, many=True, context={'request': request})
+        return Response(serializer.data)
+
 
 # TODO convert to APIBackedViewSet
 class RegisterApplicationModule(APIView):

@@ -90,6 +90,11 @@ export default {
       url: "/api/applications/<lookup>/application_deployments/",
       requestType: 'get',
       modelClass: ApplicationDeploymentDescription
+    }, {
+      name: "listAll",
+      url: "/api/applications/list_all/",
+      requestType: 'get',
+      modelClass: ApplicationModule,
     }],
     modelClass: ApplicationModule,
   },

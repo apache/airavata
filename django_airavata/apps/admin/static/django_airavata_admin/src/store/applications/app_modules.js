@@ -16,7 +16,7 @@ export default {
   },
   actions: {
     loadApplicationModules({ commit }) {
-      return services.ApplicationModuleService.list()
+      return services.ApplicationModuleService.listAll()
         .then(appModules => {
           commit('setModules', appModules);
           return appModules;
