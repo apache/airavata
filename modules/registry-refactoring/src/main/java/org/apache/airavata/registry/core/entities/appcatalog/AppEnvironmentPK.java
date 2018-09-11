@@ -1,5 +1,4 @@
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,54 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
+
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
-
-/**
- * The persistent class for the library_apend_path database table.
- */
-@Entity
-@Table(name = "LIBRARY_APEND_PATH")
-@IdClass(LibraryAppendPathPK.class)
-public class LibraryApendPathEntity implements Serializable {
+public class AppEnvironmentPK implements Serializable {
+    // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "DEPLOYMENT_ID")
     private String deploymentId;
-
-    @Column(name = "VALUE")
-    private String value;
-
-    @Id
-    @Column(name = "NAME")
     private String name;
 
-    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DEPLOYMENT_ID")
-    private ApplicationDeploymentEntity applicationDeployment;
-
-    public LibraryApendPathEntity() {
+    public AppEnvironmentPK() {
     }
 
     public String getDeploymentId() {
+
         return deploymentId;
     }
 
     public void setDeploymentId(String deploymentId) {
         this.deploymentId = deploymentId;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     public String getName() {
@@ -75,12 +49,22 @@ public class LibraryApendPathEntity implements Serializable {
         this.name = name;
     }
 
-    public ApplicationDeploymentEntity getApplicationDeployment() {
-        return applicationDeployment;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AppEnvironmentPK)) return false;
+
+        AppEnvironmentPK that = (AppEnvironmentPK) o;
+
+        if (!deploymentId.equals(that.deploymentId)) return false;
+        return name.equals(that.name);
     }
 
-    public void setApplicationDeployment(ApplicationDeploymentEntity applicationDeployment) {
-        this.applicationDeployment = applicationDeployment;
+    @Override
+    public int hashCode() {
+        int result = deploymentId.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
     }
 
 }

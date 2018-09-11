@@ -34,11 +34,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
 import java.util.*;
+
+import static org.junit.Assert.assertTrue;
 
 public class ApplicationDeploymentRepositoryTest extends TestBase {
 
@@ -72,10 +70,25 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
 
     private boolean deepCompareDeployment(ApplicationDeploymentDescription expected, ApplicationDeploymentDescription actual) {
         boolean equals = true;
-        equals = equals & EqualsBuilder.reflectionEquals(expected, actual,
+        equals = equals && EqualsBuilder.reflectionEquals(expected, actual,
                 "moduleLoadCmds", "libPrependPaths", "libAppendPaths" ,"setEnvironment" ,"preJobCommands"
                 ,"postJobCommands", "__isset_bitfield");
+        equals = equals && deepCompareLists(expected.getSetEnvironment(), actual.getSetEnvironment(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
+        equals = equals && deepCompareLists(expected.getLibPrependPaths(), actual.getLibPrependPaths(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
+        equals = equals && deepCompareLists(expected.getLibAppendPaths(), actual.getLibAppendPaths(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
+        equals = equals && deepCompareLists(expected.getModuleLoadCmds(), actual.getModuleLoadCmds(), Comparator.comparingInt(CommandObject::getCommandOrder));
+        equals = equals && deepCompareLists(expected.getPreJobCommands(), actual.getPreJobCommands(), Comparator.comparingInt(CommandObject::getCommandOrder));
+        equals = equals && deepCompareLists(expected.getPostJobCommands(), actual.getPostJobCommands(), Comparator.comparingInt(CommandObject::getCommandOrder));
         return equals;
+    }
+
+    private <T> boolean deepCompareLists(List<T> expected, List<T> actual, Comparator<? super T> c) {
+
+        List<T> expectedCopy = new ArrayList<>(expected);
+        expectedCopy.sort(c);
+        List<T> actualCopy = new ArrayList<>(actual);
+        actualCopy.sort(c);
+        return EqualsBuilder.reflectionEquals(expectedCopy, actualCopy);
     }
 
     private ApplicationDeploymentDescription prepareSampleDeployment(String tag, String applicationModule, String computeResource) {

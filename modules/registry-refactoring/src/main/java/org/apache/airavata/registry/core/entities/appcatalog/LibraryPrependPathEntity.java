@@ -30,6 +30,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name="LIBRARY_PREPAND_PATH")
+@IdClass(LibraryPrependPathPK.class)
 public class LibraryPrependPathEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -39,7 +40,8 @@ public class LibraryPrependPathEntity implements Serializable {
 
 	@Column(name="VALUE")
 	private String value;
-	
+
+	@Id
 	@Column(name="NAME")
 	private String name;
 
