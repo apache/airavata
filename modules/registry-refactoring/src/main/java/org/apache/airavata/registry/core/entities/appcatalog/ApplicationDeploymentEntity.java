@@ -82,27 +82,27 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Column(name = "EDITABLE_BY_USER")
     private boolean editableByUser;
 
-    @OneToMany(targetEntity = ModuleLoadCmdEntity.class, cascade = CascadeType.ALL,
+    @OneToMany(targetEntity = ModuleLoadCmdEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
     private List<ModuleLoadCmdEntity> moduleLoadCmds;
 
-    @OneToMany(targetEntity = AppEnvironmentEntity.class, cascade = CascadeType.ALL,
+    @OneToMany(targetEntity = AppEnvironmentEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
     private List<AppEnvironmentEntity> setEnvironment;
 
-    @OneToMany(targetEntity = LibraryPrependPathEntity.class, cascade = CascadeType.ALL,
+    @OneToMany(targetEntity = LibraryPrependPathEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
     private List<LibraryPrependPathEntity> libPrependPaths;
 
-    @OneToMany(targetEntity = LibraryApendPathEntity.class, cascade = CascadeType.ALL,
+    @OneToMany(targetEntity = LibraryApendPathEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
     private List<LibraryApendPathEntity> libAppendPaths;
 
-    @OneToMany(targetEntity = PrejobCommandEntity.class, cascade = CascadeType.ALL,
+    @OneToMany(targetEntity = PrejobCommandEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
     private List<PrejobCommandEntity> preJobCommands;
 
-    @OneToMany(targetEntity = PostjobCommandEntity.class, cascade = CascadeType.ALL,
+    @OneToMany(targetEntity = PostjobCommandEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
     private List<PostjobCommandEntity> postJobCommands;
 
