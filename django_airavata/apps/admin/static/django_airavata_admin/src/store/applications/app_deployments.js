@@ -42,6 +42,13 @@ export default {
           commit('setCurrentDeployment', appDeployment);
           return appDeployment;
         })
+    },
+    deleteApplicationDeployment({ commit }, appDeployment) {
+      return services.ApplicationDeploymentService.delete({lookup: appDeployment.appDeploymentId })
+        .then(() => {
+          commit('setCurrentDeployment', null);
+          return null;
+        });
     }
   }
 }

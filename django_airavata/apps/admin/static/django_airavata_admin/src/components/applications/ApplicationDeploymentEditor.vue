@@ -52,10 +52,6 @@ export default {
     value: {
       type: models.ApplicationDescriptionDefinition
     },
-    id: {
-      type: String,
-      required: true
-    },
     deployment_id: {
       type: String,
       required: true
@@ -71,7 +67,7 @@ export default {
       if (this.computeResource) {
         return this.computeResource.hostName;
       } else {
-        return this.data.computeHostId.substring(0, 10);
+        return this.data.computeHostId.substring(0, 10) + "...";
       }
     },
     parallelismTypeOptions() {

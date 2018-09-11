@@ -17,7 +17,8 @@
         <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule" />
         <router-view name="interface" v-if="appInterface" v-model="appInterface" @save="saveInterface" @cancel="cancelInterface"
         />
-        <router-view name="deployments" v-if="deployments" :deployments="deployments" />
+        <router-view name="deployments" v-if="deployments" :deployments="deployments" @new="createNewDeployment" @delete="deleteDeployment"
+        />
         <router-view name="deployment" v-if="deployment" v-model="deployment" @save="saveDeployment" @cancel="cancelDeployment" />
       </div>
     </div>
@@ -33,7 +34,8 @@ export default {
   name: "application-editor-container",
   props: {
     id: String,
-    deployment_id: String
+    deployment_id: String,
+    hostId: String
   },
   data: function() {
     return {
@@ -63,6 +65,8 @@ export default {
     this.initialize();
     if (this.deployment_id) {
       this.loadApplicationDeployment(this.deployment_id);
+    } else if (this.hostId) {
+      this.createNewDeployment(this.hostId);
     }
   },
   methods: {
@@ -80,7 +84,8 @@ export default {
       "loadApplicationDeployments",
       "loadApplicationDeployment",
       "createApplicationDeployment",
-      "updateApplicationDeployment"
+      "updateApplicationDeployment",
+      "deleteApplicationDeployment"
     ]),
     initialize() {
       // TODO: move this to applications store?
@@ -138,11 +143,74 @@ export default {
         })
         .catch(error => notifications.NotificationList.addError(error));
     },
+    createNewDeployment(computeHostId) {
+      const deployment = new models.ApplicationDeploymentDescription();
+      deployment.appModuleId = this.id;
+      deployment.computeHostId = computeHostId;
+      this.deployment = deployment;
+      this.$router.push({
+        name: "new_application_deployment",
+        params: { id: this.id, hostId: computeHostId }
+      });
+    },
+    saveDeployment() {
+      return this.saveAll().then(appDeployment => {
+        this.$router.push({
+          name: "application_deployments",
+          params: { id: this.id }
+        });
+      });
+    },
+    saveAll() {
+      const moduleSave = this.id
+        ? this.updateApplicationModule(this.module)
+        : this.createApplicationModule(this.module);
+      return moduleSave
+        .then(appModule => {
+          this.appInterface.applicationName = appModule.appModuleName;
+          this.appInterface.applicationDescription =
+            appModule.appModuleDescription;
+
+          if (this.appInterface.applicationInterfaceId) {
+            return this.updateApplicationInterface(this.appInterface);
+          } else {
+            this.appInterface.applicationModules = [this.id];
+            return this.createApplicationInterface(this.appInterface);
+          }
+        })
+        .then(appInterface => {
+          if (this.deployment) {
+            if (this.deployment.appDeploymentId) {
+              return this.updateApplicationDeployment(this.deployment);
+            } else {
+              return this.createApplicationDeployment(this.deployment);
+            }
+          } else {
+            return Promise.resolve(null);
+          }
+        });
+    },
     cancelModule() {
       this.$router.push({ path: "/applications" });
     },
     cancelInterface() {
       this.$router.push({ path: "/applications" });
+    },
+    cancelDeployment() {
+      this.$router.push({
+        name: "application_deployments",
+        params: { id: this.id }
+      });
+    },
+    deleteDeployment(deployment) {
+      return this.deleteApplicationDeployment(deployment)
+        .then(() => this.loadApplicationDeployments(this.id))
+        .then(() => {
+          this.$router.push({
+            name: "application_deployments",
+            params: { id: this.id }
+          });
+        });
     }
   },
   watch: {

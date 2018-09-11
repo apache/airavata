@@ -45,8 +45,8 @@ export default {
             const appModulesCopy = state.modules.slice();
             appModulesCopy.push(appModule);
             commit('setModules', appModulesCopy);
-            return appModule;
           }
+          return appModule;
         });
     },
     updateApplicationModule({ commit, state }, appModule) {
@@ -57,8 +57,8 @@ export default {
             const appModules = state.modules.filter(mod => mod.appModuleId !== appModule.appModuleId)
             appModules.push(appModule);
             commit('setModules', appModules);
-            return appModule;
           }
+          return appModule;
         })
     }
   }

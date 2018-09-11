@@ -1,5 +1,6 @@
 import ApplicationDeploymentDescription from './models/ApplicationDeploymentDescription'
 import ApplicationModule from './models/ApplicationModule';
+import ComputeResourceDescription from './models/ComputeResourceDescription'
 import CredentialSummary from './models/CredentialSummary'
 import Group from './models/Group'
 import GroupResourceProfile from './models/GroupResourceProfile'
@@ -105,7 +106,7 @@ export default {
       url: "/api/compute-resources/all_names_list/",
       requestType: 'get',
     }],
-    modelClass: ApplicationDeploymentDescription,
+    modelClass: ComputeResourceDescription,
   },
   "CredentialSummaries": {
     url: "/api/credential-summaries/",

@@ -49,7 +49,11 @@ const FIELDS = [
   'defaultNodeCount',
   'defaultCPUCount',
   'defaultWalltime',
-  'editableByUser',
+  {
+    name: 'editableByUser',
+    type: 'boolean',
+    default: false,
+  },
   'userHasWriteAccess'
 ];
 

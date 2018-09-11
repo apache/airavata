@@ -75,6 +75,12 @@ const routes = [
         }
       },
       {
+        path: 'deployments/new/:hostId', components: {
+          deployment: ApplicationDeploymentEditor
+        },
+        name: 'new_application_deployment',
+      },
+      {
         path: 'deployments/:deployment_id', components: {
           deployment: ApplicationDeploymentEditor
         },

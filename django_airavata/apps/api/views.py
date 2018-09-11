@@ -413,6 +413,10 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
                                                                  application_deployment.appDeploymentId,
                                                                  application_deployment)
 
+    def perform_destroy(self, instance):
+        self.request.airavata_client.deleteApplicationDeployment(
+            self.authz_token, instance.appDeploymentId)
+
     @detail_route()
     def queues(self, request, app_deployment_id):
         """Return queues for this deployment with defaults overridden by deployment defaults if they exist"""

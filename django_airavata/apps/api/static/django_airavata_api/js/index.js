@@ -2,6 +2,7 @@ import UnhandledError from './errors/UnhandledError'
 import UnhandledErrorDispatcher from './errors/UnhandledErrorDispatcher'
 import UnhandledErrorDisplayList from './errors/UnhandledErrorDisplayList'
 
+import ApplicationDeploymentDescription from './models/ApplicationDeploymentDescription'
 import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition'
 import ApplicationModule from './models/ApplicationModule'
 import BaseModel from './models/BaseModel'
@@ -54,6 +55,7 @@ exports.errors = {
 }
 
 exports.models = {
+  ApplicationDeploymentDescription,
   ApplicationInterfaceDefinition,
   ApplicationModule,
   BaseModel,
