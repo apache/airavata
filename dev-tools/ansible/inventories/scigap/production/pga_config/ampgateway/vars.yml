@@ -24,13 +24,12 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "simccs.org"
-vhost_server_redirect: "geosurveyiu.scigap.org"
-vhost_ssl: true
+vhost_servername: "ampgateway.scigap.org"
+vhost_ssl: false
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/simccs.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/simccs.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/simccs.org/privkey.pem"
+#ssl_certificate_file: "/etc/letsencrypt/live/gemr.scigap.org/cert.pem"
+#ssl_certificate_chain_file: "/etc/letsencrypt/live/gemr.scigap.org/fullchain.pem"
+#ssl_certificate_key_file: "/etc/letsencrypt/live/gemr.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -41,23 +40,26 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "Indiana Geological Survey"
+  - name: "Atomic and Molecular Physics and Optics Gateway"
     oauth_grant_type: "password"
+#  - name: "University Account" #CILogon
+#    oauth_grant_type: "authorization_code"
+#    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+#    logo: "/assets/cilogon-logo-24x24-b.png"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "iu-geology-survey"
+gateway_id: "amp"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEuA1indjdczBXg2qrmD0bB0QfKq0u2q3o25DegTaty5LoogW+APEvXmwc2g6PzkM75MgfMsTErMQaQ3/PoElADQKg2/NePz05YWobn9zrPZFeRWfOqWMjFDx72cffHKBzgnahFDBlR/YJhf4IZJ+EOA1zMiMF2oZQmEYQtbQFhbKPF+jrScEQeuXVuXWSS2sKNAVKj3pY4kmi9kEOYELee/O6ghBUfrVhB95vDKJPgmQSuo3pgkLRdflTBSAQ54UchwjXi2RA9Xv0RXJF/JyyRGn6bSbRxYhsm5RJeiBVj4ua7p2b36rSYVqtVsTKEonx5kYdKzwyjJXWpjB2KtQp"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCAfFAdLrGC/om63ipx9RhuzcGnMlVQkKsuy5NtUgK7I4OdTJ1Ck1H/ARBwiWNQy08GO2HETfM7StCROwW+tlZ6n+THBkbei4G8q6xV6UXlC3BJxuDlwkxnyOFSYEt8Qd2g8IC/X0qo9/m5Ea9Z5axzTk+n2OZlV87DrLheV+OVhgf+yYGVo9egTZ7Kg/TV/Hl1xeU5JgRcPPrLrWYn8vEQo7xT5boS3X9y2o7FgNTdUf5K10ZJ37RWcLQpzZ+7zEKs/P/I/QU+BUhxRRfnEf/4e4L3OFE36SQ4DSFmu3lKU4BcQQb3A6SfQGC1PwQdD5y9MUkpit4hMCSJLjVBTN3H"
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgrc-iu-group@iu.edu','wangyinz@indiana.edu','kmellett@indiana.edu','rkammer@indiana.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-portal_theme: "iu-geosurvey-gateway-theme"
-portal_theme_repo: "https://github.com/SciGaP/iu-geosurvey-gateway-theme.git"
-portal_title: "Indiana Geological Survey"
-pga_google_analytics_id: "UA-111528347-8"
+#portal_theme: "gsu-gateway-theme"
+#portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
+portal_title: "Atomic and Molecular Physics and Optics Gateway"
 ...
