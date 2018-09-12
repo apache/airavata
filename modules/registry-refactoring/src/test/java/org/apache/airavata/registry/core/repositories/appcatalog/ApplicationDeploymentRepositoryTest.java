@@ -23,6 +23,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
@@ -151,6 +152,19 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         ApplicationDeploymentDescription savedDeployment = applicationDeploymentRepository.getApplicationDeployement("appDep1");
         Assert.assertNotNull(savedDeployment);
         Assert.assertTrue(deepCompareDeployment(deployment, savedDeployment));
+    }
+
+    @Test
+    public void createAppDeploymentWithDefaultIdTest() throws AppCatalogException {
+
+        String applicationModule = addSampleApplicationModule("1");
+        String computeResource =  addSampleComputeResource("1");
+
+        ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
+        deployment.setAppDeploymentId(application_interface_modelConstants.DEFAULT_ID);
+        String deploymentId = applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
+        Assert.assertNotEquals(deploymentId, application_interface_modelConstants.DEFAULT_ID);
+        Assert.assertEquals("compHostName1" + "_" + applicationModule, deploymentId);
     }
 
     @Test

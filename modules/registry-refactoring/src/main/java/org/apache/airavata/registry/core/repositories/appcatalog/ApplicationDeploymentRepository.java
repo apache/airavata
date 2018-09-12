@@ -19,8 +19,10 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.appcatalog.appdeployment.*;
-import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationDeploymentEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
@@ -48,6 +50,13 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
 
     protected ApplicationDeploymentEntity saveApplicationDeployment(
             ApplicationDeploymentDescription applicationDeploymentDescription, String gatewayId) throws AppCatalogException {
+
+        if (applicationDeploymentDescription.getAppDeploymentId().trim().equals("") || applicationDeploymentDescription.getAppDeploymentId().equals(application_interface_modelConstants.DEFAULT_ID) ) {
+            logger.debug("If Application Deployment ID is empty or DEFAULT, set it as the compute host name plus the App Module ID");
+            ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository().getComputeResource(applicationDeploymentDescription.getComputeHostId());
+            applicationDeploymentDescription.setAppDeploymentId(computeResourceDescription.getHostName() + "_" + applicationDeploymentDescription.getAppModuleId());
+        }
+
         String applicationDeploymentId = applicationDeploymentDescription.getAppDeploymentId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationDeploymentEntity applicationDeploymentEntity = mapper.map(applicationDeploymentDescription, ApplicationDeploymentEntity.class);
