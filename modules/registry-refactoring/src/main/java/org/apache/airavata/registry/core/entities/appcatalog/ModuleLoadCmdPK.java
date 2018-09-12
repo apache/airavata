@@ -55,7 +55,7 @@ public class ModuleLoadCmdPK implements Serializable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof PostjobCommandPK)) {
+        if (!(other instanceof ModuleLoadCmdPK)) {
             return false;
         }
         ModuleLoadCmdPK castOther = (ModuleLoadCmdPK) other;
