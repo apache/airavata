@@ -36,9 +36,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ApplicationInterfaceRepositoryTest extends TestBase {
 
@@ -78,7 +80,8 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         String moduleId = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
 
         ApplicationModule savedAppModule = applicationInterfaceRepository.getApplicationModule(moduleId);
-        Assert.assertEquals(applicationModule.getAppModuleName(), savedAppModule.getAppModuleId());
+        Assert.assertNotEquals(applicationModule.getAppModuleName(), savedAppModule.getAppModuleId());
+        Assert.assertTrue(savedAppModule.getAppModuleId().startsWith(applicationModule.getAppModuleName()));
     }
 
     @Test
@@ -133,6 +136,35 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
         ApplicationInterfaceDescription savedInterface = applicationInterfaceRepository.getApplicationInterface(interfaceId);
         Assert.assertTrue(EqualsBuilder.reflectionEquals(applicationInterfaceDescription, savedInterface, "__isset_bitfield"));
+    }
+
+    @Test
+    public void addApplicationInterfaceWithDefaultIdTest() throws AppCatalogException {
+        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+        applicationInterfaceDescription.setApplicationName("app interface 1");
+
+        applicationInterfaceDescription.setApplicationModules(new ArrayList<>());
+
+        InputDataObjectType input = new InputDataObjectType();
+        input.setName("input1");
+        input.setApplicationArgument("Arg");
+        input.setDataStaged(true);
+        input.setInputOrder(0);
+        input.setIsReadOnly(true);
+        input.setIsRequired(true);
+        input.setRequiredToAddedToCommandLine(true);
+        input.setType(DataType.FLOAT);
+        input.setUserFriendlyDescription("User friendly description");
+        input.setValue("113");
+        input.setMetaData("Metadata");
+        input.setStandardInput(true);
+        applicationInterfaceDescription.setApplicationInputs(Collections.singletonList(input));
+
+        applicationInterfaceDescription.setApplicationOutputs(new ArrayList<>());
+
+        String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
+        assertTrue(MessageFormat.format("{0} does not start with {1}", interfaceId, "app_interface_1"),
+                interfaceId.startsWith("app_interface_1"));
     }
 
     @Test

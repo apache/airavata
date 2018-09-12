@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
@@ -54,6 +55,12 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     protected ApplicationInterfaceEntity saveApplicationInterface(
             ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException {
+
+        if (applicationInterfaceDescription.getApplicationInterfaceId().trim().equals("") || applicationInterfaceDescription.getApplicationInterfaceId().equals(application_interface_modelConstants.DEFAULT_ID) ) {
+            logger.debug("If Application Interface ID is empty or DEFAULT, set it as the Application Interface Name plus random UUID");
+            applicationInterfaceDescription.setApplicationInterfaceId(AiravataUtils.getId(applicationInterfaceDescription.getApplicationName()));
+        }
+
         String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationInterfaceEntity applicationInterfaceEntity = mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
@@ -90,6 +97,12 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     protected ApplicationModuleEntity saveApplicationModule(
             ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
+
+        if (applicationModule.getAppModuleId().trim().equals("") || applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)) {
+            logger.debug("If Application Module ID is empty or DEFAULT, set it as the Application Module Name plus random UUID");
+            applicationModule.setAppModuleId(AiravataUtils.getId(applicationModule.getAppModuleName()));
+        }
+
         String applicationModuleId = applicationModule.getAppModuleId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
@@ -97,16 +110,6 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         if (gatewayId != null) {
             logger.debug("Setting the gateway ID of the Application Module");
             applicationModuleEntity.setGatewayId(gatewayId);
-        }
-
-        if (!applicationModuleEntity.getAppModuleId().equals("") && !applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)) {
-            logger.debug("Checking if the Application Module ID is not empty or DEFAULT");
-            applicationModuleEntity.setAppModuleId(applicationModule.getAppModuleId());
-        }
-
-        else {
-            logger.debug("If Application Module ID is empty or DEFAULT, set it as the Application Module Name");
-            applicationModuleEntity.setAppModuleId(applicationModule.getAppModuleName());
         }
 
         if (!isApplicationModuleExists(applicationModuleId)) {
