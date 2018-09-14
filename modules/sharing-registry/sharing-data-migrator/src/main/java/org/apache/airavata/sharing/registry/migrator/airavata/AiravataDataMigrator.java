@@ -290,7 +290,7 @@ public class AiravataDataMigrator {
                 entity.setEntityId(description.getAppDeploymentId());
                 entity.setDomainId(domainID);
                 entity.setEntityTypeId(entity.domainId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
-                entity.setOwnerId(domainOwnerMap.get(domainID) + "@" + entity.domainId);
+                entity.setOwnerId(domainOwnerMap.get(domainID));
                 entity.setName(description.getAppDeploymentId());
                 entity.setDescription(description.getAppDeploymentDescription());
                 if (entity.getDescription() == null)
