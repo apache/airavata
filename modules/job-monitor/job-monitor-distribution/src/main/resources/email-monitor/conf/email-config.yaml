@@ -11,6 +11,7 @@ config:
        - smic3 <smic@mail.hpc.lsu.edu> # philip.hpc.lsu
        - adm@jetstream-cloud.org
        - root <adm@alamo.uthscsa.edu> #alamo
+       - adm@s1.carbonate.uits.iu.edu
 
    - jobManagerType: SLURM
      emailParser: org.apache.airavata.monitor.email.parser.SLURMEmailParser

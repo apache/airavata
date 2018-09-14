@@ -43,7 +43,8 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
             "org.apache.airavata.helix.impl.task.staging.ArchiveTask",
             "org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask",
             "org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask",
-            "org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask"
+            "org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask",
+            "org.apache.airavata.helix.impl.task.parsing.DataParsingTask"
     };
 
     @SuppressWarnings("WeakerAccess")

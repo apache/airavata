@@ -22,6 +22,7 @@ package org.apache.airavata.helix.core;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
@@ -172,6 +173,14 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     public AbstractTask setTaskHelper(TaskHelper taskHelper) {
         this.taskHelper = taskHelper;
         return this;
+    }
+
+    protected int getCurrentRetryCount() throws Exception {
+        return MonitoringUtil.getTaskRetryCount(getCuratorClient(), taskId);
+    }
+
+    protected void markNewRetry() throws Exception {
+        MonitoringUtil.increaseTaskRetryCount(getCuratorClient(), taskId);
     }
 
     public int getRetryCount() {

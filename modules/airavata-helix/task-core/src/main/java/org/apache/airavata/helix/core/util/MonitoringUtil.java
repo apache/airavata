@@ -17,7 +17,7 @@ public class MonitoringUtil {
     private static final String REGISTRY = "/registry/";
 
     private static final String EXPERIMENT = "/experiment";
-    private static final String TASK = "/task";
+    private static final String TASK = "/task/";
     private static final String PROCESS = "/process";
     private static final String GATEWAY = "/gateway";
     private static final String LOCK = "/lock";
@@ -27,8 +27,31 @@ public class MonitoringUtil {
     private static final String JOB_ID = "/jobId";
     private static final String JOB_NAME = "/jobName";
     private static final String WORKFLOWS = "/workflows";
+    private static final String RETRY = "/retry";
 
     public static final String CANCEL = "cancel";
+
+    public static int getTaskRetryCount(CuratorFramework curatorClient, String taskId) throws Exception {
+        String path = TASK + taskId + RETRY;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            byte[] processBytes = curatorClient.getData().forPath(path);
+            return Integer.parseInt(new String(processBytes));
+        } else {
+            return 1;
+        }
+    }
+
+    public static void increaseTaskRetryCount(CuratorFramework curatorClient, String takId) throws Exception {
+        String path = TASK + takId + RETRY;
+        int currentRetryCount = 2;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            byte[] processBytes = curatorClient.getData().forPath(path);
+            currentRetryCount = Integer.parseInt(new String(processBytes)) + 1;
+            curatorClient.delete().forPath(path);
+        }
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                path , (currentRetryCount + "").getBytes());
+    }
 
     public static String getExperimentIdByJobId(CuratorFramework curatorClient, String jobId) throws Exception {
         String path = MONITORING + jobId + EXPERIMENT;
