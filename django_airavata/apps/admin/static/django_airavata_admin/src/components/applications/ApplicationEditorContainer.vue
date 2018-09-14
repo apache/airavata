@@ -14,9 +14,10 @@
           <b-nav-item exact-active-class="active" exact :to="{name: 'application_interface', params: {id: id}}" :disabled="!id">Interface</b-nav-item>
           <b-nav-item active-class="active" :to="{name: 'application_deployments', params: {id: id}}" :disabled="!id">Deployments</b-nav-item>
         </b-nav>
-        <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule" />
-        <router-view name="interface" v-if="appInterface" v-model="appInterface" @save="saveInterface" @cancel="cancelInterface"
+        <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule" :readonly="!module.userHasWriteAccess"
         />
+        <router-view name="interface" v-if="appInterface" v-model="appInterface" @save="saveInterface" @cancel="cancelInterface"
+          :readonly="!appInterface.userHasWriteAccess" />
         <router-view name="deployments" v-if="deployments" :deployments="deployments" @new="createNewDeployment" @delete="deleteDeployment"
         />
         <router-view name="deployment" v-if="deployment" v-model="deployment" @save="saveDeployment" @cancel="cancelDeployment" />

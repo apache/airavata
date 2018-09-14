@@ -10,13 +10,13 @@
     <div class="row">
       <div class="col">
         <b-form-group label="Enable Archiving Working Directory" label-for="archive-directory">
-          <b-form-radio-group id="archive-directory" v-model="data.archiveWorkingDirectory" :options="trueFalseOptions">
+          <b-form-radio-group id="archive-directory" v-model="data.archiveWorkingDirectory" :options="trueFalseOptions" :disabled="readonly">
           </b-form-radio-group>
         </b-form-group>
       </div>
       <div class="col">
         <b-form-group label="Enable Optional File Inputs" label-for="optional-file-inputs">
-          <b-form-radio-group id="optional-file-inputs" v-model="data.hasOptionalFileInputs" :options="trueFalseOptions">
+          <b-form-radio-group id="optional-file-inputs" v-model="data.hasOptionalFileInputs" :options="trueFalseOptions" :disabled="readonly">
           </b-form-radio-group>
         </b-form-group>
       </div>
@@ -28,13 +28,13 @@
         </h1>
         <draggable v-model="data.applicationInputs" :options="dragOptions" @start="onDragStart" @end="onDragEnd">
           <application-input-field-editor v-for="input in data.applicationInputs" :value="input" :key="input.key" :focus="input.key === focusApplicationInputKey"
-            :collapse="collapseApplicationInputs" @input="updatedInput" @delete="deleteInput(input)" />
+            :collapse="collapseApplicationInputs" @input="updatedInput" @delete="deleteInput(input)" :readonly="readonly" />
         </draggable>
       </div>
     </div>
     <div class="row mb-4">
       <div class="col">
-        <b-button variant="secondary" @click="addApplicationInput">
+        <b-button variant="secondary" @click="addApplicationInput" :disabled="readonly">
           Add application input
         </b-button>
       </div>
@@ -45,19 +45,19 @@
           Output Fields
         </h1>
         <application-output-field-editor v-for="output in data.applicationOutputs" :value="output" :key="output.key" :focus="output.key === focusApplicationOutputKey"
-          @input="updatedOutput" @delete="deleteOutput(output)" />
+          @input="updatedOutput" @delete="deleteOutput(output)" :readonly="readonly" />
       </div>
     </div>
     <div class="row mb-4">
       <div class="col">
-        <b-button variant="secondary" @click="addApplicationOutput">
+        <b-button variant="secondary" @click="addApplicationOutput" :disabled="readonly">
           Add application output
         </b-button>
       </div>
     </div>
     <div class="row mb-4">
       <div class="col">
-        <b-button variant="primary" @click="save">
+        <b-button variant="primary" @click="save" :disabled="readonly">
           Save
         </b-button>
         <b-button variant="secondary" @click="cancel">
@@ -82,6 +82,10 @@ export default {
   props: {
     value: {
       type: models.ApplicationInterfaceDefinition
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   components: {

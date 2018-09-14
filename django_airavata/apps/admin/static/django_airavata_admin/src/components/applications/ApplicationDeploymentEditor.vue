@@ -6,27 +6,29 @@
           {{ name }}
         </h1>
         <b-form-group label="Application Executable Path" label-for="executable-path">
-          <b-form-input id="executable-path" type="text" v-model="data.executablePath" required></b-form-input>
+          <b-form-input id="executable-path" type="text" v-model="data.executablePath" required :disabled="readonly"></b-form-input>
         </b-form-group>
         <b-form-group label="Application Parallelism Type" label-for="parallelism-type">
-          <b-form-select id="parallelism-type" v-model="data.parallelism" :options="parallelismTypeOptions" />
+          <b-form-select id="parallelism-type" v-model="data.parallelism" :options="parallelismTypeOptions" :disabled="readonly" />
         </b-form-group>
         <b-form-group label="Application Deployment Description" label-for="deployment-description">
-          <b-form-textarea id="deployment-description" v-model="data.appDeploymentDescription" :rows="3"></b-form-textarea>
+          <b-form-textarea id="deployment-description" v-model="data.appDeploymentDescription" :rows="3" :disabled="readonly"></b-form-textarea>
         </b-form-group>
         <command-objects-editor title="Module Load Commands" add-button-label="Add Module Load Command" v-model="data.moduleLoadCmds"
-        />
+          :readonly="readonly" />
         <set-env-paths-editor title="Library Prepend Paths" add-button-label="Add a Library Prepend Path" v-model="data.libPrependPaths"
-        />
+          :readonly="readonly" />
         <set-env-paths-editor title="Library Append Paths" add-button-label="Add a Library Append Path" v-model="data.libAppendPaths"
-        />
+          :readonly="readonly" />
         <set-env-paths-editor title="Environment Variables" add-button-label="Add Environment Variable" v-model="data.setEnvironment"
+          :readonly="readonly" />
+        <command-objects-editor title="Pre Job Commands" add-button-label="Add Pre Job Command" v-model="data.preJobCommands" :readonly="readonly"
         />
-        <command-objects-editor title="Pre Job Commands" add-button-label="Add Pre Job Command" v-model="data.preJobCommands" />
         <command-objects-editor title="Post Job Commands" add-button-label="Add Post Job Command" v-model="data.postJobCommands"
-        />
+          :readonly="readonly" />
         <b-form-group label="Default Queue Name" label-for="default-queue-name">
-          <b-form-select id="default-queue-name" v-model="data.defaultQueueName" :options="queueNameOptions" @change="defaultQueueChanged">
+          <b-form-select id="default-queue-name" v-model="data.defaultQueueName" :options="queueNameOptions" @change="defaultQueueChanged"
+            :disabled="readonly">
             <template slot="first">
               <option :value="null">Select a Default Queue</option>
             </template>
@@ -45,7 +47,7 @@
     </div>
     <div class="row mb-4">
       <div class="col">
-        <b-button variant="primary" @click="save">
+        <b-button variant="primary" @click="save" :disabled="readonly">
           Save
         </b-button>
         <b-button variant="secondary" @click="cancel">
@@ -72,6 +74,10 @@ export default {
     deployment_id: {
       type: String,
       required: true
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -135,7 +141,7 @@ export default {
       return queue ? queue.maxRuntime : 0;
     },
     defaultQueueAttributesDisabled() {
-      return !this.data.defaultQueueName;
+      return !this.data.defaultQueueName || this.readonly;
     }
   },
   created() {

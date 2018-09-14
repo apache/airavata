@@ -36,6 +36,7 @@ const FIELDS = [
     type: 'boolean',
     default: false,
   },
+  'userHasWriteAccess',
 ];
 
 export default class ApplicationInterfaceDefinition extends BaseModel {

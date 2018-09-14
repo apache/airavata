@@ -1,11 +1,10 @@
 <template>
-  <list-layout @add-new-item="newGroupResourcePreference" :items="groupResourceProfiles"
-      title="Group Resource Profiles" new-item-button-text="New Group Resource Profile">
+  <list-layout @add-new-item="newGroupResourcePreference" :items="groupResourceProfiles" title="Group Resource Profiles" new-item-button-text="New Group Resource Profile">
     <template slot="item-list" slot-scope="slotProps">
 
       <b-table striped hover :fields="fields" :items="slotProps.items">
         <template slot="action" slot-scope="data">
-          <router-link :to="{name: 'group_resource_preference', params: {value: data.item, id: data.item.groupResourceProfileId}}">
+          <router-link v-if="data.item.userHasWriteAccess" :to="{name: 'group_resource_preference', params: {value: data.item, id: data.item.groupResourceProfileId}}">
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </router-link>
@@ -14,62 +13,67 @@
             <i class="fa fa-trash" aria-hidden="true"></i>
           </a>
         </template>
-      </b-table> 
+      </b-table>
     </template>
   </list-layout>
 </template>
 
 <script>
-  import {layouts} from 'django-airavata-common-ui'
-  import {services} from 'django-airavata-api'
-  import moment from 'moment'
+import { layouts } from "django-airavata-common-ui";
+import { services } from "django-airavata-api";
+import moment from "moment";
 
-  export default {
-    name: "compute-resource-preference",
-    components: {
-      'list-layout': layouts.ListLayout,
+export default {
+  name: "compute-resource-preference",
+  components: {
+    "list-layout": layouts.ListLayout
+  },
+  data: function() {
+    return {
+      groupResourceProfiles: [],
+      fields: [
+        {
+          label: "Name",
+          key: "groupResourceProfileName"
+        },
+        {
+          label: "Updated",
+          key: "updatedTime",
+          formatter: value => moment(new Date(value)).fromNow()
+        },
+        {
+          label: "Action",
+          key: "action"
+        }
+      ]
+    };
+  },
+  methods: {
+    newGroupResourcePreference: function() {
+      this.$router.push({
+        name: "new_group_resource_preference"
+      });
     },
-    data: function () {
-      return {
-        groupResourceProfiles: [],
-        fields: [
-          {
-            label: 'Name',
-            key: 'groupResourceProfileName',
-          },
-          {
-            label: 'Updated',
-            key: 'updatedTime',
-            formatter: (value) => moment(new Date(value)).fromNow(),
-          },
-          {
-            label: 'Action',
-            key: 'action',
-          },
-        ],
-      }
+    loadGroupResourceProfiles: function() {
+      services.GroupResourceProfileService.list().then(
+        groupResourceProfiles => {
+          this.groupResourceProfiles = groupResourceProfiles;
+        }
+      );
     },
-    methods: {
-      newGroupResourcePreference: function () {
-        this.$router.push({
-          name: 'new_group_resource_preference'
-        });
-      },
-      loadGroupResourceProfiles: function () {
-        services.GroupResourceProfileService.list()
-          .then(groupResourceProfiles => {
-            this.groupResourceProfiles = groupResourceProfiles;
-          });
-      },
-      removeGroupResourceProfile: function(groupResourceProfile) {
-
-        services.GroupResourceProfileService.delete({lookup: groupResourceProfile.groupResourceProfileId})
-          .then(() => services.GroupResourceProfileService.list())
-          .then(groupResourceProfiles => this.groupResourceProfiles = groupResourceProfiles);
-      }
-    },
-    mounted: function () {
-      this.loadGroupResourceProfiles();
+    removeGroupResourceProfile: function(groupResourceProfile) {
+      services.GroupResourceProfileService.delete({
+        lookup: groupResourceProfile.groupResourceProfileId
+      })
+        .then(() => services.GroupResourceProfileService.list())
+        .then(
+          groupResourceProfiles =>
+            (this.groupResourceProfiles = groupResourceProfiles)
+        );
     }
+  },
+  mounted: function() {
+    this.loadGroupResourceProfiles();
   }
+};
 </script>

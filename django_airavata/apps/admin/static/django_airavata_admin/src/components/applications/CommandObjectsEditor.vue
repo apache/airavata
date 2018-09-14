@@ -1,15 +1,15 @@
 <template>
   <b-card :title="title" title-tag="h5">
     <b-input-group v-for="commandObject in data" :key="commandObject.key" class="mb-1">
-      <b-form-input type="text" v-model="commandObject.command" required ref="commandObjectInputs" />
-      <b-input-group-append>
+      <b-form-input type="text" v-model="commandObject.command" required ref="commandObjectInputs" :disabled="readonly" />
+      <b-input-group-append v-if="!readonly">
         <b-button variant="secondary" @click="deleteCommandObject(commandObject)">
           <i class="fa fa-trash"></i>
           <span class="sr-only">Delete</span>
         </b-button>
       </b-input-group-append>
     </b-input-group>
-    <b-button variant="secondary" @click="addCommandObject">{{ addButtonLabel }}</b-button>
+    <b-button v-if="!readonly" variant="secondary" @click="addCommandObject">{{ addButtonLabel }}</b-button>
   </b-card>
 </template>
 
@@ -31,6 +31,10 @@ export default {
     addButtonLabel: {
       type: String,
       required: true
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -46,9 +50,7 @@ export default {
       );
     },
     deleteCommandObject(commandObject) {
-      const index = this.data.findIndex(
-        cmd => cmd.key === commandObject.key
-      );
+      const index = this.data.findIndex(cmd => cmd.key === commandObject.key);
       this.data.splice(index, 1);
     }
   }

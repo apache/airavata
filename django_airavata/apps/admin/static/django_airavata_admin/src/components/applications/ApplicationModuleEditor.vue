@@ -6,19 +6,19 @@
           Application Details
         </h1>
         <b-form-group label="Application Name" label-for="application-name">
-          <b-form-input id="application-name" type="text" v-model="data.appModuleName" required></b-form-input>
+          <b-form-input id="application-name" type="text" v-model="data.appModuleName" required :disabled="readonly"></b-form-input>
         </b-form-group>
         <b-form-group label="Application Version" label-for="application-version">
-          <b-form-input id="application-version" type="text" v-model="data.appModuleVersion"></b-form-input>
+          <b-form-input id="application-version" type="text" v-model="data.appModuleVersion" :disabled="readonly"></b-form-input>
         </b-form-group>
         <b-form-group label="Application Description" label-for="application-description">
-          <b-form-textarea id="application-description" v-model="data.appModuleDescription" :rows="3"></b-form-textarea>
+          <b-form-textarea id="application-description" v-model="data.appModuleDescription" :rows="3" :disabled="readonly"></b-form-textarea>
         </b-form-group>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <b-button variant="primary" @click="save">
+        <b-button variant="primary" @click="save" :disabled="readonly">
           Save
         </b-button>
         <b-button variant="secondary" @click="cancel">
@@ -39,6 +39,10 @@ export default {
   props: {
     value: {
       type: models.ApplicationModule
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

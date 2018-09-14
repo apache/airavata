@@ -252,9 +252,14 @@ class ApplicationModuleSerializer(
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-detail', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
     applicationInterface = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-interface', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
     applicationDeployments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-deployments', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
+    userHasWriteAccess = serializers.SerializerMethodField()
 
     class Meta:
         required = ('appModuleName',)
+
+    def get_userHasWriteAccess(self, appDeployment):
+        request = self.context['request']
+        return request.is_gateway_admin
 
 
 class InputDataObjectTypeSerializer(
@@ -272,6 +277,11 @@ class ApplicationInterfaceDescriptionSerializer(
     applicationInputs = OrderedListField(
         order_by='inputOrder',
         child=InputDataObjectTypeSerializer())
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, appDeployment):
+        request = self.context['request']
+        return request.is_gateway_admin
 
 
 class CommandObjectSerializer(
