@@ -90,42 +90,63 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     protected TaskResult onFail(String reason, boolean fatal, Throwable error) {
+        int currentRetryCount = 0;
+        try {
+            currentRetryCount = getCurrentRetryCount();
+        } catch (Exception e) {
+            logger.error("Failed to obtain current retry count. So failing the task permanently", e);
+            fatal = true;
+        }
 
-        ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
-        StringWriter errors = new StringWriter();
+        logger.warn("Task failed with fatal = " + fatal + ".  Current retry count " + currentRetryCount);
 
-        String errorCode = UUID.randomUUID().toString();
-        String errorMessage = "Error Code : " + errorCode + ", Task " + getTaskId() + " failed due to " + reason +
-                (error == null ? "" : ", " + error.getMessage());
+        if (currentRetryCount < getRetryCount() && !fatal) {
+            try {
+                markNewRetry();
+            } catch (Exception e) {
+                logger.error("Failed to mark retry. So failing the task permanently", e);
+                fatal = true;
+            }
+        }
 
-        // wrapping from new error object with error code
-        error = new TaskOnFailException(errorMessage, true, error);
+        if (currentRetryCount >= getRetryCount() || fatal) {
+            ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
+            StringWriter errors = new StringWriter();
 
-        status.setReason(errorMessage);
-        errors.write(ExceptionUtils.getStackTrace(error));
-        logger.error(errorMessage, error);
+            String errorCode = UUID.randomUUID().toString();
+            String errorMessage = "Error Code : " + errorCode + ", Task " + getTaskId() + " failed due to " + reason +
+                    (error == null ? "" : ", " + error.getMessage());
 
-        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        if (getTaskContext() != null) { // task context could be null if the initialization failed
-            getTaskContext().setProcessStatus(status);
+            // wrapping from new error object with error code
+            error = new TaskOnFailException(errorMessage, true, error);
+
+            status.setReason(errorMessage);
+            errors.write(ExceptionUtils.getStackTrace(error));
+            logger.error(errorMessage, error);
+
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            if (getTaskContext() != null) { // task context could be null if the initialization failed
+                getTaskContext().setProcessStatus(status);
+            } else {
+                logger.warn("Task context is null. So can not store the process status in the context");
+            }
+
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setUserFriendlyMessage(reason);
+            errorModel.setActualErrorMessage(errors.toString());
+            errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+
+            if (!skipTaskStatusPublish) {
+                publishTaskState(TaskState.FAILED);
+                saveAndPublishProcessStatus(taskContext != null ? taskContext.getProcessStatus() : status);
+                saveExperimentError(errorModel);
+                saveProcessError(errorModel);
+                saveTaskError(errorModel);
+            }
+            return onFail(errorMessage, fatal);
         } else {
-            logger.warn("Task context is null. So can not store the process status in the context");
+            return onFail("Handover back to helix engine to retry", fatal);
         }
-
-        ErrorModel errorModel = new ErrorModel();
-        errorModel.setUserFriendlyMessage(reason);
-        errorModel.setActualErrorMessage(errors.toString());
-        errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-
-        if (!skipTaskStatusPublish) {
-            publishTaskState(TaskState.FAILED);
-            saveAndPublishProcessStatus(taskContext != null ? taskContext.getProcessStatus() : status);
-            saveExperimentError(errorModel);
-            saveProcessError(errorModel);
-            saveTaskError(errorModel);
-        }
-
-        return onFail(errorMessage, fatal);
     }
 
     protected void saveAndPublishProcessStatus(ProcessState state) {
@@ -254,7 +275,7 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void saveExperimentError(ErrorModel errorModel) {
+    private void saveExperimentError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
             getRegistryServiceClient().addErrors("EXPERIMENT_ERROR", errorModel, experimentId);
@@ -265,7 +286,7 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void saveProcessError(ErrorModel errorModel) {
+    private void saveProcessError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
             getRegistryServiceClient().addErrors("PROCESS_ERROR", errorModel, getProcessId());
@@ -275,7 +296,7 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void saveTaskError(ErrorModel errorModel) {
+    private void saveTaskError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
             getRegistryServiceClient().addErrors("TASK_ERROR", errorModel, getTaskId());

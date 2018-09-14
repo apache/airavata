@@ -52,7 +52,7 @@ public class EnvSetupTask extends AiravataTask {
             return onSuccess("Envi setup task successfully completed " + getTaskId());
 
         } catch (Exception e) {
-            return onFail("Failed to setup environment of task " + getTaskId(), true, e);
+            return onFail("Failed to setup environment of task " + getTaskId(), false, e);
         }
     }
 
