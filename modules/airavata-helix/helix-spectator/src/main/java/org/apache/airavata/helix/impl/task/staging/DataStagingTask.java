@@ -28,7 +28,6 @@ import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.task.DataStagingTaskModel;
-import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +56,7 @@ public abstract class DataStagingTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     protected StorageResourceDescription getStorageResource() throws TaskOnFailException {
-        StorageResourceDescription storageResource = getTaskContext().getStorageResource();
+        StorageResourceDescription storageResource = getTaskContext().getStorageResourceDescription();
         if (storageResource == null) {
             throw new TaskOnFailException("Storage resource can not be null for task " + getTaskId(), true, null);
         }
