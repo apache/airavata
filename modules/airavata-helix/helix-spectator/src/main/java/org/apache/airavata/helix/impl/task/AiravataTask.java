@@ -253,7 +253,7 @@ public abstract class AiravataTask extends AbstractTask {
                         dataProductModel.setDataProductType(DataProductType.FILE);
 
                         DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
-                        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResource().getStorageResourceId());
+                        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResourceDescription().getStorageResourceId());
                         replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
                         replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
                         replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
@@ -383,14 +383,7 @@ public abstract class AiravataTask extends AbstractTask {
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId())
                     .setRegistryClient(getRegistryServiceClient())
                     .setProcessModel(getProcessModel())
-                    .setStatusPublisher(getStatusPublisher())
-                    .setGatewayResourceProfile(getRegistryServiceClient().getGatewayResourceProfile(gatewayId))
-                    .setGatewayComputeResourcePreference(
-                            getRegistryServiceClient().getGatewayComputeResourcePreference(gatewayId,
-                                    processModel.getComputeResourceId()))
-                    .setGatewayStorageResourcePreference(
-                            getRegistryServiceClient().getGatewayStoragePreference(gatewayId,
-                                    processModel.getStorageResourceId()));
+                    .setStatusPublisher(getStatusPublisher());
 
             this.taskContext = taskContextBuilder.build();
             logger.info("Task " + this.taskName + " initialized");
