@@ -37,31 +37,30 @@ Vue.use(BootstrapVue);
 Vue.use(VueResource);
 Vue.use(VueRouter);
 
-export function initializeApacheAiravataDashboard(dashboardName) {
-  var template = `
+
+var template = `
     <div class="vmain"><notifications-display/><Loading/>
         <transition name="fade">
             <router-view>
             </router-view>
         </transition>
-    </div>`;
-  var vueApp = new Vue({
-    el: "#app",
-    router,
-    store,
-    template: template,
-    components: {
-      ExperimentsDashboard,
-      // AdminDashboard,
-      CredentialStore,
-      Loading,
-      ComputeResourceDashboard,
-      ComputeResourcePreferenceDashboard,
-      "notifications-display": components.NotificationsDisplay
-    }
-  });
-  Vue.config.devtools = true;
-  Vue.config.debug = true;
-  Vue.config.silent = false;
-  return vueApp;
-}
+    </div>`
+new Vue({
+  el: '#app',
+  router,
+  store,
+  template: template,
+  components: {
+    ExperimentsDashboard,
+    // AdminDashboard,
+    CredentialStore,
+    Loading,
+    ComputeResourceDashboard,
+    ComputeResourcePreferenceDashboard,
+    'notifications-display': components.NotificationsDisplay,
+  }
+});
+Vue.config.devtools = true
+Vue.config.debug = true
+Vue.config.silent = false
+

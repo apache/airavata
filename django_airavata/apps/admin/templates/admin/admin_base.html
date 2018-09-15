@@ -1,12 +1,8 @@
-{% extends "base.html" %}
-{% load static %}
-{% block content %}
-    <div id=app></div>
-{% endblock %}
-{% block css %}
+{% extends "base.html" %} {% load static %} {% block content %}
+<div id=app></div>
+{% endblock %} {% block css %}
 <link rel=stylesheet type=text/css href={% static 'django_airavata_admin/dist/static/css/app.css' %}>
-<link rel=stylesheet type=text/css href={% static 'django_airavata_admin/dist/static/css/admin.css' %}>
- {% endblock %}
+<link rel=stylesheet type=text/css href={% static 'django_airavata_admin/static/css/admin.css' %}> {% endblock %}
 {% block nav-items %}
 
         {% if request.is_gateway_admin or request.is_read_only_gateway_admin %}
@@ -28,7 +24,6 @@
 {% endblock %}
 {% block scripts %}
     {{ block.super }}
-    <script type=text/javascript src="{% static 'django_airavata_admin/dist/static/js/manifest.js' %}"></script>
     <script type=text/javascript src="{% static 'django_airavata_admin/dist/static/js/app.js' %}"></script>
     <script>
         if(AiravataApp){
