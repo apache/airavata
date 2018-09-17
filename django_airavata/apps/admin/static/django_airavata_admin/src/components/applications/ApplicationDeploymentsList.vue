@@ -21,8 +21,8 @@
         </b-table>
       </template>
     </list-layout>
-    <compute-resources-modal ref="modalSelectComputeResource" @selected="onSelectComputeResource" :excluded-resource-ids="excludedComputeResourceIds"
-    />
+    <compute-resources-modal ref="modalSelectComputeResource" @selected="onSelectComputeResource" :compute-resource-names="selectableComputeResourceNames"
+      :excluded-resource-ids="excludedComputeResourceIds" />
   </div>
 </template>
 
@@ -50,7 +50,8 @@ export default {
   },
   data() {
     return {
-      computeResourceNames: null
+      computeResourceNames: null,
+      groupResourceProfiles: null
     };
   },
   computed: {
@@ -72,6 +73,40 @@ export default {
         }
       ];
     },
+    selectableComputeResourceNames() {
+      // Only allow selecting a compute resource for a new deployment if that
+      // compute resource exists in a GroupResourceProfile
+      if (this.computeResourceNames && this.groupResourceProfiles) {
+        // Create a set of all computeResourceIds in GroupResourceProfiles
+        const groupResourceProfileCompResources = {};
+        for (const groupResourceProfile of this.groupResourceProfiles) {
+          for (const computePreference of groupResourceProfile.computePreferences) {
+            groupResourceProfileCompResources[
+              computePreference.computeResourceId
+            ] = null;
+          }
+        }
+        const result = [];
+        // Filter compute resources based on existence in groupResourceProfileCompResources
+        for (const computeResourceId in this.computeResourceNames) {
+          if (
+            this.computeResourceNames.hasOwnProperty(computeResourceId) &&
+            groupResourceProfileCompResources.hasOwnProperty(computeResourceId)
+          ) {
+            const computeResourceName = this.computeResourceNames[
+              computeResourceId
+            ];
+            result.push({
+              host_id: computeResourceId,
+              host: computeResourceName
+            });
+          }
+        }
+        return result;
+      } else {
+        return [];
+      }
+    },
     excludedComputeResourceIds() {
       return this.deployments.map(dep => dep.computeHostId);
     }
@@ -79,6 +114,10 @@ export default {
   mounted() {
     services.ComputeResourceService.names().then(
       names => (this.computeResourceNames = names)
+    );
+    services.GroupResourceProfileService.list().then(
+      groupResourceProfiles =>
+        (this.groupResourceProfiles = groupResourceProfiles)
     );
   },
   methods: {
