@@ -20,7 +20,8 @@
           :readonly="!appInterface.userHasWriteAccess" />
         <router-view name="deployments" v-if="deployments" :deployments="deployments" @new="createNewDeployment" @delete="deleteDeployment"
         />
-        <router-view name="deployment" v-if="deployment" v-model="deployment" @save="saveDeployment" @cancel="cancelDeployment" />
+        <router-view name="deployment" v-if="deployment" v-model="deployment" :shared-entity="deploymentSharedEntity" @sharing-changed="deploymentSharingChanged"
+          @save="saveDeployment" @cancel="cancelDeployment" />
       </div>
     </div>
   </div>
@@ -28,7 +29,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import { models } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
 import { notifications } from "django-airavata-common-ui";
 
 export default {
@@ -42,7 +43,8 @@ export default {
     return {
       module: null,
       appInterface: null,
-      deployment: null
+      deployment: null,
+      deploymentSharedEntity: null
     };
   },
   computed: {
@@ -66,6 +68,9 @@ export default {
     this.initialize();
     if (this.deployment_id) {
       this.loadApplicationDeployment(this.deployment_id);
+      services.SharedEntityService.retrieve({
+        lookup: this.deployment_id
+      }).then(sharedEntity => (this.deploymentSharedEntity = sharedEntity));
     } else if (this.hostId) {
       this.createNewDeployment(this.hostId);
     }
@@ -149,18 +154,23 @@ export default {
       deployment.appModuleId = this.id;
       deployment.computeHostId = computeHostId;
       this.deployment = deployment;
+      this.deploymentSharedEntity = new models.SharedEntity();
       this.$router.push({
         name: "new_application_deployment",
         params: { id: this.id, hostId: computeHostId }
       });
     },
     saveDeployment() {
-      return this.saveAll().then(appDeployment => {
-        this.$router.push({
-          name: "application_deployments",
-          params: { id: this.id }
+      return this.saveAll()
+        .then(() => {
+          return this.loadApplicationDeployments(this.id);
+        })
+        .then(() => {
+          this.$router.push({
+            name: "application_deployments",
+            params: { id: this.id }
+          });
         });
-      });
     },
     saveAll() {
       const moduleSave = this.id
@@ -184,7 +194,14 @@ export default {
             if (this.deployment.appDeploymentId) {
               return this.updateApplicationDeployment(this.deployment);
             } else {
-              return this.createApplicationDeployment(this.deployment);
+              return this.createApplicationDeployment(this.deployment).then(
+                deployment => {
+                  return services.SharedEntityService.merge({
+                    data: this.deploymentSharedEntity,
+                    lookup: deployment.appDeploymentId
+                  });
+                }
+              );
             }
           } else {
             return Promise.resolve(null);
@@ -212,6 +229,9 @@ export default {
             params: { id: this.id }
           });
         });
+    },
+    deploymentSharingChanged(deploymentSharedEntity) {
+      this.deploymentSharedEntity = deploymentSharedEntity;
     }
   },
   watch: {
@@ -221,6 +241,9 @@ export default {
       }
       if (this.deployment_id) {
         this.loadApplicationDeployment(this.deployment_id);
+        services.SharedEntityService.retrieve({
+          lookup: this.deployment_id
+        }).then(sharedEntity => (this.deploymentSharedEntity = sharedEntity));
       }
     },
     currentModule: function(newModule) {
@@ -231,7 +254,7 @@ export default {
       this.appInterface = newInterface.clone();
     },
     currentDeployment: function(newDeployment) {
-      this.deployment = newDeployment.clone();
+      this.deployment = newDeployment ? newDeployment.clone() : null;
     }
   }
 };

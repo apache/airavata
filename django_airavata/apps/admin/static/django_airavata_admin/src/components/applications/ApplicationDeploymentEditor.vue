@@ -5,6 +5,7 @@
         <h1 class="h4 mb-4">
           {{ name }}
         </h1>
+        <share-button v-model="localSharedEntity" @input="sharingChanged" />
         <b-form-group label="Application Executable Path" label-for="executable-path">
           <b-form-input id="executable-path" type="text" v-model="data.executablePath" required :disabled="readonly"></b-form-input>
         </b-form-group>
@@ -63,6 +64,7 @@ import { models, services } from "django-airavata-api";
 import vmodel_mixin from "../commons/vmodel_mixin";
 import CommandObjectsEditor from "./CommandObjectsEditor.vue";
 import SetEnvPathsEditor from "./SetEnvPathsEditor.vue";
+import { components } from "django-airavata-common-ui";
 
 export default {
   name: "application-deployment-editor",
@@ -78,15 +80,21 @@ export default {
     readonly: {
       type: Boolean,
       default: false
+    },
+    sharedEntity: {
+      type: models.SharedEntity,
+      required: true
     }
   },
   components: {
     CommandObjectsEditor,
-    SetEnvPathsEditor
+    SetEnvPathsEditor,
+    "share-button": components.ShareButton
   },
   data() {
     return {
-      computeResource: null
+      computeResource: null,
+      localSharedEntity: this.sharedEntity ? this.sharedEntity.clone() : null
     };
   },
   computed: {
@@ -165,6 +173,14 @@ export default {
       this.data.defaultNodeCount = queue.defaultNodeCount;
       this.data.defaultCPUCount = queue.defaultCPUCount;
       this.data.defaultWalltime = queue.defaultWalltime;
+    },
+    sharingChanged(newSharedEntity) {
+      this.$emit("sharing-changed", newSharedEntity);
+    }
+  },
+  watch: {
+    sharedEntity(newValue, oldValue) {
+      this.localSharedEntity = newValue.clone();
     }
   }
 };

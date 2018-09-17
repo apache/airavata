@@ -207,11 +207,9 @@ class GroupSerializer(serializers.Serializer):
         return group.members and username in group.members
 
     def get_isGatewayAdminsGroup(self, group):
-        request = self.context['request']
         return group.id == self._gateway_groups()['adminsGroupId']
 
     def get_isReadOnlyGatewayAdminsGroup(self, group):
-        request = self.context['request']
         return group.id == self._gateway_groups()['readOnlyAdminsGroupId']
 
     def get_isDefaultGatewayUsersGroup(self, group):
@@ -310,22 +308,28 @@ class ApplicationDeploymentDescriptionSerializer(
     userHasWriteAccess = serializers.SerializerMethodField()
     moduleLoadCmds = OrderedListField(
         order_by='commandOrder',
-        child=CommandObjectSerializer())
+        child=CommandObjectSerializer(),
+        allow_null=True)
     preJobCommands = OrderedListField(
         order_by='commandOrder',
-        child=CommandObjectSerializer())
+        child=CommandObjectSerializer(),
+        allow_null=True)
     postJobCommands = OrderedListField(
         order_by='commandOrder',
-        child=CommandObjectSerializer())
+        child=CommandObjectSerializer(),
+        allow_null=True)
     libPrependPaths = OrderedListField(
         order_by='envPathOrder',
-        child=SetEnvPathsSerializer())
+        child=SetEnvPathsSerializer(),
+        allow_null=True)
     libAppendPaths = OrderedListField(
         order_by='envPathOrder',
-        child=SetEnvPathsSerializer())
+        child=SetEnvPathsSerializer(),
+        allow_null=True)
     setEnvironment = OrderedListField(
         order_by='envPathOrder',
-        child=SetEnvPathsSerializer())
+        child=SetEnvPathsSerializer(),
+        allow_null=True)
 
     def get_userHasWriteAccess(self, appDeployment):
         request = self.context['request']

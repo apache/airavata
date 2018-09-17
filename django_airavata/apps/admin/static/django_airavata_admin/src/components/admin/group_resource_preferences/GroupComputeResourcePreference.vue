@@ -86,9 +86,9 @@ export default {
           .retrieve({ lookup: this.id })
           .then(grp => (this.data = grp));
       }
-      services.ServiceFactory.service("SharedEntities")
-        .retrieve({ lookup: this.id })
-        .then(sharedEntity => (this.sharedEntity = sharedEntity));
+      services.SharedEntityService.retrieve({ lookup: this.id }).then(
+        sharedEntity => (this.sharedEntity = sharedEntity)
+      );
     }
   },
   data: function() {

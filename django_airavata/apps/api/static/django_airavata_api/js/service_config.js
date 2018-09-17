@@ -134,7 +134,19 @@ export default {
   },
   "SharedEntities": {
     url: "/api/shared-entities",
-    viewSet: true,
+    viewSet: [{
+      name: "retrieve"
+    }, {
+      name: "update"
+    }, {
+      name: "merge",
+      url: "/api/shared-entities/<lookup>/merge/",
+      bodyParams: {
+        name: "data"
+      },
+      requestType: 'put',
+      modelClass: SharedEntity
+    }],
     modelClass: SharedEntity,
   },
   "UserProfiles": {

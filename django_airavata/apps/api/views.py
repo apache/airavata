@@ -895,6 +895,31 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             self.authz_token, entity_id,
             {group_id: permission_type for group_id in group_ids})
 
+    @detail_route(methods=['put'])
+    def merge(self, request, entity_id=None):
+        # Validate updated sharing settings
+        updated = self.get_serializer(data=request.data)
+        updated.is_valid(raise_exception=True)
+        # Get the existing sharing settings and merge in the updated settings
+        existing_instance = self.get_object()
+        existing = self.get_serializer(instance=existing_instance)
+        merged_data = existing.data
+        merged_data['userPermissions'] = existing.data['userPermissions'] + \
+            updated.initial_data['userPermissions']
+        merged_data['groupPermissions'] = existing.data['groupPermissions'] + \
+            updated.initial_data['groupPermissions']
+        # Create a merged_serializer from the existing sharing settings and the
+        # merged settings. This will calculate all permissions that need to be
+        # granted and revoked to go from the exisitng settings to the merged
+        # settings.
+        merged_serializer = self.get_serializer(existing_instance, data=merged_data)
+        merged_serializer.is_valid(raise_exception=True)
+        self.perform_update(merged_serializer)
+        return Response(merged_serializer.data)
+
+
+
+
 
 class CredentialSummaryViewSet(mixins.ListModelMixin,
                                GenericAPIBackedViewSet):
