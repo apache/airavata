@@ -16,14 +16,14 @@ export default {
   },
   actions: {
     loadApplicationDeployments({ commit }, appModuleId) {
-      services.ApplicationModuleService.getApplicationDeployments({ lookup: appModuleId })
+      return services.ApplicationModuleService.getApplicationDeployments({ lookup: appModuleId })
         .then(appDeployments => {
           commit('setDeployments', appDeployments);
           return appDeployments;
         });
     },
     loadApplicationDeployment({ commit }, appDeploymentId) {
-      services.ApplicationDeploymentService.retrieve({ lookup: appDeploymentId })
+      return services.ApplicationDeploymentService.retrieve({ lookup: appDeploymentId })
         .then(appDeployment => {
           commit('setCurrentDeployment', appDeployment);
           return appDeployment;
@@ -44,7 +44,7 @@ export default {
         })
     },
     deleteApplicationDeployment({ commit }, appDeployment) {
-      return services.ApplicationDeploymentService.delete({lookup: appDeployment.appDeploymentId })
+      return services.ApplicationDeploymentService.delete({ lookup: appDeployment.appDeploymentId })
         .then(() => {
           commit('setCurrentDeployment', null);
           return null;

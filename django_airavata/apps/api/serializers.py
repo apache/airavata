@@ -274,7 +274,8 @@ class ApplicationInterfaceDescriptionSerializer(
         lookup_url_kwarg='app_interface_id')
     applicationInputs = OrderedListField(
         order_by='inputOrder',
-        child=InputDataObjectTypeSerializer())
+        child=InputDataObjectTypeSerializer(),
+        allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
 
     def get_userHasWriteAccess(self, appDeployment):

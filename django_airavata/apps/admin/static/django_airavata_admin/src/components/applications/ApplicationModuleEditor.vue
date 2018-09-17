@@ -21,6 +21,9 @@
         <b-button variant="primary" @click="save" :disabled="readonly">
           Save
         </b-button>
+        <b-button v-if="data.appModuleId" variant="danger" @click="deleteApplicationModule" :disabled="readonly">
+          Delete
+        </b-button>
         <b-button variant="secondary" @click="cancel">
           Cancel
         </b-button>
@@ -51,6 +54,9 @@ export default {
     },
     cancel() {
       this.$emit("cancel");
+    },
+    deleteApplicationModule() {
+      this.$emit("delete", this.data);
     }
   }
 };

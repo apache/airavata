@@ -274,6 +274,10 @@ class ApplicationModuleViewSet(APIBackedViewSet):
     def perform_update(self, serializer):
         app_module = serializer.save()
         self.request.airavata_client.updateApplicationModule(self.authz_token, app_module.appModuleId, app_module)
+    
+    def perform_destroy(self, instance):
+        self.request.airavata_client.deleteApplicationModule(
+            self.authz_token, instance.appModuleId)
 
     @detail_route()
     def application_interface(self, request, app_module_id):
@@ -378,6 +382,10 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
         self.request.airavata_client.updateApplicationInterface(self.authz_token,
                                                                 application_interface.applicationInterfaceId,
                                                                 application_interface)
+    
+    def perform_destroy(self, instance):
+        self.request.airavata_client.deleteApplicationInterface(
+            self.authz_token, instance.applicationInterfaceId)
 
     @detail_route()
     def compute_resources(self, request, app_interface_id):

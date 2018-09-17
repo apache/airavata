@@ -14,8 +14,8 @@
           <b-nav-item exact-active-class="active" exact :to="{name: 'application_interface', params: {id: id}}" :disabled="!id">Interface</b-nav-item>
           <b-nav-item active-class="active" :to="{name: 'application_deployments', params: {id: id}}" :disabled="!id">Deployments</b-nav-item>
         </b-nav>
-        <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule" :readonly="!module.userHasWriteAccess"
-        />
+        <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule" @delete="deleteApplication"
+          :readonly="!module.userHasWriteAccess" />
         <router-view name="interface" v-if="appInterface" v-model="appInterface" @save="saveInterface" @cancel="cancelInterface"
           :readonly="!appInterface.userHasWriteAccess" />
         <router-view name="deployments" v-if="deployments" :deployments="deployments" @new="createNewDeployment" @delete="deleteDeployment"
@@ -108,7 +108,9 @@ export default {
         });
         this.loadApplicationDeployments(this.id);
       } else {
-        this.module = new models.ApplicationModule();
+        this.module = new models.ApplicationModule({
+          userHasWriteAccess: true
+        });
       }
     },
     saveModule() {
@@ -232,6 +234,27 @@ export default {
     },
     deploymentSharingChanged(deploymentSharedEntity) {
       this.deploymentSharedEntity = deploymentSharedEntity;
+    },
+    deleteApplication(appModule) {
+      const deleteAllDeployments = this.deployments.map(dep =>
+        services.ApplicationDeploymentService.delete({
+          lookup: dep.appDeploymentId
+        })
+      );
+      return Promise.all(deleteAllDeployments)
+        .then(() => {
+          if (this.appInterface && this.appInterface.applicationInterfaceId) {
+            return services.ApplicationInterfaceService.delete({
+              lookup: this.appInterface.applicationInterfaceId
+            });
+          }
+        })
+        .then(() => {
+          return services.ApplicationModuleService.delete({ lookup: this.id });
+        })
+        .then(() => {
+          this.$router.push({ path: "/applications" });
+        });
     }
   },
   watch: {

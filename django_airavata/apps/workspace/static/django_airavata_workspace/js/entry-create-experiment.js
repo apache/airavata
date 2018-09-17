@@ -12,15 +12,14 @@ new Vue({
   el: '#create-experiment',
   template: '<create-experiment-container v-bind:appModuleId="appModuleId"></create-experiment-container>',
   data: {
-      appModuleId: null,
+    appModuleId: null,
   },
   components: {
-      CreateExperimentContainer,
+    CreateExperimentContainer,
   },
   beforeMount: function () {
-      if (this.$el.dataset.appModuleId) {
-          this.appModuleId = this.$el.dataset.appModuleId;
-      }
+    if (this.$el.dataset.appModuleId) {
+      this.appModuleId = this.$el.dataset.appModuleId;
+    }
   }
-
 })

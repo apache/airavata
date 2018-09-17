@@ -21,7 +21,7 @@ export default {
         .catch(error => {
           if (error.details.status === 404) {
             // If there is no interface, just create a new instance
-            const appInterface = new models.ApplicationInterfaceDefinition();
+            const appInterface = new models.ApplicationInterfaceDefinition({ userHasWriteAccess: true });
             appInterface.addStandardOutAndStandardErrorOutputs();
             commit('setCurrentInterface', appInterface);
             return Promise.resolve(null);
