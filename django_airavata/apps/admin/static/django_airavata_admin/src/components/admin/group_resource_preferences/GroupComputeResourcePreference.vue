@@ -13,7 +13,7 @@
               <b-form-input id="profile-name" type="text" v-model="data.groupResourceProfileName" required placeholder="Name of this Group Resource Profile">
               </b-form-input>
             </b-form-group>
-            <share-button ref="shareButton" v-model="sharedEntity" />
+            <share-button ref="shareButton" v-model="sharedEntity" @save="saveSharedEntity" />
           </div>
         </div>
       </div>
@@ -152,13 +152,23 @@ export default {
         persist = this.service.update({ data: this.data, lookup: this.id });
       } else {
         persist = this.service.create({ data: this.data }).then(data => {
-          // Save sharing settings too
+          // Merge sharing settings with default sharing settings created when
+          // Group Resource Profile was created
           const groupResourceProfileId = data.groupResourceProfileId;
-          return this.$refs.shareButton.mergeAndSave(groupResourceProfileId);
+          return services.SharedEntityService.merge({
+            data: this.sharedEntity,
+            lookup: groupResourceProfileId
+          });
         });
       }
       persist.then(data => {
         this.$router.push("/group-resource-profiles");
+      });
+    },
+    saveSharedEntity: function(sharedEntity) {
+      return services.SharedEntityService.update({
+        data: sharedEntity,
+        lookup: sharedEntity.entityId
       });
     },
     getComputeResourceName: function(computeResourceId) {

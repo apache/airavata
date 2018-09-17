@@ -5,9 +5,7 @@
       <b-badge>{{ totalCount }}</b-badge>
     </b-button>
     <b-modal id="modal-share-settings" title="Sharing Settings" ref="modalSharingSettings" ok-title="Save" @ok="saveSharedEntity"
-      @cancel="cancelEditSharedEntity" no-close-on-esc no-close-on-backdrop hide-header-close :ok-disabled="loading" :cancel-disabled="loading"
-      @show="showSharingSettingsModal">
-      <b-alert variant="danger" :show="!!errorMessage">{{errorMessage}}</b-alert>
+      @cancel="cancelEditSharedEntity" no-close-on-esc no-close-on-backdrop hide-header-close @show="showSharingSettingsModal">
       <b-form-group label="Search for users/groups" labelFor="user-groups-autocomplete">
         <autocomplete-text-input id="user-groups-autocomplete" :suggestions="usersAndGroupsSuggestions" @selected="suggestionSelected">
           <template slot="suggestion" slot-scope="slotProps">
@@ -88,8 +86,6 @@ export default {
       ],
       users: [],
       groups: [],
-      errorMessage: null,
-      loading: false,
       sharedEntityCopy: null
     };
   },
@@ -256,33 +252,10 @@ export default {
       );
     },
     saveSharedEntity: function(event) {
-      // If entity hasn't been persisted yet then just emitValueChanged.
-      // Sharing settings will need to be saved later (see mergeAndSave).
-      if (!this.sharedEntity.entityId) {
-        this.emitValueChanged();
-        return;
-      }
-      // Prevent hiding the modal, hide it programmatically
-      this.errorMessage = null;
-      this.loading = true;
-      event.preventDefault();
-      services.SharedEntityService.update({
-        data: this.sharedEntity,
-        lookup: this.sharedEntity.entityId
-      })
-        .then(sharedEntity => {
-          this.emitValueChanged();
-          this.$refs.modalSharingSettings.hide();
-        })
-        .catch(error => {
-          console.log("Error occurred while saving:", error);
-          this.errorMessage =
-            "Error occurred while saving: " + JSON.stringify(error);
-        })
-        .then(() => (this.loading = false), () => (this.loading = false));
+      this.emitValueChanged();
+      this.$emit("save", this.sharedEntity);
     },
     cancelEditSharedEntity: function(event) {
-      this.errorMessage = null;
       this.sharedEntity = this.sharedEntityCopy;
     },
     emitValueChanged: function() {
