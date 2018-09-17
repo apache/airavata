@@ -2464,13 +2464,13 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            if (ServerSettings.isEnableSharing()) {
-                final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, appDeploymentId, ResourcePermissionType.WRITE);
-                if (!hasAccess) {
-                    throw new AuthorizationException("User does not have WRITE access to application deployment " + appDeploymentId);
-                }
+            final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, appDeploymentId, ResourcePermissionType.WRITE);
+            if (!hasAccess) {
+                throw new AuthorizationException("User does not have WRITE access to application deployment " + appDeploymentId);
             }
+            final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             boolean result = regClient.deleteApplicationDeployment(appDeploymentId);
+            sharingClient.deleteEntity(domainId, appDeploymentId);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
