@@ -1120,7 +1120,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                     if (tasks != null && !tasks.isEmpty()){
                         for (TaskModel taskModel : tasks){
                             String taskId =  taskModel.getTaskId();
-                            jobList = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                            List<JobModel> taskJobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                            jobList.addAll(taskJobs);
                         }
                     }
                 }
