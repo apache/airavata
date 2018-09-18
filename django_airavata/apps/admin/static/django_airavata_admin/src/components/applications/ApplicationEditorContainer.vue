@@ -1,5 +1,9 @@
 <template>
   <div>
+    <unsaved-changes-guard :dirty="isDirty" />
+    <confirmation-dialog ref="unsavedChangesDialog" title="You have unsaved changes">
+      You have unsaved changes. Are you sure you want to leave this page?
+    </confirmation-dialog>
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">
@@ -15,13 +19,13 @@
           <b-nav-item active-class="active" :to="{name: 'application_deployments', params: {id: id}}" :disabled="!id">Deployments</b-nav-item>
         </b-nav>
         <router-view name="module" v-if="module" v-model="module" @save="saveModule" @cancel="cancelModule" @delete="deleteApplication"
-          :readonly="!module.userHasWriteAccess" />
+          @input="moduleIsDirty = true" :readonly="!module.userHasWriteAccess" />
         <router-view name="interface" v-if="appInterface" v-model="appInterface" @save="saveInterface" @cancel="cancelInterface"
-          :readonly="!appInterface.userHasWriteAccess" />
+          @input="interfaceIsDirty = true" :readonly="!appInterface.userHasWriteAccess" />
         <router-view name="deployments" v-if="deployments" :deployments="deployments" @new="createNewDeployment" @delete="deleteDeployment"
         />
         <router-view name="deployment" v-if="deployment" v-model="deployment" :shared-entity="deploymentSharedEntity" @sharing-changed="deploymentSharingChanged"
-          @save="saveDeployment" @cancel="cancelDeployment" />
+          @input="deploymentIsDirty = true" @save="saveDeployment" @cancel="cancelDeployment" />
       </div>
     </div>
   </div>
@@ -30,7 +34,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import { models, services } from "django-airavata-api";
-import { notifications } from "django-airavata-common-ui";
+import { components, notifications } from "django-airavata-common-ui";
 
 export default {
   name: "application-editor-container",
@@ -39,12 +43,19 @@ export default {
     deployment_id: String,
     hostId: String
   },
+  components: {
+    "unsaved-changes-guard": components.UnsavedChangesGuard,
+    "confirmation-dialog": components.ConfirmationDialog
+  },
   data: function() {
     return {
       module: null,
       appInterface: null,
       deployment: null,
-      deploymentSharedEntity: null
+      deploymentSharedEntity: null,
+      moduleIsDirty: false,
+      interfaceIsDirty: false,
+      deploymentIsDirty: false
     };
   },
   computed: {
@@ -56,6 +67,11 @@ export default {
       } else {
         return "Create a New Application";
       }
+    },
+    isDirty() {
+      return (
+        this.moduleIsDirty || this.interfaceIsDirty || this.deploymentIsDirty
+      );
     },
     ...mapState("applications/modules", ["currentModule"]),
     ...mapState("applications/interfaces", ["currentInterface"]),
@@ -116,10 +132,12 @@ export default {
     saveModule() {
       if (this.id) {
         this.updateApplicationModule(this.module).then(() => {
+          this.moduleIsDirty = false;
           this.$router.push({ path: "/applications" });
         });
       } else {
         this.createApplicationModule(this.module).then(appModule => {
+          this.moduleIsDirty = false;
           this.$router.push({
             name: "application_module",
             params: { id: appModule.appModuleId }
@@ -137,6 +155,7 @@ export default {
           if (this.appInterface.applicationInterfaceId) {
             return this.updateApplicationInterface(this.appInterface).then(
               () => {
+                this.interfaceIsDirty = false;
                 this.$router.push({ path: "/applications" });
               }
             );
@@ -144,6 +163,7 @@ export default {
             this.appInterface.applicationModules = [this.id];
             return this.createApplicationInterface(this.appInterface).then(
               () => {
+                this.interfaceIsDirty = false;
                 this.$router.push({ path: "/applications" });
               }
             );
@@ -180,6 +200,7 @@ export default {
         : this.createApplicationModule(this.module);
       return moduleSave
         .then(appModule => {
+          this.moduleIsDirty = false;
           this.appInterface.applicationName = appModule.appModuleName;
           this.appInterface.applicationDescription =
             appModule.appModuleDescription;
@@ -192,6 +213,7 @@ export default {
           }
         })
         .then(appInterface => {
+          this.interfaceIsDirty = false;
           if (this.deployment) {
             if (this.deployment.appDeploymentId) {
               return this.updateApplicationDeployment(this.deployment);
@@ -208,15 +230,19 @@ export default {
           } else {
             return Promise.resolve(null);
           }
-        });
+        })
+        .then(() => (this.deploymentIsDirty = false));
     },
     cancelModule() {
+      this.moduleIsDirty = false;
       this.$router.push({ path: "/applications" });
     },
     cancelInterface() {
+      this.interfaceIsDirty = false;
       this.$router.push({ path: "/applications" });
     },
     cancelDeployment() {
+      this.deploymentIsDirty = false;
       this.$router.push({
         name: "application_deployments",
         params: { id: this.id }
@@ -224,7 +250,10 @@ export default {
     },
     deleteDeployment(deployment) {
       return this.deleteApplicationDeployment(deployment)
-        .then(() => this.loadApplicationDeployments(this.id))
+        .then(() => {
+          this.deploymentIsDirty = false;
+          return this.loadApplicationDeployments(this.id);
+        })
         .then(() => {
           this.$router.push({
             name: "application_deployments",
@@ -243,6 +272,7 @@ export default {
       );
       return Promise.all(deleteAllDeployments)
         .then(() => {
+          this.deploymentIsDirty = false;
           if (this.appInterface && this.appInterface.applicationInterfaceId) {
             return services.ApplicationInterfaceService.delete({
               lookup: this.appInterface.applicationInterfaceId
@@ -250,9 +280,11 @@ export default {
           }
         })
         .then(() => {
+          this.interfaceIsDirty = false;
           return services.ApplicationModuleService.delete({ lookup: this.id });
         })
         .then(() => {
+          this.deploymentIsDirty = false;
           this.$router.push({ path: "/applications" });
         });
     }
@@ -278,6 +310,14 @@ export default {
     },
     currentDeployment: function(newDeployment) {
       this.deployment = newDeployment ? newDeployment.clone() : null;
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.isDirty) {
+      this.$refs.unsavedChangesDialog.show();
+      this.$refs.unsavedChangesDialog.$on("ok", next);
+    } else {
+      next();
     }
   }
 };

@@ -1,5 +1,8 @@
 <template>
   <div>
+    <confirmation-dialog ref="unsavedChangesDialog" title="You have unsaved changes">
+      You have unsaved changes. Are you sure you want to leave this page?
+    </confirmation-dialog>
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">
@@ -89,13 +92,23 @@ export default {
   components: {
     CommandObjectsEditor,
     SetEnvPathsEditor,
-    "share-button": components.ShareButton
+    "share-button": components.ShareButton,
+    "confirmation-dialog": components.ConfirmationDialog
   },
   data() {
     return {
       computeResource: null,
-      localSharedEntity: this.sharedEntity ? this.sharedEntity.clone() : null
+      localSharedEntity: this.sharedEntity ? this.sharedEntity.clone() : null,
+      dirty: false
     };
+  },
+  mounted() {
+    this.$on("input", () => {
+      this.dirty = true;
+    });
+  },
+  destroyed() {
+    this.$off("input");
   },
   computed: {
     name() {
@@ -161,9 +174,13 @@ export default {
   },
   methods: {
     save() {
+      // FIXME: if the save operation fails then this form should still be
+      // dirty. But this editor doesn't know if the save fails.
+      this.dirty = false;
       this.$emit("save");
     },
     cancel() {
+      this.dirty = false;
       this.$emit("cancel");
     },
     defaultQueueChanged(queueName) {
@@ -175,12 +192,21 @@ export default {
       this.data.defaultWalltime = queue.defaultWalltime;
     },
     sharingChanged(newSharedEntity) {
+      this.dirty = true;
       this.$emit("sharing-changed", newSharedEntity);
     }
   },
   watch: {
     sharedEntity(newValue, oldValue) {
       this.localSharedEntity = newValue.clone();
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.dirty) {
+      this.$refs.unsavedChangesDialog.show();
+      this.$refs.unsavedChangesDialog.$on("ok", next);
+    } else {
+      next();
     }
   }
 };

@@ -7,6 +7,7 @@ import DeleteLink from "./components/DeleteLink.vue";
 import NotificationsDisplay from "./components/NotificationsDisplay.vue";
 import Pager from "./components/Pager.vue";
 import ShareButton from "./components/ShareButton.vue";
+import UnsavedChangesGuard from "./components/UnsavedChangesGuard.vue";
 
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
 
@@ -26,7 +27,8 @@ exports.components = {
   DeleteButton,
   DeleteLink,
   NotificationsDisplay,
-  ShareButton
+  ShareButton,
+  UnsavedChangesGuard
 };
 
 exports.errors = {
