@@ -13,10 +13,9 @@
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            <a href="#" class="text-danger" @click.prevent="removeApplicationDeployment(data.item)" v-if="data.item.userHasWriteAccess">
-              Delete
-              <i class="fa fa-trash" aria-hidden="true"></i>
-            </a>
+            <delete-link v-if="data.item.userHasWriteAccess" @delete="removeApplicationDeployment(data.item)">
+              Are you sure you want to remove the {{ getComputeResourceName(data.item.computeHostId) }} deployment?
+            </delete-link>
           </template>
         </b-table>
       </template>
@@ -28,14 +27,15 @@
 
 <script>
 import { models, services } from "django-airavata-api";
-import { layouts } from "django-airavata-common-ui";
+import { components, layouts } from "django-airavata-common-ui";
 import ComputeResourcesModal from "../admin/ComputeResourcesModal.vue";
 
 export default {
   name: "application-deployments-list",
   components: {
     "list-layout": layouts.ListLayout,
-    ComputeResourcesModal
+    ComputeResourcesModal,
+    "delete-link": components.DeleteLink
   },
   props: {
     deployments: {

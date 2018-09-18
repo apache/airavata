@@ -21,9 +21,9 @@
         <b-button variant="primary" @click="save" :disabled="readonly">
           Save
         </b-button>
-        <b-button v-if="data.appModuleId" variant="danger" @click="deleteApplicationModule" :disabled="readonly">
-          Delete
-        </b-button>
+        <delete-button v-if="data.appModuleId" :disabled="readonly" @delete="deleteApplicationModule">
+          Are you sure you want to delete the {{ data.appModuleName }} application?
+        </delete-button>
         <b-button variant="secondary" @click="cancel">
           Cancel
         </b-button>
@@ -34,6 +34,7 @@
 
 <script>
 import { models } from "django-airavata-api";
+import { components } from "django-airavata-common-ui";
 import vmodel_mixin from "../commons/vmodel_mixin";
 
 export default {
@@ -47,6 +48,9 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  components: {
+    "delete-button": components.DeleteButton
   },
   methods: {
     save() {

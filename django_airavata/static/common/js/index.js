@@ -1,39 +1,45 @@
-import ApplicationCard from './components/ApplicationCard.vue'
-import Autocomplete from './components/Autocomplete.vue'
-import AutocompleteTextInput from './components/AutocompleteTextInput.vue'
-import NotificationsDisplay from './components/NotificationsDisplay.vue'
-import Pager from './components/Pager.vue'
-import ShareButton from './components/ShareButton.vue'
+import ApplicationCard from "./components/ApplicationCard.vue";
+import Autocomplete from "./components/Autocomplete.vue";
+import AutocompleteTextInput from "./components/AutocompleteTextInput.vue";
+import ConfirmationDialog from "./components/ConfirmationDialog.vue";
+import DeleteButton from "./components/DeleteButton.vue";
+import DeleteLink from "./components/DeleteLink.vue";
+import NotificationsDisplay from "./components/NotificationsDisplay.vue";
+import Pager from "./components/Pager.vue";
+import ShareButton from "./components/ShareButton.vue";
 
-import GlobalErrorHandler from './errors/GlobalErrorHandler'
+import GlobalErrorHandler from "./errors/GlobalErrorHandler";
 
-import ListLayout from './layouts/ListLayout.vue'
+import ListLayout from "./layouts/ListLayout.vue";
 
-import Notification from './notifications/Notification'
-import NotificationList from './notifications/NotificationList'
+import Notification from "./notifications/Notification";
+import NotificationList from "./notifications/NotificationList";
 
-import * as utils from './utils'
+import * as utils from "./utils";
 
 exports.components = {
   Pager,
   ApplicationCard,
   Autocomplete,
   AutocompleteTextInput,
+  ConfirmationDialog,
+  DeleteButton,
+  DeleteLink,
   NotificationsDisplay,
-  ShareButton,
-}
+  ShareButton
+};
 
 exports.errors = {
-  GlobalErrorHandler,
-}
+  GlobalErrorHandler
+};
 
 exports.layouts = {
-  ListLayout,
-}
+  ListLayout
+};
 
 exports.notifications = {
   Notification,
-  NotificationList,
-}
+  NotificationList
+};
 
 exports.utils = utils;
