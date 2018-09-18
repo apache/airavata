@@ -14,6 +14,7 @@
                 <tr>
                   <th>Name</th>
                   <th>Application</th>
+                  <th>User</th>
                   <th>Creation Time</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -23,6 +24,7 @@
                 <tr v-for="experiment in experiments" :key="experiment.experimentId">
                   <td>{{experiment.name}}</td>
                   <td>{{applicationName(experiment)}}</td>
+                  <td>{{experiment.userName}}</td>
                   <td>
                     <span :title="experiment.creationTime">{{ fromNow(experiment.creationTime) }}</span>
                   </td>
