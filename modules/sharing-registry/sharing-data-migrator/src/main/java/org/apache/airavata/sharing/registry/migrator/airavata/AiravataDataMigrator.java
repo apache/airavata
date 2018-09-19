@@ -361,6 +361,11 @@ public class AiravataDataMigrator {
             for (User sharingUser : sharingUsers) {
 
                 String userId = sharingUser.getUserId();
+                int index = userId.lastIndexOf("@");
+                if (index <= 0) {
+                    System.out.println("Skipping credentials for user " + userId + " since sharing user id is improperly formed");
+                    continue;
+                }
                 String username = userId.substring(0, userId.lastIndexOf("@"));
                 List<CredentialSummary> gatewayCredentialSummaries = credentialStoreServiceClient.getAllCredentialSummaryForUserInGateway(SummaryType.SSH, domainID, username);
                 for (CredentialSummary credentialSummary : gatewayCredentialSummaries) {
