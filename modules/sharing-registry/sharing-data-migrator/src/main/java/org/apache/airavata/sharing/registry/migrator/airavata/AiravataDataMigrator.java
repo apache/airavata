@@ -33,7 +33,9 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.credential.store.CredentialSummary;
 import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.registry.api.RegistryService;
@@ -124,6 +126,14 @@ public class AiravataDataMigrator {
                 entityType.setDomainId(domain.domainId);
                 entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
                 entityType.setDescription("Group Resource Profile entity type");
+                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                    sharingRegistryServerHandler.createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.CREDENTIAL_TOKEN.name());
+                entityType.setDomainId(domain.domainId);
+                entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
+                entityType.setDescription("Credential Store Token entity type");
                 if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
                     sharingRegistryServerHandler.createEntityType(entityType);
 
@@ -323,6 +333,68 @@ public class AiravataDataMigrator {
                     sharingRegistryServerHandler.createEntity(entity);
                 shareEntityWithGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups, false);
 
+            }
+        }
+
+        // Creating credential store token entries (GATEWAY SSH tokens)
+        for (String domainID : domainOwnerMap.keySet()) {
+            List<CredentialSummary> gatewayCredentialSummaries = credentialStoreServiceClient.getAllCredentialSummaryForGateway(SummaryType.SSH, domainID);
+            for (CredentialSummary credentialSummary : gatewayCredentialSummaries) {
+                Entity entity = new Entity();
+                entity.setEntityId(credentialSummary.getToken());
+                entity.setDomainId(domainID);
+                entity.setEntityTypeId(entity.domainId + ":" + ResourceType.CREDENTIAL_TOKEN.name());
+                entity.setOwnerId(domainOwnerMap.get(domainID));
+                entity.setName(credentialSummary.getToken());
+                entity.setDescription(credentialSummary.getDescription());
+                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                    sharingRegistryServerHandler.createEntity(entity);
+                if (gatewayGroupsMap.containsKey(entity.domainId)) {
+                    shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
+                }
+            }
+        }
+
+        // Creating credential store token entries (USER SSH tokens)
+        for (String domainID : domainOwnerMap.keySet()) {
+            List<User> sharingUsers = sharingRegistryServerHandler.getUsers(domainID, 0, Integer.MAX_VALUE);
+            for (User sharingUser : sharingUsers) {
+
+                String userId = sharingUser.getUserId();
+                String username = userId.substring(0, userId.lastIndexOf("@"));
+                List<CredentialSummary> gatewayCredentialSummaries = credentialStoreServiceClient.getAllCredentialSummaryForUserInGateway(SummaryType.SSH, domainID, username);
+                for (CredentialSummary credentialSummary : gatewayCredentialSummaries) {
+                    Entity entity = new Entity();
+                    entity.setEntityId(credentialSummary.getToken());
+                    entity.setDomainId(domainID);
+                    entity.setEntityTypeId(entity.domainId + ":" + ResourceType.CREDENTIAL_TOKEN.name());
+                    entity.setOwnerId(userId);
+                    entity.setName(credentialSummary.getToken());
+                    entity.setDescription(credentialSummary.getDescription());
+                    if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                        sharingRegistryServerHandler.createEntity(entity);
+                    if (gatewayGroupsMap.containsKey(entity.domainId)) {
+                        shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
+                    }
+                }
+            }
+        }
+        // Creating credential store token entries (GATEWAY PWD tokens)
+        for (String domainID : domainOwnerMap.keySet()) {
+            Map<String, String> gatewayPasswords = credentialStoreServiceClient.getAllPWDCredentialsForGateway(domainID);
+            for (Map.Entry<String, String> gatewayPasswordEntry : gatewayPasswords.entrySet()) {
+                Entity entity = new Entity();
+                entity.setEntityId(gatewayPasswordEntry.getKey());
+                entity.setDomainId(domainID);
+                entity.setEntityTypeId(entity.domainId + ":" + ResourceType.CREDENTIAL_TOKEN.name());
+                entity.setOwnerId(domainOwnerMap.get(domainID));
+                entity.setName(gatewayPasswordEntry.getKey());
+                entity.setDescription(gatewayPasswordEntry.getValue());
+                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                    sharingRegistryServerHandler.createEntity(entity);
+                if (gatewayGroupsMap.containsKey(entity.domainId)) {
+                    shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
+                }
             }
         }
 

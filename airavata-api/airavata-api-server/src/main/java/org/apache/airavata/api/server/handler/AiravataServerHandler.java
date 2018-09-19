@@ -245,6 +245,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entityType.setDescription("Group Resource Profile entity type");
                 client.createEntityType(entityType);
 
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.CREDENTIAL_TOKEN.name());
+                entityType.setDomainId(domain.domainId);
+                entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
+                entityType.setDescription("Credential Store Token entity type");
+                client.createEntityType(entityType);
+
                 //Creating Permission Types for each domain
                 PermissionType permissionType = new PermissionType();
                 permissionType.setPermissionTypeId(domain.domainId + ":READ");
