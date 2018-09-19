@@ -32,6 +32,7 @@ enum ResourceType {
     DATA,
     APPLICATION_DEPLOYMENT,
     GROUP_RESOURCE_PROFILE,
+    CREDENTIAL_TOKEN,
     OTHER
 }
 
