@@ -1,104 +1,98 @@
 <template>
-    <div class="autocomplete-text-input">
-        <b-input-group>
-            <b-input-group-addon>
-                <i class="fa fa-search"></i>
-            </b-input-group-addon>
-            <b-form-input type="text" :value="searchValue" placeholder="Type to get suggestions..."
-              @input="updateSearchValue"
-              @keydown.native.enter = 'enter'
-              @keydown.native.down = 'down'
-              @keydown.native.up = 'up'
-            ></b-form-input>
-        </b-input-group>
-        <b-list-group class="autocomplete-suggestion-list" v-if="open">
-            <b-list-group-item v-for="(suggestion, index) in filtered.slice(0,5)"
-                v-bind:class="{'active': isActive(index)}"
-                href="#" @click="suggestionClick(index)" v-bind:key="suggestion.id">
-              <slot name="suggestion" :suggestion="suggestion">
-                  {{ suggestion.name }}
-              </slot>
-            </b-list-group-item>
-        </b-list-group>
-    </div>
+  <div class="autocomplete-text-input">
+    <b-input-group>
+      <b-input-group-text slot="prepend">
+        <i class="fa fa-search"></i>
+      </b-input-group-text>
+      <b-form-input type="text" :value="searchValue" placeholder="Type to get suggestions..." @input="updateSearchValue" @keydown.native.enter='enter'
+        @keydown.native.down='down' @keydown.native.up='up'></b-form-input>
+    </b-input-group>
+    <b-list-group class="autocomplete-suggestion-list" v-if="open">
+      <b-list-group-item v-for="(suggestion, index) in filtered.slice(0,5)" v-bind:class="{'active': isActive(index)}" href="#"
+        @click="suggestionClick(index)" v-bind:key="suggestion.id">
+        <slot name="suggestion" :suggestion="suggestion">
+          {{ suggestion.name }}
+        </slot>
+      </b-list-group-item>
+    </b-list-group>
+  </div>
 </template>
 
 <script>
-
 export default {
-
-  name: 'autocomplete-text-input',
+  name: "autocomplete-text-input",
   props: {
     suggestions: {
       type: Array,
       required: true
     }
   },
-  data () {
+  data() {
     return {
       open: false,
       current: 0,
-      searchValue: '',
-    }
+      searchValue: ""
+    };
   },
 
   computed: {
-    filtered () {
-      return this.suggestions.filter((data) => {
+    filtered() {
+      return this.suggestions.filter(data => {
         // Case insensitive search
-        return data.name.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0
-      })
-    },
+        return (
+          data.name.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0
+        );
+      });
+    }
   },
   methods: {
-    updateSearchValue (value) {
+    updateSearchValue(value) {
       if (this.open === false) {
-        this.open = true
-        this.current = 0
+        this.open = true;
+        this.current = 0;
       }
-      if(value===''){
+      if (value === "") {
         this.open = false;
       }
       this.searchValue = value;
     },
-    enter () {
+    enter() {
       this.emitSelectedItem(this.current);
-      this.searchValue = '';
-      this.open = false
+      this.searchValue = "";
+      this.open = false;
     },
-    up () {
+    up() {
       if (this.current > 0) {
-        this.current--
+        this.current--;
       }
     },
-    down () {
+    down() {
       if (this.current < this.filtered.length - 1) {
-        this.current++
+        this.current++;
       }
     },
-    isActive (index) {
-      return index === this.current
+    isActive(index) {
+      return index === this.current;
     },
-    suggestionClick (index) {
+    suggestionClick(index) {
       this.emitSelectedItem(index);
-      this.searchValue = '';
+      this.searchValue = "";
       this.open = false;
     },
     emitSelectedItem(index) {
-        this.$emit('selected', this.filtered[index]);
+      this.$emit("selected", this.filtered[index]);
     }
-  },
-}
-
+  }
+};
 </script>
 
 <style scoped>
 .autocomplete-text-input {
-    position: relative;
+  position: relative;
 }
 .autocomplete-suggestion-list {
-    width: 100%;
-    position: absolute;
-    z-index: 1;
+  width: 100%;
+  position: absolute;
+  z-index: 1;
 }
 </style>
