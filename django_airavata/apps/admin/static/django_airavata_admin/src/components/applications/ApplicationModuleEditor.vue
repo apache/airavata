@@ -16,19 +16,6 @@
         </b-form-group>
       </div>
     </div>
-    <div class="row">
-      <div class="col">
-        <b-button variant="primary" @click="save" :disabled="readonly">
-          Save
-        </b-button>
-        <delete-button v-if="data.appModuleId" :disabled="readonly" @delete="deleteApplicationModule">
-          Are you sure you want to delete the {{ data.appModuleName }} application?
-        </delete-button>
-        <b-button variant="secondary" @click="cancel">
-          Cancel
-        </b-button>
-      </div>
-    </div>
   </div>
 </template>
 

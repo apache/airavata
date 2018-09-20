@@ -1,8 +1,5 @@
 <template>
   <div>
-    <confirmation-dialog ref="unsavedChangesDialog" title="You have unsaved changes">
-      You have unsaved changes. Are you sure you want to leave this page?
-    </confirmation-dialog>
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">
@@ -49,16 +46,6 @@
         </b-form-group>
       </div>
     </div>
-    <div class="row mb-4">
-      <div class="col">
-        <b-button variant="primary" @click="save" :disabled="readonly">
-          Save
-        </b-button>
-        <b-button variant="secondary" @click="cancel">
-          Cancel
-        </b-button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -92,8 +79,7 @@ export default {
   components: {
     CommandObjectsEditor,
     SetEnvPathsEditor,
-    "share-button": components.ShareButton,
-    "confirmation-dialog": components.ConfirmationDialog
+    "share-button": components.ShareButton
   },
   data() {
     return {
@@ -193,20 +179,12 @@ export default {
     },
     sharingChanged(newSharedEntity) {
       this.dirty = true;
-      this.$emit("sharing-changed", newSharedEntity);
+      this.$emit("sharing-changed", newSharedEntity, this.data);
     }
   },
   watch: {
     sharedEntity(newValue, oldValue) {
       this.localSharedEntity = newValue.clone();
-    }
-  },
-  beforeRouteLeave(to, from, next) {
-    if (this.dirty) {
-      this.$refs.unsavedChangesDialog.show();
-      this.$refs.unsavedChangesDialog.$on("ok", next);
-    } else {
-      next();
     }
   }
 };

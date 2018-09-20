@@ -244,12 +244,16 @@ export default {
       if (!this.sharedEntity.groupPermissions) {
         this.sharedEntity.groupPermissions = [];
       }
-      this.sharedEntity.groupPermissions.push(
-        new models.GroupPermission({
-          group: group,
-          permissionType: models.ResourcePermissionType.READ
-        })
-      );
+      if (
+        !this.sharedEntity.groupPermissions.find(gp => gp.group.id === group.id)
+      ) {
+        this.sharedEntity.groupPermissions.push(
+          new models.GroupPermission({
+            group: group,
+            permissionType: models.ResourcePermissionType.READ
+          })
+        );
+      }
     },
     saveSharedEntity: function(event) {
       this.emitValueChanged();

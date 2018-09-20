@@ -55,16 +55,6 @@
         </b-button>
       </div>
     </div>
-    <div class="row mb-4">
-      <div class="col">
-        <b-button variant="primary" @click="save" :disabled="readonly">
-          Save
-        </b-button>
-        <b-button variant="secondary" @click="cancel">
-          Cancel
-        </b-button>
-      </div>
-    </div>
   </div>
 </template>
 
