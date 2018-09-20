@@ -23,6 +23,7 @@ from airavata.model.application.io.ttypes import DataType
 from airavata.model.credential.store.ttypes import CredentialOwnerType, SummaryType, CredentialSummary
 from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMovement, SCPDataMovement, \
     UnicoreDataMovement
+from airavata.api.error.ttypes import ProjectNotFoundException
 from airavata.model.group.ttypes import ResourcePermissionType
 from django_airavata.apps.api.view_utils import GenericAPIBackedViewSet, APIBackedViewSet, APIResultIterator, \
     APIResultPagination, ReadOnlyAPIBackedViewSet
@@ -240,8 +241,12 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
         compute_resource = self.request.airavata_client.getComputeResource(
             self.authz_token, compute_resource_id) \
             if compute_resource_id else None
-        project = self.request.airavata_client.getProject(
-            self.authz_token, experimentModel.projectId)
+        try:
+            project = self.request.airavata_client.getProject(
+                self.authz_token, experimentModel.projectId)
+        except ProjectNotFoundException as pnfe:
+            # User may not have access to project, only experiment
+            project = None
         job_details = self.request.airavata_client.getJobDetails(
             self.authz_token, lookup_value)
         full_experiment = serializers.FullExperiment(
