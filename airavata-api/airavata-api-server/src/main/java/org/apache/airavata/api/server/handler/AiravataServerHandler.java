@@ -618,16 +618,15 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public String generateAndRegisterSSHKeys(AuthzToken authzToken, String gatewayId, String userName, String description, CredentialOwnerType credentialOwnerType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String generateAndRegisterSSHKeys(AuthzToken authzToken, String description) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         CredentialStoreService.Client csClient = csClientPool.getResource();
         try {
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setUsername(userName);
             sshCredential.setGatewayId(gatewayId);
             sshCredential.setDescription(description);
-            if (credentialOwnerType != null) {
-                sshCredential.setCredentialOwnerType(credentialOwnerType);
-            }
             String key = csClient.addSSHCredential(sshCredential);
             logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
             csClientPool.returnResource(csClient);
@@ -643,25 +642,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Generate and Register Username PWD Pair with Airavata Credential Store.
+     * Register Username PWD Pair with Airavata Credential Store.
      *
      * @param authzToken
-     * @param gatewayId  The identifier for the requested Gateway.
-     * @param portalUserName The User for which the credential should be registered. For community accounts, this user is the name of the
-     *                   community user name. For computational resources, this user name need not be the same user name on resoruces.
+     * @param loginUserName
      * @param password
+     * @param description
      * @return airavataCredStoreToken
-     * An SSH Key pair is generated and stored in the credential store and associated with users or community account
-     * belonging to a Gateway.
      */
     @Override
     @SecurityCheck
-    public String registerPwdCredential(AuthzToken authzToken, String gatewayId, String portalUserName,
-                                        String loginUserName, String password, String description) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String registerPwdCredential(AuthzToken authzToken, String loginUserName, String password, String description) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         CredentialStoreService.Client csClient = csClientPool.getResource();
         try {
             PasswordCredential pwdCredential = new PasswordCredential();
-            pwdCredential.setPortalUserName(portalUserName);
+            pwdCredential.setPortalUserName(userName);
             pwdCredential.setLoginUserName(loginUserName);
             pwdCredential.setPassword(password);
             pwdCredential.setDescription(description);
@@ -675,120 +672,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error occurred while registering PWD Credential. More info : " + e.getMessage());
-            csClientPool.returnBrokenResource(csClient);
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public String getSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        CredentialStoreService.Client csClient = csClientPool.getResource();
-        try {
-            SSHCredential sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
-            logger.debug("Airavata retrieved SSH pub key for gateway id : " + gatewayId + " and for token : " + airavataCredStoreToken);
-            csClientPool.returnResource(csClient);
-            return sshCredential.getPublicKey();
-        }catch (Exception e){
-            logger.error("Error occurred while retrieving SSH credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retrieving SSH credential. More info : " + e.getMessage());
-            csClientPool.returnBrokenResource(csClient);
-            throw exception;
-        }
-    }
-
-
-    @Override
-    @SecurityCheck
-    public Map<String, String> getAllGatewaySSHPubKeys(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        CredentialStoreService.Client csClient = csClientPool.getResource();
-        try {
-            Map<String, String> allSSHKeysForGateway = csClient.getAllSSHKeysForGateway(gatewayId);
-            logger.debug("Airavata retrieved all SSH pub keys for gateway Id : " + gatewayId);
-            csClientPool.returnResource(csClient);
-            return allSSHKeysForGateway;
-        }catch (Exception e){
-            logger.error("Error occurred while retrieving SSH public keys for gateway : " + gatewayId , e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retrieving SSH public keys for gateway : " + gatewayId + ". More info : " + e.getMessage());
-            csClientPool.returnBrokenResource(csClient);
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public List<CredentialSummary> getAllCredentialSummaryForGateway(AuthzToken authzToken, SummaryType type, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        CredentialStoreService.Client csClient = csClientPool.getResource();
-        try {
-            if(type.equals(SummaryType.SSH)){
-                logger.debug("Airavata will retrieve all SSH pub keys summaries for gateway Id : " + gatewayId);
-                List<CredentialSummary> result = csClient.getAllCredentialSummaryForGateway(type, gatewayId);
-                csClientPool.returnResource(csClient);
-                return result;
-            } else {
-                logger.info("Summay Type"+ type.toString() + " not supported by Airavata");
-                AiravataSystemException ex = new AiravataSystemException();
-                ex.setAiravataErrorType(AiravataErrorType.UNSUPPORTED_OPERATION);
-                ex.setMessage("Summay Type"+ type.toString() + " not supported by Airavata");
-                csClientPool.returnResource(csClient);
-                throw ex;
-            }
-        }catch (Exception e){
-            logger.error("Error occurred while retrieving SSH public keys summaries for gateway : " + gatewayId , e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retrieving SSH public keys summaries for gateway : " + gatewayId + ". More info : " + e.getMessage());
-            csClientPool.returnBrokenResource(csClient);
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public List<CredentialSummary> getAllCredentialSummaryForUsersInGateway(AuthzToken authzToken,SummaryType type, String gatewayId, String userId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        CredentialStoreService.Client csClient = csClientPool.getResource();
-        try {
-            if(type.equals(SummaryType.SSH)){
-                logger.debug("Airavata will retrieve all SSH pub keys summaries for gateway Id : " + gatewayId);
-                List<CredentialSummary> result = csClient.getAllCredentialSummaryForUserInGateway(type, gatewayId, userId);
-                csClientPool.returnResource(csClient);
-                return result;
-            } else {
-                logger.info("Summay Type"+ type.toString() + " not supported by Airavata");
-                AiravataSystemException ex = new AiravataSystemException();
-                ex.setAiravataErrorType(AiravataErrorType.UNSUPPORTED_OPERATION);
-                ex.setMessage("Summay Type"+ type.toString() + " not supported by Airavata");
-                csClientPool.returnResource(csClient);
-                throw ex;
-            }
-        }catch (Exception e){
-            logger.error("Error occurred while retrieving SSH public keys summaries for user : " + userId , e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retrieving SSH public keys summaries for user : " + userId + ". More info : " + e.getMessage());
-            csClientPool.returnBrokenResource(csClient);
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public Map<String, String> getAllGatewayPWDCredentials(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        CredentialStoreService.Client csClient = csClientPool.getResource();
-        try {
-            Map<String, String> allPwdCredentials = csClient.getAllPWDCredentialsForGateway(gatewayId);
-            logger.debug("Airavata retrieved all PWD Credentials for gateway Id : " + gatewayId);
-            csClientPool.returnResource(csClient);
-            return allPwdCredentials;
-        }catch (Exception e){
-            logger.error("Error occurred while retrieving PWD Credentials for gateway : " + gatewayId , e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retrieving PWD Credentials for gateway : " + gatewayId + ". More info : " + e.getMessage());
             csClientPool.returnBrokenResource(csClient);
             throw exception;
         }

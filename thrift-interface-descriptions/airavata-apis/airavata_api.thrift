@@ -263,18 +263,8 @@ service Airavata {
    /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    *
-   * @param gatewayId
-   *    The identifier for the requested Gateway.
-   *
-   * @param userName
-   *    The User for which the credential should be registered. For community accounts, this user is the name of the
-   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
-   *
    * @param description
    *    The description field for a credential type, all type of credential can have a description.
-   *
-   * @param credentialOwnerType
-   *    The type of owner of this credential. Two possible values: GATEWAY (default) and USER
    *
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
@@ -282,23 +272,13 @@ service Airavata {
    *
    **/
    string generateAndRegisterSSHKeys (1: required security_model.AuthzToken authzToken,
-                    2: required string gatewayId,
-                    3: required string userName,
-                    4: string description,
-                    5: credential_store_data_models.CredentialOwnerType credentialOwnerType)
+                    4: string description)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
  /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
-   *
-   * @param gatewayId
-   *    The identifier for the requested Gateway.
-   *
-   * @param portalUserName
-   *    The User for which the credential should be registered. For community accounts, this user is the name of the
-   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
    *
    * @param loginUserName
    *
@@ -310,8 +290,6 @@ service Airavata {
    *
    **/
   string registerPwdCredential (1: required security_model.AuthzToken authzToken,
-                      2: required string gatewayId,
-                      3: required string portalUserName,
                       4: required string loginUserName,
                       5: required string password,
                       6: required string description)
@@ -319,100 +297,16 @@ service Airavata {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
-   /**
-   * Get a Public Key by Providing the Token
-   *
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   *
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   *
-   * @return publicKey
-   *
-   **/
-   string getSSHPubKey (1: required security_model.AuthzToken authzToken,
-                        2: required string airavataCredStoreToken,
-                        3: required string gatewayId)
-           throws (1: airavata_errors.InvalidRequestException ire,
-                   2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase)
-
-   /**
-   *
-   * Get all Public Keys of the Gateway
-   *
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   *
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   *
-   * @return publicKey
-   *
-   **/
-  map<string, string> getAllGatewaySSHPubKeys (1: required security_model.AuthzToken authzToken,
-                                               2: required string gatewayId)
-             throws (1: airavata_errors.InvalidRequestException ire,
-                     2: airavata_errors.AiravataClientException ace,
-                     3: airavata_errors.AiravataSystemException ase)
-
-    /**
-       *
-       * Get all Credential summaries for the Gateway
-       *
-       * @param CredStoreToken
-       *    Credential Store Token which you want to find the Public Key for.
-       *
-       * @param credential_store_data_models.SummaryType
-       *    Summary type : SSH,PASSWD or CERT
-       *
-       * @param gatewayId
-       *    This is the unique identifier of your gateway where the token and public key was generated from.
-       *
-       * @return List of Credential Summary Objects
-       *
-       **/
-  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForGateway (1: required security_model.AuthzToken authzToken,
-                                                     2: required credential_store_data_models.SummaryType type,
-                                                     3: required string gatewayId)
-                   throws (1: airavata_errors.InvalidRequestException ire,
-                           2: airavata_errors.AiravataClientException ace,
-                           3: airavata_errors.AiravataSystemException ase)
-
-  /**
-         *
-         * Get all Credential summaries for user in a Gateway
-         *
-         * @param CredStoreToken
-         *    Credential Store Token which you want to find the Public Key for.
-         *
-         * @param credential_store_data_models.SummaryType
-         *    Summary type : SSH,PASSWD or CERT
-         *
-         * @param gatewayId
-         *    This is the unique identifier of your gateway where the token and public key was generated from.
-         *
-         * @param userId
-         *    This is the unique identifier of user whose public keys are to be fetched.
-         *
-         * @return CredentialSummary
-         *
-         **/
-    list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForUsersInGateway (1: required security_model.AuthzToken authzToken,
-                                                         2: required credential_store_data_models.SummaryType type,
-                                                         3: required string gatewayId,
-                                                         4: required string userId)
-                       throws (1: airavata_errors.InvalidRequestException ire,
-                               2: airavata_errors.AiravataClientException ace,
-                               3: airavata_errors.AiravataSystemException ase)
-
-
-  map<string, string> getAllGatewayPWDCredentials (1: required security_model.AuthzToken authzToken,
-                                                 2: required string gatewayId)
-               throws (1: airavata_errors.InvalidRequestException ire,
-                       2: airavata_errors.AiravataClientException ace,
-                       3: airavata_errors.AiravataSystemException ase)
+//  credential_store_data_models.CredentialSummary getCredentialSummary(1: required security_model.AuthzToken authzToken, 2: required string tokenId)
+//             throws (1: airavata_errors.InvalidRequestException ire,
+//                     2: airavata_errors.AiravataClientException ace,
+//                     3: airavata_errors.AiravataSystemException ase,
+//                     4: airavata_errors.AuthorizationException ae)
+//
+//  credential_store_data_models.CredentialSummary getAllCredentialSummaries(1: required security_model.AuthzToken authzToken, 2: required credential_store_data_models.SummaryType type)
+//             throws (1: airavata_errors.InvalidRequestException ire,
+//                     2: airavata_errors.AiravataClientException ace,
+//                     3: airavata_errors.AiravataSystemException ase)
 
     /**
     *
