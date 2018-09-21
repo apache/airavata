@@ -7,3 +7,4 @@ script:
   - cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
   - python manage.py migrate
   - python manage.py check
+  - ./build_js.sh

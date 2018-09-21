@@ -1,5 +1,6 @@
-
 # Apache Airavata Django Portal
+
+[![Build Status](https://travis-ci.org/apache/airavata-django-portal.svg?branch=master)](https://travis-ci.org/apache/airavata-django-portal)
 
 The Airavata Django Portal is a web interface to the [Apache
 Airavata](http://airavata.apache.org/) API implemented using the Django web
@@ -16,7 +17,8 @@ also be used as a development environment.
 The Airavata Django Portal is developed with Python 3.6 but should also work
 with 3.4 and 3.5. You'll need one of these versions installed locally.
 
-1. Checkout this project and create a virtual environment.
+1.  Checkout this project and create a virtual environment.
+
     ```
     git clone https://github.com/apache/airavata-django-portal.git
     cd airavata-django-portal
@@ -25,34 +27,38 @@ with 3.4 and 3.5. You'll need one of these versions installed locally.
     pip install -r requirements.txt
     ```
 
-2. Create a local settings file. Copy
-`django_airavata/settings_local.py.sample` to
-`django_airavata/settings_local.py` and edit the contents to match your
-Keycloak and Airavata server deployments.
+2.  Create a local settings file. Copy
+    `django_airavata/settings_local.py.sample` to
+    `django_airavata/settings_local.py` and edit the contents to match your
+    Keycloak and Airavata server deployments.
 
-3. Run Django migrations
+3.  Run Django migrations
+
     ```
     python manage.py migrate
     ```
 
-4. Build the JavaScript sources. There are a few JavaScript packages in the source tree, colocated with the Django apps in which they are used. The `build_js.sh` script will build them all.
+4.  Build the JavaScript sources. There are a few JavaScript packages in the source tree, colocated with the Django apps in which they are used. The `build_js.sh` script will build them all.
+
     ```
     ./build_js.sh
     ```
 
-5. Run the server
+5.  Run the server
+
     ```
     python manage.py runserver
     ```
-    * Note: if you want to use OpenID Connect authentication from the Django
-    Portal when running it locally, you'll need to first set the following
-    environment to allow OAuth over insecure HTTP:
 
-        ```
-        export OAUTHLIB_INSECURE_TRANSPORT=1
-        ```
+    - Note: if you want to use OpenID Connect authentication from the Django
+      Portal when running it locally, you'll need to first set the following
+      environment to allow OAuth over insecure HTTP:
 
-6. Point your browser to http://localhost:8000.
+          ```
+          export OAUTHLIB_INSECURE_TRANSPORT=1
+          ```
+
+6.  Point your browser to http://localhost:8000.
 
 ## Documentation
 
@@ -60,7 +66,7 @@ Documentation currently resides in the `docs` directory.
 
 ## Feedback
 
-Please send feedback to the mailing list at <dev@airavata.apache.org>. If you encounter bugs or would like to request a new feature you can do so in the [Airavata Jira project](https://issues.apache.org/jira/projects/AIRAVATA) (just select the *Django Portal* component when you make your issue).
+Please send feedback to the mailing list at <dev@airavata.apache.org>. If you encounter bugs or would like to request a new feature you can do so in the [Airavata Jira project](https://issues.apache.org/jira/projects/AIRAVATA) (just select the _Django Portal_ component when you make your issue).
 
 ## Contributing
 
