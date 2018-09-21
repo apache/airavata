@@ -1,23 +1,19 @@
-import Vuex from 'vuex';
-import Vue from 'vue';
+import Vuex from "vuex";
+import Vue from "vue";
 
-import newApplication from './newapplication/new_application'
-import computeResource from './compute_resource_dashboard/compute_resource'
-import applications from './applications/index'
+import newApplication from "./newapplication/new_application";
+import computeResource from "./compute_resource_dashboard/compute_resource";
 
-import loading from './loading'
+import loading from "./loading";
 
 Vue.use(Vuex);
 
-
-const store={
-  modules:{
+const store = {
+  modules: {
     newApplication,
     loading,
-    computeResource,
-    applications,
+    computeResource
   }
 };
 
 export default new Vuex.Store(store);
-
