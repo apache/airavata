@@ -1,9 +1,6 @@
 import ApplicationDeploymentEditor from "./components/applications/ApplicationDeploymentEditor.vue";
-import ApplicationDeployments from "./components/admin/ApplicationDeployments.vue";
 import ApplicationDeploymentsList from "./components/applications/ApplicationDeploymentsList.vue";
-import ApplicationDetails from "./components/admin/ApplicationDetails.vue";
 import ApplicationEditorContainer from "./components/applications/ApplicationEditorContainer.vue";
-import ApplicationInterface from "./components/admin/ApplicationInterface.vue";
 import ApplicationInterfaceEditor from "./components/applications/ApplicationInterfaceEditor.vue";
 import ApplicationModuleEditor from "./components/applications/ApplicationModuleEditor.vue";
 import ApplicationsDashboard from "./components/dashboards/ApplicationsDashboard.vue";
@@ -12,32 +9,9 @@ import ComputeResourcePreferenceDashboard from "./components/dashboards/ComputeR
 import CredentialStoreDashboard from "./components/dashboards/CredentialStoreDashboard";
 import ExperimentsDashboard from "./components/dashboards/ExperimentDashboard.vue";
 import GroupComputeResourcePreference from "./components/admin/group_resource_preferences/GroupComputeResourcePreference";
-import NewApplication from "./components/admin/NewApplication.vue";
 import VueRouter from "vue-router";
 
 const routes = [
-  {
-    path: "/new/application",
-    component: NewApplication,
-    name: "newapp",
-    children: [
-      {
-        path: "details",
-        component: ApplicationDetails,
-        name: "details"
-      },
-      {
-        path: "interface",
-        component: ApplicationInterface,
-        name: "interface"
-      },
-      {
-        path: "deployments",
-        component: ApplicationDeployments,
-        name: "deployments"
-      }
-    ]
-  },
   {
     path: "/applications/new",
     component: ApplicationEditorContainer,
