@@ -1,7 +1,6 @@
-import Notification from './Notification'
+import Notification from "./Notification";
 
 class NotificationList {
-
   constructor() {
     this.notifications = [];
   }
@@ -12,10 +11,12 @@ class NotificationList {
 
   // Convenience method for adding an error
   addError(error) {
-    this.notifications.push(new Notification({
-      type: "ERROR",
-      message: error.message
-    }))
+    this.notifications.push(
+      new Notification({
+        type: "ERROR",
+        message: error.message
+      })
+    );
   }
 
   remove(notification) {

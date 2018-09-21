@@ -429,7 +429,6 @@ export default {
         );
       }
       return Promise.resolve(this.currentDeployment);
-      this.setCurrentApplicationDeploymentSharedEntity(this.currentDeployment);
     },
     setCurrentDeploymentFromComputeHostId(computeHostId) {
       this.currentDeployment = this.appDeployments.find(
@@ -541,6 +540,13 @@ export default {
           );
         })
         .then(sharedEntities => {
+          notifications.NotificationList.add(
+            new notifications.Notification({
+              type: "SUCCESS",
+              message: "Application saved successfully",
+              duration: 5
+            })
+          );
           if (!this.id && this.appModule.appModuleId) {
             // if we just create a new module, navigate to app module route now
             // that we have an id
@@ -549,9 +555,17 @@ export default {
               params: { id: this.appModule.appModuleId }
             });
           }
-          // Reinitialize deployment editing so that deployment being edited is
-          // the saved instance
-          this.initializeDeploymentEditing();
+          if (this.hostId) {
+            // If creating a new deployment, navigate to the deployments list
+            this.$router.push({
+              name: "application_deployments",
+              params: { id: this.appModule.appModuleId }
+            });
+          } else {
+            // Reinitialize deployment editing so that deployment being edited is
+            // the saved instance
+            this.initializeDeploymentEditing();
+          }
         });
     },
     cancel() {
