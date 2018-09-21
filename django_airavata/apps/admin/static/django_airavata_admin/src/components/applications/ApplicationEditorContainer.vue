@@ -30,7 +30,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <b-button variant="primary" @click="saveAll" :disabled="readonly">
+        <b-button variant="primary" @click="saveAll" :disabled="readonly || !isDirty">
           Save
         </b-button>
         <delete-button v-if="id" :disabled="readonly" @delete="deleteApplication">
@@ -452,27 +452,58 @@ export default {
       return Promise.resolve(this.currentDeployment);
     },
     saveAll() {
-      // TODO: catch errors and navigate to the route showing the errors
       const moduleSave = this.appModuleIsDirty
-        ? this.saveApplicationModule(this.appModule)
+        ? this.saveApplicationModule(this.appModule).catch(error => {
+            // Navigate to the route that has the error
+            this.$router.push({
+              name: this.id ? "application_module" : "new_application_module"
+            });
+            // Cancel the chain of promises
+            return Promise.reject(error);
+          })
         : Promise.resolve(this.appModule);
       const interfaceSave = moduleSave.then(
-        this.appInterfaceIsDirty
-          ? this.saveApplicationInterface(this.appInterface)
-          : Promise.resolve(this.appInterface)
+        appModule =>
+          this.appInterfaceIsDirty
+            ? this.saveApplicationInterface(this.appInterface).catch(error => {
+                // Navigate to the route that has the error
+                this.$router.push({
+                  name: "application_interface"
+                });
+                // Cancel the chain of promises
+                return Promise.reject(error);
+              })
+            : Promise.resolve(this.appInterface)
       );
       const deploymentsSave = interfaceSave
-        .then(() => {
+        .then(appInterface => {
           return Promise.all(
             this.dirtyAppDeploymentComputeHostIds.map(computeHostId => {
               const deployment = this.appDeployments.find(
                 dep => dep.computeHostId === computeHostId
               );
-              return this.saveApplicationDeployment(deployment);
+              return this.saveApplicationDeployment(deployment).catch(error => {
+                // Navigate to the route that has the error
+                if (deployment.appDeploymentId) {
+                  this.$router.push({
+                    name: "application_deployment",
+                    params: {
+                      id: this.id,
+                      deploymentId: deployment.appDeploymentId
+                    }
+                  });
+                } else {
+                  this.$router.push({
+                    name: "new_application_deployment",
+                    params: { id: this.id, hostId: deployment.computeHostId }
+                  });
+                }
+                return Promise.reject(error);
+              });
             })
           );
         })
-        .then(() => {
+        .then(appDeployments => {
           return Promise.all(
             this.dirtyAppDeploymentSharedEntityComputeHostIds.map(
               computeHostId => {
@@ -482,12 +513,42 @@ export default {
                 const deployment = this.appDeployments.find(
                   dep => dep.computeHostId === computeHostId
                 );
-                return this.saveSharedEntity(sharedEntity, deployment);
+                return this.saveSharedEntity(sharedEntity, deployment).catch(
+                  error => {
+                    // Navigate to the route that has the error
+                    if (deployment.appDeploymentId) {
+                      this.$router.push({
+                        name: "application_deployment",
+                        params: {
+                          id: this.id,
+                          deploymentId: deployment.appDeploymentId
+                        }
+                      });
+                    } else {
+                      this.$router.push({
+                        name: "new_application_deployment",
+                        params: {
+                          id: this.id,
+                          hostId: deployment.computeHostId
+                        }
+                      });
+                    }
+                    return Promise.reject(error);
+                  }
+                );
               }
             )
           );
         })
-        .then(() => {
+        .then(sharedEntities => {
+          if (!this.id && this.appModule.appModuleId) {
+            // if we just create a new module, navigate to app module route now
+            // that we have an id
+            this.$router.push({
+              name: "application_module",
+              params: { id: this.appModule.appModuleId }
+            });
+          }
           // Reinitialize deployment editing so that deployment being edited is
           // the saved instance
           this.initializeDeploymentEditing();

@@ -43,8 +43,8 @@ const routes = [
     component: ApplicationEditorContainer,
     name: "new_application",
     children: [
-      // TODO: Maybe only have the module route for a new application, save it
-      // and then replace the URL with the module id
+      // Only the module route for a new application, save it and then replace
+      // the URL with the module id
       {
         path: "",
         components: {
