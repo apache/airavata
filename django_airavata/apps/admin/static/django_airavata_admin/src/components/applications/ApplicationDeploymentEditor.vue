@@ -63,7 +63,7 @@ export default {
     value: {
       type: models.ApplicationDescriptionDefinition
     },
-    deployment_id: {
+    deploymentId: {
       type: String,
       required: true
     },

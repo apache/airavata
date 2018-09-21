@@ -52,8 +52,7 @@ export default {
   name: "application-editor-container",
   props: {
     id: String,
-    // TODO: camelCase this
-    deployment_id: String,
+    deploymentId: String,
     hostId: String
   },
   components: {
@@ -116,8 +115,8 @@ export default {
       }
     },
     initializeDeploymentEditing() {
-      if (this.deployment_id) {
-        this.startEditingExistingDeployment(this.deployment_id);
+      if (this.deploymentId) {
+        this.startEditingExistingDeployment(this.deploymentId);
       } else if (this.hostId) {
         this.startEditingNewDeployment(this.hostId);
       }
