@@ -770,6 +770,11 @@ public class TaskContext {
             ctx.setGatewayId(gatewayId);
             ctx.setProcessId(processId);
 
+            ctx.setGroupComputeResourcePreference(registryClient.getGroupComputeResourcePreference(processModel.getComputeResourceId(),
+                    processModel.getGroupResourceProfileId()));
+
+            ctx.setGroupResourceProfile(registryClient.getGroupResourceProfile(processModel.getGroupResourceProfileId()));
+
             ctx.setGatewayComputeResourcePreference(
                     Optional.ofNullable(registryClient.getGatewayComputeResourcePreference(
                             gatewayId,
@@ -805,11 +810,6 @@ public class TaskContext {
                     Optional.ofNullable(registryClient.getStorageResource(
                             ctx.getStorageResourceId()))
                             .orElseThrow(() -> new Exception("Invalid Storage Resource Description")));
-
-            ctx.setGroupResourceProfile(registryClient.getGroupResourceProfile(processModel.getGroupResourceProfileId()));
-
-            ctx.setGroupComputeResourcePreference(registryClient.getGroupComputeResourcePreference(processModel.getComputeResourceId(),
-                    processModel.getGroupResourceProfileId()));
 
             if (processModel.isUseUserCRPref()) {
                 ctx.setUserResourceProfile(registryClient.getUserResourceProfile(processModel.getUserName(), gatewayId));
