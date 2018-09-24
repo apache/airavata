@@ -7,6 +7,7 @@ from django.http import FileResponse, Http404, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.decorators import detail_route
 from rest_framework.decorators import list_route
 from rest_framework.exceptions import ParseError
@@ -20,7 +21,7 @@ from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDe
 from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription, LOCALSubmission, \
     CloudJobSubmission, SSHJobSubmission, GlobusJobSubmission, UnicoreJobSubmission
 from airavata.model.application.io.ttypes import DataType
-from airavata.model.credential.store.ttypes import CredentialOwnerType, SummaryType, CredentialSummary
+from airavata.model.credential.store.ttypes import SummaryType, CredentialSummary
 from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMovement, SCPDataMovement, \
     UnicoreDataMovement
 from airavata.api.error.ttypes import ProjectNotFoundException
@@ -326,45 +327,6 @@ class ApplicationModuleViewSet(APIBackedViewSet):
         return Response(serializer.data)
 
 
-# TODO convert to APIBackedViewSet
-class RegisterApplicationModule(APIView):
-    parser_classes = (JSONParser,)
-
-    def post(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        app_module = ApplicationModule(request.data['name'], request.data['version'], request.data['description'])
-        response = request.airavata_client.registerApplicationModule(request.authz_token, gateway_id, app_module)
-        return Response(response)
-
-
-# TODO use ApplicationInterfaceViewSet instead
-class RegisterApplicationInterface(APIView):
-    parser_classes = (JSONParser,)
-
-    def post(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        params = request.data
-        app_interface_description_serializer = serializers.ApplicationInterfaceDescriptionSerializer(data=params)
-        app_interface_description_serializer.is_valid(raise_exception=True)
-        app_interface = app_interface_description_serializer.save()
-        response = request.airavata_client.registerApplicationInterface(request.authz_token, gateway_id,
-                                                                        applicationInterface=app_interface)
-        return Response(response)
-
-
-# TODO convert to APIBackedViewSet
-class RegisterApplicationDeployments(APIView):
-    parser_classes = (JSONParser,)
-
-    def post(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        params = request.data
-        app_deployment = ApplicationDeploymentDescription(**params)
-        response = request.airavata_client.registerApplicationDeployment(request.authz_token, gateway_id,
-                                                                         app_deployment)
-        return Response(response)
-
-
 class ApplicationInterfaceViewSet(APIBackedViewSet):
     serializer_class = serializers.ApplicationInterfaceDescriptionSerializer
     lookup_field = 'app_interface_id'
@@ -457,87 +419,6 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
             batch_queues.append(batch_queue)
         serializer = serializers.BatchQueueSerializer(batch_queues, many=True, context={'request': request})
         return Response(serializer.data)
-
-
-class ComputeResourcesQueues(APIView):
-    renderer_classes = (JSONRenderer,)
-
-    def get(self, request, format=None):
-        details = request.airavata_client.getComputeResource(request.authz_token, request.query_params["id"])
-        serializer = thrift_utils.create_serializer(ComputeResourceDescription, instance=details,
-                                                    context={'request': request})
-        data = serializer.data
-        return Response([queue["queueName"] for queue in data["batchQueues"]])
-
-
-class ApplicationInterfaceList(APIView):
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        serializer = thrift_utils.create_serializer(ApplicationInterfaceDescription,
-                                                    instance=request.airavata_client.getAllApplicationInterfaces(
-                                                        request.authz_token, gateway_id),
-                                                    context={'request': request}, many=True)
-        return Response(serializer.data)
-
-
-class FetchApplicationInterface(APIView):
-
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        for app_interface in request.airavata_client.getAllApplicationInterfaces(
-                request.authz_token, gateway_id):
-            app_modules = app_interface.applicationModules
-            if request.query_params["id"] in app_modules:
-                return Response(thrift_utils.create_serializer(ApplicationInterfaceDescription,
-                                                               instance=app_interface,
-                                                               context={'request': request}).data)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class FetchApplicationDeployment(APIView):
-
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        app_deployments = [app_deployment for app_deployment in request.airavata_client.getAllApplicationDeployments(
-            request.authz_token, gateway_id) if request.query_params["id"] == app_deployment.appModuleId]
-        serializer = thrift_utils.create_serializer(ApplicationDeploymentDescription,
-                                                    instance=app_deployments,
-                                                    context={'request': request}, many=True)
-        return Response(serializer.data)
-        # return Response(request.airavata_client.getAppModuleDeployedResources(request.authz_token, request.query_params["id"]))
-
-
-class FetchSSHPubKeys(APIView):
-
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        serializer = thrift_utils.create_serializer(CredentialSummary,
-                                                    instance=request.airavata_client.getAllCredentialSummaryForGateway(
-                                                        request.authz_token, SummaryType.SSH, gateway_id),
-                                                    context={'request': request}, many=True)
-        return Response(serializer.data)
-
-
-class GenerateRegisterSSHKeys(APIView):
-    parser_classes = (JSONParser,)
-    renderer_classes = (JSONRenderer,)
-
-    def post(self, request, format=None):
-        username = request.user.username
-        gateway_id = settings.GATEWAY_ID
-        data = request.data
-        return Response(request.airavata_client.generateAndRegisterSSHKeys(request.authz_token, gateway_id, username,
-                                                                           data["description"],
-                                                                           CredentialOwnerType.GATEWAY))
-
-
-class DeleteSSHPubKey(APIView):
-    parser_classes = (JSONParser,)
-    renderer_classes = (JSONRenderer,)
-
-    def post(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        return Response(request.airavata_client.deleteSSHPubKey(request.authz_token, request.data['token'], gateway_id))
 
 
 class ComputeResourceViewSet(mixins.RetrieveModelMixin,
@@ -761,39 +642,6 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
             self.authz_token, instance.groupResourceProfileId)
 
 
-class SharedEntityGroups(APIBackedViewSet):
-    serializer_class = serializers.SharedGroups
-
-    def perform_update(self, serializer):
-        before = serializer.data
-        after = serializer.initial_data
-        del serializer._data
-        remaining = [item for item in before["groupList"] if item not in after["groupList"]]
-        params = dict(after)
-        params["domainId"] = settings.GATEWAY_ID
-        params["permissionTypeId"] = READ_PERMISSION_TYPE.format(settings.GATEWAY_ID)
-        params["cascadePermission"] = True
-        ret = self.request.sharing_client.shareEntityWithGroups(**params)
-        if remaining:
-            self.request.sharing_client.revokeEntitySharingFromGroups(domainId=settings.GATEWAY_ID,
-                                                                      entityId=before["entityId"], groupList=remaining,
-                                                                      permissionTypeId=READ_PERMISSION_TYPE.format(
-                                                                          settings.GATEWAY_ID))
-        serializer.save()
-
-    def get_instance(self, entity_id):
-        groups = {
-            'entityId': entity_id
-        }
-        group_list = self.request.sharing_client.getListOfSharedGroups(domainId=settings.GATEWAY_ID, entityId=entity_id,
-                                                                       permissionTypeId=READ_PERMISSION_TYPE.format(
-                                                                           settings.GATEWAY_ID))
-        if group_list:
-            group_list = map(lambda val: val.groupId, group_list)
-        groups['groupList'] = group_list
-        return groups
-
-
 class SharedEntityViewSet(mixins.RetrieveModelMixin,
                           mixins.UpdateModelMixin,
                           GenericAPIBackedViewSet):
@@ -939,6 +787,59 @@ class CredentialSummaryViewSet(mixins.ListModelMixin,
     serializer_class = serializers.CredentialSummarySerializer
 
     def get_list(self):
-        # NOTE: only supported SummaryType is SSH for now
-        return self.request.airavata_client.getAllCredentialSummaryForGateway(
-            self.authz_token, SummaryType.SSH, settings.GATEWAY_ID)
+        ssh_creds = self.request.airavata_client.getAllCredentialSummaries(
+            self.authz_token, SummaryType.SSH)
+        pwd_creds = self.request.airavata_client.getAllCredentialSummaries(
+            self.authz_token, SummaryType.PASSWD)
+        return ssh_creds + pwd_creds
+
+    @action(detail=False)
+    def ssh(self, request):
+        summaries = self.request.airavata_client.getAllCredentialSummaries(
+            self.authz_token, SummaryType.SSH
+        )
+        serializer = self.get_serializer(summaries, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def password(self, request):
+        summaries = self.request.airavata_client.getAllCredentialSummaries(
+            self.authz_token, SummaryType.PASSWD
+        )
+        serializer = self.get_serializer(summaries, many=True)
+        return Response(serializer.data)
+
+    @action(methods=['post'], detail=False)
+    def create_ssh(self, request):
+        description = request.POST.get('description')
+        if description is None:
+            raise ParseError("'description' is required in request")
+        token_id = self.request.airavata_client.generateAndRegisterSSHKeys(
+            request.authz_token, description)
+        credential_summary = self.request.airavata_client.getCredentialSummary(
+            request.authz_token, SummaryType.SSH, token_id)
+        serializer = self.get_serializer(credential_summary)
+        return Response(serializer.data)
+
+    @action(methods=['post'], detail=False)
+    def create_password(self, request):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        description = request.POST.get('description')
+        if username is None or password is None or description is None:
+            raise ParseError("'username', 'password' and 'description' "
+                             "are all required in request")
+        token_id = self.request.airavata_client.registerPwdCredential(
+            request.authz_token, username, password, description)
+        credential_summary = self.request.airavata_client.getCredentialSummary(
+            request.authz_token, SummaryType.PASSWD, token_id)
+        serializer = self.get_serializer(credential_summary)
+        return Response(serializer.data)
+
+    def perform_destroy(self, instance):
+        if instance.type == SummaryType.SSH:
+            self.request.airavata_client.deleteSSHPubKey(
+                self.authz_token, instance.token)
+        elif instance.type == SummaryType.PASSWD:
+            self.request.airavata_client.deletePWDCredential(
+                self.authz_token, instance.token)

@@ -17,7 +17,7 @@ def app_catalog(request):
 @login_required
 def credential_store(request):
     request.active_nav_item = 'credential_store'
-    return render(request, 'admin/credential_store.html')
+    return render(request, 'admin/admin_base.html')
 
 
 @login_required

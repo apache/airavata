@@ -1,13 +1,13 @@
-import ApplicationDeploymentDescription from './models/ApplicationDeploymentDescription'
-import ApplicationModule from './models/ApplicationModule';
-import ComputeResourceDescription from './models/ComputeResourceDescription'
-import CredentialSummary from './models/CredentialSummary'
-import Group from './models/Group'
-import GroupResourceProfile from './models/GroupResourceProfile'
-import SharedEntity from './models/SharedEntity'
-import UserProfile from './models/UserProfile'
-import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition';
-import BatchQueue from './models/BatchQueue';
+import ApplicationDeploymentDescription from "./models/ApplicationDeploymentDescription";
+import ApplicationModule from "./models/ApplicationModule";
+import ComputeResourceDescription from "./models/ComputeResourceDescription";
+import CredentialSummary from "./models/CredentialSummary";
+import Group from "./models/Group";
+import GroupResourceProfile from "./models/GroupResourceProfile";
+import SharedEntity from "./models/SharedEntity";
+import UserProfile from "./models/UserProfile";
+import ApplicationInterfaceDefinition from "./models/ApplicationInterfaceDefinition";
+import BatchQueue from "./models/BatchQueue";
 
 const post = "post";
 const get = "get";
@@ -42,118 +42,173 @@ pagination:true # whether to treat the response as a paginated response
  */
 
 export default {
-  "ApplicationDeployments": {
+  ApplicationDeployments: {
     url: "/api/application-deployments",
-    viewSet: [{
-      name: "list"
-    }, {
-      name: "create"
-    }, {
-      name: "retrieve"
-    }, {
-      name: "update"
-    }, {
-      name: "delete"
-    }, {
-      name: "getQueues",
-      url: "/api/application-deployments/<lookup>/queues/",
-      requestType: 'get',
-      modelClass: BatchQueue
-    }],
-    queryParams: ['appModuleId', 'groupResourceProfileId'],
-    modelClass: ApplicationDeploymentDescription,
+    viewSet: [
+      {
+        name: "list"
+      },
+      {
+        name: "create"
+      },
+      {
+        name: "retrieve"
+      },
+      {
+        name: "update"
+      },
+      {
+        name: "delete"
+      },
+      {
+        name: "getQueues",
+        url: "/api/application-deployments/<lookup>/queues/",
+        requestType: "get",
+        modelClass: BatchQueue
+      }
+    ],
+    queryParams: ["appModuleId", "groupResourceProfileId"],
+    modelClass: ApplicationDeploymentDescription
   },
-  "ApplicationInterfaces": {
+  ApplicationInterfaces: {
     url: "/api/application-interfaces",
     viewSet: true,
-    modelClass: ApplicationInterfaceDefinition,
+    modelClass: ApplicationInterfaceDefinition
   },
-  "ApplicationModules": {
+  ApplicationModules: {
     url: "/api/applications",
-    viewSet: [{
-      name: "list"
-    }, {
-      name: "create"
-    }, {
-      name: "retrieve"
-    }, {
-      name: "update"
-    }, {
-      name: "delete"
-    }, {
-      name: "getApplicationInterface",
-      url: "/api/applications/<lookup>/application_interface/",
-      requestType: 'get',
-      modelClass: ApplicationInterfaceDefinition
-    }, {
-      name: "getApplicationDeployments",
-      url: "/api/applications/<lookup>/application_deployments/",
-      requestType: 'get',
-      modelClass: ApplicationDeploymentDescription
-    }, {
-      name: "listAll",
-      url: "/api/applications/list_all/",
-      requestType: 'get',
-      modelClass: ApplicationModule,
-    }],
-    modelClass: ApplicationModule,
+    viewSet: [
+      {
+        name: "list"
+      },
+      {
+        name: "create"
+      },
+      {
+        name: "retrieve"
+      },
+      {
+        name: "update"
+      },
+      {
+        name: "delete"
+      },
+      {
+        name: "getApplicationInterface",
+        url: "/api/applications/<lookup>/application_interface/",
+        requestType: "get",
+        modelClass: ApplicationInterfaceDefinition
+      },
+      {
+        name: "getApplicationDeployments",
+        url: "/api/applications/<lookup>/application_deployments/",
+        requestType: "get",
+        modelClass: ApplicationDeploymentDescription
+      },
+      {
+        name: "listAll",
+        url: "/api/applications/list_all/",
+        requestType: "get",
+        modelClass: ApplicationModule
+      }
+    ],
+    modelClass: ApplicationModule
   },
-  "ComputeResources": {
+  ComputeResources: {
     url: "/api/compute-resources",
-    viewSet: [{
-      name: "retrieve"
-    }, {
-      name: "names",
-      url: "/api/compute-resources/all_names/",
-      requestType: 'get',
-    }, {
-      name: "namesList",
-      url: "/api/compute-resources/all_names_list/",
-      requestType: 'get',
-    }],
-    modelClass: ComputeResourceDescription,
+    viewSet: [
+      {
+        name: "retrieve"
+      },
+      {
+        name: "names",
+        url: "/api/compute-resources/all_names/",
+        requestType: "get"
+      },
+      {
+        name: "namesList",
+        url: "/api/compute-resources/all_names_list/",
+        requestType: "get"
+      }
+    ],
+    modelClass: ComputeResourceDescription
   },
-  "CredentialSummaries": {
+  CredentialSummaries: {
     url: "/api/credential-summaries/",
-    viewSet: [{
-      name: "list"
-    }],
-    modelClass: CredentialSummary,
+    viewSet: [
+      {
+        name: "list"
+      },
+      {
+        name: "delete"
+      },
+      {
+        name: "allSSHCredentials",
+        url: "/api/credential-summaries/ssh/",
+        requestType: "get",
+        modelClass: CredentialSummary
+      },
+      {
+        name: "allPasswordCredentials",
+        url: "/api/credential-summaries/password/",
+        requestType: "get",
+        modelClass: CredentialSummary
+      },
+      {
+        name: "createSSH",
+        url: "/api/credential-summaries/create_ssh/",
+        requestType: "post",
+        modelClass: CredentialSummary
+      },
+      {
+        name: "createPassword",
+        url: "/api/credential-summaries/create_password/",
+        requestType: "post",
+        modelClass: CredentialSummary
+      }
+    ],
+    modelClass: CredentialSummary
   },
-  "GroupResourceProfiles": {
+  GroupResourceProfiles: {
     url: "/api/group-resource-profiles/",
     viewSet: true,
-    modelClass: GroupResourceProfile,
+    modelClass: GroupResourceProfile
   },
-  "Groups": {
+  Groups: {
     url: "/api/groups",
     viewSet: true,
     pagination: true,
-    queryParams: ['limit', 'offset'],
-    modelClass: Group,
+    queryParams: ["limit", "offset"],
+    modelClass: Group
   },
-  "SharedEntities": {
+  SharedEntities: {
     url: "/api/shared-entities",
-    viewSet: [{
-      name: "retrieve"
-    }, {
-      name: "update"
-    }, {
-      name: "merge",
-      url: "/api/shared-entities/<lookup>/merge/",
-      bodyParams: {
-        name: "data"
+    viewSet: [
+      {
+        name: "retrieve"
       },
-      requestType: 'put',
-      modelClass: SharedEntity
-    }],
-    modelClass: SharedEntity,
+      {
+        name: "update"
+      },
+      {
+        name: "merge",
+        url: "/api/shared-entities/<lookup>/merge/",
+        bodyParams: {
+          name: "data"
+        },
+        requestType: "put",
+        modelClass: SharedEntity
+      }
+    ],
+    modelClass: SharedEntity
   },
-  "UserProfiles": {
+  UserProfiles: {
     url: "/api/user-profiles",
-    viewSet: [{
-      name: "list"
-    }],
-    modelClass: UserProfile,
-  },
-}
+    viewSet: [
+      {
+        name: "list"
+      }
+    ],
+    modelClass: UserProfile
+  }
+};

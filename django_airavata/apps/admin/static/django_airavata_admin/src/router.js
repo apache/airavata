@@ -113,7 +113,7 @@ const routes = [
     name: "group_resource_preference_dashboard"
   },
   {
-    path: "/credential/store",
+    path: "/credentials",
     component: CredentialStoreDashboard,
     name: "credential_store"
   }

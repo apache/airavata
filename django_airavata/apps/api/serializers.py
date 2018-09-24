@@ -630,3 +630,10 @@ class CredentialSummarySerializer(
         thrift_utils.create_serializer_class(CredentialSummary)):
     type = thrift_utils.ThriftEnumField(SummaryType)
     persistedTime = UTCPosixTimestampDateTimeField()
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, credential_summary):
+        request = self.context['request']
+        return request.airavata_client.userHasAccess(
+            request.authz_token, credential_summary.token,
+            ResourcePermissionType.WRITE)
