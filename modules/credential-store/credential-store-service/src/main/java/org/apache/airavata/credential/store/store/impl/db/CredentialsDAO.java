@@ -30,6 +30,7 @@ import java.io.*;
 import java.security.GeneralSecurityException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -298,10 +299,18 @@ public class CredentialsDAO extends ParentDAO {
      */
     public List<Credential> getCredentials(String gatewayName, Connection connection) throws CredentialStoreException {
 
-        return getCredentials(gatewayName, null, connection);
+        return getCredentialsInternal(gatewayName, null, connection);
     }
 
     public List<Credential> getCredentials(String gatewayId, List<String> accessibleTokenIds, Connection connection) throws CredentialStoreException {
+
+        if (accessibleTokenIds == null || accessibleTokenIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getCredentialsInternal(gatewayId, accessibleTokenIds, connection);
+    }
+
+    private List<Credential> getCredentialsInternal(String gatewayId, List<String> accessibleTokenIds, Connection connection) throws CredentialStoreException {
         List<Credential> credentialList = new ArrayList<>();
 
         String sql = "SELECT * FROM CREDENTIALS WHERE GATEWAY_ID=?";

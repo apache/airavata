@@ -297,16 +297,16 @@ service Airavata {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
-//  credential_store_data_models.CredentialSummary getCredentialSummary(1: required security_model.AuthzToken authzToken, 2: required string tokenId)
-//             throws (1: airavata_errors.InvalidRequestException ire,
-//                     2: airavata_errors.AiravataClientException ace,
-//                     3: airavata_errors.AiravataSystemException ase,
-//                     4: airavata_errors.AuthorizationException ae)
-//
-//  credential_store_data_models.CredentialSummary getAllCredentialSummaries(1: required security_model.AuthzToken authzToken, 2: required credential_store_data_models.SummaryType type)
-//             throws (1: airavata_errors.InvalidRequestException ire,
-//                     2: airavata_errors.AiravataClientException ace,
-//                     3: airavata_errors.AiravataSystemException ase)
+  credential_store_data_models.CredentialSummary getCredentialSummary(1: required security_model.AuthzToken authzToken, 2: required credential_store_data_models.SummaryType type, 3: required string tokenId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                     2: airavata_errors.AiravataClientException ace,
+                     3: airavata_errors.AiravataSystemException ase,
+                     4: airavata_errors.AuthorizationException ae)
+
+  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaries(1: required security_model.AuthzToken authzToken, 2: required credential_store_data_models.SummaryType type)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                     2: airavata_errors.AiravataClientException ace,
+                     3: airavata_errors.AiravataSystemException ase)
 
     /**
     *
@@ -324,7 +324,8 @@ service Airavata {
                           3: required string gatewayId)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
-                     3: airavata_errors.AiravataSystemException ase)
+                     3: airavata_errors.AiravataSystemException ase,
+                     4: airavata_errors.AuthorizationException ae)
 
 
   bool deletePWDCredential (1: required security_model.AuthzToken authzToken,
@@ -332,7 +333,8 @@ service Airavata {
                             3: required string gatewayId)
                throws (1: airavata_errors.InvalidRequestException ire,
                        2: airavata_errors.AiravataClientException ace,
-                       3: airavata_errors.AiravataSystemException ase)
+                       3: airavata_errors.AiravataSystemException ase,
+                       4: airavata_errors.AuthorizationException ae)
 
    /**
    *
