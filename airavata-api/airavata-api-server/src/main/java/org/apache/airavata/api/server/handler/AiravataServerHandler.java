@@ -622,14 +622,35 @@ public class AiravataServerHandler implements Airavata.Iface {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         CredentialStoreService.Client csClient = csClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        RegistryService.Client regClient = registryClientPool.getResource();
         try {
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setUsername(userName);
             sshCredential.setGatewayId(gatewayId);
             sshCredential.setDescription(description);
             String key = csClient.addSSHCredential(sshCredential);
+            try {
+                Entity entity = new Entity();
+                entity.setEntityId(key);
+                entity.setDomainId(gatewayId);
+                entity.setEntityTypeId(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN);
+                entity.setOwnerId(userName + "@" + gatewayId);
+                entity.setName(key);
+                entity.setDescription(description);
+                sharingClient.createEntity(entity);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage(), ex);
+                logger.error("Rolling back ssh key creation for user " + userName + " and description [" + description + "]");
+                csClient.deleteSSHCredential(key, gatewayId);
+                AiravataSystemException ase = new AiravataSystemException();
+                ase.setMessage("Failed to create sharing registry record");
+                throw ase;
+            }
             logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
             csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
+            registryClientPool.returnResource(regClient);
             return key;
         }catch (Exception e){
             logger.error("Error occurred while registering SSH Credential", e);
@@ -637,6 +658,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error occurred while registering SSH Credential. More info : " + e.getMessage());
             csClientPool.returnBrokenResource(csClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
+            registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
     }
@@ -656,6 +679,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         CredentialStoreService.Client csClient = csClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        RegistryService.Client regClient = registryClientPool.getResource();
         try {
             PasswordCredential pwdCredential = new PasswordCredential();
             pwdCredential.setPortalUserName(userName);
@@ -664,8 +689,27 @@ public class AiravataServerHandler implements Airavata.Iface {
             pwdCredential.setDescription(description);
             pwdCredential.setGatewayId(gatewayId);
             String key = csClient.addPasswordCredential(pwdCredential);
+            try {
+                Entity entity = new Entity();
+                entity.setEntityId(key);
+                entity.setDomainId(gatewayId);
+                entity.setEntityTypeId(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN);
+                entity.setOwnerId(userName + "@" + gatewayId);
+                entity.setName(key);
+                entity.setDescription(description);
+                sharingClient.createEntity(entity);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage(), ex);
+                logger.error("Rolling back password registration for user " + userName + " and description [" + description + "]");
+                csClient.deletePWDCredential(key, gatewayId);
+                AiravataSystemException ase = new AiravataSystemException();
+                ase.setMessage("Failed to create sharing registry record");
+                throw ase;
+            }
             logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : " + loginUserName);
             csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
+            registryClientPool.returnResource(regClient);
             return key;
         }catch (Exception e){
             logger.error("Error occurred while registering PWD Credential", e);
@@ -679,19 +723,95 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
+    public CredentialSummary getCredentialSummary(AuthzToken authzToken, SummaryType type, String tokenId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        CredentialStoreService.Client csClient = csClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+            if (!userHasAccessInternal(sharingClient, authzToken, tokenId, ResourcePermissionType.READ)) {
+                throw new AuthorizationException("User does not have permission to access this resource");
+            }
+            CredentialSummary credentialSummary = csClient.getCredentialSummary(type, tokenId, gatewayId);
+            csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
+            return credentialSummary;
+        } catch (AuthorizationException ae) {
+            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            logger.info("User " + userName + " not allowed to access credential store token " + tokenId);
+            csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw ae;
+        } catch (Exception e) {
+            String msg = "Error retrieving credential summary of type " + type + " for token " + tokenId + ". GatewayId: "+ gatewayId;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            csClientPool.returnBrokenResource(csClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<CredentialSummary> getAllCredentialSummaries(AuthzToken authzToken, SummaryType type) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        CredentialStoreService.Client csClient = csClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        try {
+            List<SearchCriteria> filters = new ArrayList<>();
+            SearchCriteria searchCriteria = new SearchCriteria();
+            searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+            searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+            searchCriteria.setValue(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN.name());
+            filters.add(searchCriteria);
+            List<String> accessibleTokenIds = sharingClient.searchEntities(gatewayId, userName + "@" + gatewayId, filters, 0, -1)
+                    .stream()
+                    .map(p -> p.entityId)
+                    .collect(Collectors.toList());
+            List<CredentialSummary> credentialSummaries = csClient.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
+            csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
+            return credentialSummaries;
+        } catch (Exception e) {
+            String msg = "Error retrieving credential summaries of type " + type + ". GatewayId: "+ gatewayId;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            csClientPool.returnBrokenResource(csClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
     public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         CredentialStoreService.Client csClient = csClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if (!userHasAccessInternal(sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+                throw new AuthorizationException("User does not have permission to delete this resource.");
+            }
             logger.debug("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : " + airavataCredStoreToken);
             boolean result = csClient.deleteSSHCredential(airavataCredStoreToken, gatewayId);
             csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
-        }catch (Exception e){
+        } catch (AuthorizationException ae) {
+            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token " + airavataCredStoreToken);
+            csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw ae;
+        } catch (Exception e){
             logger.error("Error occurred while deleting SSH credential", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error occurred while deleting SSH credential. More info : " + e.getMessage());
             csClientPool.returnBrokenResource(csClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -700,17 +820,29 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean deletePWDCredential(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         CredentialStoreService.Client csClient = csClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if (!userHasAccessInternal(sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+                throw new AuthorizationException("User does not have permission to delete this resource.");
+            }
             logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : " + airavataCredStoreToken);
             boolean result = csClient.deletePWDCredential(airavataCredStoreToken, gatewayId);
             csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
+        } catch (AuthorizationException ae) {
+            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token " + airavataCredStoreToken);
+            csClientPool.returnResource(csClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw ae;
         }catch (Exception e){
             logger.error("Error occurred while deleting PWD credential", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error occurred while deleting PWD credential. More info : " + e.getMessage());
             csClientPool.returnBrokenResource(csClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -5212,8 +5344,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         try {
+            validateGroupResourceProfile(sharingClient, authzToken, groupResourceProfile);
             String groupResourceProfileId = regClient.createGroupResourceProfile(groupResourceProfile);
-            if(ServerSettings.isEnableSharing()) {
+            if (ServerSettings.isEnableSharing()) {
                 try {
                     Entity entity = new Entity();
                     entity.setEntityId(groupResourceProfileId);
@@ -5238,6 +5371,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return groupResourceProfileId;
+        } catch (AuthorizationException ae) {
+            logger.info("User " + userName + " not allowed access to resources referenced in this GroupResourceProfile. Reason: " + ae.getMessage());
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw ae;
         } catch (Exception e) {
             String msg = "Error creating group resource profile.";
             logger.error(msg, e);
@@ -5248,27 +5386,41 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    private void validateGroupResourceProfile(SharingRegistryService.Client sharingClient, AuthzToken authzToken, GroupResourceProfile groupResourceProfile) throws AuthorizationException {
+        Set<String> tokenIds = new HashSet<>();
+        if (groupResourceProfile.getComputePreferences() != null) {
+            for (GroupComputeResourcePreference groupComputeResourcePreference : groupResourceProfile.getComputePreferences()) {
+                if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
+                    tokenIds.add(groupComputeResourcePreference.getResourceSpecificCredentialStoreToken());
+                }
+            }
+        }
+        for (String tokenId : tokenIds) {
+            if (!userHasAccessInternal(sharingClient, authzToken, tokenId, ResourcePermissionType.READ)) {
+                throw new AuthorizationException("User does not have permission to a credential token in this resource.");
+            }
+        }
+    }
+
     @Override
     @SecurityCheck
     public void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            if(ServerSettings.isEnableSharing()) {
-                try {
-                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
-                            groupResourceProfile.getGroupResourceProfileId(), gatewayId + ":WRITE")){
-                        throw new AuthorizationException("User does not have permission to update group resource profile");
-                    }
-                } catch (Exception e) {
-                    throw new AuthorizationException("User does not have permission to update group resource profile");
-                }
+            validateGroupResourceProfile(sharingClient, authzToken, groupResourceProfile);
+            if (!userHasAccessInternal(sharingClient, authzToken, groupResourceProfile.getGroupResourceProfileId(), ResourcePermissionType.WRITE)){
+                throw new AuthorizationException("User does not have permission to update group resource profile");
             }
             regClient.updateGroupResourceProfile(groupResourceProfile);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
+        } catch (AuthorizationException ae) {
+            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            logger.info("User " + userName + " not allowed access to update GroupResourceProfile " + groupResourceProfile.getGroupResourceProfileId() + ", reason: " + ae.getMessage());
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw ae;
         } catch (Exception e) {
             String msg = "Error updating group resource profile. groupResourceProfileId: "+groupResourceProfile.getGroupResourceProfileId();
             logger.error(msg, e);

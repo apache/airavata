@@ -447,6 +447,10 @@ public class CredentialsDAOTest extends DatabaseTestCases {
             Assert.assertEquals(1, list.size());
             list = credentialsDAO.getCredentials("gw1", Arrays.asList("non-existent-token-id"), connection);
             Assert.assertEquals(0, list.size());
+            list = credentialsDAO.getCredentials("gw1", Arrays.asList(), connection);
+            Assert.assertEquals(0, list.size());
+            list = credentialsDAO.getCredentials("gw1", null, connection);
+            Assert.assertEquals(0, list.size());
         } finally {
             connection.close();
         }
