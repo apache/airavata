@@ -201,7 +201,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
         } catch (Exception e) {
 
-            logger.error("Task failed due to unexpected issue. Trying to control damage");
+            logger.error("Task failed due to unexpected issue. Trying to control damage", e);
 
             if (jobId != null && !jobId.isEmpty()) {
                 logger.warn("Job " + jobId + " has already being submitted. Trying to cancel the job");
