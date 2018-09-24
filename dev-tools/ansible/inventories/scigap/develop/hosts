@@ -25,3 +25,9 @@
 [django]
 seagrid ansible_host=pgadev.scigap.org
 simvascular ansible_host=pgadev.scigap.org
+
+[helix]
+149.165.157.37
+
+[kafka]
+149.165.157.37

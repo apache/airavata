@@ -24,6 +24,7 @@
 - name: Check kafka package availability
   stat: path={{ kafka_dir }}
   register: kafka_package
+  become: yes
 
 # Download Kafka
 - name: Download and unarchive Kafka from {{ kafka_tgz_url }}
@@ -38,6 +39,7 @@
 # Create kafka logs directory
 - name: Create kafka logs directory
   file: path="{{ kafka_dir }}/logs" state=directory owner={{ user }} group={{ group }}
+  become: yes
 
 # Config kafka server and start
 - name: Copy kafka server properties file
@@ -65,7 +67,7 @@
   with_items:
     - "{{ kafka_listener_port }}/tcp"
     - "{{ kafka_rest_proxy_listener_port }}/tcp"
-  become_user: root
+  become: yes
 
 - name: systemd install kafka service script
   template: src=kafka.service.j2
