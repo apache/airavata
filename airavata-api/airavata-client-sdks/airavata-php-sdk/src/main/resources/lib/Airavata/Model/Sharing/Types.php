@@ -718,6 +718,7 @@ class GroupAdmin {
  *  <li><b>groupCardinality</b> : Group cardinality (SINGLE_USER, MULTI_USER)</li>
  *  <li>createdTime : Will be set by the system</li>
  *  <li>updatedTime : Will be set by the system</li>
+ *  <li>groupAdmins : Admins for the group</li>
  *  
  */
 class UserGroup {
@@ -759,6 +760,10 @@ class UserGroup {
    * @var int
    */
   public $updatedTime = null;
+  /**
+   * @var \Airavata\Model\Sharing\GroupAdmin[]
+   */
+  public $groupAdmins = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -799,6 +804,15 @@ class UserGroup {
           'var' => 'updatedTime',
           'type' => TType::I64,
           ),
+        10 => array(
+          'var' => 'groupAdmins',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Sharing\GroupAdmin',
+            ),
+          ),
         );
     }
     if (is_array($vals)) {
@@ -828,6 +842,9 @@ class UserGroup {
       }
       if (isset($vals['updatedTime'])) {
         $this->updatedTime = $vals['updatedTime'];
+      }
+      if (isset($vals['groupAdmins'])) {
+        $this->groupAdmins = $vals['groupAdmins'];
       }
     }
   }
@@ -914,6 +931,24 @@ class UserGroup {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::LST) {
+            $this->groupAdmins = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\Sharing\GroupAdmin();
+              $xfer += $elem5->read($input);
+              $this->groupAdmins []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -970,6 +1005,23 @@ class UserGroup {
     if ($this->updatedTime !== null) {
       $xfer += $output->writeFieldBegin('updatedTime', TType::I64, 9);
       $xfer += $output->writeI64($this->updatedTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupAdmins !== null) {
+      if (!is_array($this->groupAdmins)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('groupAdmins', TType::LST, 10);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->groupAdmins));
+        {
+          foreach ($this->groupAdmins as $iter6)
+          {
+            $xfer += $iter6->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -30,7 +30,9 @@ import java.io.*;
 import java.security.GeneralSecurityException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Data access class for credential store.
@@ -297,9 +299,25 @@ public class CredentialsDAO extends ParentDAO {
      */
     public List<Credential> getCredentials(String gatewayName, Connection connection) throws CredentialStoreException {
 
-        List<Credential> credentialList = new ArrayList<Credential>();
+        return getCredentialsInternal(gatewayName, null, connection);
+    }
+
+    public List<Credential> getCredentials(String gatewayId, List<String> accessibleTokenIds, Connection connection) throws CredentialStoreException {
+
+        if (accessibleTokenIds == null || accessibleTokenIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getCredentialsInternal(gatewayId, accessibleTokenIds, connection);
+    }
+
+    private List<Credential> getCredentialsInternal(String gatewayId, List<String> accessibleTokenIds, Connection connection) throws CredentialStoreException {
+        List<Credential> credentialList = new ArrayList<>();
 
         String sql = "SELECT * FROM CREDENTIALS WHERE GATEWAY_ID=?";
+        if (accessibleTokenIds != null && !accessibleTokenIds.isEmpty()) {
+            String tokenIdBindParameters = String.join(", ", accessibleTokenIds.stream().map(tokenId -> "?").collect(Collectors.toList()));
+            sql += " AND TOKEN_ID IN (" + tokenIdBindParameters + ")";
+        }
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -307,7 +325,14 @@ public class CredentialsDAO extends ParentDAO {
         try {
             preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setString(1, gatewayName);
+            int parameterIndex = 1;
+            preparedStatement.setString(parameterIndex++, gatewayId);
+            if (accessibleTokenIds != null) {
+                for (String tokenId : accessibleTokenIds) {
+
+                    preparedStatement.setString(parameterIndex++, tokenId);
+                }
+            }
 
             resultSet = preparedStatement.executeQuery();
 
@@ -323,14 +348,13 @@ public class CredentialsDAO extends ParentDAO {
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
-                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 credentialList.add(certificateCredential);
             }
 
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error retrieving credential list for ");
-            stringBuilder.append("gateway - ").append(gatewayName);
+            stringBuilder.append("gateway - ").append(gatewayId);
 
             log.debug(stringBuilder.toString(), e);
 

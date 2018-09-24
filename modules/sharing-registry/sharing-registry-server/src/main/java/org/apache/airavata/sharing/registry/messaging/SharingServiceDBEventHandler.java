@@ -212,6 +212,14 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 entityType.setDescription("Group Resource Profile entity type");
                                 sharingRegistryClient.createEntityType(entityType);
 
+                                log.info("Creating entity type. Id : " + domain.domainId+":"+ResourceType.CREDENTIAL_TOKEN);
+                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.CREDENTIAL_TOKEN.name());
+                                entityType.setDomainId(domain.domainId);
+                                entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
+                                entityType.setDescription("Credential Store Token entity type");
+                                sharingRegistryClient.createEntityType(entityType);
+
                                 //Creating Permission Types for each domain
                                 log.info("Creating Permission Type. Id : " + domain.domainId+":READ");
                                 PermissionType permissionType = new PermissionType();

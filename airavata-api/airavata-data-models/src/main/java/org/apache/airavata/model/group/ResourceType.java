@@ -34,7 +34,8 @@ public enum ResourceType implements org.apache.thrift.TEnum {
   DATA(2),
   APPLICATION_DEPLOYMENT(3),
   GROUP_RESOURCE_PROFILE(4),
-  OTHER(5);
+  CREDENTIAL_TOKEN(5),
+  OTHER(6);
 
   private final int value;
 
@@ -66,6 +67,8 @@ public enum ResourceType implements org.apache.thrift.TEnum {
       case 4:
         return GROUP_RESOURCE_PROFILE;
       case 5:
+        return CREDENTIAL_TOKEN;
+      case 6:
         return OTHER;
       default:
         return null;

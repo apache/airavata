@@ -38,13 +38,10 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool deleteNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
     print('  Notification getNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
     print('   getAllNotifications(AuthzToken authzToken, string gatewayId)')
-    print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName, string description, CredentialOwnerType credentialOwnerType)')
-    print('  string registerPwdCredential(AuthzToken authzToken, string gatewayId, string portalUserName, string loginUserName, string password, string description)')
-    print('  string getSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
-    print('   getAllGatewaySSHPubKeys(AuthzToken authzToken, string gatewayId)')
-    print('   getAllCredentialSummaryForGateway(AuthzToken authzToken, SummaryType type, string gatewayId)')
-    print('   getAllCredentialSummaryForUsersInGateway(AuthzToken authzToken, SummaryType type, string gatewayId, string userId)')
-    print('   getAllGatewayPWDCredentials(AuthzToken authzToken, string gatewayId)')
+    print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string description)')
+    print('  string registerPwdCredential(AuthzToken authzToken, string loginUserName, string password, string description)')
+    print('  CredentialSummary getCredentialSummary(AuthzToken authzToken, SummaryType type, string tokenId)')
+    print('   getAllCredentialSummaries(AuthzToken authzToken, SummaryType type)')
     print('  bool deleteSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
     print('  bool deletePWDCredential(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
     print('  string createProject(AuthzToken authzToken, string gatewayId, Project project)')
@@ -378,46 +375,28 @@ elif cmd == 'getAllNotifications':
     pp.pprint(client.getAllNotifications(eval(args[0]), args[1],))
 
 elif cmd == 'generateAndRegisterSSHKeys':
-    if len(args) != 5:
-        print('generateAndRegisterSSHKeys requires 5 args')
+    if len(args) != 2:
+        print('generateAndRegisterSSHKeys requires 2 args')
         sys.exit(1)
-    pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]), args[1], args[2], args[3], eval(args[4]),))
+    pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]), args[1],))
 
 elif cmd == 'registerPwdCredential':
-    if len(args) != 6:
-        print('registerPwdCredential requires 6 args')
-        sys.exit(1)
-    pp.pprint(client.registerPwdCredential(eval(args[0]), args[1], args[2], args[3], args[4], args[5],))
-
-elif cmd == 'getSSHPubKey':
-    if len(args) != 3:
-        print('getSSHPubKey requires 3 args')
-        sys.exit(1)
-    pp.pprint(client.getSSHPubKey(eval(args[0]), args[1], args[2],))
-
-elif cmd == 'getAllGatewaySSHPubKeys':
-    if len(args) != 2:
-        print('getAllGatewaySSHPubKeys requires 2 args')
-        sys.exit(1)
-    pp.pprint(client.getAllGatewaySSHPubKeys(eval(args[0]), args[1],))
-
-elif cmd == 'getAllCredentialSummaryForGateway':
-    if len(args) != 3:
-        print('getAllCredentialSummaryForGateway requires 3 args')
-        sys.exit(1)
-    pp.pprint(client.getAllCredentialSummaryForGateway(eval(args[0]), eval(args[1]), args[2],))
-
-elif cmd == 'getAllCredentialSummaryForUsersInGateway':
     if len(args) != 4:
-        print('getAllCredentialSummaryForUsersInGateway requires 4 args')
+        print('registerPwdCredential requires 4 args')
         sys.exit(1)
-    pp.pprint(client.getAllCredentialSummaryForUsersInGateway(eval(args[0]), eval(args[1]), args[2], args[3],))
+    pp.pprint(client.registerPwdCredential(eval(args[0]), args[1], args[2], args[3],))
 
-elif cmd == 'getAllGatewayPWDCredentials':
-    if len(args) != 2:
-        print('getAllGatewayPWDCredentials requires 2 args')
+elif cmd == 'getCredentialSummary':
+    if len(args) != 3:
+        print('getCredentialSummary requires 3 args')
         sys.exit(1)
-    pp.pprint(client.getAllGatewayPWDCredentials(eval(args[0]), args[1],))
+    pp.pprint(client.getCredentialSummary(eval(args[0]), eval(args[1]), args[2],))
+
+elif cmd == 'getAllCredentialSummaries':
+    if len(args) != 2:
+        print('getAllCredentialSummaries requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getAllCredentialSummaries(eval(args[0]), eval(args[1]),))
 
 elif cmd == 'deleteSSHPubKey':
     if len(args) != 3:
