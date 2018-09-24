@@ -378,9 +378,7 @@ public class AiravataDataMigrator {
                     entity.setDescription(credentialSummary.getDescription());
                     if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                         sharingRegistryServerHandler.createEntity(entity);
-                    if (gatewayGroupsMap.containsKey(entity.domainId)) {
-                        shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroupsMap.get(entity.domainId), false);
-                    }
+                    // Don't need to share USER SSH tokens with any group
                 }
             }
         }
