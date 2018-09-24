@@ -20,7 +20,8 @@ class ResourceType(object):
     DATA = 2
     APPLICATION_DEPLOYMENT = 3
     GROUP_RESOURCE_PROFILE = 4
-    OTHER = 5
+    CREDENTIAL_TOKEN = 5
+    OTHER = 6
 
     _VALUES_TO_NAMES = {
         0: "PROJECT",
@@ -28,7 +29,8 @@ class ResourceType(object):
         2: "DATA",
         3: "APPLICATION_DEPLOYMENT",
         4: "GROUP_RESOURCE_PROFILE",
-        5: "OTHER",
+        5: "CREDENTIAL_TOKEN",
+        6: "OTHER",
     }
 
     _NAMES_TO_VALUES = {
@@ -37,7 +39,8 @@ class ResourceType(object):
         "DATA": 2,
         "APPLICATION_DEPLOYMENT": 3,
         "GROUP_RESOURCE_PROFILE": 4,
-        "OTHER": 5,
+        "CREDENTIAL_TOKEN": 5,
+        "OTHER": 6,
     }
 
 
