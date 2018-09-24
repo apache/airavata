@@ -10,6 +10,7 @@ import ShareButton from "./components/ShareButton.vue";
 import UnsavedChangesGuard from "./components/UnsavedChangesGuard.vue";
 
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
+import ValidationErrors from "./errors/ValidationErrors";
 
 import ListLayout from "./layouts/ListLayout.vue";
 
@@ -32,7 +33,8 @@ exports.components = {
 };
 
 exports.errors = {
-  GlobalErrorHandler
+  GlobalErrorHandler,
+  ValidationErrors
 };
 
 exports.layouts = {

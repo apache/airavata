@@ -32,9 +32,4 @@ def custom_exception_handler(exc, context):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-    if isinstance(exc, serializers.ValidationError):
-        # Create a default error message for the validation error
-        response.data['detail'] = "ValidationError: {}".format(
-            json.dumps(response.data))
-
     return response

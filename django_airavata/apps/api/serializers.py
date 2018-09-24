@@ -262,7 +262,9 @@ class ApplicationModuleSerializer(
 
 class InputDataObjectTypeSerializer(
         thrift_utils.create_serializer_class(InputDataObjectType)):
-    pass
+
+    class Meta:
+        required = ('name',)
 
 
 class ApplicationInterfaceDescriptionSerializer(

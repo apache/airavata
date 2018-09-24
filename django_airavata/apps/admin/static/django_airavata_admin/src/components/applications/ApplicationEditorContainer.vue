@@ -19,7 +19,7 @@
           <b-nav-item active-class="active" :to="{name: 'application_deployments', params: {id: id}}" :disabled="!id">Deployments</b-nav-item>
         </b-nav>
         <router-view name="module" v-if="appModule" v-model="appModule" @input="appModuleIsDirty = true" :readonly="!appModule.userHasWriteAccess"
-        />
+          :validation-errors="appModuleValidationErrors" />
         <router-view name="interface" v-if="appInterface" v-model="appInterface" @input="appInterfaceIsDirty = true" :readonly="!appInterface.userHasWriteAccess"
         />
         <router-view name="deployments" v-if="appDeployments" :deployments="appDeployments" @new="createNewDeployment" @delete="deleteApplicationDeployment"
@@ -72,7 +72,8 @@ export default {
       appModuleIsDirty: false,
       appInterfaceIsDirty: false,
       dirtyAppDeploymentComputeHostIds: [],
-      dirtyAppDeploymentSharedEntityComputeHostIds: []
+      dirtyAppDeploymentSharedEntityComputeHostIds: [],
+      appModuleValidationErrors: null
     };
   },
   computed: {
@@ -142,28 +143,40 @@ export default {
       });
     },
     createApplicationModule(appModule) {
-      return services.ApplicationModuleService.create({ data: appModule }).then(
-        appModule => {
-          this.appModuleIsDirty = false;
-          this.appModule = appModule;
-          return appModule;
-        }
+      return services.ApplicationModuleService.create(
+        { data: appModule },
+        { ignoreErrors: true }
       );
     },
     updateApplicationModule(appModule) {
-      return services.ApplicationModuleService.update({
-        lookup: appModule.appModuleId,
-        data: appModule
-      }).then(appModule => {
-        this.appModuleIsDirty = false;
-        this.appModule = appModule;
-        return appModule;
-      });
+      return services.ApplicationModuleService.update(
+        {
+          lookup: appModule.appModuleId,
+          data: appModule
+        },
+        { ignoreErrors: true }
+      );
     },
     saveApplicationModule(appModule) {
-      return this.id
+      return (this.id
         ? this.updateApplicationModule(appModule)
-        : this.createApplicationModule(appModule);
+        : this.createApplicationModule(appModule)
+      )
+        .then(appModule => {
+          this.appModuleValidationErrors = null;
+          this.appModuleIsDirty = false;
+          this.appModule = appModule;
+          return appModule;
+        })
+        .catch(error => {
+          if (errors.ErrorUtils.isValidationError(error)) {
+            this.appModuleValidationErrors = error.details.response;
+          } else {
+            this.appModuleValidationErrors = null;
+            notifications.NotificationList.addError(error);
+          }
+          return Promise.reject(error);
+        });
     },
     deleteApplicationModule(appModule) {
       const deleteModule = this.id
