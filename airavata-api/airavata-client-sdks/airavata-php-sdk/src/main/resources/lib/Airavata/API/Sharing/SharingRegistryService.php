@@ -194,6 +194,7 @@ interface SharingRegistryServiceIf {
    *  <li><b>groupCardinality</b> : Group cardinality (SINGLE_USER, MULTI_USER)</li>
    *  <li>createdTime : Will be set by the system</li>
    *  <li>updatedTime : Will be set by the system</li>
+   *  <li>groupAdmins : Admins for the group</li>
    *  
    * 
    * @throws \Airavata\Model\Sharing\SharingRegistryException

@@ -214,22 +214,12 @@ class Iface(object):
         """
         pass
 
-    def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName, description, credentialOwnerType):
+    def generateAndRegisterSSHKeys(self, authzToken, description):
         """
         Generate and Register SSH Key Pair with Airavata Credential Store.
 
-        @param gatewayId
-           The identifier for the requested Gateway.
-
-        @param userName
-           The User for which the credential should be registered. For community accounts, this user is the name of the
-           community user name. For computational resources, this user name need not be the same user name on resoruces.
-
         @param description
            The description field for a credential type, all type of credential can have a description.
-
-        @param credentialOwnerType
-           The type of owner of this credential. Two possible values: GATEWAY (default) and USER
 
         @return airavataCredStoreToken
           An SSH Key pair is generated and stored in the credential store and associated with users or community account
@@ -239,23 +229,13 @@ class Iface(object):
 
         Parameters:
          - authzToken
-         - gatewayId
-         - userName
          - description
-         - credentialOwnerType
         """
         pass
 
-    def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password, description):
+    def registerPwdCredential(self, authzToken, loginUserName, password, description):
         """
         Generate and Register Username PWD Pair with Airavata Credential Store.
-
-        @param gatewayId
-           The identifier for the requested Gateway.
-
-        @param portalUserName
-           The User for which the credential should be registered. For community accounts, this user is the name of the
-           community user name. For computational resources, this user name need not be the same user name on resoruces.
 
         @param loginUserName
 
@@ -269,115 +249,26 @@ class Iface(object):
 
         Parameters:
          - authzToken
-         - gatewayId
-         - portalUserName
          - loginUserName
          - password
          - description
         """
         pass
 
-    def getSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
+    def getCredentialSummary(self, authzToken, type, tokenId):
         """
-        Get a Public Key by Providing the Token
-
-        @param CredStoreToken
-           Credential Store Token which you want to find the Public Key for.
-
-        @param gatewayId
-           This is the unique identifier of your gateway where the token and public key was generated from.
-
-        @return publicKey
-
-
-
-        Parameters:
-         - authzToken
-         - airavataCredStoreToken
-         - gatewayId
-        """
-        pass
-
-    def getAllGatewaySSHPubKeys(self, authzToken, gatewayId):
-        """
-
-        Get all Public Keys of the Gateway
-
-        @param CredStoreToken
-           Credential Store Token which you want to find the Public Key for.
-
-        @param gatewayId
-           This is the unique identifier of your gateway where the token and public key was generated from.
-
-        @return publicKey
-
-
-
-        Parameters:
-         - authzToken
-         - gatewayId
-        """
-        pass
-
-    def getAllCredentialSummaryForGateway(self, authzToken, type, gatewayId):
-        """
-
-        Get all Credential summaries for the Gateway
-
-        @param CredStoreToken
-           Credential Store Token which you want to find the Public Key for.
-
-        @param credential_store_data_models.SummaryType
-           Summary type : SSH,PASSWD or CERT
-
-        @param gatewayId
-           This is the unique identifier of your gateway where the token and public key was generated from.
-
-        @return List of Credential Summary Objects
-
-
-
         Parameters:
          - authzToken
          - type
-         - gatewayId
+         - tokenId
         """
         pass
 
-    def getAllCredentialSummaryForUsersInGateway(self, authzToken, type, gatewayId, userId):
+    def getAllCredentialSummaries(self, authzToken, type):
         """
-
-        Get all Credential summaries for user in a Gateway
-
-        @param CredStoreToken
-           Credential Store Token which you want to find the Public Key for.
-
-        @param credential_store_data_models.SummaryType
-           Summary type : SSH,PASSWD or CERT
-
-        @param gatewayId
-           This is the unique identifier of your gateway where the token and public key was generated from.
-
-        @param userId
-           This is the unique identifier of user whose public keys are to be fetched.
-
-        @return CredentialSummary
-
-
-
         Parameters:
          - authzToken
          - type
-         - gatewayId
-         - userId
-        """
-        pass
-
-    def getAllGatewayPWDCredentials(self, authzToken, gatewayId):
-        """
-        Parameters:
-         - authzToken
-         - gatewayId
         """
         pass
 
@@ -4350,22 +4241,12 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllNotifications failed: unknown result")
 
-    def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName, description, credentialOwnerType):
+    def generateAndRegisterSSHKeys(self, authzToken, description):
         """
         Generate and Register SSH Key Pair with Airavata Credential Store.
 
-        @param gatewayId
-           The identifier for the requested Gateway.
-
-        @param userName
-           The User for which the credential should be registered. For community accounts, this user is the name of the
-           community user name. For computational resources, this user name need not be the same user name on resoruces.
-
         @param description
            The description field for a credential type, all type of credential can have a description.
-
-        @param credentialOwnerType
-           The type of owner of this credential. Two possible values: GATEWAY (default) and USER
 
         @return airavataCredStoreToken
           An SSH Key pair is generated and stored in the credential store and associated with users or community account
@@ -4375,22 +4256,16 @@ class Client(Iface):
 
         Parameters:
          - authzToken
-         - gatewayId
-         - userName
          - description
-         - credentialOwnerType
         """
-        self.send_generateAndRegisterSSHKeys(authzToken, gatewayId, userName, description, credentialOwnerType)
+        self.send_generateAndRegisterSSHKeys(authzToken, description)
         return self.recv_generateAndRegisterSSHKeys()
 
-    def send_generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName, description, credentialOwnerType):
+    def send_generateAndRegisterSSHKeys(self, authzToken, description):
         self._oprot.writeMessageBegin('generateAndRegisterSSHKeys', TMessageType.CALL, self._seqid)
         args = generateAndRegisterSSHKeys_args()
         args.authzToken = authzToken
-        args.gatewayId = gatewayId
-        args.userName = userName
         args.description = description
-        args.credentialOwnerType = credentialOwnerType
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -4416,16 +4291,9 @@ class Client(Iface):
             raise result.ase
         raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result")
 
-    def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password, description):
+    def registerPwdCredential(self, authzToken, loginUserName, password, description):
         """
         Generate and Register Username PWD Pair with Airavata Credential Store.
-
-        @param gatewayId
-           The identifier for the requested Gateway.
-
-        @param portalUserName
-           The User for which the credential should be registered. For community accounts, this user is the name of the
-           community user name. For computational resources, this user name need not be the same user name on resoruces.
 
         @param loginUserName
 
@@ -4439,21 +4307,17 @@ class Client(Iface):
 
         Parameters:
          - authzToken
-         - gatewayId
-         - portalUserName
          - loginUserName
          - password
          - description
         """
-        self.send_registerPwdCredential(authzToken, gatewayId, portalUserName, loginUserName, password, description)
+        self.send_registerPwdCredential(authzToken, loginUserName, password, description)
         return self.recv_registerPwdCredential()
 
-    def send_registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password, description):
+    def send_registerPwdCredential(self, authzToken, loginUserName, password, description):
         self._oprot.writeMessageBegin('registerPwdCredential', TMessageType.CALL, self._seqid)
         args = registerPwdCredential_args()
         args.authzToken = authzToken
-        args.gatewayId = gatewayId
-        args.portalUserName = portalUserName
         args.loginUserName = loginUserName
         args.password = password
         args.description = description
@@ -4482,148 +4346,27 @@ class Client(Iface):
             raise result.ase
         raise TApplicationException(TApplicationException.MISSING_RESULT, "registerPwdCredential failed: unknown result")
 
-    def getSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
+    def getCredentialSummary(self, authzToken, type, tokenId):
         """
-        Get a Public Key by Providing the Token
-
-        @param CredStoreToken
-           Credential Store Token which you want to find the Public Key for.
-
-        @param gatewayId
-           This is the unique identifier of your gateway where the token and public key was generated from.
-
-        @return publicKey
-
-
-
-        Parameters:
-         - authzToken
-         - airavataCredStoreToken
-         - gatewayId
-        """
-        self.send_getSSHPubKey(authzToken, airavataCredStoreToken, gatewayId)
-        return self.recv_getSSHPubKey()
-
-    def send_getSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
-        self._oprot.writeMessageBegin('getSSHPubKey', TMessageType.CALL, self._seqid)
-        args = getSSHPubKey_args()
-        args.authzToken = authzToken
-        args.airavataCredStoreToken = airavataCredStoreToken
-        args.gatewayId = gatewayId
-        args.write(self._oprot)
-        self._oprot.writeMessageEnd()
-        self._oprot.trans.flush()
-
-    def recv_getSSHPubKey(self):
-        iprot = self._iprot
-        (fname, mtype, rseqid) = iprot.readMessageBegin()
-        if mtype == TMessageType.EXCEPTION:
-            x = TApplicationException()
-            x.read(iprot)
-            iprot.readMessageEnd()
-            raise x
-        result = getSSHPubKey_result()
-        result.read(iprot)
-        iprot.readMessageEnd()
-        if result.success is not None:
-            return result.success
-        if result.ire is not None:
-            raise result.ire
-        if result.ace is not None:
-            raise result.ace
-        if result.ase is not None:
-            raise result.ase
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getSSHPubKey failed: unknown result")
-
-    def getAllGatewaySSHPubKeys(self, authzToken, gatewayId):
-        """
-
-        Get all Public Keys of the Gateway
-
-        @param CredStoreToken
-           Credential Store Token which you want to find the Public Key for.
-
-        @param gatewayId
-           This is the unique identifier of your gateway where the token and public key was generated from.
-
-        @return publicKey
-
-
-
-        Parameters:
-         - authzToken
-         - gatewayId
-        """
-        self.send_getAllGatewaySSHPubKeys(authzToken, gatewayId)
-        return self.recv_getAllGatewaySSHPubKeys()
-
-    def send_getAllGatewaySSHPubKeys(self, authzToken, gatewayId):
-        self._oprot.writeMessageBegin('getAllGatewaySSHPubKeys', TMessageType.CALL, self._seqid)
-        args = getAllGatewaySSHPubKeys_args()
-        args.authzToken = authzToken
-        args.gatewayId = gatewayId
-        args.write(self._oprot)
-        self._oprot.writeMessageEnd()
-        self._oprot.trans.flush()
-
-    def recv_getAllGatewaySSHPubKeys(self):
-        iprot = self._iprot
-        (fname, mtype, rseqid) = iprot.readMessageBegin()
-        if mtype == TMessageType.EXCEPTION:
-            x = TApplicationException()
-            x.read(iprot)
-            iprot.readMessageEnd()
-            raise x
-        result = getAllGatewaySSHPubKeys_result()
-        result.read(iprot)
-        iprot.readMessageEnd()
-        if result.success is not None:
-            return result.success
-        if result.ire is not None:
-            raise result.ire
-        if result.ace is not None:
-            raise result.ace
-        if result.ase is not None:
-            raise result.ase
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewaySSHPubKeys failed: unknown result")
-
-    def getAllCredentialSummaryForGateway(self, authzToken, type, gatewayId):
-        """
-
-        Get all Credential summaries for the Gateway
-
-        @param CredStoreToken
-           Credential Store Token which you want to find the Public Key for.
-
-        @param credential_store_data_models.SummaryType
-           Summary type : SSH,PASSWD or CERT
-
-        @param gatewayId
-           This is the unique identifier of your gateway where the token and public key was generated from.
-
-        @return List of Credential Summary Objects
-
-
-
         Parameters:
          - authzToken
          - type
-         - gatewayId
+         - tokenId
         """
-        self.send_getAllCredentialSummaryForGateway(authzToken, type, gatewayId)
-        return self.recv_getAllCredentialSummaryForGateway()
+        self.send_getCredentialSummary(authzToken, type, tokenId)
+        return self.recv_getCredentialSummary()
 
-    def send_getAllCredentialSummaryForGateway(self, authzToken, type, gatewayId):
-        self._oprot.writeMessageBegin('getAllCredentialSummaryForGateway', TMessageType.CALL, self._seqid)
-        args = getAllCredentialSummaryForGateway_args()
+    def send_getCredentialSummary(self, authzToken, type, tokenId):
+        self._oprot.writeMessageBegin('getCredentialSummary', TMessageType.CALL, self._seqid)
+        args = getCredentialSummary_args()
         args.authzToken = authzToken
         args.type = type
-        args.gatewayId = gatewayId
+        args.tokenId = tokenId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
 
-    def recv_getAllCredentialSummaryForGateway(self):
+    def recv_getCredentialSummary(self):
         iprot = self._iprot
         (fname, mtype, rseqid) = iprot.readMessageBegin()
         if mtype == TMessageType.EXCEPTION:
@@ -4631,7 +4374,7 @@ class Client(Iface):
             x.read(iprot)
             iprot.readMessageEnd()
             raise x
-        result = getAllCredentialSummaryForGateway_result()
+        result = getCredentialSummary_result()
         result.read(iprot)
         iprot.readMessageEnd()
         if result.success is not None:
@@ -4642,50 +4385,29 @@ class Client(Iface):
             raise result.ace
         if result.ase is not None:
             raise result.ase
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllCredentialSummaryForGateway failed: unknown result")
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getCredentialSummary failed: unknown result")
 
-    def getAllCredentialSummaryForUsersInGateway(self, authzToken, type, gatewayId, userId):
+    def getAllCredentialSummaries(self, authzToken, type):
         """
-
-        Get all Credential summaries for user in a Gateway
-
-        @param CredStoreToken
-           Credential Store Token which you want to find the Public Key for.
-
-        @param credential_store_data_models.SummaryType
-           Summary type : SSH,PASSWD or CERT
-
-        @param gatewayId
-           This is the unique identifier of your gateway where the token and public key was generated from.
-
-        @param userId
-           This is the unique identifier of user whose public keys are to be fetched.
-
-        @return CredentialSummary
-
-
-
         Parameters:
          - authzToken
          - type
-         - gatewayId
-         - userId
         """
-        self.send_getAllCredentialSummaryForUsersInGateway(authzToken, type, gatewayId, userId)
-        return self.recv_getAllCredentialSummaryForUsersInGateway()
+        self.send_getAllCredentialSummaries(authzToken, type)
+        return self.recv_getAllCredentialSummaries()
 
-    def send_getAllCredentialSummaryForUsersInGateway(self, authzToken, type, gatewayId, userId):
-        self._oprot.writeMessageBegin('getAllCredentialSummaryForUsersInGateway', TMessageType.CALL, self._seqid)
-        args = getAllCredentialSummaryForUsersInGateway_args()
+    def send_getAllCredentialSummaries(self, authzToken, type):
+        self._oprot.writeMessageBegin('getAllCredentialSummaries', TMessageType.CALL, self._seqid)
+        args = getAllCredentialSummaries_args()
         args.authzToken = authzToken
         args.type = type
-        args.gatewayId = gatewayId
-        args.userId = userId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
 
-    def recv_getAllCredentialSummaryForUsersInGateway(self):
+    def recv_getAllCredentialSummaries(self):
         iprot = self._iprot
         (fname, mtype, rseqid) = iprot.readMessageBegin()
         if mtype == TMessageType.EXCEPTION:
@@ -4693,7 +4415,7 @@ class Client(Iface):
             x.read(iprot)
             iprot.readMessageEnd()
             raise x
-        result = getAllCredentialSummaryForUsersInGateway_result()
+        result = getAllCredentialSummaries_result()
         result.read(iprot)
         iprot.readMessageEnd()
         if result.success is not None:
@@ -4704,46 +4426,7 @@ class Client(Iface):
             raise result.ace
         if result.ase is not None:
             raise result.ase
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllCredentialSummaryForUsersInGateway failed: unknown result")
-
-    def getAllGatewayPWDCredentials(self, authzToken, gatewayId):
-        """
-        Parameters:
-         - authzToken
-         - gatewayId
-        """
-        self.send_getAllGatewayPWDCredentials(authzToken, gatewayId)
-        return self.recv_getAllGatewayPWDCredentials()
-
-    def send_getAllGatewayPWDCredentials(self, authzToken, gatewayId):
-        self._oprot.writeMessageBegin('getAllGatewayPWDCredentials', TMessageType.CALL, self._seqid)
-        args = getAllGatewayPWDCredentials_args()
-        args.authzToken = authzToken
-        args.gatewayId = gatewayId
-        args.write(self._oprot)
-        self._oprot.writeMessageEnd()
-        self._oprot.trans.flush()
-
-    def recv_getAllGatewayPWDCredentials(self):
-        iprot = self._iprot
-        (fname, mtype, rseqid) = iprot.readMessageBegin()
-        if mtype == TMessageType.EXCEPTION:
-            x = TApplicationException()
-            x.read(iprot)
-            iprot.readMessageEnd()
-            raise x
-        result = getAllGatewayPWDCredentials_result()
-        result.read(iprot)
-        iprot.readMessageEnd()
-        if result.success is not None:
-            return result.success
-        if result.ire is not None:
-            raise result.ire
-        if result.ace is not None:
-            raise result.ace
-        if result.ase is not None:
-            raise result.ase
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewayPWDCredentials failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllCredentialSummaries failed: unknown result")
 
     def deleteSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
         """
@@ -4795,6 +4478,8 @@ class Client(Iface):
             raise result.ace
         if result.ase is not None:
             raise result.ase
+        if result.ae is not None:
+            raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteSSHPubKey failed: unknown result")
 
     def deletePWDCredential(self, authzToken, airavataCredStoreToken, gatewayId):
@@ -4836,6 +4521,8 @@ class Client(Iface):
             raise result.ace
         if result.ase is not None:
             raise result.ase
+        if result.ae is not None:
+            raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "deletePWDCredential failed: unknown result")
 
     def createProject(self, authzToken, gatewayId, project):
@@ -13779,11 +13466,8 @@ class Processor(Iface, TProcessor):
         self._processMap["getAllNotifications"] = Processor.process_getAllNotifications
         self._processMap["generateAndRegisterSSHKeys"] = Processor.process_generateAndRegisterSSHKeys
         self._processMap["registerPwdCredential"] = Processor.process_registerPwdCredential
-        self._processMap["getSSHPubKey"] = Processor.process_getSSHPubKey
-        self._processMap["getAllGatewaySSHPubKeys"] = Processor.process_getAllGatewaySSHPubKeys
-        self._processMap["getAllCredentialSummaryForGateway"] = Processor.process_getAllCredentialSummaryForGateway
-        self._processMap["getAllCredentialSummaryForUsersInGateway"] = Processor.process_getAllCredentialSummaryForUsersInGateway
-        self._processMap["getAllGatewayPWDCredentials"] = Processor.process_getAllGatewayPWDCredentials
+        self._processMap["getCredentialSummary"] = Processor.process_getCredentialSummary
+        self._processMap["getAllCredentialSummaries"] = Processor.process_getAllCredentialSummaries
         self._processMap["deleteSSHPubKey"] = Processor.process_deleteSSHPubKey
         self._processMap["deletePWDCredential"] = Processor.process_deletePWDCredential
         self._processMap["createProject"] = Processor.process_createProject
@@ -14409,7 +14093,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = generateAndRegisterSSHKeys_result()
         try:
-            result.success = self._handler.generateAndRegisterSSHKeys(args.authzToken, args.gatewayId, args.userName, args.description, args.credentialOwnerType)
+            result.success = self._handler.generateAndRegisterSSHKeys(args.authzToken, args.description)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -14437,7 +14121,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = registerPwdCredential_result()
         try:
-            result.success = self._handler.registerPwdCredential(args.authzToken, args.gatewayId, args.portalUserName, args.loginUserName, args.password, args.description)
+            result.success = self._handler.registerPwdCredential(args.authzToken, args.loginUserName, args.password, args.description)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -14459,13 +14143,13 @@ class Processor(Iface, TProcessor):
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
-    def process_getSSHPubKey(self, seqid, iprot, oprot):
-        args = getSSHPubKey_args()
+    def process_getCredentialSummary(self, seqid, iprot, oprot):
+        args = getCredentialSummary_args()
         args.read(iprot)
         iprot.readMessageEnd()
-        result = getSSHPubKey_result()
+        result = getCredentialSummary_result()
         try:
-            result.success = self._handler.getSSHPubKey(args.authzToken, args.airavataCredStoreToken, args.gatewayId)
+            result.success = self._handler.getCredentialSummary(args.authzToken, args.type, args.tokenId)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -14478,22 +14162,25 @@ class Processor(Iface, TProcessor):
         except airavata.api.error.ttypes.AiravataSystemException as ase:
             msg_type = TMessageType.REPLY
             result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
         except Exception as ex:
             msg_type = TMessageType.EXCEPTION
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getSSHPubKey", msg_type, seqid)
+        oprot.writeMessageBegin("getCredentialSummary", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
-    def process_getAllGatewaySSHPubKeys(self, seqid, iprot, oprot):
-        args = getAllGatewaySSHPubKeys_args()
+    def process_getAllCredentialSummaries(self, seqid, iprot, oprot):
+        args = getAllCredentialSummaries_args()
         args.read(iprot)
         iprot.readMessageEnd()
-        result = getAllGatewaySSHPubKeys_result()
+        result = getAllCredentialSummaries_result()
         try:
-            result.success = self._handler.getAllGatewaySSHPubKeys(args.authzToken, args.gatewayId)
+            result.success = self._handler.getAllCredentialSummaries(args.authzToken, args.type)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -14510,91 +14197,7 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.EXCEPTION
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getAllGatewaySSHPubKeys", msg_type, seqid)
-        result.write(oprot)
-        oprot.writeMessageEnd()
-        oprot.trans.flush()
-
-    def process_getAllCredentialSummaryForGateway(self, seqid, iprot, oprot):
-        args = getAllCredentialSummaryForGateway_args()
-        args.read(iprot)
-        iprot.readMessageEnd()
-        result = getAllCredentialSummaryForGateway_result()
-        try:
-            result.success = self._handler.getAllCredentialSummaryForGateway(args.authzToken, args.type, args.gatewayId)
-            msg_type = TMessageType.REPLY
-        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
-            raise
-        except airavata.api.error.ttypes.InvalidRequestException as ire:
-            msg_type = TMessageType.REPLY
-            result.ire = ire
-        except airavata.api.error.ttypes.AiravataClientException as ace:
-            msg_type = TMessageType.REPLY
-            result.ace = ace
-        except airavata.api.error.ttypes.AiravataSystemException as ase:
-            msg_type = TMessageType.REPLY
-            result.ase = ase
-        except Exception as ex:
-            msg_type = TMessageType.EXCEPTION
-            logging.exception(ex)
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getAllCredentialSummaryForGateway", msg_type, seqid)
-        result.write(oprot)
-        oprot.writeMessageEnd()
-        oprot.trans.flush()
-
-    def process_getAllCredentialSummaryForUsersInGateway(self, seqid, iprot, oprot):
-        args = getAllCredentialSummaryForUsersInGateway_args()
-        args.read(iprot)
-        iprot.readMessageEnd()
-        result = getAllCredentialSummaryForUsersInGateway_result()
-        try:
-            result.success = self._handler.getAllCredentialSummaryForUsersInGateway(args.authzToken, args.type, args.gatewayId, args.userId)
-            msg_type = TMessageType.REPLY
-        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
-            raise
-        except airavata.api.error.ttypes.InvalidRequestException as ire:
-            msg_type = TMessageType.REPLY
-            result.ire = ire
-        except airavata.api.error.ttypes.AiravataClientException as ace:
-            msg_type = TMessageType.REPLY
-            result.ace = ace
-        except airavata.api.error.ttypes.AiravataSystemException as ase:
-            msg_type = TMessageType.REPLY
-            result.ase = ase
-        except Exception as ex:
-            msg_type = TMessageType.EXCEPTION
-            logging.exception(ex)
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getAllCredentialSummaryForUsersInGateway", msg_type, seqid)
-        result.write(oprot)
-        oprot.writeMessageEnd()
-        oprot.trans.flush()
-
-    def process_getAllGatewayPWDCredentials(self, seqid, iprot, oprot):
-        args = getAllGatewayPWDCredentials_args()
-        args.read(iprot)
-        iprot.readMessageEnd()
-        result = getAllGatewayPWDCredentials_result()
-        try:
-            result.success = self._handler.getAllGatewayPWDCredentials(args.authzToken, args.gatewayId)
-            msg_type = TMessageType.REPLY
-        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
-            raise
-        except airavata.api.error.ttypes.InvalidRequestException as ire:
-            msg_type = TMessageType.REPLY
-            result.ire = ire
-        except airavata.api.error.ttypes.AiravataClientException as ace:
-            msg_type = TMessageType.REPLY
-            result.ace = ace
-        except airavata.api.error.ttypes.AiravataSystemException as ase:
-            msg_type = TMessageType.REPLY
-            result.ase = ase
-        except Exception as ex:
-            msg_type = TMessageType.EXCEPTION
-            logging.exception(ex)
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getAllGatewayPWDCredentials", msg_type, seqid)
+        oprot.writeMessageBegin("getAllCredentialSummaries", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -14618,6 +14221,9 @@ class Processor(Iface, TProcessor):
         except airavata.api.error.ttypes.AiravataSystemException as ase:
             msg_type = TMessageType.REPLY
             result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
         except Exception as ex:
             msg_type = TMessageType.EXCEPTION
             logging.exception(ex)
@@ -14646,6 +14252,9 @@ class Processor(Iface, TProcessor):
         except airavata.api.error.ttypes.AiravataSystemException as ase:
             msg_type = TMessageType.REPLY
             result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
         except Exception as ex:
             msg_type = TMessageType.EXCEPTION
             logging.exception(ex)
@@ -22573,27 +22182,20 @@ class generateAndRegisterSSHKeys_args(object):
     """
     Attributes:
      - authzToken
-     - gatewayId
-     - userName
      - description
-     - credentialOwnerType
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 2
-        (3, TType.STRING, 'userName', 'UTF8', None, ),  # 3
+        None,  # 2
+        None,  # 3
         (4, TType.STRING, 'description', 'UTF8', None, ),  # 4
-        (5, TType.I32, 'credentialOwnerType', None, None, ),  # 5
     )
 
-    def __init__(self, authzToken=None, gatewayId=None, userName=None, description=None, credentialOwnerType=None,):
+    def __init__(self, authzToken=None, description=None,):
         self.authzToken = authzToken
-        self.gatewayId = gatewayId
-        self.userName = userName
         self.description = description
-        self.credentialOwnerType = credentialOwnerType
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -22610,24 +22212,9 @@ class generateAndRegisterSSHKeys_args(object):
                     self.authzToken.read(iprot)
                 else:
                     iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRING:
-                    self.userName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.STRING:
                     self.description = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 5:
-                if ftype == TType.I32:
-                    self.credentialOwnerType = iprot.readI32()
                 else:
                     iprot.skip(ftype)
             else:
@@ -22644,21 +22231,9 @@ class generateAndRegisterSSHKeys_args(object):
             oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
             self.authzToken.write(oprot)
             oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
-            oprot.writeFieldEnd()
-        if self.userName is not None:
-            oprot.writeFieldBegin('userName', TType.STRING, 3)
-            oprot.writeString(self.userName.encode('utf-8') if sys.version_info[0] == 2 else self.userName)
-            oprot.writeFieldEnd()
         if self.description is not None:
             oprot.writeFieldBegin('description', TType.STRING, 4)
             oprot.writeString(self.description.encode('utf-8') if sys.version_info[0] == 2 else self.description)
-            oprot.writeFieldEnd()
-        if self.credentialOwnerType is not None:
-            oprot.writeFieldBegin('credentialOwnerType', TType.I32, 5)
-            oprot.writeI32(self.credentialOwnerType)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -22666,10 +22241,6 @@ class generateAndRegisterSSHKeys_args(object):
     def validate(self):
         if self.authzToken is None:
             raise TProtocolException(message='Required field authzToken is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
-        if self.userName is None:
-            raise TProtocolException(message='Required field userName is unset!')
         return
 
     def __repr__(self):
@@ -22786,8 +22357,6 @@ class registerPwdCredential_args(object):
     """
     Attributes:
      - authzToken
-     - gatewayId
-     - portalUserName
      - loginUserName
      - password
      - description
@@ -22796,17 +22365,15 @@ class registerPwdCredential_args(object):
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 2
-        (3, TType.STRING, 'portalUserName', 'UTF8', None, ),  # 3
+        None,  # 2
+        None,  # 3
         (4, TType.STRING, 'loginUserName', 'UTF8', None, ),  # 4
         (5, TType.STRING, 'password', 'UTF8', None, ),  # 5
         (6, TType.STRING, 'description', 'UTF8', None, ),  # 6
     )
 
-    def __init__(self, authzToken=None, gatewayId=None, portalUserName=None, loginUserName=None, password=None, description=None,):
+    def __init__(self, authzToken=None, loginUserName=None, password=None, description=None,):
         self.authzToken = authzToken
-        self.gatewayId = gatewayId
-        self.portalUserName = portalUserName
         self.loginUserName = loginUserName
         self.password = password
         self.description = description
@@ -22824,16 +22391,6 @@ class registerPwdCredential_args(object):
                 if ftype == TType.STRUCT:
                     self.authzToken = airavata.model.security.ttypes.AuthzToken()
                     self.authzToken.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRING:
-                    self.portalUserName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -22865,14 +22422,6 @@ class registerPwdCredential_args(object):
             oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
             self.authzToken.write(oprot)
             oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
-            oprot.writeFieldEnd()
-        if self.portalUserName is not None:
-            oprot.writeFieldBegin('portalUserName', TType.STRING, 3)
-            oprot.writeString(self.portalUserName.encode('utf-8') if sys.version_info[0] == 2 else self.portalUserName)
-            oprot.writeFieldEnd()
         if self.loginUserName is not None:
             oprot.writeFieldBegin('loginUserName', TType.STRING, 4)
             oprot.writeString(self.loginUserName.encode('utf-8') if sys.version_info[0] == 2 else self.loginUserName)
@@ -22891,10 +22440,6 @@ class registerPwdCredential_args(object):
     def validate(self):
         if self.authzToken is None:
             raise TProtocolException(message='Required field authzToken is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
-        if self.portalUserName is None:
-            raise TProtocolException(message='Required field portalUserName is unset!')
         if self.loginUserName is None:
             raise TProtocolException(message='Required field loginUserName is unset!')
         if self.password is None:
@@ -23013,399 +22558,25 @@ class registerPwdCredential_result(object):
         return not (self == other)
 
 
-class getSSHPubKey_args(object):
-    """
-    Attributes:
-     - authzToken
-     - airavataCredStoreToken
-     - gatewayId
-    """
-
-    thrift_spec = (
-        None,  # 0
-        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.STRING, 'airavataCredStoreToken', 'UTF8', None, ),  # 2
-        (3, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 3
-    )
-
-    def __init__(self, authzToken=None, airavataCredStoreToken=None, gatewayId=None,):
-        self.authzToken = authzToken
-        self.airavataCredStoreToken = airavataCredStoreToken
-        self.gatewayId = gatewayId
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 1:
-                if ftype == TType.STRUCT:
-                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
-                    self.authzToken.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRING:
-                    self.airavataCredStoreToken = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getSSHPubKey_args')
-        if self.authzToken is not None:
-            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-            self.authzToken.write(oprot)
-            oprot.writeFieldEnd()
-        if self.airavataCredStoreToken is not None:
-            oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 2)
-            oprot.writeString(self.airavataCredStoreToken.encode('utf-8') if sys.version_info[0] == 2 else self.airavataCredStoreToken)
-            oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        if self.authzToken is None:
-            raise TProtocolException(message='Required field authzToken is unset!')
-        if self.airavataCredStoreToken is None:
-            raise TProtocolException(message='Required field airavataCredStoreToken is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getSSHPubKey_result(object):
-    """
-    Attributes:
-     - success
-     - ire
-     - ace
-     - ase
-    """
-
-    thrift_spec = (
-        (0, TType.STRING, 'success', 'UTF8', None, ),  # 0
-        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
-        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
-        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
-    )
-
-    def __init__(self, success=None, ire=None, ace=None, ase=None,):
-        self.success = success
-        self.ire = ire
-        self.ace = ace
-        self.ase = ase
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 0:
-                if ftype == TType.STRING:
-                    self.success = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 1:
-                if ftype == TType.STRUCT:
-                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
-                    self.ire.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRUCT:
-                    self.ace = airavata.api.error.ttypes.AiravataClientException()
-                    self.ace.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRUCT:
-                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
-                    self.ase.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getSSHPubKey_result')
-        if self.success is not None:
-            oprot.writeFieldBegin('success', TType.STRING, 0)
-            oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
-            oprot.writeFieldEnd()
-        if self.ire is not None:
-            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-            self.ire.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ace is not None:
-            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-            self.ace.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ase is not None:
-            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-            self.ase.write(oprot)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getAllGatewaySSHPubKeys_args(object):
-    """
-    Attributes:
-     - authzToken
-     - gatewayId
-    """
-
-    thrift_spec = (
-        None,  # 0
-        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 2
-    )
-
-    def __init__(self, authzToken=None, gatewayId=None,):
-        self.authzToken = authzToken
-        self.gatewayId = gatewayId
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 1:
-                if ftype == TType.STRUCT:
-                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
-                    self.authzToken.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAllGatewaySSHPubKeys_args')
-        if self.authzToken is not None:
-            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-            self.authzToken.write(oprot)
-            oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        if self.authzToken is None:
-            raise TProtocolException(message='Required field authzToken is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getAllGatewaySSHPubKeys_result(object):
-    """
-    Attributes:
-     - success
-     - ire
-     - ace
-     - ase
-    """
-
-    thrift_spec = (
-        (0, TType.MAP, 'success', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 0
-        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
-        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
-        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
-    )
-
-    def __init__(self, success=None, ire=None, ace=None, ase=None,):
-        self.success = success
-        self.ire = ire
-        self.ace = ace
-        self.ase = ase
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 0:
-                if ftype == TType.MAP:
-                    self.success = {}
-                    (_ktype22, _vtype23, _size21) = iprot.readMapBegin()
-                    for _i25 in range(_size21):
-                        _key26 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val27 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success[_key26] = _val27
-                    iprot.readMapEnd()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 1:
-                if ftype == TType.STRUCT:
-                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
-                    self.ire.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRUCT:
-                    self.ace = airavata.api.error.ttypes.AiravataClientException()
-                    self.ace.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRUCT:
-                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
-                    self.ase.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAllGatewaySSHPubKeys_result')
-        if self.success is not None:
-            oprot.writeFieldBegin('success', TType.MAP, 0)
-            oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-            for kiter28, viter29 in self.success.items():
-                oprot.writeString(kiter28.encode('utf-8') if sys.version_info[0] == 2 else kiter28)
-                oprot.writeString(viter29.encode('utf-8') if sys.version_info[0] == 2 else viter29)
-            oprot.writeMapEnd()
-            oprot.writeFieldEnd()
-        if self.ire is not None:
-            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-            self.ire.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ace is not None:
-            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-            self.ace.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ase is not None:
-            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-            self.ase.write(oprot)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getAllCredentialSummaryForGateway_args(object):
+class getCredentialSummary_args(object):
     """
     Attributes:
      - authzToken
      - type
-     - gatewayId
+     - tokenId
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.I32, 'type', None, None, ),  # 2
-        (3, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 3
+        (3, TType.STRING, 'tokenId', 'UTF8', None, ),  # 3
     )
 
-    def __init__(self, authzToken=None, type=None, gatewayId=None,):
+    def __init__(self, authzToken=None, type=None, tokenId=None,):
         self.authzToken = authzToken
         self.type = type
-        self.gatewayId = gatewayId
+        self.tokenId = tokenId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -23429,7 +22600,7 @@ class getAllCredentialSummaryForGateway_args(object):
                     iprot.skip(ftype)
             elif fid == 3:
                 if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.tokenId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -23441,7 +22612,7 @@ class getAllCredentialSummaryForGateway_args(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
-        oprot.writeStructBegin('getAllCredentialSummaryForGateway_args')
+        oprot.writeStructBegin('getCredentialSummary_args')
         if self.authzToken is not None:
             oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
             self.authzToken.write(oprot)
@@ -23450,9 +22621,9 @@ class getAllCredentialSummaryForGateway_args(object):
             oprot.writeFieldBegin('type', TType.I32, 2)
             oprot.writeI32(self.type)
             oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
+        if self.tokenId is not None:
+            oprot.writeFieldBegin('tokenId', TType.STRING, 3)
+            oprot.writeString(self.tokenId.encode('utf-8') if sys.version_info[0] == 2 else self.tokenId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -23462,8 +22633,8 @@ class getAllCredentialSummaryForGateway_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.type is None:
             raise TProtocolException(message='Required field type is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
+        if self.tokenId is None:
+            raise TProtocolException(message='Required field tokenId is unset!')
         return
 
     def __repr__(self):
@@ -23478,27 +22649,30 @@ class getAllCredentialSummaryForGateway_args(object):
         return not (self == other)
 
 
-class getAllCredentialSummaryForGateway_result(object):
+class getCredentialSummary_result(object):
     """
     Attributes:
      - success
      - ire
      - ace
      - ase
+     - ae
     """
 
     thrift_spec = (
-        (0, TType.LIST, 'success', (TType.STRUCT, (airavata.model.credential.store.ttypes.CredentialSummary, airavata.model.credential.store.ttypes.CredentialSummary.thrift_spec), False), None, ),  # 0
+        (0, TType.STRUCT, 'success', (airavata.model.credential.store.ttypes.CredentialSummary, airavata.model.credential.store.ttypes.CredentialSummary.thrift_spec), None, ),  # 0
         (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
         (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
         (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
     )
 
-    def __init__(self, success=None, ire=None, ace=None, ase=None,):
+    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
         self.success = success
         self.ire = ire
         self.ace = ace
         self.ase = ase
+        self.ae = ae
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -23510,14 +22684,9 @@ class getAllCredentialSummaryForGateway_result(object):
             if ftype == TType.STOP:
                 break
             if fid == 0:
-                if ftype == TType.LIST:
-                    self.success = []
-                    (_etype33, _size30) = iprot.readListBegin()
-                    for _i34 in range(_size30):
-                        _elem35 = airavata.model.credential.store.ttypes.CredentialSummary()
-                        _elem35.read(iprot)
-                        self.success.append(_elem35)
-                    iprot.readListEnd()
+                if ftype == TType.STRUCT:
+                    self.success = airavata.model.credential.store.ttypes.CredentialSummary()
+                    self.success.read(iprot)
                 else:
                     iprot.skip(ftype)
             elif fid == 1:
@@ -23536,106 +22705,12 @@ class getAllCredentialSummaryForGateway_result(object):
                 if ftype == TType.STRUCT:
                     self.ase = airavata.api.error.ttypes.AiravataSystemException()
                     self.ase.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAllCredentialSummaryForGateway_result')
-        if self.success is not None:
-            oprot.writeFieldBegin('success', TType.LIST, 0)
-            oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter36 in self.success:
-                iter36.write(oprot)
-            oprot.writeListEnd()
-            oprot.writeFieldEnd()
-        if self.ire is not None:
-            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-            self.ire.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ace is not None:
-            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-            self.ace.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ase is not None:
-            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-            self.ase.write(oprot)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getAllCredentialSummaryForUsersInGateway_args(object):
-    """
-    Attributes:
-     - authzToken
-     - type
-     - gatewayId
-     - userId
-    """
-
-    thrift_spec = (
-        None,  # 0
-        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.I32, 'type', None, None, ),  # 2
-        (3, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 3
-        (4, TType.STRING, 'userId', 'UTF8', None, ),  # 4
-    )
-
-    def __init__(self, authzToken=None, type=None, gatewayId=None, userId=None,):
-        self.authzToken = authzToken
-        self.type = type
-        self.gatewayId = gatewayId
-        self.userId = userId
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 1:
-                if ftype == TType.STRUCT:
-                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
-                    self.authzToken.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.I32:
-                    self.type = iprot.readI32()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
-                if ftype == TType.STRING:
-                    self.userId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
                 else:
                     iprot.skip(ftype)
             else:
@@ -23647,35 +22722,31 @@ class getAllCredentialSummaryForUsersInGateway_args(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
-        oprot.writeStructBegin('getAllCredentialSummaryForUsersInGateway_args')
-        if self.authzToken is not None:
-            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-            self.authzToken.write(oprot)
+        oprot.writeStructBegin('getCredentialSummary_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.STRUCT, 0)
+            self.success.write(oprot)
             oprot.writeFieldEnd()
-        if self.type is not None:
-            oprot.writeFieldBegin('type', TType.I32, 2)
-            oprot.writeI32(self.type)
+        if self.ire is not None:
+            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+            self.ire.write(oprot)
             oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
+        if self.ace is not None:
+            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+            self.ace.write(oprot)
             oprot.writeFieldEnd()
-        if self.userId is not None:
-            oprot.writeFieldBegin('userId', TType.STRING, 4)
-            oprot.writeString(self.userId.encode('utf-8') if sys.version_info[0] == 2 else self.userId)
+        if self.ase is not None:
+            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+            self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
     def validate(self):
-        if self.authzToken is None:
-            raise TProtocolException(message='Required field authzToken is unset!')
-        if self.type is None:
-            raise TProtocolException(message='Required field type is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
-        if self.userId is None:
-            raise TProtocolException(message='Required field userId is unset!')
         return
 
     def __repr__(self):
@@ -23690,7 +22761,84 @@ class getAllCredentialSummaryForUsersInGateway_args(object):
         return not (self == other)
 
 
-class getAllCredentialSummaryForUsersInGateway_result(object):
+class getAllCredentialSummaries_args(object):
+    """
+    Attributes:
+     - authzToken
+     - type
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.I32, 'type', None, None, ),  # 2
+    )
+
+    def __init__(self, authzToken=None, type=None,):
+        self.authzToken = authzToken
+        self.type = type
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.I32:
+                    self.type = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getAllCredentialSummaries_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.type is not None:
+            oprot.writeFieldBegin('type', TType.I32, 2)
+            oprot.writeI32(self.type)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.type is None:
+            raise TProtocolException(message='Required field type is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getAllCredentialSummaries_result(object):
     """
     Attributes:
      - success
@@ -23724,11 +22872,11 @@ class getAllCredentialSummaryForUsersInGateway_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype40, _size37) = iprot.readListBegin()
-                    for _i41 in range(_size37):
-                        _elem42 = airavata.model.credential.store.ttypes.CredentialSummary()
-                        _elem42.read(iprot)
-                        self.success.append(_elem42)
+                    (_etype24, _size21) = iprot.readListBegin()
+                    for _i25 in range(_size21):
+                        _elem26 = airavata.model.credential.store.ttypes.CredentialSummary()
+                        _elem26.read(iprot)
+                        self.success.append(_elem26)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23759,198 +22907,13 @@ class getAllCredentialSummaryForUsersInGateway_result(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
-        oprot.writeStructBegin('getAllCredentialSummaryForUsersInGateway_result')
+        oprot.writeStructBegin('getAllCredentialSummaries_result')
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter43 in self.success:
-                iter43.write(oprot)
+            for iter27 in self.success:
+                iter27.write(oprot)
             oprot.writeListEnd()
-            oprot.writeFieldEnd()
-        if self.ire is not None:
-            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-            self.ire.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ace is not None:
-            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-            self.ace.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ase is not None:
-            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-            self.ase.write(oprot)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getAllGatewayPWDCredentials_args(object):
-    """
-    Attributes:
-     - authzToken
-     - gatewayId
-    """
-
-    thrift_spec = (
-        None,  # 0
-        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 2
-    )
-
-    def __init__(self, authzToken=None, gatewayId=None,):
-        self.authzToken = authzToken
-        self.gatewayId = gatewayId
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 1:
-                if ftype == TType.STRUCT:
-                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
-                    self.authzToken.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAllGatewayPWDCredentials_args')
-        if self.authzToken is not None:
-            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-            self.authzToken.write(oprot)
-            oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        if self.authzToken is None:
-            raise TProtocolException(message='Required field authzToken is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getAllGatewayPWDCredentials_result(object):
-    """
-    Attributes:
-     - success
-     - ire
-     - ace
-     - ase
-    """
-
-    thrift_spec = (
-        (0, TType.MAP, 'success', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 0
-        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
-        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
-        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
-    )
-
-    def __init__(self, success=None, ire=None, ace=None, ase=None,):
-        self.success = success
-        self.ire = ire
-        self.ace = ace
-        self.ase = ase
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 0:
-                if ftype == TType.MAP:
-                    self.success = {}
-                    (_ktype45, _vtype46, _size44) = iprot.readMapBegin()
-                    for _i48 in range(_size44):
-                        _key49 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val50 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success[_key49] = _val50
-                    iprot.readMapEnd()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 1:
-                if ftype == TType.STRUCT:
-                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
-                    self.ire.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRUCT:
-                    self.ace = airavata.api.error.ttypes.AiravataClientException()
-                    self.ace.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRUCT:
-                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
-                    self.ase.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAllGatewayPWDCredentials_result')
-        if self.success is not None:
-            oprot.writeFieldBegin('success', TType.MAP, 0)
-            oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-            for kiter51, viter52 in self.success.items():
-                oprot.writeString(kiter51.encode('utf-8') if sys.version_info[0] == 2 else kiter51)
-                oprot.writeString(viter52.encode('utf-8') if sys.version_info[0] == 2 else viter52)
-            oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
             oprot.writeFieldBegin('ire', TType.STRUCT, 1)
@@ -24080,6 +23043,7 @@ class deleteSSHPubKey_result(object):
      - ire
      - ace
      - ase
+     - ae
     """
 
     thrift_spec = (
@@ -24087,13 +23051,15 @@ class deleteSSHPubKey_result(object):
         (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
         (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
         (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
     )
 
-    def __init__(self, success=None, ire=None, ace=None, ase=None,):
+    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
         self.success = success
         self.ire = ire
         self.ace = ace
         self.ase = ase
+        self.ae = ae
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -24127,6 +23093,12 @@ class deleteSSHPubKey_result(object):
                     self.ase.read(iprot)
                 else:
                     iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -24152,6 +23124,10 @@ class deleteSSHPubKey_result(object):
         if self.ase is not None:
             oprot.writeFieldBegin('ase', TType.STRUCT, 3)
             self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -24269,6 +23245,7 @@ class deletePWDCredential_result(object):
      - ire
      - ace
      - ase
+     - ae
     """
 
     thrift_spec = (
@@ -24276,13 +23253,15 @@ class deletePWDCredential_result(object):
         (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
         (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
         (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
     )
 
-    def __init__(self, success=None, ire=None, ace=None, ase=None,):
+    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
         self.success = success
         self.ire = ire
         self.ace = ace
         self.ase = ase
+        self.ae = ae
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -24316,6 +23295,12 @@ class deletePWDCredential_result(object):
                     self.ase.read(iprot)
                 else:
                     iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -24341,6 +23326,10 @@ class deletePWDCredential_result(object):
         if self.ase is not None:
             oprot.writeFieldBegin('ase', TType.STRUCT, 3)
             self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -25327,11 +24316,11 @@ class getUserProjects_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype56, _size53) = iprot.readListBegin()
-                    for _i57 in range(_size53):
-                        _elem58 = airavata.model.workspace.ttypes.Project()
-                        _elem58.read(iprot)
-                        self.success.append(_elem58)
+                    (_etype31, _size28) = iprot.readListBegin()
+                    for _i32 in range(_size28):
+                        _elem33 = airavata.model.workspace.ttypes.Project()
+                        _elem33.read(iprot)
+                        self.success.append(_elem33)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -25372,8 +24361,8 @@ class getUserProjects_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter59 in self.success:
-                iter59.write(oprot)
+            for iter34 in self.success:
+                iter34.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -25467,11 +24456,11 @@ class searchProjects_args(object):
             elif fid == 4:
                 if ftype == TType.MAP:
                     self.filters = {}
-                    (_ktype61, _vtype62, _size60) = iprot.readMapBegin()
-                    for _i64 in range(_size60):
-                        _key65 = iprot.readI32()
-                        _val66 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.filters[_key65] = _val66
+                    (_ktype36, _vtype37, _size35) = iprot.readMapBegin()
+                    for _i39 in range(_size35):
+                        _key40 = iprot.readI32()
+                        _val41 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.filters[_key40] = _val41
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -25510,9 +24499,9 @@ class searchProjects_args(object):
         if self.filters is not None:
             oprot.writeFieldBegin('filters', TType.MAP, 4)
             oprot.writeMapBegin(TType.I32, TType.STRING, len(self.filters))
-            for kiter67, viter68 in self.filters.items():
-                oprot.writeI32(kiter67)
-                oprot.writeString(viter68.encode('utf-8') if sys.version_info[0] == 2 else viter68)
+            for kiter42, viter43 in self.filters.items():
+                oprot.writeI32(kiter42)
+                oprot.writeString(viter43.encode('utf-8') if sys.version_info[0] == 2 else viter43)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.limit is not None:
@@ -25588,11 +24577,11 @@ class searchProjects_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype72, _size69) = iprot.readListBegin()
-                    for _i73 in range(_size69):
-                        _elem74 = airavata.model.workspace.ttypes.Project()
-                        _elem74.read(iprot)
-                        self.success.append(_elem74)
+                    (_etype47, _size44) = iprot.readListBegin()
+                    for _i48 in range(_size44):
+                        _elem49 = airavata.model.workspace.ttypes.Project()
+                        _elem49.read(iprot)
+                        self.success.append(_elem49)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -25633,8 +24622,8 @@ class searchProjects_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter75 in self.success:
-                iter75.write(oprot)
+            for iter50 in self.success:
+                iter50.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -25728,11 +24717,11 @@ class searchExperiments_args(object):
             elif fid == 4:
                 if ftype == TType.MAP:
                     self.filters = {}
-                    (_ktype77, _vtype78, _size76) = iprot.readMapBegin()
-                    for _i80 in range(_size76):
-                        _key81 = iprot.readI32()
-                        _val82 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.filters[_key81] = _val82
+                    (_ktype52, _vtype53, _size51) = iprot.readMapBegin()
+                    for _i55 in range(_size51):
+                        _key56 = iprot.readI32()
+                        _val57 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.filters[_key56] = _val57
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -25771,9 +24760,9 @@ class searchExperiments_args(object):
         if self.filters is not None:
             oprot.writeFieldBegin('filters', TType.MAP, 4)
             oprot.writeMapBegin(TType.I32, TType.STRING, len(self.filters))
-            for kiter83, viter84 in self.filters.items():
-                oprot.writeI32(kiter83)
-                oprot.writeString(viter84.encode('utf-8') if sys.version_info[0] == 2 else viter84)
+            for kiter58, viter59 in self.filters.items():
+                oprot.writeI32(kiter58)
+                oprot.writeString(viter59.encode('utf-8') if sys.version_info[0] == 2 else viter59)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.limit is not None:
@@ -25849,11 +24838,11 @@ class searchExperiments_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype88, _size85) = iprot.readListBegin()
-                    for _i89 in range(_size85):
-                        _elem90 = airavata.model.experiment.ttypes.ExperimentSummaryModel()
-                        _elem90.read(iprot)
-                        self.success.append(_elem90)
+                    (_etype63, _size60) = iprot.readListBegin()
+                    for _i64 in range(_size60):
+                        _elem65 = airavata.model.experiment.ttypes.ExperimentSummaryModel()
+                        _elem65.read(iprot)
+                        self.success.append(_elem65)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -25894,8 +24883,8 @@ class searchExperiments_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter91 in self.success:
-                iter91.write(oprot)
+            for iter66 in self.success:
+                iter66.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -26330,11 +25319,11 @@ class getExperimentsInProject_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype95, _size92) = iprot.readListBegin()
-                    for _i96 in range(_size92):
-                        _elem97 = airavata.model.experiment.ttypes.ExperimentModel()
-                        _elem97.read(iprot)
-                        self.success.append(_elem97)
+                    (_etype70, _size67) = iprot.readListBegin()
+                    for _i71 in range(_size67):
+                        _elem72 = airavata.model.experiment.ttypes.ExperimentModel()
+                        _elem72.read(iprot)
+                        self.success.append(_elem72)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -26381,8 +25370,8 @@ class getExperimentsInProject_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter98 in self.success:
-                iter98.write(oprot)
+            for iter73 in self.success:
+                iter73.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -26579,11 +25568,11 @@ class getUserExperiments_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype102, _size99) = iprot.readListBegin()
-                    for _i103 in range(_size99):
-                        _elem104 = airavata.model.experiment.ttypes.ExperimentModel()
-                        _elem104.read(iprot)
-                        self.success.append(_elem104)
+                    (_etype77, _size74) = iprot.readListBegin()
+                    for _i78 in range(_size74):
+                        _elem79 = airavata.model.experiment.ttypes.ExperimentModel()
+                        _elem79.read(iprot)
+                        self.success.append(_elem79)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -26624,8 +25613,8 @@ class getUserExperiments_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter105 in self.success:
-                iter105.write(oprot)
+            for iter80 in self.success:
+                iter80.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -28894,11 +27883,11 @@ class getExperimentOutputs_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype109, _size106) = iprot.readListBegin()
-                    for _i110 in range(_size106):
-                        _elem111 = airavata.model.application.io.ttypes.OutputDataObjectType()
-                        _elem111.read(iprot)
-                        self.success.append(_elem111)
+                    (_etype84, _size81) = iprot.readListBegin()
+                    for _i85 in range(_size81):
+                        _elem86 = airavata.model.application.io.ttypes.OutputDataObjectType()
+                        _elem86.read(iprot)
+                        self.success.append(_elem86)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -28945,8 +27934,8 @@ class getExperimentOutputs_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter112 in self.success:
-                iter112.write(oprot)
+            for iter87 in self.success:
+                iter87.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -29104,11 +28093,11 @@ class getIntermediateOutputs_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype116, _size113) = iprot.readListBegin()
-                    for _i117 in range(_size113):
-                        _elem118 = airavata.model.application.io.ttypes.OutputDataObjectType()
-                        _elem118.read(iprot)
-                        self.success.append(_elem118)
+                    (_etype91, _size88) = iprot.readListBegin()
+                    for _i92 in range(_size88):
+                        _elem93 = airavata.model.application.io.ttypes.OutputDataObjectType()
+                        _elem93.read(iprot)
+                        self.success.append(_elem93)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -29155,8 +28144,8 @@ class getIntermediateOutputs_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter119 in self.success:
-                iter119.write(oprot)
+            for iter94 in self.success:
+                iter94.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -29314,12 +28303,12 @@ class getJobStatuses_result(object):
             if fid == 0:
                 if ftype == TType.MAP:
                     self.success = {}
-                    (_ktype121, _vtype122, _size120) = iprot.readMapBegin()
-                    for _i124 in range(_size120):
-                        _key125 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val126 = airavata.model.status.ttypes.JobStatus()
-                        _val126.read(iprot)
-                        self.success[_key125] = _val126
+                    (_ktype96, _vtype97, _size95) = iprot.readMapBegin()
+                    for _i99 in range(_size95):
+                        _key100 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val101 = airavata.model.status.ttypes.JobStatus()
+                        _val101.read(iprot)
+                        self.success[_key100] = _val101
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -29366,9 +28355,9 @@ class getJobStatuses_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.MAP, 0)
             oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.success))
-            for kiter127, viter128 in self.success.items():
-                oprot.writeString(kiter127.encode('utf-8') if sys.version_info[0] == 2 else kiter127)
-                viter128.write(oprot)
+            for kiter102, viter103 in self.success.items():
+                oprot.writeString(kiter102.encode('utf-8') if sys.version_info[0] == 2 else kiter102)
+                viter103.write(oprot)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -29526,11 +28515,11 @@ class getJobDetails_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype132, _size129) = iprot.readListBegin()
-                    for _i133 in range(_size129):
-                        _elem134 = airavata.model.job.ttypes.JobModel()
-                        _elem134.read(iprot)
-                        self.success.append(_elem134)
+                    (_etype107, _size104) = iprot.readListBegin()
+                    for _i108 in range(_size104):
+                        _elem109 = airavata.model.job.ttypes.JobModel()
+                        _elem109.read(iprot)
+                        self.success.append(_elem109)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -29577,8 +28566,8 @@ class getJobDetails_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter135 in self.success:
-                iter135.write(oprot)
+            for iter110 in self.success:
+                iter110.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -31000,11 +29989,11 @@ class getAllAppModules_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype139, _size136) = iprot.readListBegin()
-                    for _i140 in range(_size136):
-                        _elem141 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
-                        _elem141.read(iprot)
-                        self.success.append(_elem141)
+                    (_etype114, _size111) = iprot.readListBegin()
+                    for _i115 in range(_size111):
+                        _elem116 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
+                        _elem116.read(iprot)
+                        self.success.append(_elem116)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -31045,8 +30034,8 @@ class getAllAppModules_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter142 in self.success:
-                iter142.write(oprot)
+            for iter117 in self.success:
+                iter117.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -31197,11 +30186,11 @@ class getAccessibleAppModules_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype146, _size143) = iprot.readListBegin()
-                    for _i147 in range(_size143):
-                        _elem148 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
-                        _elem148.read(iprot)
-                        self.success.append(_elem148)
+                    (_etype121, _size118) = iprot.readListBegin()
+                    for _i122 in range(_size118):
+                        _elem123 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
+                        _elem123.read(iprot)
+                        self.success.append(_elem123)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -31242,8 +30231,8 @@ class getAccessibleAppModules_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter149 in self.success:
-                iter149.write(oprot)
+            for iter124 in self.success:
+                iter124.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -32365,11 +31354,11 @@ class getAllApplicationDeployments_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype153, _size150) = iprot.readListBegin()
-                    for _i154 in range(_size150):
-                        _elem155 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
-                        _elem155.read(iprot)
-                        self.success.append(_elem155)
+                    (_etype128, _size125) = iprot.readListBegin()
+                    for _i129 in range(_size125):
+                        _elem130 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
+                        _elem130.read(iprot)
+                        self.success.append(_elem130)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -32410,8 +31399,8 @@ class getAllApplicationDeployments_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter156 in self.success:
-                iter156.write(oprot)
+            for iter131 in self.success:
+                iter131.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -32576,11 +31565,11 @@ class getAccessibleApplicationDeployments_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype160, _size157) = iprot.readListBegin()
-                    for _i161 in range(_size157):
-                        _elem162 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
-                        _elem162.read(iprot)
-                        self.success.append(_elem162)
+                    (_etype135, _size132) = iprot.readListBegin()
+                    for _i136 in range(_size132):
+                        _elem137 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
+                        _elem137.read(iprot)
+                        self.success.append(_elem137)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -32621,8 +31610,8 @@ class getAccessibleApplicationDeployments_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter163 in self.success:
-                iter163.write(oprot)
+            for iter138 in self.success:
+                iter138.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -32773,10 +31762,10 @@ class getAppModuleDeployedResources_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype167, _size164) = iprot.readListBegin()
-                    for _i168 in range(_size164):
-                        _elem169 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success.append(_elem169)
+                    (_etype142, _size139) = iprot.readListBegin()
+                    for _i143 in range(_size139):
+                        _elem144 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success.append(_elem144)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -32817,8 +31806,8 @@ class getAppModuleDeployedResources_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRING, len(self.success))
-            for iter170 in self.success:
-                oprot.writeString(iter170.encode('utf-8') if sys.version_info[0] == 2 else iter170)
+            for iter145 in self.success:
+                oprot.writeString(iter145.encode('utf-8') if sys.version_info[0] == 2 else iter145)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -32983,11 +31972,11 @@ class getApplicationDeploymentsForAppModuleAndGroupResourceProfile_result(object
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype174, _size171) = iprot.readListBegin()
-                    for _i175 in range(_size171):
-                        _elem176 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
-                        _elem176.read(iprot)
-                        self.success.append(_elem176)
+                    (_etype149, _size146) = iprot.readListBegin()
+                    for _i150 in range(_size146):
+                        _elem151 = airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
+                        _elem151.read(iprot)
+                        self.success.append(_elem151)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -33028,8 +32017,8 @@ class getApplicationDeploymentsForAppModuleAndGroupResourceProfile_result(object
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter177 in self.success:
-                iter177.write(oprot)
+            for iter152 in self.success:
+                iter152.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -34173,11 +33162,11 @@ class getAllApplicationInterfaceNames_result(object):
             if fid == 0:
                 if ftype == TType.MAP:
                     self.success = {}
-                    (_ktype179, _vtype180, _size178) = iprot.readMapBegin()
-                    for _i182 in range(_size178):
-                        _key183 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val184 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success[_key183] = _val184
+                    (_ktype154, _vtype155, _size153) = iprot.readMapBegin()
+                    for _i157 in range(_size153):
+                        _key158 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val159 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success[_key158] = _val159
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -34218,9 +33207,9 @@ class getAllApplicationInterfaceNames_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.MAP, 0)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-            for kiter185, viter186 in self.success.items():
-                oprot.writeString(kiter185.encode('utf-8') if sys.version_info[0] == 2 else kiter185)
-                oprot.writeString(viter186.encode('utf-8') if sys.version_info[0] == 2 else viter186)
+            for kiter160, viter161 in self.success.items():
+                oprot.writeString(kiter160.encode('utf-8') if sys.version_info[0] == 2 else kiter160)
+                oprot.writeString(viter161.encode('utf-8') if sys.version_info[0] == 2 else viter161)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -34371,11 +33360,11 @@ class getAllApplicationInterfaces_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype190, _size187) = iprot.readListBegin()
-                    for _i191 in range(_size187):
-                        _elem192 = airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
-                        _elem192.read(iprot)
-                        self.success.append(_elem192)
+                    (_etype165, _size162) = iprot.readListBegin()
+                    for _i166 in range(_size162):
+                        _elem167 = airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
+                        _elem167.read(iprot)
+                        self.success.append(_elem167)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -34416,8 +33405,8 @@ class getAllApplicationInterfaces_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter193 in self.success:
-                iter193.write(oprot)
+            for iter168 in self.success:
+                iter168.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -34568,11 +33557,11 @@ class getApplicationInputs_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype197, _size194) = iprot.readListBegin()
-                    for _i198 in range(_size194):
-                        _elem199 = airavata.model.application.io.ttypes.InputDataObjectType()
-                        _elem199.read(iprot)
-                        self.success.append(_elem199)
+                    (_etype172, _size169) = iprot.readListBegin()
+                    for _i173 in range(_size169):
+                        _elem174 = airavata.model.application.io.ttypes.InputDataObjectType()
+                        _elem174.read(iprot)
+                        self.success.append(_elem174)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -34613,8 +33602,8 @@ class getApplicationInputs_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter200 in self.success:
-                iter200.write(oprot)
+            for iter175 in self.success:
+                iter175.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -34765,11 +33754,11 @@ class getApplicationOutputs_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype204, _size201) = iprot.readListBegin()
-                    for _i205 in range(_size201):
-                        _elem206 = airavata.model.application.io.ttypes.OutputDataObjectType()
-                        _elem206.read(iprot)
-                        self.success.append(_elem206)
+                    (_etype179, _size176) = iprot.readListBegin()
+                    for _i180 in range(_size176):
+                        _elem181 = airavata.model.application.io.ttypes.OutputDataObjectType()
+                        _elem181.read(iprot)
+                        self.success.append(_elem181)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -34810,8 +33799,8 @@ class getApplicationOutputs_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter207 in self.success:
-                iter207.write(oprot)
+            for iter182 in self.success:
+                iter182.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -34962,11 +33951,11 @@ class getAvailableAppInterfaceComputeResources_result(object):
             if fid == 0:
                 if ftype == TType.MAP:
                     self.success = {}
-                    (_ktype209, _vtype210, _size208) = iprot.readMapBegin()
-                    for _i212 in range(_size208):
-                        _key213 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val214 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success[_key213] = _val214
+                    (_ktype184, _vtype185, _size183) = iprot.readMapBegin()
+                    for _i187 in range(_size183):
+                        _key188 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val189 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success[_key188] = _val189
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -35007,9 +33996,9 @@ class getAvailableAppInterfaceComputeResources_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.MAP, 0)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-            for kiter215, viter216 in self.success.items():
-                oprot.writeString(kiter215.encode('utf-8') if sys.version_info[0] == 2 else kiter215)
-                oprot.writeString(viter216.encode('utf-8') if sys.version_info[0] == 2 else viter216)
+            for kiter190, viter191 in self.success.items():
+                oprot.writeString(kiter190.encode('utf-8') if sys.version_info[0] == 2 else kiter190)
+                oprot.writeString(viter191.encode('utf-8') if sys.version_info[0] == 2 else viter191)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -35524,11 +34513,11 @@ class getAllComputeResourceNames_result(object):
             if fid == 0:
                 if ftype == TType.MAP:
                     self.success = {}
-                    (_ktype218, _vtype219, _size217) = iprot.readMapBegin()
-                    for _i221 in range(_size217):
-                        _key222 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val223 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success[_key222] = _val223
+                    (_ktype193, _vtype194, _size192) = iprot.readMapBegin()
+                    for _i196 in range(_size192):
+                        _key197 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val198 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success[_key197] = _val198
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -35569,9 +34558,9 @@ class getAllComputeResourceNames_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.MAP, 0)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-            for kiter224, viter225 in self.success.items():
-                oprot.writeString(kiter224.encode('utf-8') if sys.version_info[0] == 2 else kiter224)
-                oprot.writeString(viter225.encode('utf-8') if sys.version_info[0] == 2 else viter225)
+            for kiter199, viter200 in self.success.items():
+                oprot.writeString(kiter199.encode('utf-8') if sys.version_info[0] == 2 else kiter199)
+                oprot.writeString(viter200.encode('utf-8') if sys.version_info[0] == 2 else viter200)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -36477,11 +35466,11 @@ class getAllStorageResourceNames_result(object):
             if fid == 0:
                 if ftype == TType.MAP:
                     self.success = {}
-                    (_ktype227, _vtype228, _size226) = iprot.readMapBegin()
-                    for _i230 in range(_size226):
-                        _key231 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val232 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success[_key231] = _val232
+                    (_ktype202, _vtype203, _size201) = iprot.readMapBegin()
+                    for _i205 in range(_size201):
+                        _key206 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val207 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success[_key206] = _val207
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -36522,9 +35511,9 @@ class getAllStorageResourceNames_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.MAP, 0)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-            for kiter233, viter234 in self.success.items():
-                oprot.writeString(kiter233.encode('utf-8') if sys.version_info[0] == 2 else kiter233)
-                oprot.writeString(viter234.encode('utf-8') if sys.version_info[0] == 2 else viter234)
+            for kiter208, viter209 in self.success.items():
+                oprot.writeString(kiter208.encode('utf-8') if sys.version_info[0] == 2 else kiter208)
+                oprot.writeString(viter209.encode('utf-8') if sys.version_info[0] == 2 else viter209)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -42536,11 +41525,11 @@ class changeJobSubmissionPriorities_args(object):
             elif fid == 2:
                 if ftype == TType.MAP:
                     self.jobSubmissionPriorityMap = {}
-                    (_ktype236, _vtype237, _size235) = iprot.readMapBegin()
-                    for _i239 in range(_size235):
-                        _key240 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val241 = iprot.readI32()
-                        self.jobSubmissionPriorityMap[_key240] = _val241
+                    (_ktype211, _vtype212, _size210) = iprot.readMapBegin()
+                    for _i214 in range(_size210):
+                        _key215 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val216 = iprot.readI32()
+                        self.jobSubmissionPriorityMap[_key215] = _val216
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -42561,9 +41550,9 @@ class changeJobSubmissionPriorities_args(object):
         if self.jobSubmissionPriorityMap is not None:
             oprot.writeFieldBegin('jobSubmissionPriorityMap', TType.MAP, 2)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.jobSubmissionPriorityMap))
-            for kiter242, viter243 in self.jobSubmissionPriorityMap.items():
-                oprot.writeString(kiter242.encode('utf-8') if sys.version_info[0] == 2 else kiter242)
-                oprot.writeI32(viter243)
+            for kiter217, viter218 in self.jobSubmissionPriorityMap.items():
+                oprot.writeString(kiter217.encode('utf-8') if sys.version_info[0] == 2 else kiter217)
+                oprot.writeI32(viter218)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -42734,11 +41723,11 @@ class changeDataMovementPriorities_args(object):
             elif fid == 2:
                 if ftype == TType.MAP:
                     self.dataMovementPriorityMap = {}
-                    (_ktype245, _vtype246, _size244) = iprot.readMapBegin()
-                    for _i248 in range(_size244):
-                        _key249 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val250 = iprot.readI32()
-                        self.dataMovementPriorityMap[_key249] = _val250
+                    (_ktype220, _vtype221, _size219) = iprot.readMapBegin()
+                    for _i223 in range(_size219):
+                        _key224 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val225 = iprot.readI32()
+                        self.dataMovementPriorityMap[_key224] = _val225
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -42759,9 +41748,9 @@ class changeDataMovementPriorities_args(object):
         if self.dataMovementPriorityMap is not None:
             oprot.writeFieldBegin('dataMovementPriorityMap', TType.MAP, 2)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.dataMovementPriorityMap))
-            for kiter251, viter252 in self.dataMovementPriorityMap.items():
-                oprot.writeString(kiter251.encode('utf-8') if sys.version_info[0] == 2 else kiter251)
-                oprot.writeI32(viter252)
+            for kiter226, viter227 in self.dataMovementPriorityMap.items():
+                oprot.writeString(kiter226.encode('utf-8') if sys.version_info[0] == 2 else kiter226)
+                oprot.writeI32(viter227)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -46009,11 +44998,11 @@ class getAllGatewayComputeResourcePreferences_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype256, _size253) = iprot.readListBegin()
-                    for _i257 in range(_size253):
-                        _elem258 = airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
-                        _elem258.read(iprot)
-                        self.success.append(_elem258)
+                    (_etype231, _size228) = iprot.readListBegin()
+                    for _i232 in range(_size228):
+                        _elem233 = airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
+                        _elem233.read(iprot)
+                        self.success.append(_elem233)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -46054,8 +45043,8 @@ class getAllGatewayComputeResourcePreferences_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter259 in self.success:
-                iter259.write(oprot)
+            for iter234 in self.success:
+                iter234.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -46206,11 +45195,11 @@ class getAllGatewayStoragePreferences_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype263, _size260) = iprot.readListBegin()
-                    for _i264 in range(_size260):
-                        _elem265 = airavata.model.appcatalog.gatewayprofile.ttypes.StoragePreference()
-                        _elem265.read(iprot)
-                        self.success.append(_elem265)
+                    (_etype238, _size235) = iprot.readListBegin()
+                    for _i239 in range(_size235):
+                        _elem240 = airavata.model.appcatalog.gatewayprofile.ttypes.StoragePreference()
+                        _elem240.read(iprot)
+                        self.success.append(_elem240)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -46251,8 +45240,8 @@ class getAllGatewayStoragePreferences_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter266 in self.success:
-                iter266.write(oprot)
+            for iter241 in self.success:
+                iter241.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -46389,11 +45378,11 @@ class getAllGatewayResourceProfiles_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype270, _size267) = iprot.readListBegin()
-                    for _i271 in range(_size267):
-                        _elem272 = airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
-                        _elem272.read(iprot)
-                        self.success.append(_elem272)
+                    (_etype245, _size242) = iprot.readListBegin()
+                    for _i246 in range(_size242):
+                        _elem247 = airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
+                        _elem247.read(iprot)
+                        self.success.append(_elem247)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -46434,8 +45423,8 @@ class getAllGatewayResourceProfiles_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter273 in self.success:
-                iter273.write(oprot)
+            for iter248 in self.success:
+                iter248.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -47410,11 +46399,11 @@ class getSSHAccountProvisioners_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype277, _size274) = iprot.readListBegin()
-                    for _i278 in range(_size274):
-                        _elem279 = airavata.model.appcatalog.accountprovisioning.ttypes.SSHAccountProvisioner()
-                        _elem279.read(iprot)
-                        self.success.append(_elem279)
+                    (_etype252, _size249) = iprot.readListBegin()
+                    for _i253 in range(_size249):
+                        _elem254 = airavata.model.appcatalog.accountprovisioning.ttypes.SSHAccountProvisioner()
+                        _elem254.read(iprot)
+                        self.success.append(_elem254)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -47455,8 +46444,8 @@ class getSSHAccountProvisioners_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter280 in self.success:
-                iter280.write(oprot)
+            for iter255 in self.success:
+                iter255.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -49949,11 +48938,11 @@ class getAllUserComputeResourcePreferences_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype284, _size281) = iprot.readListBegin()
-                    for _i285 in range(_size281):
-                        _elem286 = airavata.model.appcatalog.userresourceprofile.ttypes.UserComputeResourcePreference()
-                        _elem286.read(iprot)
-                        self.success.append(_elem286)
+                    (_etype259, _size256) = iprot.readListBegin()
+                    for _i260 in range(_size256):
+                        _elem261 = airavata.model.appcatalog.userresourceprofile.ttypes.UserComputeResourcePreference()
+                        _elem261.read(iprot)
+                        self.success.append(_elem261)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -49994,8 +48983,8 @@ class getAllUserComputeResourcePreferences_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter287 in self.success:
-                iter287.write(oprot)
+            for iter262 in self.success:
+                iter262.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -50160,11 +49149,11 @@ class getAllUserStoragePreferences_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype291, _size288) = iprot.readListBegin()
-                    for _i292 in range(_size288):
-                        _elem293 = airavata.model.appcatalog.userresourceprofile.ttypes.UserStoragePreference()
-                        _elem293.read(iprot)
-                        self.success.append(_elem293)
+                    (_etype266, _size263) = iprot.readListBegin()
+                    for _i267 in range(_size263):
+                        _elem268 = airavata.model.appcatalog.userresourceprofile.ttypes.UserStoragePreference()
+                        _elem268.read(iprot)
+                        self.success.append(_elem268)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -50205,8 +49194,8 @@ class getAllUserStoragePreferences_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter294 in self.success:
-                iter294.write(oprot)
+            for iter269 in self.success:
+                iter269.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -50343,11 +49332,11 @@ class getAllUserResourceProfiles_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype298, _size295) = iprot.readListBegin()
-                    for _i299 in range(_size295):
-                        _elem300 = airavata.model.appcatalog.userresourceprofile.ttypes.UserResourceProfile()
-                        _elem300.read(iprot)
-                        self.success.append(_elem300)
+                    (_etype273, _size270) = iprot.readListBegin()
+                    for _i274 in range(_size270):
+                        _elem275 = airavata.model.appcatalog.userresourceprofile.ttypes.UserResourceProfile()
+                        _elem275.read(iprot)
+                        self.success.append(_elem275)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -50388,8 +49377,8 @@ class getAllUserResourceProfiles_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter301 in self.success:
-                iter301.write(oprot)
+            for iter276 in self.success:
+                iter276.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -51434,10 +50423,10 @@ class getAllWorkflows_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype305, _size302) = iprot.readListBegin()
-                    for _i306 in range(_size302):
-                        _elem307 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success.append(_elem307)
+                    (_etype280, _size277) = iprot.readListBegin()
+                    for _i281 in range(_size277):
+                        _elem282 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success.append(_elem282)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -51478,8 +50467,8 @@ class getAllWorkflows_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRING, len(self.success))
-            for iter308 in self.success:
-                oprot.writeString(iter308.encode('utf-8') if sys.version_info[0] == 2 else iter308)
+            for iter283 in self.success:
+                oprot.writeString(iter283.encode('utf-8') if sys.version_info[0] == 2 else iter283)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -51616,11 +50605,11 @@ class getLatestQueueStatuses_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype312, _size309) = iprot.readListBegin()
-                    for _i313 in range(_size309):
-                        _elem314 = airavata.model.status.ttypes.QueueStatusModel()
-                        _elem314.read(iprot)
-                        self.success.append(_elem314)
+                    (_etype287, _size284) = iprot.readListBegin()
+                    for _i288 in range(_size284):
+                        _elem289 = airavata.model.status.ttypes.QueueStatusModel()
+                        _elem289.read(iprot)
+                        self.success.append(_elem289)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -51661,8 +50650,8 @@ class getLatestQueueStatuses_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter315 in self.success:
-                iter315.write(oprot)
+            for iter290 in self.success:
+                iter290.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -53706,11 +52695,11 @@ class getChildDataProducts_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype319, _size316) = iprot.readListBegin()
-                    for _i320 in range(_size316):
-                        _elem321 = airavata.model.data.replica.ttypes.DataProductModel()
-                        _elem321.read(iprot)
-                        self.success.append(_elem321)
+                    (_etype294, _size291) = iprot.readListBegin()
+                    for _i295 in range(_size291):
+                        _elem296 = airavata.model.data.replica.ttypes.DataProductModel()
+                        _elem296.read(iprot)
+                        self.success.append(_elem296)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -53751,8 +52740,8 @@ class getChildDataProducts_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter322 in self.success:
-                iter322.write(oprot)
+            for iter297 in self.success:
+                iter297.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -53833,11 +52822,11 @@ class shareResourceWithUsers_args(object):
             elif fid == 4:
                 if ftype == TType.MAP:
                     self.userPermissionList = {}
-                    (_ktype324, _vtype325, _size323) = iprot.readMapBegin()
-                    for _i327 in range(_size323):
-                        _key328 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val329 = iprot.readI32()
-                        self.userPermissionList[_key328] = _val329
+                    (_ktype299, _vtype300, _size298) = iprot.readMapBegin()
+                    for _i302 in range(_size298):
+                        _key303 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val304 = iprot.readI32()
+                        self.userPermissionList[_key303] = _val304
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -53862,9 +52851,9 @@ class shareResourceWithUsers_args(object):
         if self.userPermissionList is not None:
             oprot.writeFieldBegin('userPermissionList', TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.userPermissionList))
-            for kiter330, viter331 in self.userPermissionList.items():
-                oprot.writeString(kiter330.encode('utf-8') if sys.version_info[0] == 2 else kiter330)
-                oprot.writeI32(viter331)
+            for kiter305, viter306 in self.userPermissionList.items():
+                oprot.writeString(kiter305.encode('utf-8') if sys.version_info[0] == 2 else kiter305)
+                oprot.writeI32(viter306)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -54044,11 +53033,11 @@ class shareResourceWithGroups_args(object):
             elif fid == 4:
                 if ftype == TType.MAP:
                     self.groupPermissionList = {}
-                    (_ktype333, _vtype334, _size332) = iprot.readMapBegin()
-                    for _i336 in range(_size332):
-                        _key337 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val338 = iprot.readI32()
-                        self.groupPermissionList[_key337] = _val338
+                    (_ktype308, _vtype309, _size307) = iprot.readMapBegin()
+                    for _i311 in range(_size307):
+                        _key312 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val313 = iprot.readI32()
+                        self.groupPermissionList[_key312] = _val313
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -54073,9 +53062,9 @@ class shareResourceWithGroups_args(object):
         if self.groupPermissionList is not None:
             oprot.writeFieldBegin('groupPermissionList', TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.groupPermissionList))
-            for kiter339, viter340 in self.groupPermissionList.items():
-                oprot.writeString(kiter339.encode('utf-8') if sys.version_info[0] == 2 else kiter339)
-                oprot.writeI32(viter340)
+            for kiter314, viter315 in self.groupPermissionList.items():
+                oprot.writeString(kiter314.encode('utf-8') if sys.version_info[0] == 2 else kiter314)
+                oprot.writeI32(viter315)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -54255,11 +53244,11 @@ class revokeSharingOfResourceFromUsers_args(object):
             elif fid == 4:
                 if ftype == TType.MAP:
                     self.userPermissionList = {}
-                    (_ktype342, _vtype343, _size341) = iprot.readMapBegin()
-                    for _i345 in range(_size341):
-                        _key346 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val347 = iprot.readI32()
-                        self.userPermissionList[_key346] = _val347
+                    (_ktype317, _vtype318, _size316) = iprot.readMapBegin()
+                    for _i320 in range(_size316):
+                        _key321 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val322 = iprot.readI32()
+                        self.userPermissionList[_key321] = _val322
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -54284,9 +53273,9 @@ class revokeSharingOfResourceFromUsers_args(object):
         if self.userPermissionList is not None:
             oprot.writeFieldBegin('userPermissionList', TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.userPermissionList))
-            for kiter348, viter349 in self.userPermissionList.items():
-                oprot.writeString(kiter348.encode('utf-8') if sys.version_info[0] == 2 else kiter348)
-                oprot.writeI32(viter349)
+            for kiter323, viter324 in self.userPermissionList.items():
+                oprot.writeString(kiter323.encode('utf-8') if sys.version_info[0] == 2 else kiter323)
+                oprot.writeI32(viter324)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -54466,11 +53455,11 @@ class revokeSharingOfResourceFromGroups_args(object):
             elif fid == 4:
                 if ftype == TType.MAP:
                     self.groupPermissionList = {}
-                    (_ktype351, _vtype352, _size350) = iprot.readMapBegin()
-                    for _i354 in range(_size350):
-                        _key355 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        _val356 = iprot.readI32()
-                        self.groupPermissionList[_key355] = _val356
+                    (_ktype326, _vtype327, _size325) = iprot.readMapBegin()
+                    for _i329 in range(_size325):
+                        _key330 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        _val331 = iprot.readI32()
+                        self.groupPermissionList[_key330] = _val331
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -54495,9 +53484,9 @@ class revokeSharingOfResourceFromGroups_args(object):
         if self.groupPermissionList is not None:
             oprot.writeFieldBegin('groupPermissionList', TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.I32, len(self.groupPermissionList))
-            for kiter357, viter358 in self.groupPermissionList.items():
-                oprot.writeString(kiter357.encode('utf-8') if sys.version_info[0] == 2 else kiter357)
-                oprot.writeI32(viter358)
+            for kiter332, viter333 in self.groupPermissionList.items():
+                oprot.writeString(kiter332.encode('utf-8') if sys.version_info[0] == 2 else kiter332)
+                oprot.writeI32(viter333)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -54762,10 +53751,10 @@ class getAllAccessibleUsers_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype362, _size359) = iprot.readListBegin()
-                    for _i363 in range(_size359):
-                        _elem364 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success.append(_elem364)
+                    (_etype337, _size334) = iprot.readListBegin()
+                    for _i338 in range(_size334):
+                        _elem339 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success.append(_elem339)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -54806,8 +53795,8 @@ class getAllAccessibleUsers_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRING, len(self.success))
-            for iter365 in self.success:
-                oprot.writeString(iter365.encode('utf-8') if sys.version_info[0] == 2 else iter365)
+            for iter340 in self.success:
+                oprot.writeString(iter340.encode('utf-8') if sys.version_info[0] == 2 else iter340)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -54973,10 +53962,10 @@ class getAllAccessibleGroups_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype369, _size366) = iprot.readListBegin()
-                    for _i370 in range(_size366):
-                        _elem371 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.success.append(_elem371)
+                    (_etype344, _size341) = iprot.readListBegin()
+                    for _i345 in range(_size341):
+                        _elem346 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success.append(_elem346)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -55017,8 +54006,8 @@ class getAllAccessibleGroups_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRING, len(self.success))
-            for iter372 in self.success:
-                oprot.writeString(iter372.encode('utf-8') if sys.version_info[0] == 2 else iter372)
+            for iter347 in self.success:
+                oprot.writeString(iter347.encode('utf-8') if sys.version_info[0] == 2 else iter347)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -56115,11 +55104,11 @@ class getGroupResourceList_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype376, _size373) = iprot.readListBegin()
-                    for _i377 in range(_size373):
-                        _elem378 = airavata.model.appcatalog.groupresourceprofile.ttypes.GroupResourceProfile()
-                        _elem378.read(iprot)
-                        self.success.append(_elem378)
+                    (_etype351, _size348) = iprot.readListBegin()
+                    for _i352 in range(_size348):
+                        _elem353 = airavata.model.appcatalog.groupresourceprofile.ttypes.GroupResourceProfile()
+                        _elem353.read(iprot)
+                        self.success.append(_elem353)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -56160,8 +55149,8 @@ class getGroupResourceList_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter379 in self.success:
-                iter379.write(oprot)
+            for iter354 in self.success:
+                iter354.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -57471,11 +56460,11 @@ class getGroupComputeResourcePrefList_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype383, _size380) = iprot.readListBegin()
-                    for _i384 in range(_size380):
-                        _elem385 = airavata.model.appcatalog.groupresourceprofile.ttypes.GroupComputeResourcePreference()
-                        _elem385.read(iprot)
-                        self.success.append(_elem385)
+                    (_etype358, _size355) = iprot.readListBegin()
+                    for _i359 in range(_size355):
+                        _elem360 = airavata.model.appcatalog.groupresourceprofile.ttypes.GroupComputeResourcePreference()
+                        _elem360.read(iprot)
+                        self.success.append(_elem360)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -57516,8 +56505,8 @@ class getGroupComputeResourcePrefList_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter386 in self.success:
-                iter386.write(oprot)
+            for iter361 in self.success:
+                iter361.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -57668,11 +56657,11 @@ class getGroupBatchQueueResourcePolicyList_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype390, _size387) = iprot.readListBegin()
-                    for _i391 in range(_size387):
-                        _elem392 = airavata.model.appcatalog.groupresourceprofile.ttypes.BatchQueueResourcePolicy()
-                        _elem392.read(iprot)
-                        self.success.append(_elem392)
+                    (_etype365, _size362) = iprot.readListBegin()
+                    for _i366 in range(_size362):
+                        _elem367 = airavata.model.appcatalog.groupresourceprofile.ttypes.BatchQueueResourcePolicy()
+                        _elem367.read(iprot)
+                        self.success.append(_elem367)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -57713,8 +56702,8 @@ class getGroupBatchQueueResourcePolicyList_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter393 in self.success:
-                iter393.write(oprot)
+            for iter368 in self.success:
+                iter368.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -57865,11 +56854,11 @@ class getGroupComputeResourcePolicyList_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype397, _size394) = iprot.readListBegin()
-                    for _i398 in range(_size394):
-                        _elem399 = airavata.model.appcatalog.groupresourceprofile.ttypes.ComputeResourcePolicy()
-                        _elem399.read(iprot)
-                        self.success.append(_elem399)
+                    (_etype372, _size369) = iprot.readListBegin()
+                    for _i373 in range(_size369):
+                        _elem374 = airavata.model.appcatalog.groupresourceprofile.ttypes.ComputeResourcePolicy()
+                        _elem374.read(iprot)
+                        self.success.append(_elem374)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -57910,8 +56899,8 @@ class getGroupComputeResourcePolicyList_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter400 in self.success:
-                iter400.write(oprot)
+            for iter375 in self.success:
+                iter375.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
