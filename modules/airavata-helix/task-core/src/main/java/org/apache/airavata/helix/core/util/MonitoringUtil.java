@@ -17,7 +17,7 @@ public class MonitoringUtil {
     private static final String REGISTRY = "/registry/";
 
     private static final String EXPERIMENT = "/experiment";
-    private static final String TASK = "/task/";
+    private static final String TASK = "/task";
     private static final String PROCESS = "/process";
     private static final String GATEWAY = "/gateway";
     private static final String LOCK = "/lock";
@@ -32,7 +32,7 @@ public class MonitoringUtil {
     public static final String CANCEL = "cancel";
 
     public static int getTaskRetryCount(CuratorFramework curatorClient, String taskId) throws Exception {
-        String path = TASK + taskId + RETRY;
+        String path = TASK + "/" + taskId + RETRY;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] processBytes = curatorClient.getData().forPath(path);
             return Integer.parseInt(new String(processBytes));
@@ -42,7 +42,7 @@ public class MonitoringUtil {
     }
 
     public static void increaseTaskRetryCount(CuratorFramework curatorClient, String takId) throws Exception {
-        String path = TASK + takId + RETRY;
+        String path = TASK + "/" + takId + RETRY;
         int currentRetryCount = 2;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] processBytes = curatorClient.getData().forPath(path);
