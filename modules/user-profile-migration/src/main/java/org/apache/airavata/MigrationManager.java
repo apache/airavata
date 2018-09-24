@@ -23,8 +23,6 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -281,7 +279,7 @@ public class MigrationManager {
         keycloakIdentityServerClient.setUserPassword(gatewayId, this.gatewayAdminUsername, this.wso2ISAdminPassword);
 
         // Create password credential for admin username and password
-        String passwordToken = airavataClient.registerPwdCredential(authzToken, gatewayId, this.gatewayAdminUsername, this.gatewayAdminUsername, this.wso2ISAdminPassword, "Keycloak admin password for realm " + gatewayId);
+        String passwordToken = airavataClient.registerPwdCredential(authzToken, this.gatewayAdminUsername, this.wso2ISAdminPassword, "Keycloak admin password for realm " + gatewayId);
 
         // Update gateway resource profile with tenant id (gatewayId) and admin user password token
         GatewayResourceProfile gatewayResourceProfile = airavataClient.getGatewayResourceProfile(authzToken, gatewayId);
