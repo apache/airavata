@@ -20,17 +20,15 @@
 package org.apache.airavata.credential.store.client;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.model.credential.store.CertificateCredential;
 import org.apache.airavata.model.credential.store.CommunityUser;
 import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
@@ -44,9 +42,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Map;
-
-import org.apache.commons.codec.binary.Base64;
 
 public class TestSSLClient {
     private void invoke() {
@@ -86,7 +81,6 @@ public class TestSSLClient {
             String token = client.addSSHCredential(sshCredential);
             System.out.println("SSH Token :" + token);
             SSHCredential credential = client.getSSHCredential(token, "testGateway");
-            Map<String, String> allSSHKeysForGateway = client.getAllSSHKeysForGateway(sshCredential.getGatewayId());
             System.out.println("private key : " + credential.getPrivateKey());
             System.out.println("public key : " + credential.getPublicKey());
         }catch (TTransportException e) {

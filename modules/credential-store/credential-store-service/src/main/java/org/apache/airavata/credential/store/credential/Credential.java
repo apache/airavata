@@ -33,6 +33,7 @@ public abstract class Credential implements Serializable {
     private String portalUserName;
     private Date persistedTime;
     private String token;
+    @Deprecated
     private CredentialOwnerType credentialOwnerType = CredentialOwnerType.GATEWAY;
 
     public String getDescription() {

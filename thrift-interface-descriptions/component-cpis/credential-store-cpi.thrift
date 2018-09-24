@@ -35,6 +35,17 @@ service CredentialStoreService {
   /** Query CS server to fetch the CPI version */
   string getCSServiceVersion(),
 
+  credential_store_data_models.CredentialSummary getCredentialSummary (1: required credential_store_data_models.SummaryType type,
+                             2: required string tokenId,
+                             3: required string gatewayId)
+                            throws (1:credential_store_errors.CredentialStoreException csException);
+
+  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaries(
+      1: required credential_store_data_models.SummaryType type,
+      2: required list<string> accessibleTokenIds,
+      3: required string gatewayId)
+    throws (1: credential_store_errors.CredentialStoreException csException);
+
   /**
   * This method is to add SSHCredential which will return the token Id in success
   **/
@@ -50,34 +61,27 @@ service CredentialStoreService {
   credential_store_data_models.SSHCredential getSSHCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
-  credential_store_data_models.CredentialSummary getCredentialSummary (1: required credential_store_data_models.SummaryType type,
-                             2: required string tokenId,
-                             3: required string gatewayId)
-                            throws (1:credential_store_errors.CredentialStoreException csException);
-
   credential_store_data_models.CertificateCredential getCertificateCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
   credential_store_data_models.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
-  map<string,string> getAllSSHKeysForUser (1: required string username) throws (1:credential_store_errors.CredentialStoreException csException);
-
-  map<string,string> getAllSSHKeysForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
-
+  // Deprecated
   list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForGateway (1: required credential_store_data_models.SummaryType type,
                               2: required string gatewayId)
                               throws (1:credential_store_errors.CredentialStoreException csException);
 
+    // Deprecated
     list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForUserInGateway (1: required credential_store_data_models.SummaryType type,
                                                 2: required string gatewayId,
                                                 3: required string userId)
                                                 throws (1:credential_store_errors.CredentialStoreException csException);
 
+  // Deprecated
   map<string,string> getAllPWDCredentialsForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
   bool deleteSSHCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
   bool deletePWDCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
-
 }
