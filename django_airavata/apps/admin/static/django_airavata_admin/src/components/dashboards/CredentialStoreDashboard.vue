@@ -4,7 +4,8 @@
 
       <b-table striped hover :fields="fields" :items="slotProps.items">
         <template slot="action" slot-scope="data">
-          <delete-link @delete="deleteSSHCredential(data.item)">
+          <clipboard-copy-link :text="data.item.publicKey" class="mr-1" />
+          <delete-link v-if="data.item.userHasWriteAccess" @delete="deleteSSHCredential(data.item)">
             Are you sure you want to delete this SSH credential?
           </delete-link>
         </template>
@@ -17,11 +18,13 @@
 import { services } from "django-airavata-api";
 import { components, layouts } from "django-airavata-common-ui";
 import moment from "moment";
+import ClipboardCopyLink from "../commons/ClipboardCopyLink.vue";
 
 export default {
   components: {
     "delete-link": components.DeleteLink,
-    "list-layout": layouts.ListLayout
+    "list-layout": layouts.ListLayout,
+    ClipboardCopyLink
   },
   created: function() {
     this.fetchSSHKeys();
