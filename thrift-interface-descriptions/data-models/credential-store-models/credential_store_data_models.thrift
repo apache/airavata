@@ -49,6 +49,10 @@ enum SummaryType{
 struct CredentialSummary {
     1: required SummaryType type,
     2: required string gatewayId,
+    /**
+     * The username corresponds to the Credential's `portalUserName` which is the username of the user that
+     * created the credential.
+     */
     3: required string username,
     4: optional string publicKey,
     5: optional i64 persistedTime,
