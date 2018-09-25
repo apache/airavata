@@ -28,7 +28,7 @@ export default {
     let clipboard = new ClipboardJS(this.$refs.copyLink);
     clipboard.on("success", this.onCopySuccess);
   },
-  destroyed() {
+  beforeDestroy() {
     let clipboard = new ClipboardJS(this.$refs.copyLink);
     clipboard.destroy();
   },

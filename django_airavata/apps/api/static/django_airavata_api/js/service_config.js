@@ -158,12 +158,18 @@ export default {
         name: "createSSH",
         url: "/api/credential-summaries/create_ssh/",
         requestType: "post",
+        bodyParams: {
+          name: "data"
+        },
         modelClass: CredentialSummary
       },
       {
         name: "createPassword",
         url: "/api/credential-summaries/create_password/",
         requestType: "post",
+        bodyParams: {
+          name: "data"
+        },
         modelClass: CredentialSummary
       }
     ],

@@ -779,11 +779,7 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
         return Response(merged_serializer.data)
 
 
-
-
-
-class CredentialSummaryViewSet(mixins.ListModelMixin,
-                               GenericAPIBackedViewSet):
+class CredentialSummaryViewSet(APIBackedViewSet):
     serializer_class = serializers.CredentialSummarySerializer
 
     def get_list(self):
@@ -792,6 +788,11 @@ class CredentialSummaryViewSet(mixins.ListModelMixin,
         pwd_creds = self.request.airavata_client.getAllCredentialSummaries(
             self.authz_token, SummaryType.PASSWD)
         return ssh_creds + pwd_creds
+
+    def get_instance(self, lookup_value):
+        # FIXME: assuming SSH type, need to remove type from signature
+        return self.request.airavata_client.getCredentialSummary(
+            self.authz_token, SummaryType.SSH, lookup_value)
 
     @action(detail=False)
     def ssh(self, request):
@@ -811,9 +812,9 @@ class CredentialSummaryViewSet(mixins.ListModelMixin,
 
     @action(methods=['post'], detail=False)
     def create_ssh(self, request):
-        description = request.POST.get('description')
-        if description is None:
+        if 'description' not in request.data:
             raise ParseError("'description' is required in request")
+        description = request.data.get('description')
         token_id = self.request.airavata_client.generateAndRegisterSSHKeys(
             request.authz_token, description)
         credential_summary = self.request.airavata_client.getCredentialSummary(
@@ -823,12 +824,14 @@ class CredentialSummaryViewSet(mixins.ListModelMixin,
 
     @action(methods=['post'], detail=False)
     def create_password(self, request):
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        description = request.POST.get('description')
-        if username is None or password is None or description is None:
+        if ('username' not in request.data or
+            'password' not in request.data or
+                'description' not in request.data):
             raise ParseError("'username', 'password' and 'description' "
                              "are all required in request")
+        username = request.data.get('username')
+        password = request.data.get('password')
+        description = request.data.get('description')
         token_id = self.request.airavata_client.registerPwdCredential(
             request.authz_token, username, password, description)
         credential_summary = self.request.airavata_client.getCredentialSummary(
@@ -839,7 +842,7 @@ class CredentialSummaryViewSet(mixins.ListModelMixin,
     def perform_destroy(self, instance):
         if instance.type == SummaryType.SSH:
             self.request.airavata_client.deleteSSHPubKey(
-                self.authz_token, instance.token)
+                self.authz_token, instance.token, settings.GATEWAY_ID)
         elif instance.type == SummaryType.PASSWD:
             self.request.airavata_client.deletePWDCredential(
-                self.authz_token, instance.token)
+                self.authz_token, instance.token, settings.GATEWAY_ID)
