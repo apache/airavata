@@ -257,7 +257,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     private CredentialSummary convertToCredentialSummary(org.apache.airavata.credential.store.credential.impl.password.PasswordCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.PASSWD);
-        credentialSummary.setUsername(cred.getUserName());
+        credentialSummary.setUsername(cred.getPortalUserName());
         credentialSummary.setGatewayId(cred.getGateway());
         credentialSummary.setToken(cred.getToken());
         credentialSummary.setPersistedTime(cred.getCertificateRequestedTime().getTime());
