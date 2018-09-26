@@ -33,7 +33,7 @@ public class CredentialStoreService {
      */
     public java.lang.String getCSServiceVersion() throws org.apache.thrift.TException;
 
-    public org.apache.airavata.model.credential.store.CredentialSummary getCredentialSummary(org.apache.airavata.model.credential.store.SummaryType type, java.lang.String tokenId, java.lang.String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public org.apache.airavata.model.credential.store.CredentialSummary getCredentialSummary(java.lang.String tokenId, java.lang.String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
     public java.util.List<org.apache.airavata.model.credential.store.CredentialSummary> getAllCredentialSummaries(org.apache.airavata.model.credential.store.SummaryType type, java.util.List<java.lang.String> accessibleTokenIds, java.lang.String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
@@ -71,7 +71,7 @@ public class CredentialStoreService {
 
     public void getCSServiceVersion(org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException;
 
-    public void getCredentialSummary(org.apache.airavata.model.credential.store.SummaryType type, java.lang.String tokenId, java.lang.String gatewayId, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.CredentialSummary> resultHandler) throws org.apache.thrift.TException;
+    public void getCredentialSummary(java.lang.String tokenId, java.lang.String gatewayId, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.CredentialSummary> resultHandler) throws org.apache.thrift.TException;
 
     public void getAllCredentialSummaries(org.apache.airavata.model.credential.store.SummaryType type, java.util.List<java.lang.String> accessibleTokenIds, java.lang.String gatewayId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.credential.store.CredentialSummary>> resultHandler) throws org.apache.thrift.TException;
 
@@ -141,16 +141,15 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getCSServiceVersion failed: unknown result");
     }
 
-    public org.apache.airavata.model.credential.store.CredentialSummary getCredentialSummary(org.apache.airavata.model.credential.store.SummaryType type, java.lang.String tokenId, java.lang.String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.CredentialSummary getCredentialSummary(java.lang.String tokenId, java.lang.String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
-      send_getCredentialSummary(type, tokenId, gatewayId);
+      send_getCredentialSummary(tokenId, gatewayId);
       return recv_getCredentialSummary();
     }
 
-    public void send_getCredentialSummary(org.apache.airavata.model.credential.store.SummaryType type, java.lang.String tokenId, java.lang.String gatewayId) throws org.apache.thrift.TException
+    public void send_getCredentialSummary(java.lang.String tokenId, java.lang.String gatewayId) throws org.apache.thrift.TException
     {
       getCredentialSummary_args args = new getCredentialSummary_args();
-      args.setType(type);
       args.setTokenId(tokenId);
       args.setGatewayId(gatewayId);
       sendBase("getCredentialSummary", args);
@@ -538,20 +537,18 @@ public class CredentialStoreService {
       }
     }
 
-    public void getCredentialSummary(org.apache.airavata.model.credential.store.SummaryType type, java.lang.String tokenId, java.lang.String gatewayId, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.CredentialSummary> resultHandler) throws org.apache.thrift.TException {
+    public void getCredentialSummary(java.lang.String tokenId, java.lang.String gatewayId, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.CredentialSummary> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getCredentialSummary_call method_call = new getCredentialSummary_call(type, tokenId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
+      getCredentialSummary_call method_call = new getCredentialSummary_call(tokenId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getCredentialSummary_call extends org.apache.thrift.async.TAsyncMethodCall<org.apache.airavata.model.credential.store.CredentialSummary> {
-      private org.apache.airavata.model.credential.store.SummaryType type;
       private java.lang.String tokenId;
       private java.lang.String gatewayId;
-      public getCredentialSummary_call(org.apache.airavata.model.credential.store.SummaryType type, java.lang.String tokenId, java.lang.String gatewayId, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.CredentialSummary> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public getCredentialSummary_call(java.lang.String tokenId, java.lang.String gatewayId, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.CredentialSummary> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.type = type;
         this.tokenId = tokenId;
         this.gatewayId = gatewayId;
       }
@@ -559,7 +556,6 @@ public class CredentialStoreService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getCredentialSummary", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getCredentialSummary_args args = new getCredentialSummary_args();
-        args.setType(type);
         args.setTokenId(tokenId);
         args.setGatewayId(gatewayId);
         args.write(prot);
@@ -1056,7 +1052,7 @@ public class CredentialStoreService {
       public getCredentialSummary_result getResult(I iface, getCredentialSummary_args args) throws org.apache.thrift.TException {
         getCredentialSummary_result result = new getCredentialSummary_result();
         try {
-          result.success = iface.getCredentialSummary(args.type, args.tokenId, args.gatewayId);
+          result.success = iface.getCredentialSummary(args.tokenId, args.gatewayId);
         } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
           result.csException = csException;
         }
@@ -1506,7 +1502,7 @@ public class CredentialStoreService {
       }
 
       public void start(I iface, getCredentialSummary_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.CredentialSummary> resultHandler) throws org.apache.thrift.TException {
-        iface.getCredentialSummary(args.type, args.tokenId, args.gatewayId,resultHandler);
+        iface.getCredentialSummary(args.tokenId, args.gatewayId,resultHandler);
       }
     }
 
@@ -2909,30 +2905,19 @@ public class CredentialStoreService {
   public static class getCredentialSummary_args implements org.apache.thrift.TBase<getCredentialSummary_args, getCredentialSummary_args._Fields>, java.io.Serializable, Cloneable, Comparable<getCredentialSummary_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getCredentialSummary_args");
 
-    private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)1);
-    private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
+    private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getCredentialSummary_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getCredentialSummary_argsTupleSchemeFactory();
 
-    /**
-     * 
-     * @see org.apache.airavata.model.credential.store.SummaryType
-     */
-    public org.apache.airavata.model.credential.store.SummaryType type; // required
     public java.lang.String tokenId; // required
     public java.lang.String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      /**
-       * 
-       * @see org.apache.airavata.model.credential.store.SummaryType
-       */
-      TYPE((short)1, "type"),
-      TOKEN_ID((short)2, "tokenId"),
-      GATEWAY_ID((short)3, "gatewayId");
+      TOKEN_ID((short)1, "tokenId"),
+      GATEWAY_ID((short)2, "gatewayId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -2947,11 +2932,9 @@ public class CredentialStoreService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // TYPE
-            return TYPE;
-          case 2: // TOKEN_ID
+          case 1: // TOKEN_ID
             return TOKEN_ID;
-          case 3: // GATEWAY_ID
+          case 2: // GATEWAY_ID
             return GATEWAY_ID;
           default:
             return null;
@@ -2996,8 +2979,6 @@ public class CredentialStoreService {
     public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.credential.store.SummaryType.class)));
       tmpMap.put(_Fields.TOKEN_ID, new org.apache.thrift.meta_data.FieldMetaData("tokenId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -3010,12 +2991,10 @@ public class CredentialStoreService {
     }
 
     public getCredentialSummary_args(
-      org.apache.airavata.model.credential.store.SummaryType type,
       java.lang.String tokenId,
       java.lang.String gatewayId)
     {
       this();
-      this.type = type;
       this.tokenId = tokenId;
       this.gatewayId = gatewayId;
     }
@@ -3024,9 +3003,6 @@ public class CredentialStoreService {
      * Performs a deep copy on <i>other</i>.
      */
     public getCredentialSummary_args(getCredentialSummary_args other) {
-      if (other.isSetType()) {
-        this.type = other.type;
-      }
       if (other.isSetTokenId()) {
         this.tokenId = other.tokenId;
       }
@@ -3041,41 +3017,8 @@ public class CredentialStoreService {
 
     @Override
     public void clear() {
-      this.type = null;
       this.tokenId = null;
       this.gatewayId = null;
-    }
-
-    /**
-     * 
-     * @see org.apache.airavata.model.credential.store.SummaryType
-     */
-    public org.apache.airavata.model.credential.store.SummaryType getType() {
-      return this.type;
-    }
-
-    /**
-     * 
-     * @see org.apache.airavata.model.credential.store.SummaryType
-     */
-    public getCredentialSummary_args setType(org.apache.airavata.model.credential.store.SummaryType type) {
-      this.type = type;
-      return this;
-    }
-
-    public void unsetType() {
-      this.type = null;
-    }
-
-    /** Returns true if field type is set (has been assigned a value) and false otherwise */
-    public boolean isSetType() {
-      return this.type != null;
-    }
-
-    public void setTypeIsSet(boolean value) {
-      if (!value) {
-        this.type = null;
-      }
     }
 
     public java.lang.String getTokenId() {
@@ -3128,14 +3071,6 @@ public class CredentialStoreService {
 
     public void setFieldValue(_Fields field, java.lang.Object value) {
       switch (field) {
-      case TYPE:
-        if (value == null) {
-          unsetType();
-        } else {
-          setType((org.apache.airavata.model.credential.store.SummaryType)value);
-        }
-        break;
-
       case TOKEN_ID:
         if (value == null) {
           unsetTokenId();
@@ -3157,9 +3092,6 @@ public class CredentialStoreService {
 
     public java.lang.Object getFieldValue(_Fields field) {
       switch (field) {
-      case TYPE:
-        return getType();
-
       case TOKEN_ID:
         return getTokenId();
 
@@ -3177,8 +3109,6 @@ public class CredentialStoreService {
       }
 
       switch (field) {
-      case TYPE:
-        return isSetType();
       case TOKEN_ID:
         return isSetTokenId();
       case GATEWAY_ID:
@@ -3201,15 +3131,6 @@ public class CredentialStoreService {
         return false;
       if (this == that)
         return true;
-
-      boolean this_present_type = true && this.isSetType();
-      boolean that_present_type = true && that.isSetType();
-      if (this_present_type || that_present_type) {
-        if (!(this_present_type && that_present_type))
-          return false;
-        if (!this.type.equals(that.type))
-          return false;
-      }
 
       boolean this_present_tokenId = true && this.isSetTokenId();
       boolean that_present_tokenId = true && that.isSetTokenId();
@@ -3236,10 +3157,6 @@ public class CredentialStoreService {
     public int hashCode() {
       int hashCode = 1;
 
-      hashCode = hashCode * 8191 + ((isSetType()) ? 131071 : 524287);
-      if (isSetType())
-        hashCode = hashCode * 8191 + type.getValue();
-
       hashCode = hashCode * 8191 + ((isSetTokenId()) ? 131071 : 524287);
       if (isSetTokenId())
         hashCode = hashCode * 8191 + tokenId.hashCode();
@@ -3259,16 +3176,6 @@ public class CredentialStoreService {
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.valueOf(isSetType()).compareTo(other.isSetType());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetType()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.type, other.type);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       lastComparison = java.lang.Boolean.valueOf(isSetTokenId()).compareTo(other.isSetTokenId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -3309,14 +3216,6 @@ public class CredentialStoreService {
       java.lang.StringBuilder sb = new java.lang.StringBuilder("getCredentialSummary_args(");
       boolean first = true;
 
-      sb.append("type:");
-      if (this.type == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.type);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("tokenId:");
       if (this.tokenId == null) {
         sb.append("null");
@@ -3338,9 +3237,6 @@ public class CredentialStoreService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
-      if (type == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'type' was not present! Struct: " + toString());
-      }
       if (tokenId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'tokenId' was not present! Struct: " + toString());
       }
@@ -3384,15 +3280,7 @@ public class CredentialStoreService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // TYPE
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.type = org.apache.airavata.model.credential.store.SummaryType.findByValue(iprot.readI32());
-                struct.setTypeIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // TOKEN_ID
+            case 1: // TOKEN_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.tokenId = iprot.readString();
                 struct.setTokenIdIsSet(true);
@@ -3400,7 +3288,7 @@ public class CredentialStoreService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // GATEWAY_ID
+            case 2: // GATEWAY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.gatewayId = iprot.readString();
                 struct.setGatewayIdIsSet(true);
@@ -3423,11 +3311,6 @@ public class CredentialStoreService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.type != null) {
-          oprot.writeFieldBegin(TYPE_FIELD_DESC);
-          oprot.writeI32(struct.type.getValue());
-          oprot.writeFieldEnd();
-        }
         if (struct.tokenId != null) {
           oprot.writeFieldBegin(TOKEN_ID_FIELD_DESC);
           oprot.writeString(struct.tokenId);
@@ -3455,7 +3338,6 @@ public class CredentialStoreService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, getCredentialSummary_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        oprot.writeI32(struct.type.getValue());
         oprot.writeString(struct.tokenId);
         oprot.writeString(struct.gatewayId);
       }
@@ -3463,8 +3345,6 @@ public class CredentialStoreService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getCredentialSummary_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        struct.type = org.apache.airavata.model.credential.store.SummaryType.findByValue(iprot.readI32());
-        struct.setTypeIsSet(true);
         struct.tokenId = iprot.readString();
         struct.setTokenIdIsSet(true);
         struct.gatewayId = iprot.readString();

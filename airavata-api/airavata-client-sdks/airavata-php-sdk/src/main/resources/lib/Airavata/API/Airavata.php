@@ -288,7 +288,6 @@ interface AiravataIf {
   public function registerPwdCredential(\Airavata\Model\Security\AuthzToken $authzToken, $loginUserName, $password, $description);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param int $type
    * @param string $tokenId
    * @return \Airavata\Model\Credential\Store\CredentialSummary
    * @throws \Airavata\API\Error\InvalidRequestException
@@ -296,7 +295,7 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getCredentialSummary(\Airavata\Model\Security\AuthzToken $authzToken, $type, $tokenId);
+  public function getCredentialSummary(\Airavata\Model\Security\AuthzToken $authzToken, $tokenId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param int $type
@@ -307,38 +306,25 @@ interface AiravataIf {
    */
   public function getAllCredentialSummaries(\Airavata\Model\Security\AuthzToken $authzToken, $type);
   /**
-   * 
-   * Delete a Gateway
-   * 
-   * @param gatewayId
-   *    The gateway Id of the Gateway to be deleted.
-   * 
-   * @return boolean
-   *    Boolean identifier for the success or failure of the deletion operation.
-   * 
-   * 
-   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataCredStoreToken
-   * @param string $gatewayId
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deleteSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId);
+  public function deleteSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataCredStoreToken
-   * @param string $gatewayId
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId);
+  public function deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken);
   /**
    * 
    * Creates a Project with basic metadata.
@@ -5339,17 +5325,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("registerPwdCredential failed: unknown result");
   }
 
-  public function getCredentialSummary(\Airavata\Model\Security\AuthzToken $authzToken, $type, $tokenId)
+  public function getCredentialSummary(\Airavata\Model\Security\AuthzToken $authzToken, $tokenId)
   {
-    $this->send_getCredentialSummary($authzToken, $type, $tokenId);
+    $this->send_getCredentialSummary($authzToken, $tokenId);
     return $this->recv_getCredentialSummary();
   }
 
-  public function send_getCredentialSummary(\Airavata\Model\Security\AuthzToken $authzToken, $type, $tokenId)
+  public function send_getCredentialSummary(\Airavata\Model\Security\AuthzToken $authzToken, $tokenId)
   {
     $args = new \Airavata\API\Airavata_getCredentialSummary_args();
     $args->authzToken = $authzToken;
-    $args->type = $type;
     $args->tokenId = $tokenId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -5465,18 +5450,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getAllCredentialSummaries failed: unknown result");
   }
 
-  public function deleteSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId)
+  public function deleteSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken)
   {
-    $this->send_deleteSSHPubKey($authzToken, $airavataCredStoreToken, $gatewayId);
+    $this->send_deleteSSHPubKey($authzToken, $airavataCredStoreToken);
     return $this->recv_deleteSSHPubKey();
   }
 
-  public function send_deleteSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId)
+  public function send_deleteSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken)
   {
     $args = new \Airavata\API\Airavata_deleteSSHPubKey_args();
     $args->authzToken = $authzToken;
     $args->airavataCredStoreToken = $airavataCredStoreToken;
-    $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -5530,18 +5514,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("deleteSSHPubKey failed: unknown result");
   }
 
-  public function deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId)
+  public function deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken)
   {
-    $this->send_deletePWDCredential($authzToken, $airavataCredStoreToken, $gatewayId);
+    $this->send_deletePWDCredential($authzToken, $airavataCredStoreToken);
     return $this->recv_deletePWDCredential();
   }
 
-  public function send_deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken, $gatewayId)
+  public function send_deletePWDCredential(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken)
   {
     $args = new \Airavata\API\Airavata_deletePWDCredential_args();
     $args->authzToken = $authzToken;
     $args->airavataCredStoreToken = $airavataCredStoreToken;
-    $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -21042,10 +21025,6 @@ class Airavata_getCredentialSummary_args {
    */
   public $authzToken = null;
   /**
-   * @var int
-   */
-  public $type = null;
-  /**
    * @var string
    */
   public $tokenId = null;
@@ -21059,10 +21038,6 @@ class Airavata_getCredentialSummary_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'type',
-          'type' => TType::I32,
-          ),
-        3 => array(
           'var' => 'tokenId',
           'type' => TType::STRING,
           ),
@@ -21071,9 +21046,6 @@ class Airavata_getCredentialSummary_args {
     if (is_array($vals)) {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
-      }
-      if (isset($vals['type'])) {
-        $this->type = $vals['type'];
       }
       if (isset($vals['tokenId'])) {
         $this->tokenId = $vals['tokenId'];
@@ -21109,13 +21081,6 @@ class Airavata_getCredentialSummary_args {
           }
           break;
         case 2:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->type);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->tokenId);
           } else {
@@ -21143,13 +21108,8 @@ class Airavata_getCredentialSummary_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->type !== null) {
-      $xfer += $output->writeFieldBegin('type', TType::I32, 2);
-      $xfer += $output->writeI32($this->type);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->tokenId !== null) {
-      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 2);
       $xfer += $output->writeString($this->tokenId);
       $xfer += $output->writeFieldEnd();
     }
@@ -21632,10 +21592,6 @@ class Airavata_deleteSSHPubKey_args {
    * @var string
    */
   public $airavataCredStoreToken = null;
-  /**
-   * @var string
-   */
-  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -21649,10 +21605,6 @@ class Airavata_deleteSSHPubKey_args {
           'var' => 'airavataCredStoreToken',
           'type' => TType::STRING,
           ),
-        3 => array(
-          'var' => 'gatewayId',
-          'type' => TType::STRING,
-          ),
         );
     }
     if (is_array($vals)) {
@@ -21661,9 +21613,6 @@ class Airavata_deleteSSHPubKey_args {
       }
       if (isset($vals['airavataCredStoreToken'])) {
         $this->airavataCredStoreToken = $vals['airavataCredStoreToken'];
-      }
-      if (isset($vals['gatewayId'])) {
-        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -21702,13 +21651,6 @@ class Airavata_deleteSSHPubKey_args {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -21733,11 +21675,6 @@ class Airavata_deleteSSHPubKey_args {
     if ($this->airavataCredStoreToken !== null) {
       $xfer += $output->writeFieldBegin('airavataCredStoreToken', TType::STRING, 2);
       $xfer += $output->writeString($this->airavataCredStoreToken);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
-      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -21933,10 +21870,6 @@ class Airavata_deletePWDCredential_args {
    * @var string
    */
   public $airavataCredStoreToken = null;
-  /**
-   * @var string
-   */
-  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -21950,10 +21883,6 @@ class Airavata_deletePWDCredential_args {
           'var' => 'airavataCredStoreToken',
           'type' => TType::STRING,
           ),
-        3 => array(
-          'var' => 'gatewayId',
-          'type' => TType::STRING,
-          ),
         );
     }
     if (is_array($vals)) {
@@ -21962,9 +21891,6 @@ class Airavata_deletePWDCredential_args {
       }
       if (isset($vals['airavataCredStoreToken'])) {
         $this->airavataCredStoreToken = $vals['airavataCredStoreToken'];
-      }
-      if (isset($vals['gatewayId'])) {
-        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -22003,13 +21929,6 @@ class Airavata_deletePWDCredential_args {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -22034,11 +21953,6 @@ class Airavata_deletePWDCredential_args {
     if ($this->airavataCredStoreToken !== null) {
       $xfer += $output->writeFieldBegin('airavataCredStoreToken', TType::STRING, 2);
       $xfer += $output->writeString($this->airavataCredStoreToken);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
-      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

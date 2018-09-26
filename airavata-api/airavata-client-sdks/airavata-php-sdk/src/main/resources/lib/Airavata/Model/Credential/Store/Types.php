@@ -280,6 +280,9 @@ class CredentialSummary {
    */
   public $gatewayId = null;
   /**
+   * The username corresponds to the Credential's `portalUserName` which is the username of the user that
+   * created the credential.
+   * 
    * @var string
    */
   public $username = null;
