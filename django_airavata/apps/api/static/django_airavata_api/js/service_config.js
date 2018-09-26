@@ -140,6 +140,9 @@ export default {
         name: "list"
       },
       {
+        name: "retrieve"
+      },
+      {
         name: "delete"
       },
       {

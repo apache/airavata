@@ -790,9 +790,8 @@ class CredentialSummaryViewSet(APIBackedViewSet):
         return ssh_creds + pwd_creds
 
     def get_instance(self, lookup_value):
-        # FIXME: assuming SSH type, need to remove type from signature
         return self.request.airavata_client.getCredentialSummary(
-            self.authz_token, SummaryType.SSH, lookup_value)
+            self.authz_token, lookup_value)
 
     @action(detail=False)
     def ssh(self, request):
@@ -818,7 +817,7 @@ class CredentialSummaryViewSet(APIBackedViewSet):
         token_id = self.request.airavata_client.generateAndRegisterSSHKeys(
             request.authz_token, description)
         credential_summary = self.request.airavata_client.getCredentialSummary(
-            request.authz_token, SummaryType.SSH, token_id)
+            request.authz_token, token_id)
         serializer = self.get_serializer(credential_summary)
         return Response(serializer.data)
 
@@ -835,14 +834,14 @@ class CredentialSummaryViewSet(APIBackedViewSet):
         token_id = self.request.airavata_client.registerPwdCredential(
             request.authz_token, username, password, description)
         credential_summary = self.request.airavata_client.getCredentialSummary(
-            request.authz_token, SummaryType.PASSWD, token_id)
+            request.authz_token, token_id)
         serializer = self.get_serializer(credential_summary)
         return Response(serializer.data)
 
     def perform_destroy(self, instance):
         if instance.type == SummaryType.SSH:
             self.request.airavata_client.deleteSSHPubKey(
-                self.authz_token, instance.token, settings.GATEWAY_ID)
+                self.authz_token, instance.token)
         elif instance.type == SummaryType.PASSWD:
             self.request.airavata_client.deletePWDCredential(
-                self.authz_token, instance.token, settings.GATEWAY_ID)
+                self.authz_token, instance.token)
