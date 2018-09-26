@@ -35,10 +35,10 @@ service CredentialStoreService {
   /** Query CS server to fetch the CPI version */
   string getCSServiceVersion(),
 
-  credential_store_data_models.CredentialSummary getCredentialSummary (1: required credential_store_data_models.SummaryType type,
-                             2: required string tokenId,
-                             3: required string gatewayId)
-                            throws (1:credential_store_errors.CredentialStoreException csException);
+  credential_store_data_models.CredentialSummary getCredentialSummary (
+        1: required string tokenId,
+        2: required string gatewayId)
+    throws (1:credential_store_errors.CredentialStoreException csException);
 
   list<credential_store_data_models.CredentialSummary> getAllCredentialSummaries(
       1: required credential_store_data_models.SummaryType type,
