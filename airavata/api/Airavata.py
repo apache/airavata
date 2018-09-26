@@ -255,11 +255,10 @@ class Iface(object):
         """
         pass
 
-    def getCredentialSummary(self, authzToken, type, tokenId):
+    def getCredentialSummary(self, authzToken, tokenId):
         """
         Parameters:
          - authzToken
-         - type
          - tokenId
         """
         pass
@@ -272,32 +271,19 @@ class Iface(object):
         """
         pass
 
-    def deleteSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
+    def deleteSSHPubKey(self, authzToken, airavataCredStoreToken):
         """
-
-        Delete a Gateway
-
-        @param gatewayId
-           The gateway Id of the Gateway to be deleted.
-
-        @return boolean
-           Boolean identifier for the success or failure of the deletion operation.
-
-
-
         Parameters:
          - authzToken
          - airavataCredStoreToken
-         - gatewayId
         """
         pass
 
-    def deletePWDCredential(self, authzToken, airavataCredStoreToken, gatewayId):
+    def deletePWDCredential(self, authzToken, airavataCredStoreToken):
         """
         Parameters:
          - authzToken
          - airavataCredStoreToken
-         - gatewayId
         """
         pass
 
@@ -4346,21 +4332,19 @@ class Client(Iface):
             raise result.ase
         raise TApplicationException(TApplicationException.MISSING_RESULT, "registerPwdCredential failed: unknown result")
 
-    def getCredentialSummary(self, authzToken, type, tokenId):
+    def getCredentialSummary(self, authzToken, tokenId):
         """
         Parameters:
          - authzToken
-         - type
          - tokenId
         """
-        self.send_getCredentialSummary(authzToken, type, tokenId)
+        self.send_getCredentialSummary(authzToken, tokenId)
         return self.recv_getCredentialSummary()
 
-    def send_getCredentialSummary(self, authzToken, type, tokenId):
+    def send_getCredentialSummary(self, authzToken, tokenId):
         self._oprot.writeMessageBegin('getCredentialSummary', TMessageType.CALL, self._seqid)
         args = getCredentialSummary_args()
         args.authzToken = authzToken
-        args.type = type
         args.tokenId = tokenId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
@@ -4428,33 +4412,20 @@ class Client(Iface):
             raise result.ase
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllCredentialSummaries failed: unknown result")
 
-    def deleteSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
+    def deleteSSHPubKey(self, authzToken, airavataCredStoreToken):
         """
-
-        Delete a Gateway
-
-        @param gatewayId
-           The gateway Id of the Gateway to be deleted.
-
-        @return boolean
-           Boolean identifier for the success or failure of the deletion operation.
-
-
-
         Parameters:
          - authzToken
          - airavataCredStoreToken
-         - gatewayId
         """
-        self.send_deleteSSHPubKey(authzToken, airavataCredStoreToken, gatewayId)
+        self.send_deleteSSHPubKey(authzToken, airavataCredStoreToken)
         return self.recv_deleteSSHPubKey()
 
-    def send_deleteSSHPubKey(self, authzToken, airavataCredStoreToken, gatewayId):
+    def send_deleteSSHPubKey(self, authzToken, airavataCredStoreToken):
         self._oprot.writeMessageBegin('deleteSSHPubKey', TMessageType.CALL, self._seqid)
         args = deleteSSHPubKey_args()
         args.authzToken = authzToken
         args.airavataCredStoreToken = airavataCredStoreToken
-        args.gatewayId = gatewayId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -4482,22 +4453,20 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteSSHPubKey failed: unknown result")
 
-    def deletePWDCredential(self, authzToken, airavataCredStoreToken, gatewayId):
+    def deletePWDCredential(self, authzToken, airavataCredStoreToken):
         """
         Parameters:
          - authzToken
          - airavataCredStoreToken
-         - gatewayId
         """
-        self.send_deletePWDCredential(authzToken, airavataCredStoreToken, gatewayId)
+        self.send_deletePWDCredential(authzToken, airavataCredStoreToken)
         return self.recv_deletePWDCredential()
 
-    def send_deletePWDCredential(self, authzToken, airavataCredStoreToken, gatewayId):
+    def send_deletePWDCredential(self, authzToken, airavataCredStoreToken):
         self._oprot.writeMessageBegin('deletePWDCredential', TMessageType.CALL, self._seqid)
         args = deletePWDCredential_args()
         args.authzToken = authzToken
         args.airavataCredStoreToken = airavataCredStoreToken
-        args.gatewayId = gatewayId
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -14149,7 +14118,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = getCredentialSummary_result()
         try:
-            result.success = self._handler.getCredentialSummary(args.authzToken, args.type, args.tokenId)
+            result.success = self._handler.getCredentialSummary(args.authzToken, args.tokenId)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -14208,7 +14177,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = deleteSSHPubKey_result()
         try:
-            result.success = self._handler.deleteSSHPubKey(args.authzToken, args.airavataCredStoreToken, args.gatewayId)
+            result.success = self._handler.deleteSSHPubKey(args.authzToken, args.airavataCredStoreToken)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -14239,7 +14208,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = deletePWDCredential_result()
         try:
-            result.success = self._handler.deletePWDCredential(args.authzToken, args.airavataCredStoreToken, args.gatewayId)
+            result.success = self._handler.deletePWDCredential(args.authzToken, args.airavataCredStoreToken)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -22562,20 +22531,17 @@ class getCredentialSummary_args(object):
     """
     Attributes:
      - authzToken
-     - type
      - tokenId
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
-        (2, TType.I32, 'type', None, None, ),  # 2
-        (3, TType.STRING, 'tokenId', 'UTF8', None, ),  # 3
+        (2, TType.STRING, 'tokenId', 'UTF8', None, ),  # 2
     )
 
-    def __init__(self, authzToken=None, type=None, tokenId=None,):
+    def __init__(self, authzToken=None, tokenId=None,):
         self.authzToken = authzToken
-        self.type = type
         self.tokenId = tokenId
 
     def read(self, iprot):
@@ -22594,11 +22560,6 @@ class getCredentialSummary_args(object):
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
-                if ftype == TType.I32:
-                    self.type = iprot.readI32()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
                 if ftype == TType.STRING:
                     self.tokenId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
@@ -22617,12 +22578,8 @@ class getCredentialSummary_args(object):
             oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
             self.authzToken.write(oprot)
             oprot.writeFieldEnd()
-        if self.type is not None:
-            oprot.writeFieldBegin('type', TType.I32, 2)
-            oprot.writeI32(self.type)
-            oprot.writeFieldEnd()
         if self.tokenId is not None:
-            oprot.writeFieldBegin('tokenId', TType.STRING, 3)
+            oprot.writeFieldBegin('tokenId', TType.STRING, 2)
             oprot.writeString(self.tokenId.encode('utf-8') if sys.version_info[0] == 2 else self.tokenId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -22631,8 +22588,6 @@ class getCredentialSummary_args(object):
     def validate(self):
         if self.authzToken is None:
             raise TProtocolException(message='Required field authzToken is unset!')
-        if self.type is None:
-            raise TProtocolException(message='Required field type is unset!')
         if self.tokenId is None:
             raise TProtocolException(message='Required field tokenId is unset!')
         return
@@ -22950,20 +22905,17 @@ class deleteSSHPubKey_args(object):
     Attributes:
      - authzToken
      - airavataCredStoreToken
-     - gatewayId
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'airavataCredStoreToken', 'UTF8', None, ),  # 2
-        (3, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 3
     )
 
-    def __init__(self, authzToken=None, airavataCredStoreToken=None, gatewayId=None,):
+    def __init__(self, authzToken=None, airavataCredStoreToken=None,):
         self.authzToken = authzToken
         self.airavataCredStoreToken = airavataCredStoreToken
-        self.gatewayId = gatewayId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -22985,11 +22937,6 @@ class deleteSSHPubKey_args(object):
                     self.airavataCredStoreToken = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -23008,10 +22955,6 @@ class deleteSSHPubKey_args(object):
             oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 2)
             oprot.writeString(self.airavataCredStoreToken.encode('utf-8') if sys.version_info[0] == 2 else self.airavataCredStoreToken)
             oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
-            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -23020,8 +22963,6 @@ class deleteSSHPubKey_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.airavataCredStoreToken is None:
             raise TProtocolException(message='Required field airavataCredStoreToken is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
         return
 
     def __repr__(self):
@@ -23152,20 +23093,17 @@ class deletePWDCredential_args(object):
     Attributes:
      - authzToken
      - airavataCredStoreToken
-     - gatewayId
     """
 
     thrift_spec = (
         None,  # 0
         (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
         (2, TType.STRING, 'airavataCredStoreToken', 'UTF8', None, ),  # 2
-        (3, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 3
     )
 
-    def __init__(self, authzToken=None, airavataCredStoreToken=None, gatewayId=None,):
+    def __init__(self, authzToken=None, airavataCredStoreToken=None,):
         self.authzToken = authzToken
         self.airavataCredStoreToken = airavataCredStoreToken
-        self.gatewayId = gatewayId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -23187,11 +23125,6 @@ class deletePWDCredential_args(object):
                     self.airavataCredStoreToken = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -23210,10 +23143,6 @@ class deletePWDCredential_args(object):
             oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 2)
             oprot.writeString(self.airavataCredStoreToken.encode('utf-8') if sys.version_info[0] == 2 else self.airavataCredStoreToken)
             oprot.writeFieldEnd()
-        if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
-            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
-            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -23222,8 +23151,6 @@ class deletePWDCredential_args(object):
             raise TProtocolException(message='Required field authzToken is unset!')
         if self.airavataCredStoreToken is None:
             raise TProtocolException(message='Required field airavataCredStoreToken is unset!')
-        if self.gatewayId is None:
-            raise TProtocolException(message='Required field gatewayId is unset!')
         return
 
     def __repr__(self):
