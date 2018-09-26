@@ -90,7 +90,7 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     protected TaskResult onFail(String reason, boolean fatal, Throwable error) {
-        int currentRetryCount = 0;
+        int currentRetryCount = 1;
         try {
             currentRetryCount = getCurrentRetryCount();
         } catch (Exception e) {
@@ -98,7 +98,7 @@ public abstract class AiravataTask extends AbstractTask {
             fatal = true;
         }
 
-        logger.warn("Task failed with fatal = " + fatal + ".  Current retry count " + currentRetryCount);
+        logger.warn("Task failed with fatal = " + fatal + ".  Current retry count " + currentRetryCount + " total retry count " + getRetryCount());
 
         if (currentRetryCount < getRetryCount() && !fatal) {
             try {
