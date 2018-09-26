@@ -190,9 +190,22 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     }
 
     @Override
-    public CredentialSummary getCredentialSummary(SummaryType type, String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
-        List<CredentialSummary> credentialSummaries = getAllCredentialSummaries(type, Collections.singletonList(tokenId), gatewayId);
-        return !credentialSummaries.isEmpty() ? credentialSummaries.get(0) : null;
+    public CredentialSummary getCredentialSummary(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        try {
+            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
+            if (isSSHCredential(credential)) {
+                return convertToCredentialSummary((org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential);
+            } else if (isCertificateCredential(credential)) {
+                return convertToCredentialSummary((org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) credential);
+            } else if (isPasswordCredential(credential)) {
+                return convertToCredentialSummary((org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) credential);
+            }
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Unrecognized type of credential for token: " + tokenId);
+        } catch (CredentialStoreException e) {
+            final String msg = "Error occurred while retrieving credential summary for token - " + tokenId + " and gateway id - " + gatewayId;
+            log.error(msg , e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException(msg);
+        }
     }
 
     @Override
@@ -201,20 +214,19 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             List<Credential> credentials = credentialReader.getAllAccessibleCredentialsPerGateway(gatewayId, accessibleTokenIds);
             if (type.equals(SummaryType.SSH)) {
                 return credentials.stream()
-                        .filter(cred -> cred instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
-                                && !(cred instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential))
+                        .filter(this::isSSHCredential)
                         .map(cred -> (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) cred)
                         .map(cred -> convertToCredentialSummary(cred))
                         .collect(Collectors.toList());
             } else if (type.equals(SummaryType.CERT)) {
                 return credentials.stream()
-                        .filter(cred -> cred instanceof org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential)
+                        .filter(this::isCertificateCredential)
                         .map(cred -> (org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) cred)
                         .map(cred -> convertToCredentialSummary(cred))
                         .collect(Collectors.toList());
             } else if (type.equals(SummaryType.PASSWD)) {
                 return credentials.stream()
-                        .filter(cred -> cred instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential)
+                        .filter(this::isPasswordCredential)
                         .map(cred -> (org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) cred)
                         .map(cred -> convertToCredentialSummary(cred))
                         .collect(Collectors.toList());
@@ -226,6 +238,19 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             log.error(msg , e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException(msg);
         }
+    }
+
+    private boolean isSSHCredential(Credential cred) {
+        return cred instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                && !(cred instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential);
+    }
+
+    private boolean isCertificateCredential(Credential cred) {
+        return cred instanceof org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+    }
+
+    private boolean isPasswordCredential(Credential cred) {
+        return cred instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential;
     }
 
     private CredentialSummary convertToCredentialSummary(org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential cred) {

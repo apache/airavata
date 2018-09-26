@@ -723,7 +723,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public CredentialSummary getCredentialSummary(AuthzToken authzToken, SummaryType type, String tokenId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public CredentialSummary getCredentialSummary(AuthzToken authzToken, String tokenId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         CredentialStoreService.Client csClient = csClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -731,7 +731,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (!userHasAccessInternal(sharingClient, authzToken, tokenId, ResourcePermissionType.READ)) {
                 throw new AuthorizationException("User does not have permission to access this resource");
             }
-            CredentialSummary credentialSummary = csClient.getCredentialSummary(type, tokenId, gatewayId);
+            CredentialSummary credentialSummary = csClient.getCredentialSummary(tokenId, gatewayId);
             csClientPool.returnResource(csClient);
             sharingClientPool.returnResource(sharingClient);
             return credentialSummary;
@@ -742,7 +742,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             throw ae;
         } catch (Exception e) {
-            String msg = "Error retrieving credential summary of type " + type + " for token " + tokenId + ". GatewayId: "+ gatewayId;
+            String msg = "Error retrieving credential summary for token " + tokenId + ". GatewayId: "+ gatewayId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
@@ -787,9 +787,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         CredentialStoreService.Client csClient = csClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             if (!userHasAccessInternal(sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
                 throw new AuthorizationException("User does not have permission to delete this resource.");
@@ -818,9 +819,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean deletePWDCredential(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public boolean deletePWDCredential(AuthzToken authzToken, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         CredentialStoreService.Client csClient = csClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             if (!userHasAccessInternal(sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
                 throw new AuthorizationException("User does not have permission to delete this resource.");
