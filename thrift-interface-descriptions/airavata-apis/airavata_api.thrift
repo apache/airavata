@@ -297,7 +297,7 @@ service Airavata {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
-  credential_store_data_models.CredentialSummary getCredentialSummary(1: required security_model.AuthzToken authzToken, 2: required credential_store_data_models.SummaryType type, 3: required string tokenId)
+  credential_store_data_models.CredentialSummary getCredentialSummary(1: required security_model.AuthzToken authzToken, 2: required string tokenId)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase,
@@ -308,20 +308,8 @@ service Airavata {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
-    /**
-    *
-    * Delete a Gateway
-    *
-    * @param gatewayId
-    *    The gateway Id of the Gateway to be deleted.
-    *
-    * @return boolean
-    *    Boolean identifier for the success or failure of the deletion operation.
-    *
-    **/
   bool deleteSSHPubKey (1: required security_model.AuthzToken authzToken,
-                          2: required string airavataCredStoreToken,
-                          3: required string gatewayId)
+                          2: required string airavataCredStoreToken)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase,
@@ -329,8 +317,7 @@ service Airavata {
 
 
   bool deletePWDCredential (1: required security_model.AuthzToken authzToken,
-                            2: required string airavataCredStoreToken,
-                            3: required string gatewayId)
+                            2: required string airavataCredStoreToken)
                throws (1: airavata_errors.InvalidRequestException ire,
                        2: airavata_errors.AiravataClientException ace,
                        3: airavata_errors.AiravataSystemException ase,
