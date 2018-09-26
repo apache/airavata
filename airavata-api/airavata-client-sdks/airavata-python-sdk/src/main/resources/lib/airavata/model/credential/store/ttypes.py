@@ -188,7 +188,8 @@ class CredentialSummary(object):
     Attributes:
      - type
      - gatewayId
-     - username
+     - username: The username corresponds to the Credential's `portalUserName` which is the username of the user that
+    created the credential.
      - publicKey
      - persistedTime
      - token
