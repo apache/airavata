@@ -5,6 +5,7 @@
 
         <b-table striped hover :fields="fields" :items="slotProps.items">
           <template slot="action" slot-scope="data">
+            <share-button :entity-id="data.item.token" />
             <clipboard-copy-link :text="data.item.publicKey" class="mr-1" />
             <delete-link v-if="data.item.userHasWriteAccess" @delete="deleteSSHCredential(data.item)">
               Are you sure you want to delete this SSH credential?
@@ -29,7 +30,8 @@ export default {
     "delete-link": components.DeleteLink,
     "list-layout": layouts.ListLayout,
     ClipboardCopyLink,
-    "new-ssh-credential-modal": NewSSHCredentialModal
+    "new-ssh-credential-modal": NewSSHCredentialModal,
+    "share-button": components.ShareButton
   },
   created: function() {
     this.fetchSSHKeys();

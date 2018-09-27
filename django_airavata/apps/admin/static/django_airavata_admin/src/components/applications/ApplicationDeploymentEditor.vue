@@ -5,7 +5,7 @@
         <h1 class="h4 mb-4">
           {{ name }}
         </h1>
-        <share-button v-model="localSharedEntity" @input="sharingChanged" />
+        <share-button :shared-entity="localSharedEntity" @saved="savedSharedEntity" @unsaved="unsavedSharedEntity" />
         <b-form-group label="Application Executable Path" label-for="executable-path">
           <b-form-input id="executable-path" type="text" v-model="data.executablePath" required :disabled="readonly"></b-form-input>
         </b-form-group>
@@ -177,9 +177,12 @@ export default {
       this.data.defaultCPUCount = queue.defaultCPUCount;
       this.data.defaultWalltime = queue.defaultWalltime;
     },
-    sharingChanged(newSharedEntity) {
+    savedSharedEntity(newSharedEntity) {
+      this.$emit("sharing-changed", newSharedEntity, this.data, false);
+    },
+    unsavedSharedEntity(newSharedEntity) {
       this.dirty = true;
-      this.$emit("sharing-changed", newSharedEntity, this.data);
+      this.$emit("sharing-changed", newSharedEntity, this.data, true);
     }
   },
   watch: {

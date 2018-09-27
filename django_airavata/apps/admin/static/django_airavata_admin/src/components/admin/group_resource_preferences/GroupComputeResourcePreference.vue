@@ -13,7 +13,7 @@
               <b-form-input id="profile-name" type="text" v-model="data.groupResourceProfileName" required placeholder="Name of this Group Resource Profile">
               </b-form-input>
             </b-form-group>
-            <share-button ref="shareButton" v-model="sharedEntity" @save="saveSharedEntity" />
+            <share-button ref="shareButton" :entity-id="id" />
           </div>
         </div>
       </div>
@@ -86,9 +86,6 @@ export default {
           .retrieve({ lookup: this.id })
           .then(grp => (this.data = grp));
       }
-      services.SharedEntityService.retrieve({ lookup: this.id }).then(
-        sharedEntity => (this.sharedEntity = sharedEntity)
-      );
     }
   },
   data: function() {
@@ -96,7 +93,6 @@ export default {
     return {
       data: data,
       service: services.ServiceFactory.service("GroupResourceProfiles"),
-      sharedEntity: null,
       computePreferencesFields: [
         {
           label: "Name",
@@ -155,20 +151,11 @@ export default {
           // Merge sharing settings with default sharing settings created when
           // Group Resource Profile was created
           const groupResourceProfileId = data.groupResourceProfileId;
-          return services.SharedEntityService.merge({
-            data: this.sharedEntity,
-            lookup: groupResourceProfileId
-          });
+          return this.$refs.shareButton.mergeAndSave(groupResourceProfileId);
         });
       }
       persist.then(data => {
         this.$router.push("/group-resource-profiles");
-      });
-    },
-    saveSharedEntity: function(sharedEntity) {
-      return services.SharedEntityService.update({
-        data: sharedEntity,
-        lookup: sharedEntity.entityId
       });
     },
     getComputeResourceName: function(computeResourceId) {

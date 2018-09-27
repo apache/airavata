@@ -350,6 +350,7 @@ export default {
         this.appDeploymentsSharedEntities[
           appDeployment.computeHostId
         ] = sharedEntity;
+        this.removeAppDeploymentSharedEntityDirty(sharedEntity, appDeployment);
         return sharedEntity;
       });
     },
@@ -369,16 +370,23 @@ export default {
         );
       }
     },
-    deploymentSharingChanged(deploymentSharedEntity, appDeployment) {
+    deploymentSharingChanged(deploymentSharedEntity, appDeployment, dirty) {
       this.currentDeploymentSharedEntity = deploymentSharedEntity;
       this.replaceAppDeploymentSharedEntity(
         deploymentSharedEntity,
         appDeployment
       );
-      this.setApplicationDeploymentSharedEntityDirty(
-        deploymentSharedEntity,
-        appDeployment
-      );
+      if (dirty) {
+        this.setApplicationDeploymentSharedEntityDirty(
+          deploymentSharedEntity,
+          appDeployment
+        );
+      } else {
+        this.removeAppDeploymentSharedEntityDirty(
+          deploymentSharedEntity,
+          appDeployment
+        );
+      }
     },
     mergeSharedEntity(sharedEntity, appDeployment) {
       return services.SharedEntityService.merge({

@@ -14,6 +14,8 @@ import ValidationErrors from "./errors/ValidationErrors";
 
 import ListLayout from "./layouts/ListLayout.vue";
 
+import VModelMixin from "./mixins/VModelMixin";
+
 import Notification from "./notifications/Notification";
 import NotificationList from "./notifications/NotificationList";
 
@@ -39,6 +41,10 @@ exports.errors = {
 
 exports.layouts = {
   ListLayout
+};
+
+exports.mixins = {
+  VModelMixin
 };
 
 exports.notifications = {
