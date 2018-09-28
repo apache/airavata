@@ -33,14 +33,8 @@ public class AiravataWorkflowEntity implements Serializable {
     @Column(name = "ID")
     private String id;
 
-    @Column(name = "NAME")
-    private String name;
-
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
-
-    @Column(name = "USER_NAME")
-    public String userName;
+    @Column(name = "EXPERIMENT_ID")
+    private String experimentId;
 
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
@@ -82,16 +76,8 @@ public class AiravataWorkflowEntity implements Serializable {
         this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
     public void setStorageResourceId(String storageResourceId) {
@@ -142,16 +128,8 @@ public class AiravataWorkflowEntity implements Serializable {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public String getUserName() {
-        return userName;
+    public String getExperimentId() {
+        return experimentId;
     }
 
     public String getStorageResourceId() {

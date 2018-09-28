@@ -29,7 +29,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowApplication");
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("belongsToMainWorkflow", org.apache.thrift.protocol.TType.BOOL, (short)2);
+  private static final org.apache.thrift.protocol.TField PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("process_id", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField QUEUE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("queueName", org.apache.thrift.protocol.TType.STRING, (short)5);
@@ -46,7 +46,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new WorkflowApplicationTupleSchemeFactory();
 
   private java.lang.String id; // required
-  private boolean belongsToMainWorkflow; // required
+  private java.lang.String process_id; // optional
   private java.lang.String applicationInterfaceId; // optional
   private java.lang.String computeResourceId; // optional
   private java.lang.String queueName; // optional
@@ -62,7 +62,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
-    BELONGS_TO_MAIN_WORKFLOW((short)2, "belongsToMainWorkflow"),
+    PROCESS_ID((short)2, "process_id"),
     APPLICATION_INTERFACE_ID((short)3, "applicationInterfaceId"),
     COMPUTE_RESOURCE_ID((short)4, "computeResourceId"),
     QUEUE_NAME((short)5, "queueName"),
@@ -90,8 +90,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       switch(fieldId) {
         case 1: // ID
           return ID;
-        case 2: // BELONGS_TO_MAIN_WORKFLOW
-          return BELONGS_TO_MAIN_WORKFLOW;
+        case 2: // PROCESS_ID
+          return PROCESS_ID;
         case 3: // APPLICATION_INTERFACE_ID
           return APPLICATION_INTERFACE_ID;
         case 4: // COMPUTE_RESOURCE_ID
@@ -154,22 +154,21 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   }
 
   // isset id assignments
-  private static final int __BELONGSTOMAINWORKFLOW_ISSET_ID = 0;
-  private static final int __NODECOUNT_ISSET_ID = 1;
-  private static final int __CORECOUNT_ISSET_ID = 2;
-  private static final int __WALLTIMELIMIT_ISSET_ID = 3;
-  private static final int __PHYSICALMEMORY_ISSET_ID = 4;
-  private static final int __CREATEDAT_ISSET_ID = 5;
-  private static final int __UPDATEDAT_ISSET_ID = 6;
+  private static final int __NODECOUNT_ISSET_ID = 0;
+  private static final int __CORECOUNT_ISSET_ID = 1;
+  private static final int __WALLTIMELIMIT_ISSET_ID = 2;
+  private static final int __PHYSICALMEMORY_ISSET_ID = 3;
+  private static final int __CREATEDAT_ISSET_ID = 4;
+  private static final int __UPDATEDAT_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.APPLICATION_INTERFACE_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.QUEUE_NAME,_Fields.NODE_COUNT,_Fields.CORE_COUNT,_Fields.WALL_TIME_LIMIT,_Fields.PHYSICAL_MEMORY,_Fields.STATUSES,_Fields.ERRORS,_Fields.CREATED_AT,_Fields.UPDATED_AT};
+  private static final _Fields optionals[] = {_Fields.PROCESS_ID,_Fields.APPLICATION_INTERFACE_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.QUEUE_NAME,_Fields.NODE_COUNT,_Fields.CORE_COUNT,_Fields.WALL_TIME_LIMIT,_Fields.PHYSICAL_MEMORY,_Fields.STATUSES,_Fields.ERRORS,_Fields.CREATED_AT,_Fields.UPDATED_AT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.BELONGS_TO_MAIN_WORKFLOW, new org.apache.thrift.meta_data.FieldMetaData("belongsToMainWorkflow", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.PROCESS_ID, new org.apache.thrift.meta_data.FieldMetaData("process_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationInterfaceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.COMPUTE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("computeResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -202,13 +201,10 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   }
 
   public WorkflowApplication(
-    java.lang.String id,
-    boolean belongsToMainWorkflow)
+    java.lang.String id)
   {
     this();
     this.id = id;
-    this.belongsToMainWorkflow = belongsToMainWorkflow;
-    setBelongsToMainWorkflowIsSet(true);
   }
 
   /**
@@ -219,7 +215,9 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     if (other.isSetId()) {
       this.id = other.id;
     }
-    this.belongsToMainWorkflow = other.belongsToMainWorkflow;
+    if (other.isSetProcess_id()) {
+      this.process_id = other.process_id;
+    }
     if (other.isSetApplicationInterfaceId()) {
       this.applicationInterfaceId = other.applicationInterfaceId;
     }
@@ -258,8 +256,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   @Override
   public void clear() {
     this.id = null;
-    setBelongsToMainWorkflowIsSet(false);
-    this.belongsToMainWorkflow = false;
+    this.process_id = null;
     this.applicationInterfaceId = null;
     this.computeResourceId = null;
     this.queueName = null;
@@ -302,26 +299,27 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     }
   }
 
-  public boolean isBelongsToMainWorkflow() {
-    return this.belongsToMainWorkflow;
+  public java.lang.String getProcess_id() {
+    return this.process_id;
   }
 
-  public void setBelongsToMainWorkflow(boolean belongsToMainWorkflow) {
-    this.belongsToMainWorkflow = belongsToMainWorkflow;
-    setBelongsToMainWorkflowIsSet(true);
+  public void setProcess_id(java.lang.String process_id) {
+    this.process_id = process_id;
   }
 
-  public void unsetBelongsToMainWorkflow() {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID);
+  public void unsetProcess_id() {
+    this.process_id = null;
   }
 
-  /** Returns true if field belongsToMainWorkflow is set (has been assigned a value) and false otherwise */
-  public boolean isSetBelongsToMainWorkflow() {
-    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID);
+  /** Returns true if field process_id is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcess_id() {
+    return this.process_id != null;
   }
 
-  public void setBelongsToMainWorkflowIsSet(boolean value) {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID, value);
+  public void setProcess_idIsSet(boolean value) {
+    if (!value) {
+      this.process_id = null;
+    }
   }
 
   public java.lang.String getApplicationInterfaceId() {
@@ -611,11 +609,11 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       }
       break;
 
-    case BELONGS_TO_MAIN_WORKFLOW:
+    case PROCESS_ID:
       if (value == null) {
-        unsetBelongsToMainWorkflow();
+        unsetProcess_id();
       } else {
-        setBelongsToMainWorkflow((java.lang.Boolean)value);
+        setProcess_id((java.lang.String)value);
       }
       break;
 
@@ -715,8 +713,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     case ID:
       return getId();
 
-    case BELONGS_TO_MAIN_WORKFLOW:
-      return isBelongsToMainWorkflow();
+    case PROCESS_ID:
+      return getProcess_id();
 
     case APPLICATION_INTERFACE_ID:
       return getApplicationInterfaceId();
@@ -764,8 +762,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     switch (field) {
     case ID:
       return isSetId();
-    case BELONGS_TO_MAIN_WORKFLOW:
-      return isSetBelongsToMainWorkflow();
+    case PROCESS_ID:
+      return isSetProcess_id();
     case APPLICATION_INTERFACE_ID:
       return isSetApplicationInterfaceId();
     case COMPUTE_RESOURCE_ID:
@@ -816,12 +814,12 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         return false;
     }
 
-    boolean this_present_belongsToMainWorkflow = true;
-    boolean that_present_belongsToMainWorkflow = true;
-    if (this_present_belongsToMainWorkflow || that_present_belongsToMainWorkflow) {
-      if (!(this_present_belongsToMainWorkflow && that_present_belongsToMainWorkflow))
+    boolean this_present_process_id = true && this.isSetProcess_id();
+    boolean that_present_process_id = true && that.isSetProcess_id();
+    if (this_present_process_id || that_present_process_id) {
+      if (!(this_present_process_id && that_present_process_id))
         return false;
-      if (this.belongsToMainWorkflow != that.belongsToMainWorkflow)
+      if (!this.process_id.equals(that.process_id))
         return false;
     }
 
@@ -935,7 +933,9 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     if (isSetId())
       hashCode = hashCode * 8191 + id.hashCode();
 
-    hashCode = hashCode * 8191 + ((belongsToMainWorkflow) ? 131071 : 524287);
+    hashCode = hashCode * 8191 + ((isSetProcess_id()) ? 131071 : 524287);
+    if (isSetProcess_id())
+      hashCode = hashCode * 8191 + process_id.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetApplicationInterfaceId()) ? 131071 : 524287);
     if (isSetApplicationInterfaceId())
@@ -1002,12 +1002,12 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetBelongsToMainWorkflow()).compareTo(other.isSetBelongsToMainWorkflow());
+    lastComparison = java.lang.Boolean.valueOf(isSetProcess_id()).compareTo(other.isSetProcess_id());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetBelongsToMainWorkflow()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.belongsToMainWorkflow, other.belongsToMainWorkflow);
+    if (isSetProcess_id()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.process_id, other.process_id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1149,10 +1149,16 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       sb.append(this.id);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("belongsToMainWorkflow:");
-    sb.append(this.belongsToMainWorkflow);
-    first = false;
+    if (isSetProcess_id()) {
+      if (!first) sb.append(", ");
+      sb.append("process_id:");
+      if (this.process_id == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.process_id);
+      }
+      first = false;
+    }
     if (isSetApplicationInterfaceId()) {
       if (!first) sb.append(", ");
       sb.append("applicationInterfaceId:");
@@ -1249,10 +1255,6 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' is unset! Struct:" + toString());
     }
 
-    if (!isSetBelongsToMainWorkflow()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'belongsToMainWorkflow' is unset! Struct:" + toString());
-    }
-
     // check for sub-struct validity
   }
 
@@ -1300,10 +1302,10 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // BELONGS_TO_MAIN_WORKFLOW
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.belongsToMainWorkflow = iprot.readBool();
-              struct.setBelongsToMainWorkflowIsSet(true);
+          case 2: // PROCESS_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.process_id = iprot.readString();
+              struct.setProcess_idIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1436,9 +1438,13 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         oprot.writeString(struct.id);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC);
-      oprot.writeBool(struct.belongsToMainWorkflow);
-      oprot.writeFieldEnd();
+      if (struct.process_id != null) {
+        if (struct.isSetProcess_id()) {
+          oprot.writeFieldBegin(PROCESS_ID_FIELD_DESC);
+          oprot.writeString(struct.process_id);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.applicationInterfaceId != null) {
         if (struct.isSetApplicationInterfaceId()) {
           oprot.writeFieldBegin(APPLICATION_INTERFACE_ID_FIELD_DESC);
@@ -1536,42 +1542,47 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     public void write(org.apache.thrift.protocol.TProtocol prot, WorkflowApplication struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.id);
-      oprot.writeBool(struct.belongsToMainWorkflow);
       java.util.BitSet optionals = new java.util.BitSet();
-      if (struct.isSetApplicationInterfaceId()) {
+      if (struct.isSetProcess_id()) {
         optionals.set(0);
       }
-      if (struct.isSetComputeResourceId()) {
+      if (struct.isSetApplicationInterfaceId()) {
         optionals.set(1);
       }
-      if (struct.isSetQueueName()) {
+      if (struct.isSetComputeResourceId()) {
         optionals.set(2);
       }
-      if (struct.isSetNodeCount()) {
+      if (struct.isSetQueueName()) {
         optionals.set(3);
       }
-      if (struct.isSetCoreCount()) {
+      if (struct.isSetNodeCount()) {
         optionals.set(4);
       }
-      if (struct.isSetWallTimeLimit()) {
+      if (struct.isSetCoreCount()) {
         optionals.set(5);
       }
-      if (struct.isSetPhysicalMemory()) {
+      if (struct.isSetWallTimeLimit()) {
         optionals.set(6);
       }
-      if (struct.isSetStatuses()) {
+      if (struct.isSetPhysicalMemory()) {
         optionals.set(7);
       }
-      if (struct.isSetErrors()) {
+      if (struct.isSetStatuses()) {
         optionals.set(8);
       }
-      if (struct.isSetCreatedAt()) {
+      if (struct.isSetErrors()) {
         optionals.set(9);
       }
-      if (struct.isSetUpdatedAt()) {
+      if (struct.isSetCreatedAt()) {
         optionals.set(10);
       }
-      oprot.writeBitSet(optionals, 11);
+      if (struct.isSetUpdatedAt()) {
+        optionals.set(11);
+      }
+      oprot.writeBitSet(optionals, 12);
+      if (struct.isSetProcess_id()) {
+        oprot.writeString(struct.process_id);
+      }
       if (struct.isSetApplicationInterfaceId()) {
         oprot.writeString(struct.applicationInterfaceId);
       }
@@ -1624,38 +1635,40 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.id = iprot.readString();
       struct.setIdIsSet(true);
-      struct.belongsToMainWorkflow = iprot.readBool();
-      struct.setBelongsToMainWorkflowIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(11);
+      java.util.BitSet incoming = iprot.readBitSet(12);
       if (incoming.get(0)) {
+        struct.process_id = iprot.readString();
+        struct.setProcess_idIsSet(true);
+      }
+      if (incoming.get(1)) {
         struct.applicationInterfaceId = iprot.readString();
         struct.setApplicationInterfaceIdIsSet(true);
       }
-      if (incoming.get(1)) {
+      if (incoming.get(2)) {
         struct.computeResourceId = iprot.readString();
         struct.setComputeResourceIdIsSet(true);
       }
-      if (incoming.get(2)) {
+      if (incoming.get(3)) {
         struct.queueName = iprot.readString();
         struct.setQueueNameIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         struct.nodeCount = iprot.readI32();
         struct.setNodeCountIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.coreCount = iprot.readI32();
         struct.setCoreCountIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.wallTimeLimit = iprot.readI32();
         struct.setWallTimeLimitIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(7)) {
         struct.physicalMemory = iprot.readI32();
         struct.setPhysicalMemoryIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(8)) {
         {
           org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.statuses = new java.util.ArrayList<ApplicationStatus>(_list10.size);
@@ -1669,7 +1682,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         }
         struct.setStatusesIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(9)) {
         {
           org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list13.size);
@@ -1683,11 +1696,11 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         }
         struct.setErrorsIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(10)) {
         struct.createdAt = iprot.readI64();
         struct.setCreatedAtIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(11)) {
         struct.updatedAt = iprot.readI64();
         struct.setUpdatedAtIsSet(true);
       }

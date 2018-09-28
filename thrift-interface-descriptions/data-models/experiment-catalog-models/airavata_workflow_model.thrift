@@ -26,32 +26,6 @@ namespace php Airavata.Model.Workflow
 namespace cpp apache.airavata.model.workflow
 namespace py airavata.model.workflow
 
-enum WorkflowState {
-    CREATED,
-    VALIDATED,
-    SCHEDULED,
-    LAUNCHED,
-    EXECUTING,
-    PAUSING,
-    PAUSED,
-    RESTARTING,
-    CANCELING,
-    CANCELED,
-    COMPLETED,
-    FAILED
-}
-
-struct WorkflowStatus {
-    1:  optional string id,
-    2:  required WorkflowState state,
-    3:  optional string description,
-    4:  optional i64 updatedAt
-}
-
-struct NotificationEmail {
-    1:  required string email,
-}
-
 enum ApplicationState {
     CREATED,
     VALIDATED,
@@ -73,7 +47,7 @@ struct ApplicationStatus {
 
 struct WorkflowApplication {
     1:  required string id,
-    2:  required bool belongsToMainWorkflow,
+    2:  optional string process_id,
     3:  optional string applicationInterfaceId,
     4:  optional string computeResourceId,
     5:  optional string queueName,
@@ -87,9 +61,22 @@ struct WorkflowApplication {
     13: optional i64 updatedAt
 }
 
+struct DataBlock{
+    1:  required string id,
+    2:  optional string value,
+    3:  optional application_io_models.DataType type,
+    4:  optional i64 createdAt,
+    5:  optional i64 updatedAt,
+}
+
+enum ComponentType {
+    APPLICATION,
+    HANDLER
+}
+
 struct WorkflowConnection {
     1:  required string id = airavata_commons.DEFAULT_ID,
-    2:  required bool belongsToMainWorkflow,
+    2:  optional DataBlock dataBlock,
     3:  required ComponentType fromType
     4:  required string fromId,
     5:  required string fromOutputName,
@@ -126,47 +113,57 @@ struct HandlerStatus {
     4:  optional i64 updatedAt
 }
 
-struct DataBlock{
-    1:  required string id,
-    2:  optional string value,
-    3:  optional application_io_models.DataType type,
-    4:  optional i64 createdAt,
-    5:  optional i64 updatedAt,
-}
-
-enum ComponentType {
-    APPLICATION,
-    HANDLER
-}
-
 struct WorkflowHandler {
     1:  required string id,
-    2:  required bool belongsToMainWorkflow,
-    3:  required HandlerType type,
-    4:  optional list<application_io_models.InputDataObjectType> inputs,
-    5:  optional list<application_io_models.OutputDataObjectType> outputs,
-    6:  optional list<WorkflowApplication> applications,
-    7:  optional list<WorkflowConnection> connections,
-    8:  optional list<HandlerStatus> statuses,
-    9: optional list<airavata_commons.ErrorModel> errors,
-    10: optional i64 createdAt,
-    11: optional i64 updatedAt
+    2:  required HandlerType type,
+    3:  optional list<application_io_models.InputDataObjectType> inputs,
+    4:  optional list<application_io_models.OutputDataObjectType> outputs,
+    5:  optional list<WorkflowApplication> applications,
+    6:  optional list<WorkflowConnection> connections,
+    7:  optional list<HandlerStatus> statuses,
+    8:  optional list<airavata_commons.ErrorModel> errors,
+    9:  optional i64 createdAt,
+    10: optional i64 updatedAt
+}
+
+enum WorkflowState {
+    CREATED,
+    VALIDATED,
+    SCHEDULED,
+    LAUNCHED,
+    EXECUTING,
+    PAUSING,
+    PAUSED,
+    RESTARTING,
+    CANCELING,
+    CANCELED,
+    COMPLETED,
+    FAILED
+}
+
+struct WorkflowStatus {
+    1:  optional string id,
+    2:  required WorkflowState state,
+    3:  optional string description,
+    4:  optional i64 updatedAt
+}
+
+struct NotificationEmail {
+    1:  required string email,
 }
 
 struct AiravataWorkflow {
     1:  required string id = airavata_commons.DEFAULT_ID,
-    2:  required string name,
-    3:  required string gatewayId,
-    4:  required string userName,
-    5:  required string storageResourceId,
-    6:  optional string description,
-    7:  optional bool enableEmailNotification,
-    8:  optional list<NotificationEmail> notificationEmails,
-    9:  optional list<WorkflowApplication> applications,
-    10: optional list<WorkflowHandler> handlers,
-    11: optional list<WorkflowConnection> connections,
-    12: optional list<WorkflowStatus> statuses,
-    13: optional list<airavata_commons.ErrorModel> errors,
-    14: optional i64 createdAt,
-    15: optional i64 updatedAt
+    2:  required string experimentId,
+    3:  required string storageResourceId,
+    4:  optional string description,
+    5:  optional bool enableEmailNotification,
+    6:  optional list<NotificationEmail> notificationEmails,
+    7:  optional list<WorkflowApplication> applications,
+    8:  optional list<WorkflowHandler> handlers,
+    9:  optional list<WorkflowConnection> connections,
+    10: optional list<WorkflowStatus> statuses,
+    11: optional list<airavata_commons.ErrorModel> errors,
+    12: optional i64 createdAt,
+    13: optional i64 updatedAt
 }

@@ -85,7 +85,6 @@ setup() {
     APP_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/app-catalog-models/app_catalog_models.thrift"
     RESOURCE_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/resource-catalog-models/resource_catalog_models.thrift"
     WORKFLOW_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/workflow-models/workflow_data_model.thrift"
-    AIRAVATA_WORKFLOW_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/workflow-catalog-models/airavata_workflow_model.thrift"
     PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/service-cpis/profile-service/profile-service-cpi.thrift"
 
     DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
@@ -186,8 +185,6 @@ generate_java_stubs() {
     $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${RESOURCE_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
 
     $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${WORKFLOW_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
-
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${AIRAVATA_WORKFLOW_THRIFT_FILE} || fail unable to generate java bean thrift classes on app airavata workflow catalog models
 
     # For the generated java beans add the ASF V2 License header
     add_license_header $JAVA_BEAN_GEN_DIR

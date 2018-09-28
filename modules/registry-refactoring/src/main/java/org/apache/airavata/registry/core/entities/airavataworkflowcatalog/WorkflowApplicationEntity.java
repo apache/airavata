@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -38,8 +40,8 @@ public class WorkflowApplicationEntity implements Serializable {
     @Column(name = "WORKFLOW_ID")
     private String workflowId;
 
-    @Column(name = "BELONGS_TO_MAIN_WORKFLOW")
-    private boolean belongsToMainWorkflow;
+    @Column(name = "PROCESS_ID")
+    private String processId;
 
     @Column(name = "APPLICATION_INTERFACE_ID")
     private String applicationInterfaceId;
@@ -89,8 +91,8 @@ public class WorkflowApplicationEntity implements Serializable {
         this.workflowId = workflowId;
     }
 
-    public void setBelongsToMainWorkflow(boolean belongsToMainWorkflow) {
-        this.belongsToMainWorkflow = belongsToMainWorkflow;
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     public void setApplicationInterfaceId(String applicationInterfaceId) {
@@ -149,8 +151,8 @@ public class WorkflowApplicationEntity implements Serializable {
         return workflowId;
     }
 
-    public boolean isBelongsToMainWorkflow() {
-        return belongsToMainWorkflow;
+    public String getProcessId() {
+        return processId;
     }
 
     public String getApplicationInterfaceId() {

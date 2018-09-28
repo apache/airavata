@@ -38,19 +38,19 @@ import java.util.Map;
 public class WorkflowCatalogImpl implements WorkflowCatalog {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCatalogImpl.class);
 
-    @Override
-    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException {
-        List<String> workflowIds = new ArrayList<String>();
-        try {
-            WorkflowResource resource = new WorkflowResource();
-            resource.setGatewayId(gatewayId);
-            workflowIds = resource.getAllIds();
-        } catch (Exception e) {
-            logger.error("Error while retrieving all the workflow template ids...", e);
-            throw new WorkflowCatalogException(e);
-        }
-        return workflowIds;
-    }
+//    @Override
+//    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException {
+//        List<String> workflowIds = new ArrayList<String>();
+//        try {
+//            WorkflowResource resource = new WorkflowResource();
+//            resource.setGatewayId(gatewayId);
+//            workflowIds = resource.getAllIds();
+//        } catch (Exception e) {
+//            logger.error("Error while retrieving all the workflow template ids...", e);
+//            throw new WorkflowCatalogException(e);
+//        }
+//        return workflowIds;
+//    }
 
     @Override
     public AiravataWorkflow getWorkflow(String workflowId) throws WorkflowCatalogException {
@@ -207,8 +207,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
         return null;
     }
 
-    @Override
-    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException {
+//    @Override
+//    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException {
 //        try {
 //            WorkflowResource resource = new WorkflowResource();
 //            List<WorkflowCatalogResource> resourceList = resource.get(WorkflowCatAbstractResource.WorkflowConstants.WORKFLOW_NAME, workflowName);
@@ -219,8 +219,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 //            logger.error("Error while retrieving the workflow with the workflow name...", e);
 //            throw new WorkflowCatalogException(e);
 //        }
-        return false;
-    }
+//        return false;
+//    }
 
 //    @Override
 //    public void updateWorkflowOutputs(String workflowId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException {

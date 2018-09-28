@@ -40,9 +40,6 @@ public class WorkflowHandlerEntity implements Serializable {
     @Column(name = "WORKFLOW_ID")
     private String workflowId;
 
-    @Column(name = "BELONGS_TO_MAIN_WORKFLOW")
-    private boolean belongsToMainWorkflow;
-
     @Column(name = "TYPE")
     @Enumerated(EnumType.STRING)
     private HandlerType type;
@@ -78,10 +75,6 @@ public class WorkflowHandlerEntity implements Serializable {
 
     public void setWorkflowId(String workflowId) {
         this.workflowId = workflowId;
-    }
-
-    public void setBelongsToMainWorkflow(boolean belongsToMainWorkflow) {
-        this.belongsToMainWorkflow = belongsToMainWorkflow;
     }
 
     public void setType(HandlerType type) {
@@ -122,10 +115,6 @@ public class WorkflowHandlerEntity implements Serializable {
 
     public String getWorkflowId() {
         return workflowId;
-    }
-
-    public boolean isBelongsToMainWorkflow() {
-        return belongsToMainWorkflow;
     }
 
     public HandlerType getType() {
