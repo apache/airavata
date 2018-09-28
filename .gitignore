@@ -8,3 +8,4 @@ ENV
 venv/
 .vscode/
 jsconfig.json
+airavata_django_portal.egg-info
