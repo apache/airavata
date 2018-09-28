@@ -28,8 +28,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
 import static org.junit.Assert.assertEquals;
 
 public class WorkflowRepositoryTest {
@@ -40,9 +38,7 @@ public class WorkflowRepositoryTest {
     private WorkflowRepository workflowRepository;
 
     // Workflow related constants
-    private String GATEWAY_ID = "testGateway";
-    private String WORKFLOW_PREFIX = "workflow_";
-    private String SAMPLE_USER = "john";
+    private String EXPERIMENT_ID = "sample_exp_id";
     private String SAMPLE_STORAGE_RESOURCE_ID = "storage_resource_1";
     private String SAMPLE_DESCRIPTION = "Sample description about the application";
     private String SAMPLE_EMAIL_1 = "example1@example.com";
@@ -86,16 +82,12 @@ public class WorkflowRepositoryTest {
 
     @Test
     public void SubmitWorkflowTest() throws WorkflowCatalogException {
-        workflowRepository.registerWorkflow(getSimpleWorkflow(), GATEWAY_ID);
 
-        List<String> workflows = workflowRepository.getAllWorkflows(GATEWAY_ID);
-        assertEquals(1, workflows.size());
+        workflowRepository.registerWorkflow(getSimpleWorkflow(), EXPERIMENT_ID);
 
-        AiravataWorkflow workflow = workflowRepository.getWorkflow(workflowRepository.getWorkflowId(WORKFLOW_PREFIX + 1));
+        AiravataWorkflow workflow = workflowRepository.getWorkflow(workflowRepository.getWorkflowId(EXPERIMENT_ID));
 
         //Assert workflow
-        assertEquals(WORKFLOW_PREFIX + 1, workflow.getName());
-        assertEquals(SAMPLE_USER, workflow.getUserName());
         assertEquals(SAMPLE_STORAGE_RESOURCE_ID, workflow.getStorageResourceId());
         assertEquals(SAMPLE_DESCRIPTION, workflow.getDescription());
 
@@ -121,9 +113,6 @@ public class WorkflowRepositoryTest {
         AiravataWorkflow workflow = new AiravataWorkflow();
 
         //Adding basic workflow parameters
-        workflow.setName(WORKFLOW_PREFIX + 1);
-        workflow.setGatewayId(GATEWAY_ID);
-        workflow.setUserName(SAMPLE_USER);
         workflow.setStorageResourceId(SAMPLE_STORAGE_RESOURCE_ID);
         workflow.setDescription(SAMPLE_DESCRIPTION);
         workflow.setEnableEmailNotification(true);
@@ -140,7 +129,6 @@ public class WorkflowRepositoryTest {
         //Adding workflow applications
         WorkflowApplication application1 = new WorkflowApplication();
         application1.setId(APPLICATION_PREFIX + 1);
-        application1.setBelongsToMainWorkflow(true);
         application1.setApplicationInterfaceId(SAMPLE_APPLICATION_INTERFACE_ID);
         application1.setComputeResourceId(SAMPLE_COMPUTE_RESOURCE_ID);
         application1.setQueueName(SAMPLE_QUEUE_NAME);
@@ -151,7 +139,6 @@ public class WorkflowRepositoryTest {
 
         WorkflowApplication application2 = new WorkflowApplication();
         application2.setId(APPLICATION_PREFIX + 2);
-        application2.setBelongsToMainWorkflow(true);
         application2.setApplicationInterfaceId(SAMPLE_APPLICATION_INTERFACE_ID);
         application2.setComputeResourceId(SAMPLE_COMPUTE_RESOURCE_ID);
         application2.setQueueName(SAMPLE_QUEUE_NAME);
@@ -166,12 +153,10 @@ public class WorkflowRepositoryTest {
         //Adding workflow handlers
         WorkflowHandler handler1 = new WorkflowHandler();
         handler1.setId(HANDLER_PREFIX + 1);
-        handler1.setBelongsToMainWorkflow(true);
         handler1.setType(HandlerType.FLOW_STARTER);
 
         WorkflowHandler handler2 = new WorkflowHandler();
         handler2.setId(HANDLER_PREFIX + 2);
-        handler2.setBelongsToMainWorkflow(true);
         handler2.setType(HandlerType.FLOW_TERMINATOR);
 
         workflow.addToHandlers(handler1);
@@ -179,7 +164,6 @@ public class WorkflowRepositoryTest {
 
         //Adding workflow connections
         WorkflowConnection connection1 = new WorkflowConnection();
-        connection1.setBelongsToMainWorkflow(true);
         connection1.setFromType(ComponentType.HANDLER);
         connection1.setFromId(HANDLER_PREFIX + 1);
         connection1.setFromOutputName(SAMPLE_HANDLER_OUTPUT_NAME);
@@ -188,7 +172,6 @@ public class WorkflowRepositoryTest {
         connection1.setToInputName(SAMPLE_APP_INPUT_NAME);
 
         WorkflowConnection connection2 = new WorkflowConnection();
-        connection2.setBelongsToMainWorkflow(true);
         connection2.setFromType(ComponentType.APPLICATION);
         connection2.setFromId(APPLICATION_PREFIX + 1);
         connection2.setFromOutputName(SAMPLE_APP_OUTPUT_NAME);
@@ -197,7 +180,6 @@ public class WorkflowRepositoryTest {
         connection2.setToInputName(SAMPLE_APP_INPUT_NAME);
 
         WorkflowConnection connection3 = new WorkflowConnection();
-        connection3.setBelongsToMainWorkflow(true);
         connection3.setFromType(ComponentType.APPLICATION);
         connection3.setFromId(APPLICATION_PREFIX + 2);
         connection3.setFromOutputName(SAMPLE_APP_OUTPUT_NAME);

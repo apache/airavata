@@ -43,7 +43,6 @@ include "../data-models/resource-catalog-models/gateway_resource_profile_model.t
 include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
-include "../data-models/workflow-catalog-models/airavata_workflow_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../airavata-apis/airavata_errors.thrift"
 include "../airavata-apis/airavata_commons.thrift"
@@ -2554,38 +2553,6 @@ service RegistryService {
 
                void registerQueueStatuses(1: required list<status_models.QueueStatusModel> queueStatuses)
                                     throws (1: registry_api_errors.RegistryServiceException rse)
-
-
-
-               list<string> getAllWorkflows(1: required string gatewayId)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-               /**
-                *
-                * API Methods Related for Work-Flow Submission Features.
-                *
-               */
-
-               airavata_workflow_model.AiravataWorkflow getWorkflow (1: required string workflowId)
-                     throws (1: registry_api_errors.RegistryServiceException rse)
-
-               void deleteWorkflow (1: required string workflowId)
-                     throws (1: registry_api_errors.RegistryServiceException rse)
-
-               string registerWorkflow(1: required string gatewayId,
-                                       2: required airavata_workflow_model.AiravataWorkflow workflow)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-               void updateWorkflow (1: required string workflowId,
-                                    2: required airavata_workflow_model.AiravataWorkflow workflow)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-               string getWorkflowId (1: required string workflowName)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-               bool isWorkflowExistWithName(1: required string workflowName)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
 
               /**
               * API Methods related to replica catalog

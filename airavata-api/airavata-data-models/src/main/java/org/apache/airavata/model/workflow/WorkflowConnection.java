@@ -29,7 +29,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowConnection");
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("belongsToMainWorkflow", org.apache.thrift.protocol.TType.BOOL, (short)2);
+  private static final org.apache.thrift.protocol.TField DATA_BLOCK_FIELD_DESC = new org.apache.thrift.protocol.TField("dataBlock", org.apache.thrift.protocol.TType.STRUCT, (short)2);
   private static final org.apache.thrift.protocol.TField FROM_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("fromType", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField FROM_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("fromId", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField FROM_OUTPUT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("fromOutputName", org.apache.thrift.protocol.TType.STRING, (short)5);
@@ -43,7 +43,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new WorkflowConnectionTupleSchemeFactory();
 
   private java.lang.String id; // required
-  private boolean belongsToMainWorkflow; // required
+  private DataBlock dataBlock; // optional
   private ComponentType fromType; // required
   private java.lang.String fromId; // required
   private java.lang.String fromOutputName; // required
@@ -56,10 +56,18 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
-    BELONGS_TO_MAIN_WORKFLOW((short)2, "belongsToMainWorkflow"),
+    DATA_BLOCK((short)2, "dataBlock"),
+    /**
+     * 
+     * @see ComponentType
+     */
     FROM_TYPE((short)3, "fromType"),
     FROM_ID((short)4, "fromId"),
     FROM_OUTPUT_NAME((short)5, "fromOutputName"),
+    /**
+     * 
+     * @see ComponentType
+     */
     TO_TYPE((short)6, "toType"),
     TO_ID((short)7, "toId"),
     TO_INPUT_NAME((short)8, "toInputName"),
@@ -81,8 +89,8 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       switch(fieldId) {
         case 1: // ID
           return ID;
-        case 2: // BELONGS_TO_MAIN_WORKFLOW
-          return BELONGS_TO_MAIN_WORKFLOW;
+        case 2: // DATA_BLOCK
+          return DATA_BLOCK;
         case 3: // FROM_TYPE
           return FROM_TYPE;
         case 4: // FROM_ID
@@ -139,26 +147,25 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   }
 
   // isset id assignments
-  private static final int __BELONGSTOMAINWORKFLOW_ISSET_ID = 0;
-  private static final int __CREATEDAT_ISSET_ID = 1;
-  private static final int __UPDATEDAT_ISSET_ID = 2;
+  private static final int __CREATEDAT_ISSET_ID = 0;
+  private static final int __UPDATEDAT_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATED_AT,_Fields.UPDATED_AT};
+  private static final _Fields optionals[] = {_Fields.DATA_BLOCK,_Fields.CREATED_AT,_Fields.UPDATED_AT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.BELONGS_TO_MAIN_WORKFLOW, new org.apache.thrift.meta_data.FieldMetaData("belongsToMainWorkflow", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.DATA_BLOCK, new org.apache.thrift.meta_data.FieldMetaData("dataBlock", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DataBlock.class)));
     tmpMap.put(_Fields.FROM_TYPE, new org.apache.thrift.meta_data.FieldMetaData("fromType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.ENUM        , "ComponentType")));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ComponentType.class)));
     tmpMap.put(_Fields.FROM_ID, new org.apache.thrift.meta_data.FieldMetaData("fromId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.FROM_OUTPUT_NAME, new org.apache.thrift.meta_data.FieldMetaData("fromOutputName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TO_TYPE, new org.apache.thrift.meta_data.FieldMetaData("toType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.ENUM        , "ComponentType")));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ComponentType.class)));
     tmpMap.put(_Fields.TO_ID, new org.apache.thrift.meta_data.FieldMetaData("toId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TO_INPUT_NAME, new org.apache.thrift.meta_data.FieldMetaData("toInputName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -178,7 +185,6 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
 
   public WorkflowConnection(
     java.lang.String id,
-    boolean belongsToMainWorkflow,
     ComponentType fromType,
     java.lang.String fromId,
     java.lang.String fromOutputName,
@@ -188,8 +194,6 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   {
     this();
     this.id = id;
-    this.belongsToMainWorkflow = belongsToMainWorkflow;
-    setBelongsToMainWorkflowIsSet(true);
     this.fromType = fromType;
     this.fromId = fromId;
     this.fromOutputName = fromOutputName;
@@ -206,7 +210,9 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     if (other.isSetId()) {
       this.id = other.id;
     }
-    this.belongsToMainWorkflow = other.belongsToMainWorkflow;
+    if (other.isSetDataBlock()) {
+      this.dataBlock = new DataBlock(other.dataBlock);
+    }
     if (other.isSetFromType()) {
       this.fromType = other.fromType;
     }
@@ -237,8 +243,7 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
   public void clear() {
     this.id = "DO_NOT_SET_AT_CLIENTS";
 
-    setBelongsToMainWorkflowIsSet(false);
-    this.belongsToMainWorkflow = false;
+    this.dataBlock = null;
     this.fromType = null;
     this.fromId = null;
     this.fromOutputName = null;
@@ -274,32 +279,41 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     }
   }
 
-  public boolean isBelongsToMainWorkflow() {
-    return this.belongsToMainWorkflow;
+  public DataBlock getDataBlock() {
+    return this.dataBlock;
   }
 
-  public void setBelongsToMainWorkflow(boolean belongsToMainWorkflow) {
-    this.belongsToMainWorkflow = belongsToMainWorkflow;
-    setBelongsToMainWorkflowIsSet(true);
+  public void setDataBlock(DataBlock dataBlock) {
+    this.dataBlock = dataBlock;
   }
 
-  public void unsetBelongsToMainWorkflow() {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID);
+  public void unsetDataBlock() {
+    this.dataBlock = null;
   }
 
-  /** Returns true if field belongsToMainWorkflow is set (has been assigned a value) and false otherwise */
-  public boolean isSetBelongsToMainWorkflow() {
-    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID);
+  /** Returns true if field dataBlock is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataBlock() {
+    return this.dataBlock != null;
   }
 
-  public void setBelongsToMainWorkflowIsSet(boolean value) {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID, value);
+  public void setDataBlockIsSet(boolean value) {
+    if (!value) {
+      this.dataBlock = null;
+    }
   }
 
+  /**
+   * 
+   * @see ComponentType
+   */
   public ComponentType getFromType() {
     return this.fromType;
   }
 
+  /**
+   * 
+   * @see ComponentType
+   */
   public void setFromType(ComponentType fromType) {
     this.fromType = fromType;
   }
@@ -365,10 +379,18 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     }
   }
 
+  /**
+   * 
+   * @see ComponentType
+   */
   public ComponentType getToType() {
     return this.toType;
   }
 
+  /**
+   * 
+   * @see ComponentType
+   */
   public void setToType(ComponentType toType) {
     this.toType = toType;
   }
@@ -488,11 +510,11 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       }
       break;
 
-    case BELONGS_TO_MAIN_WORKFLOW:
+    case DATA_BLOCK:
       if (value == null) {
-        unsetBelongsToMainWorkflow();
+        unsetDataBlock();
       } else {
-        setBelongsToMainWorkflow((java.lang.Boolean)value);
+        setDataBlock((DataBlock)value);
       }
       break;
 
@@ -568,8 +590,8 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     case ID:
       return getId();
 
-    case BELONGS_TO_MAIN_WORKFLOW:
-      return isBelongsToMainWorkflow();
+    case DATA_BLOCK:
+      return getDataBlock();
 
     case FROM_TYPE:
       return getFromType();
@@ -608,8 +630,8 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     switch (field) {
     case ID:
       return isSetId();
-    case BELONGS_TO_MAIN_WORKFLOW:
-      return isSetBelongsToMainWorkflow();
+    case DATA_BLOCK:
+      return isSetDataBlock();
     case FROM_TYPE:
       return isSetFromType();
     case FROM_ID:
@@ -654,12 +676,12 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
         return false;
     }
 
-    boolean this_present_belongsToMainWorkflow = true;
-    boolean that_present_belongsToMainWorkflow = true;
-    if (this_present_belongsToMainWorkflow || that_present_belongsToMainWorkflow) {
-      if (!(this_present_belongsToMainWorkflow && that_present_belongsToMainWorkflow))
+    boolean this_present_dataBlock = true && this.isSetDataBlock();
+    boolean that_present_dataBlock = true && that.isSetDataBlock();
+    if (this_present_dataBlock || that_present_dataBlock) {
+      if (!(this_present_dataBlock && that_present_dataBlock))
         return false;
-      if (this.belongsToMainWorkflow != that.belongsToMainWorkflow)
+      if (!this.dataBlock.equals(that.dataBlock))
         return false;
     }
 
@@ -746,7 +768,9 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     if (isSetId())
       hashCode = hashCode * 8191 + id.hashCode();
 
-    hashCode = hashCode * 8191 + ((belongsToMainWorkflow) ? 131071 : 524287);
+    hashCode = hashCode * 8191 + ((isSetDataBlock()) ? 131071 : 524287);
+    if (isSetDataBlock())
+      hashCode = hashCode * 8191 + dataBlock.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetFromType()) ? 131071 : 524287);
     if (isSetFromType())
@@ -801,12 +825,12 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetBelongsToMainWorkflow()).compareTo(other.isSetBelongsToMainWorkflow());
+    lastComparison = java.lang.Boolean.valueOf(isSetDataBlock()).compareTo(other.isSetDataBlock());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetBelongsToMainWorkflow()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.belongsToMainWorkflow, other.belongsToMainWorkflow);
+    if (isSetDataBlock()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataBlock, other.dataBlock);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -918,10 +942,16 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       sb.append(this.id);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("belongsToMainWorkflow:");
-    sb.append(this.belongsToMainWorkflow);
-    first = false;
+    if (isSetDataBlock()) {
+      if (!first) sb.append(", ");
+      sb.append("dataBlock:");
+      if (this.dataBlock == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dataBlock);
+      }
+      first = false;
+    }
     if (!first) sb.append(", ");
     sb.append("fromType:");
     if (this.fromType == null) {
@@ -992,10 +1022,6 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' is unset! Struct:" + toString());
     }
 
-    if (!isSetBelongsToMainWorkflow()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'belongsToMainWorkflow' is unset! Struct:" + toString());
-    }
-
     if (!isSetFromType()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'fromType' is unset! Struct:" + toString());
     }
@@ -1021,6 +1047,9 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     }
 
     // check for sub-struct validity
+    if (dataBlock != null) {
+      dataBlock.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -1067,10 +1096,11 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // BELONGS_TO_MAIN_WORKFLOW
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.belongsToMainWorkflow = iprot.readBool();
-              struct.setBelongsToMainWorkflowIsSet(true);
+          case 2: // DATA_BLOCK
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.dataBlock = new DataBlock();
+              struct.dataBlock.read(iprot);
+              struct.setDataBlockIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1157,9 +1187,13 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
         oprot.writeString(struct.id);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC);
-      oprot.writeBool(struct.belongsToMainWorkflow);
-      oprot.writeFieldEnd();
+      if (struct.dataBlock != null) {
+        if (struct.isSetDataBlock()) {
+          oprot.writeFieldBegin(DATA_BLOCK_FIELD_DESC);
+          struct.dataBlock.write(oprot);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.fromType != null) {
         oprot.writeFieldBegin(FROM_TYPE_FIELD_DESC);
         oprot.writeI32(struct.fromType.getValue());
@@ -1218,7 +1252,6 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
     public void write(org.apache.thrift.protocol.TProtocol prot, WorkflowConnection struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.id);
-      oprot.writeBool(struct.belongsToMainWorkflow);
       oprot.writeI32(struct.fromType.getValue());
       oprot.writeString(struct.fromId);
       oprot.writeString(struct.fromOutputName);
@@ -1226,13 +1259,19 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       oprot.writeString(struct.toId);
       oprot.writeString(struct.toInputName);
       java.util.BitSet optionals = new java.util.BitSet();
-      if (struct.isSetCreatedAt()) {
+      if (struct.isSetDataBlock()) {
         optionals.set(0);
       }
-      if (struct.isSetUpdatedAt()) {
+      if (struct.isSetCreatedAt()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetUpdatedAt()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetDataBlock()) {
+        struct.dataBlock.write(oprot);
+      }
       if (struct.isSetCreatedAt()) {
         oprot.writeI64(struct.createdAt);
       }
@@ -1246,8 +1285,6 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.id = iprot.readString();
       struct.setIdIsSet(true);
-      struct.belongsToMainWorkflow = iprot.readBool();
-      struct.setBelongsToMainWorkflowIsSet(true);
       struct.fromType = org.apache.airavata.model.workflow.ComponentType.findByValue(iprot.readI32());
       struct.setFromTypeIsSet(true);
       struct.fromId = iprot.readString();
@@ -1260,12 +1297,17 @@ public class WorkflowConnection implements org.apache.thrift.TBase<WorkflowConne
       struct.setToIdIsSet(true);
       struct.toInputName = iprot.readString();
       struct.setToInputNameIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(2);
+      java.util.BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
+        struct.dataBlock = new DataBlock();
+        struct.dataBlock.read(iprot);
+        struct.setDataBlockIsSet(true);
+      }
+      if (incoming.get(1)) {
         struct.createdAt = iprot.readI64();
         struct.setCreatedAtIsSet(true);
       }
-      if (incoming.get(1)) {
+      if (incoming.get(2)) {
         struct.updatedAt = iprot.readI64();
         struct.setUpdatedAtIsSet(true);
       }

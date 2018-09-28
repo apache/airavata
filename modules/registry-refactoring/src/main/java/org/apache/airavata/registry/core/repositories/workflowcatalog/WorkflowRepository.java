@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,15 +42,15 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
         super(AiravataWorkflow.class, AiravataWorkflowEntity.class);
     }
 
-    protected String saveWorkflowModelData(AiravataWorkflow workflowModel, String gatewayId) throws WorkflowCatalogException {
-        AiravataWorkflowEntity workflowEntity = saveWorkflow(workflowModel, gatewayId);
+    protected String saveWorkflowModelData(AiravataWorkflow workflowModel, String experimentId) throws WorkflowCatalogException {
+        AiravataWorkflowEntity workflowEntity = saveWorkflow(workflowModel, experimentId);
         return workflowEntity.getId();
     }
 
-    protected AiravataWorkflowEntity saveWorkflow(AiravataWorkflow workflowModel, String gatewayId) throws WorkflowCatalogException {
+    protected AiravataWorkflowEntity saveWorkflow(AiravataWorkflow workflowModel, String experimentId) throws WorkflowCatalogException {
 
         if (workflowModel.getId() == null || workflowModel.getId().equals(airavata_commonsConstants.DEFAULT_ID)) {
-            String newId = WorkflowCatalogUtils.getID(workflowModel.getName());
+            String newId = WorkflowCatalogUtils.getID(experimentId);
             logger.debug("Setting the ID: " + newId + " for the new Workflow");
             workflowModel.setId(newId);
         }
@@ -65,9 +64,9 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
             });
         }
 
-        if (workflowModel.getGatewayId() == null) {
-            logger.debug("Setting the GatewayID: " + gatewayId + " for the new Workflow with ID: " + workflowModel.getId());
-            workflowModel.setGatewayId(gatewayId);
+        if (workflowModel.getExperimentId() == null) {
+            logger.debug("Setting the ExperimentID: " + experimentId + " for the new Workflow with ID: " + workflowModel.getId());
+            workflowModel.setExperimentId(experimentId);
         }
 
         String workflowId = workflowModel.getId();
@@ -141,12 +140,12 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
     }
 
     @Override
-    public String registerWorkflow(AiravataWorkflow workflowModel, String gatewayId) throws WorkflowCatalogException {
-        return saveWorkflowModelData(workflowModel, gatewayId);
+    public String registerWorkflow(AiravataWorkflow workflowModel, String experimentId) throws WorkflowCatalogException {
+        return saveWorkflowModelData(workflowModel, experimentId);
     }
 
     @Override
-    public void updateWorkflow(String templateId, AiravataWorkflow updatedWorkflowModel) throws WorkflowCatalogException {
+    public void updateWorkflow(String workflowId, AiravataWorkflow updatedWorkflowModel) throws WorkflowCatalogException {
         saveWorkflowModelData(updatedWorkflowModel, null);
     }
 
@@ -156,36 +155,16 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
     }
 
     @Override
-    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException {
+    public String getWorkflowId(String experimentId) throws WorkflowCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.Workflow.GATEWAY_ID, gatewayId);
-        List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_ALL_WORKFLOWS, -1, 0, queryParameters);
-        List<String> workflows = new ArrayList<>();
-        for (AiravataWorkflow workflowModel : workflowModelList) {
-            workflows.add(workflowModel.getId());
-        }
-        return workflows;
-    }
-
-    @Override
-    public String getWorkflowId(String workflowName) throws WorkflowCatalogException {
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.Workflow.NAME, workflowName);
-        List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
+        queryParameters.put(DBConstants.Workflow.EXPERIMENT_ID, experimentId);
+        List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_WORKFLOW_FOR_EXPERIMENT_ID, -1, 0, queryParameters);
 
         if (workflowModelList != null && !workflowModelList.isEmpty()) {
             logger.debug("Return the record (there is only one record)");
             return workflowModelList.get(0).getId();
         }
         return null;
-    }
-
-    @Override
-    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException {
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.Workflow.NAME, workflowName);
-        List<AiravataWorkflow> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
-        return (workflowModelList != null && !workflowModelList.isEmpty());
     }
 
     @Override
