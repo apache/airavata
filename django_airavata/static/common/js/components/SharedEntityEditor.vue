@@ -94,11 +94,7 @@ export default {
     },
     filteredGroupPermissions: function() {
       return this.data && this.data.groupPermissions
-        ? this.data.groupPermissions.filter(
-            grp =>
-              !grp.group.isGatewayAdminsGroup &&
-              !grp.group.isReadOnlyGatewayAdminsGroup
-          )
+        ? this.data.groupPermissions
         : [];
     },
     groupsCount: function() {
@@ -124,12 +120,7 @@ export default {
         groupPerm => groupPerm.group.id
       );
       return this.groups
-        .filter(
-          group =>
-            currentGroupIds.indexOf(group.id) < 0 &&
-            !group.isGatewayAdminsGroup &&
-            !group.isReadOnlyGatewayAdminsGroup
-        )
+        .filter(group => currentGroupIds.indexOf(group.id) < 0)
         .map(group => {
           return {
             id: group.id,

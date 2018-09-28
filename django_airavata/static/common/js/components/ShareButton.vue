@@ -64,14 +64,8 @@ export default {
         : null;
     },
     filteredGroupPermissions: function() {
-      // TODO: make this an option? Maybe don't filter the admin groups but add
-      // an option to make it so that they can't be removed
       return this.localSharedEntity && this.localSharedEntity.groupPermissions
-        ? this.localSharedEntity.groupPermissions.filter(
-            grp =>
-              !grp.group.isGatewayAdminsGroup &&
-              !grp.group.isReadOnlyGatewayAdminsGroup
-          )
+        ? this.localSharedEntity.groupPermissions
         : [];
     },
     groupNames: function() {
