@@ -5,7 +5,8 @@
         <h1 class="h4 mb-4">
           {{ name }}
         </h1>
-        <share-button :shared-entity="localSharedEntity" @saved="savedSharedEntity" @unsaved="unsavedSharedEntity" />
+        <share-button v-if="localSharedEntity" :shared-entity="localSharedEntity" @saved="savedSharedEntity" @unsaved="unsavedSharedEntity"
+        />
         <b-form-group label="Application Executable Path" label-for="executable-path">
           <b-form-input id="executable-path" type="text" v-model="data.executablePath" required :disabled="readonly"></b-form-input>
         </b-form-group>

@@ -102,7 +102,7 @@ export default {
       let loadedSharedEntity = null;
       if (this.entityId) {
         promises.push(
-          services.SharedEntityService.retrieve({ lookup: this.entityId }).then(
+          this.loadSharedEntity(this.entityId).then(
             sharedEntity => (loadedSharedEntity = sharedEntity)
           )
         );
@@ -138,6 +138,9 @@ export default {
           this.localSharedEntity.addGroup(this.defaultGatewayUsersGroup);
         }
       });
+    },
+    loadSharedEntity(entityId) {
+      return services.SharedEntityService.retrieve({ lookup: this.entityId });
     },
     /**
      * Merge the persisted SharedEntity with the local SharedEntity
@@ -186,14 +189,22 @@ export default {
     }
   },
   mounted: function() {
+    // Only run initialize when mounted since it may add the default gateways
+    // group automatically (autoAddDefaultGatewayUsersGroup)
     this.initialize();
   },
   watch: {
     sharedEntity(newSharedEntity) {
-      this.initialize();
+      this.localSharedEntity = newSharedEntity
+        ? newSharedEntity.clone()
+        : new models.SharedEntity();
     },
-    entityId(newEntityId) {
-      this.initialize();
+    entityId(newEntityId, oldEntityId) {
+      if (newEntityId && newEntityId !== oldEntityId) {
+        this.loadSharedEntity(newEntityId).then(
+          sharedEntity => (this.localSharedEntity = sharedEntity)
+        );
+      }
     }
   }
 };
