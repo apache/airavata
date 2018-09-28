@@ -52,8 +52,8 @@ def create_user_profile_for_new_user(sender, request, user, **kwargs):
             log.debug("UserProfile doesn't exist for {username}, "
                       "creating...".format(username=user.username))
             new_user_profile = UserProfile()
-            new_user_profile.airavataInternalUserId = (user.username + "@"
-                                                       + settings.GATEWAY_ID)
+            new_user_profile.airavataInternalUserId = (user.username + "@" +
+                                                       settings.GATEWAY_ID)
             new_user_profile.userId = user.username
             new_user_profile.gatewayId = settings.GATEWAY_ID
             new_user_profile.emails = [user.email]

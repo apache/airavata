@@ -115,7 +115,8 @@ class APIResultPagination(pagination.LimitOffsetPagination):
     default_limit = 10
 
     def paginate_queryset(self, queryset, request, view=None):
-        assert isinstance(queryset, APIResultIterator), "queryset is not an APIResultIterator: {}".format(queryset)
+        assert isinstance(
+            queryset, APIResultIterator), "queryset is not an APIResultIterator: {}".format(queryset)
         self.limit = self.get_limit(request)
         if self.limit is None:
             return None

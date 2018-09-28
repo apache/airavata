@@ -11,7 +11,8 @@ def airavata_app_registry(request):
     airavata_apps.sort(
         key=lambda app: "{:09}-{}".format(app.app_order,
                                           app.verbose_name.lower()))
-    current_airavata_app = [app for app in airavata_apps if app.url_app_name == request.resolver_match.app_name]
+    current_airavata_app = [
+        app for app in airavata_apps if app.url_app_name == request.resolver_match.app_name]
     current_airavata_app = current_airavata_app[0]\
         if len(current_airavata_app) > 0 else None
     return {

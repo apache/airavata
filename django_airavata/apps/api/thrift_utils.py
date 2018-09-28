@@ -116,9 +116,11 @@ def create_serializer_class(thrift_data_type, enable_date_time_conversion=False)
                 if isinstance(serializer, ListField):
                     if (params[field_name] is not None or not serializer.allow_null):
                         if isinstance(serializer.child, Serializer):
-                            params[field_name] = [serializer.child.create(item) for item in params[field_name]]
+                            params[field_name] = [serializer.child.create(
+                                item) for item in params[field_name]]
                         else:
-                            params[field_name] = serializer.to_representation(params[field_name])
+                            params[field_name] = serializer.to_representation(
+                                params[field_name])
                 elif isinstance(serializer, Serializer):
                     params[field_name] = serializer.create(params[field_name])
             return params
