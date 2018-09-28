@@ -64,6 +64,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     private TaskHelper taskHelper;
     private HelixParticipant participant;
 
+    @TaskParam(name = "Retry Count")
     private int retryCount = 3;
 
     @Override
