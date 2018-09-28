@@ -4,9 +4,10 @@
       Share
       <b-badge>{{ totalCount }}</b-badge>
     </b-button>
-    <b-modal clas="modal-share-settings" title="Sharing Settings" ref="sharingSettingsModal" ok-title="Save" @ok="saveSharedEntity"
+    <b-modal class="modal-share-settings" title="Sharing Settings" ref="sharingSettingsModal" ok-title="Save" @ok="saveSharedEntity"
       @cancel="cancelEditSharedEntity" no-close-on-esc no-close-on-backdrop hide-header-close @show="showSharingSettingsModal">
-      <shared-entity-editor v-if="localSharedEntity" v-model="localSharedEntity" />
+      <shared-entity-editor v-if="localSharedEntity && users && groups" v-model="localSharedEntity" :users="users" :groups="groups"
+      />
     </b-modal>
   </div>
 </template>
@@ -31,10 +32,10 @@ export default {
   data: function() {
     return {
       localSharedEntity: null,
-      users: [],
-      groups: [],
       sharedEntityCopy: null,
-      defaultGatewayUsersGroup: null
+      defaultGatewayUsersGroup: null,
+      users: null,
+      groups: null
     };
   },
   computed: {
@@ -116,6 +117,7 @@ export default {
           services.ServiceFactory.service("Groups")
             .list({ limit: -1 })
             .then(groups => {
+              this.groups = groups;
               // If a new sharedEntity, automatically add the defaultGatewayUsersGroup
               groups
                 .filter(group => group.isDefaultGatewayUsersGroup)
@@ -186,6 +188,18 @@ export default {
     },
     showSharingSettingsModal: function(event) {
       this.sharedEntityCopy = this.localSharedEntity.clone();
+      if (!this.users) {
+        services.ServiceFactory.service("UserProfiles")
+          .list()
+          .then(users => (this.users = users));
+      }
+      if (!this.groups) {
+        services.ServiceFactory.service("Groups")
+          .list({ limit: -1 })
+          .then(groups => {
+            this.groups = groups;
+          });
+      }
     }
   },
   mounted: function() {

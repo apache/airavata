@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { models } from "django-airavata-api";
 import AutocompleteTextInput from "./AutocompleteTextInput.vue";
 import VModelMixin from "../mixins/VModelMixin";
 
@@ -58,29 +58,35 @@ export default {
   props: {
     value: {
       type: models.SharedEntity
+    },
+    users: {
+      type: Array,
+      required: true
+    },
+    groups: {
+      type: Array,
+      required: true
     }
   },
   components: {
     AutocompleteTextInput
   },
-  data: function() {
-    return {
-      userFields: [
+  computed: {
+    userFields: function() {
+      return [
         { key: "name", label: "User Name" },
         { key: "email", label: "Email" },
         { key: "permission", label: "Permission" },
         { key: "remove", label: "Remove" }
-      ],
-      groupFields: [
+      ];
+    },
+    groupFields: function() {
+      return [
         { key: "name", label: "Group Name" },
         { key: "permission", label: "Permission" },
         { key: "remove", label: "Remove" }
-      ],
-      users: [],
-      groups: []
-    };
-  },
-  computed: {
+      ];
+    },
     usersCount: function() {
       return this.data && this.data.userPermissions
         ? this.data.userPermissions.length
@@ -163,60 +169,22 @@ export default {
   },
   methods: {
     removeUser: function(user) {
-      this.data.userPermissions = this.data.userPermissions.filter(
-        userPermission =>
-          userPermission.user.airavataInternalUserId !==
-          user.airavataInternalUserId
-      );
+      this.data.removeUser(user);
     },
     removeGroup: function(group) {
-      this.data.groupPermissions = this.data.groupPermissions.filter(
-        groupPermission => groupPermission.group.id !== group.id
-      );
+      this.data.removeGroup(group);
     },
     suggestionSelected: function(suggestion) {
       if (suggestion.type === "group") {
         const group = this.groups.find(group => group.id === suggestion.id);
-        this.addGroup(group);
+        this.data.addGroup(group);
       } else if (suggestion.type === "user") {
         const user = this.users.find(
           user => user.airavataInternalUserId === suggestion.id
         );
-        if (!this.data.userPermissions) {
-          this.data.userPermissions = [];
-        }
-        this.data.userPermissions.push(
-          new models.UserPermission({
-            user: user,
-            permissionType: models.ResourcePermissionType.READ
-          })
-        );
-      }
-    },
-    addGroup: function(group) {
-      if (!this.data.groupPermissions) {
-        this.data.groupPermissions = [];
-      }
-      if (!this.data.groupPermissions.find(gp => gp.group.id === group.id)) {
-        this.data.groupPermissions.push(
-          new models.GroupPermission({
-            group: group,
-            permissionType: models.ResourcePermissionType.READ
-          })
-        );
+        this.data.addUser(user);
       }
     }
-  },
-  mounted: function() {
-    // Load all of the groups and users
-    services.ServiceFactory.service("Groups")
-      .list({ limit: -1 })
-      .then(groups => {
-        this.groups = groups;
-      });
-    services.ServiceFactory.service("UserProfiles")
-      .list()
-      .then(users => (this.users = users));
   }
 };
 </script>

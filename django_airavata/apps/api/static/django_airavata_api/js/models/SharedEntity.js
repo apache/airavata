@@ -30,6 +30,32 @@ export default class SharedEntity extends BaseModel {
     super(FIELDS, data);
   }
 
+  addUser(user) {
+    if (!this.userPermissions) {
+      this.userPermissions = [];
+    }
+    if (
+      !this.userPermissions.find(
+        up => up.user.airavataInternalUserId === user.airavataInternalUserId
+      )
+    ) {
+      this.userPermissions.push(
+        new UserPermission({
+          user: user,
+          permissionType: ResourcePermissionType.READ
+        })
+      );
+    }
+  }
+
+  removeUser(user) {
+    this.userPermissions = this.userPermissions.filter(
+      userPermission =>
+        userPermission.user.airavataInternalUserId !==
+        user.airavataInternalUserId
+    );
+  }
+
   addGroup(group) {
     if (!this.groupPermissions) {
       this.groupPermissions = [];
@@ -42,5 +68,11 @@ export default class SharedEntity extends BaseModel {
         })
       );
     }
+  }
+
+  removeGroup(group) {
+    this.groupPermissions = this.groupPermissions.filter(
+      groupPermission => groupPermission.group.id !== group.id
+    );
   }
 }
