@@ -2,10 +2,10 @@
 
 import time
 
-from airavata.model.security.ttypes import AuthzToken
-
 from django.conf import settings
 from django.contrib.auth import authenticate
+
+from airavata.model.security.ttypes import AuthzToken
 
 
 def get_authz_token(request):

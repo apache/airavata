@@ -1,23 +1,11 @@
 from django import template
-
 from wagtail.core.models import Page
 
-from django_airavata.wagtailapps.base.models import FooterText
-
-from django_airavata.wagtailapps.base.models import Navbar
-
-from django_airavata.wagtailapps.base.models import Announcements
-
-from django_airavata.wagtailapps.base.models import CustomHeaderLinks
-
-from django_airavata.wagtailapps.base.models import CustomCss
-
-from django_airavata.wagtailapps.base.models import NavExtra
-
-from django_airavata.wagtailapps.base.models import GatewayIcon
-
-from django_airavata.wagtailapps.base.models import GatewayTitle
-
+from django_airavata.wagtailapps.base.models import (Announcements, CustomCss,
+                                                     CustomHeaderLinks,
+                                                     FooterText, GatewayIcon,
+                                                     GatewayTitle, Navbar,
+                                                     NavExtra)
 
 register = template.Library()
 # https://docs.djangoproject.com/en/1.9/howto/custom-template-tags/
