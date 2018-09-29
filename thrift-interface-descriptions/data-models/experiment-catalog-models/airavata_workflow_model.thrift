@@ -89,9 +89,7 @@ struct WorkflowConnection {
 
 enum HandlerType {
     FLOW_STARTER,
-    FLOW_TERMINATOR,
-    DOWHILE_LOOP,
-    FOREACH_LOOP
+    FLOW_TERMINATOR
 }
 
 enum HandlerState {
@@ -118,12 +116,10 @@ struct WorkflowHandler {
     2:  required HandlerType type,
     3:  optional list<application_io_models.InputDataObjectType> inputs,
     4:  optional list<application_io_models.OutputDataObjectType> outputs,
-    5:  optional list<WorkflowApplication> applications,
-    6:  optional list<WorkflowConnection> connections,
-    7:  optional list<HandlerStatus> statuses,
-    8:  optional list<airavata_commons.ErrorModel> errors,
-    9:  optional i64 createdAt,
-    10: optional i64 updatedAt
+    5:  optional list<HandlerStatus> statuses,
+    6:  optional list<airavata_commons.ErrorModel> errors,
+    7:  optional i64 createdAt,
+    8: optional i64 updatedAt
 }
 
 enum WorkflowState {
