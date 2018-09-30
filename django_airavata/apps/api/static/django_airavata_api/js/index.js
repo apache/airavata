@@ -48,14 +48,14 @@ import FetchUtils from "./utils/FetchUtils";
 import PaginationIterator from "./utils/PaginationIterator";
 import StringUtils from "./utils/StringUtils";
 
-exports.errors = {
+const errors = {
   ErrorUtils,
   UnhandledError,
   UnhandledErrorDispatcher,
   UnhandledErrorDisplayList
 };
 
-exports.models = {
+const models = {
   ApplicationDeploymentDescription,
   ApplicationInterfaceDefinition,
   ApplicationModule,
@@ -85,7 +85,7 @@ exports.models = {
   UserPermission
 };
 
-exports.services = {
+const services = {
   ApplicationDeploymentService: ServiceFactory.service(
     "ApplicationDeployments"
   ),
@@ -119,8 +119,15 @@ exports.services = {
   UserProfileService
 };
 
-exports.utils = {
+const utils = {
   FetchUtils,
   PaginationIterator,
   StringUtils
+};
+
+export default {
+  errors,
+  models,
+  services,
+  utils
 };

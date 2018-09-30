@@ -20,7 +20,7 @@ import NotificationList from "./notifications/NotificationList";
 
 import * as utils from "./utils";
 
-exports.components = {
+const components = {
   Pager,
   ApplicationCard,
   AutocompleteTextInput,
@@ -32,22 +32,29 @@ exports.components = {
   UnsavedChangesGuard
 };
 
-exports.errors = {
+const errors = {
   GlobalErrorHandler,
   ValidationErrors
 };
 
-exports.layouts = {
+const layouts = {
   ListLayout
 };
 
-exports.mixins = {
+const mixins = {
   VModelMixin
 };
 
-exports.notifications = {
+const notifications = {
   Notification,
   NotificationList
 };
 
-exports.utils = utils;
+export default {
+  components,
+  errors,
+  layouts,
+  mixins,
+  notifications,
+  utils
+};

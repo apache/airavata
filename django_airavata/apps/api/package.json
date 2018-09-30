@@ -5,6 +5,7 @@
   "author": "Marcus Christie <machristie@apache.org>",
   "private": false,
   "main": "./static/django_airavata_api/dist/index.js",
+  "module": "./static/django_airavata_api/js/index.js",
   "license": "Apache-2.0",
   "repository": "https://github.com/apache/airavata-django-portal",
   "scripts": {
@@ -14,31 +15,23 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "babel-runtime": "^6.26.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/runtime": "^7.1.2",
     "url-parse": "^1.4.3",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^9.0.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-transform-runtime": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
     "jest": "^23.6.0",
     "eslint": "^5.6.0",
     "eslint-plugin-vue": "^4.7.1"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
-  }
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
 }

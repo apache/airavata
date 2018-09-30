@@ -24,10 +24,5 @@
 {% endblock %}
 {% block scripts %}
     {{ block.super }}
-    <script type=text/javascript src="{% static 'django_airavata_admin/dist/static/js/app.js' %}"></script>
-    <script>
-        if(AiravataApp){
-            AiravataApp.initializeApacheAiravataDashboard(window.airavataDashboardName);
-        }
-    </script>
+    <script type=text/javascript src="{% static 'django_airavata_admin/dist/app.js' %}"></script>
 {% endblock %}

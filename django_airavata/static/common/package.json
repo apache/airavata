@@ -5,6 +5,7 @@
   "author": "Marcus Christie <machristie@apache.org>",
   "private": true,
   "main": "./dist/main.js",
+  "module": "./js/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
     "watch": "cross-env NODE_ENV=development webpack --watch",

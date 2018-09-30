@@ -6,7 +6,14 @@ module.exports = {
   assetsDir: "static",
   filenameHashing: false,
   css: {
-    extract: true
+    extract: true,
+    loaderOptions: {
+      postcss: {
+        config: {
+          path: __dirname
+        }
+      }
+    }
   },
   configureWebpack: {
     plugins: [
