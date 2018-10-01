@@ -5402,7 +5402,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         for (String tokenId : tokenIds) {
             if (!userHasAccessInternal(sharingClient, authzToken, tokenId, ResourcePermissionType.READ)) {
-                throw new AuthorizationException("User does not have permission to a credential token in this resource.");
+                throw new AuthorizationException("User does not have READ permission to credential token " + tokenId + ".");
             }
         }
     }
