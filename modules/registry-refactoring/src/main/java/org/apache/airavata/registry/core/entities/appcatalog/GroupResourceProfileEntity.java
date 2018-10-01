@@ -49,6 +49,9 @@ public class GroupResourceProfileEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Long updatedTime;
 
+    @Column(name = "DEFAULT_CREDENTIAL_STORE_TOKEN")
+    private String defaultCredentialStoreToken;
+
     @OneToMany(targetEntity = GroupComputeResourcePrefEntity.class, cascade = CascadeType.ALL,
             mappedBy = "groupResourceProfile", fetch = FetchType.EAGER)
     private List<GroupComputeResourcePrefEntity> computePreferences;
@@ -102,6 +105,14 @@ public class GroupResourceProfileEntity implements Serializable {
 
     public void setUpdatedTime(Long updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public String getDefaultCredentialStoreToken() {
+        return defaultCredentialStoreToken;
+    }
+
+    public void setDefaultCredentialStoreToken(String defaultCredentialStoreToken) {
+        this.defaultCredentialStoreToken = defaultCredentialStoreToken;
     }
 
     public List<GroupComputeResourcePrefEntity> getComputePreferences() {

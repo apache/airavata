@@ -5397,6 +5397,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         }
+        if (groupResourceProfile.getDefaultCredentialStoreToken() != null) {
+            tokenIds.add(groupResourceProfile.getDefaultCredentialStoreToken());
+        }
         for (String tokenId : tokenIds) {
             if (!userHasAccessInternal(sharingClient, authzToken, tokenId, ResourcePermissionType.READ)) {
                 throw new AuthorizationException("User does not have permission to a credential token in this resource.");

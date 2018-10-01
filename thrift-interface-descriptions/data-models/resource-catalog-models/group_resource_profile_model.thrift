@@ -89,6 +89,8 @@ struct BatchQueueResourcePolicy {
  * batchQueueResourcePolicies:
  *  List of enforced policies on registered batch queues
  *
+ * defaultCredentialStoreToken:
+ *  The default credential store token to use for compute resources that don't specify a resource specific credential store token.
  *
 */
 
@@ -100,5 +102,6 @@ struct GroupResourceProfile {
     5: optional list<ComputeResourcePolicy> computeResourcePolicies,
     6: optional list<BatchQueueResourcePolicy> batchQueueResourcePolicies
     7: optional i64 creationTime,
-    8: optional i64 updatedTime
+    8: optional i64 updatedTime,
+    9: optional string defaultCredentialStoreToken
 }
