@@ -559,6 +559,8 @@ public class AiravataDataMigrator {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("Default");
+        GatewayResourceProfile gatewayResourceProfile = registryServiceClient.getGatewayResourceProfile(gatewayId);
+        groupResourceProfile.setDefaultCredentialStoreToken(gatewayResourceProfile.getCredentialStoreToken());
         List<GroupComputeResourcePreference> groupComputeResourcePreferences = new ArrayList<>();
         List<ComputeResourcePolicy> computeResourcePolicies = new ArrayList<>();
         List<ComputeResourcePreference> computeResourcePreferences = registryServiceClient.getAllGatewayComputeResourcePreferences(gatewayId);
