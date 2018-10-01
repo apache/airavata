@@ -560,7 +560,9 @@ public class AiravataDataMigrator {
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("Default");
         GatewayResourceProfile gatewayResourceProfile = registryServiceClient.getGatewayResourceProfile(gatewayId);
-        groupResourceProfile.setDefaultCredentialStoreToken(gatewayResourceProfile.getCredentialStoreToken());
+        if (isValid(gatewayResourceProfile.getCredentialStoreToken())) {
+            groupResourceProfile.setDefaultCredentialStoreToken(gatewayResourceProfile.getCredentialStoreToken());
+        }
         List<GroupComputeResourcePreference> groupComputeResourcePreferences = new ArrayList<>();
         List<ComputeResourcePolicy> computeResourcePolicies = new ArrayList<>();
         List<ComputeResourcePreference> computeResourcePreferences = registryServiceClient.getAllGatewayComputeResourcePreferences(gatewayId);
@@ -587,15 +589,29 @@ public class AiravataDataMigrator {
         groupComputeResourcePreference.setGroupResourceProfileId(groupResourceProfileId);
         groupComputeResourcePreference.setComputeResourceId(computeResourcePreference.getComputeResourceId());
         groupComputeResourcePreference.setOverridebyAiravata(computeResourcePreference.isOverridebyAiravata());
-        groupComputeResourcePreference.setLoginUserName(computeResourcePreference.getLoginUserName());
+        if (isValid(computeResourcePreference.getLoginUserName())) {
+            groupComputeResourcePreference.setLoginUserName(computeResourcePreference.getLoginUserName());
+        }
         groupComputeResourcePreference.setPreferredJobSubmissionProtocol(computeResourcePreference.getPreferredJobSubmissionProtocol());
         groupComputeResourcePreference.setPreferredDataMovementProtocol(computeResourcePreference.getPreferredDataMovementProtocol());
-        groupComputeResourcePreference.setPreferredBatchQueue(computeResourcePreference.getPreferredBatchQueue());
-        groupComputeResourcePreference.setScratchLocation(computeResourcePreference.getScratchLocation());
-        groupComputeResourcePreference.setAllocationProjectNumber(computeResourcePreference.getAllocationProjectNumber());
-        groupComputeResourcePreference.setResourceSpecificCredentialStoreToken(computeResourcePreference.getResourceSpecificCredentialStoreToken());
-        groupComputeResourcePreference.setUsageReportingGatewayId(computeResourcePreference.getUsageReportingGatewayId());
-        groupComputeResourcePreference.setQualityOfService(computeResourcePreference.getQualityOfService());
+        if (isValid(computeResourcePreference.getPreferredBatchQueue())) {
+            groupComputeResourcePreference.setPreferredBatchQueue(computeResourcePreference.getPreferredBatchQueue());
+        }
+        if (isValid(computeResourcePreference.getScratchLocation())) {
+            groupComputeResourcePreference.setScratchLocation(computeResourcePreference.getScratchLocation());
+        }
+        if (isValid(computeResourcePreference.getAllocationProjectNumber())) {
+            groupComputeResourcePreference.setAllocationProjectNumber(computeResourcePreference.getAllocationProjectNumber());
+        }
+        if (isValid(computeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+            groupComputeResourcePreference.setResourceSpecificCredentialStoreToken(computeResourcePreference.getResourceSpecificCredentialStoreToken());
+        }
+        if (isValid(computeResourcePreference.getUsageReportingGatewayId())) {
+            groupComputeResourcePreference.setUsageReportingGatewayId(computeResourcePreference.getUsageReportingGatewayId());
+        }
+        if (isValid(groupComputeResourcePreference.getQualityOfService())) {
+            groupComputeResourcePreference.setQualityOfService(computeResourcePreference.getQualityOfService());
+        }
         // Note: skipping copying of reservation time and ssh account provisioner configuration for now
         return groupComputeResourcePreference;
     }
@@ -610,6 +626,9 @@ public class AiravataDataMigrator {
         return computeResourcePolicy;
     }
 
+    private static boolean isValid(String s) {
+        return s != null && !"".equals(s.trim());
+    }
 
     private static CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
