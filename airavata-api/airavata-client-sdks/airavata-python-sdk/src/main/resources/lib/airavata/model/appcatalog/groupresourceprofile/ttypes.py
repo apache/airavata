@@ -663,6 +663,8 @@ class GroupResourceProfile(object):
     batchQueueResourcePolicies:
      List of enforced policies on registered batch queues
 
+    defaultCredentialStoreToken:
+     The default credential store token to use for compute resources that don't specify a resource specific credential store token.
 
 
     Attributes:
@@ -674,6 +676,7 @@ class GroupResourceProfile(object):
      - batchQueueResourcePolicies
      - creationTime
      - updatedTime
+     - defaultCredentialStoreToken
     """
 
     thrift_spec = (
@@ -686,9 +689,10 @@ class GroupResourceProfile(object):
         (6, TType.LIST, 'batchQueueResourcePolicies', (TType.STRUCT, (BatchQueueResourcePolicy, BatchQueueResourcePolicy.thrift_spec), False), None, ),  # 6
         (7, TType.I64, 'creationTime', None, None, ),  # 7
         (8, TType.I64, 'updatedTime', None, None, ),  # 8
+        (9, TType.STRING, 'defaultCredentialStoreToken', 'UTF8', None, ),  # 9
     )
 
-    def __init__(self, gatewayId=None, groupResourceProfileId=thrift_spec[2][4], groupResourceProfileName=None, computePreferences=None, computeResourcePolicies=None, batchQueueResourcePolicies=None, creationTime=None, updatedTime=None,):
+    def __init__(self, gatewayId=None, groupResourceProfileId=thrift_spec[2][4], groupResourceProfileName=None, computePreferences=None, computeResourcePolicies=None, batchQueueResourcePolicies=None, creationTime=None, updatedTime=None, defaultCredentialStoreToken=None,):
         self.gatewayId = gatewayId
         self.groupResourceProfileId = groupResourceProfileId
         self.groupResourceProfileName = groupResourceProfileName
@@ -697,6 +701,7 @@ class GroupResourceProfile(object):
         self.batchQueueResourcePolicies = batchQueueResourcePolicies
         self.creationTime = creationTime
         self.updatedTime = updatedTime
+        self.defaultCredentialStoreToken = defaultCredentialStoreToken
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -765,6 +770,11 @@ class GroupResourceProfile(object):
                     self.updatedTime = iprot.readI64()
                 else:
                     iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.STRING:
+                    self.defaultCredentialStoreToken = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -815,6 +825,10 @@ class GroupResourceProfile(object):
         if self.updatedTime is not None:
             oprot.writeFieldBegin('updatedTime', TType.I64, 8)
             oprot.writeI64(self.updatedTime)
+            oprot.writeFieldEnd()
+        if self.defaultCredentialStoreToken is not None:
+            oprot.writeFieldBegin('defaultCredentialStoreToken', TType.STRING, 9)
+            oprot.writeString(self.defaultCredentialStoreToken.encode('utf-8') if sys.version_info[0] == 2 else self.defaultCredentialStoreToken)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

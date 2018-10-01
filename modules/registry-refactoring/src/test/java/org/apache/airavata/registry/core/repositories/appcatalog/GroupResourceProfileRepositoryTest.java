@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class GroupResourceProfileRepositoryTest extends TestBase {
@@ -110,6 +111,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setDefaultCredentialStoreToken("test-cred-store-token");
 
         GroupAccountSSHProvisionerConfig groupAccountSSHProvisionerConfig = new GroupAccountSSHProvisionerConfig();
         groupAccountSSHProvisionerConfig.setResourceId(resourceId1);
@@ -170,6 +172,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
             assertTrue(getGroupResourceProfile.getGatewayId().equals(gatewayId));
             assertTrue(getGroupResourceProfile.getGroupResourceProfileId().equals(groupResourceProfileId));
+            assertEquals("test-cred-store-token", getGroupResourceProfile.getDefaultCredentialStoreToken());
 
             assertTrue(getGroupResourceProfile.getComputePreferences().size() == 2);
             assertTrue(getGroupResourceProfile.getComputeResourcePolicies().size() == 2);
