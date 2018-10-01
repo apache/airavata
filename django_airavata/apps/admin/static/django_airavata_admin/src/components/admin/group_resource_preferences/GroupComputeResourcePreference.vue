@@ -13,12 +13,20 @@
               <b-form-input id="profile-name" type="text" v-model="data.groupResourceProfileName" required placeholder="Name of this Group Resource Profile">
               </b-form-input>
             </b-form-group>
+            <b-form-group label="Default SSH Credential" label-for="default-credential-store-token">
+              <ssh-credential-selector id="default-credential-store-token" v-model="data.defaultCredentialStoreToken">
+                <option :value="null" slot="first">
+                  --- Unset the default SSH credential for this profile
+                </option>
+              </ssh-credential-selector>
+            </b-form-group>
             <share-button ref="shareButton" :entity-id="id" />
           </div>
         </div>
       </div>
     </div>
-    <list-layout :items="data.computePreferences" title="Compute Preferences" new-item-button-text="New Compute Preference" @add-new-item="createComputePreference">
+    <list-layout :items="data.computePreferences" title="Compute Preferences" new-item-button-text="New Compute Preference"
+      @add-new-item="createComputePreference">
       <template slot="item-list" slot-scope="slotProps">
 
         <b-table hover :fields="computePreferencesFields" :items="slotProps.items" sort-by="computeResourceId">
@@ -55,8 +63,8 @@
         <b-button class="ml-2" variant="secondary" @click="cancel">Cancel</b-button>
       </div>
     </div>
-    <compute-resources-modal ref="modalSelectComputeResource" @selected="onSelectComputeResource" :excluded-resource-ids="excludedComputeResourceIds"
-    />
+    <compute-resources-modal ref="modalSelectComputeResource" @selected="onSelectComputeResource"
+      :excluded-resource-ids="excludedComputeResourceIds" />
   </div>
 </template>
 
@@ -65,6 +73,7 @@ import { components as comps, layouts } from "django-airavata-common-ui";
 import { models, services } from "django-airavata-api";
 import ComputeResourcePolicySummary from "./ComputeResourcePolicySummary.vue";
 import ComputeResourcesModal from "../ComputeResourcesModal.vue";
+import SSHCredentialSelector from "../../credentials/SSHCredentialSelector.vue";
 
 export default {
   name: "group-compute-resource-preference",
@@ -124,7 +133,8 @@ export default {
     "share-button": comps.ShareButton,
     "list-layout": layouts.ListLayout,
     ComputeResourcePolicySummary,
-    ComputeResourcesModal
+    ComputeResourcesModal,
+    "ssh-credential-selector": SSHCredentialSelector
   },
   computed: {
     excludedComputeResourceIds() {

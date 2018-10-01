@@ -2,10 +2,12 @@
   <div>
     <b-input-group>
       <b-form-select v-model="data" :options="credentialStoreTokenOptions">
-        <template slot="first">
-          <option :value="null">
-            <em>Use the default SSH credential</em>
-          </option>
+        <template v-if="$slots.first" slot="first">
+          <slot name="first">
+            <option :value="null">
+              Use the default SSH credential
+            </option>
+          </slot>
         </template>
       </b-form-select>
       <b-input-group-append>

@@ -18,7 +18,12 @@
               </b-form-input>
             </b-form-group>
             <b-form-group label="SSH Credential" label-for="credential-store-token">
-              <ssh-credential-selector v-model="data.resourceSpecificCredentialStoreToken" />
+              <ssh-credential-selector v-model="data.resourceSpecificCredentialStoreToken">
+                <option v-if="localGroupResourceProfile && localGroupResourceProfile.defaultCredentialStoreToken"
+                  :value="null" slot="first">
+                  --- Use the default SSH credential for {{ localGroupResourceProfile.groupResourceProfileName }}
+                </option>
+              </ssh-credential-selector>
             </b-form-group>
             <b-form-group label="Allocation Project Number" label-for="allocation-number">
               <b-form-input id="allocation-number" type="text" v-model="data.allocationProjectNumber">
@@ -39,12 +44,13 @@
             <h5 class="card-title">Policy</h5>
             <b-form-group label="Allowed Queues">
               <div v-for="batchQueue in computeResource.batchQueues" :key="batchQueue.queueName" v-if="localComputeResourcePolicy">
-                <b-form-checkbox :checked="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)" @input="batchQueueChecked(batchQueue, $event)">
+                <b-form-checkbox :checked="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
+                  @input="batchQueueChecked(batchQueue, $event)">
                   {{ batchQueue.queueName }}
                 </b-form-checkbox>
-                <batch-queue-resource-policy v-if="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)" :batch-queue="batchQueue"
-                  :value="localBatchQueueResourcePolicies.find(pol => pol.queuename === batchQueue.queueName)" @input="updatedBatchQueueResourcePolicy(batchQueue, $event)"
-                />
+                <batch-queue-resource-policy v-if="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
+                  :batch-queue="batchQueue" :value="localBatchQueueResourcePolicies.find(pol => pol.queuename === batchQueue.queueName)"
+                  @input="updatedBatchQueueResourcePolicy(batchQueue, $event)" />
               </div>
             </b-form-group>
           </div>
