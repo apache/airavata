@@ -84,48 +84,6 @@ class UTCPosixTimestampDateTimeField(serializers.DateTimeField):
         return int(datetime.datetime.utcnow().timestamp() * 1000)
 
 
-class GetGatewayUsername(object):
-
-    def __call__(self):
-        return self.field.context['request'].user.username
-
-    def set_context(self, field):
-        self.field = field
-
-
-class GetGatewayUserId(object):
-
-    def __call__(self):
-        return self.field.context['request'].user.id
-
-    def set_context(self, field):
-        self.field = field
-
-
-class GatewayUsernameDefaultField(serializers.CharField):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.read_only = True
-        self.default = GetGatewayUsername()
-
-
-class GatewayUserIdDefaultField(serializers.CharField):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.read_only = True
-        self.default = GetGatewayUserId()
-
-
-class GatewayIdDefaultField(serializers.CharField):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.read_only = True
-        self.default = settings.GATEWAY_ID
-
-
 class StoredJSONField(serializers.JSONField):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -226,14 +184,21 @@ class GroupSerializer(serializers.Serializer):
             return copy.deepcopy(gateway_groups.__dict__)
 
 
-class ProjectSerializer(serializers.Serializer):
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectID', lookup_url_kwarg='project_id')
-    projectID = serializers.CharField(default=Project.thrift_spec[1][4], read_only=True)
-    name = serializers.CharField(required=True)
-    description = serializers.CharField(allow_null=True)
-    owner = GatewayUsernameDefaultField()
-    gatewayId = GatewayIdDefaultField()
-    experiments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-experiments', lookup_field='projectID', lookup_url_kwarg='project_id')
+class ProjectSerializer(
+        thrift_utils.create_serializer_class(Project)):
+
+    class Meta:
+        required = ('name',)
+        read_only = ('projectID', 'owner', 'gatewayId')
+
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:project-detail',
+        lookup_field='projectID',
+        lookup_url_kwarg='project_id')
+    experiments = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:project-experiments',
+        lookup_field='projectID',
+        lookup_url_kwarg='project_id')
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
 
     def create(self, validated_data):
@@ -241,7 +206,8 @@ class ProjectSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
+        instance.description = validated_data.get(
+            'description', instance.description)
         return instance
 
 
@@ -358,15 +324,28 @@ class ExperimentSerializer(
 
     class Meta:
         required = ('projectId', 'experimentType', 'experimentName')
-        read_only = ('experimentId',)
+        read_only = ('experimentId', 'userName', 'gatewayId')
 
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
-    full_experiment = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:full-experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
-    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
-    jobs = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-jobs', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
-    shared_entity = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:shared-entity-detail', lookup_field='experimentId', lookup_url_kwarg='entity_id')
-    userName = GatewayUsernameDefaultField()
-    gatewayId = GatewayIdDefaultField()
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:experiment-detail',
+        lookup_field='experimentId',
+        lookup_url_kwarg='experiment_id')
+    full_experiment = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:full-experiment-detail',
+        lookup_field='experimentId',
+        lookup_url_kwarg='experiment_id')
+    project = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:project-detail',
+        lookup_field='projectId',
+        lookup_url_kwarg='project_id')
+    jobs = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:experiment-jobs',
+        lookup_field='experimentId',
+        lookup_url_kwarg='experiment_id')
+    shared_entity = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:shared-entity-detail',
+        lookup_field='experimentId',
+        lookup_url_kwarg='entity_id')
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     experimentStatus = ExperimentStatusSerializer(many=True, read_only=True)
 

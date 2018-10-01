@@ -114,8 +114,11 @@ class ProjectViewSet(APIBackedViewSet):
         return self.request.airavata_client.getProject(self.authz_token, lookup_value)
 
     def perform_create(self, serializer):
-        project = serializer.save()
-        project_id = self.request.airavata_client.createProject(self.authz_token, self.gateway_id, project)
+        project = serializer.save(
+            owner=self.username,
+            gatewayId=self.gateway_id)
+        project_id = self.request.airavata_client.createProject(
+            self.authz_token, self.gateway_id, project)
         project.projectID = project_id
 
     def perform_update(self, serializer):
@@ -146,7 +149,9 @@ class ExperimentViewSet(APIBackedViewSet):
         return self.request.airavata_client.getExperiment(self.authz_token, lookup_value)
 
     def perform_create(self, serializer):
-        experiment = serializer.save()
+        experiment = serializer.save(
+            gatewayId=self.gateway_id,
+            userName=self.username)
         experiment.userConfigurationData.storageId = \
             settings.GATEWAY_DATA_STORE_RESOURCE_ID
         # Set the experimentDataDir
