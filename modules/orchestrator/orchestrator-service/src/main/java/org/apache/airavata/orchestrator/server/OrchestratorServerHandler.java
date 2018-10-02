@@ -34,9 +34,8 @@ import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.replica.DataProductModel;
@@ -149,11 +148,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
 
 			UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
-            ComputeResourcePreference computeResourcePreference = registryClient.getGatewayComputeResourcePreference
-							(gatewayId,
-							userConfigurationData.getComputationalResourceScheduling().getResourceHostId());
-            String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
-
+			String token = null;
 			final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
 			if (groupResourceProfileId == null) {
 				log.error("Experiment not configured with a Group Resource Profile: {}", experimentId);
@@ -166,14 +161,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
 			}
             if (token == null || token.isEmpty()){
-                // try with gateway profile level token
-                GatewayResourceProfile gatewayProfile = registryClient.getGatewayResourceProfile(gatewayId);
-                token = gatewayProfile.getCredentialStoreToken();
+                // try with group resource profile level token
+				GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
+				token = groupResourceProfile.getDefaultCredentialStoreToken();
             }
             // still the token is empty, then we fail the experiment
             if (token == null || token.isEmpty()){
-                log.error("You have not configured credential store token at gateway profile or compute resource preference." +
-						" Please provide the correct token at gateway profile or compute resource preference.");
+                log.error("You have not configured credential store token at group resource profile or compute resource preference." +
+						" Please provide the correct token at group resource profile or compute resource preference.");
                 return false;
             }
             ExperimentType executionType = experiment.getExperimentType();
@@ -446,20 +441,22 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				return false;
 			default:
 				ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
+				final UserConfigurationDataModel userConfigurationData = experimentModel.getUserConfigurationData();
+				final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
 
-                ComputeResourcePreference computeResourcePreference = registryClient.getGatewayComputeResourcePreference
-                        (gatewayId,
-                                experimentModel.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
-                String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
+				GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
+						userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
+						groupResourceProfileId);
+                String token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
                 if (token == null || token.isEmpty()){
-                    // try with gateway profile level token
-                    GatewayResourceProfile gatewayProfile = registryClient.getGatewayResourceProfile(gatewayId);
-                    token = gatewayProfile.getCredentialStoreToken();
+                    // try with group resource profile level token
+					GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
+                    token = groupResourceProfile.getDefaultCredentialStoreToken();
                 }
                 // still the token is empty, then we fail the experiment
                 if (token == null || token.isEmpty()){
-                    log.error("You have not configured credential store token at gateway profile or compute resource preference." +
-                            " Please provide the correct token at gateway profile or compute resource preference.");
+                    log.error("You have not configured credential store token at group resource profile or compute resource preference." +
+                            " Please provide the correct token at group resource profile or compute resource preference.");
                     return false;
                 }
 
