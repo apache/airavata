@@ -4414,6 +4414,36 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
+    public boolean isSSHSetupCompleteForUserComputeResourcePreference(AuthzToken authzToken, String computeResourceId, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        CredentialStoreService.Client csClient = csClientPool.getResource();
+        SSHCredential sshCredential = null;
+        try {
+            sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH Credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH Credential. More info : " + e.getMessage());
+            csClientPool.returnBrokenResource(csClient);
+            throw exception;
+        }
+
+        try {
+            return SSHAccountManager.isSSHAccountSetupComplete(gatewayId, computeResourceId, userId, sshCredential);
+        }catch (Exception e){
+            final String msg = "Error occurred while checking if setup of SSH account is complete for user [" + userId + "].";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
     public UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(AuthzToken authzToken, String computeResourceId, String userId, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         CredentialStoreService.Client csClient = csClientPool.getResource();

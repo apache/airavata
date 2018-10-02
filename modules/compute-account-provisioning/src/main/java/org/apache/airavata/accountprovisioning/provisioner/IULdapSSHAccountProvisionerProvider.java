@@ -54,7 +54,11 @@ public class IULdapSSHAccountProvisionerProvider implements SSHAccountProvisione
             .setDescription("Pattern for scratch location. Use ${username} as replacement for username. For example, '/N/dc2/scratch/${username}/iu-gateway'.")
             .setOptional(false)
             .setType(ConfigParam.ConfigParamType.STRING);
-    public static final List<ConfigParam> CONFIG_PARAMS = Arrays.asList(LDAP_HOST, LDAP_PORT, LDAP_USERNAME, LDAP_PASSWORD, LDAP_BASE_DN, CANONICAL_SCRATCH_LOCATION);
+    public static final ConfigParam CYBERGATEWAY_GROUP_DN = new ConfigParam("cybergateway-group-dn")
+            .setDescription("Cybergateway group DN")
+            .setOptional(false)
+            .setType(ConfigParam.ConfigParamType.STRING);
+    public static final List<ConfigParam> CONFIG_PARAMS = Arrays.asList(LDAP_HOST, LDAP_PORT, LDAP_USERNAME, LDAP_PASSWORD, LDAP_BASE_DN, CANONICAL_SCRATCH_LOCATION, CYBERGATEWAY_GROUP_DN);
 
     @Override
     public List<ConfigParam> getConfigParams() {

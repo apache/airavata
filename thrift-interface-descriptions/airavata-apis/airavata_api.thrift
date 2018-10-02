@@ -2913,6 +2913,15 @@ service Airavata {
               4: airavata_errors.AuthorizationException ae)
 
   /**
+   * Check if SSH account setup is complete for this user on the given compute resource.
+   */
+  bool isSSHSetupCompleteForUserComputeResourcePreference(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string airavataCredStoreToken)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
+  /**
    * Setup and return a UserComputeResourcePreference object for this user to SSH into the given compute resource with
    * the given SSH credential. This method will only work if the compute resource has an SSHAccountProvisioner
    * configured for it. The returned UserComputeResourcePreference object is not saved; it is up to the client to
