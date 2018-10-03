@@ -27,7 +27,6 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -315,11 +314,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             ComputeResourceDescription computeResource = registryClient.getComputeResource(resourceHostId);
             JobSubmissionInterface preferredJobSubmissionInterface =
                     OrchestratorUtils.getPreferredJobSubmissionInterface(processModel, gatewayId);
-            ComputeResourcePreference resourcePreference =
-                    OrchestratorUtils.getComputeResourcePreference(processModel, gatewayId);
+            JobSubmissionProtocol preferredJobSubmissionProtocol = OrchestratorUtils.getPreferredJobSubmissionProtocol(processModel, gatewayId);
             List<String> taskIdList = new ArrayList<>();
 
-            if (resourcePreference.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.UNICORE) {
+            if (preferredJobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
                 // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE here.
                 taskIdList.addAll(createAndSaveSubmissionTasks(registryClient, gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
             } else {
@@ -390,7 +388,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         envSetupTask.setParentProcessId(processModel.getProcessId());
         EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
         envSetupSubModel.setProtocol(OrchestratorUtils.getSecurityProtocol(processModel, gatewayId));
-        ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(processModel, gatewayId);
         String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
         String workingDir = scratchLocation + File.separator + processModel.getProcessId();
         envSetupSubModel.setLocation(workingDir);
