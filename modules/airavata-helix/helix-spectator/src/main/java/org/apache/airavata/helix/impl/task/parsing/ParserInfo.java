@@ -19,17 +19,18 @@
  */
 package org.apache.airavata.helix.impl.task.parsing;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Catalog entry which is comprised with the required parameters to parse
- * a given input file to a given output file and to initiate a Docker container
+ * Contains parser information which are required to parse given input files into
+ * given output files and to initiate a Docker container
  *
  * @since 1.0.0-SNAPSHOT
  */
-public class CatalogEntry {
+public class ParserInfo {
 
+    private String id;
     private String containerName;
     private String dockerImageName;
     // Where the output files will be saved inside container
@@ -38,11 +39,9 @@ public class CatalogEntry {
     private String executableBinary;
     // The file which should be executed to parse the content
     private String executingFile;
-    private String inputFileName;
-    private String inputFileExtension;
-    private String outputFileName;
-    private String applicationType;
-    private String operation;
+    private List<String> inputFiles;
+    private List<String> mandatoryOutputFiles;
+    private List<String> optionalOutputFiles;
 
     /*
      * Following variables are declared according to the parameters
@@ -61,24 +60,27 @@ public class CatalogEntry {
     // Set metadata on container, eg."--label com.example.foo=bar"
     private String label;
 
-    private CatalogEntry(Builder builder) {
+    private ParserInfo(Builder builder) {
+        id = builder.id;
         containerName = "CONTAINER-" + builder.dockerImageName.replaceAll("[^a-zA-Z0-9_.-]", "-");
-
         dockerImageName = builder.dockerImageName;
         dockerWorkingDirPath = builder.dockerWorkingDirPath;
         executableBinary = builder.executableBinary;
         executingFile = builder.executingFile;
-        inputFileExtension = builder.inputFileExtension;
-        outputFileName = builder.outputFileName;
+        inputFiles = builder.inputFiles;
+        mandatoryOutputFiles = builder.mandatoryOutputFiles;
+        optionalOutputFiles = builder.optionalOutputFiles;
 
-        applicationType = builder.applicationType;
-        operation = builder.operation;
         runInDetachedMode = builder.runInDetachedMode;
         automaticallyRmContainer = builder.automaticallyRmContainer;
         securityOpt = builder.securityOpt;
         envVariables = builder.envVariables;
         cpus = builder.cpus;
         label = builder.label;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getContainerName() {
@@ -101,36 +103,16 @@ public class CatalogEntry {
         return executingFile;
     }
 
-    public String getInputFileName() {
-        return inputFileName;
+    public List<String> getInputFiles() {
+        return inputFiles;
     }
 
-    public void setInputFileName(String inputFileName) {
-        this.inputFileName = inputFileName;
+    public List<String> getMandatoryOutputFiles() {
+        return mandatoryOutputFiles;
     }
 
-    public String getInputFileExtension() {
-        return inputFileExtension;
-    }
-
-    public String getOutputFileExtension() {
-        return outputFileName.substring(outputFileName.indexOf('.'));
-    }
-
-    public String getOutputFileName() {
-        return outputFileName;
-    }
-
-    public void setOutputFileName(String outputFileName) {
-        this.outputFileName = outputFileName;
-    }
-
-    public String getApplicationType() {
-        return applicationType;
-    }
-
-    public String getOperation() {
-        return operation;
+    public List<String> getOptionalOutputFiles() {
+        return optionalOutputFiles;
     }
 
     public String getRunInDetachedMode() {
@@ -159,16 +141,16 @@ public class CatalogEntry {
 
     public static class Builder {
         // Required parameters
+        private String id;
         private String dockerImageName;
         private String dockerWorkingDirPath;
         private String executableBinary;
-        private String inputFileExtension;
         private String executingFile;
-        private String outputFileName;
+        private List<String> inputFiles;
+        private List<String> mandatoryOutputFiles;
 
         // Optional parameters. Initialized to default values
-        private String applicationType = "";
-        private String operation = "";
+        private List<String> optionalOutputFiles = null;
         private String runInDetachedMode = "";
         private String automaticallyRmContainer = "--rm=true";
         private String securityOpt = "";
@@ -176,26 +158,20 @@ public class CatalogEntry {
         private String cpus = "";
         private String label = "";
 
-        public Builder(String dockerImageName, String dockerWorkingDirPath, String executableBinary,
-                       String executingFile, String inputFileExtension, String outputFileName) {
+        public Builder(String id, String dockerImageName, String dockerWorkingDirPath, String executableBinary,
+                       String executingFile, List<String> inputFiles, List<String> mandatoryOutputFiles) {
+            this.id = id;
             this.dockerImageName = dockerImageName;
             this.dockerWorkingDirPath = dockerWorkingDirPath;
             this.executableBinary = executableBinary;
             this.executingFile = executingFile;
-            this.inputFileExtension = inputFileExtension;
-            this.outputFileName = outputFileName;
+            this.inputFiles = inputFiles;
+            this.mandatoryOutputFiles = mandatoryOutputFiles;
         }
 
-        public Builder applicationType(String val) {
-            if (!val.isEmpty()) {
-                applicationType = val;
-            }
-            return this;
-        }
-
-        public Builder operation(String val) {
-            if (!val.isEmpty()) {
-                operation = val;
+        public Builder optionalOutputFiles(List<String> files) {
+            if (files != null && files.size() > 0) {
+                optionalOutputFiles = files;
             }
             return this;
         }
@@ -221,9 +197,9 @@ public class CatalogEntry {
             return this;
         }
 
-        public Builder envVariables(String[] val) {
-            if (val != null && val.length > 0) {
-                envVariables = Arrays.stream(val).map(s -> " --env " + s).collect(Collectors.joining()).trim();
+        public Builder envVariables(List<String> val) {
+            if (val != null && val.size() > 0) {
+                envVariables = val.stream().map(s -> " --env " + s).collect(Collectors.joining()).trim();
             }
             return this;
         }
@@ -242,8 +218,8 @@ public class CatalogEntry {
             return this;
         }
 
-        public CatalogEntry build() {
-            return new CatalogEntry(this);
+        public ParserInfo build() {
+            return new ParserInfo(this);
         }
     }
 }
