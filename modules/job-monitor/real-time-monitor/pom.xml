@@ -54,6 +54,10 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>task-core</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
