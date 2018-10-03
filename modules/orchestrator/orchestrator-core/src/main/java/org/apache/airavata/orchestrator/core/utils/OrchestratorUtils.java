@@ -226,15 +226,12 @@ public class OrchestratorUtils {
             String resourceHostId = processModel.getComputeResourceId();
             ComputeResourceDescription resourceDescription = registryClient.getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
-            Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
-            List<JobSubmissionInterface> interfaces = new ArrayList<>();
             if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
-                Collections.sort(interfaces, (jobSubmissionInterface, jobSubmissionInterface2) ->
-                        jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder());
+                Collections.sort(jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
             } else {
                 throw new OrchestratorException("Compute resource should have at least one job submission interface defined...");
             }
-            return interfaces.get(0);
+            return jobSubmissionInterfaces.get(0);
         } catch (Exception e) {
             throw new OrchestratorException("Error occurred while retrieving data from app catalog", e);
         } finally {
