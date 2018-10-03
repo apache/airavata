@@ -86,6 +86,13 @@ public abstract class AiravataTask extends AbstractTask {
         if (!skipTaskStatusPublish) {
             publishTaskState(TaskState.COMPLETED);
         }
+
+        try {
+            MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
+        } catch (Exception e) {
+            logger.error("Failed to delete task specific nodes but continuing", e);
+        }
+
         return super.onSuccess(message);
     }
 
@@ -143,6 +150,13 @@ public abstract class AiravataTask extends AbstractTask {
                 saveProcessError(errorModel);
                 saveTaskError(errorModel);
             }
+
+            try {
+                MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
+            } catch (Exception e) {
+                logger.error("Failed to delete task specific nodes but continuing", e);
+            }
+
             return onFail(errorMessage, fatal);
         } else {
             return onFail("Handover back to helix engine to retry", fatal);
@@ -349,6 +363,13 @@ public abstract class AiravataTask extends AbstractTask {
             if (!skipTaskStatusPublish) {
                 publishTaskState(TaskState.CANCELED);
             }
+
+            try {
+                MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
+            } catch (Exception e) {
+                logger.error("Failed to delete task specific nodes but continuing", e);
+            }
+
             onCancel(getTaskContext());
         } finally {
             MDC.clear();

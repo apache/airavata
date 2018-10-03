@@ -1,5 +1,6 @@
 package org.apache.airavata.helix.impl.task.cancel;
 
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -30,6 +31,14 @@ public class CancelCompletingTask extends AiravataTask {
             logger.info("Job is not in the saturated state but updating experiment as cancelled");
             saveAndPublishProcessStatus(ProcessState.CANCELED);
         }
+
+        logger.info("Deleting process level monitoring nodes");
+        try {
+            MonitoringUtil.deleteProcessSpecificNodes(getCuratorClient(), getProcessId());
+        } catch (Exception e) {
+            logger.error("Failed to delete process specific nodes but continuing", e);
+        }
+
         return onSuccess("Process " + getProcessId() + " successfully cancelled");
     }
 

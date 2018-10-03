@@ -19,10 +19,12 @@
  */
 package org.apache.airavata.helix.impl.task.completing;
 
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
@@ -38,6 +40,13 @@ public class CompletingTask extends AiravataTask {
         logger.info("Starting completing task for task " + getTaskId() + ", experiment id " + getExperimentId());
         logger.info("Process " + getProcessId() + " successfully completed");
         saveAndPublishProcessStatus(ProcessState.COMPLETED);
+
+        logger.info("Deleting process level monitoring nodes");
+        try {
+            MonitoringUtil.deleteProcessSpecificNodes(getCuratorClient(), getProcessId());
+        } catch (Exception e) {
+            logger.error("Failed to delete process specific nodes but continuing", e);
+        }
         return onSuccess("Process " + getProcessId() + " successfully completed");
     }
 
