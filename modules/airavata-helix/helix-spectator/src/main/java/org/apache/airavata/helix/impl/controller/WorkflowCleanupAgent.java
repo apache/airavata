@@ -68,6 +68,7 @@ public class WorkflowCleanupAgent implements Runnable {
 
     @Override
     public void run() {
+        logger.info("Cleaning up stale workflows");
         Map<String, WorkflowConfig> workflows = taskDriver.getWorkflows();
 
         workflows.keySet().forEach(id -> {

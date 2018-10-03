@@ -88,6 +88,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
 
         try {
+            logger.info("Deleting task specific monitoring nodes");
             MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
         } catch (Exception e) {
             logger.error("Failed to delete task specific nodes but continuing", e);
@@ -152,6 +153,7 @@ public abstract class AiravataTask extends AbstractTask {
             }
 
             try {
+                logger.info("Deleting task specific monitoring nodes");
                 MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
             } catch (Exception e) {
                 logger.error("Failed to delete task specific nodes but continuing", e);
@@ -365,6 +367,7 @@ public abstract class AiravataTask extends AbstractTask {
             }
 
             try {
+                logger.info("Deleting task specific monitoring nodes");
                 MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
             } catch (Exception e) {
                 logger.error("Failed to delete task specific nodes but continuing", e);
