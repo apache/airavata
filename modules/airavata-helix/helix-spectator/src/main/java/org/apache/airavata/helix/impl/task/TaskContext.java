@@ -36,6 +36,7 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProf
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -163,7 +164,7 @@ public class TaskContext {
                     isValid(groupComputeResourcePreference.getScratchLocation())) {
                 scratchLocation = groupComputeResourcePreference.getScratchLocation();
             } else {
-                scratchLocation = gatewayComputeResourcePreference.getScratchLocation();
+                throw new RuntimeException("Can't find a specified scratch location for compute resource " + getComputeResourceId());
             }
         }
         return scratchLocation;
@@ -295,11 +296,10 @@ public class TaskContext {
 
     public JobSubmissionProtocol getJobSubmissionProtocol() {
         if (jobSubmissionProtocol == null) {
-            if (isSetGroupResourceProfile() && groupComputeResourcePreference != null) {
-                jobSubmissionProtocol = groupComputeResourcePreference.getPreferredJobSubmissionProtocol();
-            } else {
-                jobSubmissionProtocol = gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
-            }
+            // Take highest priority one
+            List<JobSubmissionInterface> jobSubmissionInterfaces = computeResourceDescription.getJobSubmissionInterfaces();
+            Collections.sort(jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
+            jobSubmissionProtocol = jobSubmissionInterfaces.get(0).getJobSubmissionProtocol();
         }
         return jobSubmissionProtocol;
     }
@@ -310,11 +310,10 @@ public class TaskContext {
 
     public DataMovementProtocol getDataMovementProtocol() {
         if (dataMovementProtocol == null) {
-            if (isSetGroupResourceProfile() && groupComputeResourcePreference != null) {
-                dataMovementProtocol = groupComputeResourcePreference.getPreferredDataMovementProtocol();
-            } else {
-                dataMovementProtocol = gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
-            }
+            // Take highest priority one
+            List<DataMovementInterface> dataMovementInterfaces = computeResourceDescription.getDataMovementInterfaces();
+            Collections.sort(dataMovementInterfaces, Comparator.comparingInt(DataMovementInterface::getPriorityOrder));
+            dataMovementProtocol = dataMovementInterfaces.get(0).getDataMovementProtocol();
         }
         return dataMovementProtocol;
     }
@@ -444,8 +443,7 @@ public class TaskContext {
                 isValid(groupComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
             return groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
         } else {
-            // FIXME: fallback to credential store token on GroupResourceProfile (see AIRAVATA-2865)
-            return gatewayResourceProfile.getCredentialStoreToken();
+            return groupResourceProfile.getDefaultCredentialStoreToken();
         }
     }
 
@@ -453,28 +451,16 @@ public class TaskContext {
         if (isValid(gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken())) {
             return gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken();
         } else {
-            return gatewayResourceProfile.getCredentialStoreToken();
+            return groupResourceProfile.getDefaultCredentialStoreToken();
         }
     }
 
     public JobSubmissionProtocol getPreferredJobSubmissionProtocol(){
-        if (isSetGroupResourceProfile() &&
-                groupComputeResourcePreference != null &&
-                groupComputeResourcePreference.getPreferredJobSubmissionProtocol() != null) {
-            return groupComputeResourcePreference.getPreferredJobSubmissionProtocol();
-        } else {
-            return gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
-        }
+        return getJobSubmissionProtocol();
     }
 
     public DataMovementProtocol getPreferredDataMovementProtocol() {
-        if (isSetGroupResourceProfile() &&
-                groupComputeResourcePreference != null &&
-                groupComputeResourcePreference.getPreferredDataMovementProtocol() != null) {
-            return groupComputeResourcePreference.getPreferredDataMovementProtocol();
-        } else {
-            return gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
-        }
+        return getDataMovementProtocol();
     }
 
     public void setResourceJobManager(ResourceJobManager resourceJobManager) {
@@ -539,7 +525,7 @@ public class TaskContext {
         return getProcessModel().isSetGroupResourceProfileId();
     }
 
-    public String getComputeResourceLoginUserName(){
+    public String getComputeResourceLoginUserName() {
         if (isUseUserCRPref() &&
                 userComputeResourcePreference != null &&
                 isValid(userComputeResourcePreference.getLoginUserName())) {
@@ -550,9 +536,8 @@ public class TaskContext {
                 groupComputeResourcePreference != null &&
                 isValid(groupComputeResourcePreference.getLoginUserName())){
             return groupComputeResourcePreference.getLoginUserName();
-        } else {
-            return gatewayComputeResourcePreference.getLoginUserName();
         }
+        throw new RuntimeException("Can't find login username for compute resource");
     }
 
     public String getStorageResourceLoginUserName(){
@@ -588,14 +573,7 @@ public class TaskContext {
     }
 
     public String getUsageReportingGatewayId() {
-        // FIXME: Should GroupResourceProfiles be able to specify a different usage reporting gateway id?
-	    /* if (isSetGroupResourceProfile() &&
-                groupComputeResourcePreference != null &&
-                isValid(groupComputeResourcePreference.getUsageReportingGatewayId())) {
-	        return groupComputeResourcePreference.getUsageReportingGatewayId();
-        }*/
-	    return gatewayComputeResourcePreference.getUsageReportingGatewayId();
-
+        return gatewayComputeResourcePreference.getUsageReportingGatewayId();
     }
 
     public String getAllocationProjectNumber() {
@@ -653,12 +631,13 @@ public class TaskContext {
             return userComputeResourcePreference.getPreferredBatchQueue();
         } else if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
             return processModel.getProcessResourceSchedule().getQueueName();
-        }  else if (isSetGroupResourceProfile() &&
-                groupComputeResourcePreference != null &&
-                isValid(groupComputeResourcePreference.getPreferredBatchQueue())){
-            return groupComputeResourcePreference.getPreferredBatchQueue();
-        } else {
-            return gatewayComputeResourcePreference.getPreferredBatchQueue();
+        }  else {
+            Optional<BatchQueue> defaultQueue = computeResourceDescription.getBatchQueues().stream().filter(q -> q.isIsDefaultQueue()).findFirst();
+            if (defaultQueue.isPresent()) {
+                return defaultQueue.get().getQueueName();
+            } else {
+                throw new RuntimeException("Can't find default queue for resource " + computeResourceDescription.getComputeResourceId());
+            }
         }
     }
 
