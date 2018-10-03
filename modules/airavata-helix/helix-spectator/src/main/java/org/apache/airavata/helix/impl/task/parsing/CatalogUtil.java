@@ -23,83 +23,89 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.gson.reflect.TypeToken;
+import org.apache.airavata.common.utils.ServerSettings;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Util class for {@link CatalogEntry} related tasks
+ * Util class for Catalog related tasks
  *
  * @since 1.0.0-SNAPSHOT
  */
 public class CatalogUtil {
 
-    private final static Logger logger = LoggerFactory.getLogger(CatalogUtil.class);
-
-    /**
-     * Creates list of {@link CatalogEntry}s using the catalog DB
-     * which has the details of Docker parsers
-     *
-     * @return a list of {@link CatalogEntry}s
-     * @throws FileNotFoundException if Catalog could not be found
-     */
-    public static List<CatalogEntry> catalogLookup(String catalogPath) throws FileNotFoundException {
-        List<CatalogEntry> entries = new ArrayList<>();
+    public static ParserInfo parserCatalogLookup(String parserId) throws Exception {
         Gson gson = new Gson();
-        JsonArray jsonArray = gson.fromJson(new FileReader(catalogPath), JsonArray.class);
+        JsonArray jsonArray = gson.fromJson(new FileReader(ServerSettings.getSetting("parser.catalog.path")), JsonArray.class);
+
         for (JsonElement element : jsonArray) {
             JsonObject obj = element.getAsJsonObject();
+            String id = obj.get("id").getAsString();
 
-            CatalogEntry entry = new CatalogEntry.Builder(
-                    obj.get("dockerImageName").getAsString(), obj.get("dockerWorkingDirPath").getAsString(),
-                    obj.get("executableBinary").getAsString(), obj.get("executingFile").getAsString(),
-                    obj.get("inputFileExtension").getAsString(), obj.get("outputFileName").getAsString())
-                    .applicationType(obj.get("applicationType").getAsString())
-                    .operation(obj.get("operation").getAsString())
-                    .runInDetachedMode(obj.get("runInDetachedMode").getAsString())
-                    .automaticallyRmContainer(obj.get("automaticallyRmContainer").getAsString())
-                    .runInDetachedMode(obj.get("runInDetachedMode").getAsString())
-                    .securityOpt(obj.get("securityOpt").getAsString())
-                    .envVariables(!obj.get("envVariables").isJsonNull()
-                            ? gson.fromJson(obj.get("envVariables").getAsJsonArray(), String[].class)
-                            : null)
-                    .cpus(obj.get("cpus").getAsString())
-                    .label(obj.get("label").getAsString())
-                    .build();
+            if (id.equals(parserId)) {
+                List<String> inputFiles = null;
+                List<String> mandatoryOutputFiles = null;
+                List<String> optionalOutputFiles = null;
+                List<String> envVariables = null;
 
-            // Catalog entry should hold either an operation or application
-            if (entry.getOperation().isEmpty() || entry.getApplicationType().isEmpty()) {
-                entries.add(entry);
+                Type listType = new TypeToken<ArrayList<String>>() {
+                }.getType();
 
-            } else {
-                logger.warn("Avoid adding the Docker entry: " + entry.getDockerImageName() +
-                        " as the catalog entry contains both operation and application");
+                if (!obj.get("inputFiles").isJsonNull()) {
+                    inputFiles = gson.fromJson(obj.get("inputFiles").getAsJsonArray(), listType);
+                }
+                if (!obj.get("mandatoryOutputFiles").isJsonNull()) {
+                    mandatoryOutputFiles = gson.fromJson(obj.get("mandatoryOutputFiles").getAsJsonArray(), listType);
+                }
+                if (!obj.get("optionalOutputFiles").isJsonNull()) {
+                    optionalOutputFiles = gson.fromJson(obj.get("optionalOutputFiles").getAsJsonArray(), listType);
+                }
+                if (!obj.get("envVariables").isJsonNull()) {
+                    envVariables = gson.fromJson(obj.get("envVariables").getAsJsonArray(), listType);
+                }
+
+                return new ParserInfo.Builder(
+                        id,
+                        obj.get("dockerImageName").getAsString(),
+                        obj.get("dockerWorkingDirPath").getAsString(),
+                        obj.get("executableBinary").getAsString(),
+                        obj.get("executingFile").getAsString(),
+                        inputFiles,
+                        mandatoryOutputFiles)
+                        .optionalOutputFiles(optionalOutputFiles)
+                        .runInDetachedMode(obj.get("runInDetachedMode").getAsString())
+                        .automaticallyRmContainer(obj.get("automaticallyRmContainer").getAsString())
+                        .runInDetachedMode(obj.get("runInDetachedMode").getAsString())
+                        .securityOpt(obj.get("securityOpt").getAsString())
+                        .envVariables(envVariables)
+                        .cpus(obj.get("cpus").getAsString())
+                        .label(obj.get("label").getAsString())
+                        .build();
             }
         }
-        return entries;
+        throw new Exception("Could not found the Parser for ParserId: " + parserId);
     }
 
-    /**
-     * Converts the given <code>entry</code> to a JSON String
-     *
-     * @param entry {@link CatalogEntry} should be converted to JSON string
-     * @return JSON string of the <code>entry</code>
-     */
-    public static String catalogEntryToJSONString(CatalogEntry entry) {
-        return new Gson().toJson(entry);
-    }
+    public static Set<ParsingTemplate> dagCatalogLookup(String appIfaceId) throws Exception {
+        Set<ParsingTemplate> templates = new HashSet<>();
+        Gson gson = new Gson();
+        JsonArray jsonArray = gson.fromJson(new FileReader(ServerSettings.getSetting("parsing.template.path")), JsonArray.class);
+        Type listType = new TypeToken<ArrayList<ParsingTemplate>>() {
+        }.getType();
 
-    /**
-     * Converts the given <code>strEntry</code> to a {@link CatalogEntry}
-     *
-     * @param strEntry which should be used to generate the relevant {@link CatalogEntry}
-     * @return the {@link CatalogEntry} corresponding to the <code>strEntry</code>
-     */
-    public static CatalogEntry jsonStringToCatalogEntry(String strEntry) {
-        return new Gson().fromJson(strEntry, CatalogEntry.class);
+        for (JsonElement element : jsonArray) {
+            List<String> envVariables = null;
+            JsonObject obj = element.getAsJsonObject();
+
+            // TODO
+
+        }
+        return templates;
     }
 }
