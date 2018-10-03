@@ -171,6 +171,16 @@ public class MonitoringUtil {
         }
     }
 
+    public static String getJobIdByJobName(CuratorFramework curatorClient, String jobName) throws Exception {
+        String path = REGISTRY + jobName + JOB_ID;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            byte[] gatewayBytes = curatorClient.getData().forPath(path);
+            return new String(gatewayBytes);
+        } else {
+            return null;
+        }
+    }
+
     public static boolean hasMonitoringRegistered(CuratorFramework curatorClient, String jobId) throws Exception {
         Stat stat = curatorClient.checkExists().forPath(MONITORING + jobId);
         return stat != null;
