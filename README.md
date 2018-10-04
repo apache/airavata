@@ -72,6 +72,15 @@ Please send feedback to the mailing list at <dev@airavata.apache.org>. If you en
 
 For general information on how to contribute, please see the [Get Involved](http://airavata.apache.org/get-involved.html) section of the Apache Airavata website.
 
+### Setting up development environment
+
+Run `pip install -r requirements-dev.txt` to install development and testing
+libraries.
+
+Use a code editor that integrates with editorconfig and flake8. I also
+recommend autopep8 for automatically formatting code to follow the PEP8
+guidelines.
+
 ## License
 
 The Apache Airavata Django Portal is licensed under the Apache 2.0 license. For
