@@ -20,13 +20,13 @@ setup(
     license='Apache License 2.0',
     packages=find_packages(),
     install_requires=[
-            'Django>=1.11,<2.0',
+            'Django',
+            'djangorestframework',
             'requests',
             'requests-oauthlib',
             'thrift',
-            'djangorestframework',
             'wagtail',
-            'wagtailfontawesome>=1.1.3,<1.2'
+            'wagtailfontawesome'
     ],
     extras_require={
         'dev': [
