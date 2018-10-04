@@ -111,7 +111,7 @@ public abstract class AiravataTask extends AbstractTask {
 
         if (currentRetryCount < getRetryCount() && !fatal) {
             try {
-                markNewRetry();
+                markNewRetry(currentRetryCount);
             } catch (Exception e) {
                 logger.error("Failed to mark retry. So failing the task permanently", e);
                 fatal = true;

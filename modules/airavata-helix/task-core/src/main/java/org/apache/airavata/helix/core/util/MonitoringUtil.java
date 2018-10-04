@@ -81,16 +81,13 @@ public class MonitoringUtil {
         }
     }
 
-    public static void increaseTaskRetryCount(CuratorFramework curatorClient, String takId) throws Exception {
+    public static void increaseTaskRetryCount(CuratorFramework curatorClient, String takId, int currentRetryCount) throws Exception {
         String path = TASK + "/" + takId + RETRY;
-        int currentRetryCount = 1;
         if (curatorClient.checkExists().forPath(path) != null) {
-            byte[] processBytes = curatorClient.getData().forPath(path);
-            currentRetryCount = Integer.parseInt(new String(processBytes)) + 1;
             curatorClient.delete().forPath(path);
         }
         curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                path , (currentRetryCount + "").getBytes());
+                path , ((currentRetryCount + 1) + "").getBytes());
     }
 
     public static String getExperimentIdByJobId(CuratorFramework curatorClient, String jobId) throws Exception {
