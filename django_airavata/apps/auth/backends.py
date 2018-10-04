@@ -2,16 +2,13 @@
 import logging
 import time
 
+import requests
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.urls import reverse
-
 from oauthlib.oauth2 import LegacyApplicationClient
-import requests
 from requests_oauthlib import OAuth2Session
 
 from . import utils
-
 
 logger = logging.getLogger(__name__)
 

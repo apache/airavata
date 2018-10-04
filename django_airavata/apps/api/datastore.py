@@ -64,7 +64,8 @@ def save(username, project_name, experiment_name, file):
     data_replica_location.replicaPersistentType = \
         ReplicaPersistentType.TRANSIENT
     data_replica_location.filePath = \
-        "file://{}:{}".format(settings.GATEWAY_DATA_STORE_HOSTNAME, input_file_fullpath)
+        "file://{}:{}".format(settings.GATEWAY_DATA_STORE_HOSTNAME,
+                              input_file_fullpath)
     data_product.replicaLocations = [data_replica_location]
     return data_product
 

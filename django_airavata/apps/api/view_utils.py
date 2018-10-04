@@ -5,7 +5,7 @@ from django.http import Http404
 from rest_framework import mixins, pagination
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.utils.urls import replace_query_param, remove_query_param
+from rest_framework.utils.urls import remove_query_param, replace_query_param
 from rest_framework.viewsets import GenericViewSet
 
 
@@ -115,7 +115,8 @@ class APIResultPagination(pagination.LimitOffsetPagination):
     default_limit = 10
 
     def paginate_queryset(self, queryset, request, view=None):
-        assert isinstance(queryset, APIResultIterator), "queryset is not an APIResultIterator: {}".format(queryset)
+        assert isinstance(
+            queryset, APIResultIterator), "queryset is not an APIResultIterator: {}".format(queryset)
         self.limit = self.get_limit(request)
         if self.limit is None:
             return None
@@ -133,7 +134,8 @@ class APIResultPagination(pagination.LimitOffsetPagination):
 
     def get_limit(self, request):
         # If limit <= 0 then don't paginate
-        if self.limit_query_param in request.query_params and int(request.query_params[self.limit_query_param]) <= 0:
+        if self.limit_query_param in request.query_params and int(
+                request.query_params[self.limit_query_param]) <= 0:
             return None
         return super().get_limit(request)
 

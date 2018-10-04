@@ -1,6 +1,8 @@
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
-from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
+from wagtail.admin.rich_text.converters.html_to_contentstate import \
+    InlineStyleElementHandler
 from wagtail.core import hooks
+
 
 @hooks.register('register_rich_text_features')
 def register_custom_style_feature(features):
@@ -8,14 +10,17 @@ def register_custom_style_feature(features):
     feature_name = 'purple'
     type_ = feature_name.upper()
     tag = 'span'
-    detection = '{tag}[class="{feature_name}"]'.format(tag=tag, feature_name=feature_name)
+    detection = '{tag}[class="{feature_name}"]'.format(
+        tag=tag, feature_name=feature_name)
 
     control = {
         'type': type_,
         'description': 'Purple Color',
-        'icon': ['M100 100 H 900 V 900 H 100 Z'],   # This should be an svg which will occupy a 1024x1024 viewbox
+        # This should be an svg which will occupy a 1024x1024 viewbox
+        'icon': ['M100 100 H 900 V 900 H 100 Z'],
         'label': 'purple',
-        'style': {'color': 'purple'}, # .purple is the class which is defined in draft-colors.css . It is necessary to get this style working.
+        # .purple is the class which is defined in draft-colors.css . It is necessary to get this style working.
+        'style': {'color': 'purple'},
     }
 
     features.register_editor_plugin(
@@ -27,6 +32,7 @@ def register_custom_style_feature(features):
         'to_database_format': {'style_map': {type_: {'element': tag, 'props': {'class': feature_name}}}},
     }
 
-    features.register_converter_rule('contentstate', feature_name, db_conversion)
+    features.register_converter_rule(
+        'contentstate', feature_name, db_conversion)
 
     features.default_features.append(feature_name)

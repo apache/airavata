@@ -18,7 +18,8 @@ def airavata_client(get_response):
                     request.airavata_client = airavata_client
                     response = get_response(request)
             except utils.ThriftConnectionException as e:
-                logger.exception("Failed to open thrift connection to API server")
+                logger.exception(
+                    "Failed to open thrift connection to API server")
                 # if request.airavata_client is None, this will indicate to view
                 # code that the API server is down
                 request.airavata_client = None
@@ -70,9 +71,9 @@ def profile_service_client(get_response):
         if request.user.is_authenticated:
             try:
                 with utils.get_group_manager_client() as group_manager_client, \
-                     utils.get_iam_admin_client() as iam_admin_client, \
-                     utils.get_tenant_profile_client() as tenant_profile_client, \
-                     utils.get_user_profile_client() as user_profile_client:
+                        utils.get_iam_admin_client() as iam_admin_client, \
+                        utils.get_tenant_profile_client() as tenant_profile_client, \
+                        utils.get_user_profile_client() as user_profile_client:
                     request.profile_service = {
                         'group_manager': group_manager_client,
                         'iam_admin': iam_admin_client,

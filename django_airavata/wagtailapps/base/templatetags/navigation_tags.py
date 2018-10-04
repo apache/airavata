@@ -1,23 +1,11 @@
 from django import template
-
 from wagtail.core.models import Page
 
-from django_airavata.wagtailapps.base.models import FooterText
-
-from django_airavata.wagtailapps.base.models import Navbar
-
-from django_airavata.wagtailapps.base.models import Announcements
-
-from django_airavata.wagtailapps.base.models import CustomHeaderLinks
-
-from django_airavata.wagtailapps.base.models import CustomCss
-
-from django_airavata.wagtailapps.base.models import NavExtra
-
-from django_airavata.wagtailapps.base.models import GatewayIcon
-
-from django_airavata.wagtailapps.base.models import GatewayTitle
-
+from django_airavata.wagtailapps.base.models import (Announcements, CustomCss,
+                                                     CustomHeaderLinks,
+                                                     FooterText, GatewayIcon,
+                                                     GatewayTitle, Navbar,
+                                                     NavExtra)
 
 register = template.Library()
 # https://docs.djangoproject.com/en/1.9/howto/custom-template-tags/
@@ -126,6 +114,7 @@ def get_footer_text(context):
         'footer_text': footer_text,
     }
 
+
 @register.inclusion_tag('django_airavata_wagtail_base/includes/navbar.html', takes_context=True)
 def get_navbar(context):
     navbar = None
@@ -135,6 +124,7 @@ def get_navbar(context):
     return {
         'navbar': navbar,
     }
+
 
 @register.inclusion_tag('django_airavata_wagtail_base/includes/custom_header_links.html', takes_context=True)
 def get_custom_header_links(context):
@@ -146,6 +136,7 @@ def get_custom_header_links(context):
         'custom_header_links': custom_header_links,
     }
 
+
 @register.inclusion_tag('django_airavata_wagtail_base/includes/custom_css.html', takes_context=True)
 def get_css(context):
     custom_css = ""
@@ -155,6 +146,7 @@ def get_css(context):
     return {
         'custom_css': custom_css,
     }
+
 
 @register.inclusion_tag('django_airavata_wagtail_base/includes/nav_extra.html', takes_context=True)
 def get_nav_extra(context):
@@ -166,6 +158,7 @@ def get_nav_extra(context):
         'navextra': nav_extra,
     }
 
+
 @register.inclusion_tag('django_airavata_wagtail_base/includes/gateway_icon.html', takes_context=True)
 def gateway_icon(context):
     gateway_icon = GatewayIcon.objects.first()
@@ -173,6 +166,7 @@ def gateway_icon(context):
     return {
         'gateway_icon': gateway_icon
     }
+
 
 @register.inclusion_tag('django_airavata_wagtail_base/includes/gateway_title.html', takes_context=True)
 def gateway_title(context):

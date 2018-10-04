@@ -1,9 +1,9 @@
-from . import views
+import logging
 
 from django.conf.urls import include, url
 from rest_framework import routers
 
-import logging
+from . import views
 
 logger = logging.getLogger(__name__)
 

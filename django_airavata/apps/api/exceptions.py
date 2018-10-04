@@ -1,12 +1,9 @@
-import json
 import logging
 
-from rest_framework import serializers, status
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 from thrift.Thrift import TException
-
-from airavata.api.error.ttypes import AiravataSystemException
 
 log = logging.getLogger(__name__)
 

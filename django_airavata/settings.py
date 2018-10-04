@@ -76,14 +76,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_airavata.apps.auth.middleware.authz_token_middleware',
     'django_airavata.middleware.airavata_client',
-     'django_airavata.middleware.sharing_client',
+    'django_airavata.middleware.sharing_client',
     'django_airavata.middleware.profile_service_client',
     # Needs to come after authz_token_middleware, airavata_client and
     # profile_service_client
     'django_airavata.apps.auth.middleware.gateway_groups_middleware',
     # Wagtail related middleware
     'wagtail.core.middleware.SiteMiddleware',
-    'wagtail.contrib.redirects.middleware.RedirectMiddleware',  
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'django_airavata.urls'

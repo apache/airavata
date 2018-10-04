@@ -19,8 +19,7 @@ from airavata.model.appcatalog.computeresource.ttypes import (BatchQueue,
                                                               ComputeResourceDescription)
 from airavata.model.appcatalog.groupresourceprofile.ttypes import \
     GroupResourceProfile
-from airavata.model.application.io.ttypes import (InputDataObjectType,
-                                                  OutputDataObjectType)
+from airavata.model.application.io.ttypes import InputDataObjectType
 from airavata.model.credential.store.ttypes import (CredentialSummary,
                                                     SummaryType)
 from airavata.model.data.replica.ttypes import (DataProductModel,
@@ -38,7 +37,8 @@ from . import datastore, thrift_utils
 log = logging.getLogger(__name__)
 
 
-class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
+class FullyEncodedHyperlinkedIdentityField(
+        serializers.HyperlinkedIdentityField):
     def get_url(self, obj, view_name, request, format):
         if hasattr(obj, self.lookup_field):
             lookup_value = getattr(obj, self.lookup_field)
@@ -56,7 +56,8 @@ class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField)
         # encode all characters including some like '/' that are used in URL
         # mappings.
         kwargs = {self.lookup_url_kwarg: "__PLACEHOLDER__"}
-        url = self.reverse(view_name, kwargs=kwargs, request=request, format=format)
+        url = self.reverse(view_name, kwargs=kwargs,
+                           request=request, format=format)
         return url.replace("__PLACEHOLDER__", encoded_lookup_value)
 
 
@@ -70,7 +71,7 @@ class UTCPosixTimestampDateTimeField(serializers.DateTimeField):
 
     def to_representation(self, obj):
         # Create datetime instance from milliseconds that is aware of timezon
-        dt = datetime.datetime.fromtimestamp(obj/1000, datetime.timezone.utc)
+        dt = datetime.datetime.fromtimestamp(obj / 1000, datetime.timezone.utc)
         return super().to_representation(dt)
 
     def to_internal_value(self, data):
@@ -120,8 +121,12 @@ class OrderedListField(serializers.ListField):
 
 
 class GroupSerializer(serializers.Serializer):
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
-    id = serializers.CharField(default=GroupModel.thrift_spec[1][4], allow_null=True)
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:group-detail',
+        lookup_field='id',
+        lookup_url_kwarg='group_id')
+    id = serializers.CharField(
+        default=GroupModel.thrift_spec[1][4], allow_null=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True, allow_blank=True)
     ownerId = serializers.CharField(read_only=True)
@@ -134,12 +139,14 @@ class GroupSerializer(serializers.Serializer):
     isDefaultGatewayUsersGroup = serializers.SerializerMethodField()
 
     def create(self, validated_data):
-        validated_data['ownerId'] = self.context['request'].user.username + "@" + settings.GATEWAY_ID
+        validated_data['ownerId'] = self.context['request'].user.username + \
+            "@" + settings.GATEWAY_ID
         return GroupModel(**validated_data)
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
+        instance.description = validated_data.get(
+            'description', instance.description)
         # Calculate added and removed members
         old_members = set(instance.members)
         new_members = set(validated_data.get('members', instance.members))
@@ -213,9 +220,18 @@ class ProjectSerializer(
 
 class ApplicationModuleSerializer(
         thrift_utils.create_serializer_class(ApplicationModule)):
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-detail', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
-    applicationInterface = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-interface', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
-    applicationDeployments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-deployments', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:application-detail',
+        lookup_field='appModuleId',
+        lookup_url_kwarg='app_module_id')
+    applicationInterface = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:application-application-interface',
+        lookup_field='appModuleId',
+        lookup_url_kwarg='app_module_id')
+    applicationDeployments = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:application-application-deployments',
+        lookup_field='appModuleId',
+        lookup_url_kwarg='app_module_id')
     userHasWriteAccess = serializers.SerializerMethodField()
 
     class Meta:
@@ -307,7 +323,8 @@ class ApplicationDeploymentDescriptionSerializer(
             ResourcePermissionType.WRITE)
 
 
-class ComputeResourceDescriptionSerializer(thrift_utils.create_serializer_class(ComputeResourceDescription)):
+class ComputeResourceDescriptionSerializer(
+        thrift_utils.create_serializer_class(ComputeResourceDescription)):
     pass
 
 
@@ -315,7 +332,8 @@ class BatchQueueSerializer(thrift_utils.create_serializer_class(BatchQueue)):
     pass
 
 
-class ExperimentStatusSerializer(thrift_utils.create_serializer_class(ExperimentStatus)):
+class ExperimentStatusSerializer(
+        thrift_utils.create_serializer_class(ExperimentStatus)):
     timeOfStateChange = UTCPosixTimestampDateTimeField()
 
 
@@ -368,9 +386,9 @@ class DataProductSerializer(
         if datastore.exists(data_product):
             request = self.context['request']
             return (request.build_absolute_uri(
-                reverse('django_airavata_api:download_file'))
-                + '?'
-                + urlencode({'data-product-uri': data_product.productUri}))
+                reverse('django_airavata_api:download_file')) +
+                '?' +
+                urlencode({'data-product-uri': data_product.productUri}))
         return None
 
 
@@ -419,8 +437,14 @@ class ExperimentSummarySerializer(
         thrift_utils.create_serializer_class(ExperimentSummaryModel)):
     creationTime = UTCPosixTimestampDateTimeField()
     statusUpdateTime = UTCPosixTimestampDateTimeField()
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
-    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:experiment-detail',
+        lookup_field='experimentId',
+        lookup_url_kwarg='experiment_id')
+    project = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:project-detail',
+        lookup_field='projectId',
+        lookup_url_kwarg='project_id')
 
 
 class UserProfileSerializer(
@@ -431,7 +455,10 @@ class UserProfileSerializer(
 
 class GroupResourceProfileSerializer(
         thrift_utils.create_serializer_class(GroupResourceProfile)):
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-resource-profile-detail', lookup_field='groupResourceProfileId', lookup_url_kwarg='group_resource_profile_id')
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:group-resource-profile-detail',
+        lookup_field='groupResourceProfileId',
+        lookup_url_kwarg='group_resource_profile_id')
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
@@ -484,11 +511,11 @@ class GroupResourceProfileSerializer(
 
 
 class SharedGroups(serializers.Serializer):
-    groupList=serializers.ListField(child=serializers.CharField())
-    entityId=serializers.CharField()
+    groupList = serializers.ListField(child=serializers.CharField())
+    entityId = serializers.CharField()
 
     def update(self, instance, validated_data):
-        instance["groupList"]=validated_data["groupList"]
+        instance["groupList"] = validated_data["groupList"]
         return instance
 
 
@@ -517,8 +544,10 @@ class SharedEntitySerializer(serializers.Serializer):
         # Compute lists of ids to grant/revoke READ/WRITE
         existing_user_permissions = {user['user'].airavataInternalUserId: user['permissionType']
                                      for user in instance['userPermissions']}
-        new_user_permissions = {user['user']['airavataInternalUserId']: user['permissionType']
-                                for user in validated_data['userPermissions']}
+        new_user_permissions = {
+            user['user']['airavataInternalUserId']:
+            user['permissionType']
+                for user in validated_data['userPermissions']}
 
         (user_grant_read_permission, user_grant_write_permission,
          user_revoke_read_permission, user_revoke_write_permission) = \
@@ -584,7 +613,7 @@ class SharedEntitySerializer(serializers.Serializer):
                                     new_permission=None):
         read_permissions = set((ResourcePermissionType.READ,))
         write_permissions = set((ResourcePermissionType.READ,
-                                ResourcePermissionType.WRITE))
+                                 ResourcePermissionType.WRITE))
         current_permissions_set = set()
         new_permissions_set = set()
         if current_permission == ResourcePermissionType.READ:

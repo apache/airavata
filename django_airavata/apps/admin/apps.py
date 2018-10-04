@@ -1,4 +1,3 @@
-from django.apps import AppConfig
 
 from django_airavata.app_config import AiravataAppConfig
 
