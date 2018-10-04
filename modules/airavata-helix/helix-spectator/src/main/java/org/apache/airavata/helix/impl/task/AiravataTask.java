@@ -98,6 +98,7 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     protected TaskResult onFail(String reason, boolean fatal, Throwable error) {
+        logger.error(reason, error);
         int currentRetryCount = 1;
         try {
             currentRetryCount = getCurrentRetryCount();
