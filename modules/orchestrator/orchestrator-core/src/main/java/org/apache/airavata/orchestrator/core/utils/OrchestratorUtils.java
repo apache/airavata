@@ -78,10 +78,10 @@ public class OrchestratorUtils {
         return getPreferredJobSubmissionInterface(model, gatewayId).getJobSubmissionProtocol();
     }
 
-    public static GroupComputeResourcePreference getGroupComputeResourcePreference(String groupResourceProfileId, String computeResourceId) throws TException {
+    public static GroupComputeResourcePreference getGroupComputeResourcePreference(ProcessModel model) throws TException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            return registryClient.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+            return registryClient.getGroupComputeResourcePreference(model.getComputeResourceId(), model.getGroupResourceProfileId());
         } finally {
             if (registryClient != null) {
                 ThriftUtils.close(registryClient);
@@ -129,8 +129,7 @@ public class OrchestratorUtils {
                                           String gatewayId) throws AiravataException, TException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel.getGroupResourceProfileId(),
-                    processModel.getComputeResourceId());
+            GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
             if (processModel.isUseUserCRPref()) {
                 UserComputeResourcePreference userComputeResourcePreference = registryClient
@@ -176,8 +175,7 @@ public class OrchestratorUtils {
                                             String gatewayId) throws  AiravataException, TException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(gatewayId,
-                    processModel.getComputeResourceId());
+            GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
             if (processModel.isUseUserCRPref()) {
                 UserComputeResourcePreference userComputeResourcePreference = registryClient
