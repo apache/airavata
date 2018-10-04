@@ -153,7 +153,7 @@
     {% block header %}
     {% gateway_icon %}
     {% endblock %}
-    <div class=c-header__title><a href="{% url 'home' %}">{% block title %}{% gateway_title %}{% endblock %}</a>
+    <div class=c-header__title><a href="/">{% block title %}{% gateway_title %}{% endblock %}</a>
     </div>
     {% if user.is_authenticated %}
     <div class=c-header__controls>
