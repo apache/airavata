@@ -190,7 +190,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
                     String usageExecutable = getComputeResourceDescription().getGatewayUsageExecutable();
                     ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
-                    String username = experiment.getUserName() + "@" + getTaskContext().getGatewayComputeResourcePreference().getUsageReportingGatewayId();
+                    String username = experiment.getUserName() + "@" + getTaskContext().getGroupComputeResourcePreference().getUsageReportingGatewayId();
                     RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
                             " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );
                     adaptor.executeCommand(rawCommandInfo.getRawCommand(), null);

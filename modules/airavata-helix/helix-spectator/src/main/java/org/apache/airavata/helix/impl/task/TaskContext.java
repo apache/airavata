@@ -84,7 +84,6 @@ public class TaskContext {
     private UserResourceProfile userResourceProfile;
     private GroupResourceProfile groupResourceProfile;
 
-    private ComputeResourcePreference gatewayComputeResourcePreference;
     private StoragePreference gatewayStorageResourcePreference;
     private UserComputeResourcePreference userComputeResourcePreference;
     private UserStoragePreference userStoragePreference;
@@ -374,14 +373,6 @@ public class TaskContext {
         this.jobModel = jobModel;
     }
 
-    public ComputeResourcePreference getGatewayComputeResourcePreference() {
-        return gatewayComputeResourcePreference;
-    }
-
-    public void setGatewayComputeResourcePreference(ComputeResourcePreference gatewayComputeResourcePreference) {
-        this.gatewayComputeResourcePreference = gatewayComputeResourcePreference;
-    }
-
     public ProcessState getProcessState() {
         if(processModel.getProcessStatuses() != null && processModel.getProcessStatuses().size() > 0)
             return processModel.getProcessStatuses().get(0).getState();
@@ -572,10 +563,6 @@ public class TaskContext {
         return str != null && !str.trim().isEmpty();
     }
 
-    public String getUsageReportingGatewayId() {
-        return gatewayComputeResourcePreference.getUsageReportingGatewayId();
-    }
-
     public String getAllocationProjectNumber() {
         if (isUseUserCRPref() &&
                 userComputeResourcePreference != null &&
@@ -753,12 +740,6 @@ public class TaskContext {
                     processModel.getGroupResourceProfileId()));
 
             ctx.setGroupResourceProfile(registryClient.getGroupResourceProfile(processModel.getGroupResourceProfileId()));
-
-            ctx.setGatewayComputeResourcePreference(
-                    Optional.ofNullable(registryClient.getGatewayComputeResourcePreference(
-                            gatewayId,
-                            processModel.getComputeResourceId()))
-                            .orElseThrow(() -> new Exception("Invalid Gateway ComputeResource Preference")));
 
             ctx.setGatewayResourceProfile(
                     Optional.ofNullable(registryClient.getGatewayResourceProfile(gatewayId))
