@@ -86,7 +86,7 @@ public class WorkflowCleanupAgent implements Runnable {
                     case STOPPED:
                     case TIMED_OUT:
                     case ABORTED:
-                        logger.info("Deleting workflow " + id);
+                        logger.info("Deleting workflow " + id + " with status " + workflowContext.getWorkflowState().name());
                         taskDriver.delete(id);
                         break;
                 }
