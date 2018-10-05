@@ -47,7 +47,7 @@ struct ApplicationStatus {
 
 struct WorkflowApplication {
     1:  required string id,
-    2:  optional string process_id,
+    2:  optional string processId,
     3:  optional string applicationInterfaceId,
     4:  optional string computeResourceId,
     5:  optional string queueName,
@@ -144,22 +144,15 @@ struct WorkflowStatus {
     4:  optional i64 updatedAt
 }
 
-struct NotificationEmail {
-    1:  required string email,
-}
-
 struct AiravataWorkflow {
     1:  required string id = airavata_commons.DEFAULT_ID,
     2:  required string experimentId,
-    3:  required string storageResourceId,
-    4:  optional string description,
-    5:  optional bool enableEmailNotification,
-    6:  optional list<NotificationEmail> notificationEmails,
-    7:  optional list<WorkflowApplication> applications,
-    8:  optional list<WorkflowHandler> handlers,
-    9:  optional list<WorkflowConnection> connections,
-    10: optional list<WorkflowStatus> statuses,
-    11: optional list<airavata_commons.ErrorModel> errors,
-    12: optional i64 createdAt,
-    13: optional i64 updatedAt
+    3:  optional string description,
+    4:  optional list<WorkflowApplication> applications,
+    5:  optional list<WorkflowHandler> handlers,
+    6:  optional list<WorkflowConnection> connections,
+    7:  optional list<WorkflowStatus> statuses,
+    8:  optional list<airavata_commons.ErrorModel> errors,
+    9:  optional i64 createdAt,
+    10: optional i64 updatedAt
 }
