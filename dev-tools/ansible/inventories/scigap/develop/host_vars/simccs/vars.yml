@@ -19,6 +19,7 @@
 #
 
 ---
+airavata_django_git_branch: "simccs"
 doc_root_dir: "/data/portals/django-simccs"
 vhost_servername: "beta.simccs.org"
 vhost_ssl: True
