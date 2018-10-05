@@ -40,6 +40,7 @@
     requirements: "{{ airavata_django_checkout }}/requirements.txt"
     virtualenv: "{{ django_venv_dir }}"
     virtualenv_command: pyvenv-3.4
+    chdir: "{{ airavata_django_checkout }}"
   become: yes
   become_user: "{{user}}"
 
