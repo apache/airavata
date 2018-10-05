@@ -36,23 +36,14 @@ public class AiravataWorkflowEntity implements Serializable {
     @Column(name = "EXPERIMENT_ID")
     private String experimentId;
 
-    @Column(name = "STORAGE_RESOURCE_ID")
-    private String storageResourceId;
-
     @Column(name = "DESCRIPTION")
     private String description;
-
-    @Column(name = "ENABLE_EMAIL_NOTIFICATION")
-    private boolean enableEmailNotification;
 
     @Column(name = "CREATED_AT")
     private Timestamp createdAt;
 
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
-
-    @OneToMany(targetEntity = NotificationEmailEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
-    private List<NotificationEmailEntity> notificationEmails;
 
     @OneToMany(targetEntity = WorkflowApplicationEntity.class, cascade = CascadeType.ALL, mappedBy = "workflow", fetch = FetchType.EAGER)
     private List<WorkflowApplicationEntity> applications;
@@ -80,16 +71,8 @@ public class AiravataWorkflowEntity implements Serializable {
         this.experimentId = experimentId;
     }
 
-    public void setStorageResourceId(String storageResourceId) {
-        this.storageResourceId = storageResourceId;
-    }
-
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void setEnableEmailNotification(boolean enableEmailNotification) {
-        this.enableEmailNotification = enableEmailNotification;
     }
 
     public void setCreatedAt(Timestamp createdAt) {
@@ -98,10 +81,6 @@ public class AiravataWorkflowEntity implements Serializable {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public void setNotificationEmails(List<NotificationEmailEntity> notificationEmails) {
-        this.notificationEmails = notificationEmails;
     }
 
     public void setApplications(List<WorkflowApplicationEntity> applications) {
@@ -132,16 +111,8 @@ public class AiravataWorkflowEntity implements Serializable {
         return experimentId;
     }
 
-    public String getStorageResourceId() {
-        return storageResourceId;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public boolean isEnableEmailNotification() {
-        return enableEmailNotification;
     }
 
     public Timestamp getCreatedAt() {
@@ -150,10 +121,6 @@ public class AiravataWorkflowEntity implements Serializable {
 
     public Timestamp getUpdatedAt() {
         return updatedAt;
-    }
-
-    public List<NotificationEmailEntity> getNotificationEmails() {
-        return notificationEmails;
     }
 
     public List<WorkflowApplicationEntity> getApplications() {

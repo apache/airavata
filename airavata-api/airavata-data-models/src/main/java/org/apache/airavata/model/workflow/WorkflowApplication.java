@@ -29,7 +29,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowApplication");
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("process_id", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("processId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField QUEUE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("queueName", org.apache.thrift.protocol.TType.STRING, (short)5);
@@ -46,7 +46,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new WorkflowApplicationTupleSchemeFactory();
 
   private java.lang.String id; // required
-  private java.lang.String process_id; // optional
+  private java.lang.String processId; // optional
   private java.lang.String applicationInterfaceId; // optional
   private java.lang.String computeResourceId; // optional
   private java.lang.String queueName; // optional
@@ -62,7 +62,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
-    PROCESS_ID((short)2, "process_id"),
+    PROCESS_ID((short)2, "processId"),
     APPLICATION_INTERFACE_ID((short)3, "applicationInterfaceId"),
     COMPUTE_RESOURCE_ID((short)4, "computeResourceId"),
     QUEUE_NAME((short)5, "queueName"),
@@ -167,7 +167,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PROCESS_ID, new org.apache.thrift.meta_data.FieldMetaData("process_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.PROCESS_ID, new org.apache.thrift.meta_data.FieldMetaData("processId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationInterfaceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -215,8 +215,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     if (other.isSetId()) {
       this.id = other.id;
     }
-    if (other.isSetProcess_id()) {
-      this.process_id = other.process_id;
+    if (other.isSetProcessId()) {
+      this.processId = other.processId;
     }
     if (other.isSetApplicationInterfaceId()) {
       this.applicationInterfaceId = other.applicationInterfaceId;
@@ -256,7 +256,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
   @Override
   public void clear() {
     this.id = null;
-    this.process_id = null;
+    this.processId = null;
     this.applicationInterfaceId = null;
     this.computeResourceId = null;
     this.queueName = null;
@@ -299,26 +299,26 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     }
   }
 
-  public java.lang.String getProcess_id() {
-    return this.process_id;
+  public java.lang.String getProcessId() {
+    return this.processId;
   }
 
-  public void setProcess_id(java.lang.String process_id) {
-    this.process_id = process_id;
+  public void setProcessId(java.lang.String processId) {
+    this.processId = processId;
   }
 
-  public void unsetProcess_id() {
-    this.process_id = null;
+  public void unsetProcessId() {
+    this.processId = null;
   }
 
-  /** Returns true if field process_id is set (has been assigned a value) and false otherwise */
-  public boolean isSetProcess_id() {
-    return this.process_id != null;
+  /** Returns true if field processId is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcessId() {
+    return this.processId != null;
   }
 
-  public void setProcess_idIsSet(boolean value) {
+  public void setProcessIdIsSet(boolean value) {
     if (!value) {
-      this.process_id = null;
+      this.processId = null;
     }
   }
 
@@ -611,9 +611,9 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
 
     case PROCESS_ID:
       if (value == null) {
-        unsetProcess_id();
+        unsetProcessId();
       } else {
-        setProcess_id((java.lang.String)value);
+        setProcessId((java.lang.String)value);
       }
       break;
 
@@ -714,7 +714,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       return getId();
 
     case PROCESS_ID:
-      return getProcess_id();
+      return getProcessId();
 
     case APPLICATION_INTERFACE_ID:
       return getApplicationInterfaceId();
@@ -763,7 +763,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     case ID:
       return isSetId();
     case PROCESS_ID:
-      return isSetProcess_id();
+      return isSetProcessId();
     case APPLICATION_INTERFACE_ID:
       return isSetApplicationInterfaceId();
     case COMPUTE_RESOURCE_ID:
@@ -814,12 +814,12 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         return false;
     }
 
-    boolean this_present_process_id = true && this.isSetProcess_id();
-    boolean that_present_process_id = true && that.isSetProcess_id();
-    if (this_present_process_id || that_present_process_id) {
-      if (!(this_present_process_id && that_present_process_id))
+    boolean this_present_processId = true && this.isSetProcessId();
+    boolean that_present_processId = true && that.isSetProcessId();
+    if (this_present_processId || that_present_processId) {
+      if (!(this_present_processId && that_present_processId))
         return false;
-      if (!this.process_id.equals(that.process_id))
+      if (!this.processId.equals(that.processId))
         return false;
     }
 
@@ -933,9 +933,9 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
     if (isSetId())
       hashCode = hashCode * 8191 + id.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetProcess_id()) ? 131071 : 524287);
-    if (isSetProcess_id())
-      hashCode = hashCode * 8191 + process_id.hashCode();
+    hashCode = hashCode * 8191 + ((isSetProcessId()) ? 131071 : 524287);
+    if (isSetProcessId())
+      hashCode = hashCode * 8191 + processId.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetApplicationInterfaceId()) ? 131071 : 524287);
     if (isSetApplicationInterfaceId())
@@ -1002,12 +1002,12 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetProcess_id()).compareTo(other.isSetProcess_id());
+    lastComparison = java.lang.Boolean.valueOf(isSetProcessId()).compareTo(other.isSetProcessId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetProcess_id()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.process_id, other.process_id);
+    if (isSetProcessId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processId, other.processId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1149,13 +1149,13 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       sb.append(this.id);
     }
     first = false;
-    if (isSetProcess_id()) {
+    if (isSetProcessId()) {
       if (!first) sb.append(", ");
-      sb.append("process_id:");
-      if (this.process_id == null) {
+      sb.append("processId:");
+      if (this.processId == null) {
         sb.append("null");
       } else {
-        sb.append(this.process_id);
+        sb.append(this.processId);
       }
       first = false;
     }
@@ -1304,8 +1304,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
             break;
           case 2: // PROCESS_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.process_id = iprot.readString();
-              struct.setProcess_idIsSet(true);
+              struct.processId = iprot.readString();
+              struct.setProcessIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1438,10 +1438,10 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         oprot.writeString(struct.id);
         oprot.writeFieldEnd();
       }
-      if (struct.process_id != null) {
-        if (struct.isSetProcess_id()) {
+      if (struct.processId != null) {
+        if (struct.isSetProcessId()) {
           oprot.writeFieldBegin(PROCESS_ID_FIELD_DESC);
-          oprot.writeString(struct.process_id);
+          oprot.writeString(struct.processId);
           oprot.writeFieldEnd();
         }
       }
@@ -1543,7 +1543,7 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.id);
       java.util.BitSet optionals = new java.util.BitSet();
-      if (struct.isSetProcess_id()) {
+      if (struct.isSetProcessId()) {
         optionals.set(0);
       }
       if (struct.isSetApplicationInterfaceId()) {
@@ -1580,8 +1580,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
         optionals.set(11);
       }
       oprot.writeBitSet(optionals, 12);
-      if (struct.isSetProcess_id()) {
-        oprot.writeString(struct.process_id);
+      if (struct.isSetProcessId()) {
+        oprot.writeString(struct.processId);
       }
       if (struct.isSetApplicationInterfaceId()) {
         oprot.writeString(struct.applicationInterfaceId);
@@ -1637,8 +1637,8 @@ public class WorkflowApplication implements org.apache.thrift.TBase<WorkflowAppl
       struct.setIdIsSet(true);
       java.util.BitSet incoming = iprot.readBitSet(12);
       if (incoming.get(0)) {
-        struct.process_id = iprot.readString();
-        struct.setProcess_idIsSet(true);
+        struct.processId = iprot.readString();
+        struct.setProcessIdIsSet(true);
       }
       if (incoming.get(1)) {
         struct.applicationInterfaceId = iprot.readString();

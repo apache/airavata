@@ -30,27 +30,21 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)5);
-  private static final org.apache.thrift.protocol.TField NOTIFICATION_EMAILS_FIELD_DESC = new org.apache.thrift.protocol.TField("notificationEmails", org.apache.thrift.protocol.TType.LIST, (short)6);
-  private static final org.apache.thrift.protocol.TField APPLICATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("applications", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField HANDLERS_FIELD_DESC = new org.apache.thrift.protocol.TField("handlers", org.apache.thrift.protocol.TType.LIST, (short)8);
-  private static final org.apache.thrift.protocol.TField CONNECTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("connections", org.apache.thrift.protocol.TType.LIST, (short)9);
-  private static final org.apache.thrift.protocol.TField STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("statuses", org.apache.thrift.protocol.TType.LIST, (short)10);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)11);
-  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)12);
-  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)13);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField APPLICATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("applications", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField HANDLERS_FIELD_DESC = new org.apache.thrift.protocol.TField("handlers", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField CONNECTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("connections", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("statuses", org.apache.thrift.protocol.TType.LIST, (short)7);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)9);
+  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)10);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new AiravataWorkflowStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new AiravataWorkflowTupleSchemeFactory();
 
   private java.lang.String id; // required
   private java.lang.String experimentId; // required
-  private java.lang.String storageResourceId; // required
   private java.lang.String description; // optional
-  private boolean enableEmailNotification; // optional
-  private java.util.List<NotificationEmail> notificationEmails; // optional
   private java.util.List<WorkflowApplication> applications; // optional
   private java.util.List<WorkflowHandler> handlers; // optional
   private java.util.List<WorkflowConnection> connections; // optional
@@ -63,17 +57,14 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
     EXPERIMENT_ID((short)2, "experimentId"),
-    STORAGE_RESOURCE_ID((short)3, "storageResourceId"),
-    DESCRIPTION((short)4, "description"),
-    ENABLE_EMAIL_NOTIFICATION((short)5, "enableEmailNotification"),
-    NOTIFICATION_EMAILS((short)6, "notificationEmails"),
-    APPLICATIONS((short)7, "applications"),
-    HANDLERS((short)8, "handlers"),
-    CONNECTIONS((short)9, "connections"),
-    STATUSES((short)10, "statuses"),
-    ERRORS((short)11, "errors"),
-    CREATED_AT((short)12, "createdAt"),
-    UPDATED_AT((short)13, "updatedAt");
+    DESCRIPTION((short)3, "description"),
+    APPLICATIONS((short)4, "applications"),
+    HANDLERS((short)5, "handlers"),
+    CONNECTIONS((short)6, "connections"),
+    STATUSES((short)7, "statuses"),
+    ERRORS((short)8, "errors"),
+    CREATED_AT((short)9, "createdAt"),
+    UPDATED_AT((short)10, "updatedAt");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -92,27 +83,21 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           return ID;
         case 2: // EXPERIMENT_ID
           return EXPERIMENT_ID;
-        case 3: // STORAGE_RESOURCE_ID
-          return STORAGE_RESOURCE_ID;
-        case 4: // DESCRIPTION
+        case 3: // DESCRIPTION
           return DESCRIPTION;
-        case 5: // ENABLE_EMAIL_NOTIFICATION
-          return ENABLE_EMAIL_NOTIFICATION;
-        case 6: // NOTIFICATION_EMAILS
-          return NOTIFICATION_EMAILS;
-        case 7: // APPLICATIONS
+        case 4: // APPLICATIONS
           return APPLICATIONS;
-        case 8: // HANDLERS
+        case 5: // HANDLERS
           return HANDLERS;
-        case 9: // CONNECTIONS
+        case 6: // CONNECTIONS
           return CONNECTIONS;
-        case 10: // STATUSES
+        case 7: // STATUSES
           return STATUSES;
-        case 11: // ERRORS
+        case 8: // ERRORS
           return ERRORS;
-        case 12: // CREATED_AT
+        case 9: // CREATED_AT
           return CREATED_AT;
-        case 13: // UPDATED_AT
+        case 10: // UPDATED_AT
           return UPDATED_AT;
         default:
           return null;
@@ -154,11 +139,10 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
   }
 
   // isset id assignments
-  private static final int __ENABLEEMAILNOTIFICATION_ISSET_ID = 0;
-  private static final int __CREATEDAT_ISSET_ID = 1;
-  private static final int __UPDATEDAT_ISSET_ID = 2;
+  private static final int __CREATEDAT_ISSET_ID = 0;
+  private static final int __UPDATEDAT_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.DESCRIPTION,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.NOTIFICATION_EMAILS,_Fields.APPLICATIONS,_Fields.HANDLERS,_Fields.CONNECTIONS,_Fields.STATUSES,_Fields.ERRORS,_Fields.CREATED_AT,_Fields.UPDATED_AT};
+  private static final _Fields optionals[] = {_Fields.DESCRIPTION,_Fields.APPLICATIONS,_Fields.HANDLERS,_Fields.CONNECTIONS,_Fields.STATUSES,_Fields.ERRORS,_Fields.CREATED_AT,_Fields.UPDATED_AT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -166,15 +150,8 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.STORAGE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageResourceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.ENABLE_EMAIL_NOTIFICATION, new org.apache.thrift.meta_data.FieldMetaData("enableEmailNotification", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.NOTIFICATION_EMAILS, new org.apache.thrift.meta_data.FieldMetaData("notificationEmails", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, NotificationEmail.class))));
     tmpMap.put(_Fields.APPLICATIONS, new org.apache.thrift.meta_data.FieldMetaData("applications", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowApplication.class))));
@@ -205,13 +182,11 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
 
   public AiravataWorkflow(
     java.lang.String id,
-    java.lang.String experimentId,
-    java.lang.String storageResourceId)
+    java.lang.String experimentId)
   {
     this();
     this.id = id;
     this.experimentId = experimentId;
-    this.storageResourceId = storageResourceId;
   }
 
   /**
@@ -225,19 +200,8 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     if (other.isSetExperimentId()) {
       this.experimentId = other.experimentId;
     }
-    if (other.isSetStorageResourceId()) {
-      this.storageResourceId = other.storageResourceId;
-    }
     if (other.isSetDescription()) {
       this.description = other.description;
-    }
-    this.enableEmailNotification = other.enableEmailNotification;
-    if (other.isSetNotificationEmails()) {
-      java.util.List<NotificationEmail> __this__notificationEmails = new java.util.ArrayList<NotificationEmail>(other.notificationEmails.size());
-      for (NotificationEmail other_element : other.notificationEmails) {
-        __this__notificationEmails.add(new NotificationEmail(other_element));
-      }
-      this.notificationEmails = __this__notificationEmails;
     }
     if (other.isSetApplications()) {
       java.util.List<WorkflowApplication> __this__applications = new java.util.ArrayList<WorkflowApplication>(other.applications.size());
@@ -287,11 +251,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     this.id = "DO_NOT_SET_AT_CLIENTS";
 
     this.experimentId = null;
-    this.storageResourceId = null;
     this.description = null;
-    setEnableEmailNotificationIsSet(false);
-    this.enableEmailNotification = false;
-    this.notificationEmails = null;
     this.applications = null;
     this.handlers = null;
     this.connections = null;
@@ -349,29 +309,6 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     }
   }
 
-  public java.lang.String getStorageResourceId() {
-    return this.storageResourceId;
-  }
-
-  public void setStorageResourceId(java.lang.String storageResourceId) {
-    this.storageResourceId = storageResourceId;
-  }
-
-  public void unsetStorageResourceId() {
-    this.storageResourceId = null;
-  }
-
-  /** Returns true if field storageResourceId is set (has been assigned a value) and false otherwise */
-  public boolean isSetStorageResourceId() {
-    return this.storageResourceId != null;
-  }
-
-  public void setStorageResourceIdIsSet(boolean value) {
-    if (!value) {
-      this.storageResourceId = null;
-    }
-  }
-
   public java.lang.String getDescription() {
     return this.description;
   }
@@ -392,66 +329,6 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
   public void setDescriptionIsSet(boolean value) {
     if (!value) {
       this.description = null;
-    }
-  }
-
-  public boolean isEnableEmailNotification() {
-    return this.enableEmailNotification;
-  }
-
-  public void setEnableEmailNotification(boolean enableEmailNotification) {
-    this.enableEmailNotification = enableEmailNotification;
-    setEnableEmailNotificationIsSet(true);
-  }
-
-  public void unsetEnableEmailNotification() {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __ENABLEEMAILNOTIFICATION_ISSET_ID);
-  }
-
-  /** Returns true if field enableEmailNotification is set (has been assigned a value) and false otherwise */
-  public boolean isSetEnableEmailNotification() {
-    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __ENABLEEMAILNOTIFICATION_ISSET_ID);
-  }
-
-  public void setEnableEmailNotificationIsSet(boolean value) {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __ENABLEEMAILNOTIFICATION_ISSET_ID, value);
-  }
-
-  public int getNotificationEmailsSize() {
-    return (this.notificationEmails == null) ? 0 : this.notificationEmails.size();
-  }
-
-  public java.util.Iterator<NotificationEmail> getNotificationEmailsIterator() {
-    return (this.notificationEmails == null) ? null : this.notificationEmails.iterator();
-  }
-
-  public void addToNotificationEmails(NotificationEmail elem) {
-    if (this.notificationEmails == null) {
-      this.notificationEmails = new java.util.ArrayList<NotificationEmail>();
-    }
-    this.notificationEmails.add(elem);
-  }
-
-  public java.util.List<NotificationEmail> getNotificationEmails() {
-    return this.notificationEmails;
-  }
-
-  public void setNotificationEmails(java.util.List<NotificationEmail> notificationEmails) {
-    this.notificationEmails = notificationEmails;
-  }
-
-  public void unsetNotificationEmails() {
-    this.notificationEmails = null;
-  }
-
-  /** Returns true if field notificationEmails is set (has been assigned a value) and false otherwise */
-  public boolean isSetNotificationEmails() {
-    return this.notificationEmails != null;
-  }
-
-  public void setNotificationEmailsIsSet(boolean value) {
-    if (!value) {
-      this.notificationEmails = null;
     }
   }
 
@@ -707,35 +584,11 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       }
       break;
 
-    case STORAGE_RESOURCE_ID:
-      if (value == null) {
-        unsetStorageResourceId();
-      } else {
-        setStorageResourceId((java.lang.String)value);
-      }
-      break;
-
     case DESCRIPTION:
       if (value == null) {
         unsetDescription();
       } else {
         setDescription((java.lang.String)value);
-      }
-      break;
-
-    case ENABLE_EMAIL_NOTIFICATION:
-      if (value == null) {
-        unsetEnableEmailNotification();
-      } else {
-        setEnableEmailNotification((java.lang.Boolean)value);
-      }
-      break;
-
-    case NOTIFICATION_EMAILS:
-      if (value == null) {
-        unsetNotificationEmails();
-      } else {
-        setNotificationEmails((java.util.List<NotificationEmail>)value);
       }
       break;
 
@@ -806,17 +659,8 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     case EXPERIMENT_ID:
       return getExperimentId();
 
-    case STORAGE_RESOURCE_ID:
-      return getStorageResourceId();
-
     case DESCRIPTION:
       return getDescription();
-
-    case ENABLE_EMAIL_NOTIFICATION:
-      return isEnableEmailNotification();
-
-    case NOTIFICATION_EMAILS:
-      return getNotificationEmails();
 
     case APPLICATIONS:
       return getApplications();
@@ -854,14 +698,8 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       return isSetId();
     case EXPERIMENT_ID:
       return isSetExperimentId();
-    case STORAGE_RESOURCE_ID:
-      return isSetStorageResourceId();
     case DESCRIPTION:
       return isSetDescription();
-    case ENABLE_EMAIL_NOTIFICATION:
-      return isSetEnableEmailNotification();
-    case NOTIFICATION_EMAILS:
-      return isSetNotificationEmails();
     case APPLICATIONS:
       return isSetApplications();
     case HANDLERS:
@@ -913,39 +751,12 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
         return false;
     }
 
-    boolean this_present_storageResourceId = true && this.isSetStorageResourceId();
-    boolean that_present_storageResourceId = true && that.isSetStorageResourceId();
-    if (this_present_storageResourceId || that_present_storageResourceId) {
-      if (!(this_present_storageResourceId && that_present_storageResourceId))
-        return false;
-      if (!this.storageResourceId.equals(that.storageResourceId))
-        return false;
-    }
-
     boolean this_present_description = true && this.isSetDescription();
     boolean that_present_description = true && that.isSetDescription();
     if (this_present_description || that_present_description) {
       if (!(this_present_description && that_present_description))
         return false;
       if (!this.description.equals(that.description))
-        return false;
-    }
-
-    boolean this_present_enableEmailNotification = true && this.isSetEnableEmailNotification();
-    boolean that_present_enableEmailNotification = true && that.isSetEnableEmailNotification();
-    if (this_present_enableEmailNotification || that_present_enableEmailNotification) {
-      if (!(this_present_enableEmailNotification && that_present_enableEmailNotification))
-        return false;
-      if (this.enableEmailNotification != that.enableEmailNotification)
-        return false;
-    }
-
-    boolean this_present_notificationEmails = true && this.isSetNotificationEmails();
-    boolean that_present_notificationEmails = true && that.isSetNotificationEmails();
-    if (this_present_notificationEmails || that_present_notificationEmails) {
-      if (!(this_present_notificationEmails && that_present_notificationEmails))
-        return false;
-      if (!this.notificationEmails.equals(that.notificationEmails))
         return false;
     }
 
@@ -1027,21 +838,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
     if (isSetExperimentId())
       hashCode = hashCode * 8191 + experimentId.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetStorageResourceId()) ? 131071 : 524287);
-    if (isSetStorageResourceId())
-      hashCode = hashCode * 8191 + storageResourceId.hashCode();
-
     hashCode = hashCode * 8191 + ((isSetDescription()) ? 131071 : 524287);
     if (isSetDescription())
       hashCode = hashCode * 8191 + description.hashCode();
-
-    hashCode = hashCode * 8191 + ((isSetEnableEmailNotification()) ? 131071 : 524287);
-    if (isSetEnableEmailNotification())
-      hashCode = hashCode * 8191 + ((enableEmailNotification) ? 131071 : 524287);
-
-    hashCode = hashCode * 8191 + ((isSetNotificationEmails()) ? 131071 : 524287);
-    if (isSetNotificationEmails())
-      hashCode = hashCode * 8191 + notificationEmails.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetApplications()) ? 131071 : 524287);
     if (isSetApplications())
@@ -1102,42 +901,12 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetStorageResourceId()).compareTo(other.isSetStorageResourceId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetStorageResourceId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.storageResourceId, other.storageResourceId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = java.lang.Boolean.valueOf(isSetDescription()).compareTo(other.isSetDescription());
     if (lastComparison != 0) {
       return lastComparison;
     }
     if (isSetDescription()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.description, other.description);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = java.lang.Boolean.valueOf(isSetEnableEmailNotification()).compareTo(other.isSetEnableEmailNotification());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetEnableEmailNotification()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.enableEmailNotification, other.enableEmailNotification);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = java.lang.Boolean.valueOf(isSetNotificationEmails()).compareTo(other.isSetNotificationEmails());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetNotificationEmails()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.notificationEmails, other.notificationEmails);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1247,14 +1016,6 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       sb.append(this.experimentId);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("storageResourceId:");
-    if (this.storageResourceId == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.storageResourceId);
-    }
-    first = false;
     if (isSetDescription()) {
       if (!first) sb.append(", ");
       sb.append("description:");
@@ -1262,22 +1023,6 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
         sb.append("null");
       } else {
         sb.append(this.description);
-      }
-      first = false;
-    }
-    if (isSetEnableEmailNotification()) {
-      if (!first) sb.append(", ");
-      sb.append("enableEmailNotification:");
-      sb.append(this.enableEmailNotification);
-      first = false;
-    }
-    if (isSetNotificationEmails()) {
-      if (!first) sb.append(", ");
-      sb.append("notificationEmails:");
-      if (this.notificationEmails == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.notificationEmails);
       }
       first = false;
     }
@@ -1357,10 +1102,6 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentId' is unset! Struct:" + toString());
     }
 
-    if (!isSetStorageResourceId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'storageResourceId' is unset! Struct:" + toString());
-    }
-
     // check for sub-struct validity
   }
 
@@ -1416,15 +1157,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // STORAGE_RESOURCE_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.storageResourceId = iprot.readString();
-              struct.setStorageResourceIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 4: // DESCRIPTION
+          case 3: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.description = iprot.readString();
               struct.setDescriptionIsSet(true);
@@ -1432,44 +1165,17 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // ENABLE_EMAIL_NOTIFICATION
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.enableEmailNotification = iprot.readBool();
-              struct.setEnableEmailNotificationIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 6: // NOTIFICATION_EMAILS
+          case 4: // APPLICATIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list48 = iprot.readListBegin();
-                struct.notificationEmails = new java.util.ArrayList<NotificationEmail>(_list48.size);
-                NotificationEmail _elem49;
+                struct.applications = new java.util.ArrayList<WorkflowApplication>(_list48.size);
+                WorkflowApplication _elem49;
                 for (int _i50 = 0; _i50 < _list48.size; ++_i50)
                 {
-                  _elem49 = new NotificationEmail();
+                  _elem49 = new WorkflowApplication();
                   _elem49.read(iprot);
-                  struct.notificationEmails.add(_elem49);
-                }
-                iprot.readListEnd();
-              }
-              struct.setNotificationEmailsIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 7: // APPLICATIONS
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list51 = iprot.readListBegin();
-                struct.applications = new java.util.ArrayList<WorkflowApplication>(_list51.size);
-                WorkflowApplication _elem52;
-                for (int _i53 = 0; _i53 < _list51.size; ++_i53)
-                {
-                  _elem52 = new WorkflowApplication();
-                  _elem52.read(iprot);
-                  struct.applications.add(_elem52);
+                  struct.applications.add(_elem49);
                 }
                 iprot.readListEnd();
               }
@@ -1478,17 +1184,17 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // HANDLERS
+          case 5: // HANDLERS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list54 = iprot.readListBegin();
-                struct.handlers = new java.util.ArrayList<WorkflowHandler>(_list54.size);
-                WorkflowHandler _elem55;
-                for (int _i56 = 0; _i56 < _list54.size; ++_i56)
+                org.apache.thrift.protocol.TList _list51 = iprot.readListBegin();
+                struct.handlers = new java.util.ArrayList<WorkflowHandler>(_list51.size);
+                WorkflowHandler _elem52;
+                for (int _i53 = 0; _i53 < _list51.size; ++_i53)
                 {
-                  _elem55 = new WorkflowHandler();
-                  _elem55.read(iprot);
-                  struct.handlers.add(_elem55);
+                  _elem52 = new WorkflowHandler();
+                  _elem52.read(iprot);
+                  struct.handlers.add(_elem52);
                 }
                 iprot.readListEnd();
               }
@@ -1497,17 +1203,17 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // CONNECTIONS
+          case 6: // CONNECTIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list57 = iprot.readListBegin();
-                struct.connections = new java.util.ArrayList<WorkflowConnection>(_list57.size);
-                WorkflowConnection _elem58;
-                for (int _i59 = 0; _i59 < _list57.size; ++_i59)
+                org.apache.thrift.protocol.TList _list54 = iprot.readListBegin();
+                struct.connections = new java.util.ArrayList<WorkflowConnection>(_list54.size);
+                WorkflowConnection _elem55;
+                for (int _i56 = 0; _i56 < _list54.size; ++_i56)
                 {
-                  _elem58 = new WorkflowConnection();
-                  _elem58.read(iprot);
-                  struct.connections.add(_elem58);
+                  _elem55 = new WorkflowConnection();
+                  _elem55.read(iprot);
+                  struct.connections.add(_elem55);
                 }
                 iprot.readListEnd();
               }
@@ -1516,17 +1222,17 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // STATUSES
+          case 7: // STATUSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list60 = iprot.readListBegin();
-                struct.statuses = new java.util.ArrayList<WorkflowStatus>(_list60.size);
-                WorkflowStatus _elem61;
-                for (int _i62 = 0; _i62 < _list60.size; ++_i62)
+                org.apache.thrift.protocol.TList _list57 = iprot.readListBegin();
+                struct.statuses = new java.util.ArrayList<WorkflowStatus>(_list57.size);
+                WorkflowStatus _elem58;
+                for (int _i59 = 0; _i59 < _list57.size; ++_i59)
                 {
-                  _elem61 = new WorkflowStatus();
-                  _elem61.read(iprot);
-                  struct.statuses.add(_elem61);
+                  _elem58 = new WorkflowStatus();
+                  _elem58.read(iprot);
+                  struct.statuses.add(_elem58);
                 }
                 iprot.readListEnd();
               }
@@ -1535,17 +1241,17 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // ERRORS
+          case 8: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list63 = iprot.readListBegin();
-                struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list63.size);
-                org.apache.airavata.model.commons.ErrorModel _elem64;
-                for (int _i65 = 0; _i65 < _list63.size; ++_i65)
+                org.apache.thrift.protocol.TList _list60 = iprot.readListBegin();
+                struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list60.size);
+                org.apache.airavata.model.commons.ErrorModel _elem61;
+                for (int _i62 = 0; _i62 < _list60.size; ++_i62)
                 {
-                  _elem64 = new org.apache.airavata.model.commons.ErrorModel();
-                  _elem64.read(iprot);
-                  struct.errors.add(_elem64);
+                  _elem61 = new org.apache.airavata.model.commons.ErrorModel();
+                  _elem61.read(iprot);
+                  struct.errors.add(_elem61);
                 }
                 iprot.readListEnd();
               }
@@ -1554,7 +1260,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // CREATED_AT
+          case 9: // CREATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.createdAt = iprot.readI64();
               struct.setCreatedAtIsSet(true);
@@ -1562,7 +1268,7 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 13: // UPDATED_AT
+          case 10: // UPDATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.updatedAt = iprot.readI64();
               struct.setUpdatedAtIsSet(true);
@@ -1593,34 +1299,10 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
         oprot.writeString(struct.experimentId);
         oprot.writeFieldEnd();
       }
-      if (struct.storageResourceId != null) {
-        oprot.writeFieldBegin(STORAGE_RESOURCE_ID_FIELD_DESC);
-        oprot.writeString(struct.storageResourceId);
-        oprot.writeFieldEnd();
-      }
       if (struct.description != null) {
         if (struct.isSetDescription()) {
           oprot.writeFieldBegin(DESCRIPTION_FIELD_DESC);
           oprot.writeString(struct.description);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.isSetEnableEmailNotification()) {
-        oprot.writeFieldBegin(ENABLE_EMAIL_NOTIFICATION_FIELD_DESC);
-        oprot.writeBool(struct.enableEmailNotification);
-        oprot.writeFieldEnd();
-      }
-      if (struct.notificationEmails != null) {
-        if (struct.isSetNotificationEmails()) {
-          oprot.writeFieldBegin(NOTIFICATION_EMAILS_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.notificationEmails.size()));
-            for (NotificationEmail _iter66 : struct.notificationEmails)
-            {
-              _iter66.write(oprot);
-            }
-            oprot.writeListEnd();
-          }
           oprot.writeFieldEnd();
         }
       }
@@ -1629,9 +1311,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(APPLICATIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.applications.size()));
-            for (WorkflowApplication _iter67 : struct.applications)
+            for (WorkflowApplication _iter63 : struct.applications)
             {
-              _iter67.write(oprot);
+              _iter63.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1643,9 +1325,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(HANDLERS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.handlers.size()));
-            for (WorkflowHandler _iter68 : struct.handlers)
+            for (WorkflowHandler _iter64 : struct.handlers)
             {
-              _iter68.write(oprot);
+              _iter64.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1657,9 +1339,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(CONNECTIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.connections.size()));
-            for (WorkflowConnection _iter69 : struct.connections)
+            for (WorkflowConnection _iter65 : struct.connections)
             {
-              _iter69.write(oprot);
+              _iter65.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1671,9 +1353,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(STATUSES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.statuses.size()));
-            for (WorkflowStatus _iter70 : struct.statuses)
+            for (WorkflowStatus _iter66 : struct.statuses)
             {
-              _iter70.write(oprot);
+              _iter66.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1685,9 +1367,9 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
           oprot.writeFieldBegin(ERRORS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.errors.size()));
-            for (org.apache.airavata.model.commons.ErrorModel _iter71 : struct.errors)
+            for (org.apache.airavata.model.commons.ErrorModel _iter67 : struct.errors)
             {
-              _iter71.write(oprot);
+              _iter67.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1723,96 +1405,77 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.id);
       oprot.writeString(struct.experimentId);
-      oprot.writeString(struct.storageResourceId);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetDescription()) {
         optionals.set(0);
       }
-      if (struct.isSetEnableEmailNotification()) {
+      if (struct.isSetApplications()) {
         optionals.set(1);
       }
-      if (struct.isSetNotificationEmails()) {
+      if (struct.isSetHandlers()) {
         optionals.set(2);
       }
-      if (struct.isSetApplications()) {
+      if (struct.isSetConnections()) {
         optionals.set(3);
       }
-      if (struct.isSetHandlers()) {
+      if (struct.isSetStatuses()) {
         optionals.set(4);
       }
-      if (struct.isSetConnections()) {
+      if (struct.isSetErrors()) {
         optionals.set(5);
       }
-      if (struct.isSetStatuses()) {
+      if (struct.isSetCreatedAt()) {
         optionals.set(6);
       }
-      if (struct.isSetErrors()) {
+      if (struct.isSetUpdatedAt()) {
         optionals.set(7);
       }
-      if (struct.isSetCreatedAt()) {
-        optionals.set(8);
-      }
-      if (struct.isSetUpdatedAt()) {
-        optionals.set(9);
-      }
-      oprot.writeBitSet(optionals, 10);
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetDescription()) {
         oprot.writeString(struct.description);
-      }
-      if (struct.isSetEnableEmailNotification()) {
-        oprot.writeBool(struct.enableEmailNotification);
-      }
-      if (struct.isSetNotificationEmails()) {
-        {
-          oprot.writeI32(struct.notificationEmails.size());
-          for (NotificationEmail _iter72 : struct.notificationEmails)
-          {
-            _iter72.write(oprot);
-          }
-        }
       }
       if (struct.isSetApplications()) {
         {
           oprot.writeI32(struct.applications.size());
-          for (WorkflowApplication _iter73 : struct.applications)
+          for (WorkflowApplication _iter68 : struct.applications)
           {
-            _iter73.write(oprot);
+            _iter68.write(oprot);
           }
         }
       }
       if (struct.isSetHandlers()) {
         {
           oprot.writeI32(struct.handlers.size());
-          for (WorkflowHandler _iter74 : struct.handlers)
+          for (WorkflowHandler _iter69 : struct.handlers)
           {
-            _iter74.write(oprot);
+            _iter69.write(oprot);
           }
         }
       }
       if (struct.isSetConnections()) {
         {
           oprot.writeI32(struct.connections.size());
-          for (WorkflowConnection _iter75 : struct.connections)
+          for (WorkflowConnection _iter70 : struct.connections)
           {
-            _iter75.write(oprot);
+            _iter70.write(oprot);
           }
         }
       }
       if (struct.isSetStatuses()) {
         {
           oprot.writeI32(struct.statuses.size());
-          for (WorkflowStatus _iter76 : struct.statuses)
+          for (WorkflowStatus _iter71 : struct.statuses)
           {
-            _iter76.write(oprot);
+            _iter71.write(oprot);
           }
         }
       }
       if (struct.isSetErrors()) {
         {
           oprot.writeI32(struct.errors.size());
-          for (org.apache.airavata.model.commons.ErrorModel _iter77 : struct.errors)
+          for (org.apache.airavata.model.commons.ErrorModel _iter72 : struct.errors)
           {
-            _iter77.write(oprot);
+            _iter72.write(oprot);
           }
         }
       }
@@ -1831,106 +1494,86 @@ public class AiravataWorkflow implements org.apache.thrift.TBase<AiravataWorkflo
       struct.setIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
-      struct.storageResourceId = iprot.readString();
-      struct.setStorageResourceIdIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(10);
+      java.util.BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.description = iprot.readString();
         struct.setDescriptionIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.enableEmailNotification = iprot.readBool();
-        struct.setEnableEmailNotificationIsSet(true);
-      }
-      if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list78 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.notificationEmails = new java.util.ArrayList<NotificationEmail>(_list78.size);
-          NotificationEmail _elem79;
-          for (int _i80 = 0; _i80 < _list78.size; ++_i80)
+          org.apache.thrift.protocol.TList _list73 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.applications = new java.util.ArrayList<WorkflowApplication>(_list73.size);
+          WorkflowApplication _elem74;
+          for (int _i75 = 0; _i75 < _list73.size; ++_i75)
           {
-            _elem79 = new NotificationEmail();
-            _elem79.read(iprot);
-            struct.notificationEmails.add(_elem79);
-          }
-        }
-        struct.setNotificationEmailsIsSet(true);
-      }
-      if (incoming.get(3)) {
-        {
-          org.apache.thrift.protocol.TList _list81 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.applications = new java.util.ArrayList<WorkflowApplication>(_list81.size);
-          WorkflowApplication _elem82;
-          for (int _i83 = 0; _i83 < _list81.size; ++_i83)
-          {
-            _elem82 = new WorkflowApplication();
-            _elem82.read(iprot);
-            struct.applications.add(_elem82);
+            _elem74 = new WorkflowApplication();
+            _elem74.read(iprot);
+            struct.applications.add(_elem74);
           }
         }
         struct.setApplicationsIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list84 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.handlers = new java.util.ArrayList<WorkflowHandler>(_list84.size);
-          WorkflowHandler _elem85;
-          for (int _i86 = 0; _i86 < _list84.size; ++_i86)
+          org.apache.thrift.protocol.TList _list76 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.handlers = new java.util.ArrayList<WorkflowHandler>(_list76.size);
+          WorkflowHandler _elem77;
+          for (int _i78 = 0; _i78 < _list76.size; ++_i78)
           {
-            _elem85 = new WorkflowHandler();
-            _elem85.read(iprot);
-            struct.handlers.add(_elem85);
+            _elem77 = new WorkflowHandler();
+            _elem77.read(iprot);
+            struct.handlers.add(_elem77);
           }
         }
         struct.setHandlersIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list87 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.connections = new java.util.ArrayList<WorkflowConnection>(_list87.size);
-          WorkflowConnection _elem88;
-          for (int _i89 = 0; _i89 < _list87.size; ++_i89)
+          org.apache.thrift.protocol.TList _list79 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.connections = new java.util.ArrayList<WorkflowConnection>(_list79.size);
+          WorkflowConnection _elem80;
+          for (int _i81 = 0; _i81 < _list79.size; ++_i81)
           {
-            _elem88 = new WorkflowConnection();
-            _elem88.read(iprot);
-            struct.connections.add(_elem88);
+            _elem80 = new WorkflowConnection();
+            _elem80.read(iprot);
+            struct.connections.add(_elem80);
           }
         }
         struct.setConnectionsIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(4)) {
         {
-          org.apache.thrift.protocol.TList _list90 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.statuses = new java.util.ArrayList<WorkflowStatus>(_list90.size);
-          WorkflowStatus _elem91;
-          for (int _i92 = 0; _i92 < _list90.size; ++_i92)
+          org.apache.thrift.protocol.TList _list82 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.statuses = new java.util.ArrayList<WorkflowStatus>(_list82.size);
+          WorkflowStatus _elem83;
+          for (int _i84 = 0; _i84 < _list82.size; ++_i84)
           {
-            _elem91 = new WorkflowStatus();
-            _elem91.read(iprot);
-            struct.statuses.add(_elem91);
+            _elem83 = new WorkflowStatus();
+            _elem83.read(iprot);
+            struct.statuses.add(_elem83);
           }
         }
         struct.setStatusesIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list93 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list93.size);
-          org.apache.airavata.model.commons.ErrorModel _elem94;
-          for (int _i95 = 0; _i95 < _list93.size; ++_i95)
+          org.apache.thrift.protocol.TList _list85 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list85.size);
+          org.apache.airavata.model.commons.ErrorModel _elem86;
+          for (int _i87 = 0; _i87 < _list85.size; ++_i87)
           {
-            _elem94 = new org.apache.airavata.model.commons.ErrorModel();
-            _elem94.read(iprot);
-            struct.errors.add(_elem94);
+            _elem86 = new org.apache.airavata.model.commons.ErrorModel();
+            _elem86.read(iprot);
+            struct.errors.add(_elem86);
           }
         }
         struct.setErrorsIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(6)) {
         struct.createdAt = iprot.readI64();
         struct.setCreatedAtIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(7)) {
         struct.updatedAt = iprot.readI64();
         struct.setUpdatedAtIsSet(true);
       }

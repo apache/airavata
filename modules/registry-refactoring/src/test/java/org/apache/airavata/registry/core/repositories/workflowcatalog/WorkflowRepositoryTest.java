@@ -39,10 +39,7 @@ public class WorkflowRepositoryTest {
 
     // Workflow related constants
     private String EXPERIMENT_ID = "sample_exp_id";
-    private String SAMPLE_STORAGE_RESOURCE_ID = "storage_resource_1";
     private String SAMPLE_DESCRIPTION = "Sample description about the application";
-    private String SAMPLE_EMAIL_1 = "example1@example.com";
-    private String SAMPLE_EMAIL_2 = "example2@example.com";
 
     // Application related constants
     private String APPLICATION_PREFIX = "app_";
@@ -88,10 +85,8 @@ public class WorkflowRepositoryTest {
         AiravataWorkflow workflow = workflowRepository.getWorkflow(workflowRepository.getWorkflowId(EXPERIMENT_ID));
 
         //Assert workflow
-        assertEquals(SAMPLE_STORAGE_RESOURCE_ID, workflow.getStorageResourceId());
         assertEquals(SAMPLE_DESCRIPTION, workflow.getDescription());
 
-        assertEquals(2, workflow.getNotificationEmailsSize());
         assertEquals(2, workflow.getApplicationsSize());
         assertEquals(2, workflow.getHandlersSize());
         assertEquals(3, workflow.getConnectionsSize());
@@ -113,18 +108,7 @@ public class WorkflowRepositoryTest {
         AiravataWorkflow workflow = new AiravataWorkflow();
 
         //Adding basic workflow parameters
-        workflow.setStorageResourceId(SAMPLE_STORAGE_RESOURCE_ID);
         workflow.setDescription(SAMPLE_DESCRIPTION);
-        workflow.setEnableEmailNotification(true);
-
-        NotificationEmail email1 = new NotificationEmail();
-        email1.setEmail(SAMPLE_EMAIL_1);
-
-        NotificationEmail email2 = new NotificationEmail();
-        email2.setEmail(SAMPLE_EMAIL_2);
-
-        workflow.addToNotificationEmails(email1);
-        workflow.addToNotificationEmails(email2);
 
         //Adding workflow applications
         WorkflowApplication application1 = new WorkflowApplication();
