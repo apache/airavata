@@ -28,3 +28,8 @@ alter table TASK drop column TASK_INTERNAL_STORE;
 alter table PROCESS modify column USE_USER_CR_PREF tinyint(1);
 alter table QUEUE_STATUS modify column QUEUE_UP tinyint(1);
 alter table USER_CONFIGURATION_DATA modify column IS_USE_USER_CR_PREF tinyint(1);
+
+-- AIRAVATA-2899
+alter table PROCESS_STATUS modify column TIME_OF_STATE_CHANGE TIMESTAMP(6) DEFAULT NOW(6) ON UPDATE NOW(6);
+alter table TASK_STATUS modify column TIME_OF_STATE_CHANGE TIMESTAMP(6) DEFAULT NOW(6) ON UPDATE NOW(6);
+alter table JOB_STATUS modify column TIME_OF_STATE_CHANGE TIMESTAMP(6) DEFAULT NOW(6) ON UPDATE NOW(6);
