@@ -20,12 +20,12 @@
 
 ---
 doc_root_dir: "/data/portals/django-simccs"
-vhost_servername: "django.simccs.scigap.org"
+vhost_servername: "beta.simccs.org"
 vhost_ssl: True
 # sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/django.simccs.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/django.simccs.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/django.simccs.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/beta.simccs.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.simccs.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/beta.simccs.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "simccs"
