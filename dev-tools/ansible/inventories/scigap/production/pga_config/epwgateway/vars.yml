@@ -51,7 +51,7 @@ oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
 
 gateway_id: "epw-gateway"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/searching-sra"
+experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 #gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCx981DispO1AnkOAwq1oJ3iaYUW6KT4jn4OPSrvIb1fJyjkNdBK8KQUTviBMgqLH9+FlIx/FYjN7sVLelGUmfOgguIWB4Ea2epAyvGFfrVeF83w5A4uILfrd5AJQuk0sZkNjnnGmmpx6z60IThaof2f14uD7JPcn5Kf0xnfmhJGIo2DYJRp8DYJ4Upd1ENu4p3CqylZGBFTx0ROe3hCNj28BxCY+kTgKTQJQHdwuHK9WxovQHdv2ZrN9GeSyIPUX8W1PpYKqM2i8xGaagPUamHON9TonHyuAdd84CagonwuaG54+jbFbB9uW/zhhnP5vNRxK8aSNIhszOucE2g8xzL"
 
