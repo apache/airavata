@@ -293,7 +293,7 @@ class BootstrapCard(StructBlock):
         ('text-dark', 'DARK'),
         ('text-light', 'LIGHT'),
     ], blank=True, required=False, help_text="select a text color")
-    buttons = ListBlock(BootstrapButton(required=False))
+    buttons = ListBlock(BootstrapButton(required=False), default=[])
     custom_class = TextBlock(
         required=False,
         blank=True,
