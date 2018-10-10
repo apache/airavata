@@ -56,6 +56,15 @@ public interface SSHAccountProvisioner {
     String createAccount(String userId, String sshPublicKey) throws InvalidUsernameException;
 
     /**
+     * Return true if this sshPublicKey has been installed for this user account and all other related setup tasks are complete.
+     * @param userId
+     * @param sshPublicKey
+     * @return
+     * @throws InvalidUsernameException
+     */
+    boolean isSSHAccountProvisioningComplete(String userId, String sshPublicKey) throws InvalidUsernameException;
+
+    /**
      * Install an SSH key for the user on the compute host.
      * @param userId the Airavata user id
      * @param sshPublicKey the public key part of an Airavata managed SSH credential
