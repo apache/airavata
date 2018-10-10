@@ -1,6 +1,7 @@
 from wagtail.core.blocks import (BooleanBlock, CharBlock, ChoiceBlock,
-                                 IntegerBlock, RawHTMLBlock, RichTextBlock,
-                                 StreamBlock, StructBlock, TextBlock)
+                                 IntegerBlock, ListBlock, RawHTMLBlock,
+                                 RichTextBlock, StreamBlock, StructBlock,
+                                 TextBlock)
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 
@@ -292,15 +293,7 @@ class BootstrapCard(StructBlock):
         ('text-dark', 'DARK'),
         ('text-light', 'LIGHT'),
     ], blank=True, required=False, help_text="select a text color")
-    btn_text = TextBlock(required=False)
-    btn_color = ChoiceBlock(choices=[
-        ('btn-primary', 'DEFAULT'),
-        ('btn-danger', 'RED'),
-        ('btn-secondary', 'GREY'),
-        ('btn-success', 'GREEN'),
-        ('btn-warning', 'ORANGE')
-    ], blank=True, required=False, help_text="select a button color")
-    btn_link = TextBlock(required=False)
+    buttons = ListBlock(BootstrapButton(required=False))
     custom_class = TextBlock(
         required=False,
         blank=True,
