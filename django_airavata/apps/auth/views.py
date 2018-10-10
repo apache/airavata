@@ -3,7 +3,7 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, resolve_url
 from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
@@ -67,7 +67,7 @@ def handle_login(request):
 def start_logout(request):
     logout(request)
     redirect_url = request.build_absolute_uri(
-        reverse(settings.LOGOUT_REDIRECT_URL))
+        resolve_url(settings.LOGOUT_REDIRECT_URL))
     return redirect(settings.KEYCLOAK_LOGOUT_URL +
                     "?redirect_uri=" + quote(redirect_url))
 

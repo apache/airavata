@@ -148,7 +148,8 @@ def get_css(context):
     }
 
 
-@register.inclusion_tag('django_airavata_wagtail_base/includes/nav_extra.html', takes_context=True)
+@register.inclusion_tag(
+    'django_airavata_wagtail_base/includes/nav_extra.html', takes_context=True)
 def get_nav_extra(context):
     nav_extra = ""
     if NavExtra.objects.first() is not None:
@@ -156,6 +157,7 @@ def get_nav_extra(context):
 
     return {
         'navextra': nav_extra,
+        'request': context['request'],
     }
 
 

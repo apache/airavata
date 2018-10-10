@@ -190,7 +190,7 @@ WAGTAILIMAGES_JPEG_QUALITY = 100
 
 LOGIN_URL = 'django_airavata_auth:login'
 LOGIN_REDIRECT_URL = 'django_airavata_workspace:dashboard'
-LOGOUT_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_OPTIONS = {
     # Control whether username/password authentication is allowed

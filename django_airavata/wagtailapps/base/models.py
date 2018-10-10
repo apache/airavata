@@ -11,7 +11,7 @@ from wagtail.core.models import Orderable, Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.models import register_snippet
 
-from .blocks import BaseStreamBlock, CssStreamBlock
+from .blocks import BaseStreamBlock, CssStreamBlock, Nav
 
 
 @register_snippet
@@ -48,86 +48,16 @@ class Announcements(models.Model):
 @register_snippet
 class NavExtra(models.Model):
     """
-    This provides editable text for the site extra navbar which comes below the main navbar. Again it uses the decorator
-    `register_snippet` to allow it to be accessible via the admin. It is made
-    accessible on the template via a template tag defined in base/templatetags/
-    navigation_tags.py
+    This provides editable text for the site extra navbar which comes below
+    the main navbar. Again it uses the decorator `register_snippet` to allow
+    it to be accessible via the admin. It is made accessible on the template
+    via a template tag defined in base/templatetags/navigation_tags.py
     """
-    nav_logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text='Nav Extra Logo'
-    )
-    nav_logo_width = models.IntegerField(
-        null=True, blank=True, help_text="Navbar Logo width")
-    nav_logo_height = models.IntegerField(
-        null=True, blank=True, help_text="Navbar Logo height")
-    nav_logo_link = models.CharField(
-        max_length=255,
-        default="#",
-        help_text="Give a redirect link for the Logo")
-    nav_text1 = models.CharField(
-        max_length=25, help_text="Give a text for link 1")
-    faicon1 = models.CharField(
-        max_length=50,
-        help_text="Provide a class name of icon from font awesome website")
-    nav_link1 = models.CharField(
-        max_length=255, help_text="Provide a link address for link 1")
-    nav_text2 = models.CharField(
-        max_length=25,
-        help_text="Give a text for link 2",
-        null=True,
-        blank=True)
-    faicon2 = models.CharField(
-        max_length=50,
-        help_text="Provide a class name of icon from font awesome website",
-        null=True,
-        blank=True)
-    nav_link2 = models.CharField(
-        max_length=255,
-        help_text="Provide a link address for link 2",
-        null=True,
-        blank=True)
-    nav_text3 = models.CharField(
-        max_length=25,
-        help_text="Give a text for link 3",
-        null=True,
-        blank=True)
-    faicon3 = models.CharField(
-        max_length=50,
-        help_text="Provide a class name of icon from font awesome website",
-        null=True,
-        blank=True)
-    nav_link3 = models.CharField(
-        max_length=255,
-        help_text="Provide a link address for link 3",
-        null=True,
-        blank=True)
-    custom_class = models.CharField(
-        max_length=255,
-        help_text="Provide custom class names separated by space to gain extra control of nav",
-        null=True,
-        blank=True,
-    )
-
+    nav = StreamField([
+        ('nav', Nav(max_num=1)),
+    ])
     panels = [
-        ImageChooserPanel('nav_logo'),
-        FieldPanel('nav_logo_width'),
-        FieldPanel('nav_logo_height'),
-        FieldPanel('nav_logo_link'),
-        FieldPanel('nav_text1'),
-        FieldPanel('faicon1'),
-        FieldPanel('nav_link1'),
-        FieldPanel('nav_text2'),
-        FieldPanel('faicon2'),
-        FieldPanel('nav_link2'),
-        FieldPanel('nav_text3'),
-        FieldPanel('faicon3'),
-        FieldPanel('nav_link3'),
-        FieldPanel('custom_class')
+        StreamFieldPanel('nav'),
     ]
 
     def __str__(self):

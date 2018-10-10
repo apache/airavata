@@ -1,25 +1,5 @@
-{% load wagtailimages_tags %}
+{% load wagtailcore_tags %}
 
-<ul class="nav {{navextra.custom_class}} ml-auto ">
-  {% if navextra.nav_logo %}
-  <li class="nav-item">
-    {% image navextra.nav_logo original as tmp_photo %}
-    <a href="{{navextra.nav_logo_link}}"><img src="{{tmp_photo.url}}" style="width:{{navextra.nav_logo_width}};height:{{navextra.nav_logo_height}};" alt="nav-extra-logo" class="nav-link"></a>
-  </li>
-  {% endif %}
-  {% if navextra.nav_text1 %}
-  <li class="nav-item ml-auto">
-    <a class="nav-link" href="{{navextra.nav_link1}}"><i class="{{navextra.faicon1}}"></i> {{navextra.nav_text1}}</a>
-  </li>
-  {% endif %}
-  {% if navextra.nav_text2 %}
-  <li class="nav-item">
-    <a class="nav-link" href="{{navextra.nav_link2}}"><i class="{{navextra.faicon2}}"></i> {{navextra.nav_text2}}</a>
-  </li>
-  {% endif %}
-  {% if navextra.nav_text3 %}
-  <li class="nav-item">
-    <a class="nav-link" href="{{navextra.nav_link3}}"><i class="{{navextra.faicon3}}"></i> {{navextra.nav_text3}}</a>
-  </li>
-  {% endif %}
-</ul>
+{% for block in navextra.nav %}
+{% include_block block %}
+{% endfor %}

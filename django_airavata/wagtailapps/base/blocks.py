@@ -434,3 +434,72 @@ class CssStreamBlock(StreamBlock):
     """
     css_block = RawHTMLBlock(required=True, help_text="Write Css Here")
     css_comment = CssCommentBlock()
+
+
+class NavItem(StructBlock):
+    link = CharBlock(help_text="Full URL or relative path (e.g., /auth/login)")
+    link_text = CharBlock(required=False)
+    image = ImageChooserBlock(required=False)
+    icon_class = CharBlock(required=False, help_text="Font awesome icon class")
+    show = ChoiceBlock(choices=[
+        ('not-logged-in', 'Only when not logged in'),
+        ('logged-in', 'Only when logged in'),
+        ('always', 'Always'),
+    ], default='not-logged-in')
+    horizontal_alignment = ChoiceBlock(choices=[
+        ('', 'Select a horizontal alignment'),
+        ('push-right', 'Push Right'),
+    ], required=False)
+
+    class Meta:
+        icon = "fa-minus"
+        template = "blocks/bootstrap/nav-item.html"
+
+
+class LoginNavItem(NavItem):
+
+    class Meta:
+        default = {
+            'link': '/auth/login',
+            'link_text': 'Log in',
+            'icon_class': 'fas fa-sign-in-alt',
+            'show': 'not-logged-in',
+            'horizontal_alignment': 'push-right',
+        }
+
+
+class DashboardLinkNavItem(NavItem):
+
+    class Meta:
+        default = {
+            'link': '/workspace/dashboard',
+            'link_text': 'Go to Dashboard',
+            'icon_class': 'fas fa-arrow-circle-right',
+            'show': 'logged-in',
+            'horizontal_alignment': 'push-right',
+        }
+
+
+class LogoutNavItem(NavItem):
+
+    class Meta:
+        default = {
+            'link': '/auth/logout',
+            'link_text': 'Logout',
+            'icon_class': 'fas fa-sign-out-alt',
+            'show': 'logged-in',
+        }
+
+
+class Nav(StructBlock):
+    custom_class = CharBlock(required=False)
+    nav_items = StreamBlock([
+        ('nav_item', NavItem()),
+        ('login_link', LoginNavItem()),
+        ('dashboard_link', DashboardLinkNavItem()),
+        ('logout_link', LogoutNavItem()),
+    ])
+
+    class Meta:
+        icon = "fa-bars"
+        template = "blocks/bootstrap/nav.html"
