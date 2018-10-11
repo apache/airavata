@@ -7,6 +7,8 @@ from django.shortcuts import redirect, render, resolve_url
 from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
+from . import forms
+
 logger = logging.getLogger(__name__)
 
 
@@ -91,12 +93,16 @@ def auth_error(request):
 
 
 def create_account(request):
+    if request.method == 'POST':
+        form = forms.CreateAccountForm(request.POST)
+        if form.is_valid():
+            # TODO: IAM registerUser
+            # TODO: send email account verification email
+            # TODO: success message
+            return redirect(reverse('django_airavata_auth:login'))
+    else:
+        form = forms.CreateAccountForm()
     return render(request, 'django_airavata_auth/create_account.html', {
         'options': settings.AUTHENTICATION_OPTIONS,
-    })
-
-
-def handle_create_account(request):
-    return render(request, 'django_airavata_auth/create_account.html', {
-        'options': settings.AUTHENTICATION_OPTIONS,
+        'form': form
     })

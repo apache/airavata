@@ -41,10 +41,8 @@ def get_service_account_authz_token():
     access_token = token.get('access_token')
     return AuthzToken(
         accessToken=access_token,
-        claimsMap={
-            'gatewayID': settings.GATEWAY_ID,
-            # This is a service account, so leaving userName blank for now
-            'userName': None})
+        # This is a service account, so leaving out userName for now
+        claimsMap={'gatewayID': settings.GATEWAY_ID})
 
 
 def _create_authz_token(request):

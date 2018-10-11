@@ -13,6 +13,4 @@ urlpatterns = [
     url(r'^callback', views.callback, name='callback'),
     url(r'^error', views.auth_error, name='error'),
     url(r'^create-account$', views.create_account, name='create_account'),
-    url(r'^handle-create-account$', views.handle_create_account,
-        name='handle_create_account'),
 ]
