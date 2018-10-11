@@ -75,6 +75,21 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 .build();
     }
 
+    private static Keycloak getClient(String adminUrl, String realm, String accessToken) {
+
+        ResteasyClient resteasyClient = new ResteasyClientBuilder()
+                .connectionPoolSize(10)
+                .trustStore(loadKeyStore())
+                .build();
+        return KeycloakBuilder.builder()
+                .serverUrl(adminUrl)
+                .realm(realm)
+                .authorization(accessToken)
+                .clientId("admin-cli")
+                .resteasyClient(resteasyClient)
+                .build();
+    }
+
     private static KeyStore loadKeyStore() {
 
         FileInputStream fis = null;
@@ -273,6 +288,29 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 return null;
             }
         }catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean isUsernameAvailable(String accessToken, String tenantId, String username) throws IamAdminServicesException {
+        Keycloak client = null;
+        try {
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
+            List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
+                    null,
+                    null,
+                    null,
+                    0, 1);
+            return retrieveUserList.isEmpty();
+        } catch (ApplicationSettingsException ex) {
             logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
@@ -662,5 +700,17 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         }
 
         return profile;
+    }
+
+    public static void main(String[] args) throws IamAdminServicesException, ApplicationSettingsException {
+        TenantManagementKeycloakImpl tenantManagementKeycloak = new TenantManagementKeycloakImpl();
+        ServerSettings.setSetting("trust.store", "./modules/configuration/server/src/main/resources/client_truststore.jks");
+        ServerSettings.setSetting("trust.store.password", "airavata");
+        ServerSettings.setSetting("iam.server.url", "");
+        String accessToken = "";
+        String tenantId = "";
+        String username = "";
+        boolean isUsernameAvailable = tenantManagementKeycloak.isUsernameAvailable(accessToken, tenantId, username);
+        System.out.println("Username " + username + " is " + (isUsernameAvailable ? "": "NOT ") + "available");
     }
 }
