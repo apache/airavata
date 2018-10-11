@@ -26,7 +26,8 @@
       </b-form-group>
       <div class="d-flex">
         <b-form-group class="flex-fill" label="Standard Input" :label-for="id+'-standard-input'">
-          <b-form-radio-group :id="id+'-standard-input'" v-model="data.standardInput" :options="trueFalseOptions" :disabled="readonly">
+          <b-form-radio-group :id="id+'-standard-input'" v-model="data.standardInput" :options="trueFalseOptions"
+            :disabled="readonly">
           </b-form-radio-group>
         </b-form-group>
         <b-form-group class="flex-fill" label="Read Only" :label-for="id+'-read-only'">
@@ -35,8 +36,8 @@
         </b-form-group>
       </div>
       <b-form-group label="User Friendly Description" :label-for="id+'-user-friendly-description'">
-        <b-form-textarea :id="id+'-user-friendly-description'" v-model="data.userFriendlyDescription" :rows="3" :disabled="readonly"
-        />
+        <b-form-textarea :id="id+'-user-friendly-description'" v-model="data.userFriendlyDescription" :rows="3"
+          :disabled="readonly" />
       </b-form-group>
       <div class="d-flex">
         <b-form-group class="flex-fill" label="Data is staged" :label-for="id+'-data-staged'">
@@ -53,6 +54,9 @@
           :disabled="readonly">
         </b-form-radio-group>
       </b-form-group>
+      <b-form-group label="Metadata" :label-for="id+'-metadata'" description="Metadata for this input, in the JSON format">
+        <json-editor :id="id+'-metadata'" v-model="data.metaData" :rows="5" :disabled="readonly" />
+      </b-form-group>
     </b-collapse>
   </b-card>
 </template>
@@ -60,6 +64,7 @@
 <script>
 import { models } from "django-airavata-api";
 import vmodel_mixin from "../commons/vmodel_mixin";
+import JSONEditor from "./JSONEditor.vue";
 
 export default {
   name: "application-input-field-editor",
@@ -79,6 +84,9 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  components: {
+    'json-editor': JSONEditor
   },
   computed: {
     inputTypeOptions() {

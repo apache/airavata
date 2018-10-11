@@ -98,6 +98,12 @@ class StoredJSONField(serializers.JSONField):
         except Exception:
             return value
 
+    def to_internal_value(self, data):
+        try:
+            return json.dumps(data)
+        except (TypeError, ValueError):
+            self.fail('invalid')
+
 
 class OrderedListField(serializers.ListField):
 
@@ -244,6 +250,8 @@ class ApplicationModuleSerializer(
 
 class InputDataObjectTypeSerializer(
         thrift_utils.create_serializer_class(InputDataObjectType)):
+
+    metaData = StoredJSONField(required=False, allow_null=True)
 
     class Meta:
         required = ('name',)
