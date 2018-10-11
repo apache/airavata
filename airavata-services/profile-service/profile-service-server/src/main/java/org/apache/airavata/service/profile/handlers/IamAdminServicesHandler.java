@@ -89,6 +89,14 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         }
     }
 
+    @Override
+    @SecurityCheck
+    public boolean isUsernameAvailable(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
+        TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        return keycloakClient.isUsernameAvailable(authzToken.getAccessToken(), gatewayId, username);
+    }
+
     //ToDo: Will only be secure when using SSL between PGA and Airavata
     @Override
     @SecurityCheck
@@ -127,6 +135,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean isUserEnabled(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);

@@ -59,6 +59,15 @@ public interface TenantManagementInterface {
     Gateway configureClient(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException;
 
     /**
+     * Check if username is available to be used for creating a new user account.
+     * @param accessToken needs to have access to searching across users by username
+     * @param tenantId
+     * @param username
+     * @return
+     */
+    boolean isUsernameAvailable(String accessToken, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
      * Method to create user in Identity Server
      *
      * @param realmAdminCreds identity server realm admin credentials
