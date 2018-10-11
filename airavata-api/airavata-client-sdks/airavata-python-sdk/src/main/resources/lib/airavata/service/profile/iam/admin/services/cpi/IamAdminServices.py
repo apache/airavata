@@ -31,6 +31,14 @@ class Iface(object):
         """
         pass
 
+    def isUsernameAvailable(self, authzToken, username):
+        """
+        Parameters:
+         - authzToken
+         - username
+        """
+        pass
+
     def registerUser(self, authzToken, username, emailAddress, firstName, lastName, newPassword):
         """
         Parameters:
@@ -190,6 +198,43 @@ class Client(Iface):
         if result.ae is not None:
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "setUpGateway failed: unknown result")
+
+    def isUsernameAvailable(self, authzToken, username):
+        """
+        Parameters:
+         - authzToken
+         - username
+        """
+        self.send_isUsernameAvailable(authzToken, username)
+        return self.recv_isUsernameAvailable()
+
+    def send_isUsernameAvailable(self, authzToken, username):
+        self._oprot.writeMessageBegin('isUsernameAvailable', TMessageType.CALL, self._seqid)
+        args = isUsernameAvailable_args()
+        args.authzToken = authzToken
+        args.username = username
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_isUsernameAvailable(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = isUsernameAvailable_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.Idse is not None:
+            raise result.Idse
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "isUsernameAvailable failed: unknown result")
 
     def registerUser(self, authzToken, username, emailAddress, firstName, lastName, newPassword):
         """
@@ -545,6 +590,7 @@ class Processor(Iface, TProcessor):
         self._processMap = {}
         self._processMap["getAPIVersion"] = Processor.process_getAPIVersion
         self._processMap["setUpGateway"] = Processor.process_setUpGateway
+        self._processMap["isUsernameAvailable"] = Processor.process_isUsernameAvailable
         self._processMap["registerUser"] = Processor.process_registerUser
         self._processMap["enableUser"] = Processor.process_enableUser
         self._processMap["isUserEnabled"] = Processor.process_isUserEnabled
@@ -616,6 +662,31 @@ class Processor(Iface, TProcessor):
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("setUpGateway", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_isUsernameAvailable(self, seqid, iprot, oprot):
+        args = isUsernameAvailable_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = isUsernameAvailable_result()
+        try:
+            result.success = self._handler.isUsernameAvailable(args.authzToken, args.username)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException as Idse:
+            msg_type = TMessageType.REPLY
+            result.Idse = Idse
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("isUsernameAvailable", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -1133,6 +1204,168 @@ class setUpGateway_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.STRUCT, 0)
             self.success.write(oprot)
+            oprot.writeFieldEnd()
+        if self.Idse is not None:
+            oprot.writeFieldBegin('Idse', TType.STRUCT, 1)
+            self.Idse.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 2)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class isUsernameAvailable_args(object):
+    """
+    Attributes:
+     - authzToken
+     - username
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.STRING, 'username', 'UTF8', None, ),  # 2
+    )
+
+    def __init__(self, authzToken=None, username=None,):
+        self.authzToken = authzToken
+        self.username = username
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.username = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('isUsernameAvailable_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.username is not None:
+            oprot.writeFieldBegin('username', TType.STRING, 2)
+            oprot.writeString(self.username.encode('utf-8') if sys.version_info[0] == 2 else self.username)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.username is None:
+            raise TProtocolException(message='Required field username is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class isUsernameAvailable_result(object):
+    """
+    Attributes:
+     - success
+     - Idse
+     - ae
+    """
+
+    thrift_spec = (
+        (0, TType.BOOL, 'success', None, None, ),  # 0
+        (1, TType.STRUCT, 'Idse', (airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException, airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 2
+    )
+
+    def __init__(self, success=None, Idse=None, ae=None,):
+        self.success = success
+        self.Idse = Idse
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.BOOL:
+                    self.success = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.Idse = airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException()
+                    self.Idse.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('isUsernameAvailable_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.BOOL, 0)
+            oprot.writeBool(self.success)
             oprot.writeFieldEnd()
         if self.Idse is not None:
             oprot.writeFieldBegin('Idse', TType.STRUCT, 1)
