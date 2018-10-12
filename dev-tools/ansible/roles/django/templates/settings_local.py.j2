@@ -87,7 +87,7 @@ SHARING_API_PORT = {{ sharing_registry_port }}
 SHARING_API_SECURE = False
 
 STATIC_ROOT = "{{ doc_root_dir }}/static/"
-FILE_UPLOAD_TEMP_DIR = "{{ experiment_data_dir }}/tmp/"
+FILE_UPLOAD_TEMP_DIR = "{{ file_upload_tmp_dir }}"
 
 ALLOWED_HOSTS = ['{{ vhost_servername }}']
 
