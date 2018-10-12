@@ -61,6 +61,7 @@ airavata_django_checkout: "{{ doc_root_dir}}/airavata-django-portal"
 gateway_id: "{{ default_gateway }}"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}"
+file_upload_tmp_dir: "{{ experiment_data_dir }}/tmp/"
 gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b64-a7cb-d195b0a26c19"
 gateway_data_store_hostname: "{{ groups['django'][0] }}"
 

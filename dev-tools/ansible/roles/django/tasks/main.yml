@@ -75,6 +75,10 @@
   file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=yes follow=yes
   become: yes
 
+- name: Create file upload tmp dir
+  file: path="{{ file_upload_tmp_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=yes
+  become: yes
+
 - name: set selinux context to allow read on static directory
   sefcontext:
     target: "{{ doc_root_dir }}/static(/.*)?"
