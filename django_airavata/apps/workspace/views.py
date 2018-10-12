@@ -11,14 +11,18 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 
-from airavata.model.data.replica.ttypes import (DataProductModel,
-                                                DataProductType,
-                                                DataReplicaLocationModel,
-                                                ReplicaLocationCategory,
-                                                ReplicaPersistentType)
-from django_airavata.apps.api.views import (ExperimentSearchViewSet,
-                                            FullExperimentViewSet,
-                                            ProjectViewSet)
+from airavata.model.data.replica.ttypes import (
+    DataProductModel,
+    DataProductType,
+    DataReplicaLocationModel,
+    ReplicaLocationCategory,
+    ReplicaPersistentType
+)
+from django_airavata.apps.api.views import (
+    ExperimentSearchViewSet,
+    FullExperimentViewSet,
+    ProjectViewSet
+)
 
 logger = logging.getLogger(__name__)
 

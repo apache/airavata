@@ -6,11 +6,13 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from django.core.files.storage import FileSystemStorage
 
-from airavata.model.data.replica.ttypes import (DataProductModel,
-                                                DataProductType,
-                                                DataReplicaLocationModel,
-                                                ReplicaLocationCategory,
-                                                ReplicaPersistentType)
+from airavata.model.data.replica.ttypes import (
+    DataProductModel,
+    DataProductType,
+    DataReplicaLocationModel,
+    ReplicaLocationCategory,
+    ReplicaPersistentType
+)
 
 experiment_data_storage = FileSystemStorage(
     location=settings.GATEWAY_DATA_STORE_DIR)

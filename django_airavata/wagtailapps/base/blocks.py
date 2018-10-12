@@ -1,7 +1,15 @@
-from wagtail.core.blocks import (BooleanBlock, CharBlock, ChoiceBlock,
-                                 IntegerBlock, ListBlock, RawHTMLBlock,
-                                 RichTextBlock, StreamBlock, StructBlock,
-                                 TextBlock)
+from wagtail.core.blocks import (
+    BooleanBlock,
+    CharBlock,
+    ChoiceBlock,
+    IntegerBlock,
+    ListBlock,
+    RawHTMLBlock,
+    RichTextBlock,
+    StreamBlock,
+    StructBlock,
+    TextBlock
+)
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 

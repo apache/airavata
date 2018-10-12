@@ -9,14 +9,17 @@ from thrift.transport import TSocket, TSSLSocket, TTransport
 from airavata.api import Airavata
 from airavata.api.sharing import SharingRegistryService
 from airavata.service.profile.groupmanager.cpi import GroupManagerService
-from airavata.service.profile.groupmanager.cpi.constants import \
+from airavata.service.profile.groupmanager.cpi.constants import (
     GROUP_MANAGER_CPI_NAME
+)
 from airavata.service.profile.iam.admin.services.cpi import IamAdminServices
-from airavata.service.profile.iam.admin.services.cpi.constants import \
+from airavata.service.profile.iam.admin.services.cpi.constants import (
     IAM_ADMIN_SERVICES_CPI_NAME
+)
 from airavata.service.profile.tenant.cpi import TenantProfileService
-from airavata.service.profile.tenant.cpi.constants import \
+from airavata.service.profile.tenant.cpi.constants import (
     TENANT_PROFILE_CPI_NAME
+)
 from airavata.service.profile.user.cpi import UserProfileService
 from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
 

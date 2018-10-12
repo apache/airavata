@@ -5,10 +5,19 @@ import copy
 import datetime
 
 from django.utils import six
-from rest_framework.serializers import (BooleanField, CharField, DateTimeField,
-                                        DecimalField, DictField, Field,
-                                        IntegerField, ListField, Serializer,
-                                        SerializerMetaclass, ValidationError)
+from rest_framework.serializers import (
+    BooleanField,
+    CharField,
+    DateTimeField,
+    DecimalField,
+    DictField,
+    Field,
+    IntegerField,
+    ListField,
+    Serializer,
+    SerializerMetaclass,
+    ValidationError
+)
 from thrift.Thrift import TType
 
 # used to map apache thrift data types to django serializer fields

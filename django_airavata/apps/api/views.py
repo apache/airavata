@@ -13,22 +13,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from airavata.api.error.ttypes import ProjectNotFoundException
-from airavata.model.appcatalog.computeresource.ttypes import (CloudJobSubmission,
-                                                              GlobusJobSubmission,
-                                                              LOCALSubmission,
-                                                              SSHJobSubmission,
-                                                              UnicoreJobSubmission)
+from airavata.model.appcatalog.computeresource.ttypes import (
+    CloudJobSubmission,
+    GlobusJobSubmission,
+    LOCALSubmission,
+    SSHJobSubmission,
+    UnicoreJobSubmission
+)
 from airavata.model.application.io.ttypes import DataType
 from airavata.model.credential.store.ttypes import SummaryType
-from airavata.model.data.movement.ttypes import (GridFTPDataMovement,
-                                                 LOCALDataMovement,
-                                                 SCPDataMovement,
-                                                 UnicoreDataMovement)
+from airavata.model.data.movement.ttypes import (
+    GridFTPDataMovement,
+    LOCALDataMovement,
+    SCPDataMovement,
+    UnicoreDataMovement
+)
 from airavata.model.group.ttypes import ResourcePermissionType
-from django_airavata.apps.api.view_utils import (APIBackedViewSet,
-                                                 APIResultIterator,
-                                                 APIResultPagination,
-                                                 GenericAPIBackedViewSet)
+from django_airavata.apps.api.view_utils import (
+    APIBackedViewSet,
+    APIResultIterator,
+    APIResultPagination,
+    GenericAPIBackedViewSet
+)
 
 from . import datastore, serializers, thrift_utils
 
