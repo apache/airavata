@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import VModelMixin from './vmodel_mixin'
+  import { mixins } from "django-airavata-common-ui"
 
   export default {
     name: "PopupComponent",
@@ -25,7 +25,7 @@
         default: true
       },
     },
-    mixins: [VModelMixin],
+    mixins: [mixins.VModelMixin],
     methods: {
       closeHandler: function () {
         this.data = false;

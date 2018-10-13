@@ -16,11 +16,11 @@
 </template>
 
 <script>
-  import VModelMixin from './vmodel_mixin'
+  import { mixins } from "django-airavata-common-ui"
 
   export default {
     name: "array-component-view",
-    mixins: [VModelMixin],
+    mixins: [mixins.VModelMixin],
     props: {
       homeBtnName: {
         type: String,

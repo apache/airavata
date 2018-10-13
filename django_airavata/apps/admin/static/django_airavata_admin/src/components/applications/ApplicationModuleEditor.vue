@@ -22,12 +22,11 @@
 
 <script>
 import { models } from "django-airavata-api";
-import { components, errors } from "django-airavata-common-ui";
-import vmodel_mixin from "../commons/vmodel_mixin";
+import { components, errors, mixins } from "django-airavata-common-ui";
 
 export default {
   name: "application-module-editor",
-  mixins: [vmodel_mixin],
+  mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: models.ApplicationModule

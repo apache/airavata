@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import vmodel_mixin from "../commons/vmodel_mixin";
 import { models, services } from "django-airavata-api";
+import { mixins } from "django-airavata-common-ui"
 
 export default {
   name: "command-objects-editor",
-  mixins: [vmodel_mixin],
+  mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: Array

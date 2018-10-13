@@ -35,10 +35,10 @@
 
 <script>
 import { models } from "django-airavata-api";
-import vmodel_mixin from "../commons/vmodel_mixin";
+import { mixins } from "django-airavata-common-ui"
 export default {
   name: "application-output-field-editor",
-  mixins: [vmodel_mixin],
+  mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: models.OutputDataObjectType

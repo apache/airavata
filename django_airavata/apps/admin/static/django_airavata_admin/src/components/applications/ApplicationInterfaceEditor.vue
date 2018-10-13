@@ -60,7 +60,7 @@
 
 <script>
 import { models } from "django-airavata-api";
-import vmodel_mixin from "../commons/vmodel_mixin";
+import { mixins } from "django-airavata-common-ui"
 import ApplicationInputFieldEditor from "./ApplicationInputFieldEditor.vue";
 import ApplicationOutputFieldEditor from "./ApplicationOutputFieldEditor.vue";
 
@@ -68,7 +68,7 @@ import draggable from "vuedraggable";
 
 export default {
   name: "application-interface-editor",
-  mixins: [vmodel_mixin],
+  mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: models.ApplicationInterfaceDefinition

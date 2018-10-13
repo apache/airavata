@@ -69,11 +69,11 @@
 
 <script>
 import DjangoAiravataAPI from "django-airavata-api";
-import VModelMixin from "../../commons/vmodel_mixin";
 import BatchQueueResourcePolicy from "./BatchQueueResourcePolicy.vue";
 import SSHCredentialSelector from "../../credentials/SSHCredentialSelector.vue";
 
 import { models, services } from "django-airavata-api";
+import { mixins } from "django-airavata-common-ui"
 
 export default {
   name: "compute-preference",
@@ -151,7 +151,7 @@ export default {
     };
   },
   computed: {},
-  mixins: [VModelMixin],
+  mixins: [mixins.VModelMixin],
   methods: {
     batchQueueChecked: function(batchQueue, checked) {
       if (checked) {

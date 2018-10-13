@@ -23,15 +23,15 @@
 </template>
 
 <script>
-import vmodel_mixin from "../commons/vmodel_mixin";
 import { services } from "django-airavata-api";
+import { mixins } from "django-airavata-common-ui"
 import ClipboardCopyButton from "../commons/ClipboardCopyButton.vue";
 import NewSSHCredentialModal from "../credentials/NewSSHCredentialModal.vue";
 
 export default {
   name: "ssh-credential-selector",
   props: {},
-  mixins: [vmodel_mixin],
+  mixins: [mixins.VModelMixin],
   components: {
     ClipboardCopyButton,
     "new-ssh-credential-modal": NewSSHCredentialModal

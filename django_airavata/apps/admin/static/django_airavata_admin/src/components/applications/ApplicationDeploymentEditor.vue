@@ -52,14 +52,13 @@
 
 <script>
 import { models, services } from "django-airavata-api";
-import vmodel_mixin from "../commons/vmodel_mixin";
 import CommandObjectsEditor from "./CommandObjectsEditor.vue";
 import SetEnvPathsEditor from "./SetEnvPathsEditor.vue";
-import { components } from "django-airavata-common-ui";
+import { components, mixins } from "django-airavata-common-ui";
 
 export default {
   name: "application-deployment-editor",
-  mixins: [vmodel_mixin],
+  mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: models.ApplicationDescriptionDefinition

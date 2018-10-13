@@ -63,12 +63,12 @@
 
 <script>
 import { models } from "django-airavata-api";
-import vmodel_mixin from "../commons/vmodel_mixin";
+import { mixins } from "django-airavata-common-ui"
 import JSONEditor from "./JSONEditor.vue";
 
 export default {
   name: "application-input-field-editor",
-  mixins: [vmodel_mixin],
+  mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: models.InputDataObjectType
