@@ -78,6 +78,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private String airavataUserName;
 	private String gatewayName;
 	private Publisher publisher;
+	private final Subscriber statusSubscribe;
 	private final Subscriber experimentSubscriber;
 
     /**
@@ -98,11 +99,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			publisher = MessagingFactory.getPublisher(Type.STATUS);
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
+			statusSubscribe = getStatusSubscriber();
 			experimentSubscriber  = getExperimentSubscriber();
 		} catch (OrchestratorException | AiravataException e) {
 			log.error(e.getMessage(), e);
 			throw new OrchestratorException("Error while initializing orchestrator service", e);
 		}
+	}
+
+	private Subscriber getStatusSubscriber() throws AiravataException {
+		List<String> routingKeys = new ArrayList<>();
+//			routingKeys.add("*"); // listen for gateway level messages
+//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
+		routingKeys.add("*.*.*"); // listen for gateway/experiment/process level messages
+		return MessagingFactory.getSubscriber(new ProcessStatusHandler(),routingKeys, Type.STATUS);
 	}
 
 	private Subscriber getExperimentSubscriber() throws AiravataException {
