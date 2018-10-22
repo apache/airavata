@@ -29,7 +29,7 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nanoshape"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/newmexicostate"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nsg"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oiitandy"
+#- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oiitandy"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oscer"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/phasta"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/scigap"
@@ -49,4 +49,9 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/searchingSRA"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/r-hpc"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/rutgersgemr"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nexttdb"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/interactwel"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/hubzero"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/epwgateway"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/ampgateway"
 ...
