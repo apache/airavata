@@ -20,3 +20,4 @@
 
 include "application_deployment_model.thrift"
 include "application_interface_model.thrift"
+include "parser_model.thrift"

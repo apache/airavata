@@ -35,6 +35,7 @@ include "../data-models/experiment-catalog-models/scheduling_model.thrift"
 include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
+include "../data-models/app-catalog-models/parser_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
@@ -2666,4 +2667,10 @@ service RegistryService {
             throws (1: registry_api_errors.RegistryServiceException rse)
     gateway_groups_model.GatewayGroups getGatewayGroups(1: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse)
+
+    parser_model.ParserInfo getParserInfo(1: required string parserId) throws (1: registry_api_errors.RegistryServiceException rse);
+    string saveParserInfo(1: required parser_model.ParserInfo parserInfo) throws (1: registry_api_errors.RegistryServiceException rse);
+    parser_model.ParsingTemplate getParsingTemplate(1: required string templateId) throws (1: registry_api_errors.RegistryServiceException rse);
+    list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required string experimentId) throws (1: registry_api_errors.RegistryServiceException rse);
+    string saveParsingTemplate(1: required parser_model.ParserInfo parserInfo) throws (1: registry_api_errors.RegistryServiceException rse);
 }

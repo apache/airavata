@@ -23,16 +23,26 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.core.util.MonitoringUtil;
+import org.apache.airavata.helix.impl.task.completing.ProcessCompletionMessage;
+import org.apache.airavata.helix.impl.task.completing.kafka.ProcessCompletionMessageDeserializer;
 import org.apache.airavata.helix.impl.task.parsing.*;
+import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
+import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
+import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutput;
+import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutputs;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.parser.DagElement;
+import org.apache.airavata.model.appcatalog.parser.ParserInfo;
+import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
+import org.apache.airavata.model.appcatalog.parser.ParsingTemplateInput;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +56,8 @@ import java.util.*;
 public class ParserWorkflowManager extends WorkflowManager {
 
     private final static Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
+
+    private String parserStorageResourceId = "";
 
     public ParserWorkflowManager() throws ApplicationSettingsException {
         super(ServerSettings.getSetting("parser.workflow.manager.name"));
@@ -61,80 +73,103 @@ public class ParserWorkflowManager extends WorkflowManager {
         super.initComponents();
     }
 
-    private boolean process(JobStatusResult jobStatusResult) {
+    private boolean process(ProcessCompletionMessage completionMessage) {
         try {
-            if (MonitoringUtil.hasMonitoringRegistered(getCuratorClient(), jobStatusResult.getJobId())) {
 
-                String processId = Optional.ofNullable(MonitoringUtil.getProcessIdByJobId(getCuratorClient(), jobStatusResult.getJobId()))
-                        .orElseThrow(() -> new Exception("Can not find the process for job id " + jobStatusResult.getJobId()));
+            RegistryService.Client registryClient = getRegistryClientPool().getResource();
+            ProcessModel processModel;
+            ApplicationInterfaceDescription appDescription;
+            try {
+                processModel = registryClient.getProcess(completionMessage.getProcessId());
+                appDescription = registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
 
-                RegistryService.Client registryClient = getRegistryClientPool().getResource();
-                ProcessModel processModel;
-                ApplicationInterfaceDescription appDescription;
-                try {
-                    processModel = registryClient.getProcess(processId);
-                    appDescription = registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
-
-                } catch (Exception e) {
-                    logger.error("Failed to fetch process or application description from registry associated with process id " + processId, e);
-                    throw new Exception("Failed to fetch process or application description from registry associated with process id " + processId, e);
-
-                } finally {
-                    getRegistryClientPool().returnResource(registryClient);
-                }
-
-                // All the templates should be run
-                // FIXME is it ApplicationInterfaceId or ApplicationName
-                Set<ParsingTemplate> parsingTemplates = ParserCatalog.getParserTemplatesForApplication(appDescription.getApplicationInterfaceId());
-
-                for (ParsingTemplate template : parsingTemplates) {
-                    List<AbstractTask> allTasks = new ArrayList<>();
-                    ParserInfo parentParser = null;
-
-                    for (ParserDAGElement dagElement : template.getParserDag()) {
-                        ParserInfo childParser = ParserCatalog.getParserById(dagElement.getChildParser());
-
-                        DataParsingTask task = new DataParsingTask();
-                        task.setTaskId("Data-Parsing-Task-" + childParser.getId().replaceAll("[^a-zA-Z0-9_.-]", "-"));
-                        task.setJsonStrParserInfo(ParserUtil.getStrFromObj(childParser));
-                        task.setJsonStrParserDagElement(ParserUtil.getStrFromObj(dagElement));
-                        task.setParsingTemplateId(template.getId());
-                        task.setGatewayId(ServerSettings.getSetting("gateway.id"));
-                        task.setStorageResourceId(ServerSettings.getSetting("storage.resource.id"));
-                        task.setDataMovementProtocol(ServerSettings.getSetting("data.movement.protocol"));
-                        task.setStorageResourceCredToken(ServerSettings.getSetting("storage.cred.token"));
-                        task.setStorageResourceLoginUName(ServerSettings.getSetting("resource.login.name"));
-                        task.setStorageInputFilePath(parentParser != null
-                                ? ParserUtil.getStorageUploadPath(template.getId(), parentParser.getId())
-                                : template.getInitialInputsPath());
-
-                        if (allTasks.size() > 0) {
-                            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(task.getTaskId(), task));
-                        }
-                        allTasks.add(task);
-                        logger.info("Successfully added the data parsing task: " + task.getTaskId() +
-                                " to the task DAG of the parsing template: " + template.getId());
-
-                        parentParser = childParser;
-                    }
-
-                    String workflowName = getWorkflowOperator().launchWorkflow(processId + "-DataParsing-" + UUID.randomUUID().toString(),
-                            new ArrayList<>(allTasks), true, false);
-
-                    try {
-                        MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
-
-                    } catch (Exception e) {
-                        logger.error("Failed to save workflow " + workflowName + " of process " + processId +
-                                " in zookeeper registry. " + "This will affect cancellation tasks", e);
-                    }
-                }
-                return true;
-
-            } else {
-                logger.warn("Could not find a monitoring registered for the job id " + jobStatusResult.getJobId());
-                return false;
+            } catch (Exception e) {
+                logger.error("Failed to fetch process or application description from registry associated with process id " + completionMessage.getProcessId(), e);
+                throw new Exception("Failed to fetch process or application description from registry associated with process id " + completionMessage.getProcessId(), e);
+            } finally {
+                getRegistryClientPool().returnResource(registryClient);
             }
+
+            // All the templates should be run
+            // FIXME is it ApplicationInterfaceId or ApplicationName
+            List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(completionMessage.getExperimentId());
+
+            Map<String, Map<String, Set<DagElement>>> parentToChildParsers = new HashMap<>();
+            Map<String, Map<String, Set<String>>> childToParentParsers = new HashMap<>();
+
+            for (ParsingTemplate template : parsingTemplates) {
+                for (DagElement dagElement: template.getParserDag()) {
+
+                    Map<String, Set<DagElement>> parentToChildLocal = new HashMap<>();
+                    if (parentToChildParsers.containsKey(template.getId())) {
+                        parentToChildLocal = parentToChildParsers.get(template.getId());
+                    } else {
+                        parentToChildParsers.put(template.getId(), parentToChildLocal);
+                    }
+
+                    Set<DagElement> childLocal = new HashSet<>();
+                    if (parentToChildLocal.containsKey(dagElement.getParentParserId())) {
+                        childLocal = parentToChildLocal.get(dagElement.getParentParserId());
+                    } else {
+                        parentToChildLocal.put(dagElement.getParentParserId(), childLocal);
+                    }
+
+                    childLocal.add(dagElement);
+
+                    Map<String, Set<String>> childToParentLocal = new HashMap<>();
+                    if (childToParentParsers.containsKey(template.getId())) {
+                        childToParentLocal = childToParentParsers.get(template.getId());
+                    } else {
+                        childToParentParsers.put(template.getId(), childToParentLocal);
+                    }
+
+                    Set<String> parentLocal = new HashSet<>();
+                    if (childToParentLocal.containsKey(dagElement.getChildParserId())) {
+                        parentLocal = childToParentLocal.get(dagElement.getChildParserId());
+                    } else {
+                        childToParentLocal.put(dagElement.getChildParserId(), parentLocal);
+                    }
+
+                    parentLocal.add(dagElement.getParentParserId());
+                }
+            }
+
+            for (ParsingTemplate template : parsingTemplates) {
+
+                String parentParserId = null;
+                for (String parentId : parentToChildParsers.get(template.getId()).keySet()) {
+                    boolean found = false;
+                    for (Set<DagElement> dagElements : parentToChildParsers.get(template.getId()).values()) {
+                        Optional<DagElement> first = dagElements.stream().filter(dagElement -> dagElement.getChildParserId().equals(parentId)).findFirst();
+                        if (first.isPresent()) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        parentParserId = parentId;
+                        break;
+                    }
+                }
+
+                if (parentParserId == null ) {
+                    throw  new Exception("Could not find a parent parser for template " + template.getId());
+                }
+
+                ParserInfo parentParserInfo = registryClient.getParserInfo(parentParserId);
+
+                DataParsingTask parentParserTask = createParentTask(parentParserInfo, completionMessage, template.getInitialInputs(), registryClient);
+
+                List<AbstractTask> allTasks = new ArrayList<>();
+                allTasks.add(parentParserTask);
+                createParserDagRecursively(allTasks, parentParserInfo, parentParserTask, parentToChildParsers.get(template.getId()), completionMessage, registryClient);
+
+                String workflow = getWorkflowOperator().launchWorkflow("Parser-" + completionMessage.getProcessId() + UUID.randomUUID().toString(),
+                        allTasks, true, false);
+                logger.info("Launched workflow " + workflow);
+            }
+            return true;
+
 
         } catch (Exception e) {
             logger.error("Failed to create the DataParsing task DAG", e);
@@ -142,25 +177,104 @@ public class ParserWorkflowManager extends WorkflowManager {
         }
     }
 
+    private DataParsingTask createParentTask(ParserInfo parserInfo, ProcessCompletionMessage completionMessage, List<ParsingTemplateInput> templateInputs, RegistryService.Client registryClient) {
+        DataParsingTask parsingTask = new DataParsingTask();
+        parsingTask.setTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId() + "-" + UUID.randomUUID().toString());
+        parsingTask.setGatewayId(completionMessage.getGatewayId());
+        parsingTask.setParserInfoId(parserInfo.getId());
+
+        ParsingTaskInputs inputs = new ParsingTaskInputs();
+
+        for (ParsingTemplateInput templateInput : templateInputs) {
+            String expression = templateInput.getExpression();
+            try {
+                ExperimentModel experiment = registryClient.getExperiment(completionMessage.getExperimentId());
+                Optional<InputDataObjectType> inputDataObj = experiment.getExperimentInputs().stream().filter(inputDataObjectType -> inputDataObjectType.getName().equals(expression)).findFirst();
+                if (inputDataObj.isPresent()) {
+                    ParsingTaskInput input = new ParsingTaskInput();
+                    input.setId(templateInput.getInputId());
+                    input.setValue(inputDataObj.get().getValue());
+                    inputs.addInput(input);
+                }
+            } catch (TException e) {
+                logger.error("Failed while fetching experiment " + completionMessage.getExperimentId());
+            }
+        }
+
+        parsingTask.setParsingTaskInputs(inputs);
+
+        ParsingTaskOutputs outputs = new ParsingTaskOutputs();
+        parserInfo.getOutputFiles().forEach(parserOutput -> {
+            ParsingTaskOutput output = new ParsingTaskOutput();
+            output.setContextVariableName(parserInfo.getId() + "-" + parserOutput.getId());
+            output.setStorageResourceId(parserStorageResourceId);
+            output.setId(parserOutput.getId());
+            output.setUploadDirectory("parsed-data/" + completionMessage.getExperimentId() + "/" + completionMessage.getProcessId());
+            outputs.addOutput(output);
+        });
+        parsingTask.setParsingTaskOutputs(outputs);
+
+        return parsingTask;
+    }
+
+    private void createParserDagRecursively(List<AbstractTask> allTasks, ParserInfo parentParserInfo, DataParsingTask parentTask, Map<String, Set<DagElement>> parentToChild,
+                                            ProcessCompletionMessage completionMessage, RegistryService.Client registryClient) throws Exception {
+        if (parentToChild.containsKey(parentParserInfo.getId())) {
+
+            for (DagElement dagElement : parentToChild.get(parentParserInfo.getId())) {
+                ParserInfo childParserInfo = registryClient.getParserInfo(dagElement.getChildParserId());
+                DataParsingTask parsingTask = new DataParsingTask();
+                parsingTask.setTaskId(completionMessage.getExperimentId() + "-" + childParserInfo.getId() + "-" + UUID.randomUUID().toString());
+                parsingTask.setGatewayId(completionMessage.getGatewayId());
+                parsingTask.setParserInfoId(childParserInfo.getId());
+
+                ParsingTaskInputs inputs = new ParsingTaskInputs();
+                dagElement.getInputOutputMapping().forEach(mapping -> {
+                    ParsingTaskInput input = new ParsingTaskInput();
+                    input.setContextVariableName(dagElement.getParentParserId() + "-" + mapping.getOutputId());
+                    input.setId(mapping.getInputId());
+                    inputs.addInput(input);
+                });
+
+                ParsingTaskOutputs outputs = new ParsingTaskOutputs();
+                childParserInfo.getOutputFiles().forEach(parserOutput -> {
+                    ParsingTaskOutput output = new ParsingTaskOutput();
+                    output.setContextVariableName(dagElement.getChildParserId() + "-" + parserOutput.getId());
+                    output.setStorageResourceId(parserStorageResourceId);
+                    output.setId(parserOutput.getId());
+                    output.setUploadDirectory("parsed-data/" + completionMessage.getExperimentId() + "/" + completionMessage.getProcessId());
+                    outputs.addOutput(output);
+                });
+
+                parsingTask.setParsingTaskInputs(inputs);
+                parsingTask.setParsingTaskOutputs(outputs);
+                parentTask.setNextTask(new OutPort(parsingTask.getTaskId(), parentTask));
+                allTasks.add(parsingTask);
+
+                createParserDagRecursively(allTasks, childParserInfo, parsingTask, parentToChild, completionMessage, registryClient);
+            }
+        }
+    }
+
     private void runConsumer() throws ApplicationSettingsException {
         final Properties props = new Properties();
-        final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
+        final Consumer<String, ProcessCompletionMessage> consumer = new KafkaConsumer<>(props);
 
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
         props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ProcessCompletionMessageDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("kafka.parser.topic")));
 
         while (true) {
-            final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
+            final ConsumerRecords<String, ProcessCompletionMessage> consumerRecords = consumer.poll(Long.MAX_VALUE);
 
             for (TopicPartition partition : consumerRecords.partitions()) {
-                List<ConsumerRecord<String, JobStatusResult>> partitionRecords = consumerRecords.records(partition);
-                for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
+                List<ConsumerRecord<String, ProcessCompletionMessage>> partitionRecords = consumerRecords.records(partition);
+                for (ConsumerRecord<String, ProcessCompletionMessage> record : partitionRecords) {
                     boolean success = process(record.value());
-                    logger.info("Status of processing job: " + record.value().getJobId() + " : " + success);
+                    logger.info("Status of processing parser for experiment : " + record.value().getExperimentId() + " : " + success);
                     if (success) {
                         consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
                     }
