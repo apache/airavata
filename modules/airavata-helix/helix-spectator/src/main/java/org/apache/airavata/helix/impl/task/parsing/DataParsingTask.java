@@ -19,18 +19,44 @@
  */
 package org.apache.airavata.helix.impl.task.parsing;
 
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DockerClientBuilder;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
+import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
+import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
+import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutput;
+import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutputs;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.parser.ParserInfo;
+import org.apache.airavata.model.appcatalog.parser.ParserInput;
+import org.apache.airavata.model.appcatalog.parser.ParserOutput;
+import org.apache.airavata.model.credential.store.CredentialSummary;
+import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.helix.task.TaskResult;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,17 +64,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementation of the data parsing task.
- *
- * <p> Run the dockerized {@link ParserInfo parser}, downloading the
- * {@link ParserInfo#inputFiles input files} from the storage resource.
- * Once the docker container is completed running, this task checks whether the
- * {@link ParserInfo#mandatoryOutputFiles mandatory output files} are created
- * if so those files will be uploaded to the storage resource along with the created
- * {@link ParserInfo#optionalOutputFiles optional output files}. Finally, the
- * {@link #localWorkingDir local working directory} will be deleted.</p>
  *
  * @since 1.0.0-SNAPSHOT
  */
@@ -57,208 +79,106 @@ public class DataParsingTask extends AbstractTask {
 
     private final static Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
 
-    private String localWorkingDir;
+    @TaskParam(name = "ParserInfo Id")
+    private String parserInfoId;
 
-    @TaskParam(name = "JSON String ParserInfo")
-    private String jsonStrParserInfo;
+    @TaskParam(name = "Parser inputs")
+    private ParsingTaskInputs parsingTaskInputs;
 
-    @TaskParam(name = "JSON String Parser DAG Element")
-    private String jsonStrParserDagElement;
-
-    @TaskParam(name = "Parsing Template ID")
-    private String parsingTemplateId;
-
-    @TaskParam(name = "Storage Input File Path")
-    private String storageInputFilePath;
+    @TaskParam(name = "Parser outputs")
+    private ParsingTaskOutputs parsingTaskOutputs;
 
     @TaskParam(name = "Gateway ID")
     private String gatewayId;
-
-    @TaskParam(name = "Storage Resource ID")
-    private String storageResourceId;
-
-    @TaskParam(name = "Data Movement Protocol")
-    private String dataMovementProtocol;
-
-    @TaskParam(name = "Storage Resource Credential Token")
-    private String storageResourceCredToken;
-
-    @TaskParam(name = "Storage Resource Login User Name")
-    private String storageResourceLoginUName;
 
     @Override
     public TaskResult onRun(TaskHelper helper) {
         logger.info("Starting data parsing task " + getTaskId());
 
         try {
-            // In this DAG element ChildParser is the current parser, only need parent parser's outputs to map child parser's inputs
-            ParserDAGElement dagElement = ParserUtil.getObjFromJSONStr(jsonStrParserDagElement, ParserDAGElement.class);
-            ParserInfo parserInfo = ParserUtil.getObjFromJSONStr(jsonStrParserInfo, ParserInfo.class);
-            localWorkingDir = createLocalWorkingDir(parserInfo.getId());
-            // Fetch and validate storage adaptor
-            StorageResourceAdaptor storageResourceAdaptor = getStorageAdaptor(helper.getAdaptorSupport());
 
-            for (String sourceFile : dagElement.getInputOutputMapping().keySet()) {
-                // Even for the first parser in the DAG there should be an input to output mapping
-                String sourcePath = storageInputFilePath + dagElement.getInputOutputMapping().get(sourceFile);
+            ParserInfo parserInfo = getRegistryServiceClient().getParserInfo(parserInfoId);
+            String containerId = getTaskId() + "_PARSER_"+ parserInfo.getId();
 
-                try {
-                    logger.info("Downloading input file " + sourcePath + " to the local path " + localWorkingDir);
-                    storageResourceAdaptor.downloadFile(sourcePath, localWorkingDir + sourceFile);
-                    logger.info("Input file downloaded to " + localWorkingDir);
+            String localInputDir = createLocalInputDir(containerId);
+            String localOutDir= createLocalOutputDir(containerId);
+            logger.info("Created local input and ouput directories : " + localInputDir + ", " + localOutDir);
 
-                } catch (AgentException e) {
-                    throw new TaskOnFailException("Failed downloading input file " + sourcePath + " to the local path "
-                            + localWorkingDir, false, e);
-                }
-            }
+            logger.info("Downloading input files to local input directory");
 
-            ContainerStatus containerStatus = ContainerStatus.REMOVED;
+            for (ParserInput parserInput : parserInfo.getInputFiles()) {
+                Optional<ParsingTaskInput> filteredInputOptional = parsingTaskInputs.getInputs().stream().filter(inp -> parserInput.getId().equals(inp.getId())).findFirst();
 
-            // Check whether the container is running if found stop the container
-            Process procActive = Runtime.getRuntime().exec("docker ps -q -f name=" + parserInfo.getContainerName());
-            try (InputStreamReader isr = new InputStreamReader(procActive.getInputStream())) {
-                if (isr.read() != -1) {
-                    containerStatus = ContainerStatus.ACTIVE;
-                    logger.info("Docker container: " + parserInfo.getContainerName() +
-                            " is active in data parsing task: " + getTaskId());
+                if (filteredInputOptional.isPresent()) {
 
-                    // Stop the container
-                    Process procStop = Runtime.getRuntime().exec("docker stop " + parserInfo.getContainerName());
-                    try (InputStreamReader isrStop = new InputStreamReader(procStop.getInputStream())) {
-                        if (isrStop.read() != -1) {
-                            containerStatus = ContainerStatus.INACTIVE;
-                            logger.info("Stopped the Docker container: " + parserInfo.getContainerName() +
-                                    " for data parsing task: " + getTaskId());
+                    ParsingTaskInput parsingTaskInput = filteredInputOptional.get();
+                    String inputDataProductUri = getContextVariable(parsingTaskInput.getContextVariableName());
+                    DataProductModel inputDataProduct = getRegistryServiceClient().getDataProduct(inputDataProductUri);
+                    List<DataReplicaLocationModel> replicaLocations = inputDataProduct.getReplicaLocations();
+
+                    boolean downloadPassed = false;
+
+                    for (DataReplicaLocationModel replicaLocationModel : replicaLocations) {
+                        String storageResourceId = replicaLocationModel.getStorageResourceId();
+                        String remoteFilePath = replicaLocationModel.getFilePath();
+                        String localFilePath = localInputDir + (localInputDir.endsWith(File.separator)? "" : File.separator)
+                                + parserInput.getName();
+
+                        downloadPassed = downloadFileFromStorageResource(storageResourceId, remoteFilePath, localFilePath, helper.getAdaptorSupport());
+
+                        if (downloadPassed) {
+                            break;
                         }
                     }
-                }
-            }
 
-            // Check for an exited container if found remove it
-            Process procExited = Runtime.getRuntime().exec("docker ps -aq -f status=exited -f name=" + parserInfo.getContainerName());
-            try (InputStreamReader isr = new InputStreamReader(procExited.getInputStream())) {
-                if (isr.read() != -1) {
-
-                    Process procRemoved = Runtime.getRuntime().exec("docker rm " + parserInfo.getContainerName());
-                    try (InputStreamReader isrRemoved = new InputStreamReader(procRemoved.getInputStream())) {
-                        if (isrRemoved.read() != -1) {
-                            containerStatus = ContainerStatus.REMOVED;
-                            logger.info("Removed the exited Docker container: " + parserInfo.getContainerName() +
-                                    " for data parsing task: " + getTaskId());
-                        } else {
-                            containerStatus = ContainerStatus.INACTIVE;
-                        }
+                    if (!downloadPassed) {
+                        logger.error("Failed to download input file with id " + parserInput.getId() + " from data product uri " + inputDataProductUri);
+                        throw new TaskOnFailException("Failed to download input file with id " + parserInput.getId() + " from data product uri " + inputDataProductUri, true, null);
                     }
-                }
-            }
-
-            if (containerStatus == ContainerStatus.REMOVED) {
-                /*
-                 * Example command
-                 *
-                 *      "docker run --name CONTAINER-lahiruj/gaussian " +
-                 *      "-it --rm=true " +
-                 *      "--security-opt seccomp=/path/to/seccomp/profile.json " +
-                 *      "--label com.example.foo=bar " +
-                 *      "--env LD_LIBRARY_PATH=/usr/local/lib " +
-                 *      "-v /Users/lahiruj/tmp/dir:/datacat/working-dir " +     // local directory is mounted in read-write mode
-                 *      "lahiruj/gaussian " +                                   // docker image name
-                 *      "python " +                                             // programming language
-                 *      "gaussian.py " +                                        // file to be executed
-                 *      "input-gaussian.json "                                   // input file
-                 *      "output.json"                                           // output file path
-                 *
-                 */
-
-                StringBuilder dockerCommand = new StringBuilder("docker run --name ")
-                        .append(parserInfo.getContainerName())
-                        .append(" -t ")
-                        .append(parserInfo.getAutomaticallyRmContainer()).append(" ")
-                        .append(parserInfo.getRunInDetachedMode()).append(" ")
-                        .append(parserInfo.getSecurityOpt()).append(" ")
-                        .append(parserInfo.getLabel()).append(" ")
-                        .append(parserInfo.getEnvVariables()).append(" ")
-                        .append(parserInfo.getCpus())
-                        .append(" -v ")
-                        .append(localWorkingDir)
-                        .append(":")
-                        .append(parserInfo.getDockerWorkingDirPath()).append(" ")
-                        .append(parserInfo.getDockerImageName()).append(" ")
-                        .append(parserInfo.getExecutableBinary()).append(" ")
-                        .append(parserInfo.getExecutingFile()).append(" ");
-
-                // Appending input files
-                parserInfo.getInputFiles().forEach(f -> dockerCommand.append(f).append(" "));
-
-                // Appending output file names FIXME I don't think this is necessary because now there is a mapping, only the input files are needed
-                parserInfo.getMandatoryOutputFiles().forEach(f -> dockerCommand.append(f).append(" "));
-                parserInfo.getOptionalOutputFiles().forEach(f -> dockerCommand.append(f).append(" "));
-
-                // Run the docker command
-                Process proc = Runtime.getRuntime().exec(dockerCommand.toString().trim());
-                try (BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()))) {
-                    String line;
-                    StringBuilder error = new StringBuilder();
-
-                    // read errors from the attempted command
-                    while ((line = stdError.readLine()) != null) {
-                        error.append(line);
-                    }
-
-                    if (error.length() > 0) {
-                        logger.error("Error running Docker command " + error + " for task " + getTaskId());
-                        throw new TaskOnFailException("Could not run Docker command successfully for task " + getTaskId(), true, null);
-                    }
-                }
-
-                String uploadPath = ParserUtil.getStorageUploadPath(parserInfo.getId(), parsingTemplateId);
-
-                // Validate whether the mandatory output files are created and upload them to the storage resource
-                for (String mandatoryFile : parserInfo.getMandatoryOutputFiles()) {
-
-                    File f = new File(localWorkingDir + mandatoryFile);
-                    if (f.exists()) {
-                        // Uploading the output file to the storage resource
-                        try {
-                            logger.info("Uploading the output file " + mandatoryFile + " to " + uploadPath + " from local path " + localWorkingDir);
-                            storageResourceAdaptor.uploadFile(localWorkingDir + mandatoryFile, uploadPath + mandatoryFile);
-                            logger.info("Output file successfully uploaded to " + uploadPath);
-
-                        } catch (AgentException e) {
-                            throw new TaskOnFailException("Failed uploading the output file to " + uploadPath + " from local path " + localWorkingDir, false, e);
-                        }
-
+                } else {
+                    if (parserInput.isRequiredFile()) {
+                        logger.error("File download info with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available");
+                        throw new TaskOnFailException("File download info with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available", true, null);
                     } else {
-                        throw new TaskOnFailException("File: " + mandatoryFile + " has not been successfully created running the task " + getTaskId(), false, null);
+                        logger.warn("File download info with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available. But it is not required");
                     }
                 }
-
-                // Upload optional files
-                for (String optionalFile : parserInfo.getOptionalOutputFiles()) {
-
-                    File f = new File(localWorkingDir + optionalFile);
-                    if (f.exists()) {
-                        // Uploading the optional output file to the storage resource
-                        try {
-                            logger.info("Uploading the optional output file " + optionalFile + " to " + uploadPath + " from local path " + localWorkingDir);
-                            storageResourceAdaptor.uploadFile(localWorkingDir + optionalFile, uploadPath + optionalFile);
-                            logger.info("Optional output file successfully uploaded to " + uploadPath);
-
-                        } catch (AgentException e) {
-                            logger.warn("Failed uploading the output file to " + uploadPath + " from local path " + localWorkingDir);
-                        }
-                    }
-                }
-
-                return onSuccess("Data parsing task " + getTaskId() + " successfully completed");
-
-            } else {
-                throw new TaskOnFailException("Docker container has not been successfully " +
-                        (containerStatus == ContainerStatus.ACTIVE ? "stopped " : "removed ") +
-                        "for data parsing task" + getTaskId(), true, null);
             }
 
+            logger.info("Running container with id " + containerId + " local input dir " + localInputDir + " local output dir " + localOutDir);
+            runContainer(parserInfo, containerId, localInputDir, localOutDir);
+
+            for (ParserOutput parserOutput : parserInfo.getOutputFiles()) {
+
+                Optional<ParsingTaskOutput> filteredOutputOptional = parsingTaskOutputs.getOutputs()
+                        .stream().filter(out -> parserOutput.getId().equals(out.getId())).findFirst();
+
+                if (filteredOutputOptional.isPresent()) {
+
+                    ParsingTaskOutput parsingTaskOutput = filteredOutputOptional.get();
+                    String localFilePath = localOutDir + (localOutDir.endsWith(File.separator) ? "" : File.separator) + parserOutput.getName();
+                    String remoteFilePath = "parsers" + File.separator + getTaskId() + File.separator + "outputs" + File.separator + parserOutput.getName();
+
+                    if (new File(localFilePath).exists()) {
+                        uploadFileToStorageResource(parsingTaskOutput.getStorageResourceId(), remoteFilePath, localFilePath, helper.getAdaptorSupport());
+                    } else if (parserOutput.isRequiredFile()) {
+                        logger.error("Expected output file " + localFilePath + " can not be found");
+                        throw new TaskOnFailException("Expected output file " + localFilePath + " can not be found", false, null);
+                    } else {
+                        logger.error("Expected output file " + localFilePath + " can not be found but skipping as it is not mandatory");
+                    }
+                } else {
+                    if (parserOutput.isRequiredFile()) {
+                        logger.error("File upload info with id " + parserOutput.getId() + " and name " + parserOutput.getName() + " is not available");
+                        throw new TaskOnFailException("File upload info with id " + parserOutput.getId() + " and name " + parserOutput.getName() + " is not available", true, null);
+                    } else {
+                        logger.warn("File upload info with id " + parserOutput.getId() + " and name " + parserOutput.getName() + " is not available. But it is not required");
+                    }
+                }
+
+            }
+
+            return onSuccess("Successfully completed data parsing task " + getTaskId());
         } catch (TaskOnFailException e) {
             if (e.getError() != null) {
                 logger.error(e.getReason(), e.getError());
@@ -266,15 +186,11 @@ public class DataParsingTask extends AbstractTask {
                 logger.error(e.getReason());
             }
 
-            // TODO is it necessary to delete the storage directory in case of a failure? (should only perform in this catch block)
             return onFail(e.getReason(), e.isCritical());
 
-        } catch (IOException e) {
-            logger.error("Error occurred while executing docker command for data parsing task " + getTaskId(), e);
-            return onFail("Error occurred while executing docker command for data parsing task " + getTaskId(), false);
-
-        } finally {
-            deleteLocalWorkingDir(localWorkingDir);
+        } catch (Exception e) {
+            logger.error("Unknown error occurred in " + getTaskId(), e);
+            return onFail("Unknown error occurred in " + getTaskId(), true);
         }
     }
 
@@ -283,78 +199,150 @@ public class DataParsingTask extends AbstractTask {
 
     }
 
-    private String createLocalWorkingDir(String parserId) throws TaskOnFailException {
-        String localDir = ServerSettings.getLocalDataLocation();
-        localDir = (localDir.endsWith(File.separator) ? localDir : localDir + File.separator) +
-                "parsers" + File.separator + parserId + File.separator + "data" + File.separator;
-        try {
-            FileUtils.forceMkdir(new File(localDir));
-            return localDir;
+    private void runContainer(ParserInfo parserInfo, String containerId, String localInputDir, String localOutputDir) {
+        DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+                .withDockerHost("tcp://localhost:2376");
 
-        } catch (IOException e) {
-            throw new TaskOnFailException("Failed to build directories " + localDir, true, e);
-        }
-    }
-
-    private void deleteLocalWorkingDir(String directory) {
-        try {
-            FileUtils.deleteDirectory(new File(directory));
-        } catch (IOException e) {
-            logger.warn("Failed to delete the local working directory: " + directory);
-        }
-    }
-
-    private StorageResourceAdaptor getStorageAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
-        try {
-            StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
-                    gatewayId,
-                    storageResourceId,
-                    ParserUtil.getObjFromJSONStr(dataMovementProtocol, DataMovementProtocol.class),
-                    storageResourceCredToken,
-                    storageResourceLoginUName);
-
-            if (storageResourceAdaptor == null) {
-                throw new TaskOnFailException("Storage resource adaptor for " + storageResourceId + " cannot be null",
-                        true, null);
+        DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
+        CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parserInfo.getImageName()).withCmd(parserInfo.getExecutionCommand()).withName(containerId)
+                .withBinds(Bind.parse(localInputDir + ":" + parserInfo.getInputDirPath()),
+                        Bind.parse(localOutputDir + ":" + parserInfo.getOutputDirPath())).withTty(true).withAttachStdin(true)
+                .exec();
+        if (containerResponse.getWarnings() != null) {
+            StringBuilder warningStr = new StringBuilder();
+            for (String w : containerResponse.getWarnings()) {
+                warningStr.append(w).append(",");
             }
-            return storageResourceAdaptor;
-
-        } catch (AgentException e) {
-            throw new TaskOnFailException("Failed to obtain adaptor for storage resource " + storageResourceId +
-                    " in task " + getTaskId(), true, e);
+            logger.warn("Container warnings : " + warningStr);
         }
     }
 
-    public String getJsonStrParserInfo() {
-        return jsonStrParserInfo;
+    private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport) throws TaskOnFailException, TException, AgentException {
+        List<CredentialSummary> allCredentialSummaryForGateway = getCredentialServiceClient()
+                .getAllCredentialSummaryForGateway(SummaryType.SSH, gatewayId);
+
+        if (allCredentialSummaryForGateway == null || allCredentialSummaryForGateway.isEmpty()) {
+            logger.error("Could not find SSH summary for gateway " + gatewayId);
+            throw new TaskOnFailException("Could not find SSH summary for gateway " + gatewayId, false, null);
+        }
+
+        StoragePreference gatewayStoragePreference = getRegistryServiceClient()
+                .getGatewayStoragePreference(gatewayId, storageResourceId);
+
+        if (gatewayStoragePreference == null) {
+            logger.error("Could not find a gateway storage preference for stogate " + storageResourceId + " gateway id " + gatewayId);
+            throw new TaskOnFailException("Could not find a gateway storage preference for stogate " + storageResourceId + " gateway id " + gatewayId, false, null);
+        }
+
+        StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(gatewayId,
+                storageResourceId, DataMovementProtocol.SCP,
+                Optional.ofNullable(gatewayStoragePreference.getResourceSpecificCredentialStoreToken())
+                        .orElse(allCredentialSummaryForGateway.get(0).getToken()),
+                gatewayStoragePreference.getLoginUserName());
+
+        return storageResourceAdaptor;
     }
 
-    public void setJsonStrParserInfo(String jsonStrParserInfo) {
-        this.jsonStrParserInfo = jsonStrParserInfo;
+    private boolean downloadFileFromStorageResource(String storageResourceId, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) {
+
+        logger.info("Downloading from storage resource " + storageResourceId + " from path " + remoteFilePath + " to local path " +
+                localFilePath);
+        try {
+            StorageResourceAdaptor storageResourceAdaptor = getStorageResourceAdaptor(storageResourceId, adaptorSupport);
+            storageResourceAdaptor.downloadFile(remoteFilePath, localFilePath);
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to download file from storage " + storageResourceId + " in path " + remoteFilePath + " to local path " + localFilePath, e);
+            return false;
+        }
     }
 
-    public String getJsonStrParserDagElement() {
-        return jsonStrParserDagElement;
+    private boolean uploadFileToStorageResource(String storageResourceId, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) {
+        logger.info("Uploading from local path " + localFilePath + " to remote path " + remoteFilePath + " of storage resource " + storageResourceId);
+        try {
+            StoragePreference gatewayStoragePreference = getRegistryServiceClient().getGatewayStoragePreference(gatewayId, storageResourceId);
+            String remoteFileRoot = gatewayStoragePreference.getFileSystemRootLocation();
+            remoteFilePath = remoteFileRoot + (remoteFileRoot.endsWith(File.separator) ? "" : File.separator) + remoteFilePath;
+            StorageResourceAdaptor storageResourceAdaptor = getStorageResourceAdaptor(storageResourceId, adaptorSupport);
+            storageResourceAdaptor.createDirectory(new File(remoteFilePath).getParent(), true);
+            storageResourceAdaptor.uploadFile(localFilePath, remoteFilePath);
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to upload from local path " + localFilePath + " to remote path " + remoteFilePath +
+                    " of storage resource " + storageResourceId, e);
+            return false;
+        }
     }
 
-    public void setJsonStrParserDagElement(String jsonStrParserDagElement) {
-        this.jsonStrParserDagElement = jsonStrParserDagElement;
+    private String createLocalInputDir(String containerName) throws TaskOnFailException {
+        String localInpDir = ServerSettings.getLocalDataLocation();
+        localInpDir = (localInpDir.endsWith(File.separator) ? localInpDir : localInpDir + File.separator) +
+                "parsers" + File.separator + containerName + File.separator + "data" + File.separator + "input" + File.separator;
+        try {
+            FileUtils.forceMkdir(new File(localInpDir));
+            return localInpDir;
+
+        } catch (IOException e) {
+            throw new TaskOnFailException("Failed to build input directories " + localInpDir, true, e);
+        }
     }
 
-    public String getParsingTemplateId() {
-        return parsingTemplateId;
+    private String createLocalOutputDir(String containerName) throws TaskOnFailException {
+        String localOutDir = ServerSettings.getLocalDataLocation();
+        localOutDir = (localOutDir.endsWith(File.separator) ? localOutDir : localOutDir + File.separator) +
+                "parsers" + File.separator + containerName + File.separator + "data" + File.separator + "output" + File.separator;
+        try {
+            FileUtils.forceMkdir(new File(localOutDir));
+            return localOutDir;
+
+        } catch (IOException e) {
+            throw new TaskOnFailException("Failed to build output directories " + localOutDir, true, e);
+        }
     }
 
-    public void setParsingTemplateId(String parsingTemplateId) {
-        this.parsingTemplateId = parsingTemplateId;
+
+    private static RegistryService.Client getRegistryServiceClient() throws TaskOnFailException {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+            final String serverHost = ServerSettings.getRegistryServerHost();
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException |ApplicationSettingsException e) {
+            throw new TaskOnFailException("Unable to create registry client...", false, e);
+        }
     }
 
-    public String getStorageInputFilePath() {
-        return storageInputFilePath;
+    private static CredentialStoreService.Client getCredentialServiceClient() throws TaskOnFailException {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+            final String serverHost = ServerSettings.getRegistryServerHost();
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException |ApplicationSettingsException e) {
+            throw new TaskOnFailException("Unable to create credential client...", false, e);
+        }
     }
 
-    public void setStorageInputFilePath(String storageInputFilePath) {
-        this.storageInputFilePath = storageInputFilePath;
+    public String getParserInfoId() {
+        return parserInfoId;
+    }
+
+    public void setParserInfoId(String parserInfoId) {
+        this.parserInfoId = parserInfoId;
+    }
+
+    public ParsingTaskInputs getParsingTaskInputs() {
+        return parsingTaskInputs;
+    }
+
+    public void setParsingTaskInputs(ParsingTaskInputs parsingTaskInputs) {
+        this.parsingTaskInputs = parsingTaskInputs;
+    }
+
+    public ParsingTaskOutputs getParsingTaskOutputs() {
+        return parsingTaskOutputs;
+    }
+
+    public void setParsingTaskOutputs(ParsingTaskOutputs parsingTaskOutputs) {
+        this.parsingTaskOutputs = parsingTaskOutputs;
     }
 
     public String getGatewayId() {
@@ -363,43 +351,5 @@ public class DataParsingTask extends AbstractTask {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
-    }
-
-    public String getStorageResourceId() {
-        return storageResourceId;
-    }
-
-    public void setStorageResourceId(String storageResourceId) {
-        this.storageResourceId = storageResourceId;
-    }
-
-    public String getDataMovementProtocol() {
-        return dataMovementProtocol;
-    }
-
-    public void setDataMovementProtocol(String dataMovementProtocol) {
-        this.dataMovementProtocol = dataMovementProtocol;
-    }
-
-    public String getStorageResourceCredToken() {
-        return storageResourceCredToken;
-    }
-
-    public void setStorageResourceCredToken(String storageResourceCredToken) {
-        this.storageResourceCredToken = storageResourceCredToken;
-    }
-
-    public String getStorageResourceLoginUName() {
-        return storageResourceLoginUName;
-    }
-
-    public void setStorageResourceLoginUName(String storageResourceLoginUName) {
-        this.storageResourceLoginUName = storageResourceLoginUName;
-    }
-
-    private enum ContainerStatus {
-        ACTIVE,
-        INACTIVE,
-        REMOVED
     }
 }

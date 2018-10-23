@@ -21,6 +21,7 @@ package org.apache.airavata.helix.core.util;
 
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.task.api.TaskParamType;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.slf4j.Logger;
@@ -65,7 +66,11 @@ public class TaskUtil {
                 TaskParam parm = classField.getAnnotation(TaskParam.class);
                 if (parm != null) {
                     classField.setAccessible(true);
-                    result.put(parm.name(), classField.get(data).toString());
+                    if (classField.get(data) instanceof TaskParamType) {
+                        result.put(parm.name(), TaskParamType.class.cast(classField.get(data)).serialize());
+                    } else {
+                        result.put(parm.name(), classField.get(data).toString());
+                    }
                 }
 
                 TaskOutPort outPort = classField.getAnnotation(TaskOutPort.class);
@@ -109,6 +114,9 @@ public class TaskUtil {
                     } else if (classField.getType().isAssignableFrom(Boolean.class) ||
                             classField.getType().isAssignableFrom(Boolean.TYPE)) {
                         classField.set(instance, Boolean.parseBoolean(params.get(param.name())));
+                    } else if (classField.getType().isAssignableFrom(TaskParamType.class)) {
+                        // TODO Fix me
+                        //classField.set(instance, )
                     }
                 }
             }

@@ -40,6 +40,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResou
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.appcatalog.parser.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
@@ -125,12 +126,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
@@ -4944,5 +4940,92 @@ public class RegistryServerHandler implements RegistryService.Iface {
             rse.setMessage(message + " More info: " + e.getMessage());
             throw rse;
         }
+    }
+
+    @Override
+    public ParserInfo getParserInfo(String parserId) throws RegistryServiceException, TException {
+
+        ParserInfo parserInfo = new ParserInfo();
+        parserInfo.setId(parserId);
+        switch (parserId) {
+            case "001":
+                parserInfo.setExecutionCommand("/opt/execute.txt");
+                parserInfo.setImageName("dimuthuupe/uppercase:v1");
+                parserInfo.setInputDirPath("/opt/inputs");
+                parserInfo.setOutputDirPath("/opt/outputs");
+                ParserInput input1 = new ParserInput();
+                input1.setId("001");
+                input1.setName("input.txt");
+                input1.setRequiredFile(true);
+
+                parserInfo.setInputFiles(Collections.singletonList(input1));
+
+                ParserOutput output1 = new ParserOutput();
+                output1.setId("002");
+                output1.setRequiredFile(true);
+                output1.setName("upper.txt");
+
+                parserInfo.setOutputFiles(Collections.singletonList(output1));
+                break;
+            case "002":
+                parserInfo.setExecutionCommand("/opt/execute.txt");
+                parserInfo.setImageName("dimuthuupe/lowercase:v1");
+                parserInfo.setInputDirPath("/opt/inputs");
+                parserInfo.setOutputDirPath("/opt/outputs");
+                ParserInput input2 = new ParserInput();
+                input2.setId("003");
+                input2.setName("input.txt");
+                input2.setRequiredFile(true);
+
+                parserInfo.setInputFiles(Collections.singletonList(input2));
+
+                ParserOutput output2 = new ParserOutput();
+                output2.setId("004");
+                output2.setRequiredFile(true);
+                output2.setName("lower.txt");
+
+                parserInfo.setOutputFiles(Collections.singletonList(output2));
+                break;
+        }
+        return parserInfo;
+    }
+
+    @Override
+    public String saveParserInfo(ParserInfo parserInfo) throws RegistryServiceException, TException {
+        return null;
+    }
+
+    @Override
+    public ParsingTemplate getParsingTemplate(String templateId) throws RegistryServiceException, TException {
+        ParsingTemplate template = new ParsingTemplate();
+        ParsingTemplateInput templateInput1 =  new ParsingTemplateInput();
+        templateInput1.setExpression("Echo-Out");
+        templateInput1.setInputId("001");
+
+        template.addToInitialInputs(templateInput1);
+
+        DagElement dagElement = new DagElement();
+        dagElement.setParentParserId("001");
+        dagElement.setChildParserId("002");
+
+        InputOutputMapping mapping1 = new InputOutputMapping();
+        mapping1.setOutputId("002");
+        mapping1.setInputId("003");
+
+        dagElement.addToInputOutputMapping(mapping1);
+
+        template.addToParserDag(dagElement);
+
+        return template;
+    }
+
+    @Override
+    public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId) throws RegistryServiceException, TException {
+        return Collections.singletonList(getParsingTemplate("001"));
+    }
+
+    @Override
+    public String saveParsingTemplate(ParserInfo parserInfo) throws RegistryServiceException, TException {
+        return null;
     }
 }
