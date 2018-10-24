@@ -34,11 +34,11 @@ user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 vhost_servername: "nexttdb.sciencegateway.scigap.org"
-vhost_ssl: false
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/dreg.dnasequence.org/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/dreg.dnasequence.org/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/dreg.dnasequence.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
