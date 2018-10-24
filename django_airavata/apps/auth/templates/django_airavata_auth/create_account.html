@@ -21,6 +21,7 @@
   </div>
   {% endif %}
 
+  {% if options.password %}
   <div class="row">
     <div class="col">
       <div class="card">
@@ -31,7 +32,11 @@
           <h5 class="card-title">Create a {{ options.password.name }} account</h5>
           {% endif %}
           <form action="{% url 'django_airavata_auth:create_account' %}" method="post">
-            {{ form.non_field_errors }}
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+              {{ error }}
+            </div>
+            {% endfor %}
             {% csrf_token %}
 
             {% for field in form %}
@@ -58,6 +63,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 </div>
 
 {% endblock %}

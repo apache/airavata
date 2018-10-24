@@ -3,11 +3,12 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.forms import ValidationError
 from django.shortcuts import redirect, render, resolve_url
 from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
-from . import forms
+from . import forms, iam_admin_client
 
 logger = logging.getLogger(__name__)
 
@@ -96,10 +97,21 @@ def create_account(request):
     if request.method == 'POST':
         form = forms.CreateAccountForm(request.POST)
         if form.is_valid():
-            # TODO: IAM registerUser
-            # TODO: send email account verification email
-            # TODO: success message
-            return redirect(reverse('django_airavata_auth:login'))
+            try:
+                success = iam_admin_client.register_user(
+                    form.cleaned_data['username'],
+                    form.cleaned_data['email'],
+                    form.cleaned_data['first_name'],
+                    form.cleaned_data['last_name'],
+                    form.cleaned_data['password'])
+                if not success:
+                    form.add_error(None, ValidationError(
+                        "Failed to register user with IAM service"))
+                # TODO: send email account verification email
+                # TODO: success message
+                # return redirect(reverse('django_airavata_auth:login'))
+            except Exception as e:
+                form.add_error(None, ValidationError(e.message))
     else:
         form = forms.CreateAccountForm()
     return render(request, 'django_airavata_auth/create_account.html', {
