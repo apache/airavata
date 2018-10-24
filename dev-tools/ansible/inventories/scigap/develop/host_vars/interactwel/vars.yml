@@ -37,8 +37,8 @@ auth_options:
   password:
     name: "InterACTWEL"
   external:
- #   - name: "CILogon"
- #     idp_alias: "cilogon"
+    - name: "CILogon"
+      idp_alias: "cilogon"
 
 gateway_id: "interactwel"
 experiment_data_dir: "{{ user_data_dir }}/django-interactwel"
