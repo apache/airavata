@@ -27,6 +27,7 @@ seagrid ansible_host=pgadev.scigap.org
 simvascular ansible_host=pgadev.scigap.org
 simccs ansible_host=pgadev.scigap.org
 interactwel ansible_host=pgadev.scigap.org
+usd ansible_host=pgadev.scigap.org
 
 [helix]
 149.165.157.37
