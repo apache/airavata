@@ -1118,26 +1118,6 @@
   }
 },
 {
-  "model": "django_airavata_wagtail_base.navextra",
-  "pk": 1,
-  "fields": {
-    "nav_logo": 1,
-    "nav_logo_width": 45,
-    "nav_logo_height": 55,
-    "nav_logo_link": "/",
-    "nav_text1": "Create Account",
-    "faicon1": "fa fa-user",
-    "nav_link1": "https://nanoconfinement.sciencegateways.iu.edu/create",
-    "nav_text2": "Log in",
-    "faicon2": "fas fa-sign-in-alt",
-    "nav_link2": "/auth/login",
-    "nav_text3": null,
-    "faicon3": null,
-    "nav_link3": null,
-    "custom_class": "secondary-nav"
-  }
-},
-{
   "model": "django_airavata_wagtail_base.customcss",
   "pk": 1,
   "fields": {

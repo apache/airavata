@@ -988,25 +988,6 @@
   }
 },
 {
-  "model": "django_airavata_wagtail_base.navextra",
-  "pk": 1,
-  "fields": {
-    "nav_logo": null,
-    "nav_logo_width": null,
-    "nav_logo_height": null,
-    "nav_text1": "Create Account",
-    "faicon1": "fa fa-user",
-    "nav_link1": "https://gateway.simvascular.org/create",
-    "nav_text2": "Log in",
-    "faicon2": "fas fa-sign-in-alt",
-    "nav_link2": "https://gateway.simvascular.org/login",
-    "nav_text3": null,
-    "faicon3": null,
-    "nav_link3": null,
-    "custom_class": "second-nav"
-  }
-},
-{
   "model": "django_airavata_wagtail_base.customcss",
   "pk": 1,
   "fields": {
