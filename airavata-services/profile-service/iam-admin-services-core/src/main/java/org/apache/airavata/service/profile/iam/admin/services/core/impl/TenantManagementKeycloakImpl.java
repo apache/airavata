@@ -345,6 +345,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 credential.setValue(newPassword);
                 credential.setTemporary(false);
                 retrievedUser.resetPassword(credential);
+                return true;
             } else {
                 logger.error("Request for user Account Creation failed with HTTP code : " + httpResponse.getStatus());
                 logger.error("Reason for user account creation failure : " + httpResponse.getStatusInfo());
@@ -360,7 +361,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 client.close();
             }
         }
-        return false;
     }
 
     @Override
