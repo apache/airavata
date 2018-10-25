@@ -20,19 +20,18 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class GatewayRepositoryTest extends TestBase {
 
@@ -53,6 +52,8 @@ public class GatewayRepositoryTest extends TestBase {
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
         gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
+        gateway.setOauthClientId("pga");
+        gateway.setOauthClientSecret("9580cafa-7c1e-434f-bfe9-595f63907a43");
 
         String gatewayId = gatewayRepository.addGateway(gateway);
         assertEquals(testGatewayId, gatewayId);
@@ -63,6 +64,8 @@ public class GatewayRepositoryTest extends TestBase {
         Gateway retrievedGateway = gatewayRepository.getGateway(gatewayId);
         assertEquals(gateway.getGatewayAdminFirstName(), retrievedGateway.getGatewayAdminFirstName());
         assertEquals(GatewayApprovalStatus.APPROVED, gateway.getGatewayApprovalStatus());
+        assertEquals(gateway.getOauthClientId(), retrievedGateway.getOauthClientId());
+        assertEquals(gateway.getOauthClientSecret(), retrievedGateway.getOauthClientSecret());
 
         assertTrue(gatewayRepository.getAllGateways().size() == 1);
 
