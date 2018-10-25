@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^callback', views.callback, name='callback'),
     url(r'^error', views.auth_error, name='error'),
     url(r'^create-account$', views.create_account, name='create_account'),
+    url(r'^verify-email/(?P<code>[\w-]+)/$', views.verify_email,
+        name="verify_email"),
 ]

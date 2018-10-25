@@ -3,12 +3,13 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.core.mail import send_mail
 from django.forms import ValidationError
 from django.shortcuts import redirect, render, resolve_url
 from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
-from . import forms, iam_admin_client
+from . import forms, iam_admin_client, models
 
 logger = logging.getLogger(__name__)
 
@@ -98,19 +99,42 @@ def create_account(request):
         form = forms.CreateAccountForm(request.POST)
         if form.is_valid():
             try:
+                username = form.cleaned_data['username']
+                email = form.cleaned_data['email']
+                first_name = form.cleaned_data['first_name']
+                last_name = form.cleaned_data['last_name']
+                password = form.cleaned_data['password']
                 success = iam_admin_client.register_user(
-                    form.cleaned_data['username'],
-                    form.cleaned_data['email'],
-                    form.cleaned_data['first_name'],
-                    form.cleaned_data['last_name'],
-                    form.cleaned_data['password'])
+                    username, email, first_name, last_name, password)
                 if not success:
                     form.add_error(None, ValidationError(
                         "Failed to register user with IAM service"))
-                # TODO: send email account verification email
-                # TODO: success message
-                # return redirect(reverse('django_airavata_auth:login'))
+                else:
+                    email_verification = models.EmailVerification(
+                        username=username)
+                    email_verification.save()
+
+                    verification_uri = request.build_absolute_uri(
+                        reverse(
+                            'django_airavata_auth:verify_email', kwargs={
+                                'code': email_verification.verification_code}))
+                    logger.debug(
+                        "verification_uri={}".format(verification_uri))
+
+                    # TODO: need a better template, customization
+                    # TODO: add email settings documentation to settings_local.py
+                    send_mail(
+                        'Please verify your email address',
+                        "Verification link: {}".format(verification_uri),
+                        "Django Portal <pga.airavata@gmail.com>",
+                        ["{} {} <{}>".format(first_name, last_name, email)]
+                    )
+                    # TODO: success message
+                    return redirect(
+                        reverse('django_airavata_auth:create_account'))
             except Exception as e:
+                logger.exception(
+                    "Failed to create account for user", exc_info=e)
                 form.add_error(None, ValidationError(e.message))
     else:
         form = forms.CreateAccountForm()
@@ -118,3 +142,7 @@ def create_account(request):
         'options': settings.AUTHENTICATION_OPTIONS,
         'form': form
     })
+
+
+def verify_email(request, code):
+    pass

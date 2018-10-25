@@ -182,6 +182,9 @@ AUTHENTICATION_BACKENDS = [
     'django_airavata.apps.auth.backends.KeycloakBackend'
 ]
 
+# Default email backend (for local development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Wagtail related stuff
 WAGTAIL_SITE_NAME = 'Django Airavata Portal'
 

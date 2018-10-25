@@ -2,9 +2,13 @@
 Wrapper around the IAM Admin Services client.
 """
 
+import logging
+
 from django_airavata.utils import get_iam_admin_client
 
 from . import utils
+
+logger = logging.getLogger(__name__)
 
 
 def is_username_available(username):
