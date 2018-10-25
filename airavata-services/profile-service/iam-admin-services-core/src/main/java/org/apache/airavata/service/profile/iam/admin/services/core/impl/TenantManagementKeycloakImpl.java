@@ -85,7 +85,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 .serverUrl(adminUrl)
                 .realm(realm)
                 .authorization(accessToken)
-                .clientId("admin-cli")
                 .resteasyClient(resteasyClient)
                 .build();
     }
@@ -323,10 +322,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
-    public boolean createUser(PasswordCredential realmAdminCreds, String tenantId, String username, String emailAddress, String firstName, String lastName, String newPassword) throws IamAdminServicesException{
+    public boolean createUser(String accessToken, String tenantId, String username, String emailAddress, String firstName, String lastName, String newPassword) throws IamAdminServicesException{
         Keycloak client = null;
         try{
-            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
             UserRepresentation user = new UserRepresentation();
             user.setUsername(username);
             user.setFirstName(firstName);
@@ -365,10 +364,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
-    public boolean enableUserAccount(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException{
+    public boolean enableUserAccount(String accessToken, String tenantId, String username) throws IamAdminServicesException{
         Keycloak client = null;
         try{
-            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
             List<UserRepresentation> userResourceList = client.realm(tenantId).users().search(username,0,1);
             UserResource userResource = client.realm(tenantId).users().get(userResourceList.get(0).getId());
             UserRepresentation profile = userResource.toRepresentation();
@@ -390,10 +389,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
-    public boolean isUserAccountEnabled(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException{
+    public boolean isUserAccountEnabled(String accessToken, String tenantId, String username) throws IamAdminServicesException{
         Keycloak client = null;
         try{
-            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
             List<UserRepresentation> userResourceList = client.realm(tenantId).users().search(username,0,1);
             return userResourceList.size() == 1 && userResourceList.get(0).isEnabled();
         } catch (ApplicationSettingsException ex) {
@@ -409,10 +408,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
-    public boolean resetUserPassword(PasswordCredential realmAdminCreds, String tenantId, String username, String newPassword) throws IamAdminServicesException{
+    public boolean resetUserPassword(String accessToken, String tenantId, String username, String newPassword) throws IamAdminServicesException{
         Keycloak client = null;
         try{
-            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
             List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
                     null,
                     null,
@@ -453,10 +452,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
-    public List<UserProfile> findUser(PasswordCredential realmAdminCreds, String tenantId, String email, String userName) throws IamAdminServicesException{
+    public List<UserProfile> findUser(String accessToken, String tenantId, String email, String userName) throws IamAdminServicesException{
         Keycloak client = null;
         try{
-            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
             List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(userName,
                     null,
                     null,
@@ -496,11 +495,11 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
-    public void updateUserProfile(PasswordCredential realmAdminCreds, String tenantId, String username, UserProfile userDetails) throws IamAdminServicesException {
+    public void updateUserProfile(String accessToken, String tenantId, String username, UserProfile userDetails) throws IamAdminServicesException {
 
         Keycloak client = null;
         try{
-            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
             List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
                     null,
                     null,
@@ -592,6 +591,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         }
     }
 
+    // TODO: this is needed for migrating from roles to group-based auth but after migration we can remove this
     @Override
     public List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName) throws IamAdminServicesException {
         Keycloak client = null;
