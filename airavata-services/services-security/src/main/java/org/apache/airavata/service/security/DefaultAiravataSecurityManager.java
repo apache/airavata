@@ -251,6 +251,11 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
         }
     }
 
+    @Override
+    public AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId) throws AiravataSecurityException {
+        throw new RuntimeException("Not implemented");
+    }
+
     private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
         final String serverHost = ServerSettings.getCredentialStoreServerHost();

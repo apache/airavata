@@ -35,4 +35,9 @@ public class AiravataSecurityException extends Exception {
     public AiravataSecurityException() {
         super();
     }
+
+    public AiravataSecurityException(Throwable cause) {
+        super(cause);
+    }
+
 }

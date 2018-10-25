@@ -21,6 +21,7 @@
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -28,8 +29,8 @@ import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.CustomDashboard;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
@@ -38,6 +39,8 @@ import org.apache.airavata.service.profile.user.core.repositories.UserProfileRep
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
+import org.apache.airavata.service.security.AiravataSecurityManager;
+import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -111,11 +114,14 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     }
 
     private Runnable getIAMUserProfileUpdater(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException {
-        IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         return () -> {
             try {
-                iamAdminServicesClient.updateUserProfile(authzToken, userProfile);
-            } catch (TException e) {
+                AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+                AuthzToken serviceAccountAuthzToken = securityManager.getUserManagementServiceAccountAuthzToken(gatewayId);
+                IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
+                iamAdminServicesClient.updateUserProfile(serviceAccountAuthzToken, userProfile);
+            } catch (AiravataSecurityException|TException e) {
                 throw new RuntimeException("Failed to update user profile in IAM service", e);
             }
         };
