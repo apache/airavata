@@ -103,6 +103,26 @@ public interface TenantManagementInterface {
     boolean isUserAccountEnabled(String accessToken, String tenantId, String username) throws IamAdminServicesException;
 
     /**
+     * Return whether user exists with username.
+     *
+     * @param accessToken
+     * @param tenantId
+     * @param username
+     * @return
+     */
+    boolean isUserExist(String accessToken, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
+     * Get user profile information from Identity Server
+     *
+     * @param accessToken
+     * @param tenantId
+     * @param username
+     * @return
+     */
+    UserProfile getUser(String accessToken, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
      * Method to reset user password in Identity Server
      *
      * @param accessToken

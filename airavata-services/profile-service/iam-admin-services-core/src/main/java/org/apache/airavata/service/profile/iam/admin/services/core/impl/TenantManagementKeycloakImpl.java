@@ -303,12 +303,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try {
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
-            List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
-                    null,
-                    null,
-                    null,
-                    0, 1);
-            return retrieveUserList.isEmpty();
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            return userRepresentation == null;
         } catch (ApplicationSettingsException ex) {
             logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
@@ -368,8 +364,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
-            List<UserRepresentation> userResourceList = client.realm(tenantId).users().search(username,0,1);
-            UserResource userResource = client.realm(tenantId).users().get(userResourceList.get(0).getId());
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            UserResource userResource = client.realm(tenantId).users().get(userRepresentation.getId());
             UserRepresentation profile = userResource.toRepresentation();
             profile.setEnabled(true);
             // We require that a user verify their email before enabling the account
@@ -393,8 +389,46 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
-            List<UserRepresentation> userResourceList = client.realm(tenantId).users().search(username,0,1);
-            return userResourceList.size() == 1 && userResourceList.get(0).isEnabled();
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            return userRepresentation != null && userRepresentation.isEnabled();
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean isUserExist(String accessToken, String tenantId, String username) throws IamAdminServicesException {
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            return userRepresentation != null;
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    @Override
+    public UserProfile getUser(String accessToken, String tenantId, String username) throws IamAdminServicesException {
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            return userRepresentation != null ? convertUserRepresentationToUserProfile(userRepresentation, tenantId) : null;
         } catch (ApplicationSettingsException ex) {
             logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
@@ -412,21 +446,17 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
-            List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
-                    null,
-                    null,
-                    null,
-                    0, 1);
-            if(!retrieveUserList.isEmpty())
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            if(userRepresentation != null)
             {
-                UserResource retrievedUser = client.realm(tenantId).users().get(retrieveUserList.get(0).getId());
+                UserResource retrievedUser = client.realm(tenantId).users().get(userRepresentation.getId());
                 CredentialRepresentation credential = new CredentialRepresentation();
                 credential.setType(CredentialRepresentation.PASSWORD);
                 credential.setValue(newPassword);
                 credential.setTemporary(false);
                 retrievedUser.resetPassword(credential);
                 // Remove the UPDATE_PASSWORD required action
-                UserRepresentation userRepresentation = retrievedUser.toRepresentation();
+                userRepresentation = retrievedUser.toRepresentation();
                 userRepresentation.getRequiredActions().remove("UPDATE_PASSWORD");
                 retrievedUser.update(userRepresentation);
                 return true;
@@ -500,14 +530,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
-            List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
-                    null,
-                    null,
-                    null,
-                    0, 1);
-            if(!retrieveUserList.isEmpty())
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            if(userRepresentation != null)
             {
-                UserRepresentation userRepresentation = retrieveUserList.get(0);
                 userRepresentation.setFirstName(userDetails.getFirstName());
                 userRepresentation.setLastName(userDetails.getLastName());
                 userRepresentation.setEmail(userDetails.getEmails().get(0));
@@ -700,6 +725,19 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         }
 
         return profile;
+    }
+
+    private UserRepresentation getUserByUsername(Keycloak client, String tenantId, String username) {
+
+        // Searching for users by username returns also partial matches, so need to filter down to an exact match if it exists
+        List<UserRepresentation> userResourceList = client.realm(tenantId).users().search(
+                username, null, null, null, null, null);
+        for (UserRepresentation userRepresentation : userResourceList) {
+            if (userRepresentation.getUsername().equals(username)) {
+                return userRepresentation;
+            }
+        }
+        return null;
     }
 
     public static void main(String[] args) throws IamAdminServicesException, ApplicationSettingsException {
