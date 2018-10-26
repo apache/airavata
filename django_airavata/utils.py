@@ -30,6 +30,10 @@ class ThriftConnectionException(Exception):
     pass
 
 
+class ThriftClientException(Exception):
+    pass
+
+
 def get_unsecure_transport(hostname, port):
     # Create a socket to the Airavata Server
     transport = TSocket.TSocket(hostname, port)
@@ -165,12 +169,16 @@ def get_thrift_client(host, port, is_secure, client_generator):
             yield client
         except Exception as e:
             log.exception("Thrift client error occurred")
-            raise e
+            raise ThriftClientException(
+                "Thrift client error occurred: " + str(e)) from e
         finally:
             if transport.isOpen():
                 transport.close()
                 log.debug("Thrift connection closed to {}:{}, "
                           "secure={}".format(host, port, is_secure))
+    except ThriftClientException as tce:
+        # Allow thrift client errors to bubble up
+        raise tce
     except Exception as e:
         msg = "Failed to open thrift connection to {}:{}, secure={}".format(
             host, port, is_secure)

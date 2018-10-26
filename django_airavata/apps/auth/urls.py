@@ -15,4 +15,6 @@ urlpatterns = [
     url(r'^create-account$', views.create_account, name='create_account'),
     url(r'^verify-email/(?P<code>[\w-]+)/$', views.verify_email,
         name="verify_email"),
+    url(r'^resend-email-link/', views.resend_email_link,
+        name="resend_email_link"),
 ]

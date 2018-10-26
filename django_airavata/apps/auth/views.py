@@ -111,25 +111,8 @@ def create_account(request):
                     form.add_error(None, ValidationError(
                         "Failed to register user with IAM service"))
                 else:
-                    email_verification = models.EmailVerification(
-                        username=username)
-                    email_verification.save()
-
-                    verification_uri = request.build_absolute_uri(
-                        reverse(
-                            'django_airavata_auth:verify_email', kwargs={
-                                'code': email_verification.verification_code}))
-                    logger.debug(
-                        "verification_uri={}".format(verification_uri))
-
-                    # TODO: need a better template, customization
-                    # TODO: add email settings documentation to settings_local.py
-                    send_mail(
-                        'Please verify your email address',
-                        "Verification link: {}".format(verification_uri),
-                        "Django Portal <pga.airavata@gmail.com>",
-                        ["{} {} <{}>".format(first_name, last_name, email)]
-                    )
+                    _create_and_send_email_verification_link(
+                        request, username, email, first_name, last_name)
                     # TODO: success message
                     return redirect(
                         reverse('django_airavata_auth:create_account'))
@@ -174,4 +157,59 @@ def verify_email(request, code):
     except ObjectDoesNotExist as e:
         # TODO: if doesn't exist, give user a form where they can enter their
         # username to resend verification code
-        pass
+        return redirect(reverse('django_airavata_auth:resend_email_link'))
+
+
+def resend_email_link(request):
+
+    # TODO: if the user is already verified their email, then redirect to login page with message
+    if request.method == 'POST':
+        form = forms.ResendEmailVerificationLinkForm(request.POST)
+        if form.is_valid():
+            try:
+                username = form.cleaned_data['username']
+                if iam_admin_client.is_user_exist(username):
+                    user_profile = iam_admin_client.get_user(username)
+                    _create_and_send_email_verification_link(
+                        request,
+                        username,
+                        user_profile.emails[0],
+                        user_profile.firstName,
+                        user_profile.lastName)
+                # TODO: success message
+                return redirect(
+                    reverse('django_airavata_auth:resend_email_link'))
+            except Exception as e:
+                logger.exception(
+                    "Failed to resend email verification link", exc_info=e)
+                form.add_error(None, ValidationError(str(e)))
+    else:
+        form = forms.ResendEmailVerificationLinkForm()
+    return render(request, 'django_airavata_auth/verify_email.html', {
+        'form': form
+    })
+
+
+def _create_and_send_email_verification_link(
+        request, username, email, first_name, last_name):
+
+    email_verification = models.EmailVerification(
+        username=username)
+    email_verification.save()
+
+    verification_uri = request.build_absolute_uri(
+        reverse(
+            'django_airavata_auth:verify_email', kwargs={
+                'code': email_verification.verification_code}))
+    logger.debug(
+        "verification_uri={}".format(verification_uri))
+
+    # TODO: need a better template, customization
+    # TODO: add email settings documentation to
+    # settings_local.py
+    send_mail(
+        'Please verify your email address',
+        "Verification link: {}".format(verification_uri),
+        "Django Portal <pga.airavata@gmail.com>",
+        ["{} {} <{}>".format(first_name, last_name, email)]
+    )

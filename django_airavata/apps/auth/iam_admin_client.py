@@ -39,3 +39,15 @@ def enable_user(username):
     with get_iam_admin_client() as iam_admin_client:
         authz_token = utils.get_service_account_authz_token()
         return iam_admin_client.enableUser(authz_token, username)
+
+
+def is_user_exist(username):
+    with get_iam_admin_client() as iam_admin_client:
+        authz_token = utils.get_service_account_authz_token()
+        return iam_admin_client.isUserExist(authz_token, username)
+
+
+def get_user(username):
+    with get_iam_admin_client() as iam_admin_client:
+        authz_token = utils.get_service_account_authz_token()
+        return iam_admin_client.getUser(authz_token, username)

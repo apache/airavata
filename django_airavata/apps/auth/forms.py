@@ -87,3 +87,13 @@ class CreateAccountForm(forms.Form):
             )
 
         return cleaned_data
+
+
+class ResendEmailVerificationLinkForm(forms.Form):
+    error_css_class = "is-invalid"
+    username = forms.CharField(
+        label='Username',
+        widget=forms.TextInput(attrs={'class': 'form-control',
+                                      'placeholder': 'Username'}),
+        min_length=6,
+        validators=[USERNAME_VALIDATOR])
