@@ -27,3 +27,15 @@ def register_user(username, email_address, first_name, last_name, password):
             first_name,
             last_name,
             password)
+
+
+def is_user_enabled(username):
+    with get_iam_admin_client() as iam_admin_client:
+        authz_token = utils.get_service_account_authz_token()
+        return iam_admin_client.isUserEnabled(authz_token, username)
+
+
+def enable_user(username):
+    with get_iam_admin_client() as iam_admin_client:
+        authz_token = utils.get_service_account_authz_token()
+        return iam_admin_client.enableUser(authz_token, username)

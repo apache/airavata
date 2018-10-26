@@ -3,7 +3,8 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.core.mail import send_mail
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import mail_admins, send_mail
 from django.forms import ValidationError
 from django.shortcuts import redirect, render, resolve_url
 from django.urls import reverse
@@ -145,4 +146,32 @@ def create_account(request):
 
 
 def verify_email(request, code):
-    pass
+
+    try:
+        email_verification = models.EmailVerification.objects.get(
+            verification_code=code)
+        email_verification.verified = True
+        email_verification.save()
+        # TODO: test what happens if calling iam_admin_client fails
+        # Check if user is enabled, if so redirect to login page
+        username = email_verification.username
+        logger.debug("Email address verified for {}".format(username))
+        if iam_admin_client.is_user_enabled(username):
+            logger.debug("User {} is already enabled".format(username))
+            # TODO: add success message
+            return redirect(reverse('django_airavata_auth:login'))
+        else:
+            logger.debug("Enabling user {}".format(username))
+            # enable user and inform admins
+            iam_admin_client.enable_user(username)
+            # TODO: use proper template for new user email
+            mail_admins(
+                'New User Created',
+                'New user: {}'.format(username)
+            )
+            # TODO: add success message
+            return redirect(reverse('django_airavata_auth:login'))
+    except ObjectDoesNotExist as e:
+        # TODO: if doesn't exist, give user a form where they can enter their
+        # username to resend verification code
+        pass
