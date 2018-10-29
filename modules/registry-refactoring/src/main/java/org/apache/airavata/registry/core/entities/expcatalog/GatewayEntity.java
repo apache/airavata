@@ -85,7 +85,7 @@ public class GatewayEntity implements Serializable {
     private String oauthClientId;
 
     @Column(name = "OAUTH_CLIENT_SECRET")
-    private String getOauthClientSecret;
+    private String oauthClientSecret;
 
     @Column(name = "REQUEST_CREATION_TIME")
     private Timestamp requestCreationTime;
@@ -233,12 +233,12 @@ public class GatewayEntity implements Serializable {
         this.oauthClientId = oauthClientId;
     }
 
-    public String getGetOauthClientSecret() {
-        return getOauthClientSecret;
+    public String getOauthClientSecret() {
+        return oauthClientSecret;
     }
 
-    public void setGetOauthClientSecret(String oauthClientSecret) {
-        this.getOauthClientSecret = oauthClientSecret;
+    public void setOauthClientSecret(String oauthClientSecret) {
+        this.oauthClientSecret = oauthClientSecret;
     }
 
     public Timestamp getRequestCreationTime() {
