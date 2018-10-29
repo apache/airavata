@@ -31,6 +31,13 @@
           {% else %}
           <h5 class="card-title">Create a {{ options.password.name }} account</h5>
           {% endif %}
+          {% if messages %}
+            {% for message in messages %}
+            <div class="alert {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}alert-danger{% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}alert-success{% else %}alert-secondary{% endif %}" role="alert">
+              {{ message }}
+            </div>
+            {% endfor %}
+          {% endif %}
           <form action="{% url 'django_airavata_auth:create_account' %}" method="post">
             {% for error in form.non_field_errors %}
             <div class="alert alert-danger" role="alert">

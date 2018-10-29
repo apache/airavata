@@ -3,6 +3,7 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import mail_admins, send_mail
 from django.forms import ValidationError
@@ -59,9 +60,11 @@ def handle_login(request):
             next_url = request.POST.get('next', settings.LOGIN_REDIRECT_URL)
             return redirect(next_url)
         else:
-            # TODO: add error message that login failed
+            messages.error(request, "Login failed. Please try again.")
             return render(request, 'django_airavata_auth/login.html', {
-                'username': username
+                'username': username,
+                'next': request.POST.get('next', None),
+                'options': settings.AUTHENTICATION_OPTIONS,
             })
     except Exception as err:
         logger.exception("An error occurred while logging in with "
@@ -113,7 +116,12 @@ def create_account(request):
                 else:
                     _create_and_send_email_verification_link(
                         request, username, email, first_name, last_name)
-                    # TODO: success message
+                    messages.success(
+                        request,
+                        "Account request processed successfully. Before you "
+                        "can login you need to confirm your email address. "
+                        "We've sent you an email with a link that you should "
+                        "click on to complete the account creation process.")
                     return redirect(
                         reverse('django_airavata_auth:create_account'))
             except Exception as e:
@@ -135,13 +143,15 @@ def verify_email(request, code):
             verification_code=code)
         email_verification.verified = True
         email_verification.save()
-        # TODO: test what happens if calling iam_admin_client fails
         # Check if user is enabled, if so redirect to login page
         username = email_verification.username
         logger.debug("Email address verified for {}".format(username))
         if iam_admin_client.is_user_enabled(username):
             logger.debug("User {} is already enabled".format(username))
-            # TODO: add success message
+            messages.success(
+                request,
+                "Your account has already been successfully created. "
+                "Please log in now.")
             return redirect(reverse('django_airavata_auth:login'))
         else:
             logger.debug("Enabling user {}".format(username))
@@ -152,17 +162,32 @@ def verify_email(request, code):
                 'New User Created',
                 'New user: {}'.format(username)
             )
-            # TODO: add success message
+            messages.success(
+                request,
+                "Your account has been successfully created. "
+                "Please log in now.")
             return redirect(reverse('django_airavata_auth:login'))
     except ObjectDoesNotExist as e:
-        # TODO: if doesn't exist, give user a form where they can enter their
+        # if doesn't exist, give user a form where they can enter their
         # username to resend verification code
+        logger.exception("EmailVerification object doesn't exist for "
+                         "code {}".format(code))
+        messages.error(
+            request,
+            "Email verification failed. Please enter your username and we "
+            "will send you another email verification link.")
         return redirect(reverse('django_airavata_auth:resend_email_link'))
+    except Exception as e:
+        logger.exception("Email verification processing failed!")
+        messages.error(
+            request,
+            "Email verification failed. Please try clicking the email "
+            "verification link again later.")
+        return redirect(reverse('django_airavata_auth:create_account'))
 
 
 def resend_email_link(request):
 
-    # TODO: if the user is already verified their email, then redirect to login page with message
     if request.method == 'POST':
         form = forms.ResendEmailVerificationLinkForm(request.POST)
         if form.is_valid():
@@ -170,13 +195,24 @@ def resend_email_link(request):
                 username = form.cleaned_data['username']
                 if iam_admin_client.is_user_exist(username):
                     user_profile = iam_admin_client.get_user(username)
+                    email_address = user_profile.emails[0]
                     _create_and_send_email_verification_link(
                         request,
                         username,
-                        user_profile.emails[0],
+                        email_address,
                         user_profile.firstName,
                         user_profile.lastName)
-                # TODO: success message
+                    messages.success(
+                        request,
+                        "Email verification link sent successfully. Please "
+                        "click on the link in the email that we sent "
+                        "to your email address.")
+                else:
+                    messages.error(
+                        request,
+                        "Unable to resend email verification link. Please "
+                        "contact the website administrator for further "
+                        "assistance.")
                 return redirect(
                     reverse('django_airavata_auth:resend_email_link'))
             except Exception as e:
