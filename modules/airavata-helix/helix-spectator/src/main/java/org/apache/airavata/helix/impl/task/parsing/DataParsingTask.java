@@ -42,14 +42,13 @@ import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.parser.ParserInfo;
 import org.apache.airavata.model.appcatalog.parser.ParserInput;
 import org.apache.airavata.model.appcatalog.parser.ParserOutput;
-import org.apache.airavata.model.credential.store.CredentialSummary;
-import org.apache.airavata.model.credential.store.SummaryType;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
@@ -60,12 +59,9 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,6 +87,12 @@ public class DataParsingTask extends AbstractTask {
     @TaskParam(name = "Gateway ID")
     private String gatewayId;
 
+    @TaskParam(name = "Group Resource Profile Id")
+    private String groupResourceProfileId;
+
+    @TaskParam(name = "Local data dir")
+    private String localDataDir;
+
     @Override
     public TaskResult onRun(TaskHelper helper) {
         logger.info("Starting data parsing task " + getTaskId());
@@ -112,7 +114,14 @@ public class DataParsingTask extends AbstractTask {
                 if (filteredInputOptional.isPresent()) {
 
                     ParsingTaskInput parsingTaskInput = filteredInputOptional.get();
-                    String inputDataProductUri = getContextVariable(parsingTaskInput.getContextVariableName());
+                    String inputDataProductUri = parsingTaskInput.getValue() != null ? parsingTaskInput.getValue() : getContextVariable(parsingTaskInput.getContextVariableName());
+
+                    if (inputDataProductUri == null || inputDataProductUri.isEmpty()) {
+                        logger.error("Data product uri could not be null or empty for input " + parsingTaskInput.getId()
+                                + " with name " + parserInput.getName());
+                        throw new TaskOnFailException("Data product uri could not be null or empty for input "
+                                + parsingTaskInput.getId() + " with name " + parserInput.getName(), true, null);
+                    }
                     DataProductModel inputDataProduct = getRegistryServiceClient().getDataProduct(inputDataProductUri);
                     List<DataReplicaLocationModel> replicaLocations = inputDataProduct.getReplicaLocations();
 
@@ -120,7 +129,7 @@ public class DataParsingTask extends AbstractTask {
 
                     for (DataReplicaLocationModel replicaLocationModel : replicaLocations) {
                         String storageResourceId = replicaLocationModel.getStorageResourceId();
-                        String remoteFilePath = replicaLocationModel.getFilePath();
+                        String remoteFilePath = new URI(replicaLocationModel.getFilePath()).getPath();
                         String localFilePath = localInputDir + (localInputDir.endsWith(File.separator)? "" : File.separator)
                                 + parserInput.getName();
 
@@ -160,7 +169,7 @@ public class DataParsingTask extends AbstractTask {
                     String remoteFilePath = "parsers" + File.separator + getTaskId() + File.separator + "outputs" + File.separator + parserOutput.getName();
 
                     if (new File(localFilePath).exists()) {
-                        uploadFileToStorageResource(parsingTaskOutput.getStorageResourceId(), remoteFilePath, localFilePath, helper.getAdaptorSupport());
+                        uploadFileToStorageResource(parsingTaskOutput, remoteFilePath, localFilePath, helper.getAdaptorSupport());
                     } else if (parserOutput.isRequiredFile()) {
                         logger.error("Expected output file " + localFilePath + " can not be found");
                         throw new TaskOnFailException("Expected output file " + localFilePath + " can not be found", false, null);
@@ -200,47 +209,50 @@ public class DataParsingTask extends AbstractTask {
     }
 
     private void runContainer(ParserInfo parserInfo, String containerId, String localInputDir, String localOutputDir) {
-        DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost("tcp://localhost:2376");
+        DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
         DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
-        CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parserInfo.getImageName()).withCmd(parserInfo.getExecutionCommand()).withName(containerId)
+
+        CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parserInfo.getImageName()).withCmd("/bin/sh", "-c", parserInfo.getExecutionCommand()).withName(containerId)
                 .withBinds(Bind.parse(localInputDir + ":" + parserInfo.getInputDirPath()),
-                        Bind.parse(localOutputDir + ":" + parserInfo.getOutputDirPath())).withTty(true).withAttachStdin(true)
-                .exec();
+                        Bind.parse(localOutputDir + ":" + parserInfo.getOutputDirPath())).withTty(true).exec();
+
+
+        logger.info("Created the container with id " + containerResponse.getId());
+
         if (containerResponse.getWarnings() != null) {
             StringBuilder warningStr = new StringBuilder();
             for (String w : containerResponse.getWarnings()) {
                 warningStr.append(w).append(",");
             }
-            logger.warn("Container warnings : " + warningStr);
+            logger.warn("Container " + containerResponse.getId() + " warnings : " + warningStr);
+        } else {
+            logger.info("Starting container with id " + containerResponse.getId());
+            dockerClient.startContainerCmd(containerResponse.getId()).exec();
+
         }
+
+        dockerClient.removeContainerCmd(containerResponse.getId()).exec();
+        logger.info("Successfully removed container with id " + containerResponse.getId());
     }
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport) throws TaskOnFailException, TException, AgentException {
-        List<CredentialSummary> allCredentialSummaryForGateway = getCredentialServiceClient()
-                .getAllCredentialSummaryForGateway(SummaryType.SSH, gatewayId);
 
-        if (allCredentialSummaryForGateway == null || allCredentialSummaryForGateway.isEmpty()) {
-            logger.error("Could not find SSH summary for gateway " + gatewayId);
-            throw new TaskOnFailException("Could not find SSH summary for gateway " + gatewayId, false, null);
+        GroupResourceProfile groupResourceProfile = getRegistryServiceClient().getGroupResourceProfile(groupResourceProfileId);
+        StoragePreference gatewayStoragePreference = getRegistryServiceClient().getGatewayStoragePreference(gatewayId, storageResourceId);
+
+        String token = gatewayStoragePreference.getResourceSpecificCredentialStoreToken();
+        if (token == null || token.isEmpty()) {
+            token = groupResourceProfile.getDefaultCredentialStoreToken();
         }
-
-        StoragePreference gatewayStoragePreference = getRegistryServiceClient()
-                .getGatewayStoragePreference(gatewayId, storageResourceId);
-
         if (gatewayStoragePreference == null) {
             logger.error("Could not find a gateway storage preference for stogate " + storageResourceId + " gateway id " + gatewayId);
             throw new TaskOnFailException("Could not find a gateway storage preference for stogate " + storageResourceId + " gateway id " + gatewayId, false, null);
         }
 
-        StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(gatewayId,
-                storageResourceId, DataMovementProtocol.SCP,
-                Optional.ofNullable(gatewayStoragePreference.getResourceSpecificCredentialStoreToken())
-                        .orElse(allCredentialSummaryForGateway.get(0).getToken()),
+        return adaptorSupport.fetchStorageAdaptor(gatewayId, storageResourceId, DataMovementProtocol.SCP, token,
                 gatewayStoragePreference.getLoginUserName());
 
-        return storageResourceAdaptor;
     }
 
     private boolean downloadFileFromStorageResource(String storageResourceId, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) {
@@ -257,26 +269,53 @@ public class DataParsingTask extends AbstractTask {
         }
     }
 
-    private boolean uploadFileToStorageResource(String storageResourceId, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) {
-        logger.info("Uploading from local path " + localFilePath + " to remote path " + remoteFilePath + " of storage resource " + storageResourceId);
+    private void uploadFileToStorageResource(ParsingTaskOutput parsingTaskOutput, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) throws TaskOnFailException {
+        logger.info("Uploading from local path " + localFilePath + " to remote path " + remoteFilePath + " of storage resource " + parsingTaskOutput.getStorageResourceId());
         try {
-            StoragePreference gatewayStoragePreference = getRegistryServiceClient().getGatewayStoragePreference(gatewayId, storageResourceId);
+            StoragePreference gatewayStoragePreference = getRegistryServiceClient().getGatewayStoragePreference(gatewayId, parsingTaskOutput.getStorageResourceId());
+            StorageResourceDescription storageResource = getRegistryServiceClient().getStorageResource(parsingTaskOutput.getStorageResourceId());
+
             String remoteFileRoot = gatewayStoragePreference.getFileSystemRootLocation();
             remoteFilePath = remoteFileRoot + (remoteFileRoot.endsWith(File.separator) ? "" : File.separator) + remoteFilePath;
-            StorageResourceAdaptor storageResourceAdaptor = getStorageResourceAdaptor(storageResourceId, adaptorSupport);
+            StorageResourceAdaptor storageResourceAdaptor = getStorageResourceAdaptor(parsingTaskOutput.getStorageResourceId(), adaptorSupport);
             storageResourceAdaptor.createDirectory(new File(remoteFilePath).getParent(), true);
             storageResourceAdaptor.uploadFile(localFilePath, remoteFilePath);
-            return true;
+
+            logger.info("Uploading completed. Registering data product for path " + remoteFilePath);
+
+            DataProductModel dataProductModel = new DataProductModel();
+            dataProductModel.setGatewayId(getGatewayId());
+            dataProductModel.setOwnerName("ParserTask");
+            dataProductModel.setProductName(parsingTaskOutput.getId());
+            dataProductModel.setDataProductType(DataProductType.FILE);
+
+            DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
+            replicaLocationModel.setStorageResourceId(parsingTaskOutput.getStorageResourceId());
+            replicaLocationModel.setReplicaName("Parsing task output " + parsingTaskOutput.getId());
+            replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
+            replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
+
+            URI destinationURI = new URI("file", gatewayStoragePreference.getLoginUserName(),
+                    storageResource.getHostName(), 22, remoteFilePath, null, null);
+
+            replicaLocationModel.setFilePath(destinationURI.toString());
+            dataProductModel.addToReplicaLocations(replicaLocationModel);
+
+            String productUri = getRegistryServiceClient().registerDataProduct(dataProductModel);
+
+            logger.info("Data product is " + productUri + " for path " + remoteFilePath);
+
+            setContextVariable(parsingTaskOutput.getContextVariableName(), productUri);
         } catch (Exception e) {
             logger.error("Failed to upload from local path " + localFilePath + " to remote path " + remoteFilePath +
-                    " of storage resource " + storageResourceId, e);
-            return false;
+                    " of storage resource " + parsingTaskOutput.getStorageResourceId(), e);
+            throw new TaskOnFailException("Failed to upload from local path " + localFilePath + " to remote path " + remoteFilePath +
+                    " of storage resource " + parsingTaskOutput.getStorageResourceId(), false, e);
         }
     }
 
     private String createLocalInputDir(String containerName) throws TaskOnFailException {
-        String localInpDir = ServerSettings.getLocalDataLocation();
-        localInpDir = (localInpDir.endsWith(File.separator) ? localInpDir : localInpDir + File.separator) +
+        String localInpDir = (localDataDir.endsWith(File.separator) ? localDataDir : localDataDir + File.separator) +
                 "parsers" + File.separator + containerName + File.separator + "data" + File.separator + "input" + File.separator;
         try {
             FileUtils.forceMkdir(new File(localInpDir));
@@ -288,8 +327,7 @@ public class DataParsingTask extends AbstractTask {
     }
 
     private String createLocalOutputDir(String containerName) throws TaskOnFailException {
-        String localOutDir = ServerSettings.getLocalDataLocation();
-        localOutDir = (localOutDir.endsWith(File.separator) ? localOutDir : localOutDir + File.separator) +
+        String localOutDir = (localDataDir.endsWith(File.separator) ? localDataDir : localDataDir + File.separator) +
                 "parsers" + File.separator + containerName + File.separator + "data" + File.separator + "output" + File.separator;
         try {
             FileUtils.forceMkdir(new File(localOutDir));
@@ -351,5 +389,21 @@ public class DataParsingTask extends AbstractTask {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    public String getGroupResourceProfileId() {
+        return groupResourceProfileId;
+    }
+
+    public void setGroupResourceProfileId(String groupResourceProfileId) {
+        this.groupResourceProfileId = groupResourceProfileId;
+    }
+
+    public String getLocalDataDir() {
+        return localDataDir;
+    }
+
+    public void setLocalDataDir(String localDataDir) {
+        this.localDataDir = localDataDir;
     }
 }

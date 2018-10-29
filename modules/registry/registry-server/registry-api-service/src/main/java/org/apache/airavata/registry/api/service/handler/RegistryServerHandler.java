@@ -4949,7 +4949,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         parserInfo.setId(parserId);
         switch (parserId) {
             case "001":
-                parserInfo.setExecutionCommand("/opt/execute.txt");
+                parserInfo.setExecutionCommand("/opt/execute.sh");
                 parserInfo.setImageName("dimuthuupe/uppercase:v1");
                 parserInfo.setInputDirPath("/opt/inputs");
                 parserInfo.setOutputDirPath("/opt/outputs");
@@ -4968,7 +4968,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 parserInfo.setOutputFiles(Collections.singletonList(output1));
                 break;
             case "002":
-                parserInfo.setExecutionCommand("/opt/execute.txt");
+                parserInfo.setExecutionCommand("/opt/execute.sh");
                 parserInfo.setImageName("dimuthuupe/lowercase:v1");
                 parserInfo.setInputDirPath("/opt/inputs");
                 parserInfo.setOutputDirPath("/opt/outputs");
@@ -4998,8 +4998,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ParsingTemplate getParsingTemplate(String templateId) throws RegistryServiceException, TException {
         ParsingTemplate template = new ParsingTemplate();
+        template.setId("001");
+        template.setApplicationInterface("sample");
         ParsingTemplateInput templateInput1 =  new ParsingTemplateInput();
-        templateInput1.setExpression("Echo-Out");
+        templateInput1.setExpression("Standard Out");
         templateInput1.setInputId("001");
 
         template.addToInitialInputs(templateInput1);

@@ -43,7 +43,7 @@ public class WorkflowManager {
     protected void initComponents() throws Exception {
         initRegistryClientPool();
         initWorkflowOperatorr();
-        initStatusPublisher();
+        //initStatusPublisher();
         initCuratorClient();
     }
 
@@ -120,5 +120,9 @@ public class WorkflowManager {
                 AiravataUtils.getId(MessageType.PROCESS.name()), gatewayId);
         msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         getStatusPublisher().publish(msgCtx);
+    }
+
+    public String normalizeTaskId(String taskId) {
+        return taskId.replace(":", "-").replace(",", "-");
     }
 }
