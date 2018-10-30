@@ -31,6 +31,7 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField REQUIRED_FILE_FIELD_DESC = new org.apache.thrift.protocol.TField("requiredFile", org.apache.thrift.protocol.TType.BOOL, (short)3);
+  private static final org.apache.thrift.protocol.TField PARSER_INFO_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parserInfoId", org.apache.thrift.protocol.TType.BOOL, (short)4);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ParserInputStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ParserInputTupleSchemeFactory();
@@ -38,12 +39,14 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
   private java.lang.String id; // required
   private java.lang.String name; // required
   private boolean requiredFile; // required
+  private boolean parserInfoId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
     NAME((short)2, "name"),
-    REQUIRED_FILE((short)3, "requiredFile");
+    REQUIRED_FILE((short)3, "requiredFile"),
+    PARSER_INFO_ID((short)4, "parserInfoId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -64,6 +67,8 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
           return NAME;
         case 3: // REQUIRED_FILE
           return REQUIRED_FILE;
+        case 4: // PARSER_INFO_ID
+          return PARSER_INFO_ID;
         default:
           return null;
       }
@@ -105,6 +110,7 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
 
   // isset id assignments
   private static final int __REQUIREDFILE_ISSET_ID = 0;
+  private static final int __PARSERINFOID_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -114,6 +120,8 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
     tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.REQUIRED_FILE, new org.apache.thrift.meta_data.FieldMetaData("requiredFile", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.PARSER_INFO_ID, new org.apache.thrift.meta_data.FieldMetaData("parserInfoId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ParserInput.class, metaDataMap);
@@ -125,13 +133,16 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
   public ParserInput(
     java.lang.String id,
     java.lang.String name,
-    boolean requiredFile)
+    boolean requiredFile,
+    boolean parserInfoId)
   {
     this();
     this.id = id;
     this.name = name;
     this.requiredFile = requiredFile;
     setRequiredFileIsSet(true);
+    this.parserInfoId = parserInfoId;
+    setParserInfoIdIsSet(true);
   }
 
   /**
@@ -146,6 +157,7 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
       this.name = other.name;
     }
     this.requiredFile = other.requiredFile;
+    this.parserInfoId = other.parserInfoId;
   }
 
   public ParserInput deepCopy() {
@@ -158,6 +170,8 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
     this.name = null;
     setRequiredFileIsSet(false);
     this.requiredFile = false;
+    setParserInfoIdIsSet(false);
+    this.parserInfoId = false;
   }
 
   public java.lang.String getId() {
@@ -228,6 +242,28 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __REQUIREDFILE_ISSET_ID, value);
   }
 
+  public boolean isParserInfoId() {
+    return this.parserInfoId;
+  }
+
+  public void setParserInfoId(boolean parserInfoId) {
+    this.parserInfoId = parserInfoId;
+    setParserInfoIdIsSet(true);
+  }
+
+  public void unsetParserInfoId() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __PARSERINFOID_ISSET_ID);
+  }
+
+  /** Returns true if field parserInfoId is set (has been assigned a value) and false otherwise */
+  public boolean isSetParserInfoId() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __PARSERINFOID_ISSET_ID);
+  }
+
+  public void setParserInfoIdIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __PARSERINFOID_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case ID:
@@ -254,6 +290,14 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
       }
       break;
 
+    case PARSER_INFO_ID:
+      if (value == null) {
+        unsetParserInfoId();
+      } else {
+        setParserInfoId((java.lang.Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -267,6 +311,9 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
 
     case REQUIRED_FILE:
       return isRequiredFile();
+
+    case PARSER_INFO_ID:
+      return isParserInfoId();
 
     }
     throw new java.lang.IllegalStateException();
@@ -285,6 +332,8 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
       return isSetName();
     case REQUIRED_FILE:
       return isSetRequiredFile();
+    case PARSER_INFO_ID:
+      return isSetParserInfoId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -331,6 +380,15 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
         return false;
     }
 
+    boolean this_present_parserInfoId = true;
+    boolean that_present_parserInfoId = true;
+    if (this_present_parserInfoId || that_present_parserInfoId) {
+      if (!(this_present_parserInfoId && that_present_parserInfoId))
+        return false;
+      if (this.parserInfoId != that.parserInfoId)
+        return false;
+    }
+
     return true;
   }
 
@@ -347,6 +405,8 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
       hashCode = hashCode * 8191 + name.hashCode();
 
     hashCode = hashCode * 8191 + ((requiredFile) ? 131071 : 524287);
+
+    hashCode = hashCode * 8191 + ((parserInfoId) ? 131071 : 524287);
 
     return hashCode;
   }
@@ -385,6 +445,16 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
     }
     if (isSetRequiredFile()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requiredFile, other.requiredFile);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetParserInfoId()).compareTo(other.isSetParserInfoId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParserInfoId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parserInfoId, other.parserInfoId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -428,6 +498,10 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
     sb.append("requiredFile:");
     sb.append(this.requiredFile);
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("parserInfoId:");
+    sb.append(this.parserInfoId);
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -444,6 +518,10 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
 
     if (!isSetRequiredFile()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'requiredFile' is unset! Struct:" + toString());
+    }
+
+    if (!isSetParserInfoId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parserInfoId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -509,6 +587,14 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // PARSER_INFO_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.parserInfoId = iprot.readBool();
+              struct.setParserInfoIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -535,6 +621,9 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
       oprot.writeFieldBegin(REQUIRED_FILE_FIELD_DESC);
       oprot.writeBool(struct.requiredFile);
       oprot.writeFieldEnd();
+      oprot.writeFieldBegin(PARSER_INFO_ID_FIELD_DESC);
+      oprot.writeBool(struct.parserInfoId);
+      oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -555,6 +644,7 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
       oprot.writeString(struct.id);
       oprot.writeString(struct.name);
       oprot.writeBool(struct.requiredFile);
+      oprot.writeBool(struct.parserInfoId);
     }
 
     @Override
@@ -566,6 +656,8 @@ public class ParserInput implements org.apache.thrift.TBase<ParserInput, ParserI
       struct.setNameIsSet(true);
       struct.requiredFile = iprot.readBool();
       struct.setRequiredFileIsSet(true);
+      struct.parserInfoId = iprot.readBool();
+      struct.setParserInfoIdIsSet(true);
     }
   }
 

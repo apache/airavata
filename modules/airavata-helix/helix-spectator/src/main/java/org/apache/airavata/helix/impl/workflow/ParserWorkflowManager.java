@@ -31,7 +31,7 @@ import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutputs;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.parser.DagElement;
+import org.apache.airavata.model.appcatalog.parser.ParserDagElement;
 import org.apache.airavata.model.appcatalog.parser.ParserInfo;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplateInput;
@@ -94,20 +94,20 @@ public class ParserWorkflowManager extends WorkflowManager {
             // FIXME is it ApplicationInterfaceId or ApplicationName
             List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(completionMessage.getExperimentId());
 
-            Map<String, Map<String, Set<DagElement>>> parentToChildParsers = new HashMap<>();
+            Map<String, Map<String, Set<ParserDagElement>>> parentToChildParsers = new HashMap<>();
             Map<String, Map<String, Set<String>>> childToParentParsers = new HashMap<>();
 
             for (ParsingTemplate template : parsingTemplates) {
-                for (DagElement dagElement: template.getParserDag()) {
+                for (ParserDagElement dagElement: template.getParserDag()) {
 
-                    Map<String, Set<DagElement>> parentToChildLocal = new HashMap<>();
+                    Map<String, Set<ParserDagElement>> parentToChildLocal = new HashMap<>();
                     if (parentToChildParsers.containsKey(template.getId())) {
                         parentToChildLocal = parentToChildParsers.get(template.getId());
                     } else {
                         parentToChildParsers.put(template.getId(), parentToChildLocal);
                     }
 
-                    Set<DagElement> childLocal = new HashSet<>();
+                    Set<ParserDagElement> childLocal = new HashSet<>();
                     if (parentToChildLocal.containsKey(dagElement.getParentParserId())) {
                         childLocal = parentToChildLocal.get(dagElement.getParentParserId());
                     } else {
@@ -139,8 +139,8 @@ public class ParserWorkflowManager extends WorkflowManager {
                 String parentParserId = null;
                 for (String parentId : parentToChildParsers.get(template.getId()).keySet()) {
                     boolean found = false;
-                    for (Set<DagElement> dagElements : parentToChildParsers.get(template.getId()).values()) {
-                        Optional<DagElement> first = dagElements.stream().filter(dagElement -> dagElement.getChildParserId().equals(parentId)).findFirst();
+                    for (Set<ParserDagElement> dagElements : parentToChildParsers.get(template.getId()).values()) {
+                        Optional<ParserDagElement> first = dagElements.stream().filter(dagElement -> dagElement.getChildParserId().equals(parentId)).findFirst();
                         if (first.isPresent()) {
                             found = true;
                             break;
@@ -226,11 +226,11 @@ public class ParserWorkflowManager extends WorkflowManager {
         return parsingTask;
     }
 
-    private void createParserDagRecursively(List<AbstractTask> allTasks, ParserInfo parentParserInfo, DataParsingTask parentTask, Map<String, Set<DagElement>> parentToChild,
+    private void createParserDagRecursively(List<AbstractTask> allTasks, ParserInfo parentParserInfo, DataParsingTask parentTask, Map<String, Set<ParserDagElement>> parentToChild,
                                             ProcessCompletionMessage completionMessage, RegistryService.Client registryClient) throws Exception {
         if (parentToChild.containsKey(parentParserInfo.getId())) {
 
-            for (DagElement dagElement : parentToChild.get(parentParserInfo.getId())) {
+            for (ParserDagElement dagElement : parentToChild.get(parentParserInfo.getId())) {
                 ParserInfo childParserInfo = registryClient.getParserInfo(dagElement.getChildParserId());
                 DataParsingTask parsingTask = new DataParsingTask();
                 parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + childParserInfo.getId() + "-" + UUID.randomUUID().toString()));
