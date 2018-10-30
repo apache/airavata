@@ -27,14 +27,14 @@ struct ParserInput {
     1: required string id;
     2: required string name;
     3: required bool requiredFile;
-    4: required bool parserInfoId
+    4: required string parserInfoId
 }
 
 struct ParserOutput {
     1: required string id;
     2: required string name;
     3: required bool requiredFile;
-    4: required bool parserInfoId;
+    4: required string parserInfoId;
 }
 
 struct ParserInfo {
