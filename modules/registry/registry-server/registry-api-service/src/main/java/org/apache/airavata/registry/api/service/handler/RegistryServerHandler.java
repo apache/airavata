@@ -5006,11 +5006,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
         template.addToInitialInputs(templateInput1);
 
-        DagElement dagElement = new DagElement();
+        ParserDagElement dagElement = new ParserDagElement();
         dagElement.setParentParserId("001");
         dagElement.setChildParserId("002");
 
-        InputOutputMapping mapping1 = new InputOutputMapping();
+        ParserDagInputOutputMapping mapping1 = new ParserDagInputOutputMapping();
         mapping1.setOutputId("002");
         mapping1.setInputId("003");
 
