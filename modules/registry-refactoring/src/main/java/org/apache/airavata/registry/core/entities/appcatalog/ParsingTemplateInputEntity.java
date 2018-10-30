@@ -47,4 +47,52 @@ public class ParsingTemplateInputEntity {
     @ManyToOne(targetEntity = ParsingTemplateEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "PARSING_TEMPLATE_ID")
     private ParsingTemplateEntity parsingTemplate;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getInputId() {
+        return inputId;
+    }
+
+    public void setInputId(String inputId) {
+        this.inputId = inputId;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public void setExpression(String expression) {
+        this.expression = expression;
+    }
+
+    public String getParsingTemplateId() {
+        return parsingTemplateId;
+    }
+
+    public void setParsingTemplateId(String parsingTemplateId) {
+        this.parsingTemplateId = parsingTemplateId;
+    }
+
+    public ParserInputEntity getInput() {
+        return input;
+    }
+
+    public void setInput(ParserInputEntity input) {
+        this.input = input;
+    }
+
+    public ParsingTemplateEntity getParsingTemplate() {
+        return parsingTemplate;
+    }
+
+    public void setParsingTemplate(ParsingTemplateEntity parsingTemplate) {
+        this.parsingTemplate = parsingTemplate;
+    }
 }
