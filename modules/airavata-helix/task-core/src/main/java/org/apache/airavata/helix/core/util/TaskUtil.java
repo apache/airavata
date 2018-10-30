@@ -27,7 +27,9 @@ import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -85,7 +87,7 @@ public class TaskUtil {
         return result;
     }
 
-    public static <T extends AbstractTask> void deserializeTaskData(T instance, Map<String, String> params) throws IllegalAccessException, InstantiationException {
+    public static <T extends AbstractTask> void deserializeTaskData(T instance, Map<String, String> params) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
 
         List<Field> allFields = new ArrayList<>();
         Class genericClass = instance.getClass();
@@ -114,9 +116,12 @@ public class TaskUtil {
                     } else if (classField.getType().isAssignableFrom(Boolean.class) ||
                             classField.getType().isAssignableFrom(Boolean.TYPE)) {
                         classField.set(instance, Boolean.parseBoolean(params.get(param.name())));
-                    } else if (classField.getType().isAssignableFrom(TaskParamType.class)) {
-                        // TODO Fix me
-                        //classField.set(instance, )
+                    } else if (TaskParamType.class.isAssignableFrom(classField.getType())) {
+                        Class<?> clazz = classField.getType();
+                        Constructor<?> ctor = clazz.getConstructor();
+                        Object obj = ctor.newInstance();
+                        ((TaskParamType)obj).deserialize(params.get(param.name()));
+                        classField.set(instance, obj);
                     }
                 }
             }

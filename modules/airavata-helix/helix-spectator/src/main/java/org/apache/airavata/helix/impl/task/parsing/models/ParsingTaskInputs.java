@@ -1,9 +1,12 @@
 package org.apache.airavata.helix.impl.task.parsing.models;
 
+import com.google.gson.Gson;
+import org.apache.airavata.helix.task.api.TaskParamType;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParsingTaskInputs {
+public class ParsingTaskInputs implements TaskParamType {
 
     private List<ParsingTaskInput> inputs = new ArrayList<>();
 
@@ -17,5 +20,16 @@ public class ParsingTaskInputs {
 
     public void addInput(ParsingTaskInput input) {
         this.inputs.add(input);
+    }
+
+    @Override
+    public String serialize() {
+        return new Gson().toJson(this);
+    }
+
+    @Override
+    public void deserialize(String content) {
+        ParsingTaskInputs parsingTaskInputs = new Gson().fromJson(content, ParsingTaskInputs.class);
+        this.inputs = parsingTaskInputs.getInputs();
     }
 }
