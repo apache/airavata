@@ -21,9 +21,13 @@ package org.apache.airavata.helix.impl.task.parsing;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.LogContainerCmd;
 import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.command.LogContainerResultCallback;
+import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -53,7 +57,6 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -62,6 +65,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -215,10 +219,11 @@ public class DataParsingTask extends AbstractTask {
 
         CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parserInfo.getImageName()).withCmd("/bin/sh", "-c", parserInfo.getExecutionCommand()).withName(containerId)
                 .withBinds(Bind.parse(localInputDir + ":" + parserInfo.getInputDirPath()),
-                        Bind.parse(localOutputDir + ":" + parserInfo.getOutputDirPath())).withTty(true).exec();
-
+                        Bind.parse(localOutputDir + ":" + parserInfo.getOutputDirPath())).withTty(true).withAttachStdin(true).withAttachStdout(true).exec();
 
         logger.info("Created the container with id " + containerResponse.getId());
+
+        final StringBuilder dockerLogs = new StringBuilder();
 
         if (containerResponse.getWarnings() != null) {
             StringBuilder warningStr = new StringBuilder();
@@ -229,7 +234,26 @@ public class DataParsingTask extends AbstractTask {
         } else {
             logger.info("Starting container with id " + containerResponse.getId());
             dockerClient.startContainerCmd(containerResponse.getId()).exec();
+            LogContainerCmd logContainerCmd = dockerClient.logContainerCmd(containerResponse.getId()).withStdOut(true).withStdErr(true);
 
+
+            try {
+                logContainerCmd.exec(new LogContainerResultCallback() {
+                    @Override
+                    public void onNext(Frame item) {
+                        dockerLogs.append(item.toString());
+                        dockerLogs.append("\n");
+                    }
+                }).awaitCompletion();
+            } catch (InterruptedException e) {
+                logger.error("Interrupted while reading container log" + e.getMessage());
+            }
+
+            logger.info("Waiting for the container to stop");
+            Integer statusCode = dockerClient.waitContainerCmd(containerResponse.getId()).exec(new WaitContainerResultCallback()).awaitStatusCode();
+            logger.info("Container " + containerResponse.getId() + " exited with status code " + statusCode);
+
+            logger.info("Container logs " + dockerLogs.toString());
         }
 
         dockerClient.removeContainerCmd(containerResponse.getId()).exec();
