@@ -101,14 +101,7 @@ import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConver
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GatewayGroupsRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.StorageResourceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.*;
 import org.apache.airavata.registry.core.repositories.expcatalog.*;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
@@ -157,6 +150,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
     private WorkflowRepository workflowRepository = new WorkflowRepository();
     private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
+    private ParserInfoRepository parserInfoRepository = new ParserInfoRepository();
+    private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
+    private ParserInputRepository parserInputRepository = new ParserInputRepository();
+    private ParserOutputRepository parserOutputRepository = new ParserOutputRepository();
+    private ParserDagElementRepository parserDagElementRepository = new ParserDagElementRepository();
+    private ParserDagInputOutputMappingRepository parserDagInputOutputMappingRepository = new ParserDagInputOutputMappingRepository();
+    private ParsingTemplateInputRepository parsingTemplateInputRepository = new ParsingTemplateInputRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -4992,7 +4992,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     @Override
     public String saveParserInfo(ParserInfo parserInfo) throws RegistryServiceException, TException {
-        return null;
+        ParserInfo created = parserInfoRepository.create(parserInfo);
+        return created.getId();
     }
 
     @Override
@@ -5027,7 +5028,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public String saveParsingTemplate(ParserInfo parserInfo) throws RegistryServiceException, TException {
-        return null;
+    public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException, TException {
+        ParsingTemplate saved = parsingTemplateRepository.create(parsingTemplate);
+        return saved.getId();
     }
 }
