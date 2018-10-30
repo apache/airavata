@@ -27,12 +27,14 @@ struct ParserInput {
     1: required string id;
     2: required string name;
     3: required bool requiredFile;
+    4: required string parserInfoId
 }
 
 struct ParserOutput {
     1: required string id;
     2: required string name;
     3: required bool requiredFile;
+    4: required string parserInfoId;
 }
 
 struct ParserInfo {
@@ -45,25 +47,32 @@ struct ParserInfo {
     7: required list<ParserOutput> outputFiles;
 }
 
-struct InputOutputMapping {
-    1: required string inputId;
-    2: required string outputId;
+struct ParserDagInputOutputMapping {
+    1: required string id;
+    2: required string inputId;
+    3: required string outputId;
+    4: required string parserDagElementId;
 }
 
-struct DagElement {
-    1: required string parentParserId;
-    2: required string childParserId;
-    3: required list<InputOutputMapping> inputOutputMapping;
+struct ParserDagElement {
+    1: required string id;
+    2: required string parentParserId;
+    3: required string childParserId;
+    4: required list<ParserDagInputOutputMapping> inputOutputMapping;
+    5: required string parsingTemplateId;
+
 }
 
 struct ParsingTemplateInput {
-    1: required string inputId
-    2: required string expression;
+    1: required string id;
+    2: required string inputId
+    3: required string expression;
+    4: required string parsingTemplateId;
 }
 
 struct ParsingTemplate {
     1: required string id;
     2: required string applicationInterface;
     3: required list<ParsingTemplateInput> initialInputs;
-    4: required list<DagElement> parserDag;
+    4: required list<ParserDagElement> parserDag;
 }

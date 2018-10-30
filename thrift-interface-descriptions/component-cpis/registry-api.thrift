@@ -2672,5 +2672,5 @@ service RegistryService {
     string saveParserInfo(1: required parser_model.ParserInfo parserInfo) throws (1: registry_api_errors.RegistryServiceException rse);
     parser_model.ParsingTemplate getParsingTemplate(1: required string templateId) throws (1: registry_api_errors.RegistryServiceException rse);
     list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required string experimentId) throws (1: registry_api_errors.RegistryServiceException rse);
-    string saveParsingTemplate(1: required parser_model.ParserInfo parserInfo) throws (1: registry_api_errors.RegistryServiceException rse);
+    string saveParsingTemplate(1: required parser_model.ParsingTemplate parsingTemplate) throws (1: registry_api_errors.RegistryServiceException rse);
 }

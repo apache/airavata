@@ -39,7 +39,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
   private java.lang.String id; // required
   private java.lang.String applicationInterface; // required
   private java.util.List<ParsingTemplateInput> initialInputs; // required
-  private java.util.List<DagElement> parserDag; // required
+  private java.util.List<ParserDagElement> parserDag; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -121,7 +121,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ParsingTemplateInput.class))));
     tmpMap.put(_Fields.PARSER_DAG, new org.apache.thrift.meta_data.FieldMetaData("parserDag", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DagElement.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ParserDagElement.class))));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ParsingTemplate.class, metaDataMap);
   }
@@ -133,7 +133,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     java.lang.String id,
     java.lang.String applicationInterface,
     java.util.List<ParsingTemplateInput> initialInputs,
-    java.util.List<DagElement> parserDag)
+    java.util.List<ParserDagElement> parserDag)
   {
     this();
     this.id = id;
@@ -160,9 +160,9 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       this.initialInputs = __this__initialInputs;
     }
     if (other.isSetParserDag()) {
-      java.util.List<DagElement> __this__parserDag = new java.util.ArrayList<DagElement>(other.parserDag.size());
-      for (DagElement other_element : other.parserDag) {
-        __this__parserDag.add(new DagElement(other_element));
+      java.util.List<ParserDagElement> __this__parserDag = new java.util.ArrayList<ParserDagElement>(other.parserDag.size());
+      for (ParserDagElement other_element : other.parserDag) {
+        __this__parserDag.add(new ParserDagElement(other_element));
       }
       this.parserDag = __this__parserDag;
     }
@@ -268,22 +268,22 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     return (this.parserDag == null) ? 0 : this.parserDag.size();
   }
 
-  public java.util.Iterator<DagElement> getParserDagIterator() {
+  public java.util.Iterator<ParserDagElement> getParserDagIterator() {
     return (this.parserDag == null) ? null : this.parserDag.iterator();
   }
 
-  public void addToParserDag(DagElement elem) {
+  public void addToParserDag(ParserDagElement elem) {
     if (this.parserDag == null) {
-      this.parserDag = new java.util.ArrayList<DagElement>();
+      this.parserDag = new java.util.ArrayList<ParserDagElement>();
     }
     this.parserDag.add(elem);
   }
 
-  public java.util.List<DagElement> getParserDag() {
+  public java.util.List<ParserDagElement> getParserDag() {
     return this.parserDag;
   }
 
-  public void setParserDag(java.util.List<DagElement> parserDag) {
+  public void setParserDag(java.util.List<ParserDagElement> parserDag) {
     this.parserDag = parserDag;
   }
 
@@ -332,7 +332,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       if (value == null) {
         unsetParserDag();
       } else {
-        setParserDag((java.util.List<DagElement>)value);
+        setParserDag((java.util.List<ParserDagElement>)value);
       }
       break;
 
@@ -650,11 +650,11 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list27 = iprot.readListBegin();
-                struct.parserDag = new java.util.ArrayList<DagElement>(_list27.size);
-                DagElement _elem28;
+                struct.parserDag = new java.util.ArrayList<ParserDagElement>(_list27.size);
+                ParserDagElement _elem28;
                 for (int _i29 = 0; _i29 < _list27.size; ++_i29)
                 {
-                  _elem28 = new DagElement();
+                  _elem28 = new ParserDagElement();
                   _elem28.read(iprot);
                   struct.parserDag.add(_elem28);
                 }
@@ -704,7 +704,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
         oprot.writeFieldBegin(PARSER_DAG_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.parserDag.size()));
-          for (DagElement _iter31 : struct.parserDag)
+          for (ParserDagElement _iter31 : struct.parserDag)
           {
             _iter31.write(oprot);
           }
@@ -740,7 +740,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       }
       {
         oprot.writeI32(struct.parserDag.size());
-        for (DagElement _iter33 : struct.parserDag)
+        for (ParserDagElement _iter33 : struct.parserDag)
         {
           _iter33.write(oprot);
         }
@@ -768,11 +768,11 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       struct.setInitialInputsIsSet(true);
       {
         org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.parserDag = new java.util.ArrayList<DagElement>(_list37.size);
-        DagElement _elem38;
+        struct.parserDag = new java.util.ArrayList<ParserDagElement>(_list37.size);
+        ParserDagElement _elem38;
         for (int _i39 = 0; _i39 < _list37.size; ++_i39)
         {
-          _elem38 = new DagElement();
+          _elem38 = new ParserDagElement();
           _elem38.read(iprot);
           struct.parserDag.add(_elem38);
         }

@@ -101,14 +101,7 @@ import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConver
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GatewayGroupsRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.StorageResourceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.*;
 import org.apache.airavata.registry.core.repositories.expcatalog.*;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
@@ -157,6 +150,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
     private WorkflowRepository workflowRepository = new WorkflowRepository();
     private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
+    private ParserInfoRepository parserInfoRepository = new ParserInfoRepository();
+    private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
+    private ParserInputRepository parserInputRepository = new ParserInputRepository();
+    private ParserOutputRepository parserOutputRepository = new ParserOutputRepository();
+    private ParserDagElementRepository parserDagElementRepository = new ParserDagElementRepository();
+    private ParserDagInputOutputMappingRepository parserDagInputOutputMappingRepository = new ParserDagInputOutputMappingRepository();
+    private ParsingTemplateInputRepository parsingTemplateInputRepository = new ParsingTemplateInputRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -4944,88 +4944,61 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     @Override
     public ParserInfo getParserInfo(String parserId) throws RegistryServiceException, TException {
+        try {
+            if (!parserInfoRepository.isExists(parserId)) {
+                final String message = "No Parser Info entry exists for " + parserId;
+                logger.error(message);
+                throw new RegistryServiceException(message);
+            }
+            return parserInfoRepository.get(parserId);
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+        } catch (Exception e) {
 
-        ParserInfo parserInfo = new ParserInfo();
-        parserInfo.setId(parserId);
-        switch (parserId) {
-            case "001":
-                parserInfo.setExecutionCommand("/opt/execute.txt");
-                parserInfo.setImageName("dimuthuupe/uppercase:v1");
-                parserInfo.setInputDirPath("/opt/inputs");
-                parserInfo.setOutputDirPath("/opt/outputs");
-                ParserInput input1 = new ParserInput();
-                input1.setId("001");
-                input1.setName("input.txt");
-                input1.setRequiredFile(true);
-
-                parserInfo.setInputFiles(Collections.singletonList(input1));
-
-                ParserOutput output1 = new ParserOutput();
-                output1.setId("002");
-                output1.setRequiredFile(true);
-                output1.setName("upper.txt");
-
-                parserInfo.setOutputFiles(Collections.singletonList(output1));
-                break;
-            case "002":
-                parserInfo.setExecutionCommand("/opt/execute.txt");
-                parserInfo.setImageName("dimuthuupe/lowercase:v1");
-                parserInfo.setInputDirPath("/opt/inputs");
-                parserInfo.setOutputDirPath("/opt/outputs");
-                ParserInput input2 = new ParserInput();
-                input2.setId("003");
-                input2.setName("input.txt");
-                input2.setRequiredFile(true);
-
-                parserInfo.setInputFiles(Collections.singletonList(input2));
-
-                ParserOutput output2 = new ParserOutput();
-                output2.setId("004");
-                output2.setRequiredFile(true);
-                output2.setName("lower.txt");
-
-                parserInfo.setOutputFiles(Collections.singletonList(output2));
-                break;
+            final String message = "Error while retrieving Parser Info for id " + parserId + ".";
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
         }
-        return parserInfo;
     }
 
     @Override
     public String saveParserInfo(ParserInfo parserInfo) throws RegistryServiceException, TException {
-        return null;
+        ParserInfo created = parserInfoRepository.create(parserInfo);
+        return created.getId();
     }
 
     @Override
     public ParsingTemplate getParsingTemplate(String templateId) throws RegistryServiceException, TException {
-        ParsingTemplate template = new ParsingTemplate();
-        ParsingTemplateInput templateInput1 =  new ParsingTemplateInput();
-        templateInput1.setExpression("Echo-Out");
-        templateInput1.setInputId("001");
+        try {
+            if (!parsingTemplateRepository.isExists(templateId)) {
+                final String message = "No Parsing Template entry exists for " + templateId;
+                logger.error(message);
+                throw new RegistryServiceException(message);
+            }
+            return parsingTemplateRepository.get(templateId);
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+        } catch (Exception e) {
 
-        template.addToInitialInputs(templateInput1);
-
-        DagElement dagElement = new DagElement();
-        dagElement.setParentParserId("001");
-        dagElement.setChildParserId("002");
-
-        InputOutputMapping mapping1 = new InputOutputMapping();
-        mapping1.setOutputId("002");
-        mapping1.setInputId("003");
-
-        dagElement.addToInputOutputMapping(mapping1);
-
-        template.addToParserDag(dagElement);
-
-        return template;
+            final String message = "Error while retrieving Parsing Template for id " + templateId + ".";
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
     }
 
+    //TODO: Fixme
     @Override
     public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId) throws RegistryServiceException, TException {
         return Collections.singletonList(getParsingTemplate("001"));
     }
 
     @Override
-    public String saveParsingTemplate(ParserInfo parserInfo) throws RegistryServiceException, TException {
-        return null;
+    public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException, TException {
+        ParsingTemplate saved = parsingTemplateRepository.create(parsingTemplate);
+        return saved.getId();
     }
 }

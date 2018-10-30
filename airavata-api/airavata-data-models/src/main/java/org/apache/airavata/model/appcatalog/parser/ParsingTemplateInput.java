@@ -28,19 +28,25 @@ package org.apache.airavata.model.appcatalog.parser;
 public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemplateInput, ParsingTemplateInput._Fields>, java.io.Serializable, Cloneable, Comparable<ParsingTemplateInput> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ParsingTemplateInput");
 
-  private static final org.apache.thrift.protocol.TField INPUT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("inputId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField EXPRESSION_FIELD_DESC = new org.apache.thrift.protocol.TField("expression", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField INPUT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("inputId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField EXPRESSION_FIELD_DESC = new org.apache.thrift.protocol.TField("expression", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField PARSING_TEMPLATE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parsingTemplateId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ParsingTemplateInputStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ParsingTemplateInputTupleSchemeFactory();
 
+  private java.lang.String id; // required
   private java.lang.String inputId; // required
   private java.lang.String expression; // required
+  private java.lang.String parsingTemplateId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    INPUT_ID((short)1, "inputId"),
-    EXPRESSION((short)2, "expression");
+    ID((short)1, "id"),
+    INPUT_ID((short)2, "inputId"),
+    EXPRESSION((short)3, "expression"),
+    PARSING_TEMPLATE_ID((short)4, "parsingTemplateId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -55,10 +61,14 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // INPUT_ID
+        case 1: // ID
+          return ID;
+        case 2: // INPUT_ID
           return INPUT_ID;
-        case 2: // EXPRESSION
+        case 3: // EXPRESSION
           return EXPRESSION;
+        case 4: // PARSING_TEMPLATE_ID
+          return PARSING_TEMPLATE_ID;
         default:
           return null;
       }
@@ -102,9 +112,13 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.INPUT_ID, new org.apache.thrift.meta_data.FieldMetaData("inputId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXPRESSION, new org.apache.thrift.meta_data.FieldMetaData("expression", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PARSING_TEMPLATE_ID, new org.apache.thrift.meta_data.FieldMetaData("parsingTemplateId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ParsingTemplateInput.class, metaDataMap);
@@ -114,23 +128,33 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
   }
 
   public ParsingTemplateInput(
+    java.lang.String id,
     java.lang.String inputId,
-    java.lang.String expression)
+    java.lang.String expression,
+    java.lang.String parsingTemplateId)
   {
     this();
+    this.id = id;
     this.inputId = inputId;
     this.expression = expression;
+    this.parsingTemplateId = parsingTemplateId;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public ParsingTemplateInput(ParsingTemplateInput other) {
+    if (other.isSetId()) {
+      this.id = other.id;
+    }
     if (other.isSetInputId()) {
       this.inputId = other.inputId;
     }
     if (other.isSetExpression()) {
       this.expression = other.expression;
+    }
+    if (other.isSetParsingTemplateId()) {
+      this.parsingTemplateId = other.parsingTemplateId;
     }
   }
 
@@ -140,8 +164,33 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
 
   @Override
   public void clear() {
+    this.id = null;
     this.inputId = null;
     this.expression = null;
+    this.parsingTemplateId = null;
+  }
+
+  public java.lang.String getId() {
+    return this.id;
+  }
+
+  public void setId(java.lang.String id) {
+    this.id = id;
+  }
+
+  public void unsetId() {
+    this.id = null;
+  }
+
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return this.id != null;
+  }
+
+  public void setIdIsSet(boolean value) {
+    if (!value) {
+      this.id = null;
+    }
   }
 
   public java.lang.String getInputId() {
@@ -190,8 +239,39 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     }
   }
 
+  public java.lang.String getParsingTemplateId() {
+    return this.parsingTemplateId;
+  }
+
+  public void setParsingTemplateId(java.lang.String parsingTemplateId) {
+    this.parsingTemplateId = parsingTemplateId;
+  }
+
+  public void unsetParsingTemplateId() {
+    this.parsingTemplateId = null;
+  }
+
+  /** Returns true if field parsingTemplateId is set (has been assigned a value) and false otherwise */
+  public boolean isSetParsingTemplateId() {
+    return this.parsingTemplateId != null;
+  }
+
+  public void setParsingTemplateIdIsSet(boolean value) {
+    if (!value) {
+      this.parsingTemplateId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
+    case ID:
+      if (value == null) {
+        unsetId();
+      } else {
+        setId((java.lang.String)value);
+      }
+      break;
+
     case INPUT_ID:
       if (value == null) {
         unsetInputId();
@@ -208,16 +288,30 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
       }
       break;
 
+    case PARSING_TEMPLATE_ID:
+      if (value == null) {
+        unsetParsingTemplateId();
+      } else {
+        setParsingTemplateId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
+    case ID:
+      return getId();
+
     case INPUT_ID:
       return getInputId();
 
     case EXPRESSION:
       return getExpression();
+
+    case PARSING_TEMPLATE_ID:
+      return getParsingTemplateId();
 
     }
     throw new java.lang.IllegalStateException();
@@ -230,10 +324,14 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     }
 
     switch (field) {
+    case ID:
+      return isSetId();
     case INPUT_ID:
       return isSetInputId();
     case EXPRESSION:
       return isSetExpression();
+    case PARSING_TEMPLATE_ID:
+      return isSetParsingTemplateId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -253,6 +351,15 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     if (this == that)
       return true;
 
+    boolean this_present_id = true && this.isSetId();
+    boolean that_present_id = true && that.isSetId();
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
+        return false;
+      if (!this.id.equals(that.id))
+        return false;
+    }
+
     boolean this_present_inputId = true && this.isSetInputId();
     boolean that_present_inputId = true && that.isSetInputId();
     if (this_present_inputId || that_present_inputId) {
@@ -271,12 +378,25 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
         return false;
     }
 
+    boolean this_present_parsingTemplateId = true && this.isSetParsingTemplateId();
+    boolean that_present_parsingTemplateId = true && that.isSetParsingTemplateId();
+    if (this_present_parsingTemplateId || that_present_parsingTemplateId) {
+      if (!(this_present_parsingTemplateId && that_present_parsingTemplateId))
+        return false;
+      if (!this.parsingTemplateId.equals(that.parsingTemplateId))
+        return false;
+    }
+
     return true;
   }
 
   @Override
   public int hashCode() {
     int hashCode = 1;
+
+    hashCode = hashCode * 8191 + ((isSetId()) ? 131071 : 524287);
+    if (isSetId())
+      hashCode = hashCode * 8191 + id.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetInputId()) ? 131071 : 524287);
     if (isSetInputId())
@@ -285,6 +405,10 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     hashCode = hashCode * 8191 + ((isSetExpression()) ? 131071 : 524287);
     if (isSetExpression())
       hashCode = hashCode * 8191 + expression.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetParsingTemplateId()) ? 131071 : 524287);
+    if (isSetParsingTemplateId())
+      hashCode = hashCode * 8191 + parsingTemplateId.hashCode();
 
     return hashCode;
   }
@@ -297,6 +421,16 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
 
     int lastComparison = 0;
 
+    lastComparison = java.lang.Boolean.valueOf(isSetId()).compareTo(other.isSetId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, other.id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = java.lang.Boolean.valueOf(isSetInputId()).compareTo(other.isSetInputId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -313,6 +447,16 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     }
     if (isSetExpression()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.expression, other.expression);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetParsingTemplateId()).compareTo(other.isSetParsingTemplateId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParsingTemplateId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parsingTemplateId, other.parsingTemplateId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -337,6 +481,14 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     java.lang.StringBuilder sb = new java.lang.StringBuilder("ParsingTemplateInput(");
     boolean first = true;
 
+    sb.append("id:");
+    if (this.id == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.id);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("inputId:");
     if (this.inputId == null) {
       sb.append("null");
@@ -352,18 +504,34 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
       sb.append(this.expression);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("parsingTemplateId:");
+    if (this.parsingTemplateId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.parsingTemplateId);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (!isSetId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' is unset! Struct:" + toString());
+    }
+
     if (!isSetInputId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'inputId' is unset! Struct:" + toString());
     }
 
     if (!isSetExpression()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'expression' is unset! Struct:" + toString());
+    }
+
+    if (!isSetParsingTemplateId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parsingTemplateId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -403,7 +571,15 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
           break;
         }
         switch (schemeField.id) {
-          case 1: // INPUT_ID
+          case 1: // ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.id = iprot.readString();
+              struct.setIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // INPUT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.inputId = iprot.readString();
               struct.setInputIdIsSet(true);
@@ -411,10 +587,18 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // EXPRESSION
+          case 3: // EXPRESSION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.expression = iprot.readString();
               struct.setExpressionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // PARSING_TEMPLATE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.parsingTemplateId = iprot.readString();
+              struct.setParsingTemplateIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -432,6 +616,11 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.id != null) {
+        oprot.writeFieldBegin(ID_FIELD_DESC);
+        oprot.writeString(struct.id);
+        oprot.writeFieldEnd();
+      }
       if (struct.inputId != null) {
         oprot.writeFieldBegin(INPUT_ID_FIELD_DESC);
         oprot.writeString(struct.inputId);
@@ -440,6 +629,11 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
       if (struct.expression != null) {
         oprot.writeFieldBegin(EXPRESSION_FIELD_DESC);
         oprot.writeString(struct.expression);
+        oprot.writeFieldEnd();
+      }
+      if (struct.parsingTemplateId != null) {
+        oprot.writeFieldBegin(PARSING_TEMPLATE_ID_FIELD_DESC);
+        oprot.writeString(struct.parsingTemplateId);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -459,17 +653,23 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ParsingTemplateInput struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      oprot.writeString(struct.id);
       oprot.writeString(struct.inputId);
       oprot.writeString(struct.expression);
+      oprot.writeString(struct.parsingTemplateId);
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ParsingTemplateInput struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      struct.id = iprot.readString();
+      struct.setIdIsSet(true);
       struct.inputId = iprot.readString();
       struct.setInputIdIsSet(true);
       struct.expression = iprot.readString();
       struct.setExpressionIsSet(true);
+      struct.parsingTemplateId = iprot.readString();
+      struct.setParsingTemplateIdIsSet(true);
     }
   }
 

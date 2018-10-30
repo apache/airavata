@@ -31,11 +31,11 @@ import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutputs;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.parser.DagElement;
+import org.apache.airavata.model.appcatalog.parser.ParserDagElement;
 import org.apache.airavata.model.appcatalog.parser.ParserInfo;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplateInput;
-import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.RegistryService;
@@ -57,7 +57,7 @@ public class ParserWorkflowManager extends WorkflowManager {
 
     private final static Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
 
-    private String parserStorageResourceId = "";
+    private String parserStorageResourceId = "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e";
 
     public ParserWorkflowManager() throws ApplicationSettingsException {
         super(ServerSettings.getSetting("parser.workflow.manager.name"));
@@ -66,7 +66,7 @@ public class ParserWorkflowManager extends WorkflowManager {
     public static void main(String[] args) throws Exception {
         ParserWorkflowManager manager = new ParserWorkflowManager();
         manager.init();
-        manager.runConsumer();
+        manager.test();
     }
 
     private void init() throws Exception {
@@ -94,20 +94,20 @@ public class ParserWorkflowManager extends WorkflowManager {
             // FIXME is it ApplicationInterfaceId or ApplicationName
             List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(completionMessage.getExperimentId());
 
-            Map<String, Map<String, Set<DagElement>>> parentToChildParsers = new HashMap<>();
+            Map<String, Map<String, Set<ParserDagElement>>> parentToChildParsers = new HashMap<>();
             Map<String, Map<String, Set<String>>> childToParentParsers = new HashMap<>();
 
             for (ParsingTemplate template : parsingTemplates) {
-                for (DagElement dagElement: template.getParserDag()) {
+                for (ParserDagElement dagElement: template.getParserDag()) {
 
-                    Map<String, Set<DagElement>> parentToChildLocal = new HashMap<>();
+                    Map<String, Set<ParserDagElement>> parentToChildLocal = new HashMap<>();
                     if (parentToChildParsers.containsKey(template.getId())) {
                         parentToChildLocal = parentToChildParsers.get(template.getId());
                     } else {
                         parentToChildParsers.put(template.getId(), parentToChildLocal);
                     }
 
-                    Set<DagElement> childLocal = new HashSet<>();
+                    Set<ParserDagElement> childLocal = new HashSet<>();
                     if (parentToChildLocal.containsKey(dagElement.getParentParserId())) {
                         childLocal = parentToChildLocal.get(dagElement.getParentParserId());
                     } else {
@@ -139,8 +139,8 @@ public class ParserWorkflowManager extends WorkflowManager {
                 String parentParserId = null;
                 for (String parentId : parentToChildParsers.get(template.getId()).keySet()) {
                     boolean found = false;
-                    for (Set<DagElement> dagElements : parentToChildParsers.get(template.getId()).values()) {
-                        Optional<DagElement> first = dagElements.stream().filter(dagElement -> dagElement.getChildParserId().equals(parentId)).findFirst();
+                    for (Set<ParserDagElement> dagElements : parentToChildParsers.get(template.getId()).values()) {
+                        Optional<ParserDagElement> first = dagElements.stream().filter(dagElement -> dagElement.getChildParserId().equals(parentId)).findFirst();
                         if (first.isPresent()) {
                             found = true;
                             break;
@@ -177,11 +177,19 @@ public class ParserWorkflowManager extends WorkflowManager {
         }
     }
 
-    private DataParsingTask createParentTask(ParserInfo parserInfo, ProcessCompletionMessage completionMessage, List<ParsingTemplateInput> templateInputs, RegistryService.Client registryClient) {
+    private DataParsingTask createParentTask(ParserInfo parserInfo, ProcessCompletionMessage completionMessage,
+                                             List<ParsingTemplateInput> templateInputs, RegistryService.Client registryClient) throws Exception {
         DataParsingTask parsingTask = new DataParsingTask();
-        parsingTask.setTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId() + "-" + UUID.randomUUID().toString());
+        parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId() + "-" + UUID.randomUUID().toString()));
         parsingTask.setGatewayId(completionMessage.getGatewayId());
         parsingTask.setParserInfoId(parserInfo.getId());
+        parsingTask.setLocalDataDir("/tmp");
+        try {
+            parsingTask.setGroupResourceProfileId(registryClient.getProcess(completionMessage.getProcessId()).getGroupResourceProfileId());
+        } catch (TException e) {
+            logger.error("Failed while fetching process model for process id  " + completionMessage.getProcessId());
+            throw new Exception("Failed while fetching process model for process id  " + completionMessage.getProcessId());
+        }
 
         ParsingTaskInputs inputs = new ParsingTaskInputs();
 
@@ -189,15 +197,16 @@ public class ParserWorkflowManager extends WorkflowManager {
             String expression = templateInput.getExpression();
             try {
                 ExperimentModel experiment = registryClient.getExperiment(completionMessage.getExperimentId());
-                Optional<InputDataObjectType> inputDataObj = experiment.getExperimentInputs().stream().filter(inputDataObjectType -> inputDataObjectType.getName().equals(expression)).findFirst();
-                if (inputDataObj.isPresent()) {
+                Optional<OutputDataObjectType> outputDataObj = experiment.getExperimentOutputs().stream().filter(outputDataObjectType -> outputDataObjectType.getName().equals(expression)).findFirst();
+                if (outputDataObj.isPresent()) {
                     ParsingTaskInput input = new ParsingTaskInput();
                     input.setId(templateInput.getInputId());
-                    input.setValue(inputDataObj.get().getValue());
+                    input.setValue(outputDataObj.get().getValue());
                     inputs.addInput(input);
                 }
             } catch (TException e) {
                 logger.error("Failed while fetching experiment " + completionMessage.getExperimentId());
+                throw new Exception("Failed while fetching experiment " + completionMessage.getExperimentId());
             }
         }
 
@@ -217,16 +226,23 @@ public class ParserWorkflowManager extends WorkflowManager {
         return parsingTask;
     }
 
-    private void createParserDagRecursively(List<AbstractTask> allTasks, ParserInfo parentParserInfo, DataParsingTask parentTask, Map<String, Set<DagElement>> parentToChild,
+    private void createParserDagRecursively(List<AbstractTask> allTasks, ParserInfo parentParserInfo, DataParsingTask parentTask, Map<String, Set<ParserDagElement>> parentToChild,
                                             ProcessCompletionMessage completionMessage, RegistryService.Client registryClient) throws Exception {
         if (parentToChild.containsKey(parentParserInfo.getId())) {
 
-            for (DagElement dagElement : parentToChild.get(parentParserInfo.getId())) {
+            for (ParserDagElement dagElement : parentToChild.get(parentParserInfo.getId())) {
                 ParserInfo childParserInfo = registryClient.getParserInfo(dagElement.getChildParserId());
                 DataParsingTask parsingTask = new DataParsingTask();
-                parsingTask.setTaskId(completionMessage.getExperimentId() + "-" + childParserInfo.getId() + "-" + UUID.randomUUID().toString());
+                parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + childParserInfo.getId() + "-" + UUID.randomUUID().toString()));
                 parsingTask.setGatewayId(completionMessage.getGatewayId());
                 parsingTask.setParserInfoId(childParserInfo.getId());
+                parsingTask.setLocalDataDir("/tmp");
+                try {
+                    parsingTask.setGroupResourceProfileId(registryClient.getProcess(completionMessage.getProcessId()).getGroupResourceProfileId());
+                } catch (TException e) {
+                    logger.error("Failed while fetching process model for process id  " + completionMessage.getProcessId());
+                    throw new Exception("Failed while fetching process model for process id  " + completionMessage.getProcessId());
+                }
 
                 ParsingTaskInputs inputs = new ParsingTaskInputs();
                 dagElement.getInputOutputMapping().forEach(mapping -> {
@@ -285,4 +301,13 @@ public class ParserWorkflowManager extends WorkflowManager {
             consumer.commitAsync();
         }
     }
+
+    private void test() {
+        ProcessCompletionMessage completionMessage = new ProcessCompletionMessage();
+        completionMessage.setExperimentId("Echo_on_Oct_24,_2018_10:03_AM_b67b6a7e-d41f-46c2-a756-d8cf91155e1e");
+        completionMessage.setGatewayId("seagrid");
+        completionMessage.setProcessId("PROCESS_be7d1946-e404-447e-a7e8-5581aaef2ef8");
+        process(completionMessage);
+    }
+
 }
