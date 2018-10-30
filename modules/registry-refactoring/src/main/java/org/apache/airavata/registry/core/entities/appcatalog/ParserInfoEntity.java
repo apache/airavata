@@ -21,11 +21,12 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "PARSER_INFO")
-public class ParserInfoEntity {
+public class ParserInfoEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

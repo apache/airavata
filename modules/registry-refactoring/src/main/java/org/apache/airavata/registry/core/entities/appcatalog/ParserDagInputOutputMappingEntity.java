@@ -21,10 +21,11 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "PARSER_DAG_IO_MAPPING")
-public class ParserDagInputOutputMappingEntity {
+public class ParserDagInputOutputMappingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
