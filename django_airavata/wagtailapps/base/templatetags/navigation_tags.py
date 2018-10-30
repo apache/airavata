@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 from wagtail.core.models import Page
 
 from django_airavata.wagtailapps.base.models import (
@@ -180,5 +181,6 @@ def gateway_title(context):
     gateway_title = GatewayTitle.objects.first()
 
     return {
-        'gateway_title': gateway_title
+        'gateway_title': gateway_title,
+        'default_title': settings.PORTAL_TITLE,
     }

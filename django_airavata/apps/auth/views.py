@@ -2,12 +2,14 @@ import logging
 from urllib.parse import quote
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import mail_admins, send_mail
+from django.core.mail import EmailMessage
 from django.forms import ValidationError
+from django.http.request import split_domain_port
 from django.shortcuts import redirect, render, resolve_url
+from django.template import Context, Template
 from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
@@ -157,11 +159,33 @@ def verify_email(request, code):
             logger.debug("Enabling user {}".format(username))
             # enable user and inform admins
             iam_admin_client.enable_user(username)
-            # TODO: use proper template for new user email
-            mail_admins(
-                'New User Created',
-                'New user: {}'.format(username)
-            )
+            user_profile = iam_admin_client.get_user(username)
+            new_user_email_template = models.EmailTemplate.objects.get(
+                pk=models.NEW_USER_EMAIL_TEMPLATE)
+            email_address = user_profile.emails[0]
+            first_name = user_profile.firstName
+            last_name = user_profile.lastName
+            domain, port = split_domain_port(request.get_host())
+            context = Context({
+                "username": username,
+                "email": email_address,
+                "first_name": first_name,
+                "last_name": last_name,
+                "portal_title": settings.PORTAL_TITLE,
+                "gateway_id": settings.GATEWAY_ID,
+                "http_host": domain,
+            })
+            subject = Template(new_user_email_template.subject).render(context)
+            body = Template(new_user_email_template.body).render(context)
+            msg = EmailMessage(subject=subject,
+                               body=body,
+                               from_email="{} <{}>".format(
+                                   settings.PORTAL_TITLE,
+                                   settings.SERVER_EMAIL),
+                               to=["{} {} <{}>".format(
+                                   first_name, last_name, email_address)])
+            msg.content_subtype = 'html'
+            msg.send()
             messages.success(
                 request,
                 "Your account has been successfully created. "
@@ -240,12 +264,21 @@ def _create_and_send_email_verification_link(
     logger.debug(
         "verification_uri={}".format(verification_uri))
 
-    # TODO: need a better template, customization
-    # TODO: add email settings documentation to
-    # settings_local.py
-    send_mail(
-        'Please verify your email address',
-        "Verification link: {}".format(verification_uri),
-        "Django Portal <pga.airavata@gmail.com>",
-        ["{} {} <{}>".format(first_name, last_name, email)]
-    )
+    verify_email_template = models.EmailTemplate.objects.get(
+        pk=models.VERIFY_EMAIL_TEMPLATE)
+    context = Context({
+        "username": username,
+        "email": email,
+        "first_name": first_name,
+        "last_name": last_name,
+        "portal_title": settings.PORTAL_TITLE,
+        "url": verification_uri,
+    })
+    subject = Template(verify_email_template.subject).render(context)
+    body = Template(verify_email_template.body).render(context)
+    msg = EmailMessage(subject=subject, body=body,
+                       from_email="{} <{}>".format(
+                           settings.PORTAL_TITLE, settings.SERVER_EMAIL),
+                       to=["{} {} <{}>".format(first_name, last_name, email)])
+    msg.content_subtype = 'html'
+    msg.send()

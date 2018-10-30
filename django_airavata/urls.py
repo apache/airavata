@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
+from django.contrib import admin
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
@@ -23,6 +24,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from . import views
 
 urlpatterns = [
+    url(r'^djadmin/', admin.site.urls),
     url(r'^admin/', include('django_airavata.apps.admin.urls')),
     url(r'^auth/', include('django_airavata.apps.auth.urls')),
     url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
