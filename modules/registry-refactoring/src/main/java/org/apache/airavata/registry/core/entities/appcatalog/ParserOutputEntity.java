@@ -36,7 +36,7 @@ public class ParserOutputEntity implements Serializable {
     private String name;
 
     @Column(name = "PARSER_OUTPUT_REQUIRED")
-    private boolean requiredFile;
+    private boolean requiredOutput;
 
     @Column(name = "PARSER_ID")
     private String parserId;
@@ -64,12 +64,12 @@ public class ParserOutputEntity implements Serializable {
         this.name = name;
     }
 
-    public boolean isRequiredFile() {
-        return requiredFile;
+    public boolean isRequiredOutput() {
+        return requiredOutput;
     }
 
-    public void setRequiredFile(boolean requiredFile) {
-        this.requiredFile = requiredFile;
+    public void setRequiredOutput(boolean requiredOutput) {
+        this.requiredOutput = requiredOutput;
     }
 
     public String getParserId() {
