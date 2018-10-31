@@ -182,8 +182,7 @@ def verify_email(request, code):
                                from_email="{} <{}>".format(
                                    settings.PORTAL_TITLE,
                                    settings.SERVER_EMAIL),
-                               to=["{} {} <{}>".format(
-                                   first_name, last_name, email_address)])
+                               to=[a[1] for a in settings.ADMINS])
             msg.content_subtype = 'html'
             msg.send()
             messages.success(
