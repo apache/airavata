@@ -19,7 +19,18 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.jdbc.ForeignKey;
+import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -52,6 +63,7 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
             @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false),
             @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", referencedColumnName = "GROUP_RESOURCE_PROFILE_ID", nullable = false)
     })
+    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public GroupSSHAccountProvisionerConfig() {

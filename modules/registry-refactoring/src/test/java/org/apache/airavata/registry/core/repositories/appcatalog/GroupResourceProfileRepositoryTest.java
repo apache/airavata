@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class GroupResourceProfileRepositoryTest extends TestBase {
@@ -206,6 +207,40 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId).size() == 2);
         assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId).size() == 2);
         assertTrue(groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId).size() == 2);
+
+        // AIRAVATA-2872 Test setting resourceSpecificCredentialStoreToken to a value and then changing it to null
+        GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        GroupComputeResourcePreference retrievedGroupComputeResourcePreference = retrievedGroupResourceProfile.getComputePreferences().stream()
+                .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
+                .findFirst()
+                .get();
+        assertNull(retrievedGroupComputeResourcePreference.getResourceSpecificCredentialStoreToken());
+        retrievedGroupComputeResourcePreference.setResourceSpecificCredentialStoreToken("abc123");
+        groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile);
+
+        GroupResourceProfile retrievedGroupResourceProfile2 = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        GroupComputeResourcePreference retrievedGroupComputeResourcePreference2 = retrievedGroupResourceProfile2.getComputePreferences().stream()
+                .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
+                .findFirst()
+                .get();
+        assertEquals("abc123", retrievedGroupComputeResourcePreference2.getResourceSpecificCredentialStoreToken());
+        retrievedGroupComputeResourcePreference2.setResourceSpecificCredentialStoreToken(null);
+        assertNull(retrievedGroupComputeResourcePreference2.getResourceSpecificCredentialStoreToken());
+        groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile2);
+
+        GroupResourceProfile retrievedGroupResourceProfile3 = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        GroupComputeResourcePreference retrievedGroupComputeResourcePreference3 = retrievedGroupResourceProfile3.getComputePreferences().stream()
+                .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
+                .findFirst()
+                .get();
+        assertNull(retrievedGroupComputeResourcePreference3.getResourceSpecificCredentialStoreToken());
+
+        // Orphan removal test
+        assertEquals(2, retrievedGroupResourceProfile3.getComputePreferencesSize());
+        retrievedGroupResourceProfile3.setComputePreferences(retrievedGroupResourceProfile3.getComputePreferences().subList(0, 1));
+        groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile3);
+        GroupResourceProfile retrievedGroupResourceProfile4 = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        assertEquals(1, retrievedGroupResourceProfile4.getComputePreferencesSize());
 
         groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
         computeResourceRepository.removeComputeResource(resourceId1);

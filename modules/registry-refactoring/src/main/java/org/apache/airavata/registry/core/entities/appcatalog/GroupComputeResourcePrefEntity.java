@@ -21,8 +21,21 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.openjpa.persistence.jdbc.ForeignKey;
+import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
@@ -95,8 +108,9 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @OneToMany(targetEntity = GroupSSHAccountProvisionerConfig.class, mappedBy = "groupComputeResourcePref", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<GroupSSHAccountProvisionerConfig> groupSSHAccountProvisionerConfigs;
 
-    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID")
+    @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private  GroupResourceProfileEntity groupResourceProfile;
 
     public GroupComputeResourcePrefEntity() {

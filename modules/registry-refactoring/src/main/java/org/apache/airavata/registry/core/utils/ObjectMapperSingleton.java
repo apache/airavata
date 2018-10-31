@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.utils;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TFieldIdEnum;
 import org.dozer.CustomFieldMapper;
@@ -53,9 +54,9 @@ public class ObjectMapperSingleton extends DozerBeanMapper{
     private static class MyCustomFieldMapper implements CustomFieldMapper {
         @Override
         public boolean mapField(Object source, Object destination, Object sourceFieldValue, ClassMap classMap, FieldMap fieldMap) {
-            // Just skipping mapping field if not set on Thrift source model
-            if (isSourceUnsetThriftField(source, fieldMap)) {
-                logger.debug("Skipping field " + fieldMap.getSrcFieldName() + " since it is unset thrift field");
+            // Just skipping mapping field if not set on Thrift source model and it is primitive
+            if (isSourceUnsetThriftField(source, fieldMap) && ClassUtils.isPrimitiveOrWrapper(source.getClass())) {
+                logger.debug("Skipping field " + fieldMap.getSrcFieldName() + " since it is unset thrift field and is primitive");
                 return true;
             }
             return false;

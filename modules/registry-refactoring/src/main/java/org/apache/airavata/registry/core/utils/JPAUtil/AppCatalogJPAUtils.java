@@ -64,6 +64,7 @@ public class AppCatalogJPAUtils {
             properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.jdbc.QuerySQLCache", "false");
+            properties.put("openjpa.DetachState", "all");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }

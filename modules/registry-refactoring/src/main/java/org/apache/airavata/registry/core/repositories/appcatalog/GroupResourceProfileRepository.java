@@ -24,10 +24,8 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResource
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.registry.core.entities.appcatalog.BatchQueueResourcePolicyPK;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefPK;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity;
-import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfilePK;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 
@@ -39,7 +37,7 @@ import java.util.UUID;
 /**
  * Created by skariyat on 2/8/18.
  */
-public class GroupResourceProfileRepository extends AppCatAbstractRepository<GroupResourceProfile, GroupResourceProfileEntity, GroupResourceProfilePK> {
+public class GroupResourceProfileRepository extends AppCatAbstractRepository<GroupResourceProfile, GroupResourceProfileEntity, String> {
 
     public GroupResourceProfileRepository() {
         super(GroupResourceProfile.class, GroupResourceProfileEntity.class);
@@ -90,22 +88,16 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
     }
 
     public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) {
-        GroupResourceProfilePK groupResourceProfilePK = new GroupResourceProfilePK();
-        groupResourceProfilePK.setGroupResourceProfileId(groupResourceProfileId);
-        GroupResourceProfile groupResourceProfile = get(groupResourceProfilePK);
+        GroupResourceProfile groupResourceProfile = get(groupResourceProfileId);
         return groupResourceProfile;
     }
 
     public boolean removeGroupResourceProfile(String groupResourceProfileId) {
-        GroupResourceProfilePK groupResourceProfilePK = new GroupResourceProfilePK();
-        groupResourceProfilePK.setGroupResourceProfileId(groupResourceProfileId);
-        return delete(groupResourceProfilePK);
+        return delete(groupResourceProfileId);
     }
 
     public boolean isGroupResourceProfileExists(String groupResourceProfileId) {
-        GroupResourceProfilePK groupResourceProfilePK = new GroupResourceProfilePK();
-        groupResourceProfilePK.setGroupResourceProfileId(groupResourceProfileId);
-        return isExists(groupResourceProfilePK);
+        return isExists(groupResourceProfileId);
     }
 
     public List<GroupResourceProfile> getAllGroupResourceProfiles(String gatewayId, List<String> accessibleGroupResProfileIds) {
@@ -133,10 +125,7 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
     }
 
     public boolean removeBatchQueueResourcePolicy(String resourcePolicyId) {
-        BatchQueueResourcePolicyPK batchQueueResourcePolicyPK = new BatchQueueResourcePolicyPK();
-        batchQueueResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
-
-        return (new BatchQueuePolicyRepository().delete(batchQueueResourcePolicyPK));
+        return (new BatchQueuePolicyRepository().delete(resourcePolicyId));
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId) {
@@ -152,10 +141,7 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
     }
 
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) {
-        BatchQueueResourcePolicyPK batchQueueResourcePolicyPK = new BatchQueueResourcePolicyPK();
-        batchQueueResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
-
-        return (new BatchQueuePolicyRepository().get(batchQueueResourcePolicyPK));
+        return (new BatchQueuePolicyRepository().get(resourcePolicyId));
     }
 
     public List<GroupComputeResourcePreference> getAllGroupComputeResourcePreferences(String groupResourceProfileId) {
