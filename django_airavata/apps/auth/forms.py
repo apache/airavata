@@ -23,14 +23,16 @@ class CreateAccountForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control',
                                       'placeholder': 'Username'}),
         min_length=6,
-        validators=[USERNAME_VALIDATOR])
+        validators=[USERNAME_VALIDATOR],
+        help_text=USERNAME_VALIDATOR.message)
     password = forms.CharField(
         label='Password',
         widget=forms.PasswordInput(attrs={'class': 'form-control',
                                           'placeholder': 'Password'}),
         min_length=8,
         max_length=48,
-        validators=[PASSWORD_VALIDATOR])
+        validators=[PASSWORD_VALIDATOR],
+        help_text=PASSWORD_VALIDATOR.message)
     password_again = forms.CharField(
         label='Password (again)',
         widget=forms.PasswordInput(attrs={'class': 'form-control',
