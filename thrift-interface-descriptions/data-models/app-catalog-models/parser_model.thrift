@@ -23,21 +23,27 @@ namespace php Airavata.Model.AppCatalog.Parser
 namespace cpp apache.airavata.model.appcatalog.parser
 namespace py airavata.model.appcatalog.parser
 
+enum IOType {
+    FILE, PROPERTY
+}
+
 struct ParserInput {
     1: required string id;
     2: required string name;
-    3: required bool requiredFile;
-    4: required string parserInfoId
+    3: required bool requiredInput;
+    4: required string parserId
+    5: required IOType type;
 }
 
 struct ParserOutput {
     1: required string id;
     2: required string name;
-    3: required bool requiredFile;
-    4: required string parserInfoId;
+    3: required bool requiredOutput;
+    4: required string parserId;
+    5: required IOType type;
 }
 
-struct ParserInfo {
+struct Parser {
     1: required string id;
     2: required string imageName;
     3: required string outputDirPath;
@@ -47,32 +53,33 @@ struct ParserInfo {
     7: required list<ParserOutput> outputFiles;
 }
 
-struct ParserDagInputOutputMapping {
+struct ParserConnectorInput {
     1: required string id;
     2: required string inputId;
-    3: required string outputId;
-    4: required string parserDagElementId;
+    3: string parentOutputId; // either it is an output of parent parser or a constant value
+    4: string value;
+    5: required string parserConnectorId;
 }
 
-struct ParserDagElement {
+struct ParserConnector {
     1: required string id;
     2: required string parentParserId;
     3: required string childParserId;
-    4: required list<ParserDagInputOutputMapping> inputOutputMapping;
+    4: required list<ParserConnectorInput> connectorInputs;
     5: required string parsingTemplateId;
-
 }
 
 struct ParsingTemplateInput {
     1: required string id;
     2: required string inputId
-    3: required string expression;
-    4: required string parsingTemplateId;
+    3: string applicationOutputName; // either it is an output of application or a constant value
+    4: string value;
+    5: required string parsingTemplateId;
 }
 
 struct ParsingTemplate {
     1: required string id;
     2: required string applicationInterface;
     3: required list<ParsingTemplateInput> initialInputs;
-    4: required list<ParserDagElement> parserDag;
+    4: required list<ParserConnector> parserConnections;
 }

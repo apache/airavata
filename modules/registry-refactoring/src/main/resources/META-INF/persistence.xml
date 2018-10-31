@@ -72,13 +72,13 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserResourceProfileEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferenceEntity</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.ParserInfoEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ParserEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParserInputEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParserOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParsingTemplateEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParsingTemplateInputEntity</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.ParserDagInputOutputMappingEntity</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.ParserDagElementEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ParserConnectorInputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ParserConnectorEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="replicacatalog_data_new">
