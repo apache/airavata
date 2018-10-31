@@ -31,7 +31,8 @@ class ImageBlock(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = 'image'
@@ -40,7 +41,8 @@ class ImageBlock(StructBlock):
 
 class FontAwesomeIcon(StructBlock):
     """
-    Custom 'StructBlock' for utilizing images with associated caption and attribution django_airavata
+    Custom 'StructBlock' for utilizing images with associated caption and
+    attribution django_airavata
     """
     icon_tag = TextBlock(required=True, blank=False,
                          help_text="Provide a font awesome icon class text")
@@ -53,7 +55,8 @@ class FontAwesomeIcon(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = 'fa-flag'
@@ -67,7 +70,8 @@ class ParagraphBlock(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
     body = RichTextBlock()
 
     class Meta:
@@ -83,7 +87,8 @@ class IuFooter(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
     footer_links = RichTextBlock()
 
     class Meta:
@@ -94,7 +99,8 @@ class IuFooter(StructBlock):
 
 class HeadingBlock(StructBlock):
     """
-    Custom `StructBlock` that allows the user to select h1 - h4 sizes for headers
+    Custom `StructBlock` that allows the user to select h1 - h4 sizes for
+    headers
     """
     heading_text = CharBlock(classname="title", required=True)
     size = ChoiceBlock(choices=[
@@ -107,7 +113,8 @@ class HeadingBlock(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "title"
@@ -121,7 +128,8 @@ class PlaceholderBlock(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-map-marker"
@@ -136,12 +144,14 @@ class CustomEmbedBlock(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-link"
         template = "blocks/embed_block.html"
-        help_text = "Insert an embed URL e.g https://www.youtube.com/embed/SGJFWirQ3ks"
+        help_text = ("Insert an embed URL e.g "
+                     "https://www.youtube.com/embed/SGJFWirQ3ks")
 
 
 class CssCommentBlock(StructBlock):
@@ -171,7 +181,8 @@ class HorizontalRule(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-long-arrow-right"
@@ -204,7 +215,8 @@ class BootstrapJumbotron(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-indent"
@@ -233,7 +245,8 @@ class BootstrapButton(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-bold"
@@ -260,7 +273,8 @@ class BootstrapAlert(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-bell"
@@ -305,7 +319,8 @@ class BootstrapCard(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-id-card"
@@ -345,17 +360,20 @@ class BootstrapCarousel(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-film"
         template = "blocks/bootstrap/carousel.html"
-        help_text = "Create a bootstrap carousel. Fill the images in order to get optimized display."
+        help_text = ("Create a bootstrap carousel. Fill the images in order "
+                     "to get optimized display.")
 
 
 class BootstrapWell(StructBlock):
     """
-    Custom 'StructBlock' that allows user to make a bootstrap well. (optimized for bootstrap 4 using card)
+    Custom 'StructBlock' that allows user to make a bootstrap well.
+    (optimized for bootstrap 4 using card)
     """
     message = RichTextBlock(help_text="Enter some message inside well")
     well_bg_color = ChoiceBlock(choices=[
@@ -370,7 +388,8 @@ class BootstrapWell(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-window-minimize"
@@ -400,7 +419,8 @@ class BootstrapMediaObject(StructBlock):
     custom_class = TextBlock(
         required=False,
         blank=True,
-        help_text="control this element by giving unique class names separated by space and styling the class in css")
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
 
     class Meta:
         icon = "fa-align-right"
