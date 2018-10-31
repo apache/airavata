@@ -30,7 +30,7 @@ public class ParserEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PARSER_INFO_ID")
+    @Column(name = "PARSER_ID")
     private String id;
 
     @Column(name = "IMAGE_NAME")
