@@ -20,7 +20,15 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.jdbc.ForeignKey;
+import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -28,7 +36,6 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "BATCH_QUEUE_RESOURCE_POLICY")
-@IdClass(BatchQueueResourcePolicyPK.class)
 public class BatchQueueResourcePolicyEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,8 +62,9 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     @Column(name = "MAX_ALLOWED_WALLTIME")
     private Integer maxAllowedWalltime;
 
-    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID")
+    @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public BatchQueueResourcePolicyEntity() {

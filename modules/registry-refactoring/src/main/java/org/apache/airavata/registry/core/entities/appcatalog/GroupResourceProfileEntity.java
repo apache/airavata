@@ -19,7 +19,13 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
 
@@ -28,7 +34,6 @@ import java.util.List;
  */
 @Entity
 @Table(name = "GROUP_RESOURCE_PROFILE")
-@IdClass(GroupResourceProfilePK.class)
 public class GroupResourceProfileEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,15 +58,15 @@ public class GroupResourceProfileEntity implements Serializable {
     private String defaultCredentialStoreToken;
 
     @OneToMany(targetEntity = GroupComputeResourcePrefEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER)
+            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<GroupComputeResourcePrefEntity> computePreferences;
 
     @OneToMany(targetEntity = ComputeResourcePolicyEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER)
+            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<ComputeResourcePolicyEntity> computeResourcePolicies;
 
     @OneToMany(targetEntity = BatchQueueResourcePolicyEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER)
+            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<BatchQueueResourcePolicyEntity> batchQueueResourcePolicies;
 
     public GroupResourceProfileEntity() {
