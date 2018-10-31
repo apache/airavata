@@ -30,23 +30,30 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField REQUIRED_FILE_FIELD_DESC = new org.apache.thrift.protocol.TField("requiredFile", org.apache.thrift.protocol.TType.BOOL, (short)3);
-  private static final org.apache.thrift.protocol.TField PARSER_INFO_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parserInfoId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField REQUIRED_OUTPUT_FIELD_DESC = new org.apache.thrift.protocol.TField("requiredOutput", org.apache.thrift.protocol.TType.BOOL, (short)3);
+  private static final org.apache.thrift.protocol.TField PARSER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parserId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)5);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ParserOutputStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ParserOutputTupleSchemeFactory();
 
   private java.lang.String id; // required
   private java.lang.String name; // required
-  private boolean requiredFile; // required
-  private java.lang.String parserInfoId; // required
+  private boolean requiredOutput; // required
+  private java.lang.String parserId; // required
+  private IOType type; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
     NAME((short)2, "name"),
-    REQUIRED_FILE((short)3, "requiredFile"),
-    PARSER_INFO_ID((short)4, "parserInfoId");
+    REQUIRED_OUTPUT((short)3, "requiredOutput"),
+    PARSER_ID((short)4, "parserId"),
+    /**
+     * 
+     * @see IOType
+     */
+    TYPE((short)5, "type");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -65,10 +72,12 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
           return ID;
         case 2: // NAME
           return NAME;
-        case 3: // REQUIRED_FILE
-          return REQUIRED_FILE;
-        case 4: // PARSER_INFO_ID
-          return PARSER_INFO_ID;
+        case 3: // REQUIRED_OUTPUT
+          return REQUIRED_OUTPUT;
+        case 4: // PARSER_ID
+          return PARSER_ID;
+        case 5: // TYPE
+          return TYPE;
         default:
           return null;
       }
@@ -109,7 +118,7 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
   }
 
   // isset id assignments
-  private static final int __REQUIREDFILE_ISSET_ID = 0;
+  private static final int __REQUIREDOUTPUT_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -118,10 +127,12 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.REQUIRED_FILE, new org.apache.thrift.meta_data.FieldMetaData("requiredFile", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.REQUIRED_OUTPUT, new org.apache.thrift.meta_data.FieldMetaData("requiredOutput", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.PARSER_INFO_ID, new org.apache.thrift.meta_data.FieldMetaData("parserInfoId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.PARSER_ID, new org.apache.thrift.meta_data.FieldMetaData("parserId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, IOType.class)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ParserOutput.class, metaDataMap);
   }
@@ -132,15 +143,17 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
   public ParserOutput(
     java.lang.String id,
     java.lang.String name,
-    boolean requiredFile,
-    java.lang.String parserInfoId)
+    boolean requiredOutput,
+    java.lang.String parserId,
+    IOType type)
   {
     this();
     this.id = id;
     this.name = name;
-    this.requiredFile = requiredFile;
-    setRequiredFileIsSet(true);
-    this.parserInfoId = parserInfoId;
+    this.requiredOutput = requiredOutput;
+    setRequiredOutputIsSet(true);
+    this.parserId = parserId;
+    this.type = type;
   }
 
   /**
@@ -154,9 +167,12 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
     if (other.isSetName()) {
       this.name = other.name;
     }
-    this.requiredFile = other.requiredFile;
-    if (other.isSetParserInfoId()) {
-      this.parserInfoId = other.parserInfoId;
+    this.requiredOutput = other.requiredOutput;
+    if (other.isSetParserId()) {
+      this.parserId = other.parserId;
+    }
+    if (other.isSetType()) {
+      this.type = other.type;
     }
   }
 
@@ -168,9 +184,10 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
   public void clear() {
     this.id = null;
     this.name = null;
-    setRequiredFileIsSet(false);
-    this.requiredFile = false;
-    this.parserInfoId = null;
+    setRequiredOutputIsSet(false);
+    this.requiredOutput = false;
+    this.parserId = null;
+    this.type = null;
   }
 
   public java.lang.String getId() {
@@ -219,48 +236,79 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
     }
   }
 
-  public boolean isRequiredFile() {
-    return this.requiredFile;
+  public boolean isRequiredOutput() {
+    return this.requiredOutput;
   }
 
-  public void setRequiredFile(boolean requiredFile) {
-    this.requiredFile = requiredFile;
-    setRequiredFileIsSet(true);
+  public void setRequiredOutput(boolean requiredOutput) {
+    this.requiredOutput = requiredOutput;
+    setRequiredOutputIsSet(true);
   }
 
-  public void unsetRequiredFile() {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __REQUIREDFILE_ISSET_ID);
+  public void unsetRequiredOutput() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __REQUIREDOUTPUT_ISSET_ID);
   }
 
-  /** Returns true if field requiredFile is set (has been assigned a value) and false otherwise */
-  public boolean isSetRequiredFile() {
-    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __REQUIREDFILE_ISSET_ID);
+  /** Returns true if field requiredOutput is set (has been assigned a value) and false otherwise */
+  public boolean isSetRequiredOutput() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __REQUIREDOUTPUT_ISSET_ID);
   }
 
-  public void setRequiredFileIsSet(boolean value) {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __REQUIREDFILE_ISSET_ID, value);
+  public void setRequiredOutputIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __REQUIREDOUTPUT_ISSET_ID, value);
   }
 
-  public java.lang.String getParserInfoId() {
-    return this.parserInfoId;
+  public java.lang.String getParserId() {
+    return this.parserId;
   }
 
-  public void setParserInfoId(java.lang.String parserInfoId) {
-    this.parserInfoId = parserInfoId;
+  public void setParserId(java.lang.String parserId) {
+    this.parserId = parserId;
   }
 
-  public void unsetParserInfoId() {
-    this.parserInfoId = null;
+  public void unsetParserId() {
+    this.parserId = null;
   }
 
-  /** Returns true if field parserInfoId is set (has been assigned a value) and false otherwise */
-  public boolean isSetParserInfoId() {
-    return this.parserInfoId != null;
+  /** Returns true if field parserId is set (has been assigned a value) and false otherwise */
+  public boolean isSetParserId() {
+    return this.parserId != null;
   }
 
-  public void setParserInfoIdIsSet(boolean value) {
+  public void setParserIdIsSet(boolean value) {
     if (!value) {
-      this.parserInfoId = null;
+      this.parserId = null;
+    }
+  }
+
+  /**
+   * 
+   * @see IOType
+   */
+  public IOType getType() {
+    return this.type;
+  }
+
+  /**
+   * 
+   * @see IOType
+   */
+  public void setType(IOType type) {
+    this.type = type;
+  }
+
+  public void unsetType() {
+    this.type = null;
+  }
+
+  /** Returns true if field type is set (has been assigned a value) and false otherwise */
+  public boolean isSetType() {
+    return this.type != null;
+  }
+
+  public void setTypeIsSet(boolean value) {
+    if (!value) {
+      this.type = null;
     }
   }
 
@@ -282,19 +330,27 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
       }
       break;
 
-    case REQUIRED_FILE:
+    case REQUIRED_OUTPUT:
       if (value == null) {
-        unsetRequiredFile();
+        unsetRequiredOutput();
       } else {
-        setRequiredFile((java.lang.Boolean)value);
+        setRequiredOutput((java.lang.Boolean)value);
       }
       break;
 
-    case PARSER_INFO_ID:
+    case PARSER_ID:
       if (value == null) {
-        unsetParserInfoId();
+        unsetParserId();
       } else {
-        setParserInfoId((java.lang.String)value);
+        setParserId((java.lang.String)value);
+      }
+      break;
+
+    case TYPE:
+      if (value == null) {
+        unsetType();
+      } else {
+        setType((IOType)value);
       }
       break;
 
@@ -309,11 +365,14 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
     case NAME:
       return getName();
 
-    case REQUIRED_FILE:
-      return isRequiredFile();
+    case REQUIRED_OUTPUT:
+      return isRequiredOutput();
 
-    case PARSER_INFO_ID:
-      return getParserInfoId();
+    case PARSER_ID:
+      return getParserId();
+
+    case TYPE:
+      return getType();
 
     }
     throw new java.lang.IllegalStateException();
@@ -330,10 +389,12 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
       return isSetId();
     case NAME:
       return isSetName();
-    case REQUIRED_FILE:
-      return isSetRequiredFile();
-    case PARSER_INFO_ID:
-      return isSetParserInfoId();
+    case REQUIRED_OUTPUT:
+      return isSetRequiredOutput();
+    case PARSER_ID:
+      return isSetParserId();
+    case TYPE:
+      return isSetType();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -371,21 +432,30 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
         return false;
     }
 
-    boolean this_present_requiredFile = true;
-    boolean that_present_requiredFile = true;
-    if (this_present_requiredFile || that_present_requiredFile) {
-      if (!(this_present_requiredFile && that_present_requiredFile))
+    boolean this_present_requiredOutput = true;
+    boolean that_present_requiredOutput = true;
+    if (this_present_requiredOutput || that_present_requiredOutput) {
+      if (!(this_present_requiredOutput && that_present_requiredOutput))
         return false;
-      if (this.requiredFile != that.requiredFile)
+      if (this.requiredOutput != that.requiredOutput)
         return false;
     }
 
-    boolean this_present_parserInfoId = true && this.isSetParserInfoId();
-    boolean that_present_parserInfoId = true && that.isSetParserInfoId();
-    if (this_present_parserInfoId || that_present_parserInfoId) {
-      if (!(this_present_parserInfoId && that_present_parserInfoId))
+    boolean this_present_parserId = true && this.isSetParserId();
+    boolean that_present_parserId = true && that.isSetParserId();
+    if (this_present_parserId || that_present_parserId) {
+      if (!(this_present_parserId && that_present_parserId))
         return false;
-      if (!this.parserInfoId.equals(that.parserInfoId))
+      if (!this.parserId.equals(that.parserId))
+        return false;
+    }
+
+    boolean this_present_type = true && this.isSetType();
+    boolean that_present_type = true && that.isSetType();
+    if (this_present_type || that_present_type) {
+      if (!(this_present_type && that_present_type))
+        return false;
+      if (!this.type.equals(that.type))
         return false;
     }
 
@@ -404,11 +474,15 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
     if (isSetName())
       hashCode = hashCode * 8191 + name.hashCode();
 
-    hashCode = hashCode * 8191 + ((requiredFile) ? 131071 : 524287);
+    hashCode = hashCode * 8191 + ((requiredOutput) ? 131071 : 524287);
 
-    hashCode = hashCode * 8191 + ((isSetParserInfoId()) ? 131071 : 524287);
-    if (isSetParserInfoId())
-      hashCode = hashCode * 8191 + parserInfoId.hashCode();
+    hashCode = hashCode * 8191 + ((isSetParserId()) ? 131071 : 524287);
+    if (isSetParserId())
+      hashCode = hashCode * 8191 + parserId.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetType()) ? 131071 : 524287);
+    if (isSetType())
+      hashCode = hashCode * 8191 + type.getValue();
 
     return hashCode;
   }
@@ -441,22 +515,32 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetRequiredFile()).compareTo(other.isSetRequiredFile());
+    lastComparison = java.lang.Boolean.valueOf(isSetRequiredOutput()).compareTo(other.isSetRequiredOutput());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetRequiredFile()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requiredFile, other.requiredFile);
+    if (isSetRequiredOutput()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requiredOutput, other.requiredOutput);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetParserInfoId()).compareTo(other.isSetParserInfoId());
+    lastComparison = java.lang.Boolean.valueOf(isSetParserId()).compareTo(other.isSetParserId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetParserInfoId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parserInfoId, other.parserInfoId);
+    if (isSetParserId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parserId, other.parserId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetType()).compareTo(other.isSetType());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.type, other.type);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -497,15 +581,23 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("requiredFile:");
-    sb.append(this.requiredFile);
+    sb.append("requiredOutput:");
+    sb.append(this.requiredOutput);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("parserInfoId:");
-    if (this.parserInfoId == null) {
+    sb.append("parserId:");
+    if (this.parserId == null) {
       sb.append("null");
     } else {
-      sb.append(this.parserInfoId);
+      sb.append(this.parserId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("type:");
+    if (this.type == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.type);
     }
     first = false;
     sb.append(")");
@@ -522,12 +614,16 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'name' is unset! Struct:" + toString());
     }
 
-    if (!isSetRequiredFile()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'requiredFile' is unset! Struct:" + toString());
+    if (!isSetRequiredOutput()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'requiredOutput' is unset! Struct:" + toString());
     }
 
-    if (!isSetParserInfoId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parserInfoId' is unset! Struct:" + toString());
+    if (!isSetParserId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parserId' is unset! Struct:" + toString());
+    }
+
+    if (!isSetType()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'type' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -585,18 +681,26 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // REQUIRED_FILE
+          case 3: // REQUIRED_OUTPUT
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.requiredFile = iprot.readBool();
-              struct.setRequiredFileIsSet(true);
+              struct.requiredOutput = iprot.readBool();
+              struct.setRequiredOutputIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // PARSER_INFO_ID
+          case 4: // PARSER_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.parserInfoId = iprot.readString();
-              struct.setParserInfoIdIsSet(true);
+              struct.parserId = iprot.readString();
+              struct.setParserIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.type = org.apache.airavata.model.appcatalog.parser.IOType.findByValue(iprot.readI32());
+              struct.setTypeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -624,12 +728,17 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
         oprot.writeString(struct.name);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(REQUIRED_FILE_FIELD_DESC);
-      oprot.writeBool(struct.requiredFile);
+      oprot.writeFieldBegin(REQUIRED_OUTPUT_FIELD_DESC);
+      oprot.writeBool(struct.requiredOutput);
       oprot.writeFieldEnd();
-      if (struct.parserInfoId != null) {
-        oprot.writeFieldBegin(PARSER_INFO_ID_FIELD_DESC);
-        oprot.writeString(struct.parserInfoId);
+      if (struct.parserId != null) {
+        oprot.writeFieldBegin(PARSER_ID_FIELD_DESC);
+        oprot.writeString(struct.parserId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.type != null) {
+        oprot.writeFieldBegin(TYPE_FIELD_DESC);
+        oprot.writeI32(struct.type.getValue());
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -651,8 +760,9 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.id);
       oprot.writeString(struct.name);
-      oprot.writeBool(struct.requiredFile);
-      oprot.writeString(struct.parserInfoId);
+      oprot.writeBool(struct.requiredOutput);
+      oprot.writeString(struct.parserId);
+      oprot.writeI32(struct.type.getValue());
     }
 
     @Override
@@ -662,10 +772,12 @@ public class ParserOutput implements org.apache.thrift.TBase<ParserOutput, Parse
       struct.setIdIsSet(true);
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      struct.requiredFile = iprot.readBool();
-      struct.setRequiredFileIsSet(true);
-      struct.parserInfoId = iprot.readString();
-      struct.setParserInfoIdIsSet(true);
+      struct.requiredOutput = iprot.readBool();
+      struct.setRequiredOutputIsSet(true);
+      struct.parserId = iprot.readString();
+      struct.setParserIdIsSet(true);
+      struct.type = org.apache.airavata.model.appcatalog.parser.IOType.findByValue(iprot.readI32());
+      struct.setTypeIsSet(true);
     }
   }
 

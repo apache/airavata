@@ -47,7 +47,7 @@ import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.parser.ParserInfo;
+import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParserInput;
 import org.apache.airavata.model.appcatalog.parser.ParserOutput;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,8 +78,8 @@ public class DataParsingTask extends AbstractTask {
 
     private final static Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
 
-    @TaskParam(name = "ParserInfo Id")
-    private String parserInfoId;
+    @TaskParam(name = "Parser Id")
+    private String parserId;
 
     @TaskParam(name = "Parser inputs")
     private ParsingTaskInputs parsingTaskInputs;
@@ -103,8 +102,8 @@ public class DataParsingTask extends AbstractTask {
 
         try {
 
-            ParserInfo parserInfo = getRegistryServiceClient().getParserInfo(parserInfoId);
-            String containerId = getTaskId() + "_PARSER_"+ parserInfo.getId();
+            Parser parser = getRegistryServiceClient().getParserInfo(parserId);
+            String containerId = getTaskId() + "_PARSER_"+ parser.getId();
 
             String localInputDir = createLocalInputDir(containerId);
             String localOutDir= createLocalOutputDir(containerId);
@@ -112,7 +111,7 @@ public class DataParsingTask extends AbstractTask {
 
             logger.info("Downloading input files to local input directory");
 
-            for (ParserInput parserInput : parserInfo.getInputFiles()) {
+            for (ParserInput parserInput : parser.getInputFiles()) {
                 Optional<ParsingTaskInput> filteredInputOptional = parsingTaskInputs.getInputs().stream().filter(inp -> parserInput.getId().equals(inp.getId())).findFirst();
 
                 if (filteredInputOptional.isPresent()) {
@@ -149,7 +148,7 @@ public class DataParsingTask extends AbstractTask {
                         throw new TaskOnFailException("Failed to download input file with id " + parserInput.getId() + " from data product uri " + inputDataProductUri, true, null);
                     }
                 } else {
-                    if (parserInput.isRequiredFile()) {
+                    if (parserInput.isRequiredInput()) {
                         logger.error("File download info with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available");
                         throw new TaskOnFailException("File download info with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available", true, null);
                     } else {
@@ -159,9 +158,9 @@ public class DataParsingTask extends AbstractTask {
             }
 
             logger.info("Running container with id " + containerId + " local input dir " + localInputDir + " local output dir " + localOutDir);
-            runContainer(parserInfo, containerId, localInputDir, localOutDir);
+            runContainer(parser, containerId, localInputDir, localOutDir);
 
-            for (ParserOutput parserOutput : parserInfo.getOutputFiles()) {
+            for (ParserOutput parserOutput : parser.getOutputFiles()) {
 
                 Optional<ParsingTaskOutput> filteredOutputOptional = parsingTaskOutputs.getOutputs()
                         .stream().filter(out -> parserOutput.getId().equals(out.getId())).findFirst();
@@ -174,14 +173,14 @@ public class DataParsingTask extends AbstractTask {
 
                     if (new File(localFilePath).exists()) {
                         uploadFileToStorageResource(parsingTaskOutput, remoteFilePath, localFilePath, helper.getAdaptorSupport());
-                    } else if (parserOutput.isRequiredFile()) {
+                    } else if (parserOutput.isRequiredOutput()) {
                         logger.error("Expected output file " + localFilePath + " can not be found");
                         throw new TaskOnFailException("Expected output file " + localFilePath + " can not be found", false, null);
                     } else {
                         logger.error("Expected output file " + localFilePath + " can not be found but skipping as it is not mandatory");
                     }
                 } else {
-                    if (parserOutput.isRequiredFile()) {
+                    if (parserOutput.isRequiredOutput()) {
                         logger.error("File upload info with id " + parserOutput.getId() + " and name " + parserOutput.getName() + " is not available");
                         throw new TaskOnFailException("File upload info with id " + parserOutput.getId() + " and name " + parserOutput.getName() + " is not available", true, null);
                     } else {
@@ -212,14 +211,14 @@ public class DataParsingTask extends AbstractTask {
 
     }
 
-    private void runContainer(ParserInfo parserInfo, String containerId, String localInputDir, String localOutputDir) {
+    private void runContainer(Parser parser, String containerId, String localInputDir, String localOutputDir) {
         DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
         DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
 
-        CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parserInfo.getImageName()).withCmd("/bin/sh", "-c", parserInfo.getExecutionCommand()).withName(containerId)
-                .withBinds(Bind.parse(localInputDir + ":" + parserInfo.getInputDirPath()),
-                        Bind.parse(localOutputDir + ":" + parserInfo.getOutputDirPath())).withTty(true).withAttachStdin(true).withAttachStdout(true).exec();
+        CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parser.getImageName()).withCmd("/bin/sh", "-c", parser.getExecutionCommand()).withName(containerId)
+                .withBinds(Bind.parse(localInputDir + ":" + parser.getInputDirPath()),
+                        Bind.parse(localOutputDir + ":" + parser.getOutputDirPath())).withTty(true).withAttachStdin(true).withAttachStdout(true).exec();
 
         logger.info("Created the container with id " + containerResponse.getId());
 
@@ -383,12 +382,12 @@ public class DataParsingTask extends AbstractTask {
         }
     }
 
-    public String getParserInfoId() {
-        return parserInfoId;
+    public String getParserId() {
+        return parserId;
     }
 
-    public void setParserInfoId(String parserInfoId) {
-        this.parserInfoId = parserInfoId;
+    public void setParserId(String parserId) {
+        this.parserId = parserId;
     }
 
     public ParsingTaskInputs getParsingTaskInputs() {
