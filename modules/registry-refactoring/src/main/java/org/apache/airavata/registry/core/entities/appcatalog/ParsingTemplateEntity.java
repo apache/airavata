@@ -40,9 +40,9 @@ public class ParsingTemplateEntity implements Serializable {
             mappedBy = "parsingTemplate", fetch = FetchType.EAGER)
     private List<ParsingTemplateInputEntity> initialInputs;
 
-    @OneToMany(targetEntity = ParserDagElementEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
+    @OneToMany(targetEntity = ParserConnectorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "parsingTemplate", fetch = FetchType.EAGER)
-    private List<ParserDagElementEntity> parserDag;
+    private List<ParserConnectorEntity> parserConnections;
 
     public String getId() {
         return id;
@@ -68,11 +68,11 @@ public class ParsingTemplateEntity implements Serializable {
         this.initialInputs = initialInputs;
     }
 
-    public List<ParserDagElementEntity> getParserDag() {
-        return parserDag;
+    public List<ParserConnectorEntity> getParserConnections() {
+        return parserConnections;
     }
 
-    public void setParserDag(List<ParserDagElementEntity> parserDag) {
-        this.parserDag = parserDag;
+    public void setParserConnections(List<ParserConnectorEntity> parserConnections) {
+        this.parserConnections = parserConnections;
     }
 }

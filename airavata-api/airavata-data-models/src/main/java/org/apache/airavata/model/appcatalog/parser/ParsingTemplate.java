@@ -31,7 +31,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterface", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField INITIAL_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("initialInputs", org.apache.thrift.protocol.TType.LIST, (short)3);
-  private static final org.apache.thrift.protocol.TField PARSER_DAG_FIELD_DESC = new org.apache.thrift.protocol.TField("parserDag", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField PARSER_CONNECTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("parserConnections", org.apache.thrift.protocol.TType.LIST, (short)4);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ParsingTemplateStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ParsingTemplateTupleSchemeFactory();
@@ -39,14 +39,14 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
   private java.lang.String id; // required
   private java.lang.String applicationInterface; // required
   private java.util.List<ParsingTemplateInput> initialInputs; // required
-  private java.util.List<ParserDagElement> parserDag; // required
+  private java.util.List<ParserConnector> parserConnections; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
     APPLICATION_INTERFACE((short)2, "applicationInterface"),
     INITIAL_INPUTS((short)3, "initialInputs"),
-    PARSER_DAG((short)4, "parserDag");
+    PARSER_CONNECTIONS((short)4, "parserConnections");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -67,8 +67,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
           return APPLICATION_INTERFACE;
         case 3: // INITIAL_INPUTS
           return INITIAL_INPUTS;
-        case 4: // PARSER_DAG
-          return PARSER_DAG;
+        case 4: // PARSER_CONNECTIONS
+          return PARSER_CONNECTIONS;
         default:
           return null;
       }
@@ -119,9 +119,9 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     tmpMap.put(_Fields.INITIAL_INPUTS, new org.apache.thrift.meta_data.FieldMetaData("initialInputs", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ParsingTemplateInput.class))));
-    tmpMap.put(_Fields.PARSER_DAG, new org.apache.thrift.meta_data.FieldMetaData("parserDag", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.PARSER_CONNECTIONS, new org.apache.thrift.meta_data.FieldMetaData("parserConnections", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ParserDagElement.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ParserConnector.class))));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ParsingTemplate.class, metaDataMap);
   }
@@ -133,13 +133,13 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     java.lang.String id,
     java.lang.String applicationInterface,
     java.util.List<ParsingTemplateInput> initialInputs,
-    java.util.List<ParserDagElement> parserDag)
+    java.util.List<ParserConnector> parserConnections)
   {
     this();
     this.id = id;
     this.applicationInterface = applicationInterface;
     this.initialInputs = initialInputs;
-    this.parserDag = parserDag;
+    this.parserConnections = parserConnections;
   }
 
   /**
@@ -159,12 +159,12 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       }
       this.initialInputs = __this__initialInputs;
     }
-    if (other.isSetParserDag()) {
-      java.util.List<ParserDagElement> __this__parserDag = new java.util.ArrayList<ParserDagElement>(other.parserDag.size());
-      for (ParserDagElement other_element : other.parserDag) {
-        __this__parserDag.add(new ParserDagElement(other_element));
+    if (other.isSetParserConnections()) {
+      java.util.List<ParserConnector> __this__parserConnections = new java.util.ArrayList<ParserConnector>(other.parserConnections.size());
+      for (ParserConnector other_element : other.parserConnections) {
+        __this__parserConnections.add(new ParserConnector(other_element));
       }
-      this.parserDag = __this__parserDag;
+      this.parserConnections = __this__parserConnections;
     }
   }
 
@@ -177,7 +177,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     this.id = null;
     this.applicationInterface = null;
     this.initialInputs = null;
-    this.parserDag = null;
+    this.parserConnections = null;
   }
 
   public java.lang.String getId() {
@@ -264,41 +264,41 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     }
   }
 
-  public int getParserDagSize() {
-    return (this.parserDag == null) ? 0 : this.parserDag.size();
+  public int getParserConnectionsSize() {
+    return (this.parserConnections == null) ? 0 : this.parserConnections.size();
   }
 
-  public java.util.Iterator<ParserDagElement> getParserDagIterator() {
-    return (this.parserDag == null) ? null : this.parserDag.iterator();
+  public java.util.Iterator<ParserConnector> getParserConnectionsIterator() {
+    return (this.parserConnections == null) ? null : this.parserConnections.iterator();
   }
 
-  public void addToParserDag(ParserDagElement elem) {
-    if (this.parserDag == null) {
-      this.parserDag = new java.util.ArrayList<ParserDagElement>();
+  public void addToParserConnections(ParserConnector elem) {
+    if (this.parserConnections == null) {
+      this.parserConnections = new java.util.ArrayList<ParserConnector>();
     }
-    this.parserDag.add(elem);
+    this.parserConnections.add(elem);
   }
 
-  public java.util.List<ParserDagElement> getParserDag() {
-    return this.parserDag;
+  public java.util.List<ParserConnector> getParserConnections() {
+    return this.parserConnections;
   }
 
-  public void setParserDag(java.util.List<ParserDagElement> parserDag) {
-    this.parserDag = parserDag;
+  public void setParserConnections(java.util.List<ParserConnector> parserConnections) {
+    this.parserConnections = parserConnections;
   }
 
-  public void unsetParserDag() {
-    this.parserDag = null;
+  public void unsetParserConnections() {
+    this.parserConnections = null;
   }
 
-  /** Returns true if field parserDag is set (has been assigned a value) and false otherwise */
-  public boolean isSetParserDag() {
-    return this.parserDag != null;
+  /** Returns true if field parserConnections is set (has been assigned a value) and false otherwise */
+  public boolean isSetParserConnections() {
+    return this.parserConnections != null;
   }
 
-  public void setParserDagIsSet(boolean value) {
+  public void setParserConnectionsIsSet(boolean value) {
     if (!value) {
-      this.parserDag = null;
+      this.parserConnections = null;
     }
   }
 
@@ -328,11 +328,11 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       }
       break;
 
-    case PARSER_DAG:
+    case PARSER_CONNECTIONS:
       if (value == null) {
-        unsetParserDag();
+        unsetParserConnections();
       } else {
-        setParserDag((java.util.List<ParserDagElement>)value);
+        setParserConnections((java.util.List<ParserConnector>)value);
       }
       break;
 
@@ -350,8 +350,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     case INITIAL_INPUTS:
       return getInitialInputs();
 
-    case PARSER_DAG:
-      return getParserDag();
+    case PARSER_CONNECTIONS:
+      return getParserConnections();
 
     }
     throw new java.lang.IllegalStateException();
@@ -370,8 +370,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       return isSetApplicationInterface();
     case INITIAL_INPUTS:
       return isSetInitialInputs();
-    case PARSER_DAG:
-      return isSetParserDag();
+    case PARSER_CONNECTIONS:
+      return isSetParserConnections();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -418,12 +418,12 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
         return false;
     }
 
-    boolean this_present_parserDag = true && this.isSetParserDag();
-    boolean that_present_parserDag = true && that.isSetParserDag();
-    if (this_present_parserDag || that_present_parserDag) {
-      if (!(this_present_parserDag && that_present_parserDag))
+    boolean this_present_parserConnections = true && this.isSetParserConnections();
+    boolean that_present_parserConnections = true && that.isSetParserConnections();
+    if (this_present_parserConnections || that_present_parserConnections) {
+      if (!(this_present_parserConnections && that_present_parserConnections))
         return false;
-      if (!this.parserDag.equals(that.parserDag))
+      if (!this.parserConnections.equals(that.parserConnections))
         return false;
     }
 
@@ -446,9 +446,9 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     if (isSetInitialInputs())
       hashCode = hashCode * 8191 + initialInputs.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetParserDag()) ? 131071 : 524287);
-    if (isSetParserDag())
-      hashCode = hashCode * 8191 + parserDag.hashCode();
+    hashCode = hashCode * 8191 + ((isSetParserConnections()) ? 131071 : 524287);
+    if (isSetParserConnections())
+      hashCode = hashCode * 8191 + parserConnections.hashCode();
 
     return hashCode;
   }
@@ -491,12 +491,12 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetParserDag()).compareTo(other.isSetParserDag());
+    lastComparison = java.lang.Boolean.valueOf(isSetParserConnections()).compareTo(other.isSetParserConnections());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetParserDag()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parserDag, other.parserDag);
+    if (isSetParserConnections()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parserConnections, other.parserConnections);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -545,11 +545,11 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("parserDag:");
-    if (this.parserDag == null) {
+    sb.append("parserConnections:");
+    if (this.parserConnections == null) {
       sb.append("null");
     } else {
-      sb.append(this.parserDag);
+      sb.append(this.parserConnections);
     }
     first = false;
     sb.append(")");
@@ -570,8 +570,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'initialInputs' is unset! Struct:" + toString());
     }
 
-    if (!isSetParserDag()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parserDag' is unset! Struct:" + toString());
+    if (!isSetParserConnections()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parserConnections' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -646,21 +646,21 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // PARSER_DAG
+          case 4: // PARSER_CONNECTIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list27 = iprot.readListBegin();
-                struct.parserDag = new java.util.ArrayList<ParserDagElement>(_list27.size);
-                ParserDagElement _elem28;
+                struct.parserConnections = new java.util.ArrayList<ParserConnector>(_list27.size);
+                ParserConnector _elem28;
                 for (int _i29 = 0; _i29 < _list27.size; ++_i29)
                 {
-                  _elem28 = new ParserDagElement();
+                  _elem28 = new ParserConnector();
                   _elem28.read(iprot);
-                  struct.parserDag.add(_elem28);
+                  struct.parserConnections.add(_elem28);
                 }
                 iprot.readListEnd();
               }
-              struct.setParserDagIsSet(true);
+              struct.setParserConnectionsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -700,11 +700,11 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
         }
         oprot.writeFieldEnd();
       }
-      if (struct.parserDag != null) {
-        oprot.writeFieldBegin(PARSER_DAG_FIELD_DESC);
+      if (struct.parserConnections != null) {
+        oprot.writeFieldBegin(PARSER_CONNECTIONS_FIELD_DESC);
         {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.parserDag.size()));
-          for (ParserDagElement _iter31 : struct.parserDag)
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.parserConnections.size()));
+          for (ParserConnector _iter31 : struct.parserConnections)
           {
             _iter31.write(oprot);
           }
@@ -739,8 +739,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
         }
       }
       {
-        oprot.writeI32(struct.parserDag.size());
-        for (ParserDagElement _iter33 : struct.parserDag)
+        oprot.writeI32(struct.parserConnections.size());
+        for (ParserConnector _iter33 : struct.parserConnections)
         {
           _iter33.write(oprot);
         }
@@ -768,16 +768,16 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       struct.setInitialInputsIsSet(true);
       {
         org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.parserDag = new java.util.ArrayList<ParserDagElement>(_list37.size);
-        ParserDagElement _elem38;
+        struct.parserConnections = new java.util.ArrayList<ParserConnector>(_list37.size);
+        ParserConnector _elem38;
         for (int _i39 = 0; _i39 < _list37.size; ++_i39)
         {
-          _elem38 = new ParserDagElement();
+          _elem38 = new ParserConnector();
           _elem38.read(iprot);
-          struct.parserDag.add(_elem38);
+          struct.parserConnections.add(_elem38);
         }
       }
-      struct.setParserDagIsSet(true);
+      struct.setParserConnectionsIsSet(true);
     }
   }
 
