@@ -492,6 +492,18 @@ class LogoutNavItem(NavItem):
         }
 
 
+class CreateAccountNavItem(NavItem):
+
+    class Meta:
+        default = {
+            'link': '/auth/create-account',
+            'link_text': 'Create Account',
+            'icon_class': 'fas fa-user',
+            'show': 'not-logged-in',
+            'horizontal_alignment': 'push-right',
+        }
+
+
 class Nav(StructBlock):
     custom_class = CharBlock(required=False)
     nav_items = StreamBlock([
@@ -499,6 +511,7 @@ class Nav(StructBlock):
         ('login_link', LoginNavItem()),
         ('dashboard_link', DashboardLinkNavItem()),
         ('logout_link', LogoutNavItem()),
+        ('create_account_link', CreateAccountNavItem()),
     ])
 
     class Meta:
