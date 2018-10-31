@@ -36,14 +36,17 @@ public class ParserOutputEntity implements Serializable {
     private String name;
 
     @Column(name = "PARSER_OUTPUT_REQUIRED")
-    private boolean requiredFile;
+    private boolean requiredOutput;
 
-    @Column(name = "PARSER_INFO_ID")
-    private String parserInfoId;
+    @Column(name = "PARSER_ID")
+    private String parserId;
 
-    @ManyToOne(targetEntity = ParserInfoEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_INFO_ID")
-    private ParserInfoEntity parserInfo;
+    @ManyToOne(targetEntity = ParserEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "PARSER_ID")
+    private ParserEntity parser;
+
+    @Column(name = "OUTPUT_TYPE")
+    private String type;
 
     public String getId() {
         return id;
@@ -61,27 +64,35 @@ public class ParserOutputEntity implements Serializable {
         this.name = name;
     }
 
-    public boolean isRequiredFile() {
-        return requiredFile;
+    public boolean isRequiredOutput() {
+        return requiredOutput;
     }
 
-    public void setRequiredFile(boolean requiredFile) {
-        this.requiredFile = requiredFile;
+    public void setRequiredOutput(boolean requiredOutput) {
+        this.requiredOutput = requiredOutput;
     }
 
-    public String getParserInfoId() {
-        return parserInfoId;
+    public String getParserId() {
+        return parserId;
     }
 
-    public void setParserInfoId(String parserInfoId) {
-        this.parserInfoId = parserInfoId;
+    public void setParserId(String parserId) {
+        this.parserId = parserId;
     }
 
-    public ParserInfoEntity getParserInfo() {
-        return parserInfo;
+    public ParserEntity getParser() {
+        return parser;
     }
 
-    public void setParserInfo(ParserInfoEntity parserInfo) {
-        this.parserInfo = parserInfo;
+    public void setParser(ParserEntity parser) {
+        this.parser = parser;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

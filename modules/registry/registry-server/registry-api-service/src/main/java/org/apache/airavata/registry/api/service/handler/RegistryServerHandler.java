@@ -150,13 +150,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
     private WorkflowRepository workflowRepository = new WorkflowRepository();
     private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
-    private ParserInfoRepository parserInfoRepository = new ParserInfoRepository();
+    private ParserRepository parserInfoRepository = new ParserRepository();
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
-    private ParserInputRepository parserInputRepository = new ParserInputRepository();
-    private ParserOutputRepository parserOutputRepository = new ParserOutputRepository();
-    private ParserDagElementRepository parserDagElementRepository = new ParserDagElementRepository();
-    private ParserDagInputOutputMappingRepository parserDagInputOutputMappingRepository = new ParserDagInputOutputMappingRepository();
-    private ParsingTemplateInputRepository parsingTemplateInputRepository = new ParsingTemplateInputRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -4943,7 +4938,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public ParserInfo getParserInfo(String parserId) throws RegistryServiceException, TException {
+    public Parser getParserInfo(String parserId) throws RegistryServiceException, TException {
         try {
             if (!parserInfoRepository.isExists(parserId)) {
                 final String message = "No Parser Info entry exists for " + parserId;
@@ -4964,8 +4959,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public String saveParserInfo(ParserInfo parserInfo) throws RegistryServiceException, TException {
-        ParserInfo created = parserInfoRepository.create(parserInfo);
+    public String saveParserInfo(Parser parser) throws RegistryServiceException, TException {
+        Parser created = parserInfoRepository.create(parser);
         return created.getId();
     }
 
@@ -4993,7 +4988,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     //TODO: Fixme
     @Override
     public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId) throws RegistryServiceException, TException {
-        return Collections.singletonList(getParsingTemplate("001"));
+        return Collections.singletonList(getParsingTemplate("template-1"));
     }
 
     @Override
