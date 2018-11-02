@@ -56,8 +56,8 @@ public class DataMovementInterfaceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    @ManyToOne(targetEntity = ComputeResourceEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "COMPUTE_RESOURCE_ID")
+    @ManyToOne(targetEntity = ComputeResourceEntity.class)
+    @JoinColumn(name = "COMPUTE_RESOURCE_ID", nullable = false, updatable = false)
     private ComputeResourceEntity computeResource;
 
     public DataMovementInterfaceEntity() {
