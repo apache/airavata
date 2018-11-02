@@ -208,7 +208,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 credential.setTemporary(false);
                 retrievedUser.resetPassword(credential);
                 List<ClientRepresentation> realmClients = client.realm(gatewayDetails.getGatewayId()).clients().findAll();
-                String realmManagementClientId=null;
+                String realmManagementClientId=getRealmManagementClientId(client, gatewayDetails.getGatewayId());
                 for(ClientRepresentation realmClient : realmClients){
                     if(realmClient.getClientId().equals("realm-management")){
                         realmManagementClientId = realmClient.getId();
@@ -262,7 +262,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                     gatewayURL = gatewayURL.substring(0, gatewayURL.length() - 1);
                 }
                 // Add redirect URL after login
-                redirectUris.add(gatewayURL + "/callback-url");
+                redirectUris.add(gatewayURL + "/callback-url"); // PGA
+                redirectUris.add(gatewayURL + "/auth/callback*"); // Django
                 // Add redirect URL after logout
                 redirectUris.add(gatewayURL);
             } else {
@@ -275,6 +276,17 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             pgaClient.setPublicClient(false);
             Response httpResponse = client.realms().realm(gatewayDetails.getGatewayId()).clients().create(pgaClient);
             logger.info("Tenant Client configuration exited with code : " + httpResponse.getStatus()+" : " +httpResponse.getStatusInfo());
+
+            // Add the manage-users role to the web client
+            UserRepresentation serviceAccountUserRepresentation = getUserByUsername(client, gatewayDetails.getGatewayId(), "service-account-" + pgaClient.getClientId());
+            UserResource serviceAccountUser = client.realms().realm(gatewayDetails.getGatewayId()).users().get(serviceAccountUserRepresentation.getId());
+            String realmManagementClientId = getRealmManagementClientId(client, gatewayDetails.getGatewayId());
+            List<RoleRepresentation> manageUsersRole = serviceAccountUser.roles().clientLevel(realmManagementClientId).listAvailable()
+                    .stream()
+                    .filter(r -> r.getName().equals("manage-users"))
+                    .collect(Collectors.toList());
+            serviceAccountUser.roles().clientLevel(realmManagementClientId).add(manageUsersRole);
+
             if(httpResponse.getStatus() == 201){
                 String ClientUUID = client.realms().realm(gatewayDetails.getGatewayId()).clients().findByClientId(pgaClient.getClientId()).get(0).getId();
                 CredentialRepresentation clientSecret = client.realms().realm(gatewayDetails.getGatewayId()).clients().get(ClientUUID).getSecret();
@@ -296,6 +308,17 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 client.close();
             }
         }
+    }
+
+    private static String getRealmManagementClientId(Keycloak client, String realmId) {
+        List<ClientRepresentation> realmClients = client.realm(realmId).clients().findAll();
+        String realmManagementClientId=null;
+        for(ClientRepresentation realmClient : realmClients){
+            if(realmClient.getClientId().equals("realm-management")){
+                realmManagementClientId = realmClient.getId();
+            }
+        }
+        return realmManagementClientId;
     }
 
     @Override
@@ -727,7 +750,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         return profile;
     }
 
-    private UserRepresentation getUserByUsername(Keycloak client, String tenantId, String username) {
+    private static UserRepresentation getUserByUsername(Keycloak client, String tenantId, String username) {
 
         // Searching for users by username returns also partial matches, so need to filter down to an exact match if it exists
         List<UserRepresentation> userResourceList = client.realm(tenantId).users().search(
