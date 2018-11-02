@@ -485,7 +485,6 @@ class LoginNavItem(NavItem):
             'link_text': 'Log in',
             'icon_class': 'fas fa-sign-in-alt',
             'show': 'not-logged-in',
-            'horizontal_alignment': 'push-right',
         }
 
 

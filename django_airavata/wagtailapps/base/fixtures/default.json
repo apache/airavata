@@ -17,6 +17,23 @@
   }
 },
 {
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": "2018-11-02T18:57:32.188Z",
+    "is_superuser": true,
+    "username": "marcus",
+    "first_name": "Marcus",
+    "last_name": "Christie",
+    "email": "machrist@iu.edu",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2018-11-02T18:38:43.781Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
   "model": "wagtailembeds.embed",
   "pk": 1,
   "fields": {
@@ -1774,6 +1791,72 @@
   }
 },
 {
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 1,
+  "fields": {
+    "group": [
+      "Moderators"
+    ],
+    "page": 1,
+    "permission_type": "add"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 2,
+  "fields": {
+    "group": [
+      "Moderators"
+    ],
+    "page": 1,
+    "permission_type": "edit"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 3,
+  "fields": {
+    "group": [
+      "Moderators"
+    ],
+    "page": 1,
+    "permission_type": "publish"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 4,
+  "fields": {
+    "group": [
+      "Editors"
+    ],
+    "page": 1,
+    "permission_type": "add"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 5,
+  "fields": {
+    "group": [
+      "Editors"
+    ],
+    "page": 1,
+    "permission_type": "edit"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 6,
+  "fields": {
+    "group": [
+      "Moderators"
+    ],
+    "page": 1,
+    "permission_type": "lock"
+  }
+},
+{
   "model": "wagtailcore.collection",
   "pk": 1,
   "fields": {
@@ -1781,6 +1864,126 @@
     "depth": 1,
     "numchild": 0,
     "name": "Root"
+  }
+},
+{
+  "model": "wagtailcore.groupcollectionpermission",
+  "pk": 1,
+  "fields": {
+    "group": [
+      "Editors"
+    ],
+    "collection": 1,
+    "permission": [
+      "add_image",
+      "wagtailimages",
+      "image"
+    ]
+  }
+},
+{
+  "model": "wagtailcore.groupcollectionpermission",
+  "pk": 2,
+  "fields": {
+    "group": [
+      "Moderators"
+    ],
+    "collection": 1,
+    "permission": [
+      "add_image",
+      "wagtailimages",
+      "image"
+    ]
+  }
+},
+{
+  "model": "wagtailcore.groupcollectionpermission",
+  "pk": 3,
+  "fields": {
+    "group": [
+      "Editors"
+    ],
+    "collection": 1,
+    "permission": [
+      "change_image",
+      "wagtailimages",
+      "image"
+    ]
+  }
+},
+{
+  "model": "wagtailcore.groupcollectionpermission",
+  "pk": 4,
+  "fields": {
+    "group": [
+      "Moderators"
+    ],
+    "collection": 1,
+    "permission": [
+      "change_image",
+      "wagtailimages",
+      "image"
+    ]
+  }
+},
+{
+  "model": "wagtailcore.groupcollectionpermission",
+  "pk": 5,
+  "fields": {
+    "group": [
+      "Editors"
+    ],
+    "collection": 1,
+    "permission": [
+      "add_document",
+      "wagtaildocs",
+      "document"
+    ]
+  }
+},
+{
+  "model": "wagtailcore.groupcollectionpermission",
+  "pk": 6,
+  "fields": {
+    "group": [
+      "Moderators"
+    ],
+    "collection": 1,
+    "permission": [
+      "add_document",
+      "wagtaildocs",
+      "document"
+    ]
+  }
+},
+{
+  "model": "wagtailcore.groupcollectionpermission",
+  "pk": 7,
+  "fields": {
+    "group": [
+      "Editors"
+    ],
+    "collection": 1,
+    "permission": [
+      "change_document",
+      "wagtaildocs",
+      "document"
+    ]
+  }
+},
+{
+  "model": "wagtailcore.groupcollectionpermission",
+  "pk": 8,
+  "fields": {
+    "group": [
+      "Moderators"
+    ],
+    "collection": 1,
+    "permission": [
+      "change_document",
+      "wagtaildocs",
+      "document"
+    ]
   }
 },
 {
@@ -2248,10 +2451,17 @@
   }
 },
 {
+  "model": "django_airavata_wagtail_base.navextra",
+  "pk": 1,
+  "fields": {
+    "nav": "[{\"type\": \"nav\", \"value\": {\"custom_class\": \"second-nav\", \"nav_items\": [{\"type\": \"create_account_link\", \"value\": {\"link\": \"/auth/create-account\", \"link_text\": \"Create Account\", \"image\": null, \"icon_class\": \"fas fa-user\", \"show\": \"not-logged-in\", \"horizontal_alignment\": \"push-right\"}, \"id\": \"53ad1e3b-5e3f-4e2c-a485-e7cfed0fb247\"}, {\"type\": \"login_link\", \"value\": {\"link\": \"/auth/login\", \"link_text\": \"Log in\", \"image\": null, \"icon_class\": \"fas fa-sign-in-alt\", \"show\": \"not-logged-in\", \"horizontal_alignment\": \"\"}, \"id\": \"b82e88b6-5a50-4fc9-8833-04bb51cd1d6d\"}, {\"type\": \"dashboard_link\", \"value\": {\"link\": \"/workspace/dashboard\", \"link_text\": \"Go to Dashboard\", \"image\": null, \"icon_class\": \"fas fa-arrow-circle-right\", \"show\": \"logged-in\", \"horizontal_alignment\": \"push-right\"}, \"id\": \"2d863b5d-eefd-4de3-a664-875f9952ce86\"}, {\"type\": \"logout_link\", \"value\": {\"link\": \"/auth/logout\", \"link_text\": \"Logout\", \"image\": null, \"icon_class\": \"fas fa-sign-out-alt\", \"show\": \"logged-in\", \"horizontal_alignment\": \"\"}, \"id\": \"dabc1083-bf2e-4b4d-97f6-30806551eda6\"}]}, \"id\": \"cd88aa57-92fb-4279-8649-1f164a39a44e\"}]"
+  }
+},
+{
   "model": "django_airavata_wagtail_base.customcss",
   "pk": 1,
   "fields": {
-    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"---- Body Styles to remove container padding -----\"}, \"id\": \"6d6eec7d-4d66-42d9-94e4-7855903f0ec4\"}, {\"type\": \"css_block\", \"value\": \"body [class*=\\\"col-\\\"] { \\r\\n  padding-left:0;\\r\\n  padding-right:0\\r\\n}\\r\\nbody .row {\\r\\nmargin-left: 0;\\r\\nmargin-right: 0;\\r\\nmin-width: 100% !important;\\r\\n}\\r\\nbody .container {\\r\\nwidth:100%;\\r\\nmax-width:none;\\r\\npadding:0;\\r\\n}\\r\\nbody .container-fluid {\\r\\nwidth:100%;\\r\\nmax-width:none;\\r\\npadding:0;\\r\\n}\", \"id\": \"ed7ef4fd-22bb-4194-89f9-1737add48fe0\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Main Navbar Styles ----\"}, \"id\": \"bcc898d0-e0ff-4b79-b11b-515b6bdaefc1\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #EFEFEF;\\r\\ncolor: #777;\\r\\n}\\r\\n.main-nav a{\\r\\ncolor: #777 !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #9cb7e2 !important;\\r\\n}\", \"id\": \"655e7de4-7c1c-40de-bfda-702912c8ab3b\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Main carousel ----\"}, \"id\": \"ea8f256e-b1e9-4da3-bf99-03115c00e193\"}, {\"type\": \"css_block\", \"value\": \".carousel .carousel-inner .carousel-item{\\r\\nwidth: 100%;\\r\\nheight: 750px;\\r\\n}\\r\\n.carousel-caption {\\r\\nbackground: #e8f0ff;\\r\\ncolor: #777;\\r\\n}\", \"id\": \"cd590fbb-f0ab-424f-a460-7fd4af110fa3\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Scigap Card -----\"}, \"id\": \"00167256-ce31-4abc-ad6a-e898ce862227\"}, {\"type\": \"css_block\", \"value\": \".scigap-card {\\r\\nheight: 500px;\\r\\nz-index: 15;\\r\\n}\", \"id\": \"dd099655-d6f2-4d4b-91f3-f6fe1592627f\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Embed Video 1----\"}, \"id\": \"2855fa59-f83f-4131-8322-fdc49986496a\"}, {\"type\": \"css_block\", \"value\": \".embedvideo1 > div {\\r\\npadding-bottom: 0px!important;\\r\\n}\\r\\n.embedvideo1 iframe {\\r\\nwidth: 100%;\\r\\nheight: 500px;\\r\\nmargin-top: -35px;\\r\\n}\", \"id\": \"7aca7ff2-83c6-4749-8182-c2e12e8e74c4\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Big red image alignment ----\"}, \"id\": \"e580704d-7aaf-48c1-9032-705dba2ddc66\"}, {\"type\": \"css_block\", \"value\": \"@media screen and (min-width: 600px) {\\r\\n   .bigred {\\r\\n    margin-top: 195px;\\r\\n  }\\r\\n}\", \"id\": \"f910f9aa-87f9-4dc9-99f6-9e22244d40f9\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Card Group-----\"}, \"id\": \"0df3c4e1-3ec7-4f30-8770-08ab409d5b69\"}, {\"type\": \"css_block\", \"value\": \".card-group {\\r\\nbackground: #343a40;\\r\\npadding-top: 100px !important;\\r\\npadding-bottom: 100px !important;\\r\\n}\\r\\n.card-group > .card {\\r\\nborder: none;\\r\\n}\", \"id\": \"aebb11ed-f922-438d-b5e6-dc8541459335\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Hero Text----\"}, \"id\": \"0c2fec88-064a-46aa-a380-0b5ab1556281\"}, {\"type\": \"css_block\", \"value\": \".hero-text {\\r\\nbackground: #EFEFEF;\\r\\ncolor: #777;\\r\\npadding-left: 50px;\\r\\npadding-right: 50px;\\r\\n}\", \"id\": \"88409537-8a25-42b5-a636-e293b82edd70\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Contact Media Objects -----\"}, \"id\": \"6adb6600-711d-4591-9cb8-98af4794054d\"}, {\"type\": \"css_block\", \"value\": \".contact-media {\\r\\nbackground: #343a40 !important;\\r\\nmargin-left: auto;\\r\\nmargin-right: auto;\\r\\npadding-left: auto;\\r\\npadding-right: auto;\\r\\n}\\r\\n@media screen and (min-width: 600px) {\\r\\n  .contact-media {\\r\\n    padding-left: 200px !important;\\r\\n    padding-right: 200px !important;\\r\\n  }\\r\\n}\\r\\n.contact-media img {\\r\\nborder-radius: 50%;\\r\\n}\\r\\n.contact-media img:hover {\\r\\nborder: 2px solid #EFEFEF;\\r\\n}\\r\\n.contact-media a {\\r\\ntext-decoration: none;\\r\\ncolor: #d6edc2;\\r\\n}\", \"id\": \"f1ae714b-eec6-4bcc-be66-f4c1feb82952\"}]"
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"---- Body Styles to remove container padding -----\"}, \"id\": \"6d6eec7d-4d66-42d9-94e4-7855903f0ec4\"}, {\"type\": \"css_block\", \"value\": \"body [class*=\\\"col-\\\"] { \\r\\n  padding-left:0;\\r\\n  padding-right:0\\r\\n}\\r\\nbody .row {\\r\\nmargin-left: 0;\\r\\nmargin-right: 0;\\r\\nmin-width: 100% !important;\\r\\n}\\r\\nbody .container {\\r\\nwidth:100%;\\r\\nmax-width:none;\\r\\npadding:0;\\r\\n}\\r\\nbody .container-fluid {\\r\\nwidth:100%;\\r\\nmax-width:none;\\r\\npadding:0;\\r\\n}\", \"id\": \"ed7ef4fd-22bb-4194-89f9-1737add48fe0\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Main Navbar Styles ----\"}, \"id\": \"bcc898d0-e0ff-4b79-b11b-515b6bdaefc1\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #EFEFEF;\\r\\ncolor: #777;\\r\\n}\\r\\n.main-nav a{\\r\\ncolor: #777 !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #9cb7e2 !important;\\r\\n}\", \"id\": \"655e7de4-7c1c-40de-bfda-702912c8ab3b\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Main carousel ----\"}, \"id\": \"ea8f256e-b1e9-4da3-bf99-03115c00e193\"}, {\"type\": \"css_block\", \"value\": \".carousel .carousel-inner .carousel-item{\\r\\nwidth: 100%;\\r\\nheight: 750px;\\r\\n}\\r\\n.carousel-caption {\\r\\nbackground: #e8f0ff;\\r\\ncolor: #777;\\r\\n}\", \"id\": \"cd590fbb-f0ab-424f-a460-7fd4af110fa3\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Scigap Card -----\"}, \"id\": \"00167256-ce31-4abc-ad6a-e898ce862227\"}, {\"type\": \"css_block\", \"value\": \".scigap-card {\\r\\nheight: 500px;\\r\\nz-index: 15;\\r\\n}\", \"id\": \"dd099655-d6f2-4d4b-91f3-f6fe1592627f\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Embed Video 1----\"}, \"id\": \"2855fa59-f83f-4131-8322-fdc49986496a\"}, {\"type\": \"css_block\", \"value\": \".embedvideo1 > div {\\r\\npadding-bottom: 0px!important;\\r\\n}\\r\\n.embedvideo1 iframe {\\r\\nwidth: 100%;\\r\\nheight: 500px;\\r\\nmargin-top: -35px;\\r\\n}\", \"id\": \"7aca7ff2-83c6-4749-8182-c2e12e8e74c4\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Big red image alignment ----\"}, \"id\": \"e580704d-7aaf-48c1-9032-705dba2ddc66\"}, {\"type\": \"css_block\", \"value\": \"@media screen and (min-width: 600px) {\\r\\n   .bigred {\\r\\n    margin-top: 195px;\\r\\n  }\\r\\n}\", \"id\": \"f910f9aa-87f9-4dc9-99f6-9e22244d40f9\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Card Group-----\"}, \"id\": \"0df3c4e1-3ec7-4f30-8770-08ab409d5b69\"}, {\"type\": \"css_block\", \"value\": \".card-group {\\r\\nbackground: #343a40;\\r\\npadding-top: 100px !important;\\r\\npadding-bottom: 100px !important;\\r\\n}\\r\\n.card-group > .card {\\r\\nborder: none;\\r\\n}\", \"id\": \"aebb11ed-f922-438d-b5e6-dc8541459335\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Hero Text----\"}, \"id\": \"0c2fec88-064a-46aa-a380-0b5ab1556281\"}, {\"type\": \"css_block\", \"value\": \".hero-text {\\r\\nbackground: #EFEFEF;\\r\\ncolor: #777;\\r\\npadding-left: 50px;\\r\\npadding-right: 50px;\\r\\n}\", \"id\": \"88409537-8a25-42b5-a636-e293b82edd70\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Contact Media Objects -----\"}, \"id\": \"6adb6600-711d-4591-9cb8-98af4794054d\"}, {\"type\": \"css_block\", \"value\": \".contact-media {\\r\\nbackground: #343a40 !important;\\r\\nmargin-left: auto;\\r\\nmargin-right: auto;\\r\\npadding-left: auto;\\r\\npadding-right: auto;\\r\\n}\\r\\n@media screen and (min-width: 600px) {\\r\\n  .contact-media {\\r\\n    padding-left: 200px !important;\\r\\n    padding-right: 200px !important;\\r\\n  }\\r\\n}\\r\\n.contact-media img {\\r\\nborder-radius: 50%;\\r\\n}\\r\\n.contact-media img:hover {\\r\\nborder: 2px solid #EFEFEF;\\r\\n}\\r\\n.contact-media a {\\r\\ntext-decoration: none;\\r\\ncolor: #d6edc2;\\r\\n}\", \"id\": \"f1ae714b-eec6-4bcc-be66-f4c1feb82952\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Nav extra styling ----\"}, \"id\": \"669f7121-bbc7-45da-b09b-c783a2ff12eb\"}, {\"type\": \"css_block\", \"value\": \".second-nav {\\r\\n  background-color: #343a40;\\r\\n}\\r\\n.second-nav a {\\r\\n  color: white;\\r\\n}\", \"id\": \"fca46420-21ec-436c-b5fc-9d0d1dd40995\"}]"
   }
 },
 {
@@ -2286,7 +2496,7 @@
     "header_sub_link_text3": null,
     "header_sub_link_text4": null,
     "header_sub_link1": "/auth/login",
-    "header_sub_link2": "https://scigap.org/create",
+    "header_sub_link2": "/auth/create-account",
     "header_sub_link3": null,
     "header_sub_link4": null,
     "body": null
@@ -2306,7 +2516,7 @@
   "pk": 2,
   "fields": {
     "sort_order": 1,
-    "body": "[{\"type\": \"bootstrap_jumbotron\", \"value\": {\"title\": \"Django Gateway with Airavata\", \"body\": \"<p>PGA is a science gateway built with the Airavata API. You can reference PGA as you integrate Airavata into your own gateway, or you can create your gateway on top of PGA by cloning it at the link below. PGA is known to work well in the Chrome, Firefox, and Internet Explorer browsers.</p>\", \"button_text\": \"Learn More\", \"button_link\": \"https://cwiki.apache.org/confluence/display/AIRAVATA/PEARC+2017+Tutorials\", \"button_color\": \"btn-primary\", \"button_size\": \"btn-lg\", \"custom_class\": \"col-md-8 p-5\"}, \"id\": \"de95c672-6bcc-45fe-87fa-393d1b3b33fa\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": null, \"is_card_img\": true, \"card_img\": 11, \"card_img_width\": 350, \"card_img_height\": 125, \"card_title\": \"\", \"card_text\": \"<p>SciGaP is a hosted service with a public API that science gateways can use to manage applications and workflows running on remote supercomputers, as well as other services. Gateway developers can thus concentrate their efforts on building their scientific communities and not worry about operations.</p><p>Science Gateway Platform as a Service (SciGaP) provides application programmer interfaces (APIs) to hosted generic infrastructure services that can be used by domain science communities to create Science Gateways.</p>\", \"card_bg_color\": \"bg-light\", \"card_text_color\": \"text-dark\", \"btn_text\": \"Learn more\", \"btn_color\": \"btn-primary\", \"btn_link\": \"http://scigap.org/\", \"custom_class\": \"col-md-4 scigap-card\"}, \"id\": \"b111eef3-22da-41d8-b93a-4d95443ea93f\"}]",
+    "body": "[{\"type\": \"bootstrap_jumbotron\", \"value\": {\"title\": \"Django Gateway with Airavata\", \"body\": \"<p>PGA is a science gateway built with the Airavata API. You can reference PGA as you integrate Airavata into your own gateway, or you can create your gateway on top of PGA by cloning it at the link below. PGA is known to work well in the Chrome, Firefox, and Internet Explorer browsers.</p>\", \"button_text\": \"Learn More\", \"button_link\": \"https://cwiki.apache.org/confluence/display/AIRAVATA/PEARC+2017+Tutorials\", \"button_color\": \"btn-primary\", \"button_size\": \"btn-lg\", \"custom_class\": \"col-md-8 p-5\"}, \"id\": \"de95c672-6bcc-45fe-87fa-393d1b3b33fa\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": null, \"is_card_img\": true, \"card_img\": 11, \"card_img_width\": 350, \"card_img_height\": 125, \"card_title\": \"\", \"card_text\": \"<p>SciGaP is a hosted service with a public API that science gateways can use to manage applications and workflows running on remote supercomputers, as well as other services. Gateway developers can thus concentrate their efforts on building their scientific communities and not worry about operations.</p><p>Science Gateway Platform as a Service (SciGaP) provides application programmer interfaces (APIs) to hosted generic infrastructure services that can be used by domain science communities to create Science Gateways.</p>\", \"card_bg_color\": \"bg-light\", \"card_text_color\": \"text-dark\", \"buttons\": [], \"custom_class\": \"col-md-4 scigap-card\"}, \"id\": \"b111eef3-22da-41d8-b93a-4d95443ea93f\"}]",
     "page": 3
   }
 },
@@ -2324,7 +2534,7 @@
   "pk": 4,
   "fields": {
     "sort_order": 3,
-    "body": "[{\"type\": \"bootstrap_card\", \"value\": {\"card_width\": 0, \"is_card_img\": true, \"card_img\": 14, \"card_img_width\": 270, \"card_img_height\": 200, \"card_title\": \"Shield\", \"card_text\": \"<p>Shield from complexity<br/> of resources</p>\", \"card_bg_color\": \"bg-dark\", \"card_text_color\": \"text-light\", \"btn_text\": \"\", \"btn_color\": \"\", \"btn_link\": \"\", \"custom_class\": \"col-md-4 card-group p-5\"}, \"id\": \"22a7cc14-7a02-4320-8d1e-b0cab2861726\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": 0, \"is_card_img\": true, \"card_img\": 13, \"card_img_width\": 270, \"card_img_height\": 200, \"card_title\": \"Fast\", \"card_text\": \"<p>Accelerate scientific<br/>discovery</p>\", \"card_bg_color\": \"bg-dark\", \"card_text_color\": \"text-light\", \"btn_text\": \"\", \"btn_color\": \"\", \"btn_link\": \"\", \"custom_class\": \"col-md-4 card-group p-5\"}, \"id\": \"14bb7667-eeb1-40f8-bf77-8d479d5cc6db\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": 0, \"is_card_img\": true, \"card_img\": 15, \"card_img_width\": 270, \"card_img_height\": 200, \"card_title\": \"Distributed\", \"card_text\": \"<p>Access distributed<br/>data resources</p>\", \"card_bg_color\": \"bg-dark\", \"card_text_color\": \"text-light\", \"btn_text\": \"\", \"btn_color\": \"\", \"btn_link\": \"\", \"custom_class\": \"col-md-4 card-group p-5\"}, \"id\": \"31d2a4d2-1e78-454e-a5bd-41e9bd43f428\"}]",
+    "body": "[{\"type\": \"bootstrap_card\", \"value\": {\"card_width\": 0, \"is_card_img\": true, \"card_img\": 14, \"card_img_width\": 270, \"card_img_height\": 200, \"card_title\": \"Shield\", \"card_text\": \"<p>Shield from complexity<br/> of resources</p>\", \"card_bg_color\": \"bg-dark\", \"card_text_color\": \"text-light\", \"buttons\": [], \"custom_class\": \"col-md-4 card-group p-5\"}, \"id\": \"22a7cc14-7a02-4320-8d1e-b0cab2861726\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": 0, \"is_card_img\": true, \"card_img\": 13, \"card_img_width\": 270, \"card_img_height\": 200, \"card_title\": \"Fast\", \"card_text\": \"<p>Accelerate scientific<br/>discovery</p>\", \"card_bg_color\": \"bg-dark\", \"card_text_color\": \"text-light\", \"buttons\": [], \"custom_class\": \"col-md-4 card-group p-5\"}, \"id\": \"14bb7667-eeb1-40f8-bf77-8d479d5cc6db\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": 0, \"is_card_img\": true, \"card_img\": 15, \"card_img_width\": 270, \"card_img_height\": 200, \"card_title\": \"Distributed\", \"card_text\": \"<p>Access distributed<br/>data resources</p>\", \"card_bg_color\": \"bg-dark\", \"card_text_color\": \"text-light\", \"buttons\": [], \"custom_class\": \"col-md-4 card-group p-5\"}, \"id\": \"31d2a4d2-1e78-454e-a5bd-41e9bd43f428\"}]",
     "page": 3
   }
 },
