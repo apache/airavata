@@ -108,10 +108,10 @@ public class RemoteJobCancellationTask extends AiravataTask {
                     CommandOutput jobCancelOutput = adaptor.executeCommand(cancelCommand.getRawCommand(), null);
 
                     if (jobCancelOutput.getExitCode() != 0) {
-                        logger.error("Failed to execute job cancellation command for job " + jobId + " Sout : " +
+                        logger.warn("Failed to execute job cancellation command for job " + jobId + " Sout : " +
                                 jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError());
-                        return onFail("Failed to execute job cancellation command for job " + jobId + " Sout : " +
-                                jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError(), true, null);
+                        //return onFail("Failed to execute job cancellation command for job " + jobId + " Sout : " +
+                        //        jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError(), true, null);
                     }
                 } catch (Exception ex) {
                     logger.error("Unknown error while canceling job " + jobId + " of process " + getProcessId());
