@@ -34,7 +34,8 @@ public class CancelCompletingTask extends AiravataTask {
 
         logger.info("Deleting process level monitoring nodes");
         try {
-            MonitoringUtil.deleteProcessSpecificNodes(getCuratorClient(), getProcessId());
+            // TODO temporary stop cleaning up because this will cause later cancellation events to be gone un notified
+            //MonitoringUtil.deleteProcessSpecificNodes(getCuratorClient(), getProcessId());
         } catch (Exception e) {
             logger.error("Failed to delete process specific nodes but continuing", e);
         }
