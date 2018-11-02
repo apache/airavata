@@ -20,7 +20,6 @@
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfaceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfacePK;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
@@ -35,8 +34,6 @@ public class DataMovementRepository extends AppCatAbstractRepository<DataMovemen
     public String addDataMovementProtocol(String resourceId, DataMovementInterface dataMovementInterface) {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         DataMovementInterfaceEntity dataMovementInterfaceEntity = mapper.map(dataMovementInterface, DataMovementInterfaceEntity.class);
-        ComputeResourceEntity computeResourceEntity = mapper.map(new ComputeResourceRepository().get(resourceId), ComputeResourceEntity.class);
-        dataMovementInterfaceEntity.setComputeResource(computeResourceEntity);
         dataMovementInterfaceEntity.setComputeResourceId(resourceId);
         execute(entityManager -> entityManager.merge(dataMovementInterfaceEntity));
         return dataMovementInterfaceEntity.getDataMovementInterfaceId();
