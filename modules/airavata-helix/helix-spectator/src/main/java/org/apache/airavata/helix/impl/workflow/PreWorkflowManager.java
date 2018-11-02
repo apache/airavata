@@ -174,8 +174,7 @@ public class PreWorkflowManager extends WorkflowManager {
             }
 
         } else {
-            logger.info("No workflow registered with process " + processId + " to cancel");
-            return null;
+            logger.warn("No workflow registered with process " + processId + " to cancel");
         }
 
         RemoteJobCancellationTask rjct = new RemoteJobCancellationTask();
