@@ -131,3 +131,10 @@ export default {
   services,
   utils
 };
+
+export {
+  errors,
+  models,
+  services,
+  utils
+};

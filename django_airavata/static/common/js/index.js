@@ -58,3 +58,11 @@ export default {
   notifications,
   utils
 };
+
+export {
+  components,
+  errors,
+  layouts,
+  notifications,
+  utils
+};
