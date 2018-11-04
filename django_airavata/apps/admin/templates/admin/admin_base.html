@@ -4,6 +4,7 @@
 {% block content %}
 <div id=app></div>
 {% endblock %} {% block css %}
+{% render_bundle 'vendor' 'css' 'ADMIN' %}
 {% render_bundle 'app' 'css' 'ADMIN' %}
 <link rel=stylesheet type=text/css href={% static 'django_airavata_admin/static/css/admin.css' %}> {% endblock %}
 {% block nav-items %}
@@ -27,5 +28,6 @@
 {% endblock %}
 {% block scripts %}
     {{ block.super }}
+    {% render_bundle 'vendor' 'js' 'ADMIN' %}
     {% render_bundle 'app' 'js' 'ADMIN' %}
 {% endblock %}
