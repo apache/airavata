@@ -2,9 +2,8 @@ const BundleTracker = require("webpack-bundle-tracker");
 const path = require("path");
 
 module.exports = {
+  baseUrl: "/static/django_airavata_admin/dist/",
   outputDir: "./static/django_airavata_admin/dist",
-  assetsDir: "static",
-  filenameHashing: false,
   css: {
     extract: true,
     loaderOptions: {

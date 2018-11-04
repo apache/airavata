@@ -1,7 +1,10 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
 <div id=app></div>
 {% endblock %} {% block css %}
-<link rel=stylesheet type=text/css href={% static 'django_airavata_admin/dist/static/css/app.css' %}>
+{% render_bundle 'app' 'css' 'ADMIN' %}
 <link rel=stylesheet type=text/css href={% static 'django_airavata_admin/static/css/admin.css' %}> {% endblock %}
 {% block nav-items %}
 
@@ -24,5 +27,5 @@
 {% endblock %}
 {% block scripts %}
     {{ block.super }}
-    <script type=text/javascript src="{% static 'django_airavata_admin/dist/app.js' %}"></script>
+    {% render_bundle 'app' 'js' 'ADMIN' %}
 {% endblock %}

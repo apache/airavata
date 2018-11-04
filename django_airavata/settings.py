@@ -66,6 +66,9 @@ INSTALLED_APPS = [
 
     # wagtail custom apps
     'django_airavata.wagtailapps.base.apps.BaseConfig',
+
+    # django-webpack-loader
+    'webpack_loader',
 ]
 
 MIDDLEWARE = [
@@ -215,6 +218,22 @@ AUTHENTICATION_OPTIONS = {
 # has lived longer than this period, it will be closed.
 # (https://github.com/Thriftpy/thrift_connector)
 THRIFT_CLIENT_POOL_KEEPALIVE = 10
+
+# Webpack loader
+WEBPACK_LOADER = {
+    'ADMIN': {
+        'BUNDLE_DIR_NAME': 'django_airavata_admin/dist/',
+        'STATS_FILE': os.path.join(
+            BASE_DIR,
+            'django_airavata',
+            'apps',
+            'admin',
+            'static',
+            'django_airavata_admin',
+            'dist',
+            'webpack-stats.json'),
+    }
+}
 
 LOGGING = {
     'version': 1,
