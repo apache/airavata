@@ -269,10 +269,11 @@ public class DataParsingTask extends AbstractTask {
             token = groupResourceProfile.getDefaultCredentialStoreToken();
         }
         if (gatewayStoragePreference == null) {
-            logger.error("Could not find a gateway storage preference for stogate " + storageResourceId + " gateway id " + gatewayId);
-            throw new TaskOnFailException("Could not find a gateway storage preference for stogate " + storageResourceId + " gateway id " + gatewayId, false, null);
+            logger.error("Could not find a gateway storage preference for storage " + storageResourceId + " gateway id " + gatewayId);
+            throw new TaskOnFailException("Could not find a gateway storage preference for storage " + storageResourceId + " gateway id " + gatewayId, false, null);
         }
 
+        logger.info("Fetching adaptor for storage resource " + storageResourceId + " with token " + token);
         return adaptorSupport.fetchStorageAdaptor(gatewayId, storageResourceId, DataMovementProtocol.SCP, token,
                 gatewayStoragePreference.getLoginUserName());
 

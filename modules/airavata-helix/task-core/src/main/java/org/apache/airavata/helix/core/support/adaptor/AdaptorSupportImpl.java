@@ -25,6 +25,8 @@ import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -35,6 +37,8 @@ import java.util.Optional;
  * @since 1.0.0-SNAPSHOT
  */
 public class AdaptorSupportImpl implements AdaptorSupport {
+
+    private final static Logger logger = LoggerFactory.getLogger(AdaptorSupportImpl.class);
 
     private static AdaptorSupportImpl INSTANCE;
 
@@ -53,6 +57,9 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     }
 
     public AgentAdaptor fetchAdaptor(String gatewayId, String computeResource, JobSubmissionProtocol protocol, String authToken, String userId) throws AgentException {
+
+        logger.debug("Fetching adaptor for compute resource " + computeResource + " with token " + authToken +
+                " with user " + userId + " with protocol" + protocol.name());
 
         Optional<AgentAdaptor> agentAdaptorOp = agentStore.getAgentAdaptor(computeResource, protocol, authToken);
         if (agentAdaptorOp.isPresent()) {
@@ -80,6 +87,10 @@ public class AdaptorSupportImpl implements AdaptorSupport {
 
     @Override
     public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId) throws AgentException {
+
+        logger.debug("Fetching adaptor for storage resource " + storageResourceId + " with token " + authToken +
+                " with user " + userId + " with protocol" + protocol.name());
+
         Optional<StorageResourceAdaptor> agentAdaptorOp = agentStore.getStorageAdaptor(storageResourceId, protocol, authToken);
         if (agentAdaptorOp.isPresent()) {
             return agentAdaptorOp.get();
