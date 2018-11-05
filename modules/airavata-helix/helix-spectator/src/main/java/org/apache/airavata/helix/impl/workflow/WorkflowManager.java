@@ -43,7 +43,7 @@ public class WorkflowManager {
     protected void initComponents() throws Exception {
         initRegistryClientPool();
         initWorkflowOperatorr();
-        //initStatusPublisher();
+        initStatusPublisher();
         initCuratorClient();
     }
 
