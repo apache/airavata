@@ -24,7 +24,7 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "singlecellgatway.wharton.upenn.edu"
+vhost_servername: "singlecellgateway.wharton.upenn.edu"
 vhost_ssl: false
 # TODO: have Ansible manage these files as well
 #ssl_certificate_file: "/etc/letsencrypt/live/hubzero.scigap.org/cert.pem"
