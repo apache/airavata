@@ -19,11 +19,40 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.data.movement.*;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
+import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.compute_resource_modelConstants;
 import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.model.data.movement.GridFTPDataMovement;
+import org.apache.airavata.model.data.movement.LOCALDataMovement;
+import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.model.data.movement.UnicoreDataMovement;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.registry.core.entities.appcatalog.BatchQueuePK;
+import org.apache.airavata.registry.core.entities.appcatalog.CloudJobSubmissionEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceFileSystemEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfacePK;
+import org.apache.airavata.registry.core.entities.appcatalog.GridftpDataMovementEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.GridftpEndpointEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.JobSubmissionInterfacePK;
+import org.apache.airavata.registry.core.entities.appcatalog.LocalDataMovementEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.LocalSubmissionEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ResourceJobManagerEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ScpDataMovementEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.SshJobSubmissionEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.UnicoreDatamovementEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.UnicoreSubmissionEntity;
 import org.apache.airavata.registry.core.utils.AppCatalogUtils;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
@@ -216,6 +245,13 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         return submissionId;
     }
 
+    public void updateSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
+        sshJobSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        execute(entityManager -> entityManager.merge(sshJobSubmissionEntity));
+    }
+
     @Override
     public String addCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
         cloudJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
@@ -223,6 +259,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         CloudJobSubmissionEntity cloudJobSubmissionEntity = mapper.map(cloudJobSubmission, CloudJobSubmissionEntity.class);
         execute(entityManager -> entityManager.merge(cloudJobSubmissionEntity));
         return cloudJobSubmissionEntity.getJobSubmissionInterfaceId();
+    }
+
+    public void updateCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        CloudJobSubmissionEntity cloudJobSubmissionEntity = mapper.map(cloudJobSubmission, CloudJobSubmissionEntity.class);
+        execute(entityManager -> entityManager.merge(cloudJobSubmissionEntity));
     }
 
     @Override
@@ -303,6 +345,14 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         return localSubmissionEntity.getJobSubmissionInterfaceId();
     }
 
+    public void updateLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
+
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
+        localSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        execute(entityManager -> entityManager.merge(localSubmissionEntity));
+    }
+
     @Override
     public String addGlobusJobSubmission(GlobusJobSubmission globusJobSubmission) throws AppCatalogException {
         return null;
@@ -329,6 +379,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         return localDataMovementEntity.getDataMovementInterfaceId();
     }
 
+    public void updateLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        LocalDataMovementEntity localDataMovementEntity = mapper.map(localDataMovement, LocalDataMovementEntity.class);
+        execute(entityManager -> entityManager.merge(localDataMovementEntity));
+    }
+
     @Override
     public String addScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
         scpDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("SCP"));
@@ -336,6 +392,13 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         ScpDataMovementEntity scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
         execute(entityManager -> entityManager.merge(scpDataMovementEntity));
         return scpDataMovementEntity.getDataMovementInterfaceId();
+    }
+
+    public void updateScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ScpDataMovementEntity scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
+        scpDataMovementEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        execute(entityManager -> entityManager.merge(scpDataMovementEntity));
     }
 
     @Override
