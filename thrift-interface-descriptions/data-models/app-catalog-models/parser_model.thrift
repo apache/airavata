@@ -71,7 +71,7 @@ struct ParserConnector {
 
 struct ParsingTemplateInput {
     1: required string id;
-    2: required string inputId
+    2: required string targetInputId
     3: string applicationOutputName; // either it is an output of application or a constant value
     4: string value;
     5: required string parsingTemplateId;
