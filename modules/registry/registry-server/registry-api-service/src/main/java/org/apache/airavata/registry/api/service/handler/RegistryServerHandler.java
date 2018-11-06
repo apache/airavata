@@ -91,7 +91,6 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
@@ -1104,7 +1103,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<String> getProcessIds(String experimentId) throws RegistryServiceException, TException {
         try {
-            return processRepository.getProcessIds(AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
+            return processRepository.getProcessIds(DBConstants.Process.EXPERIMENT_ID, experimentId);
         } catch (Exception e) {
             logger.error(experimentId, "Error while retrieving process ids", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -3898,8 +3897,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
 
             if(accessibleExpIds.size() == 0 && !ServerSettings.isEnableSharing()){
-                if(!regFilters.containsKey(AbstractExpCatResource.ExperimentConstants.USER_NAME)){
-                    regFilters.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, userName);
+                if(!regFilters.containsKey(DBConstants.Experiment.USER_NAME)){
+                    regFilters.put(DBConstants.Experiment.USER_NAME, userName);
                 }
             }
             summaries = experimentSummaryRepository.searchAllAccessibleExperiments(
@@ -3961,8 +3960,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
 
             if(accessibleProjIds.size() == 0 && !ServerSettings.isEnableSharing()){
-                if(!regFilters.containsKey(AbstractExpCatResource.ProjectConstants.USERNAME)){
-                    regFilters.put(AbstractExpCatResource.ProjectConstants.USERNAME, userName);
+                if(!regFilters.containsKey(DBConstants.Project.OWNER)){
+                    regFilters.put(DBConstants.Project.OWNER, userName);
                 }
             }
 
