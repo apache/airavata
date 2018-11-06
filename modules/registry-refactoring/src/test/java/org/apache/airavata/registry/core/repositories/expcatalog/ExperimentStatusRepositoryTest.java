@@ -89,6 +89,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
 
         ExperimentStatus updatedExecutingStatus = new ExperimentStatus(ExperimentState.EXECUTING);
         updatedExecutingStatus.setReason("updated reason");
+        updatedExecutingStatus.setTimeOfStateChange(experimentStatus.getTimeOfStateChange());
         String updatedExperimentStatusId = experimentStatusRepository.updateExperimentStatus(updatedExecutingStatus, experimentId);
 
         ExperimentStatus retrievedExpStatus = experimentStatusRepository.getExperimentStatus(experimentId);

@@ -46,16 +46,16 @@ public class ObjectMapperSingleton extends DozerBeanMapper{
                     new ArrayList<String>(){{
                         add("dozer_mapping.xml");
                     }});
-            instance.setCustomFieldMapper(new MyCustomFieldMapper());
+            instance.setCustomFieldMapper(new SkipUnsetPrimitiveFieldMapper());
         }
         return instance;
     }
 
-    private static class MyCustomFieldMapper implements CustomFieldMapper {
+    private static class SkipUnsetPrimitiveFieldMapper implements CustomFieldMapper {
         @Override
         public boolean mapField(Object source, Object destination, Object sourceFieldValue, ClassMap classMap, FieldMap fieldMap) {
-            // Just skipping mapping field if not set on Thrift source model and it is primitive
-            if (isSourceUnsetThriftField(source, fieldMap) && ClassUtils.isPrimitiveOrWrapper(source.getClass())) {
+            // Just skipping mapping field if not set on Thrift source model and the field's value is primitive
+            if (isSourceUnsetThriftField(source, fieldMap) && sourceFieldValue != null && ClassUtils.isPrimitiveOrWrapper(sourceFieldValue.getClass())) {
                 logger.debug("Skipping field " + fieldMap.getSrcFieldName() + " since it is unset thrift field and is primitive");
                 return true;
             }

@@ -78,8 +78,8 @@ public class DataReplicaLocationEntity implements Serializable {
     @Column(name = "METADATA_VALUE")
     private Map<String, String> replicaMetadata;
 
-    @ManyToOne(targetEntity = DataProductEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PRODUCT_URI")
+    @ManyToOne(targetEntity = DataProductEntity.class)
+    @JoinColumn(name = "PRODUCT_URI", nullable = false, updatable = false)
     private DataProductEntity dataProduct;
 
     public String getReplicaId() {

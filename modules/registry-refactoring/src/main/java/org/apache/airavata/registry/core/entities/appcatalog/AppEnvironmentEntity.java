@@ -49,8 +49,8 @@ public class AppEnvironmentEntity implements Serializable {
     @Column(name = "ENV_ORDER")
     private int envPathOrder;
 
-    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DEPLOYMENT_ID")
+    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class)
+    @JoinColumn(name = "DEPLOYMENT_ID", nullable = false, updatable = false)
     @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 
