@@ -29,7 +29,7 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ParsingTemplateInput");
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField INPUT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("inputId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField TARGET_INPUT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("targetInputId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField APPLICATION_OUTPUT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationOutputName", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField PARSING_TEMPLATE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parsingTemplateId", org.apache.thrift.protocol.TType.STRING, (short)5);
@@ -38,7 +38,7 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ParsingTemplateInputTupleSchemeFactory();
 
   private java.lang.String id; // required
-  private java.lang.String inputId; // required
+  private java.lang.String targetInputId; // required
   private java.lang.String applicationOutputName; // required
   private java.lang.String value; // required
   private java.lang.String parsingTemplateId; // required
@@ -46,7 +46,7 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
-    INPUT_ID((short)2, "inputId"),
+    TARGET_INPUT_ID((short)2, "targetInputId"),
     APPLICATION_OUTPUT_NAME((short)3, "applicationOutputName"),
     VALUE((short)4, "value"),
     PARSING_TEMPLATE_ID((short)5, "parsingTemplateId");
@@ -66,8 +66,8 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
       switch(fieldId) {
         case 1: // ID
           return ID;
-        case 2: // INPUT_ID
-          return INPUT_ID;
+        case 2: // TARGET_INPUT_ID
+          return TARGET_INPUT_ID;
         case 3: // APPLICATION_OUTPUT_NAME
           return APPLICATION_OUTPUT_NAME;
         case 4: // VALUE
@@ -119,7 +119,7 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.INPUT_ID, new org.apache.thrift.meta_data.FieldMetaData("inputId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.TARGET_INPUT_ID, new org.apache.thrift.meta_data.FieldMetaData("targetInputId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_OUTPUT_NAME, new org.apache.thrift.meta_data.FieldMetaData("applicationOutputName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -136,14 +136,14 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
 
   public ParsingTemplateInput(
     java.lang.String id,
-    java.lang.String inputId,
+    java.lang.String targetInputId,
     java.lang.String applicationOutputName,
     java.lang.String value,
     java.lang.String parsingTemplateId)
   {
     this();
     this.id = id;
-    this.inputId = inputId;
+    this.targetInputId = targetInputId;
     this.applicationOutputName = applicationOutputName;
     this.value = value;
     this.parsingTemplateId = parsingTemplateId;
@@ -156,8 +156,8 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     if (other.isSetId()) {
       this.id = other.id;
     }
-    if (other.isSetInputId()) {
-      this.inputId = other.inputId;
+    if (other.isSetTargetInputId()) {
+      this.targetInputId = other.targetInputId;
     }
     if (other.isSetApplicationOutputName()) {
       this.applicationOutputName = other.applicationOutputName;
@@ -177,7 +177,7 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
   @Override
   public void clear() {
     this.id = null;
-    this.inputId = null;
+    this.targetInputId = null;
     this.applicationOutputName = null;
     this.value = null;
     this.parsingTemplateId = null;
@@ -206,26 +206,26 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     }
   }
 
-  public java.lang.String getInputId() {
-    return this.inputId;
+  public java.lang.String getTargetInputId() {
+    return this.targetInputId;
   }
 
-  public void setInputId(java.lang.String inputId) {
-    this.inputId = inputId;
+  public void setTargetInputId(java.lang.String targetInputId) {
+    this.targetInputId = targetInputId;
   }
 
-  public void unsetInputId() {
-    this.inputId = null;
+  public void unsetTargetInputId() {
+    this.targetInputId = null;
   }
 
-  /** Returns true if field inputId is set (has been assigned a value) and false otherwise */
-  public boolean isSetInputId() {
-    return this.inputId != null;
+  /** Returns true if field targetInputId is set (has been assigned a value) and false otherwise */
+  public boolean isSetTargetInputId() {
+    return this.targetInputId != null;
   }
 
-  public void setInputIdIsSet(boolean value) {
+  public void setTargetInputIdIsSet(boolean value) {
     if (!value) {
-      this.inputId = null;
+      this.targetInputId = null;
     }
   }
 
@@ -308,11 +308,11 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
       }
       break;
 
-    case INPUT_ID:
+    case TARGET_INPUT_ID:
       if (value == null) {
-        unsetInputId();
+        unsetTargetInputId();
       } else {
-        setInputId((java.lang.String)value);
+        setTargetInputId((java.lang.String)value);
       }
       break;
 
@@ -348,8 +348,8 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     case ID:
       return getId();
 
-    case INPUT_ID:
-      return getInputId();
+    case TARGET_INPUT_ID:
+      return getTargetInputId();
 
     case APPLICATION_OUTPUT_NAME:
       return getApplicationOutputName();
@@ -373,8 +373,8 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     switch (field) {
     case ID:
       return isSetId();
-    case INPUT_ID:
-      return isSetInputId();
+    case TARGET_INPUT_ID:
+      return isSetTargetInputId();
     case APPLICATION_OUTPUT_NAME:
       return isSetApplicationOutputName();
     case VALUE:
@@ -409,12 +409,12 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
         return false;
     }
 
-    boolean this_present_inputId = true && this.isSetInputId();
-    boolean that_present_inputId = true && that.isSetInputId();
-    if (this_present_inputId || that_present_inputId) {
-      if (!(this_present_inputId && that_present_inputId))
+    boolean this_present_targetInputId = true && this.isSetTargetInputId();
+    boolean that_present_targetInputId = true && that.isSetTargetInputId();
+    if (this_present_targetInputId || that_present_targetInputId) {
+      if (!(this_present_targetInputId && that_present_targetInputId))
         return false;
-      if (!this.inputId.equals(that.inputId))
+      if (!this.targetInputId.equals(that.targetInputId))
         return false;
     }
 
@@ -456,9 +456,9 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     if (isSetId())
       hashCode = hashCode * 8191 + id.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetInputId()) ? 131071 : 524287);
-    if (isSetInputId())
-      hashCode = hashCode * 8191 + inputId.hashCode();
+    hashCode = hashCode * 8191 + ((isSetTargetInputId()) ? 131071 : 524287);
+    if (isSetTargetInputId())
+      hashCode = hashCode * 8191 + targetInputId.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetApplicationOutputName()) ? 131071 : 524287);
     if (isSetApplicationOutputName())
@@ -493,12 +493,12 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetInputId()).compareTo(other.isSetInputId());
+    lastComparison = java.lang.Boolean.valueOf(isSetTargetInputId()).compareTo(other.isSetTargetInputId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetInputId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.inputId, other.inputId);
+    if (isSetTargetInputId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.targetInputId, other.targetInputId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -561,11 +561,11 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("inputId:");
-    if (this.inputId == null) {
+    sb.append("targetInputId:");
+    if (this.targetInputId == null) {
       sb.append("null");
     } else {
-      sb.append(this.inputId);
+      sb.append(this.targetInputId);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -602,8 +602,8 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' is unset! Struct:" + toString());
     }
 
-    if (!isSetInputId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'inputId' is unset! Struct:" + toString());
+    if (!isSetTargetInputId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'targetInputId' is unset! Struct:" + toString());
     }
 
     if (!isSetParsingTemplateId()) {
@@ -655,10 +655,10 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // INPUT_ID
+          case 2: // TARGET_INPUT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.inputId = iprot.readString();
-              struct.setInputIdIsSet(true);
+              struct.targetInputId = iprot.readString();
+              struct.setTargetInputIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -705,9 +705,9 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
         oprot.writeString(struct.id);
         oprot.writeFieldEnd();
       }
-      if (struct.inputId != null) {
-        oprot.writeFieldBegin(INPUT_ID_FIELD_DESC);
-        oprot.writeString(struct.inputId);
+      if (struct.targetInputId != null) {
+        oprot.writeFieldBegin(TARGET_INPUT_ID_FIELD_DESC);
+        oprot.writeString(struct.targetInputId);
         oprot.writeFieldEnd();
       }
       if (struct.applicationOutputName != null) {
@@ -743,7 +743,7 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
     public void write(org.apache.thrift.protocol.TProtocol prot, ParsingTemplateInput struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.id);
-      oprot.writeString(struct.inputId);
+      oprot.writeString(struct.targetInputId);
       oprot.writeString(struct.parsingTemplateId);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetApplicationOutputName()) {
@@ -766,8 +766,8 @@ public class ParsingTemplateInput implements org.apache.thrift.TBase<ParsingTemp
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.id = iprot.readString();
       struct.setIdIsSet(true);
-      struct.inputId = iprot.readString();
-      struct.setInputIdIsSet(true);
+      struct.targetInputId = iprot.readString();
+      struct.setTargetInputIdIsSet(true);
       struct.parsingTemplateId = iprot.readString();
       struct.setParsingTemplateIdIsSet(true);
       java.util.BitSet incoming = iprot.readBitSet(2);

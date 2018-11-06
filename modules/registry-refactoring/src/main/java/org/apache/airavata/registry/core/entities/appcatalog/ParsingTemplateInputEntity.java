@@ -32,8 +32,8 @@ public class ParsingTemplateInputEntity implements Serializable {
     @Column(name = "PARSING_TEMPLATE_INPUT_ID")
     private String id;
 
-    @Column(name = "PARSER_INPUT_ID")
-    private String inputId;
+    @Column(name = "TARGET_PARSER_INPUT_ID")
+    private String targetInputId;
 
     @Column(name = "APPLICATION_OUTPUT_NAME")
     private String applicationOutputName;
@@ -60,12 +60,12 @@ public class ParsingTemplateInputEntity implements Serializable {
         this.id = id;
     }
 
-    public String getInputId() {
-        return inputId;
+    public String getTargetInputId() {
+        return targetInputId;
     }
 
-    public void setInputId(String inputId) {
-        this.inputId = inputId;
+    public void setTargetInputId(String targetInputId) {
+        this.targetInputId = targetInputId;
     }
 
     public String getApplicationOutputName() {
