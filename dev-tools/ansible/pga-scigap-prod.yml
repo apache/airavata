@@ -54,4 +54,6 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/hubzero"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/epwgateway"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/ampgateway"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/hubzero"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/saverx"
 ...
