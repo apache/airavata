@@ -40,7 +40,8 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResou
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.parser.*;
+import org.apache.airavata.model.appcatalog.parser.Parser;
+import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
@@ -99,10 +100,36 @@ import org.apache.airavata.registry.core.app.catalog.resources.UnicoreDataMoveme
 import org.apache.airavata.registry.core.app.catalog.resources.UnicoreJobSubmissionResource;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
-import org.apache.airavata.registry.core.repositories.appcatalog.*;
-import org.apache.airavata.registry.core.repositories.expcatalog.*;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.GatewayGroupsRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ParserRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ParsingTemplateRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.StorageResourceRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ExperimentErrorRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ExperimentOutputRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ExperimentRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ExperimentStatusRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ExperimentSummaryRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.GatewayRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.JobRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.JobStatusRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.NotificationRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ProcessErrorRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ProcessOutputRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ProcessRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ProcessStatusRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ProjectRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.QueueStatusRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.TaskErrorRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.TaskRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.TaskStatusRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.UserRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
@@ -119,7 +146,12 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
@@ -152,6 +184,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
     private ParserRepository parserInfoRepository = new ParserRepository();
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
+    private UserRepository userRepository = new UserRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -171,7 +204,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException, TException {
         try {
-            return ExpCatResourceUtils.isUserExist(userName, gatewayId);
+            return userRepository.isUserExists(gatewayId, userName);
         } catch (RegistryException e) {
             logger.error("Error while verifying user", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -190,7 +223,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<String> getAllUsersInGateway(String gatewayId) throws RegistryServiceException, TException {
         try {
-            return ExpCatResourceUtils.getAllUsersInGateway(gatewayId);
+            return userRepository.getAllUsernamesInGateway(gatewayId);
         } catch (RegistryException e) {
             logger.error("Error while retrieving users", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -410,7 +443,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
         List<Project> projects = new ArrayList<>();
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+            if (!userRepository.isUserExists(gatewayId, userName)){
                 logger.warn("User does not exist in the system. Please provide a valid user..");
                 return projects;
             }
@@ -530,7 +563,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
         List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+            if (!userRepository.isUserExists(gatewayId, userName)){
                 logger.warn("User does not exist in the system. Please provide a valid user..");
                 return experiments;
             }
@@ -3886,7 +3919,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-                if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+                if (!userRepository.isUserExists(gatewayId, userName)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -3959,7 +3992,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+            if (!userRepository.isUserExists(gatewayId, userName)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -4311,7 +4344,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw exception;
             }
 
-            if (!ExpCatResourceUtils.isUserExist(userResourceProfile.getUserId(), userResourceProfile.getGatewayID())){
+            if (!userRepository.isUserExists(userResourceProfile.getGatewayID(), userResourceProfile.getUserId())){
                 logger.error("User does not exist.Please provide a valid user ID...");
                 throw new RegistryServiceException("User does not exist.Please provide a valid user ID...");
             }
@@ -4334,7 +4367,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean isUserResourceProfileExists(String userId, String gatewayId) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayId)){
+            if (!userRepository.isUserExists(gatewayId, userId)){
                 logger.error("user does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -4362,7 +4395,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayId)){
+            if (!userRepository.isUserExists(gatewayId, userId)){
                 logger.error("user does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -4394,7 +4427,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("User does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4424,7 +4457,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteUserResourceProfile(String userId, String gatewayID) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4447,14 +4480,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addUser(UserProfile userProfile) throws RegistryServiceException, DuplicateEntryException, TException {
         try {
-            //FIXME: figure out a way to get password
             logger.info("Adding User in Registry: " + userProfile);
             if (isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
                 throw new DuplicateEntryException("User already exists, with userId: " +
                         userProfile.getUserId() + ", and gatewayId: " + userProfile.getGatewayId());
             }
-            ExpCatResourceUtils.addUser(userProfile.getUserId(), null, userProfile.getGatewayId());
-            return userProfile.getUserId();
+            UserProfile savedUser = userRepository.addUser(userProfile);
+            return savedUser.getUserId();
         } catch (RegistryException ex) {
             logger.error("Error while adding user in registry: " + ex, ex);
             RegistryServiceException rse = new RegistryServiceException();
@@ -4476,7 +4508,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean addUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId, UserComputeResourcePreference userComputeResourcePreference) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4515,7 +4547,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean addUserStoragePreference(String userId, String gatewayID, String storageResourceId, UserStoragePreference dataStoragePreference) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4553,7 +4585,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UserComputeResourcePreference getUserComputeResourcePreference(String userId, String gatewayID, String userComputeResourceId) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4594,7 +4626,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String storageId) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4647,7 +4679,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId, UserComputeResourcePreference userComputeResourcePreference) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4693,7 +4725,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateUserStoragePreference(String userId, String gatewayID, String storageId, UserStoragePreference userStoragePreference) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4738,7 +4770,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
@@ -4767,7 +4799,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteUserStoragePreference(String userId, String gatewayID, String storageId) throws RegistryServiceException, TException {
         try {
-            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+            if (!userRepository.isUserExists(gatewayID, userId)){
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }

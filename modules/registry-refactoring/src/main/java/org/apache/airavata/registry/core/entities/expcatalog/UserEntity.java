@@ -5,21 +5,21 @@ import javax.persistence.*;
 @Entity
 @Table(name = "USERS")
 @IdClass(UserPK.class)
-public class UsersEntity {
+public class UserEntity {
     private String airavataInternalUserId;
-    private String userName;
+    private String userId;
     private String password;
     private String gatewayId;
     private GatewayEntity gateway;
 
     @Id
     @Column(name = "USER_NAME")
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Id
@@ -50,8 +50,8 @@ public class UsersEntity {
         this.password = password;
     }
 
-    @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID")
-    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST})
+    @ManyToOne(targetEntity = GatewayEntity.class)
+    @JoinColumn(name = "GATEWAY_ID")
     public GatewayEntity getGateway() {
         return gateway;
     }

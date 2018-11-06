@@ -87,6 +87,11 @@ public class DBConstants {
         public static final String GATEWAY_NAME = "gatewayName";
     }
 
+    public static class User {
+        public static final String USER_NAME = "userId";
+        public static final String GATEWAY_ID = "gatewayId";
+    }
+
     public static class Notification {
         public static final String GATEWAY_ID = "gatewayId";
     }

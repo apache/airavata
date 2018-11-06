@@ -1,14 +1,18 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-
 public class UserPK {
     private String gatewayId;
-    private String userName;
+    private String userId;
 
-    @Id
-    @Column(name = "GATEWAY_ID")
+    public UserPK() {
+
+    }
+
+    public UserPK(String gatewayId, String userId) {
+        this.gatewayId = gatewayId;
+        this.userId = userId;
+    }
+
     public String getGatewayId() {
         return gatewayId;
     }
@@ -17,34 +21,29 @@ public class UserPK {
         this.gatewayId = gatewayId;
     }
 
-
-    @Id
-    @Column(name = "USER_NAME")
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof UserPK)) return false;
 
-        UserPK that = (UserPK) o;
+        UserPK userPK = (UserPK) o;
 
-        if (getGatewayId() != null ? !getGatewayId().equals(that.getGatewayId()) : that.getGatewayId() != null) return false;
-        if (getUserName() != null ? !getUserName().equals(that.getUserName()) : that.getUserName() != null) return false;
-
-        return true;
+        if (!gatewayId.equals(userPK.gatewayId)) return false;
+        return userId.equals(userPK.userId);
     }
 
     @Override
     public int hashCode() {
-        int result = getGatewayId() != null ? getGatewayId().hashCode() : 0;
-        result = 31 * result + (getUserName() != null ? getUserName().hashCode() : 0);
+        int result = gatewayId.hashCode();
+        result = 31 * result + userId.hashCode();
         return result;
     }
 }
