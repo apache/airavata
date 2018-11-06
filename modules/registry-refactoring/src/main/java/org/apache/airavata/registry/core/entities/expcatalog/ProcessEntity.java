@@ -120,8 +120,8 @@ public class ProcessEntity implements Serializable {
             mappedBy = "process", fetch = FetchType.EAGER)
     private List<TaskEntity> tasks;
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false)
     private ExperimentEntity experiment;
 
     public ProcessEntity() {
