@@ -90,15 +90,6 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
-import org.apache.airavata.registry.core.app.catalog.resources.CloudSubmissionResource;
-import org.apache.airavata.registry.core.app.catalog.resources.GridftpDataMovementResource;
-import org.apache.airavata.registry.core.app.catalog.resources.LocalDataMovementResource;
-import org.apache.airavata.registry.core.app.catalog.resources.LocalSubmissionResource;
-import org.apache.airavata.registry.core.app.catalog.resources.ScpDataMovementResource;
-import org.apache.airavata.registry.core.app.catalog.resources.SshJobSubmissionResource;
-import org.apache.airavata.registry.core.app.catalog.resources.UnicoreDataMovementResource;
-import org.apache.airavata.registry.core.app.catalog.resources.UnicoreJobSubmissionResource;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
@@ -185,6 +176,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ParserRepository parserInfoRepository = new ParserRepository();
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
     private UserRepository userRepository = new UserRepository();
+    private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -2983,18 +2975,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGridFTPDataMovementDetails(String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws RegistryServiceException, TException {
-        try {
-            GridftpDataMovementResource movment = AppCatalogThriftConversion.getGridFTPDataMovementDescription(gridFTPDataMovement);
-            movment.setDataMovementInterfaceId(dataMovementInterfaceId);
-            movment.save();
-            logger.debug("Airavata updated GRIDFTP data movement with data movement id: " + dataMovementInterfaceId );
-            return true;
-        } catch (Exception e) {
-            logger.error(dataMovementInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
-            throw exception;
-        }
+        throw new RegistryServiceException("updateGridFTPDataMovementDetails is not yet implemented");
     }
 
     /**
@@ -3036,18 +3017,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateUnicoreDataMovementDetails(String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws RegistryServiceException, TException {
-        try {
-            UnicoreDataMovementResource movment = AppCatalogThriftConversion.getUnicoreDMResource(unicoreDataMovement);
-            movment.setDataMovementId(dataMovementInterfaceId);
-            movment.save();
-            logger.debug("Airavata updated UNICORE data movement with data movement id: " + dataMovementInterfaceId);
-            return true;
-        } catch (Exception e) {
-            logger.error(dataMovementInterfaceId, "Error while updating unicore data movement to compute resource...", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while updating unicore data movement to compute resource. More info : " + e.getMessage());
-            throw exception;
-        }
+        throw new RegistryServiceException("updateUnicoreDataMovementDetails is not yet implemented");
     }
 
     /**
@@ -3089,9 +3059,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement) throws RegistryServiceException, TException {
         try {
-            ScpDataMovementResource movment = AppCatalogThriftConversion.getSCPDataMovementDescription(scpDataMovement);
-            movment.setDataMovementInterfaceId(dataMovementInterfaceId);
-            movment.save();
+            computeResourceRepository.updateScpDataMovement(scpDataMovement);
             logger.debug("Airavata updated SCP data movement with data movement id: " + dataMovementInterfaceId);
             return true;
         } catch (Exception e) {
@@ -3140,9 +3108,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement) throws RegistryServiceException, TException {
         try {
-            LocalDataMovementResource movment = AppCatalogThriftConversion.getLocalDataMovement(localDataMovement);
-            movment.setDataMovementInterfaceId(dataMovementInterfaceId);
-            movment.save();
+            computeResourceRepository.updateLocalDataMovement(localDataMovement);
             logger.debug("Airavata updated local data movement with data movement id: " + dataMovementInterfaceId);
             return true;
         } catch (Exception e) {
@@ -3190,18 +3156,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateUnicoreJobSubmissionDetails(String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws RegistryServiceException, TException {
-        try {
-            UnicoreJobSubmissionResource submission = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
-            submission.setjobSubmissionInterfaceId(jobSubmissionInterfaceId);
-            submission.save();
-            logger.debug("Airavata updated UNICORE job submission for job submission interface id: " + jobSubmissionInterfaceId);
-            return true;
-        } catch (Exception e) {
-            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
-            throw exception;
-        }
+        throw new RegistryServiceException("updateUnicoreJobSubmissionDetails is not yet implemented");
     }
 
     /**
@@ -3215,9 +3170,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission) throws RegistryServiceException, TException {
         try {
-            CloudSubmissionResource submission = AppCatalogThriftConversion.getCloudJobSubmission(sshJobSubmission);
-            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-            submission.save();
+            computeResourceRepository.updateCloudJobSubmission(sshJobSubmission);
             logger.debug("Airavata updated Cloud job submission for job submission interface id: " + jobSubmissionInterfaceId);
             return true;
         } catch (Exception e) {
@@ -3239,9 +3192,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission) throws RegistryServiceException, TException {
         try {
-            SshJobSubmissionResource submission = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
-            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-            submission.save();
+            computeResourceRepository.updateSSHJobSubmission(sshJobSubmission);
             logger.debug("Airavata updated SSH job submission for job submission interface id: " + jobSubmissionInterfaceId);
             return true;
         } catch (Exception e) {
@@ -3380,9 +3331,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission) throws RegistryServiceException, TException {
         try {
-            LocalSubmissionResource submission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
-            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-            submission.save();
+            computeResourceRepository.updateLocalJobSubmission(localSubmission);
             logger.debug("Airavata updated local job submission for job submission interface id: " + jobSubmissionInterfaceId);
             return true;
         } catch (Exception e) {
