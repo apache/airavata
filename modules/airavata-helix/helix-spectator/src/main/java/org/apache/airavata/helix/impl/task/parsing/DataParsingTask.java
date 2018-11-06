@@ -65,8 +65,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the data parsing task.
@@ -111,54 +114,63 @@ public class DataParsingTask extends AbstractTask {
 
             logger.info("Downloading input files to local input directory");
 
+            Map<String, String> properties = new HashMap<>();
             for (ParserInput parserInput : parser.getInputFiles()) {
                 Optional<ParsingTaskInput> filteredInputOptional = parsingTaskInputs.getInputs().stream().filter(inp -> parserInput.getId().equals(inp.getId())).findFirst();
 
                 if (filteredInputOptional.isPresent()) {
 
                     ParsingTaskInput parsingTaskInput = filteredInputOptional.get();
-                    String inputDataProductUri = parsingTaskInput.getValue() != null ? parsingTaskInput.getValue() : getContextVariable(parsingTaskInput.getContextVariableName());
 
-                    if (inputDataProductUri == null || inputDataProductUri.isEmpty()) {
-                        logger.error("Data product uri could not be null or empty for input " + parsingTaskInput.getId()
-                                + " with name " + parserInput.getName());
-                        throw new TaskOnFailException("Data product uri could not be null or empty for input "
-                                + parsingTaskInput.getId() + " with name " + parserInput.getName(), true, null);
-                    }
-                    DataProductModel inputDataProduct = getRegistryServiceClient().getDataProduct(inputDataProductUri);
-                    List<DataReplicaLocationModel> replicaLocations = inputDataProduct.getReplicaLocations();
+                    String inputVal = parsingTaskInput.getValue() != null ? parsingTaskInput.getValue() : getContextVariable(parsingTaskInput.getContextVariableName());
 
-                    boolean downloadPassed = false;
+                    if ("PROPERTY".equals(parsingTaskInput.getType())) {
+                        properties.put(parsingTaskInput.getContextVariableName(), inputVal);
+                    } else if ("FILE".equals(parsingTaskInput.getType())) {
 
-                    for (DataReplicaLocationModel replicaLocationModel : replicaLocations) {
-                        String storageResourceId = replicaLocationModel.getStorageResourceId();
-                        String remoteFilePath = new URI(replicaLocationModel.getFilePath()).getPath();
-                        String localFilePath = localInputDir + (localInputDir.endsWith(File.separator)? "" : File.separator)
-                                + parserInput.getName();
+                        String inputDataProductUri = inputVal;
 
-                        downloadPassed = downloadFileFromStorageResource(storageResourceId, remoteFilePath, localFilePath, helper.getAdaptorSupport());
-
-                        if (downloadPassed) {
-                            break;
+                        if (inputDataProductUri == null || inputDataProductUri.isEmpty()) {
+                            logger.error("Data product uri could not be null or empty for input " + parsingTaskInput.getId()
+                                    + " with name " + parserInput.getName());
+                            throw new TaskOnFailException("Data product uri could not be null or empty for input "
+                                    + parsingTaskInput.getId() + " with name " + parserInput.getName(), true, null);
                         }
-                    }
+                        DataProductModel inputDataProduct = getRegistryServiceClient().getDataProduct(inputDataProductUri);
+                        List<DataReplicaLocationModel> replicaLocations = inputDataProduct.getReplicaLocations();
 
-                    if (!downloadPassed) {
-                        logger.error("Failed to download input file with id " + parserInput.getId() + " from data product uri " + inputDataProductUri);
-                        throw new TaskOnFailException("Failed to download input file with id " + parserInput.getId() + " from data product uri " + inputDataProductUri, true, null);
+                        boolean downloadPassed = false;
+
+                        for (DataReplicaLocationModel replicaLocationModel : replicaLocations) {
+                            String storageResourceId = replicaLocationModel.getStorageResourceId();
+                            String remoteFilePath = new URI(replicaLocationModel.getFilePath()).getPath();
+                            String localFilePath = localInputDir + (localInputDir.endsWith(File.separator) ? "" : File.separator)
+                                    + parserInput.getName();
+
+                            downloadPassed = downloadFileFromStorageResource(storageResourceId, remoteFilePath, localFilePath, helper.getAdaptorSupport());
+
+                            if (downloadPassed) {
+                                break;
+                            }
+                        }
+
+                        if (!downloadPassed) {
+                            logger.error("Failed to download input file with id " + parserInput.getId() + " from data product uri " + inputDataProductUri);
+                            throw new TaskOnFailException("Failed to download input file with id " + parserInput.getId() + " from data product uri " + inputDataProductUri, true, null);
+                        }
                     }
                 } else {
                     if (parserInput.isRequiredInput()) {
-                        logger.error("File download info with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available");
-                        throw new TaskOnFailException("File download info with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available", true, null);
+                        logger.error("Parser input with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available");
+                        throw new TaskOnFailException("Parser input with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available", true, null);
                     } else {
-                        logger.warn("File download info with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available. But it is not required");
+                        logger.warn("Parser input with id with id " + parserInput.getId() + " and name " + parserInput.getName() + " is not available. But it is not required");
                     }
                 }
             }
 
             logger.info("Running container with id " + containerId + " local input dir " + localInputDir + " local output dir " + localOutDir);
-            runContainer(parser, containerId, localInputDir, localOutDir);
+            runContainer(parser, containerId, localInputDir, localOutDir, properties);
 
             for (ParserOutput parserOutput : parser.getOutputFiles()) {
 
@@ -211,14 +223,21 @@ public class DataParsingTask extends AbstractTask {
 
     }
 
-    private void runContainer(Parser parser, String containerId, String localInputDir, String localOutputDir) {
+    private void runContainer(Parser parser, String containerId, String localInputDir, String localOutputDir, Map<String, String> properties) {
         DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
         DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
 
         CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parser.getImageName()).withCmd("/bin/sh", "-c", parser.getExecutionCommand()).withName(containerId)
                 .withBinds(Bind.parse(localInputDir + ":" + parser.getInputDirPath()),
-                        Bind.parse(localOutputDir + ":" + parser.getOutputDirPath())).withTty(true).withAttachStdin(true).withAttachStdout(true).exec();
+                        Bind.parse(localOutputDir + ":" + parser.getOutputDirPath()))
+                .withTty(true)
+                .withAttachStdin(true)
+                .withAttachStdout(true).withEnv(properties.entrySet()
+                        .stream()
+                        .map(entry -> entry.getKey() + "=" + entry.getValue())
+                        .collect(Collectors.toList()))
+                .exec();
 
         logger.info("Created the container with id " + containerResponse.getId());
 

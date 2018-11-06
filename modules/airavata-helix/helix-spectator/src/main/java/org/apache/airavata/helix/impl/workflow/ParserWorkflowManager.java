@@ -31,10 +31,7 @@ import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutputs;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.parser.Parser;
-import org.apache.airavata.model.appcatalog.parser.ParserConnector;
-import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
-import org.apache.airavata.model.appcatalog.parser.ParsingTemplateInput;
+import org.apache.airavata.model.appcatalog.parser.*;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -194,20 +191,38 @@ public class ParserWorkflowManager extends WorkflowManager {
         ParsingTaskInputs inputs = new ParsingTaskInputs();
 
         for (ParsingTemplateInput templateInput : templateInputs) {
-            String expression = templateInput.getApplicationOutputName();
-            try {
-                ExperimentModel experiment = registryClient.getExperiment(completionMessage.getExperimentId());
-                Optional<OutputDataObjectType> outputDataObj = experiment.getExperimentOutputs().stream().filter(outputDataObjectType -> outputDataObjectType.getName().equals(expression)).findFirst();
-                if (outputDataObj.isPresent()) {
-                    ParsingTaskInput input = new ParsingTaskInput();
-                    input.setId(templateInput.getInputId());
-                    input.setValue(outputDataObj.get().getValue());
-                    inputs.addInput(input);
-                }
-            } catch (TException e) {
-                logger.error("Failed while fetching experiment " + completionMessage.getExperimentId());
-                throw new Exception("Failed while fetching experiment " + completionMessage.getExperimentId());
+
+            Optional<ParserInput> parserInputOp = parserInfo.getInputFiles().stream()
+                    .filter(inp -> inp.getId().equals(templateInput.getTargetInputId())).findFirst();
+
+            ParsingTaskInput input = new ParsingTaskInput();
+            input.setId(templateInput.getTargetInputId());
+            if (parserInputOp.isPresent()) {
+                input.setType(parserInputOp.get().getType().name());
+            } else {
+                throw new Exception("Failed to find an input with id " + templateInput.getTargetInputId());
             }
+
+            if(templateInput.getApplicationOutputName() != null) {
+                String applicationOutputName = templateInput.getApplicationOutputName();
+                try {
+                    ExperimentModel experiment = registryClient.getExperiment(completionMessage.getExperimentId());
+                    Optional<OutputDataObjectType> expOutputData = experiment.getExperimentOutputs().stream()
+                            .filter(outputDataObjectType -> outputDataObjectType.getName().equals(applicationOutputName)).findFirst();
+
+                    if (expOutputData.isPresent()) {
+                        input.setValue(expOutputData.get().getValue());
+                    } else {
+                        throw new Exception("Could not find an experiment output with name " + applicationOutputName);
+                    }
+                } catch (TException e) {
+                    logger.error("Failed while fetching experiment " + completionMessage.getExperimentId());
+                    throw new Exception("Failed while fetching experiment " + completionMessage.getExperimentId());
+                }
+            } else {
+                input.setValue(processExpression(templateInput.getValue()));
+            }
+            inputs.addInput(input);
         }
 
         parsingTask.setParsingTaskInputs(inputs);
@@ -224,6 +239,10 @@ public class ParserWorkflowManager extends WorkflowManager {
         parsingTask.setParsingTaskOutputs(outputs);
 
         return parsingTask;
+    }
+
+    private String processExpression(String expression) {
+        return expression;
     }
 
     private void createParserDagRecursively(List<AbstractTask> allTasks, Parser parentParserInfo, DataParsingTask parentTask, Map<String, Set<ParserConnector>> parentToChild,
@@ -245,12 +264,23 @@ public class ParserWorkflowManager extends WorkflowManager {
                 }
 
                 ParsingTaskInputs inputs = new ParsingTaskInputs();
-                connector.getConnectorInputs().forEach(mapping -> {
-                    ParsingTaskInput input = new ParsingTaskInput();
-                    input.setContextVariableName(connector.getParentParserId() + "-" + mapping.getParentOutputId());
-                    input.setId(mapping.getInputId());
-                    inputs.addInput(input);
-                });
+                for(ParserConnectorInput connectorInput : connector.getConnectorInputs()) {
+
+                    Optional<ParserInput> parserInputOp = childParserInfo.getInputFiles().stream()
+                            .filter(inp -> inp.getId().equals(connectorInput.getInputId())).findFirst();
+
+                    if (parserInputOp.isPresent()) {
+                        ParsingTaskInput input = new ParsingTaskInput();
+                        // Either context variable or value is set
+                        input.setContextVariableName(connector.getParentParserId() + "-" + connectorInput.getParentOutputId());
+                        input.setValue(processExpression(connectorInput.getValue()));
+                        input.setId(connectorInput.getInputId());
+                        input.setType(parserInputOp.get().getType().name());
+                        inputs.addInput(input);
+                    } else {
+                        throw new Exception("Failed to find an input with id " + connectorInput.getId());
+                    }
+                }
 
                 ParsingTaskOutputs outputs = new ParsingTaskOutputs();
                 childParserInfo.getOutputFiles().forEach(parserOutput -> {
