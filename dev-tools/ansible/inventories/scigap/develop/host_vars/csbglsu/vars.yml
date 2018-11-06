@@ -22,11 +22,11 @@
 #airavata_django_git_branch: "simccs"
 doc_root_dir: "/data/portals/django-csbglsu"
 vhost_servername: "beta-sciencegateway.brylinski.org"
-vhost_ssl: false
+vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org
-#ssl_certificate_file: "/etc/letsencrypt/live/beta.sciencegateway.usd.edu/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.sciencegateway.usd.edu/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/beta.sciencegateway.usd.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/beta-sciencegateway.brylinski.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/beta-sciencegateway.brylinski.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/beta-sciencegateway.brylinski.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "csbglsu"
