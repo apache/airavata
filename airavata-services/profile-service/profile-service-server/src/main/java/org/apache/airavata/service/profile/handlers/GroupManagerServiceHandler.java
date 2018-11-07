@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
@@ -353,6 +354,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         groupModel.setName(userGroup.getName());
         groupModel.setDescription(userGroup.getDescription());
         groupModel.setOwnerId(userGroup.getOwnerId());
+        final List<String> admins = userGroup.getGroupAdmins().stream()
+                                                              .map(groupAdmin -> groupAdmin.getAdminId())
+                                                              .collect(Collectors.toList());
+        groupModel.setAdmins(admins);
 
         sharingClient.getGroupMembersOfTypeUser(userGroup.getDomainId(), userGroup.getGroupId(), 0, -1).stream().forEach(user->
                 groupModel.addToMembers(user.getUserId())
