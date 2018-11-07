@@ -108,7 +108,7 @@ export default {
         !this.defaultGatewayUsersGroup
       ) {
         promises.push(
-          services.ServiceFactory.service("Groups")
+          services.GroupService
             .list({ limit: -1 })
             .then(groups => {
               this.groups = groups;
@@ -188,7 +188,7 @@ export default {
           .then(users => (this.users = users));
       }
       if (!this.groups) {
-        services.ServiceFactory.service("Groups")
+        services.GroupService
           .list({ limit: -1 })
           .then(groups => {
             this.groups = groups;

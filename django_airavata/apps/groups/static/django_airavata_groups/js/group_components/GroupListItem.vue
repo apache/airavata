@@ -58,7 +58,7 @@ export default {
     methods: {
       deleteGroup(id) {
           this.deleting = true;
-          services.GroupService.delete(id)
+          services.GroupService.delete({lookup: id})
               .then(result => {
                   this.$emit('deleteSuccess','Group Deleted Successfully!');
                   this.show = false;

@@ -33,7 +33,6 @@ import ExperimentService from "./services/ExperimentService";
 import ExperimentSearchService from "./services/ExperimentSearchService";
 import FullExperimentService from "./services/FullExperimentService";
 import ProjectService from "./services/ProjectService";
-import GroupService from "./services/GroupService";
 import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
@@ -99,7 +98,7 @@ exports.services = {
   GlobusJobSubmissionService,
   GridFTPDataMovementService,
   GroupResourceProfileService: ServiceFactory.service("GroupResourceProfiles"),
-  GroupService,
+  GroupService: ServiceFactory.service("Groups"),
   LocaJobSubmissionService,
   ProjectService,
   SCPDataMovementService,

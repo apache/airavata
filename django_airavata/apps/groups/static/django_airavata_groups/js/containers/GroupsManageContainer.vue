@@ -55,7 +55,7 @@ export default {
         },
     },
     beforeMount: function () {
-        services.GroupService.list(this.groupsDataOwners)
+        services.GroupService.list()
             .then(result => this.groupPaginator = result);
     },
 }

@@ -33,7 +33,7 @@ export default {
     computed: {
     },
     mounted: function () {
-        services.GroupService.get(this.groupId)
+        services.GroupService.retrieve({lookup: this.groupId})
             .then(group => this.group = group);
     },
 }

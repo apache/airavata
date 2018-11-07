@@ -6,6 +6,7 @@ const FIELDS = [
     'ownerId',
     'description',
     'members',
+    'admins',
     'isOwner',
     'isAdmin',
     'isMember',

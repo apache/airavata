@@ -52,8 +52,8 @@ export default {
     methods: {
         submitForm () {
             let saveOperation = (this.localGroup.id)
-                ? services.GroupService.update(this.localGroup)
-                : services.GroupService.create(this.localGroup);
+                ? services.GroupService.update({lookup: this.localGroup.id, data: this.localGroup})
+                : services.GroupService.create({data: this.localGroup});
             saveOperation
                 .then(group => {
                     this.$emit('saved', group);
