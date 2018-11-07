@@ -170,4 +170,7 @@ public interface QueryConstants {
 
     String FIND_ALL_GRID_FTP_ENDPOINTS_BY_DATA_MOVEMENT = "SELECT GFE FROM " + GridftpEndpointEntity.class.getSimpleName() +
             " GFE WHERE GFE.gridftpDataMovement.dataMovementInterfaceId LIKE :" + DBConstants.DataMovement.GRID_FTP_DATA_MOVEMENT_ID;
+
+    String FIND_PARSING_TEMPLATES_FOR_APPLICATION_INTERFACE_ID = "SELECT PT FROM " + ParsingTemplateEntity.class.getSimpleName() + " PT " +
+            "WHERE PT.applicationInterface = :" + DBConstants.ParsingTemplate.APPLICATION_INTERFACE_ID;
 }
