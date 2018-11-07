@@ -33,6 +33,7 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
   private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField MEMBERS_FIELD_DESC = new org.apache.thrift.protocol.TField("members", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField ADMINS_FIELD_DESC = new org.apache.thrift.protocol.TField("admins", org.apache.thrift.protocol.TType.LIST, (short)6);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GroupModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GroupModelTupleSchemeFactory();
@@ -42,6 +43,7 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
   private java.lang.String ownerId; // optional
   private java.lang.String description; // optional
   private java.util.List<java.lang.String> members; // optional
+  private java.util.List<java.lang.String> admins; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -49,7 +51,8 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     NAME((short)2, "name"),
     OWNER_ID((short)3, "ownerId"),
     DESCRIPTION((short)4, "description"),
-    MEMBERS((short)5, "members");
+    MEMBERS((short)5, "members"),
+    ADMINS((short)6, "admins");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -74,6 +77,8 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
           return DESCRIPTION;
         case 5: // MEMBERS
           return MEMBERS;
+        case 6: // ADMINS
+          return ADMINS;
         default:
           return null;
       }
@@ -114,7 +119,7 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.ID,_Fields.NAME,_Fields.OWNER_ID,_Fields.DESCRIPTION,_Fields.MEMBERS};
+  private static final _Fields optionals[] = {_Fields.ID,_Fields.NAME,_Fields.OWNER_ID,_Fields.DESCRIPTION,_Fields.MEMBERS,_Fields.ADMINS};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -127,6 +132,9 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.MEMBERS, new org.apache.thrift.meta_data.FieldMetaData("members", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.ADMINS, new org.apache.thrift.meta_data.FieldMetaData("admins", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
@@ -156,6 +164,10 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
       java.util.List<java.lang.String> __this__members = new java.util.ArrayList<java.lang.String>(other.members);
       this.members = __this__members;
     }
+    if (other.isSetAdmins()) {
+      java.util.List<java.lang.String> __this__admins = new java.util.ArrayList<java.lang.String>(other.admins);
+      this.admins = __this__admins;
+    }
   }
 
   public GroupModel deepCopy() {
@@ -169,6 +181,7 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     this.ownerId = null;
     this.description = null;
     this.members = null;
+    this.admins = null;
   }
 
   public java.lang.String getId() {
@@ -301,6 +314,44 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     }
   }
 
+  public int getAdminsSize() {
+    return (this.admins == null) ? 0 : this.admins.size();
+  }
+
+  public java.util.Iterator<java.lang.String> getAdminsIterator() {
+    return (this.admins == null) ? null : this.admins.iterator();
+  }
+
+  public void addToAdmins(java.lang.String elem) {
+    if (this.admins == null) {
+      this.admins = new java.util.ArrayList<java.lang.String>();
+    }
+    this.admins.add(elem);
+  }
+
+  public java.util.List<java.lang.String> getAdmins() {
+    return this.admins;
+  }
+
+  public void setAdmins(java.util.List<java.lang.String> admins) {
+    this.admins = admins;
+  }
+
+  public void unsetAdmins() {
+    this.admins = null;
+  }
+
+  /** Returns true if field admins is set (has been assigned a value) and false otherwise */
+  public boolean isSetAdmins() {
+    return this.admins != null;
+  }
+
+  public void setAdminsIsSet(boolean value) {
+    if (!value) {
+      this.admins = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case ID:
@@ -343,6 +394,14 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
       }
       break;
 
+    case ADMINS:
+      if (value == null) {
+        unsetAdmins();
+      } else {
+        setAdmins((java.util.List<java.lang.String>)value);
+      }
+      break;
+
     }
   }
 
@@ -362,6 +421,9 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
 
     case MEMBERS:
       return getMembers();
+
+    case ADMINS:
+      return getAdmins();
 
     }
     throw new java.lang.IllegalStateException();
@@ -384,6 +446,8 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
       return isSetDescription();
     case MEMBERS:
       return isSetMembers();
+    case ADMINS:
+      return isSetAdmins();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -448,6 +512,15 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
         return false;
     }
 
+    boolean this_present_admins = true && this.isSetAdmins();
+    boolean that_present_admins = true && that.isSetAdmins();
+    if (this_present_admins || that_present_admins) {
+      if (!(this_present_admins && that_present_admins))
+        return false;
+      if (!this.admins.equals(that.admins))
+        return false;
+    }
+
     return true;
   }
 
@@ -474,6 +547,10 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     hashCode = hashCode * 8191 + ((isSetMembers()) ? 131071 : 524287);
     if (isSetMembers())
       hashCode = hashCode * 8191 + members.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetAdmins()) ? 131071 : 524287);
+    if (isSetAdmins())
+      hashCode = hashCode * 8191 + admins.hashCode();
 
     return hashCode;
   }
@@ -532,6 +609,16 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     }
     if (isSetMembers()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.members, other.members);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetAdmins()).compareTo(other.isSetAdmins());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAdmins()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.admins, other.admins);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -602,6 +689,16 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
         sb.append("null");
       } else {
         sb.append(this.members);
+      }
+      first = false;
+    }
+    if (isSetAdmins()) {
+      if (!first) sb.append(", ");
+      sb.append("admins:");
+      if (this.admins == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.admins);
       }
       first = false;
     }
@@ -698,6 +795,24 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // ADMINS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
+                struct.admins = new java.util.ArrayList<java.lang.String>(_list3.size);
+                java.lang.String _elem4;
+                for (int _i5 = 0; _i5 < _list3.size; ++_i5)
+                {
+                  _elem4 = iprot.readString();
+                  struct.admins.add(_elem4);
+                }
+                iprot.readListEnd();
+              }
+              struct.setAdminsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -744,9 +859,23 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
           oprot.writeFieldBegin(MEMBERS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.members.size()));
-            for (java.lang.String _iter3 : struct.members)
+            for (java.lang.String _iter6 : struct.members)
             {
-              oprot.writeString(_iter3);
+              oprot.writeString(_iter6);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.admins != null) {
+        if (struct.isSetAdmins()) {
+          oprot.writeFieldBegin(ADMINS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.admins.size()));
+            for (java.lang.String _iter7 : struct.admins)
+            {
+              oprot.writeString(_iter7);
             }
             oprot.writeListEnd();
           }
@@ -786,7 +915,10 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
       if (struct.isSetMembers()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetAdmins()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetId()) {
         oprot.writeString(struct.id);
       }
@@ -802,9 +934,18 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
       if (struct.isSetMembers()) {
         {
           oprot.writeI32(struct.members.size());
-          for (java.lang.String _iter4 : struct.members)
+          for (java.lang.String _iter8 : struct.members)
           {
-            oprot.writeString(_iter4);
+            oprot.writeString(_iter8);
+          }
+        }
+      }
+      if (struct.isSetAdmins()) {
+        {
+          oprot.writeI32(struct.admins.size());
+          for (java.lang.String _iter9 : struct.admins)
+          {
+            oprot.writeString(_iter9);
           }
         }
       }
@@ -813,7 +954,7 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, GroupModel struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(5);
+      java.util.BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.id = iprot.readString();
         struct.setIdIsSet(true);
@@ -832,16 +973,29 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
       }
       if (incoming.get(4)) {
         {
-          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.members = new java.util.ArrayList<java.lang.String>(_list5.size);
-          java.lang.String _elem6;
-          for (int _i7 = 0; _i7 < _list5.size; ++_i7)
+          org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.members = new java.util.ArrayList<java.lang.String>(_list10.size);
+          java.lang.String _elem11;
+          for (int _i12 = 0; _i12 < _list10.size; ++_i12)
           {
-            _elem6 = iprot.readString();
-            struct.members.add(_elem6);
+            _elem11 = iprot.readString();
+            struct.members.add(_elem11);
           }
         }
         struct.setMembersIsSet(true);
+      }
+      if (incoming.get(5)) {
+        {
+          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.admins = new java.util.ArrayList<java.lang.String>(_list13.size);
+          java.lang.String _elem14;
+          for (int _i15 = 0; _i15 < _list13.size; ++_i15)
+          {
+            _elem14 = iprot.readString();
+            struct.admins.add(_elem14);
+          }
+        }
+        struct.setAdminsIsSet(true);
       }
     }
   }
