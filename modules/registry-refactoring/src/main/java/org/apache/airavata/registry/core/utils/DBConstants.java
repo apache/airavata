@@ -171,4 +171,8 @@ public class DBConstants {
         public static final String GRID_FTP_DATA_MOVEMENT_ID = "dataMovementId";
     }
 
+    public static class ParsingTemplate {
+        public static final String APPLICATION_INTERFACE_ID = "applicationInterfaceId";
+    }
+
 }

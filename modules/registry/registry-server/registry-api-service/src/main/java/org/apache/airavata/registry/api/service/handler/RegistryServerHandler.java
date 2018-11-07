@@ -4965,10 +4965,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
-    //TODO: Fixme
     @Override
     public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId) throws RegistryServiceException, TException {
-        return Collections.singletonList(getParsingTemplate("template-1"));
+        List<ProcessModel> processes = getExperiment(experimentId).getProcesses();
+        if (processes.size() > 0) {
+            return parsingTemplateRepository.getParsingTemplatesForApplication(processes.get(processes.size() - 1).getApplicationInterfaceId());
+        }
+        return Collections.emptyList();
     }
 
     @Override
