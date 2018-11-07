@@ -79,28 +79,18 @@ class GroupViewSet(APIBackedViewSet):
         if len(group._removed_members) > 0:
             group_manager_client.removeUsersFromGroup(
                 self.authz_token, group._removed_members, group.id)
+        if len(group._added_admins) > 0:
+            group_manager_client.addGroupAdmins(
+                self.authz_token, group.id, group._added_admins)
+        if len(group._removed_admins) > 0:
+            group_manager_client.removeGroupAdmins(
+                self.authz_token, group.id, group._removed_admins)
         group_manager_client.updateGroup(self.authz_token, group)
 
     def perform_destroy(self, group):
         group_manager_client = self.request.profile_service['group_manager']
         group_manager_client.deleteGroup(
             self.authz_token, group.id, group.ownerId)
-
-    @detail_route(methods=['post'])
-    def add_admins(self, request, group_id=None):
-        admin_ids = request.data
-        group_manager_client = self.request.profile_service['group_manager']
-        result = group_manager_client.addGroupAdmins(
-            self.authz_token, group_id, admin_ids)
-        return Response({'success': result})
-
-    @detail_route(methods=['post'])
-    def remove_admins(self, request, group_id=None):
-        admin_ids = request.data
-        group_manager_client = self.request.profile_service['group_manager']
-        result = group_manager_client.removeGroupAdmins(
-            self.authz_token, group_id, admin_ids)
-        return Response({'success': result})
 
 
 class ProjectViewSet(APIBackedViewSet):

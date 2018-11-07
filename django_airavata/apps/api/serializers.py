@@ -138,17 +138,11 @@ class OrderedListField(serializers.ListField):
         return validated_data
 
 
-class GroupSerializer(serializers.Serializer):
+class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:group-detail',
         lookup_field='id',
         lookup_url_kwarg='group_id')
-    id = serializers.CharField(
-        default=GroupModel.thrift_spec[1][4], allow_null=True)
-    name = serializers.CharField(required=True)
-    description = serializers.CharField(allow_null=True, allow_blank=True)
-    ownerId = serializers.CharField(read_only=True)
-    members = serializers.ListSerializer(child=serializers.CharField())
     isAdmin = serializers.SerializerMethodField()
     isOwner = serializers.SerializerMethodField()
     isMember = serializers.SerializerMethodField()
@@ -156,10 +150,15 @@ class GroupSerializer(serializers.Serializer):
     isReadOnlyGatewayAdminsGroup = serializers.SerializerMethodField()
     isDefaultGatewayUsersGroup = serializers.SerializerMethodField()
 
+    class Meta:
+        required = ('name',)
+        read_only = ('id', 'ownerId')
+
     def create(self, validated_data):
-        validated_data['ownerId'] = self.context['request'].user.username + \
+        group = super().create(validated_data)
+        group.ownerId = self.context['request'].user.username + \
             "@" + settings.GATEWAY_ID
-        return GroupModel(**validated_data)
+        return group
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
@@ -173,16 +172,31 @@ class GroupSerializer(serializers.Serializer):
         instance._removed_members = list(removed_members)
         instance._added_members = list(added_members)
         instance.members = validated_data.get('members', instance.members)
+        # Calculate added and removed admins
+        old_admins = set(instance.admins)
+        new_admins = set(validated_data.get('admins', instance.admins))
+        removed_admins = old_admins - new_admins
+        added_admins = new_admins - old_admins
+        instance._removed_admins = list(removed_admins)
+        instance._added_admins = list(added_admins)
+        instance.admins = validated_data.get('admins', instance.admins)
+        # Add new admins that aren't members to the added_members list
+        instance._added_members.extend(list(added_admins - new_members))
+        instance.members.extend(list(added_admins - new_members))
         return instance
 
     def get_isAdmin(self, group):
         request = self.context['request']
         return request.profile_service['group_manager'].hasAdminAccess(
-            request.authz_token, group.id, request.user.username + "@" + settings.GATEWAY_ID)
+            request.authz_token,
+            group.id,
+            request.user.username + "@" + settings.GATEWAY_ID)
 
     def get_isOwner(self, group):
         request = self.context['request']
-        return group.ownerId == request.user.username + "@" + settings.GATEWAY_ID
+        return group.ownerId == (request.user.username +
+                                 "@" +
+                                 settings.GATEWAY_ID)
 
     def get_isMember(self, group):
         request = self.context['request']
