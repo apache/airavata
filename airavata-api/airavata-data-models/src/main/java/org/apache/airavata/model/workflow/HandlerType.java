@@ -30,9 +30,7 @@ import org.apache.thrift.TEnum;
 
 public enum HandlerType implements org.apache.thrift.TEnum {
   FLOW_STARTER(0),
-  FLOW_TERMINATOR(1),
-  DOWHILE_LOOP(2),
-  FOREACH_LOOP(3);
+  FLOW_TERMINATOR(1);
 
   private final int value;
 
@@ -57,10 +55,6 @@ public enum HandlerType implements org.apache.thrift.TEnum {
         return FLOW_STARTER;
       case 1:
         return FLOW_TERMINATOR;
-      case 2:
-        return DOWHILE_LOOP;
-      case 3:
-        return FOREACH_LOOP;
       default:
         return null;
     }

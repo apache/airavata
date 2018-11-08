@@ -23,6 +23,7 @@
  include "scheduling_model.thrift"
  include "status_models.thrift"
  include "process_model.thrift"
+ include "airavata_workflow_model.thrift"
 
  namespace java org.apache.airavata.model.experiment
  namespace php Airavata.Model.Experiment
@@ -104,7 +105,8 @@ struct ExperimentModel {
     16: optional list<application_io_models.OutputDataObjectType> experimentOutputs,
     17: optional list<status_models.ExperimentStatus> experimentStatus,
     18: optional list<airavata_commons.ErrorModel> errors,
-    19: optional list<process_model.ProcessModel> processes
+    19: optional list<process_model.ProcessModel> processes,
+    20: optional airavata_workflow_model.AiravataWorkflow workflow
     }
 
 struct ExperimentSummaryModel {

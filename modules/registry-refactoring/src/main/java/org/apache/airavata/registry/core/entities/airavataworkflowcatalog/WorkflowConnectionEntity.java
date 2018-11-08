@@ -19,7 +19,7 @@
  */
 package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 
-import org.apache.airavata.model.workflow.core.ComponentType;
+import org.apache.airavata.model.workflow.ComponentType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -41,9 +41,6 @@ public class WorkflowConnectionEntity implements Serializable {
 
     @Column(name = "DATA_BLOCK_ID")
     private String dataBlockId;
-
-    @Column(name = "BELONGS_TO_MAIN_WORKFLOW")
-    private boolean belongsToMainWorkflow;
 
     @Column(name = "FROM_TYPE")
     @Enumerated(EnumType.STRING)
@@ -92,10 +89,6 @@ public class WorkflowConnectionEntity implements Serializable {
 
     public void setDataBlockId(String dataBlockId) {
         this.dataBlockId = dataBlockId;
-    }
-
-    public void setBelongsToMainWorkflow(boolean belongsToMainWorkflow) {
-        this.belongsToMainWorkflow = belongsToMainWorkflow;
     }
 
     public void setFromType(ComponentType fromType) {
@@ -148,10 +141,6 @@ public class WorkflowConnectionEntity implements Serializable {
 
     public String getDataBlockId() {
         return dataBlockId;
-    }
-
-    public boolean isBelongsToMainWorkflow() {
-        return belongsToMainWorkflow;
     }
 
     public ComponentType getFromType() {

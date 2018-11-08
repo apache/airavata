@@ -163,8 +163,7 @@ public class DBConstants {
     }
 
     public static class Workflow {
-        public static final String GATEWAY_ID = "gatewayId";
-        public static final String NAME = "name";
+        public static final String EXPERIMENT_ID = "experimentId";
     }
 
     public static class DataMovement {
