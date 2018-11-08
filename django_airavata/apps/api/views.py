@@ -914,3 +914,44 @@ class CredentialSummaryViewSet(APIBackedViewSet):
         elif instance.type == SummaryType.PASSWD:
             self.request.airavata_client.deletePWDCredential(
                 self.authz_token, instance.token)
+
+
+class GatewayResourceProfileViewSet(APIBackedViewSet):
+    serializer_class = serializers.GatewayResourceProfileSerializer
+    lookup_field = 'gateway_id'
+    lookup_value_regex = '[^/]+'
+
+    def get_list(self):
+        return self.request.airavata_client.getAllGatewayResourceProfiles(
+            self.authz_token)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getGatewayResourceProfile(
+            self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        gateway_resource_profile = serializer.save()
+        self.request.airavata_client.registerGatewayResourceProfile(
+            self.authz_token, gateway_resource_profile)
+
+    def perform_update(self, serializer):
+        gateway_resource_profile = serializer.save()
+        self.request.airavata_client.updateGatewayResourceProfile(
+            self.authz_token,
+            gateway_resource_profile.gatewayID,
+            gateway_resource_profile)
+
+    def perform_destroy(self, instance):
+        self.request.airavata_client.deleteGatewayResourceProfile(
+            self.authz_token, instance.gatewayID)
+
+
+class GetCurrentGatewayResourceProfile(APIView):
+
+    def get(self, request, format=None):
+        gateway_resource_profile = \
+            request.airavata_client.getGatewayResourceProfile(
+                request.authz_token, settings.GATEWAY_ID)
+        serializer = serializers.GatewayResourceProfileSerializer(
+            gateway_resource_profile, context={'request': request})
+        return Response(serializer.data)

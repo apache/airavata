@@ -26,6 +26,7 @@ import Project from "./models/Project";
 import ResourcePermissionType from "./models/ResourcePermissionType";
 import SetEnvPaths from "./models/SetEnvPaths";
 import SharedEntity from "./models/SharedEntity";
+import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
@@ -79,6 +80,7 @@ exports.models = {
   ResourcePermissionType,
   SetEnvPaths,
   SharedEntity,
+  StoragePreference,
   SummaryType,
   UserPermission
 };
@@ -95,6 +97,7 @@ exports.services = {
   ExperimentSearchService,
   ExperimentService,
   FullExperimentService,
+  GatewayResourceProfileService: ServiceFactory.service("GatewayResourceProfiles"),
   GlobusJobSubmissionService,
   GridFTPDataMovementService,
   GroupResourceProfileService: ServiceFactory.service("GroupResourceProfiles"),

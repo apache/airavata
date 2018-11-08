@@ -3,6 +3,7 @@ Used to create Django Rest Framework serializers for Apache Thrift Data Types
 """
 import copy
 import datetime
+import logging
 
 from django.utils import six
 from rest_framework.serializers import (
@@ -14,11 +15,14 @@ from rest_framework.serializers import (
     Field,
     IntegerField,
     ListField,
+    ListSerializer,
     Serializer,
     SerializerMetaclass,
     ValidationError
 )
 from thrift.Thrift import TType
+
+logger = logging.getLogger(__name__)
 
 # used to map apache thrift data types to django serializer fields
 mapping = {
@@ -122,8 +126,10 @@ def create_serializer_class(thrift_data_type, enable_date_time_conversion=False)
             fields = self.fields
             params = copy.deepcopy(validated_data)
             for field_name, serializer in fields.items():
-                if isinstance(serializer, ListField):
-                    if (params[field_name] is not None or not serializer.allow_null):
+                if (isinstance(serializer, ListField) or
+                        isinstance(serializer, ListSerializer)):
+                    if (params[field_name] is not None or
+                            not serializer.allow_null):
                         if isinstance(serializer.child, Serializer):
                             params[field_name] = [serializer.child.create(
                                 item) for item in params[field_name]]

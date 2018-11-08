@@ -8,6 +8,7 @@ import ComputePreference from "./components/admin/group_resource_preferences/Com
 import ComputeResourcePreferenceDashboard from "./components/dashboards/ComputeResourcePreferenceDashboard";
 import CredentialStoreDashboard from "./components/dashboards/CredentialStoreDashboard";
 import ExperimentsDashboard from "./components/dashboards/ExperimentDashboard.vue";
+import GatewayResourceProfileEditorContainer from "./components/gatewayprofile/GatewayResourceProfileEditorContainer.vue";
 import GroupComputeResourcePreference from "./components/admin/group_resource_preferences/GroupComputeResourcePreference";
 import VueRouter from "vue-router";
 
@@ -116,6 +117,11 @@ const routes = [
     path: "/credentials",
     component: CredentialStoreDashboard,
     name: "credential_store"
+  },
+  {
+    path: "/gateway-resource-profile",
+    component: GatewayResourceProfileEditorContainer,
+    name: "gateway-resource-profile"
   }
 ];
 export default new VueRouter({

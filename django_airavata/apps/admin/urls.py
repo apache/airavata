@@ -9,4 +9,6 @@ urlpatterns = [
     url(r'^credentials/', views.credential_store, name='credential_store'),
     url(r'^group-resource-profiles/', views.group_resource_profile,
         name='group_resource_profile'),
+    url(r'^gateway-resource-profile/', views.gateway_resource_profile,
+        name='gateway_resource_profile'),
 ]

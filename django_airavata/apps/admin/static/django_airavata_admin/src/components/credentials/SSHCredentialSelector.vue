@@ -29,6 +29,9 @@ import ClipboardCopyButton from "../commons/ClipboardCopyButton.vue";
 import NewSSHCredentialModal from "../credentials/NewSSHCredentialModal.vue";
 
 export default {
+  // TODO: disable if the 'value' is not in the list of loaded credentials?
+  // Because it would mean that the user doesn't have access to this credential.
+  // Maybe display 'You don't have access to this credential'.
   name: "ssh-credential-selector",
   props: {},
   mixins: [mixins.VModelMixin],

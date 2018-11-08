@@ -29,3 +29,9 @@ def compute_resource(request):
 def group_resource_profile(request):
     request.active_nav_item = 'group_resource_profile'
     return render(request, 'admin/admin_base.html')
+
+
+@login_required
+def gateway_resource_profile(request):
+    request.active_nav_item = 'gateway_resource_profile'
+    return render(request, 'admin/admin_base.html')

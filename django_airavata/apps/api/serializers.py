@@ -22,6 +22,10 @@ from airavata.model.appcatalog.computeresource.ttypes import (
     BatchQueue,
     ComputeResourceDescription
 )
+from airavata.model.appcatalog.gatewayprofile.ttypes import (
+    GatewayResourceProfile,
+    StoragePreference
+)
 from airavata.model.appcatalog.groupresourceprofile.ttypes import (
     GroupResourceProfile
 )
@@ -64,9 +68,9 @@ class FullyEncodedHyperlinkedIdentityField(
                 "[{}] of object [{}]".format(
                     lookup_value, self.lookup_field, obj))
             raise
-        # Bit of a hack. Django's URL reversing does URL encoding but it doesn't
-        # encode all characters including some like '/' that are used in URL
-        # mappings.
+        # Bit of a hack. Django's URL reversing does URL encoding but it
+        # doesn't encode all characters including some like '/' that are used
+        # in URL mappings.
         kwargs = {self.lookup_url_kwarg: "__PLACEHOLDER__"}
         url = self.reverse(view_name, kwargs=kwargs,
                            request=request, format=format)
@@ -152,7 +156,7 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
 
     class Meta:
         required = ('name',)
-        read_only = ('id', 'ownerId')
+        read_only = ('ownerId',)
 
     def create(self, validated_data):
         group = super().create(validated_data)
@@ -576,8 +580,9 @@ class SharedEntitySerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         # Compute lists of ids to grant/revoke READ/WRITE
-        existing_user_permissions = {user['user'].airavataInternalUserId: user['permissionType']
-                                     for user in instance['userPermissions']}
+        existing_user_permissions = {
+            user['user'].airavataInternalUserId: user['permissionType']
+            for user in instance['userPermissions']}
         new_user_permissions = {
             user['user']['airavataInternalUserId']:
             user['permissionType']
@@ -679,3 +684,23 @@ class CredentialSummarySerializer(
         return request.airavata_client.userHasAccess(
             request.authz_token, credential_summary.token,
             ResourcePermissionType.WRITE)
+
+
+class StoragePreferenceSerializer(
+        thrift_utils.create_serializer_class(StoragePreference)):
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        # Convert empty string to null
+        if ret['resourceSpecificCredentialStoreToken'] == '':
+            ret['resourceSpecificCredentialStoreToken'] = None
+        return ret
+
+
+class GatewayResourceProfileSerializer(
+        thrift_utils.create_serializer_class(GatewayResourceProfile)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:gateway-resource-profile-detail',
+        lookup_field='gatewayID',
+        lookup_url_kwarg='gateway_id')
+    storagePreferences = StoragePreferenceSerializer(many=True)
