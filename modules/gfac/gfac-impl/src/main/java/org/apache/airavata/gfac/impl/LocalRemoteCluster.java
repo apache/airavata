@@ -164,6 +164,20 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     }
 
     @Override
+    public long getFileSize(String filePath) throws GFacException {
+        File file = new File(filePath);
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new GFacException(filePath + " is a directory. This does not support to measure the size of a directory");
+            } else {
+                return file.length();
+            }
+        } else {
+            throw new GFacException("File " + filePath + " does not exist");
+        }
+    }
+
+    @Override
     public JobStatus cancelJob(String jobID) throws GFacException {
         JobStatus oldStatus = getJobStatus(jobID);
         RawCommandInfo cancelCommand = jobManagerConfiguration.getCancelCommand(jobID);

@@ -79,6 +79,11 @@ public class BESRemoteCluster extends AbstractRemoteCluster{
     }
 
     @Override
+    public long getFileSize(String filePath) throws GFacException {
+        throw new GFacException("Method not implemented");
+    }
+
+    @Override
     public JobStatus cancelJob(String jobID) throws GFacException {
         return null;
     }

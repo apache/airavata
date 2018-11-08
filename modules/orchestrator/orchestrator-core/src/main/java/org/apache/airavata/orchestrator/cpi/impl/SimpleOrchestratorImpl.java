@@ -433,6 +433,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     case URI:
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
+                    case FLOAT:
+                    case STRING:
+                    case INTEGER:
+                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
+                        break;
                     default:
                         // nothing to do
                         break;
