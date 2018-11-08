@@ -171,8 +171,8 @@ public class GfacServerHandler implements GfacService.Iface {
             throw new TException("Failed to submit process due to credential issue, " +
                     "make sure you are passing a valid credential token", e);
         } catch (Exception e) {
-            log.error("Error creating zookeeper nodes", e);
-            throw new TException("Error creating zookeeper nodes", e);
+            log.error("Unknown error while submitting the process", e);
+            throw new TException("Unknown error while submitting the process", e);
         }
         return true;
     }
