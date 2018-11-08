@@ -2,6 +2,7 @@ package org.apache.airavata.helix.impl.task.parsing.models;
 
 public class ParsingTaskInput {
     private String id;
+    private String name;
     private String contextVariableName;
     private String value;
     private String type;
@@ -36,5 +37,13 @@ public class ParsingTaskInput {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

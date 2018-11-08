@@ -63,7 +63,7 @@ public class ParserWorkflowManager extends WorkflowManager {
     public static void main(String[] args) throws Exception {
         ParserWorkflowManager manager = new ParserWorkflowManager();
         manager.init();
-        manager.test();
+        manager.runConsumer();
     }
 
     private void init() throws Exception {
@@ -92,7 +92,6 @@ public class ParserWorkflowManager extends WorkflowManager {
             List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(completionMessage.getExperimentId());
 
             Map<String, Map<String, Set<ParserConnector>>> parentToChildParsers = new HashMap<>();
-            Map<String, Map<String, Set<String>>> childToParentParsers = new HashMap<>();
 
             for (ParsingTemplate template : parsingTemplates) {
                 for (ParserConnector connector: template.getParserConnections()) {
@@ -111,23 +110,9 @@ public class ParserWorkflowManager extends WorkflowManager {
                         parentToChildLocal.put(connector.getParentParserId(), childLocal);
                     }
 
-                    childLocal.add(connector);
-
-                    Map<String, Set<String>> childToParentLocal = new HashMap<>();
-                    if (childToParentParsers.containsKey(template.getId())) {
-                        childToParentLocal = childToParentParsers.get(template.getId());
-                    } else {
-                        childToParentParsers.put(template.getId(), childToParentLocal);
+                    if (!connector.getParentParserId().equals(connector.getChildParserId())) {
+                        childLocal.add(connector);
                     }
-
-                    Set<String> parentLocal = new HashSet<>();
-                    if (childToParentLocal.containsKey(connector.getChildParserId())) {
-                        parentLocal = childToParentLocal.get(connector.getChildParserId());
-                    } else {
-                        childToParentLocal.put(connector.getChildParserId(), parentLocal);
-                    }
-
-                    parentLocal.add(connector.getParentParserId());
                 }
             }
 
@@ -197,8 +182,10 @@ public class ParserWorkflowManager extends WorkflowManager {
 
             ParsingTaskInput input = new ParsingTaskInput();
             input.setId(templateInput.getTargetInputId());
+
             if (parserInputOp.isPresent()) {
                 input.setType(parserInputOp.get().getType().name());
+                input.setName(parserInputOp.get().getName());
             } else {
                 throw new Exception("Failed to find an input with id " + templateInput.getTargetInputId());
             }
@@ -220,7 +207,7 @@ public class ParserWorkflowManager extends WorkflowManager {
                     throw new Exception("Failed while fetching experiment " + completionMessage.getExperimentId());
                 }
             } else {
-                input.setValue(processExpression(templateInput.getValue()));
+                input.setValue(processExpression(templateInput.getValue(), completionMessage));
             }
             inputs.addInput(input);
         }
@@ -241,7 +228,19 @@ public class ParserWorkflowManager extends WorkflowManager {
         return parsingTask;
     }
 
-    private String processExpression(String expression) {
+    private String processExpression(String expression, ProcessCompletionMessage completionMessage) {
+        if (expression != null) {
+            if (expression.startsWith("{{") && expression.endsWith("}}")) {
+                switch (expression) {
+                    case "{{experimentId}}":
+                        return completionMessage.getExperimentId();
+                    case "{{processId}}":
+                        return completionMessage.getProcessId();
+                    case "{{gateway}}":
+                        return completionMessage.getGatewayId();
+                }
+            }
+        }
         return expression;
     }
 
@@ -272,8 +271,11 @@ public class ParserWorkflowManager extends WorkflowManager {
                     if (parserInputOp.isPresent()) {
                         ParsingTaskInput input = new ParsingTaskInput();
                         // Either context variable or value is set
-                        input.setContextVariableName(connector.getParentParserId() + "-" + connectorInput.getParentOutputId());
-                        input.setValue(processExpression(connectorInput.getValue()));
+                        input.setName(parserInputOp.get().getName());
+                        if (connectorInput.getParentOutputId() != null) {
+                            input.setContextVariableName(connector.getParentParserId() + "-" + connectorInput.getParentOutputId());
+                        }
+                        input.setValue(processExpression(connectorInput.getValue(), completionMessage));
                         input.setId(connectorInput.getInputId());
                         input.setType(parserInputOp.get().getType().name());
                         inputs.addInput(input);
@@ -330,14 +332,6 @@ public class ParserWorkflowManager extends WorkflowManager {
             consumerRecords.forEach(record -> process(record.value()));
             consumer.commitAsync();
         }
-    }
-
-    private void test() {
-        ProcessCompletionMessage completionMessage = new ProcessCompletionMessage();
-        completionMessage.setExperimentId("Echo_on_Oct_24,_2018_10:03_AM_b67b6a7e-d41f-46c2-a756-d8cf91155e1e");
-        completionMessage.setGatewayId("seagrid");
-        completionMessage.setProcessId("PROCESS_be7d1946-e404-447e-a7e8-5581aaef2ef8");
-        process(completionMessage);
     }
 
 }

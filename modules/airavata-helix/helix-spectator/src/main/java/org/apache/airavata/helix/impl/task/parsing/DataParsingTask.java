@@ -125,7 +125,7 @@ public class DataParsingTask extends AbstractTask {
                     String inputVal = parsingTaskInput.getValue() != null ? parsingTaskInput.getValue() : getContextVariable(parsingTaskInput.getContextVariableName());
 
                     if ("PROPERTY".equals(parsingTaskInput.getType())) {
-                        properties.put(parsingTaskInput.getContextVariableName(), inputVal);
+                        properties.put(parsingTaskInput.getName(), inputVal);
                     } else if ("FILE".equals(parsingTaskInput.getType())) {
 
                         String inputDataProductUri = inputVal;
