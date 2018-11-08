@@ -26,19 +26,19 @@ import java.util.List;
 
 public interface WorkflowCatalog {
 
-    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException;
+//    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException;
 
     public AiravataWorkflow getWorkflow(String workflowId) throws WorkflowCatalogException;
 
     public void deleteWorkflow(String workflowId) throws WorkflowCatalogException;
 
-    public String registerWorkflow(AiravataWorkflow workflow, String gatewayId) throws WorkflowCatalogException;
+    public String registerWorkflow(AiravataWorkflow workflow, String experimentId) throws WorkflowCatalogException;
 
     public void updateWorkflow(String workflowId, AiravataWorkflow workflow) throws WorkflowCatalogException;
 
-    public String getWorkflowId(String workflowName) throws WorkflowCatalogException;
+    public String getWorkflowId(String experimentId) throws WorkflowCatalogException;
 
-    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException;
+//    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException;
 
 //    public void updateWorkflowOutputs(String workflowId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException;
 

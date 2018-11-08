@@ -29,27 +29,21 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowHandler");
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("belongsToMainWorkflow", org.apache.thrift.protocol.TType.BOOL, (short)2);
-  private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("inputs", org.apache.thrift.protocol.TType.LIST, (short)4);
-  private static final org.apache.thrift.protocol.TField OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("outputs", org.apache.thrift.protocol.TType.LIST, (short)5);
-  private static final org.apache.thrift.protocol.TField APPLICATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("applications", org.apache.thrift.protocol.TType.LIST, (short)6);
-  private static final org.apache.thrift.protocol.TField CONNECTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("connections", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("statuses", org.apache.thrift.protocol.TType.LIST, (short)8);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)9);
-  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)10);
-  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)11);
+  private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("inputs", org.apache.thrift.protocol.TType.LIST, (short)3);
+  private static final org.apache.thrift.protocol.TField OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("outputs", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("statuses", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField CREATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdAt", org.apache.thrift.protocol.TType.I64, (short)7);
+  private static final org.apache.thrift.protocol.TField UPDATED_AT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedAt", org.apache.thrift.protocol.TType.I64, (short)8);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new WorkflowHandlerStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new WorkflowHandlerTupleSchemeFactory();
 
   private java.lang.String id; // required
-  private boolean belongsToMainWorkflow; // required
   private HandlerType type; // required
   private java.util.List<org.apache.airavata.model.application.io.InputDataObjectType> inputs; // optional
   private java.util.List<org.apache.airavata.model.application.io.OutputDataObjectType> outputs; // optional
-  private java.util.List<WorkflowApplication> applications; // optional
-  private java.util.List<WorkflowConnection> connections; // optional
   private java.util.List<HandlerStatus> statuses; // optional
   private java.util.List<org.apache.airavata.model.commons.ErrorModel> errors; // optional
   private long createdAt; // optional
@@ -58,20 +52,17 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
-    BELONGS_TO_MAIN_WORKFLOW((short)2, "belongsToMainWorkflow"),
     /**
      * 
      * @see HandlerType
      */
-    TYPE((short)3, "type"),
-    INPUTS((short)4, "inputs"),
-    OUTPUTS((short)5, "outputs"),
-    APPLICATIONS((short)6, "applications"),
-    CONNECTIONS((short)7, "connections"),
-    STATUSES((short)8, "statuses"),
-    ERRORS((short)9, "errors"),
-    CREATED_AT((short)10, "createdAt"),
-    UPDATED_AT((short)11, "updatedAt");
+    TYPE((short)2, "type"),
+    INPUTS((short)3, "inputs"),
+    OUTPUTS((short)4, "outputs"),
+    STATUSES((short)5, "statuses"),
+    ERRORS((short)6, "errors"),
+    CREATED_AT((short)7, "createdAt"),
+    UPDATED_AT((short)8, "updatedAt");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -88,25 +79,19 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
       switch(fieldId) {
         case 1: // ID
           return ID;
-        case 2: // BELONGS_TO_MAIN_WORKFLOW
-          return BELONGS_TO_MAIN_WORKFLOW;
-        case 3: // TYPE
+        case 2: // TYPE
           return TYPE;
-        case 4: // INPUTS
+        case 3: // INPUTS
           return INPUTS;
-        case 5: // OUTPUTS
+        case 4: // OUTPUTS
           return OUTPUTS;
-        case 6: // APPLICATIONS
-          return APPLICATIONS;
-        case 7: // CONNECTIONS
-          return CONNECTIONS;
-        case 8: // STATUSES
+        case 5: // STATUSES
           return STATUSES;
-        case 9: // ERRORS
+        case 6: // ERRORS
           return ERRORS;
-        case 10: // CREATED_AT
+        case 7: // CREATED_AT
           return CREATED_AT;
-        case 11: // UPDATED_AT
+        case 8: // UPDATED_AT
           return UPDATED_AT;
         default:
           return null;
@@ -148,18 +133,15 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
   }
 
   // isset id assignments
-  private static final int __BELONGSTOMAINWORKFLOW_ISSET_ID = 0;
-  private static final int __CREATEDAT_ISSET_ID = 1;
-  private static final int __UPDATEDAT_ISSET_ID = 2;
+  private static final int __CREATEDAT_ISSET_ID = 0;
+  private static final int __UPDATEDAT_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.INPUTS,_Fields.OUTPUTS,_Fields.APPLICATIONS,_Fields.CONNECTIONS,_Fields.STATUSES,_Fields.ERRORS,_Fields.CREATED_AT,_Fields.UPDATED_AT};
+  private static final _Fields optionals[] = {_Fields.INPUTS,_Fields.OUTPUTS,_Fields.STATUSES,_Fields.ERRORS,_Fields.CREATED_AT,_Fields.UPDATED_AT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.BELONGS_TO_MAIN_WORKFLOW, new org.apache.thrift.meta_data.FieldMetaData("belongsToMainWorkflow", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, HandlerType.class)));
     tmpMap.put(_Fields.INPUTS, new org.apache.thrift.meta_data.FieldMetaData("inputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -168,12 +150,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     tmpMap.put(_Fields.OUTPUTS, new org.apache.thrift.meta_data.FieldMetaData("outputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.application.io.OutputDataObjectType.class))));
-    tmpMap.put(_Fields.APPLICATIONS, new org.apache.thrift.meta_data.FieldMetaData("applications", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowApplication.class))));
-    tmpMap.put(_Fields.CONNECTIONS, new org.apache.thrift.meta_data.FieldMetaData("connections", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowConnection.class))));
     tmpMap.put(_Fields.STATUSES, new org.apache.thrift.meta_data.FieldMetaData("statuses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, HandlerStatus.class))));
@@ -193,13 +169,10 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
 
   public WorkflowHandler(
     java.lang.String id,
-    boolean belongsToMainWorkflow,
     HandlerType type)
   {
     this();
     this.id = id;
-    this.belongsToMainWorkflow = belongsToMainWorkflow;
-    setBelongsToMainWorkflowIsSet(true);
     this.type = type;
   }
 
@@ -211,7 +184,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     if (other.isSetId()) {
       this.id = other.id;
     }
-    this.belongsToMainWorkflow = other.belongsToMainWorkflow;
     if (other.isSetType()) {
       this.type = other.type;
     }
@@ -228,20 +200,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
         __this__outputs.add(new org.apache.airavata.model.application.io.OutputDataObjectType(other_element));
       }
       this.outputs = __this__outputs;
-    }
-    if (other.isSetApplications()) {
-      java.util.List<WorkflowApplication> __this__applications = new java.util.ArrayList<WorkflowApplication>(other.applications.size());
-      for (WorkflowApplication other_element : other.applications) {
-        __this__applications.add(new WorkflowApplication(other_element));
-      }
-      this.applications = __this__applications;
-    }
-    if (other.isSetConnections()) {
-      java.util.List<WorkflowConnection> __this__connections = new java.util.ArrayList<WorkflowConnection>(other.connections.size());
-      for (WorkflowConnection other_element : other.connections) {
-        __this__connections.add(new WorkflowConnection(other_element));
-      }
-      this.connections = __this__connections;
     }
     if (other.isSetStatuses()) {
       java.util.List<HandlerStatus> __this__statuses = new java.util.ArrayList<HandlerStatus>(other.statuses.size());
@@ -268,13 +226,9 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
   @Override
   public void clear() {
     this.id = null;
-    setBelongsToMainWorkflowIsSet(false);
-    this.belongsToMainWorkflow = false;
     this.type = null;
     this.inputs = null;
     this.outputs = null;
-    this.applications = null;
-    this.connections = null;
     this.statuses = null;
     this.errors = null;
     setCreatedAtIsSet(false);
@@ -304,28 +258,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     if (!value) {
       this.id = null;
     }
-  }
-
-  public boolean isBelongsToMainWorkflow() {
-    return this.belongsToMainWorkflow;
-  }
-
-  public void setBelongsToMainWorkflow(boolean belongsToMainWorkflow) {
-    this.belongsToMainWorkflow = belongsToMainWorkflow;
-    setBelongsToMainWorkflowIsSet(true);
-  }
-
-  public void unsetBelongsToMainWorkflow() {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID);
-  }
-
-  /** Returns true if field belongsToMainWorkflow is set (has been assigned a value) and false otherwise */
-  public boolean isSetBelongsToMainWorkflow() {
-    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID);
-  }
-
-  public void setBelongsToMainWorkflowIsSet(boolean value) {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __BELONGSTOMAINWORKFLOW_ISSET_ID, value);
   }
 
   /**
@@ -432,82 +364,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
   public void setOutputsIsSet(boolean value) {
     if (!value) {
       this.outputs = null;
-    }
-  }
-
-  public int getApplicationsSize() {
-    return (this.applications == null) ? 0 : this.applications.size();
-  }
-
-  public java.util.Iterator<WorkflowApplication> getApplicationsIterator() {
-    return (this.applications == null) ? null : this.applications.iterator();
-  }
-
-  public void addToApplications(WorkflowApplication elem) {
-    if (this.applications == null) {
-      this.applications = new java.util.ArrayList<WorkflowApplication>();
-    }
-    this.applications.add(elem);
-  }
-
-  public java.util.List<WorkflowApplication> getApplications() {
-    return this.applications;
-  }
-
-  public void setApplications(java.util.List<WorkflowApplication> applications) {
-    this.applications = applications;
-  }
-
-  public void unsetApplications() {
-    this.applications = null;
-  }
-
-  /** Returns true if field applications is set (has been assigned a value) and false otherwise */
-  public boolean isSetApplications() {
-    return this.applications != null;
-  }
-
-  public void setApplicationsIsSet(boolean value) {
-    if (!value) {
-      this.applications = null;
-    }
-  }
-
-  public int getConnectionsSize() {
-    return (this.connections == null) ? 0 : this.connections.size();
-  }
-
-  public java.util.Iterator<WorkflowConnection> getConnectionsIterator() {
-    return (this.connections == null) ? null : this.connections.iterator();
-  }
-
-  public void addToConnections(WorkflowConnection elem) {
-    if (this.connections == null) {
-      this.connections = new java.util.ArrayList<WorkflowConnection>();
-    }
-    this.connections.add(elem);
-  }
-
-  public java.util.List<WorkflowConnection> getConnections() {
-    return this.connections;
-  }
-
-  public void setConnections(java.util.List<WorkflowConnection> connections) {
-    this.connections = connections;
-  }
-
-  public void unsetConnections() {
-    this.connections = null;
-  }
-
-  /** Returns true if field connections is set (has been assigned a value) and false otherwise */
-  public boolean isSetConnections() {
-    return this.connections != null;
-  }
-
-  public void setConnectionsIsSet(boolean value) {
-    if (!value) {
-      this.connections = null;
     }
   }
 
@@ -641,14 +497,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
       }
       break;
 
-    case BELONGS_TO_MAIN_WORKFLOW:
-      if (value == null) {
-        unsetBelongsToMainWorkflow();
-      } else {
-        setBelongsToMainWorkflow((java.lang.Boolean)value);
-      }
-      break;
-
     case TYPE:
       if (value == null) {
         unsetType();
@@ -670,22 +518,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
         unsetOutputs();
       } else {
         setOutputs((java.util.List<org.apache.airavata.model.application.io.OutputDataObjectType>)value);
-      }
-      break;
-
-    case APPLICATIONS:
-      if (value == null) {
-        unsetApplications();
-      } else {
-        setApplications((java.util.List<WorkflowApplication>)value);
-      }
-      break;
-
-    case CONNECTIONS:
-      if (value == null) {
-        unsetConnections();
-      } else {
-        setConnections((java.util.List<WorkflowConnection>)value);
       }
       break;
 
@@ -729,9 +561,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     case ID:
       return getId();
 
-    case BELONGS_TO_MAIN_WORKFLOW:
-      return isBelongsToMainWorkflow();
-
     case TYPE:
       return getType();
 
@@ -740,12 +569,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
 
     case OUTPUTS:
       return getOutputs();
-
-    case APPLICATIONS:
-      return getApplications();
-
-    case CONNECTIONS:
-      return getConnections();
 
     case STATUSES:
       return getStatuses();
@@ -772,18 +595,12 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     switch (field) {
     case ID:
       return isSetId();
-    case BELONGS_TO_MAIN_WORKFLOW:
-      return isSetBelongsToMainWorkflow();
     case TYPE:
       return isSetType();
     case INPUTS:
       return isSetInputs();
     case OUTPUTS:
       return isSetOutputs();
-    case APPLICATIONS:
-      return isSetApplications();
-    case CONNECTIONS:
-      return isSetConnections();
     case STATUSES:
       return isSetStatuses();
     case ERRORS:
@@ -820,15 +637,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
         return false;
     }
 
-    boolean this_present_belongsToMainWorkflow = true;
-    boolean that_present_belongsToMainWorkflow = true;
-    if (this_present_belongsToMainWorkflow || that_present_belongsToMainWorkflow) {
-      if (!(this_present_belongsToMainWorkflow && that_present_belongsToMainWorkflow))
-        return false;
-      if (this.belongsToMainWorkflow != that.belongsToMainWorkflow)
-        return false;
-    }
-
     boolean this_present_type = true && this.isSetType();
     boolean that_present_type = true && that.isSetType();
     if (this_present_type || that_present_type) {
@@ -853,24 +661,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
       if (!(this_present_outputs && that_present_outputs))
         return false;
       if (!this.outputs.equals(that.outputs))
-        return false;
-    }
-
-    boolean this_present_applications = true && this.isSetApplications();
-    boolean that_present_applications = true && that.isSetApplications();
-    if (this_present_applications || that_present_applications) {
-      if (!(this_present_applications && that_present_applications))
-        return false;
-      if (!this.applications.equals(that.applications))
-        return false;
-    }
-
-    boolean this_present_connections = true && this.isSetConnections();
-    boolean that_present_connections = true && that.isSetConnections();
-    if (this_present_connections || that_present_connections) {
-      if (!(this_present_connections && that_present_connections))
-        return false;
-      if (!this.connections.equals(that.connections))
         return false;
     }
 
@@ -921,8 +711,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     if (isSetId())
       hashCode = hashCode * 8191 + id.hashCode();
 
-    hashCode = hashCode * 8191 + ((belongsToMainWorkflow) ? 131071 : 524287);
-
     hashCode = hashCode * 8191 + ((isSetType()) ? 131071 : 524287);
     if (isSetType())
       hashCode = hashCode * 8191 + type.getValue();
@@ -934,14 +722,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     hashCode = hashCode * 8191 + ((isSetOutputs()) ? 131071 : 524287);
     if (isSetOutputs())
       hashCode = hashCode * 8191 + outputs.hashCode();
-
-    hashCode = hashCode * 8191 + ((isSetApplications()) ? 131071 : 524287);
-    if (isSetApplications())
-      hashCode = hashCode * 8191 + applications.hashCode();
-
-    hashCode = hashCode * 8191 + ((isSetConnections()) ? 131071 : 524287);
-    if (isSetConnections())
-      hashCode = hashCode * 8191 + connections.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetStatuses()) ? 131071 : 524287);
     if (isSetStatuses())
@@ -980,16 +760,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetBelongsToMainWorkflow()).compareTo(other.isSetBelongsToMainWorkflow());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetBelongsToMainWorkflow()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.belongsToMainWorkflow, other.belongsToMainWorkflow);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = java.lang.Boolean.valueOf(isSetType()).compareTo(other.isSetType());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1016,26 +786,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     }
     if (isSetOutputs()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.outputs, other.outputs);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = java.lang.Boolean.valueOf(isSetApplications()).compareTo(other.isSetApplications());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetApplications()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applications, other.applications);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = java.lang.Boolean.valueOf(isSetConnections()).compareTo(other.isSetConnections());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetConnections()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.connections, other.connections);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1108,10 +858,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("belongsToMainWorkflow:");
-    sb.append(this.belongsToMainWorkflow);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("type:");
     if (this.type == null) {
       sb.append("null");
@@ -1136,26 +882,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
         sb.append("null");
       } else {
         sb.append(this.outputs);
-      }
-      first = false;
-    }
-    if (isSetApplications()) {
-      if (!first) sb.append(", ");
-      sb.append("applications:");
-      if (this.applications == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.applications);
-      }
-      first = false;
-    }
-    if (isSetConnections()) {
-      if (!first) sb.append(", ");
-      sb.append("connections:");
-      if (this.connections == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.connections);
       }
       first = false;
     }
@@ -1199,10 +925,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     // check for required fields
     if (!isSetId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' is unset! Struct:" + toString());
-    }
-
-    if (!isSetBelongsToMainWorkflow()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'belongsToMainWorkflow' is unset! Struct:" + toString());
     }
 
     if (!isSetType()) {
@@ -1256,15 +978,7 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // BELONGS_TO_MAIN_WORKFLOW
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.belongsToMainWorkflow = iprot.readBool();
-              struct.setBelongsToMainWorkflowIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 3: // TYPE
+          case 2: // TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.type = org.apache.airavata.model.workflow.HandlerType.findByValue(iprot.readI32());
               struct.setTypeIsSet(true);
@@ -1272,7 +986,7 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // INPUTS
+          case 3: // INPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
@@ -1291,7 +1005,7 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // OUTPUTS
+          case 4: // OUTPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list19 = iprot.readListBegin();
@@ -1310,55 +1024,17 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // APPLICATIONS
+          case 5: // STATUSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list22 = iprot.readListBegin();
-                struct.applications = new java.util.ArrayList<WorkflowApplication>(_list22.size);
-                WorkflowApplication _elem23;
+                struct.statuses = new java.util.ArrayList<HandlerStatus>(_list22.size);
+                HandlerStatus _elem23;
                 for (int _i24 = 0; _i24 < _list22.size; ++_i24)
                 {
-                  _elem23 = new WorkflowApplication();
+                  _elem23 = new HandlerStatus();
                   _elem23.read(iprot);
-                  struct.applications.add(_elem23);
-                }
-                iprot.readListEnd();
-              }
-              struct.setApplicationsIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 7: // CONNECTIONS
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list25 = iprot.readListBegin();
-                struct.connections = new java.util.ArrayList<WorkflowConnection>(_list25.size);
-                WorkflowConnection _elem26;
-                for (int _i27 = 0; _i27 < _list25.size; ++_i27)
-                {
-                  _elem26 = new WorkflowConnection();
-                  _elem26.read(iprot);
-                  struct.connections.add(_elem26);
-                }
-                iprot.readListEnd();
-              }
-              struct.setConnectionsIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 8: // STATUSES
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list28 = iprot.readListBegin();
-                struct.statuses = new java.util.ArrayList<HandlerStatus>(_list28.size);
-                HandlerStatus _elem29;
-                for (int _i30 = 0; _i30 < _list28.size; ++_i30)
-                {
-                  _elem29 = new HandlerStatus();
-                  _elem29.read(iprot);
-                  struct.statuses.add(_elem29);
+                  struct.statuses.add(_elem23);
                 }
                 iprot.readListEnd();
               }
@@ -1367,17 +1043,17 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // ERRORS
+          case 6: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list31 = iprot.readListBegin();
-                struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list31.size);
-                org.apache.airavata.model.commons.ErrorModel _elem32;
-                for (int _i33 = 0; _i33 < _list31.size; ++_i33)
+                org.apache.thrift.protocol.TList _list25 = iprot.readListBegin();
+                struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list25.size);
+                org.apache.airavata.model.commons.ErrorModel _elem26;
+                for (int _i27 = 0; _i27 < _list25.size; ++_i27)
                 {
-                  _elem32 = new org.apache.airavata.model.commons.ErrorModel();
-                  _elem32.read(iprot);
-                  struct.errors.add(_elem32);
+                  _elem26 = new org.apache.airavata.model.commons.ErrorModel();
+                  _elem26.read(iprot);
+                  struct.errors.add(_elem26);
                 }
                 iprot.readListEnd();
               }
@@ -1386,7 +1062,7 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // CREATED_AT
+          case 7: // CREATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.createdAt = iprot.readI64();
               struct.setCreatedAtIsSet(true);
@@ -1394,7 +1070,7 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // UPDATED_AT
+          case 8: // UPDATED_AT
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.updatedAt = iprot.readI64();
               struct.setUpdatedAtIsSet(true);
@@ -1420,9 +1096,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
         oprot.writeString(struct.id);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(BELONGS_TO_MAIN_WORKFLOW_FIELD_DESC);
-      oprot.writeBool(struct.belongsToMainWorkflow);
-      oprot.writeFieldEnd();
       if (struct.type != null) {
         oprot.writeFieldBegin(TYPE_FIELD_DESC);
         oprot.writeI32(struct.type.getValue());
@@ -1433,9 +1106,9 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
           oprot.writeFieldBegin(INPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.inputs.size()));
-            for (org.apache.airavata.model.application.io.InputDataObjectType _iter34 : struct.inputs)
+            for (org.apache.airavata.model.application.io.InputDataObjectType _iter28 : struct.inputs)
             {
-              _iter34.write(oprot);
+              _iter28.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1447,37 +1120,9 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
           oprot.writeFieldBegin(OUTPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.outputs.size()));
-            for (org.apache.airavata.model.application.io.OutputDataObjectType _iter35 : struct.outputs)
+            for (org.apache.airavata.model.application.io.OutputDataObjectType _iter29 : struct.outputs)
             {
-              _iter35.write(oprot);
-            }
-            oprot.writeListEnd();
-          }
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.applications != null) {
-        if (struct.isSetApplications()) {
-          oprot.writeFieldBegin(APPLICATIONS_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.applications.size()));
-            for (WorkflowApplication _iter36 : struct.applications)
-            {
-              _iter36.write(oprot);
-            }
-            oprot.writeListEnd();
-          }
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.connections != null) {
-        if (struct.isSetConnections()) {
-          oprot.writeFieldBegin(CONNECTIONS_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.connections.size()));
-            for (WorkflowConnection _iter37 : struct.connections)
-            {
-              _iter37.write(oprot);
+              _iter29.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1489,9 +1134,9 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
           oprot.writeFieldBegin(STATUSES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.statuses.size()));
-            for (HandlerStatus _iter38 : struct.statuses)
+            for (HandlerStatus _iter30 : struct.statuses)
             {
-              _iter38.write(oprot);
+              _iter30.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1503,9 +1148,9 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
           oprot.writeFieldBegin(ERRORS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.errors.size()));
-            for (org.apache.airavata.model.commons.ErrorModel _iter39 : struct.errors)
+            for (org.apache.airavata.model.commons.ErrorModel _iter31 : struct.errors)
             {
-              _iter39.write(oprot);
+              _iter31.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1540,7 +1185,6 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
     public void write(org.apache.thrift.protocol.TProtocol prot, WorkflowHandler struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.id);
-      oprot.writeBool(struct.belongsToMainWorkflow);
       oprot.writeI32(struct.type.getValue());
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetInputs()) {
@@ -1549,76 +1193,52 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
       if (struct.isSetOutputs()) {
         optionals.set(1);
       }
-      if (struct.isSetApplications()) {
+      if (struct.isSetStatuses()) {
         optionals.set(2);
       }
-      if (struct.isSetConnections()) {
+      if (struct.isSetErrors()) {
         optionals.set(3);
       }
-      if (struct.isSetStatuses()) {
+      if (struct.isSetCreatedAt()) {
         optionals.set(4);
       }
-      if (struct.isSetErrors()) {
+      if (struct.isSetUpdatedAt()) {
         optionals.set(5);
       }
-      if (struct.isSetCreatedAt()) {
-        optionals.set(6);
-      }
-      if (struct.isSetUpdatedAt()) {
-        optionals.set(7);
-      }
-      oprot.writeBitSet(optionals, 8);
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetInputs()) {
         {
           oprot.writeI32(struct.inputs.size());
-          for (org.apache.airavata.model.application.io.InputDataObjectType _iter40 : struct.inputs)
+          for (org.apache.airavata.model.application.io.InputDataObjectType _iter32 : struct.inputs)
           {
-            _iter40.write(oprot);
+            _iter32.write(oprot);
           }
         }
       }
       if (struct.isSetOutputs()) {
         {
           oprot.writeI32(struct.outputs.size());
-          for (org.apache.airavata.model.application.io.OutputDataObjectType _iter41 : struct.outputs)
+          for (org.apache.airavata.model.application.io.OutputDataObjectType _iter33 : struct.outputs)
           {
-            _iter41.write(oprot);
-          }
-        }
-      }
-      if (struct.isSetApplications()) {
-        {
-          oprot.writeI32(struct.applications.size());
-          for (WorkflowApplication _iter42 : struct.applications)
-          {
-            _iter42.write(oprot);
-          }
-        }
-      }
-      if (struct.isSetConnections()) {
-        {
-          oprot.writeI32(struct.connections.size());
-          for (WorkflowConnection _iter43 : struct.connections)
-          {
-            _iter43.write(oprot);
+            _iter33.write(oprot);
           }
         }
       }
       if (struct.isSetStatuses()) {
         {
           oprot.writeI32(struct.statuses.size());
-          for (HandlerStatus _iter44 : struct.statuses)
+          for (HandlerStatus _iter34 : struct.statuses)
           {
-            _iter44.write(oprot);
+            _iter34.write(oprot);
           }
         }
       }
       if (struct.isSetErrors()) {
         {
           oprot.writeI32(struct.errors.size());
-          for (org.apache.airavata.model.commons.ErrorModel _iter45 : struct.errors)
+          for (org.apache.airavata.model.commons.ErrorModel _iter35 : struct.errors)
           {
-            _iter45.write(oprot);
+            _iter35.write(oprot);
           }
         }
       }
@@ -1635,100 +1255,70 @@ public class WorkflowHandler implements org.apache.thrift.TBase<WorkflowHandler,
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.id = iprot.readString();
       struct.setIdIsSet(true);
-      struct.belongsToMainWorkflow = iprot.readBool();
-      struct.setBelongsToMainWorkflowIsSet(true);
       struct.type = org.apache.airavata.model.workflow.HandlerType.findByValue(iprot.readI32());
       struct.setTypeIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(8);
+      java.util.BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list46 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.inputs = new java.util.ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list46.size);
-          org.apache.airavata.model.application.io.InputDataObjectType _elem47;
-          for (int _i48 = 0; _i48 < _list46.size; ++_i48)
+          org.apache.thrift.protocol.TList _list36 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.inputs = new java.util.ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list36.size);
+          org.apache.airavata.model.application.io.InputDataObjectType _elem37;
+          for (int _i38 = 0; _i38 < _list36.size; ++_i38)
           {
-            _elem47 = new org.apache.airavata.model.application.io.InputDataObjectType();
-            _elem47.read(iprot);
-            struct.inputs.add(_elem47);
+            _elem37 = new org.apache.airavata.model.application.io.InputDataObjectType();
+            _elem37.read(iprot);
+            struct.inputs.add(_elem37);
           }
         }
         struct.setInputsIsSet(true);
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list49 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.outputs = new java.util.ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list49.size);
-          org.apache.airavata.model.application.io.OutputDataObjectType _elem50;
-          for (int _i51 = 0; _i51 < _list49.size; ++_i51)
+          org.apache.thrift.protocol.TList _list39 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.outputs = new java.util.ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list39.size);
+          org.apache.airavata.model.application.io.OutputDataObjectType _elem40;
+          for (int _i41 = 0; _i41 < _list39.size; ++_i41)
           {
-            _elem50 = new org.apache.airavata.model.application.io.OutputDataObjectType();
-            _elem50.read(iprot);
-            struct.outputs.add(_elem50);
+            _elem40 = new org.apache.airavata.model.application.io.OutputDataObjectType();
+            _elem40.read(iprot);
+            struct.outputs.add(_elem40);
           }
         }
         struct.setOutputsIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list52 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.applications = new java.util.ArrayList<WorkflowApplication>(_list52.size);
-          WorkflowApplication _elem53;
-          for (int _i54 = 0; _i54 < _list52.size; ++_i54)
+          org.apache.thrift.protocol.TList _list42 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.statuses = new java.util.ArrayList<HandlerStatus>(_list42.size);
+          HandlerStatus _elem43;
+          for (int _i44 = 0; _i44 < _list42.size; ++_i44)
           {
-            _elem53 = new WorkflowApplication();
-            _elem53.read(iprot);
-            struct.applications.add(_elem53);
-          }
-        }
-        struct.setApplicationsIsSet(true);
-      }
-      if (incoming.get(3)) {
-        {
-          org.apache.thrift.protocol.TList _list55 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.connections = new java.util.ArrayList<WorkflowConnection>(_list55.size);
-          WorkflowConnection _elem56;
-          for (int _i57 = 0; _i57 < _list55.size; ++_i57)
-          {
-            _elem56 = new WorkflowConnection();
-            _elem56.read(iprot);
-            struct.connections.add(_elem56);
-          }
-        }
-        struct.setConnectionsIsSet(true);
-      }
-      if (incoming.get(4)) {
-        {
-          org.apache.thrift.protocol.TList _list58 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.statuses = new java.util.ArrayList<HandlerStatus>(_list58.size);
-          HandlerStatus _elem59;
-          for (int _i60 = 0; _i60 < _list58.size; ++_i60)
-          {
-            _elem59 = new HandlerStatus();
-            _elem59.read(iprot);
-            struct.statuses.add(_elem59);
+            _elem43 = new HandlerStatus();
+            _elem43.read(iprot);
+            struct.statuses.add(_elem43);
           }
         }
         struct.setStatusesIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list61 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list61.size);
-          org.apache.airavata.model.commons.ErrorModel _elem62;
-          for (int _i63 = 0; _i63 < _list61.size; ++_i63)
+          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.errors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list45.size);
+          org.apache.airavata.model.commons.ErrorModel _elem46;
+          for (int _i47 = 0; _i47 < _list45.size; ++_i47)
           {
-            _elem62 = new org.apache.airavata.model.commons.ErrorModel();
-            _elem62.read(iprot);
-            struct.errors.add(_elem62);
+            _elem46 = new org.apache.airavata.model.commons.ErrorModel();
+            _elem46.read(iprot);
+            struct.errors.add(_elem46);
           }
         }
         struct.setErrorsIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(4)) {
         struct.createdAt = iprot.readI64();
         struct.setCreatedAtIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(5)) {
         struct.updatedAt = iprot.readI64();
         struct.setUpdatedAtIsSet(true);
       }

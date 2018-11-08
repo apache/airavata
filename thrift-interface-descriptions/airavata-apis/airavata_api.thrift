@@ -3320,64 +3320,11 @@ service Airavata {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
-
-
-
-  list<string> getAllWorkflows(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
   list<status_models.QueueStatusModel> getLatestQueueStatuses(1: required security_model.AuthzToken authzToken)
         throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,
                         4: airavata_errors.AuthorizationException ae)
-  /**
-   *
-   * API Methods Related for Work-Flow Submission Features.
-   *
-  */
-
-  airavata_workflow_model.AiravataWorkflow getWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowId)
-        throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase,
-                4: airavata_errors.AuthorizationException ae)
-
-  void deleteWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowId)
-        throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase,
-                4: airavata_errors.AuthorizationException ae)
-
-  string registerWorkflow(1: required security_model.AuthzToken authzToken, 2: required string gatewayId,
-                          3: required airavata_workflow_model.AiravataWorkflow workflow)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
-  void updateWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowId,
-                       3: required airavata_workflow_model.AiravataWorkflow workflow)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
-  string getWorkflowId (1: required security_model.AuthzToken authzToken, 2: required string workflowName)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
-  bool isWorkflowExistWithName(1: required security_model.AuthzToken authzToken, 2: required string workflowName)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
 
  /**
  * API Methods related to replica catalog

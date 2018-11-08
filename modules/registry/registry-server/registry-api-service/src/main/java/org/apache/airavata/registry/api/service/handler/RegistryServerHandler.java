@@ -66,12 +66,7 @@ import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.error.ProjectNotFoundException;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentSearchFields;
-import org.apache.airavata.model.experiment.ExperimentStatistics;
-import org.apache.airavata.model.experiment.ExperimentSummaryModel;
-import org.apache.airavata.model.experiment.ProjectSearchFields;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
@@ -83,7 +78,6 @@ import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workflow.AiravataWorkflow;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
@@ -130,7 +124,6 @@ import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.ExperimentCatalogException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
-import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -2254,86 +2247,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
-    /**
-     * Delete the Storage Resource Preference of a registered gateway profile.
-     *
-     * @param gatewayId@return status
-     *                         Returns a success/failure of the deletion.
-     */
-    @Override
-    public List<String> getAllWorkflows(String gatewayId) throws RegistryServiceException, TException {
-        if (!isGatewayExistInternal(gatewayId)){
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
-        }
-        try {
-            return workflowRepository.getAllWorkflows(gatewayId);
-        } catch (WorkflowCatalogException e) {
-            String msg = "Error in retrieving all workflow template Ids.";
-            logger.error(msg, e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    /**
-     * API Methods Related for Work-Flow Submission Features.
-     *
-     * @param workflowId
-     */
-    @Override
-    public AiravataWorkflow getWorkflow(String workflowId) throws RegistryServiceException, TException {
-        try {
-            return workflowRepository.getWorkflow(workflowId);
-        } catch (WorkflowCatalogException e) {
-            String msg = "Error in retrieving the workflow "+workflowId+".";
-            logger.error(msg, e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    public void deleteWorkflow(String workflowId) throws RegistryServiceException, TException {
-        try {
-            workflowRepository.deleteWorkflow(workflowId);
-        } catch (WorkflowCatalogException e) {
-            String msg = "Error in deleting the workflow "+workflowId+".";
-            logger.error(msg, e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    public String getWorkflowId(String workflowName) throws RegistryServiceException, TException {
-        try {
-            return workflowRepository.getWorkflowId(workflowName);
-        } catch (WorkflowCatalogException e) {
-            String msg = "Error in retrieving the workflow template id for "+workflowName+".";
-            logger.error(msg, e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    public boolean isWorkflowExistWithName(String workflowName) throws RegistryServiceException, TException {
-        try {
-            return workflowRepository.isWorkflowExistWithName(workflowName);
-        } catch (WorkflowCatalogException e) {
-            String msg = "Error in veriying the workflow for workflow name "+workflowName+".";
-            logger.error(msg, e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
     @Override
     public DataProductModel getDataProduct(String productUri) throws RegistryServiceException, TException {
         try {
@@ -2652,36 +2565,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
             return productUrl;
         } catch (RegistryException e) {
             String msg = "Error in registering the data resource"+dataProductModel.getProductName()+".";
-            logger.error(msg, e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    public void updateWorkflow(String workflowId, AiravataWorkflow workflow) throws RegistryServiceException, TException {
-        try {
-            workflowRepository.updateWorkflow(workflowId, workflow);
-        } catch (WorkflowCatalogException e) {
-            String msg = "Error in updating the workflow "+workflow.getName()+".";
-            logger.error(msg, e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage(msg+" More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    public String registerWorkflow(String gatewayId, AiravataWorkflow workflow) throws RegistryServiceException, TException {
-        if (!isGatewayExistInternal(gatewayId)){
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
-        }
-        try {
-            return workflowRepository.registerWorkflow(workflow, gatewayId);
-        } catch (WorkflowCatalogException e) {
-            String msg = "Error in registering the workflow "+workflow.getName()+".";
             logger.error(msg, e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage(msg+" More info : " + e.getMessage());
@@ -3830,6 +3713,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
             experiment.setGatewayId(gatewayId);
             String experimentId = experimentRepository.addExperiment(experiment);
+            if (experiment.getExperimentType() == ExperimentType.WORKFLOW) {
+                workflowRepository.registerWorkflow(experiment.getWorkflow(), experimentId);
+            }
             logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
             return experimentId;
         } catch (Exception e) {

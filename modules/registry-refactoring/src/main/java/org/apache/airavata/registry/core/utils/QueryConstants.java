@@ -157,10 +157,8 @@ public interface QueryConstants {
             "WHERE DP.gatewayId LIKE :" + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE :" +
             DBConstants.DataProduct.OWNER_NAME + " AND dp.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
 
-    String GET_ALL_WORKFLOWS = "SELECT W FROM " + AiravataWorkflowEntity.class.getSimpleName() + " W " +
-            "WHERE W.gatewayId LIKE :" + DBConstants.Workflow.GATEWAY_ID;
-    String GET_WORKFLOW_GIVEN_NAME = "SELECT W FROM " + AiravataWorkflowEntity.class.getSimpleName() + " W " +
-            "WHERE W.name LIKE :" + DBConstants.Workflow.NAME;
+    String GET_WORKFLOW_FOR_EXPERIMENT_ID = "SELECT W FROM " + AiravataWorkflowEntity.class.getSimpleName() + " W " +
+            "WHERE W.experimentId LIKE :" + DBConstants.Workflow.EXPERIMENT_ID;
 
     String FIND_STORAGE_RESOURCE = "SELECT DISTINCT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
             "WHERE SR.hostName LIKE :" + DBConstants.StorageResource.HOST_NAME;
