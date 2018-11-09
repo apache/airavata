@@ -1,6 +1,6 @@
-package org.apache.airavata.helix.impl.task.completing.kafka;
+package org.apache.airavata.helix.impl.task.parsing.kafka;
 
-import org.apache.airavata.helix.impl.task.completing.ProcessCompletionMessage;
+import org.apache.airavata.helix.impl.task.parsing.ProcessCompletionMessage;
 import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.Map;

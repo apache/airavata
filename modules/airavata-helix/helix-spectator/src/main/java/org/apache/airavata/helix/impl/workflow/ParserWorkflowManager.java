@@ -23,8 +23,8 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.impl.task.completing.ProcessCompletionMessage;
-import org.apache.airavata.helix.impl.task.completing.kafka.ProcessCompletionMessageDeserializer;
+import org.apache.airavata.helix.impl.task.parsing.ProcessCompletionMessage;
+import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageDeserializer;
 import org.apache.airavata.helix.impl.task.parsing.*;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
@@ -308,8 +308,8 @@ public class ParserWorkflowManager extends WorkflowManager {
         final Properties props = new Properties();
         final Consumer<String, ProcessCompletionMessage> consumer = new KafkaConsumer<>(props);
 
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.broker.consumer.group"));
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.parser.broker.url"));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.parser.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ProcessCompletionMessageDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");

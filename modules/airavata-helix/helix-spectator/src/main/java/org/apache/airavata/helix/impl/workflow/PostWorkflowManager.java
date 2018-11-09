@@ -27,6 +27,7 @@ import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
+import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.model.status.ProcessState;
@@ -214,7 +215,18 @@ public class PostWorkflowManager extends WorkflowManager {
                         if (allTasks.size() > 0) {
                             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
                         }
+
                         allTasks.add(completingTask);
+
+                        ParsingTriggeringTask parsingTriggeringTask = new ParsingTriggeringTask();
+                        parsingTriggeringTask.setTaskId("Parsing-Triggering-Task");
+                        parsingTriggeringTask.setGatewayId(experimentModel.getGatewayId());
+                        parsingTriggeringTask.setExperimentId(experimentModel.getExperimentId());
+                        parsingTriggeringTask.setProcessId(processModel.getProcessId());
+                        parsingTriggeringTask.setSkipTaskStatusPublish(true);
+                        completingTask.setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
+
+                        allTasks.add(parsingTriggeringTask);
 
                         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                                 new ArrayList<>(allTasks), true, false);

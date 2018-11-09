@@ -1,4 +1,4 @@
-package org.apache.airavata.helix.impl.task.completing;
+package org.apache.airavata.helix.impl.task.parsing;
 
 public class ProcessCompletionMessage {
     private String processId;
