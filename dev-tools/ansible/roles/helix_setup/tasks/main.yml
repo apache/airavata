@@ -50,6 +50,7 @@
   - "{{ helix_participant_dist_name }}"
   - "{{ helix_pre_wm_dist_name }}"
   - "{{ helix_post_wm_dist_name }}"
+  - "{{ helix_parser_wm_dist_name }}"
 
 # Copy properties files & logback.xml files
 
@@ -64,6 +65,7 @@
   - { name: participant, dir: "{{ helix_participant_version }}" }
   - { name: pre-wm, dir: "{{ helix_pre_wm_version }}" }
   - { name: post-wm, dir: "{{ helix_post_wm_version }}" }
+  - { name: parser-wm, dir: "{{ helix_parser_wm_version }}" }
 
 - name: Copy logback configuration file
   template: "src={{ item.name }}/logback.xml.j2
@@ -76,6 +78,7 @@
   - { name: participant, dir: "{{ helix_participant_version }}" }
   - { name: pre-wm, dir: "{{ helix_pre_wm_version }}" }
   - { name: post-wm, dir: "{{ helix_post_wm_version }}" }
+  - { name: parser-wm, dir: "{{ helix_parser_wm_version }}" }
 
 - name: Create logs directory
   file: "path={{ item }} state=directory owner={{ user }} group={{ group }}"
@@ -84,6 +87,7 @@
   - "{{ helix_participant_log_dir }}"
   - "{{ helix_pre_wm_dist_log_dir }}"
   - "{{ helix_post_wm_dist_log_dir }}"
+  - "{{ helix_parser_wm_dist_log_dir }}"
 
 - name: Stop daemons
   command: "{{ item.command }} chdir={{ helix_dir }}/{{ item.dir }}/"
@@ -92,6 +96,7 @@
   - { command: ./bin/participant-daemon.sh stop, dir: "{{ helix_participant_version }}" }
   - { command: ./bin/pre-wm-daemon.sh stop, dir: "{{ helix_pre_wm_version }}" }
   - { command: ./bin/post-wm-daemon.sh stop, dir: "{{ helix_post_wm_version }}" }
+  - { command: ./bin/parser-wm-daemon.sh stop, dir: "{{ helix_parser_wm_version }}" }
 
 # Run bash-scripts
 - name: Start daemons
@@ -101,6 +106,7 @@
   - { command: ./bin/participant-daemon.sh start, dir: "{{ helix_participant_version }}" }
   - { command: ./bin/pre-wm-daemon.sh start, dir: "{{ helix_pre_wm_version }}" }
   - { command: ./bin/post-wm-daemon.sh start, dir: "{{ helix_post_wm_version }}" }
+  - { command: ./bin/parser-wm-daemon.sh start, dir: "{{ helix_parser_wm_version }}" }
 
 #- name: systemd install helix setup service scripts
 #  template: src={{ item.template }}

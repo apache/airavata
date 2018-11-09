@@ -162,3 +162,10 @@ realtime_monitor_broker_topic: "helix-airavata-mq"
 job_monitor_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
 job_monitor_broker_topic: "parsed-data"
 job_monitor_broker_consumer_group: "MonitoringConsumer"
+
+# Variables related to parser framework
+parser_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
+parser_broker_topic: "completed-messages"
+parser_broker_consumer_group: "ParsingConsumer"
+parser_storage_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+parser_broker_publisher_id: "ParserProducer"
