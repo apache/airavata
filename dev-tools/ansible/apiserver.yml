@@ -20,8 +20,8 @@
 
 ---
 # Just gather facts on database
-- hosts: database
-  gather_facts: True
+#- hosts: database
+#  gather_facts: True
 - hosts: api-orch
   tags: api-orch, airavata
   roles:
