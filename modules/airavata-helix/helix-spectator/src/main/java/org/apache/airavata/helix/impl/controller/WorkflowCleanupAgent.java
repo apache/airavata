@@ -82,7 +82,7 @@ public class WorkflowCleanupAgent implements Runnable {
 
                 switch (workflowContext.getWorkflowState()) {
                     case COMPLETED:
-                    case FAILED:
+                    //case FAILED:
                     case STOPPED:
                     case TIMED_OUT:
                     case ABORTED:
