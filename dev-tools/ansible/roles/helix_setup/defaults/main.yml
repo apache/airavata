@@ -41,7 +41,7 @@ helix_controller_log_dir: "{{ helix_dir }}/{{ helix_controller_version }}/logs"
 helix_participant_log_dir: "{{ helix_dir }}/{{ helix_participant_version }}/logs"
 helix_pre_wm_dist_log_dir: "{{ helix_dir }}/{{ helix_pre_wm_version }}/logs"
 helix_post_wm_dist_log_dir: "{{ helix_dir }}/{{ helix_post_wm_version }}/logs"
-helix_parser_wm_log_dir: "{{ helix_dir }}/{{ helix_parser_wm_version }}/logs"
+helix_parser_wm_dist_log_dir: "{{ helix_dir }}/{{ helix_parser_wm_version }}/logs"
 
 job_status_publish_endpoint: "http://{{ groups['kafka'][0] }}:{{ kafka_rest_proxy_listener_port }}/topics/{{ realtime_monitor_broker_topic }}"
 
