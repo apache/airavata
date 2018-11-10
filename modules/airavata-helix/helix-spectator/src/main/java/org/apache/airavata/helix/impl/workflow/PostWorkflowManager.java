@@ -140,90 +140,12 @@ public class PostWorkflowManager extends WorkflowManager {
                     if (jobStatusResult.getState() == JobState.COMPLETE || jobStatusResult.getState() == JobState.FAILED) {
                         // if the job is FAILED, still run output staging tasks to debug the reason for failure. And update
                         // the experiment status as COMPLETED as this job failure is not related to Airavata scope.
-
                         logger.info("Starting the post workflow for job id : " + jobStatusResult.getJobId() + " with process id "
                                 + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
 
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
-                        RegistryService.Client registryClient = getRegistryClientPool().getResource();
-
-                        ProcessModel processModel;
-                        ExperimentModel experimentModel;
-                        try {
-                            processModel = registryClient.getProcess(processId);
-                            experimentModel = registryClient.getExperiment(processModel.getExperimentId());
-                            getRegistryClientPool().returnResource(registryClient);
-
-                        } catch (Exception e) {
-                            logger.error("Failed to fetch experiment or process from registry associated with process id " + processId, e);
-                            getRegistryClientPool().returnResource(registryClient);
-                            throw new Exception("Failed to fetch experiment or process from registry associated with process id " + processId, e);
-                        }
-
-                        String taskDag = processModel.getTaskDag();
-                        List<TaskModel> taskList = processModel.getTasks();
-
-                        String[] taskIds = taskDag.split(",");
-                        final List<AiravataTask> allTasks = new ArrayList<>();
-
-                        boolean jobSubmissionFound = false;
-
-                        for (String taskId : taskIds) {
-                            Optional<TaskModel> model = taskList.stream().filter(taskModel -> taskModel.getTaskId().equals(taskId)).findFirst();
-
-                            if (model.isPresent()) {
-                                TaskModel taskModel = model.get();
-                                AiravataTask airavataTask = null;
-                                if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
-                                    jobSubmissionFound = true;
-                                } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
-                                    if (jobSubmissionFound) {
-                                        DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskModel);
-                                        assert subTaskModel != null;
-                                        switch (subTaskModel.getType()) {
-                                            case OUPUT:
-                                                airavataTask = new OutputDataStagingTask();
-                                                break;
-                                            case ARCHIVE_OUTPUT:
-                                                airavataTask = new ArchiveTask();
-                                                break;
-                                        }
-                                    }
-                                }
-
-                                if (airavataTask != null) {
-                                    airavataTask.setGatewayId(experimentModel.getGatewayId());
-                                    airavataTask.setExperimentId(experimentModel.getExperimentId());
-                                    airavataTask.setProcessId(processModel.getProcessId());
-                                    airavataTask.setTaskId(taskModel.getTaskId());
-                                    if (allTasks.size() > 0) {
-                                        allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
-                                    }
-                                    allTasks.add(airavataTask);
-                                }
-                            }
-                        }
-
-                        CompletingTask completingTask = new CompletingTask();
-                        completingTask.setGatewayId(experimentModel.getGatewayId());
-                        completingTask.setExperimentId(experimentModel.getExperimentId());
-                        completingTask.setProcessId(processModel.getProcessId());
-                        completingTask.setTaskId("Completing-Task");
-                        completingTask.setSkipTaskStatusPublish(true);
-                        if (allTasks.size() > 0) {
-                            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
-                        }
-                        allTasks.add(completingTask);
-
-                        String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
-                                new ArrayList<>(allTasks), true, false);
-                        try {
-                            MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
-                        } catch (Exception e) {
-                            logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
-                                    "This will affect cancellation tasks", e);
-                        }
+                        executePostWorkflow(processId, gateway);
 
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled but process is not marked as cancelled yet");
@@ -245,6 +167,89 @@ public class PostWorkflowManager extends WorkflowManager {
             logger.error("Failed to process job : " + jobStatusResult.getJobId() + ", with status : " + jobStatusResult.getState().name(), e);
             return false;
         }
+    }
+
+    private void executePostWorkflow(String processId, String gateway) throws Exception {
+
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+        ProcessModel processModel;
+        ExperimentModel experimentModel;
+        try {
+            processModel = registryClient.getProcess(processId);
+            experimentModel = registryClient.getExperiment(processModel.getExperimentId());
+            getRegistryClientPool().returnResource(registryClient);
+
+        } catch (Exception e) {
+            logger.error("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+            getRegistryClientPool().returnResource(registryClient);
+            throw new Exception("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+        }
+
+        String taskDag = processModel.getTaskDag();
+        List<TaskModel> taskList = processModel.getTasks();
+
+        String[] taskIds = taskDag.split(",");
+        final List<AiravataTask> allTasks = new ArrayList<>();
+
+        boolean jobSubmissionFound = false;
+
+        for (String taskId : taskIds) {
+            Optional<TaskModel> model = taskList.stream().filter(taskModel -> taskModel.getTaskId().equals(taskId)).findFirst();
+
+            if (model.isPresent()) {
+                TaskModel taskModel = model.get();
+                AiravataTask airavataTask = null;
+                if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
+                    jobSubmissionFound = true;
+                } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
+                    if (jobSubmissionFound) {
+                        DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskModel);
+                        assert subTaskModel != null;
+                        switch (subTaskModel.getType()) {
+                            case OUPUT:
+                                airavataTask = new OutputDataStagingTask();
+                                break;
+                            case ARCHIVE_OUTPUT:
+                                airavataTask = new ArchiveTask();
+                                break;
+                        }
+                    }
+                }
+
+                if (airavataTask != null) {
+                    airavataTask.setGatewayId(experimentModel.getGatewayId());
+                    airavataTask.setExperimentId(experimentModel.getExperimentId());
+                    airavataTask.setProcessId(processModel.getProcessId());
+                    airavataTask.setTaskId(taskModel.getTaskId());
+                    if (allTasks.size() > 0) {
+                        allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
+                    }
+                    allTasks.add(airavataTask);
+                }
+            }
+        }
+
+        CompletingTask completingTask = new CompletingTask();
+        completingTask.setGatewayId(experimentModel.getGatewayId());
+        completingTask.setExperimentId(experimentModel.getExperimentId());
+        completingTask.setProcessId(processModel.getProcessId());
+        completingTask.setTaskId("Completing-Task");
+        completingTask.setSkipTaskStatusPublish(true);
+        if (allTasks.size() > 0) {
+            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
+        }
+        allTasks.add(completingTask);
+
+        String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
+                new ArrayList<>(allTasks), true, false);
+        try {
+            MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
+        } catch (Exception e) {
+            logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
+                    "This will affect cancellation tasks", e);
+        }
+
     }
 
     private void runConsumer() throws ApplicationSettingsException {
