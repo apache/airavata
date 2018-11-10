@@ -73,10 +73,10 @@ public class HelixController implements Runnable {
 
     public void startServer() throws Exception {
 
-        WorkflowCleanupAgent cleanupAgent = new WorkflowCleanupAgent();
-        cleanupAgent.init();
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleWithFixedDelay(cleanupAgent, 10, 120, TimeUnit.SECONDS);
+        //WorkflowCleanupAgent cleanupAgent = new WorkflowCleanupAgent();
+        //cleanupAgent.init();
+        //ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        //executor.scheduleWithFixedDelay(cleanupAgent, 10, 120, TimeUnit.SECONDS);
 
         new Thread(this).start();
         try {
