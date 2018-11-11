@@ -347,8 +347,10 @@ public abstract class AiravataTask extends AbstractTask {
                 publishTaskState(TaskState.EXECUTING);
             }
             return onRun(helper, getTaskContext());
+        } catch (TaskOnFailException e) {
+            return onFail("Captured a task fail : " + e.getReason(), e.isCritical(), e);
         } catch (Exception e) {
-            return onFail("Unknown error while running task " + getTaskId(), true, e);
+            return onFail("Unknown error while running task " + getTaskId(), false, e);
         } finally {
             MDC.clear();
         }
@@ -422,7 +424,7 @@ public abstract class AiravataTask extends AbstractTask {
 
         } catch (Exception e) {
             logger.error("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), e);
-            throw new TaskOnFailException("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), true, e);
+            throw new TaskOnFailException("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), false, e);
         }
     }
 
