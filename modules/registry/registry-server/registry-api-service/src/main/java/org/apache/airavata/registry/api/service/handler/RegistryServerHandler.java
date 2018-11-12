@@ -4804,7 +4804,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public Parser getParserInfo(String parserId) throws RegistryServiceException, TException {
+    public Parser getParser(String parserId) throws RegistryServiceException, TException {
         try {
             if (!parserInfoRepository.isExists(parserId)) {
                 final String message = "No Parser Info entry exists for " + parserId;
@@ -4825,7 +4825,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public String saveParserInfo(Parser parser) throws RegistryServiceException, TException {
+    public String saveParser(Parser parser) throws RegistryServiceException, TException {
         Parser created = parserInfoRepository.create(parser);
         return created.getId();
     }

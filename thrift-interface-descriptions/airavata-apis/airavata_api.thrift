@@ -36,6 +36,7 @@ include "../data-models/experiment-catalog-models/scheduling_model.thrift"
 include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
+include "../data-models/app-catalog-models/parser_model.thrift"
 include "../data-models/resource-catalog-models/account_provisioning_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
@@ -44,7 +45,6 @@ include "../data-models/resource-catalog-models/group_resource_profile_model.thr
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
-include "../data-models/workflow-catalog-models/airavata_workflow_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../data-models/user-tenant-group-models/group_manager_model.thrift"
 include "../data-models/user-tenant-group-models/user_profile_model.thrift"
@@ -3497,11 +3497,41 @@ service Airavata {
   /**
    * GatewayGroups API methods
    */
-  gateway_groups_model.GatewayGroups getGatewayGroups(1: required security_model.AuthzToken authzToken)
-        throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase,
-                4: airavata_errors.AuthorizationException ae)
+ gateway_groups_model.GatewayGroups getGatewayGroups(1: required security_model.AuthzToken authzToken)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ parser_model.Parser getParser(1: required security_model.AuthzToken authzToken, 2: required string parserId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ string saveParser(1: required security_model.AuthzToken authzToken, 2: required parser_model.Parser parser)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ parser_model.ParsingTemplate getParsingTemplate(1: required security_model.AuthzToken authzToken, 2: required string templateId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae);
+
+ list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required security_model.AuthzToken authzToken, 2: required string experimentId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae);
+
+ string saveParsingTemplate(1: required security_model.AuthzToken authzToken, 2: required parser_model.ParsingTemplate parsingTemplate)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae);
  //
  //End of API
  }
