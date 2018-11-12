@@ -42,7 +42,7 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Column(name = "APPLICATION_DESC")
     private String appDeploymentDescription;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false, updatable = false)
     private Timestamp creationTime;
 
     @Column(name = "ENV_MODULE_LOAD_CMD")
@@ -51,14 +51,14 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Column(name = "EXECUTABLE_PATH")
     private String executablePath;
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false, updatable = false)
     private String gatewayId;
 
     @Column(name = "parallelism")
     @Enumerated(EnumType.STRING)
     private ApplicationParallelismType parallelism;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     @Column(name = "COMPUTE_HOSTID")
