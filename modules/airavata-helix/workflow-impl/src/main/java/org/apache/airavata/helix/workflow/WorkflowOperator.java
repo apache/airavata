@@ -45,6 +45,7 @@ public class WorkflowOperator {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowOperator.class);
 
     private static final String WORKFLOW_PREFIX = "Workflow_of_process_";
+    private static final long WORKFLOW_EXPIRY_TIME = 30 * 60 * 1000;
     private TaskDriver taskDriver;
 
     public WorkflowOperator(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
@@ -86,6 +87,7 @@ public class WorkflowOperator {
             JobConfig.Builder job = new JobConfig.Builder()
                     .addTaskConfigs(taskBuilds)
                     .setFailureThreshold(0)
+                    .setExpiry(WORKFLOW_EXPIRY_TIME)
                     .setMaxAttemptsPerTask(data.getRetryCount());
 
             if (!globalParticipant) {
@@ -104,6 +106,7 @@ public class WorkflowOperator {
 
         WorkflowConfig.Builder config = new WorkflowConfig.Builder().setFailureThreshold(0);
         workflowBuilder.setWorkflowConfig(config.build());
+        workflowBuilder.setExpiry(WORKFLOW_EXPIRY_TIME);
         Workflow workflow = workflowBuilder.build();
 
         taskDriver.start(workflow);
