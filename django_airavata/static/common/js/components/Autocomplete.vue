@@ -1,25 +1,25 @@
 <template>
-    <div style="position:relative">
-        <span class="selected-cards" style="position:relative">
-          <b-button variant="warning" v-for="item in selected" v-bind:key="item.id" @click="removeClick(item)">
-             {{ item.name }} <b-badge variant="light"><a href="#">x</a></b-badge>
-          </b-button>
-        </span>
-        <hr>
-        <autocomplete-text-input :suggestions="suggestions" @selected="suggestionSelected"/>
-    </div>
+  <div style="position:relative">
+    <span class="selected-cards" style="position:relative">
+      <b-button variant="warning" v-for="item in selected" v-bind:key="item.id" @click="removeClick(item)">
+        {{ item.name }} <b-badge variant="light"><a href="#">x</a></b-badge>
+      </b-button>
+    </span>
+    <hr>
+    <autocomplete-text-input :suggestions="suggestions" @selected="suggestionSelected" />
+  </div>
 </template>
 
 <script>
-import AutocompleteTextInput from './AutocompleteTextInput.vue'
+import AutocompleteTextInput from "./AutocompleteTextInput.vue";
+import VModelMixin from "../mixins/VModelMixin";
 
 export default {
-
-  name: 'autocomplete',
+  name: "autocomplete",
+  mixins: [VModelMixin],
   props: {
     value: {
-      type: Array,
-      required: false,
+      type: Array
     },
 
     suggestions: {
@@ -27,44 +27,35 @@ export default {
       required: true
     }
   },
-  data () {
-    return {
-      localValue: this.value ? this.value.slice() : [],
-    }
-  },
   components: {
-      AutocompleteTextInput,
+    AutocompleteTextInput
   },
   computed: {
-    selected () {
-        return this.suggestions.filter((suggestion) => {
-            return this.localValue.indexOf(suggestion.id) >= 0;
-        });
+    selected() {
+      return this.suggestions.filter(suggestion => {
+        return this.data.indexOf(suggestion.id) >= 0;
+      });
     }
   },
   methods: {
-    suggestionSelected (suggestion) {
-      if(this.localValue.indexOf(suggestion.id)==-1) {
-        this.localValue.push(suggestion.id);
+    suggestionSelected(suggestion) {
+      if (this.data.indexOf(suggestion.id) == -1) {
+        this.data.push(suggestion.id);
       }
-      this.$emit('input',this.localValue);
     },
     removeClick(data) {
-      var index = this.localValue.indexOf(data.id);
-      this.localValue.splice(index,1);
-      this.$emit('input',this.localValue);
+      var index = this.data.indexOf(data.id);
+      this.data.splice(index, 1);
     }
-  },
-    watch:{
-      value:function (newValue) {
-          this.localValue=newValue;
-      }
-    }
-}
-
+  }
+};
 </script>
 <style>
-.selected-cards > button + button {
-    margin-left: 10px;
+.selected-cards > button {
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+.selected-cards > button:last-child {
+  margin-right: 0px;
 }
 </style>
