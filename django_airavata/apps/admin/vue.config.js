@@ -2,7 +2,10 @@ const BundleTracker = require("webpack-bundle-tracker");
 const path = require("path");
 
 module.exports = {
-  baseUrl: "/static/django_airavata_admin/dist/",
+  baseUrl:
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:9000/static/django_airavata_admin/dist/"
+      : "/static/django_airavata_admin/dist/",
   outputDir: "./static/django_airavata_admin/dist",
   css: {
     extract: true,
@@ -54,5 +57,13 @@ module.exports = {
         options.configFile = path.resolve(__dirname, "package.json");
         return options;
       });
+  },
+  devServer: {
+    port: 9000,
+    headers: {
+      "Access-Control-Allow-Origin": "*"
+    },
+    hot: true,
+    hotOnly: true
   }
 };
