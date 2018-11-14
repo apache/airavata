@@ -93,6 +93,6 @@ export default {
 .autocomplete-suggestion-list {
   width: 100%;
   position: absolute;
-  z-index: 1;
+  z-index: 3;
 }
 </style>
