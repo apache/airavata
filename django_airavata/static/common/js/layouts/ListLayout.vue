@@ -22,6 +22,11 @@
     </div>
     <div class="row">
       <div class="col">
+        <slot name="new-item-editor"></slot>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
         <slot name="item-list" :items="itemsList">Item List goes here</slot>
         <pager v-if="itemsPaginator" :paginator="itemsPaginator" next="nextItems" v-on:previous="previousItems"></pager>
       </div>

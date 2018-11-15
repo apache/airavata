@@ -955,3 +955,55 @@ class GetCurrentGatewayResourceProfile(APIView):
         serializer = serializers.GatewayResourceProfileSerializer(
             gateway_resource_profile, context={'request': request})
         return Response(serializer.data)
+
+
+class StorageResourceViewSet(mixins.RetrieveModelMixin,
+                             GenericAPIBackedViewSet):
+    serializer_class = serializers.StorageResourceSerializer
+    lookup_field = 'storage_resource_id'
+    lookup_value_regex = '[^/]+'
+
+    def get_instance(self, lookup_value, format=None):
+        return self.request.airavata_client.getStorageResource(
+            self.authz_token, lookup_value)
+
+    @list_route()
+    def all_names(self, request, format=None):
+        """Return a map of compute resource names keyed by resource id."""
+        return Response(
+            request.airavata_client.getAllStorageResourceNames(
+                request.authz_token))
+
+
+class StoragePreferenceViewSet(APIBackedViewSet):
+    serializer_class = serializers.StoragePreferenceSerializer
+    lookup_field = 'storage_resource_id'
+    lookup_value_regex = '[^/]+'
+
+    def get_list(self):
+        return self.request.airavata_client.getAllGatewayStoragePreferences(
+            self.authz_token, settings.GATEWAY_ID)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getGatewayStoragePreference(
+            self.authz_token, settings.GATEWAY_ID, lookup_value)
+
+    def perform_create(self, serializer):
+        storage_preference = serializer.save()
+        self.request.airavata_client.addGatewayStoragePreference(
+            self.authz_token,
+            settings.GATEWAY_ID,
+            storage_preference.storageResourceId,
+            storage_preference)
+
+    def perform_update(self, serializer):
+        storage_preference = serializer.save()
+        self.request.airavata_client.updateGatewayStoragePreference(
+            self.authz_token,
+            settings.GATEWAY_ID,
+            storage_preference.storageResourceId,
+            storage_preference)
+
+    def perform_destroy(self, instance):
+        self.request.airavata_client.deleteGatewayStoragePreference(
+            self.authz_token, settings.GATEWAY_ID, instance.storageResourceId)

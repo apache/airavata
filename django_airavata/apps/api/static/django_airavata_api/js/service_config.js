@@ -6,6 +6,8 @@ import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
 import SharedEntity from "./models/SharedEntity";
+import StoragePreference from "./models/StoragePreference";
+import StorageResourceDescription from "./models/StorageResourceDescription";
 import UserProfile from "./models/UserProfile";
 import ApplicationInterfaceDefinition from "./models/ApplicationInterfaceDefinition";
 import BatchQueue from "./models/BatchQueue";
@@ -238,6 +240,25 @@ export default {
       }
     ],
     modelClass: SharedEntity
+  },
+  StoragePreferences: {
+    url: "/api/storage-preferences/",
+    viewSet: true,
+    modelClass: StoragePreference
+  },
+  StorageResources: {
+    url: "/api/storage-resources",
+    viewSet: [
+      {
+        name: "retrieve"
+      },
+      {
+        name: "names",
+        url: "/api/storage-resources/all_names/",
+        requestType: "get"
+      }
+    ],
+    modelClass: StorageResourceDescription
   },
   UserProfiles: {
     url: "/api/user-profiles",

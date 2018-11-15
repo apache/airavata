@@ -108,6 +108,8 @@ exports.services = {
   ServiceFactory,
   SharedEntityService: ServiceFactory.service("SharedEntities"),
   SshJobSubmissionService,
+  StoragePreferenceService: ServiceFactory.service("StoragePreferences"),
+  StorageResourceService: ServiceFactory.service("StorageResources"),
   UnicoreDataMovementService,
   UnicoreJobSubmissionService,
   UserProfileService

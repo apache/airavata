@@ -29,6 +29,9 @@ from airavata.model.appcatalog.gatewayprofile.ttypes import (
 from airavata.model.appcatalog.groupresourceprofile.ttypes import (
     GroupResourceProfile
 )
+from airavata.model.appcatalog.storageresource.ttypes import (
+    StorageResourceDescription
+)
 from airavata.model.application.io.ttypes import InputDataObjectType
 from airavata.model.credential.store.ttypes import (
     CredentialSummary,
@@ -688,6 +691,10 @@ class CredentialSummarySerializer(
 
 class StoragePreferenceSerializer(
         thrift_utils.create_serializer_class(StoragePreference)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:storage-preference-detail',
+        lookup_field='storageResourceId',
+        lookup_url_kwarg='storage_resource_id')
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -704,3 +711,13 @@ class GatewayResourceProfileSerializer(
         lookup_field='gatewayID',
         lookup_url_kwarg='gateway_id')
     storagePreferences = StoragePreferenceSerializer(many=True)
+
+
+class StorageResourceSerializer(
+        thrift_utils.create_serializer_class(StorageResourceDescription)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:storage-resource-detail',
+        lookup_field='storageResourceId',
+        lookup_url_kwarg='storage_resource_id')
+    creationTime = UTCPosixTimestampDateTimeField()
+    updateTime = UTCPosixTimestampDateTimeField()

@@ -14,7 +14,7 @@
         <div class="card">
           <div class="card-body">
             <storage-preference-list v-if="gatewayResourceProfile" :storagePreferences="gatewayResourceProfile.storagePreferences"
-              @updated="updatedStoragePreference" />
+              @updated="updatedStoragePreference" @added="addedStoragePreference" />
           </div>
         </div>
       </div>
@@ -80,6 +80,13 @@ export default {
         1,
         updatedStoragePreference
       );
+    },
+    addedStoragePreference(newStoragePreference) {
+      services.StoragePreferenceService.create({
+        data: newStoragePreference
+      }).then(sp => {
+        this.gatewayResourceProfile.storagePreferences.push(sp);
+      });
     }
   }
 };

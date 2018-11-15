@@ -1,6 +1,24 @@
 <template>
-  <list-layout @add-new-item="newStoragePreference" :items="decoratedStoragePreferences" title="Storage Preferences"
+  <list-layout @add-new-item="addNewStoragePreference" :items="decoratedStoragePreferences" title="Storage Preferences"
     new-item-button-text="New Storage Preference">
+    <template slot="new-item-editor">
+      <b-card v-if="showNewItemEditor" title="New Storage Preference">
+        <b-form-group label="Storage Resource" label-for="storage-resource">
+          <b-form-select id="storage-resource" v-model="newStoragePreference.storageResourceId" :options="storageResourceOptions" />
+        </b-form-group>
+        <storage-preference-editor v-model="newStoragePreference" />
+        <div class="row">
+          <div class="col">
+            <b-button variant="primary" @click="saveNewStoragePreference">
+              Save
+            </b-button>
+            <b-button variant="secondary" @click="cancelNewStoragePreference">
+              Cancel
+            </b-button>
+          </div>
+        </div>
+      </b-card>
+    </template>
     <template slot="item-list" slot-scope="slotProps">
 
       <b-table striped hover :fields="fields" :items="slotProps.items" sort-by="storageResourceId">
@@ -22,7 +40,7 @@
 </template>
 
 <script>
-import { models } from "django-airavata-api";
+import { models, services, utils } from "django-airavata-api";
 import { layouts } from "django-airavata-common-ui";
 import StoragePreferenceEditor from "./StoragePreferenceEditor.vue";
 
@@ -41,7 +59,10 @@ export default {
   data() {
     return {
       showingDetails: {},
-    }
+      showNewItemEditor: false,
+      newStoragePreference: null,
+      storageResourceNames: null
+    };
   },
   computed: {
     fields() {
@@ -78,7 +99,25 @@ export default {
         spClone._showDetails = this.showingDetails[spClone.storageResourceId];
         return spClone;
       });
+    },
+    storageResourceOptions() {
+      const options = [];
+      for (const key in this.storageResourceNames) {
+        if (this.storageResourceNames.hasOwnProperty(key)) {
+          const name = this.storageResourceNames[key];
+          options.push({
+            value: key,
+            text: name
+          });
+        }
+      }
+      return utils.StringUtils.sortIgnoreCase(options, a => a.text);
     }
+  },
+  created() {
+    services.StorageResourceService.names().then(names => {
+      this.storageResourceNames = names;
+    });
   },
   methods: {
     getStorageResourceName(storageResourceId) {
@@ -94,11 +133,24 @@ export default {
       return fileSystemRootLocation;
     },
     updatedStoragePreference(newValue) {
-      this.$emit('updated', newValue);
+      this.$emit("updated", newValue);
     },
     toggleDetails(row) {
       row.toggleDetails();
-      this.showingDetails[row.item.storageResourceId] = !this.showingDetails[row.item.storageResourceId];
+      this.showingDetails[row.item.storageResourceId] = !this.showingDetails[
+        row.item.storageResourceId
+      ];
+    },
+    addNewStoragePreference() {
+      this.newStoragePreference = new models.StoragePreference();
+      this.showNewItemEditor = true;
+    },
+    saveNewStoragePreference() {
+      this.$emit("added", this.newStoragePreference);
+      this.showNewItemEditor = false;
+    },
+    cancelNewStoragePreference() {
+      this.showNewItemEditor = false;
     }
   }
 };
