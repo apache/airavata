@@ -1,5 +1,4 @@
 import ApplicationCard from "./components/ApplicationCard.vue";
-import Autocomplete from "./components/Autocomplete.vue";
 import AutocompleteTextInput from "./components/AutocompleteTextInput.vue";
 import ConfirmationDialog from "./components/ConfirmationDialog.vue";
 import DeleteButton from "./components/DeleteButton.vue";
@@ -24,7 +23,6 @@ import * as utils from "./utils";
 exports.components = {
   Pager,
   ApplicationCard,
-  Autocomplete,
   AutocompleteTextInput,
   ConfirmationDialog,
   DeleteButton,
