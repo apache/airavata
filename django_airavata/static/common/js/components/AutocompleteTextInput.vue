@@ -4,7 +4,7 @@
       <b-input-group-text slot="prepend">
         <i class="fa fa-search"></i>
       </b-input-group-text>
-      <b-form-input type="text" :value="searchValue" placeholder="Type to get suggestions..." @input="updateSearchValue" @keydown.native.enter='enter'
+      <b-form-input type="text" :value="searchValue" :placeholder="placeholder" @input="updateSearchValue" @keydown.native.enter='enter'
         @keydown.native.down='down' @keydown.native.up='up'></b-form-input>
     </b-input-group>
     <b-list-group class="autocomplete-suggestion-list" v-if="open">
@@ -25,6 +25,10 @@ export default {
     suggestions: {
       type: Array,
       required: true
+    },
+    placeholder: {
+      type: String,
+      default: "Type to get suggestions..."
     }
   },
   data() {

@@ -1,9 +1,10 @@
 <template>
   <div>
-    <b-form-group label="Add members" labelFor="user-autocomplete">
-      <autocomplete-text-input id="user-autocomplete" :suggestions="suggestions" @selected="suggestionSelected" />
+    <b-form-group>
+      <autocomplete-text-input id="user-autocomplete" :suggestions="suggestions" @selected="suggestionSelected"
+        placeholder="Search for users to add to this group" />
     </b-form-group>
-    <b-table v-if="membersCount > 0" hover :items="currentMembers" :fields="fields">
+    <b-table v-if="membersCount > 0" hover :items="currentMembers" :fields="fields" sort-by="name">
       <template slot="role" slot-scope="data">
         <b-form-select :value="data.item.role" @input="changeRole(data.item, $event)" :options="groupRoleOptions">
         </b-form-select>
@@ -62,10 +63,10 @@ export default {
     },
     fields() {
       return [
-        { key: "name", label: "Name" },
-        { key: "username", label: "Username" },
-        { key: "email", label: "Email" },
-        { key: "role", label: "Role" },
+        { key: "name", label: "Name", sortable: true },
+        { key: "username", label: "Username", sortable: true },
+        { key: "email", label: "Email", sortable: true },
+        { key: "role", label: "Role", sortable: true },
         { key: "remove", label: "Remove" }
       ];
     },
