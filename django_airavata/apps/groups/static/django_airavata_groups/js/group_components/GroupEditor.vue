@@ -17,8 +17,8 @@
       </b-form-group>
 
       <b-card title="Group Members" title-tag="h5">
-        <group-members-editor :members="localGroup.members" :admins="localGroup.admins" @add-member="addGroupMember"
-          @remove-member="removeGroupMember" @change-role-to-member="changeRoleToMember" @change-role-to-admin="changeRoleToAdmin" />
+        <group-members-editor :group="localGroup" @add-member="addGroupMember" @remove-member="removeGroupMember"
+          @change-role-to-member="changeRoleToMember" @change-role-to-admin="changeRoleToAdmin" />
       </b-card>
 
       <b-button @click="submitForm" variant="primary">Submit</b-button>

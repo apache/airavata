@@ -5,12 +5,21 @@
         placeholder="Search for users to add to this group" />
     </b-form-group>
     <b-table v-if="membersCount > 0" hover :items="currentMembers" :fields="fields" sort-by="name">
+      <template slot="HEAD_role" slot-scope="data">
+        <div class="d-flex">
+          <div>Role</div>
+          <div class="ml-auto mr-2">
+            <i class="fa fa-info-circle text-info align-text-top" v-b-tooltip.hover title="Admins can add and remove group members." />
+          </div>
+        </div>
+      </template>
       <template slot="role" slot-scope="data">
-        <b-form-select :value="data.item.role" @input="changeRole(data.item, $event)" :options="groupRoleOptions">
+        <b-form-select v-if="group.isOwner" :value="data.item.role" @input="changeRole(data.item, $event)" :options="groupRoleOptions">
         </b-form-select>
+        <span v-else>{{ data.value }}</span>
       </template>
       <template slot="remove" slot-scope="data">
-        <b-link @click="removeMember(data.item)">
+        <b-link v-if="data.item.editable" @click="removeMember(data.item)">
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -19,7 +28,7 @@
 </template>
 
 <script>
-import { services } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 
 export default {
@@ -28,12 +37,8 @@ export default {
     "autocomplete-text-input": components.AutocompleteTextInput
   },
   props: {
-    members: {
-      type: Array,
-      required: true
-    },
-    admins: {
-      type: Array,
+    group: {
+      type: models.Group,
       required: true
     }
   },
@@ -43,6 +48,12 @@ export default {
     };
   },
   computed: {
+    members() {
+      return this.group.members;
+    },
+    admins() {
+      return this.group.admins;
+    },
     suggestions() {
       if (!this.userProfiles) {
         return [];
@@ -87,12 +98,15 @@ export default {
       return this.members.map(m => {
         const userProfile = this.userProfilesMap[m];
         const isAdmin = this.admins.indexOf(m) >= 0;
+        // Owners can edit all members and admins can edit non-admin members
+        const editable = this.group.isOwner || (this.group.isAdmin && !isAdmin);
         return {
           id: m,
           name: userProfile.firstName + " " + userProfile.lastName,
           username: userProfile.userId,
           email: userProfile.email,
-          role: isAdmin ? "ADMIN" : "MEMBER"
+          role: isAdmin ? "ADMIN" : "MEMBER",
+          editable: editable
         };
       });
     },
