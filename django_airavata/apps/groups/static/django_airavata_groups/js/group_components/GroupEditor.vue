@@ -16,8 +16,8 @@
         </b-form-textarea>
       </b-form-group>
 
-      <group-members-editor :members="localGroup.members" :admins="localGroup.admins"
-        @add-member="addGroupMember" @remove-member="removeGroupMember" />
+      <group-members-editor :members="localGroup.members" :admins="localGroup.admins" @add-member="addGroupMember"
+        @remove-member="removeGroupMember" @change-role-to-member="changeRoleToMember" @change-role-to-admin="changeRoleToAdmin" />
 
       <b-button @click="submitForm" variant="primary">Submit</b-button>
     </b-form>
@@ -27,7 +27,6 @@
 <script>
 import { models, services } from "django-airavata-api";
 import GroupMembersEditor from "./GroupMembersEditor.vue";
-
 
 export default {
   props: {
@@ -74,9 +73,21 @@ export default {
     removeGroupMember(airavataInternalUserId) {
       const index = this.localGroup.members.indexOf(airavataInternalUserId);
       this.localGroup.members.splice(index, 1);
+      this.removeAdminMember(airavataInternalUserId);
+    },
+    removeAdminMember(airavataInternalUserId) {
       const adminIndex = this.localGroup.admins.indexOf(airavataInternalUserId);
       if (adminIndex >= 0) {
         this.localGroup.admins.splice(adminIndex, 1);
+      }
+    },
+    changeRoleToMember(airavataInternalUserId) {
+      this.removeAdminMember(airavataInternalUserId);
+    },
+    changeRoleToAdmin(airavataInternalUserId) {
+      const adminIndex = this.localGroup.admins.indexOf(airavataInternalUserId);
+      if (adminIndex < 0) {
+        this.localGroup.admins.push(airavataInternalUserId);
       }
     }
   }

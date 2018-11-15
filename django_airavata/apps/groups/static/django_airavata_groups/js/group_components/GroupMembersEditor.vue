@@ -4,6 +4,10 @@
       <autocomplete-text-input id="user-autocomplete" :suggestions="suggestions" @selected="suggestionSelected" />
     </b-form-group>
     <b-table v-if="membersCount > 0" hover :items="currentMembers" :fields="fields">
+      <template slot="role" slot-scope="data">
+        <b-form-select :value="data.item.role" @input="changeRole(data.item, $event)" :options="groupRoleOptions">
+        </b-form-select>
+      </template>
       <template slot="remove" slot-scope="data">
         <b-link @click="removeMember(data.item)">
           <span class="fa fa-trash"></span>
@@ -93,6 +97,18 @@ export default {
     },
     membersCount() {
       return this.members.length;
+    },
+    groupRoleOptions() {
+      return [
+        {
+          value: "MEMBER",
+          text: "MEMBER"
+        },
+        {
+          value: "ADMIN",
+          text: "ADMIN"
+        }
+      ];
     }
   },
   created() {
@@ -102,10 +118,17 @@ export default {
   },
   methods: {
     suggestionSelected(suggestion) {
-      this.$emit('add-member', suggestion.id);
+      this.$emit("add-member", suggestion.id);
     },
     removeMember(item) {
-      this.$emit('remove-member', item.id);
+      this.$emit("remove-member", item.id);
+    },
+    changeRole(item, role) {
+      if (role === "ADMIN") {
+        this.$emit("change-role-to-admin", item.id);
+      } else {
+        this.$emit("change-role-to-member", item.id);
+      }
     }
   }
 };
