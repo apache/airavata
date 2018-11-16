@@ -40,6 +40,22 @@ public class MonitoringUtil {
         logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
                 + processId + ", gateway : " + gateway);
 
+        // TODO add another children in job id path to store process id. Some cases different machines will return same job id
+        if (curatorClient.checkExists().forPath(PATH_PREFIX + MONITORING + jobId) != null) {
+            logger.warn("Path " + PATH_PREFIX + MONITORING + jobId + " exists. Deleting for new job");
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId);
+        }
+
+        if (curatorClient.checkExists().forPath(PATH_PREFIX + MONITORING + jobName) != null) {
+            logger.warn("Path " + PATH_PREFIX + MONITORING + jobName + " exists. Deleting for new job");
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobName);
+        }
+
+        if (curatorClient.checkExists().forPath(PATH_PREFIX + REGISTRY + processId) != null) {
+            logger.warn("Path " + PATH_PREFIX + REGISTRY + processId + " exists. Deleting for new job");
+            deleteIfExists(curatorClient, PATH_PREFIX + REGISTRY + processId);
+        }
+
         curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 PATH_PREFIX + MONITORING + jobId + LOCK, new byte[0]);
         curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
@@ -228,9 +244,13 @@ public class MonitoringUtil {
 
             String jobName = getJobNameByJobId(curatorClient, jobId);
             deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobName + JOB_ID);
+
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobName);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId);
         }
 
         deleteIfExists(curatorClient, PATH_PREFIX + REGISTRY + processId + JOBS);
         deleteIfExists(curatorClient, PATH_PREFIX + REGISTRY + processId + WORKFLOWS);
+        deleteIfExists(curatorClient, PATH_PREFIX + REGISTRY + processId);
     }
 }
