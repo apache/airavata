@@ -586,6 +586,127 @@ class User {
 
 }
 
+class GroupAdmin {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $groupId = null;
+  /**
+   * @var string
+   */
+  public $domainId = null;
+  /**
+   * @var string
+   */
+  public $adminId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'groupId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'domainId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'adminId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['groupId'])) {
+        $this->groupId = $vals['groupId'];
+      }
+      if (isset($vals['domainId'])) {
+        $this->domainId = $vals['domainId'];
+      }
+      if (isset($vals['adminId'])) {
+        $this->adminId = $vals['adminId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupAdmin';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domainId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->adminId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupAdmin');
+    if ($this->groupId !== null) {
+      $xfer += $output->writeFieldBegin('groupId', TType::STRING, 1);
+      $xfer += $output->writeString($this->groupId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->domainId !== null) {
+      $xfer += $output->writeFieldBegin('domainId', TType::STRING, 2);
+      $xfer += $output->writeString($this->domainId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->adminId !== null) {
+      $xfer += $output->writeFieldBegin('adminId', TType::STRING, 3);
+      $xfer += $output->writeString($this->adminId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 /**
  * <p>User group is a collection of users.</p>
  *  <li><b>groupId</b> : Group id provided by the client</li>
