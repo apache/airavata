@@ -68,7 +68,8 @@ enum JobState {
     CANCELED,
     FAILED,
     SUSPENDED,
-    UNKNOWN
+    UNKNOWN,
+    NON_CRITICAL_FAIL
 }
 
 /**

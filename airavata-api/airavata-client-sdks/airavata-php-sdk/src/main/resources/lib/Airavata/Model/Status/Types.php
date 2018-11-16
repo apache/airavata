@@ -97,6 +97,7 @@ final class JobState {
   const FAILED = 5;
   const SUSPENDED = 6;
   const UNKNOWN = 7;
+  const NON_CRITICAL_FAIL = 8;
   static public $__names = array(
     0 => 'SUBMITTED',
     1 => 'QUEUED',
@@ -106,6 +107,7 @@ final class JobState {
     5 => 'FAILED',
     6 => 'SUSPENDED',
     7 => 'UNKNOWN',
+    8 => 'NON_CRITICAL_FAIL',
   );
 }
 

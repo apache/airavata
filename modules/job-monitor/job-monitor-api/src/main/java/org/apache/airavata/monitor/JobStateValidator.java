@@ -27,6 +27,7 @@ import static org.apache.airavata.model.status.JobState.ACTIVE;
 import static org.apache.airavata.model.status.JobState.COMPLETE;
 import static org.apache.airavata.model.status.JobState.CANCELED;
 import static org.apache.airavata.model.status.JobState.FAILED;
+import static org.apache.airavata.model.status.JobState.NON_CRITICAL_FAIL;
 import static org.apache.airavata.model.status.JobState.SUSPENDED;
 import static org.apache.airavata.model.status.JobState.UNKNOWN;
 
@@ -53,6 +54,7 @@ public class JobStateValidator {
         setTransition(SUBMITTED, FAILED, true);
         setTransition(SUBMITTED, SUSPENDED, true);
         setTransition(SUBMITTED, UNKNOWN, true);
+        setTransition(SUBMITTED, NON_CRITICAL_FAIL, true);
 
         setTransition(QUEUED, ACTIVE, true);
         setTransition(QUEUED, COMPLETE, true);
@@ -60,12 +62,22 @@ public class JobStateValidator {
         setTransition(QUEUED, FAILED, true);
         setTransition(QUEUED, SUSPENDED, true);
         setTransition(QUEUED, UNKNOWN, true);
+        setTransition(QUEUED, NON_CRITICAL_FAIL, true);
 
         setTransition(ACTIVE, COMPLETE, true);
         setTransition(ACTIVE, CANCELED, true);
         setTransition(ACTIVE, FAILED, true);
         setTransition(ACTIVE, SUSPENDED, true);
         setTransition(ACTIVE, UNKNOWN, true);
+        setTransition(ACTIVE, NON_CRITICAL_FAIL, true);
+
+        setTransition(NON_CRITICAL_FAIL, QUEUED, true);
+        setTransition(NON_CRITICAL_FAIL, ACTIVE, true);
+        setTransition(NON_CRITICAL_FAIL, COMPLETE, true);
+        setTransition(NON_CRITICAL_FAIL, CANCELED, true);
+        setTransition(NON_CRITICAL_FAIL, FAILED, true);
+        setTransition(NON_CRITICAL_FAIL, SUSPENDED, true);
+        setTransition(NON_CRITICAL_FAIL, UNKNOWN, true);
     }
 
     public static boolean isValid(JobState previousState, JobState newState) {
