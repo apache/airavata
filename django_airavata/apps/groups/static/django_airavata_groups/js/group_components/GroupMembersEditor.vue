@@ -95,20 +95,26 @@ export default {
       if (!this.userProfilesMap) {
         return [];
       }
-      return this.members.map(m => {
-        const userProfile = this.userProfilesMap[m];
-        const isAdmin = this.admins.indexOf(m) >= 0;
-        // Owners can edit all members and admins can edit non-admin members
-        const editable = this.group.isOwner || (this.group.isAdmin && !isAdmin);
-        return {
-          id: m,
-          name: userProfile.firstName + " " + userProfile.lastName,
-          username: userProfile.userId,
-          email: userProfile.email,
-          role: isAdmin ? "ADMIN" : "MEMBER",
-          editable: editable
-        };
-      });
+      return (
+        this.members
+          // Filter out users that are missing profiles
+          .filter(m => m in this.userProfilesMap)
+          .map(m => {
+            const userProfile = this.userProfilesMap[m];
+            const isAdmin = this.admins.indexOf(m) >= 0;
+            // Owners can edit all members and admins can edit non-admin members
+            const editable =
+              this.group.isOwner || (this.group.isAdmin && !isAdmin);
+            return {
+              id: m,
+              name: userProfile.firstName + " " + userProfile.lastName,
+              username: userProfile.userId,
+              email: userProfile.email,
+              role: isAdmin ? "ADMIN" : "MEMBER",
+              editable: editable
+            };
+          })
+      );
     },
     membersCount() {
       return this.members.length;
