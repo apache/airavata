@@ -15,7 +15,7 @@
           <div class="card-body">
             <storage-preference-list v-if="gatewayResourceProfile" :storagePreferences="gatewayResourceProfile.storagePreferences"
               :default-credential-store-token="gatewayResourceProfile.credentialStoreToken" @updated="updatedStoragePreference"
-              @added="addedStoragePreference" />
+              @added="addedStoragePreference" @delete="deleteStoragePreference" />
           </div>
         </div>
       </div>
@@ -87,6 +87,16 @@ export default {
         data: newStoragePreference
       }).then(sp => {
         this.gatewayResourceProfile.storagePreferences.push(sp);
+      });
+    },
+    deleteStoragePreference(storageResourceId) {
+      services.StoragePreferenceService.delete({
+        lookup: storageResourceId
+      }).then(() => {
+        const index = this.gatewayResourceProfile.storagePreferences.findIndex(
+          sp => sp.storageResourceId === storageResourceId
+        );
+        this.gatewayResourceProfile.storagePreferences.splice(index, 1);
       });
     }
   }

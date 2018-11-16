@@ -23,10 +23,13 @@
 
       <b-table striped hover :fields="fields" :items="slotProps.items" sort-by="storageResourceId">
         <template slot="action" slot-scope="data">
-          <b-link @click="toggleDetails(data)">
+          <b-link class="action-link" @click="toggleDetails(data)">
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </b-link>
+          <delete-link @delete="deleteStoragePreference(data.item.storageResourceId)">
+            Are you sure you want to delete the storage preference for {{ getStorageResourceName(data.item.storageResourceId) }}?
+          </delete-link>
         </template>
         <template slot="row-details" slot-scope="row">
           <b-card>
@@ -42,12 +45,13 @@
 
 <script>
 import { models, services, utils } from "django-airavata-api";
-import { layouts } from "django-airavata-common-ui";
+import { components, layouts } from "django-airavata-common-ui";
 import StoragePreferenceEditor from "./StoragePreferenceEditor.vue";
 
 export default {
   name: "storage-preference-list",
   components: {
+    "delete-link": components.DeleteLink,
     "list-layout": layouts.ListLayout,
     StoragePreferenceEditor
   },
@@ -172,6 +176,9 @@ export default {
         row.item.storageResourceId
       ];
     },
+    deleteStoragePreference(storageResourceId) {
+      this.$emit('delete', storageResourceId);
+    },
     addNewStoragePreference() {
       this.newStoragePreference = new models.StoragePreference();
       this.showNewItemEditor = true;
@@ -187,3 +194,8 @@ export default {
 };
 </script>
 
+<style scoped>
+.action-link {
+  white-space: nowrap;
+}
+</style>
