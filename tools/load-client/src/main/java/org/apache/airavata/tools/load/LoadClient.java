@@ -16,9 +16,6 @@ import java.util.concurrent.CompletionService;
 
 public class LoadClient {
 
-    private String apiHost;
-    private int apiPort = 9930;
-
     private String privateKeyFile = System.getProperty("user.home") + "/.ssh/id_rsa";
     private String publicKeyFile = System.getProperty("user.home") + "/.ssh/id_rsa.pub";
     private String passPhrase = null;
@@ -29,7 +26,6 @@ public class LoadClient {
     private Configurations configurations;
 
     public void init() throws Exception {
-        securityManager.loadCertificate(apiHost, apiPort);
 
         if (configFile == null) {
             try (InputStream in = LoadClient.class.getResourceAsStream("/conf/load-config.yml")) {
@@ -44,11 +40,14 @@ public class LoadClient {
                 createStorageResourceManagers(configurations);
             }
         }
+
+        securityManager.loadCertificate(configurations.getApiHost(), configurations.getApiPort());
     }
 
     public void start() throws Exception {
         for (Configuration configuration : configurations.getConfigurations()) {
-            UnitLoad unitLoad = new UnitLoad(apiHost, apiPort, securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(),
+            UnitLoad unitLoad = new UnitLoad(configurations.getApiHost(), configurations.getApiPort(),
+                    securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(),
                     storageResourceManagerStore.get(configuration.getStorageResourceId()));
             CompletionService<Boolean> completion = unitLoad.execute(configuration);
 
@@ -63,7 +62,7 @@ public class LoadClient {
 
     private void createStorageResourceManagers(Configurations configurations) throws Exception {
 
-        Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(apiHost, apiPort,
+        Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(configurations.getApiHost(), configurations.getApiPort(),
                 securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(), 100000);
 
         for (Configuration configuration : configurations.getConfigurations()) {
@@ -103,19 +102,6 @@ public class LoadClient {
         } else {
             System.out.println("Error : Load config file should be specified");
             System.exit(0);
-        }
-
-        if (cmd.hasOption("apiHost")) {
-            loadClient.apiHost = cmd.getOptionValue("apiHost");
-        } else {
-            System.out.println("Error : API host should be specified");
-            System.exit(0);
-        }
-
-        if (cmd.hasOption("apiPort")) {
-            loadClient.apiPort = Integer.parseInt(cmd.getOptionValue("apiPort"));
-        } else {
-            System.out.println("Using default API port " + loadClient.apiPort);
         }
 
         if (cmd.hasOption("privateKeyPath")) {
