@@ -65,7 +65,8 @@ export default {
       showingDetails: {},
       showNewItemEditor: false,
       newStoragePreference: null,
-      storageResourceNames: null
+      storageResourceNames: null,
+      credentials: null
     };
   },
   computed: {
@@ -88,8 +89,7 @@ export default {
         },
         {
           label: "File System Location",
-          key: "fileSystemRootLocation",
-          formatter: value => this.formatFileSystemLocation(value)
+          key: "fileSystemRootLocation"
         },
         {
           label: "Action",
@@ -122,25 +122,46 @@ export default {
         }
       }
       return utils.StringUtils.sortIgnoreCase(options, a => a.text);
+    },
+    defaultCredentialSummary() {
+      if (this.defaultCredentialStoreToken && this.credentials) {
+        return this.credentials.find(
+          cred => cred.token === this.defaultCredentialStoreToken
+        );
+      } else {
+        return null;
+      }
     }
   },
   created() {
     services.StorageResourceService.names().then(names => {
       this.storageResourceNames = names;
     });
+    services.CredentialSummaryService.allSSHCredentials().then(
+      creds => (this.credentials = creds)
+    );
   },
   methods: {
     getStorageResourceName(storageResourceId) {
-      // TODO: fetch storage resources
-      return storageResourceId;
+      if (
+        this.storageResourceNames &&
+        storageResourceId in this.storageResourceNames
+      ) {
+        return this.storageResourceNames[storageResourceId];
+      } else {
+        return storageResourceId.substring(0, 10) + "...";
+      }
     },
     getCredentialName(token) {
-      // TODO: fetch credential name
-      return token;
-    },
-    formatFileSystemLocation(fileSystemRootLocation) {
-      // TODO: truncate to fit
-      return fileSystemRootLocation;
+      if (token === null && this.defaultCredentialSummary) {
+        return this.defaultCredentialSummary.description + " (default)";
+      } else if (this.credentials) {
+        const cred = this.credentials.find(cred => cred.token === token);
+        if (cred) {
+          return cred.description;
+        }
+      }
+      return "...";
     },
     updatedStoragePreference(newValue) {
       this.$emit("updated", newValue);
