@@ -15,9 +15,6 @@
             </b-form-group>
             <b-form-group label="Default SSH Credential" label-for="default-credential-store-token">
               <ssh-credential-selector id="default-credential-store-token" v-model="data.defaultCredentialStoreToken">
-                <option :value="null" slot="first">
-                  --- Unset the default SSH credential for this profile
-                </option>
               </ssh-credential-selector>
             </b-form-group>
             <share-button ref="shareButton" :entity-id="id" />

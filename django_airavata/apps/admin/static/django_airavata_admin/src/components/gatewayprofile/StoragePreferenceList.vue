@@ -6,7 +6,7 @@
         <b-form-group label="Storage Resource" label-for="storage-resource">
           <b-form-select id="storage-resource" v-model="newStoragePreference.storageResourceId" :options="storageResourceOptions" />
         </b-form-group>
-        <storage-preference-editor v-model="newStoragePreference" />
+        <storage-preference-editor v-model="newStoragePreference" :default-credential-store-token="defaultCredentialStoreToken" />
         <div class="row">
           <div class="col">
             <b-button variant="primary" @click="saveNewStoragePreference">
@@ -30,7 +30,8 @@
         </template>
         <template slot="row-details" slot-scope="row">
           <b-card>
-            <storage-preference-editor :value="row.item" @input="updatedStoragePreference" />
+            <storage-preference-editor :value="row.item" @input="updatedStoragePreference"
+              :default-credential-store-token="defaultCredentialStoreToken" />
             <b-button size="sm" @click="toggleDetails(row)">Close</b-button>
           </b-card>
         </template>
@@ -54,6 +55,9 @@ export default {
     storagePreferences: {
       type: Array,
       required: true
+    },
+    defaultCredentialStoreToken: {
+      type: String
     }
   },
   data() {
@@ -100,10 +104,16 @@ export default {
         return spClone;
       });
     },
+    currentStoragePreferenceIds() {
+      return this.storagePreferences.map(sp => sp.storageResourceId);
+    },
     storageResourceOptions() {
       const options = [];
       for (const key in this.storageResourceNames) {
-        if (this.storageResourceNames.hasOwnProperty(key)) {
+        if (
+          this.storageResourceNames.hasOwnProperty(key) &&
+          this.currentStoragePreferenceIds.indexOf(key) < 0
+        ) {
           const name = this.storageResourceNames[key];
           options.push({
             value: key,

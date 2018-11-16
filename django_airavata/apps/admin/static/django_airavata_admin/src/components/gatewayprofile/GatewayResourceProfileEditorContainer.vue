@@ -14,7 +14,8 @@
         <div class="card">
           <div class="card-body">
             <storage-preference-list v-if="gatewayResourceProfile" :storagePreferences="gatewayResourceProfile.storagePreferences"
-              @updated="updatedStoragePreference" @added="addedStoragePreference" />
+              :default-credential-store-token="gatewayResourceProfile.credentialStoreToken" @updated="updatedStoragePreference"
+              @added="addedStoragePreference" />
           </div>
         </div>
       </div>
