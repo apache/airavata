@@ -1,3 +1,5 @@
+apiHost: 149.165.170.103
+apiPort: 9930
 configurations:
   - experimentBaseName: "LoadTest"
     userId: "dimuthu"
