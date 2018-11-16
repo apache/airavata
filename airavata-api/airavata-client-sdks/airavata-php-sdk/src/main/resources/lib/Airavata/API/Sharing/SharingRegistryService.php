@@ -229,6 +229,56 @@ interface SharingRegistryServiceIf {
    */
   public function removeUsersFromGroup($domainId, array $userIds, $groupId);
   /**
+   * <p>API method to transfer group ownership</p>
+   * 
+   * @param string $domainId
+   * @param string $groupId
+   * @param string $newOwnerId
+   * @return bool
+   * @throws \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public function transferGroupOwnership($domainId, $groupId, $newOwnerId);
+  /**
+   * <p>API method to add Admin for a group</p>
+   * 
+   * @param string $domainId
+   * @param string $groupId
+   * @param string[] $adminIds
+   * @return bool
+   * @throws \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public function addGroupAdmins($domainId, $groupId, array $adminIds);
+  /**
+   * <p>API method to remove Admin for a group</p>
+   * 
+   * @param string $domainId
+   * @param string $groupId
+   * @param string[] $adminIds
+   * @return bool
+   * @throws \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public function removeGroupAdmins($domainId, $groupId, array $adminIds);
+  /**
+   * <p>API method to check whether the user has Admin access for the group</p>
+   * 
+   * @param string $domainId
+   * @param string $groupId
+   * @param string $adminId
+   * @return bool
+   * @throws \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public function hasAdminAccess($domainId, $groupId, $adminId);
+  /**
+   * <p>API method to check whether the user has Admin access for the group</p>
+   * 
+   * @param string $domainId
+   * @param string $groupId
+   * @param string $ownerId
+   * @return bool
+   * @throws \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public function hasOwnerAccess($domainId, $groupId, $ownerId);
+  /**
    * <p>API method to get list of child users in a group. Only the direct members will be returned.</p>
    * 
    * @param string $domainId
@@ -1658,6 +1708,286 @@ class SharingRegistryServiceClient implements \Airavata\API\Sharing\SharingRegis
       throw $result->sre;
     }
     throw new \Exception("removeUsersFromGroup failed: unknown result");
+  }
+
+  public function transferGroupOwnership($domainId, $groupId, $newOwnerId)
+  {
+    $this->send_transferGroupOwnership($domainId, $groupId, $newOwnerId);
+    return $this->recv_transferGroupOwnership();
+  }
+
+  public function send_transferGroupOwnership($domainId, $groupId, $newOwnerId)
+  {
+    $args = new \Airavata\API\Sharing\SharingRegistryService_transferGroupOwnership_args();
+    $args->domainId = $domainId;
+    $args->groupId = $groupId;
+    $args->newOwnerId = $newOwnerId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'transferGroupOwnership', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('transferGroupOwnership', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_transferGroupOwnership()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Sharing\SharingRegistryService_transferGroupOwnership_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Sharing\SharingRegistryService_transferGroupOwnership_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->sre !== null) {
+      throw $result->sre;
+    }
+    throw new \Exception("transferGroupOwnership failed: unknown result");
+  }
+
+  public function addGroupAdmins($domainId, $groupId, array $adminIds)
+  {
+    $this->send_addGroupAdmins($domainId, $groupId, $adminIds);
+    return $this->recv_addGroupAdmins();
+  }
+
+  public function send_addGroupAdmins($domainId, $groupId, array $adminIds)
+  {
+    $args = new \Airavata\API\Sharing\SharingRegistryService_addGroupAdmins_args();
+    $args->domainId = $domainId;
+    $args->groupId = $groupId;
+    $args->adminIds = $adminIds;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'addGroupAdmins', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('addGroupAdmins', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_addGroupAdmins()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Sharing\SharingRegistryService_addGroupAdmins_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Sharing\SharingRegistryService_addGroupAdmins_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->sre !== null) {
+      throw $result->sre;
+    }
+    throw new \Exception("addGroupAdmins failed: unknown result");
+  }
+
+  public function removeGroupAdmins($domainId, $groupId, array $adminIds)
+  {
+    $this->send_removeGroupAdmins($domainId, $groupId, $adminIds);
+    return $this->recv_removeGroupAdmins();
+  }
+
+  public function send_removeGroupAdmins($domainId, $groupId, array $adminIds)
+  {
+    $args = new \Airavata\API\Sharing\SharingRegistryService_removeGroupAdmins_args();
+    $args->domainId = $domainId;
+    $args->groupId = $groupId;
+    $args->adminIds = $adminIds;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'removeGroupAdmins', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('removeGroupAdmins', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_removeGroupAdmins()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Sharing\SharingRegistryService_removeGroupAdmins_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Sharing\SharingRegistryService_removeGroupAdmins_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->sre !== null) {
+      throw $result->sre;
+    }
+    throw new \Exception("removeGroupAdmins failed: unknown result");
+  }
+
+  public function hasAdminAccess($domainId, $groupId, $adminId)
+  {
+    $this->send_hasAdminAccess($domainId, $groupId, $adminId);
+    return $this->recv_hasAdminAccess();
+  }
+
+  public function send_hasAdminAccess($domainId, $groupId, $adminId)
+  {
+    $args = new \Airavata\API\Sharing\SharingRegistryService_hasAdminAccess_args();
+    $args->domainId = $domainId;
+    $args->groupId = $groupId;
+    $args->adminId = $adminId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'hasAdminAccess', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('hasAdminAccess', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_hasAdminAccess()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Sharing\SharingRegistryService_hasAdminAccess_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Sharing\SharingRegistryService_hasAdminAccess_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->sre !== null) {
+      throw $result->sre;
+    }
+    throw new \Exception("hasAdminAccess failed: unknown result");
+  }
+
+  public function hasOwnerAccess($domainId, $groupId, $ownerId)
+  {
+    $this->send_hasOwnerAccess($domainId, $groupId, $ownerId);
+    return $this->recv_hasOwnerAccess();
+  }
+
+  public function send_hasOwnerAccess($domainId, $groupId, $ownerId)
+  {
+    $args = new \Airavata\API\Sharing\SharingRegistryService_hasOwnerAccess_args();
+    $args->domainId = $domainId;
+    $args->groupId = $groupId;
+    $args->ownerId = $ownerId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'hasOwnerAccess', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('hasOwnerAccess', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_hasOwnerAccess()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Sharing\SharingRegistryService_hasOwnerAccess_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Sharing\SharingRegistryService_hasOwnerAccess_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->sre !== null) {
+      throw $result->sre;
+    }
+    throw new \Exception("hasOwnerAccess failed: unknown result");
   }
 
   public function getGroupMembersOfTypeUser($domainId, $groupId, $offset, $limit)
@@ -7391,6 +7721,1163 @@ class SharingRegistryService_removeUsersFromGroup_result {
 
 }
 
+class SharingRegistryService_transferGroupOwnership_args {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $domainId = null;
+  /**
+   * @var string
+   */
+  public $groupId = null;
+  /**
+   * @var string
+   */
+  public $newOwnerId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'domainId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'groupId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'newOwnerId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['domainId'])) {
+        $this->domainId = $vals['domainId'];
+      }
+      if (isset($vals['groupId'])) {
+        $this->groupId = $vals['groupId'];
+      }
+      if (isset($vals['newOwnerId'])) {
+        $this->newOwnerId = $vals['newOwnerId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_transferGroupOwnership_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domainId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->newOwnerId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_transferGroupOwnership_args');
+    if ($this->domainId !== null) {
+      $xfer += $output->writeFieldBegin('domainId', TType::STRING, 1);
+      $xfer += $output->writeString($this->domainId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupId !== null) {
+      $xfer += $output->writeFieldBegin('groupId', TType::STRING, 2);
+      $xfer += $output->writeString($this->groupId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->newOwnerId !== null) {
+      $xfer += $output->writeFieldBegin('newOwnerId', TType::STRING, 3);
+      $xfer += $output->writeString($this->newOwnerId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_transferGroupOwnership_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public $sre = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'sre',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Sharing\SharingRegistryException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['sre'])) {
+        $this->sre = $vals['sre'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_transferGroupOwnership_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->sre = new \Airavata\Model\Sharing\SharingRegistryException();
+            $xfer += $this->sre->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_transferGroupOwnership_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sre !== null) {
+      $xfer += $output->writeFieldBegin('sre', TType::STRUCT, 1);
+      $xfer += $this->sre->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_addGroupAdmins_args {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $domainId = null;
+  /**
+   * @var string
+   */
+  public $groupId = null;
+  /**
+   * @var string[]
+   */
+  public $adminIds = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'domainId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'groupId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'adminIds',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['domainId'])) {
+        $this->domainId = $vals['domainId'];
+      }
+      if (isset($vals['groupId'])) {
+        $this->groupId = $vals['groupId'];
+      }
+      if (isset($vals['adminIds'])) {
+        $this->adminIds = $vals['adminIds'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_addGroupAdmins_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domainId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::LST) {
+            $this->adminIds = array();
+            $_size35 = 0;
+            $_etype38 = 0;
+            $xfer += $input->readListBegin($_etype38, $_size35);
+            for ($_i39 = 0; $_i39 < $_size35; ++$_i39)
+            {
+              $elem40 = null;
+              $xfer += $input->readString($elem40);
+              $this->adminIds []= $elem40;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_addGroupAdmins_args');
+    if ($this->domainId !== null) {
+      $xfer += $output->writeFieldBegin('domainId', TType::STRING, 1);
+      $xfer += $output->writeString($this->domainId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupId !== null) {
+      $xfer += $output->writeFieldBegin('groupId', TType::STRING, 2);
+      $xfer += $output->writeString($this->groupId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->adminIds !== null) {
+      if (!is_array($this->adminIds)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('adminIds', TType::LST, 3);
+      {
+        $output->writeListBegin(TType::STRING, count($this->adminIds));
+        {
+          foreach ($this->adminIds as $iter41)
+          {
+            $xfer += $output->writeString($iter41);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_addGroupAdmins_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public $sre = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'sre',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Sharing\SharingRegistryException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['sre'])) {
+        $this->sre = $vals['sre'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_addGroupAdmins_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->sre = new \Airavata\Model\Sharing\SharingRegistryException();
+            $xfer += $this->sre->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_addGroupAdmins_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sre !== null) {
+      $xfer += $output->writeFieldBegin('sre', TType::STRUCT, 1);
+      $xfer += $this->sre->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_removeGroupAdmins_args {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $domainId = null;
+  /**
+   * @var string
+   */
+  public $groupId = null;
+  /**
+   * @var string[]
+   */
+  public $adminIds = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'domainId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'groupId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'adminIds',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['domainId'])) {
+        $this->domainId = $vals['domainId'];
+      }
+      if (isset($vals['groupId'])) {
+        $this->groupId = $vals['groupId'];
+      }
+      if (isset($vals['adminIds'])) {
+        $this->adminIds = $vals['adminIds'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_removeGroupAdmins_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domainId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::LST) {
+            $this->adminIds = array();
+            $_size42 = 0;
+            $_etype45 = 0;
+            $xfer += $input->readListBegin($_etype45, $_size42);
+            for ($_i46 = 0; $_i46 < $_size42; ++$_i46)
+            {
+              $elem47 = null;
+              $xfer += $input->readString($elem47);
+              $this->adminIds []= $elem47;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_removeGroupAdmins_args');
+    if ($this->domainId !== null) {
+      $xfer += $output->writeFieldBegin('domainId', TType::STRING, 1);
+      $xfer += $output->writeString($this->domainId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupId !== null) {
+      $xfer += $output->writeFieldBegin('groupId', TType::STRING, 2);
+      $xfer += $output->writeString($this->groupId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->adminIds !== null) {
+      if (!is_array($this->adminIds)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('adminIds', TType::LST, 3);
+      {
+        $output->writeListBegin(TType::STRING, count($this->adminIds));
+        {
+          foreach ($this->adminIds as $iter48)
+          {
+            $xfer += $output->writeString($iter48);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_removeGroupAdmins_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public $sre = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'sre',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Sharing\SharingRegistryException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['sre'])) {
+        $this->sre = $vals['sre'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_removeGroupAdmins_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->sre = new \Airavata\Model\Sharing\SharingRegistryException();
+            $xfer += $this->sre->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_removeGroupAdmins_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sre !== null) {
+      $xfer += $output->writeFieldBegin('sre', TType::STRUCT, 1);
+      $xfer += $this->sre->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_hasAdminAccess_args {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $domainId = null;
+  /**
+   * @var string
+   */
+  public $groupId = null;
+  /**
+   * @var string
+   */
+  public $adminId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'domainId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'groupId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'adminId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['domainId'])) {
+        $this->domainId = $vals['domainId'];
+      }
+      if (isset($vals['groupId'])) {
+        $this->groupId = $vals['groupId'];
+      }
+      if (isset($vals['adminId'])) {
+        $this->adminId = $vals['adminId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_hasAdminAccess_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domainId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->adminId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_hasAdminAccess_args');
+    if ($this->domainId !== null) {
+      $xfer += $output->writeFieldBegin('domainId', TType::STRING, 1);
+      $xfer += $output->writeString($this->domainId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupId !== null) {
+      $xfer += $output->writeFieldBegin('groupId', TType::STRING, 2);
+      $xfer += $output->writeString($this->groupId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->adminId !== null) {
+      $xfer += $output->writeFieldBegin('adminId', TType::STRING, 3);
+      $xfer += $output->writeString($this->adminId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_hasAdminAccess_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public $sre = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'sre',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Sharing\SharingRegistryException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['sre'])) {
+        $this->sre = $vals['sre'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_hasAdminAccess_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->sre = new \Airavata\Model\Sharing\SharingRegistryException();
+            $xfer += $this->sre->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_hasAdminAccess_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sre !== null) {
+      $xfer += $output->writeFieldBegin('sre', TType::STRUCT, 1);
+      $xfer += $this->sre->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_hasOwnerAccess_args {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $domainId = null;
+  /**
+   * @var string
+   */
+  public $groupId = null;
+  /**
+   * @var string
+   */
+  public $ownerId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'domainId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'groupId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'ownerId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['domainId'])) {
+        $this->domainId = $vals['domainId'];
+      }
+      if (isset($vals['groupId'])) {
+        $this->groupId = $vals['groupId'];
+      }
+      if (isset($vals['ownerId'])) {
+        $this->ownerId = $vals['ownerId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_hasOwnerAccess_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domainId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->ownerId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_hasOwnerAccess_args');
+    if ($this->domainId !== null) {
+      $xfer += $output->writeFieldBegin('domainId', TType::STRING, 1);
+      $xfer += $output->writeString($this->domainId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupId !== null) {
+      $xfer += $output->writeFieldBegin('groupId', TType::STRING, 2);
+      $xfer += $output->writeString($this->groupId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ownerId !== null) {
+      $xfer += $output->writeFieldBegin('ownerId', TType::STRING, 3);
+      $xfer += $output->writeString($this->ownerId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_hasOwnerAccess_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public $sre = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'sre',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Sharing\SharingRegistryException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['sre'])) {
+        $this->sre = $vals['sre'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_hasOwnerAccess_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->sre = new \Airavata\Model\Sharing\SharingRegistryException();
+            $xfer += $this->sre->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_hasOwnerAccess_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sre !== null) {
+      $xfer += $output->writeFieldBegin('sre', TType::STRUCT, 1);
+      $xfer += $this->sre->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class SharingRegistryService_getGroupMembersOfTypeUser_args {
   static $_TSPEC;
 
@@ -7598,15 +9085,15 @@ class SharingRegistryService_getGroupMembersOfTypeUser_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size35 = 0;
-            $_etype38 = 0;
-            $xfer += $input->readListBegin($_etype38, $_size35);
-            for ($_i39 = 0; $_i39 < $_size35; ++$_i39)
+            $_size49 = 0;
+            $_etype52 = 0;
+            $xfer += $input->readListBegin($_etype52, $_size49);
+            for ($_i53 = 0; $_i53 < $_size49; ++$_i53)
             {
-              $elem40 = null;
-              $elem40 = new \Airavata\Model\Sharing\User();
-              $xfer += $elem40->read($input);
-              $this->success []= $elem40;
+              $elem54 = null;
+              $elem54 = new \Airavata\Model\Sharing\User();
+              $xfer += $elem54->read($input);
+              $this->success []= $elem54;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -7642,9 +9129,9 @@ class SharingRegistryService_getGroupMembersOfTypeUser_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter41)
+          foreach ($this->success as $iter55)
           {
-            $xfer += $iter41->write($output);
+            $xfer += $iter55->write($output);
           }
         }
         $output->writeListEnd();
@@ -7870,15 +9357,15 @@ class SharingRegistryService_getGroupMembersOfTypeGroup_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size42 = 0;
-            $_etype45 = 0;
-            $xfer += $input->readListBegin($_etype45, $_size42);
-            for ($_i46 = 0; $_i46 < $_size42; ++$_i46)
+            $_size56 = 0;
+            $_etype59 = 0;
+            $xfer += $input->readListBegin($_etype59, $_size56);
+            for ($_i60 = 0; $_i60 < $_size56; ++$_i60)
             {
-              $elem47 = null;
-              $elem47 = new \Airavata\Model\Sharing\UserGroup();
-              $xfer += $elem47->read($input);
-              $this->success []= $elem47;
+              $elem61 = null;
+              $elem61 = new \Airavata\Model\Sharing\UserGroup();
+              $xfer += $elem61->read($input);
+              $this->success []= $elem61;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -7914,9 +9401,9 @@ class SharingRegistryService_getGroupMembersOfTypeGroup_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter48)
+          foreach ($this->success as $iter62)
           {
-            $xfer += $iter48->write($output);
+            $xfer += $iter62->write($output);
           }
         }
         $output->writeListEnd();
@@ -8014,14 +9501,14 @@ class SharingRegistryService_addChildGroupsToParentGroup_args {
         case 2:
           if ($ftype == TType::LST) {
             $this->childIds = array();
-            $_size49 = 0;
-            $_etype52 = 0;
-            $xfer += $input->readListBegin($_etype52, $_size49);
-            for ($_i53 = 0; $_i53 < $_size49; ++$_i53)
+            $_size63 = 0;
+            $_etype66 = 0;
+            $xfer += $input->readListBegin($_etype66, $_size63);
+            for ($_i67 = 0; $_i67 < $_size63; ++$_i67)
             {
-              $elem54 = null;
-              $xfer += $input->readString($elem54);
-              $this->childIds []= $elem54;
+              $elem68 = null;
+              $xfer += $input->readString($elem68);
+              $this->childIds []= $elem68;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -8061,9 +9548,9 @@ class SharingRegistryService_addChildGroupsToParentGroup_args {
       {
         $output->writeListBegin(TType::STRING, count($this->childIds));
         {
-          foreach ($this->childIds as $iter55)
+          foreach ($this->childIds as $iter69)
           {
-            $xfer += $output->writeString($iter55);
+            $xfer += $output->writeString($iter69);
           }
         }
         $output->writeListEnd();
@@ -8564,15 +10051,15 @@ class SharingRegistryService_getAllMemberGroupsForUser_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size56 = 0;
-            $_etype59 = 0;
-            $xfer += $input->readListBegin($_etype59, $_size56);
-            for ($_i60 = 0; $_i60 < $_size56; ++$_i60)
+            $_size70 = 0;
+            $_etype73 = 0;
+            $xfer += $input->readListBegin($_etype73, $_size70);
+            for ($_i74 = 0; $_i74 < $_size70; ++$_i74)
             {
-              $elem61 = null;
-              $elem61 = new \Airavata\Model\Sharing\UserGroup();
-              $xfer += $elem61->read($input);
-              $this->success []= $elem61;
+              $elem75 = null;
+              $elem75 = new \Airavata\Model\Sharing\UserGroup();
+              $xfer += $elem75->read($input);
+              $this->success []= $elem75;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -8608,9 +10095,9 @@ class SharingRegistryService_getAllMemberGroupsForUser_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter62)
+          foreach ($this->success as $iter76)
           {
-            $xfer += $iter62->write($output);
+            $xfer += $iter76->write($output);
           }
         }
         $output->writeListEnd();
@@ -9797,15 +11284,15 @@ class SharingRegistryService_getEntityTypes_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size63 = 0;
-            $_etype66 = 0;
-            $xfer += $input->readListBegin($_etype66, $_size63);
-            for ($_i67 = 0; $_i67 < $_size63; ++$_i67)
+            $_size77 = 0;
+            $_etype80 = 0;
+            $xfer += $input->readListBegin($_etype80, $_size77);
+            for ($_i81 = 0; $_i81 < $_size77; ++$_i81)
             {
-              $elem68 = null;
-              $elem68 = new \Airavata\Model\Sharing\EntityType();
-              $xfer += $elem68->read($input);
-              $this->success []= $elem68;
+              $elem82 = null;
+              $elem82 = new \Airavata\Model\Sharing\EntityType();
+              $xfer += $elem82->read($input);
+              $this->success []= $elem82;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -9841,9 +11328,9 @@ class SharingRegistryService_getEntityTypes_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter69)
+          foreach ($this->success as $iter83)
           {
-            $xfer += $iter69->write($output);
+            $xfer += $iter83->write($output);
           }
         }
         $output->writeListEnd();
@@ -10930,15 +12417,15 @@ class SharingRegistryService_searchEntities_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->filters = array();
-            $_size70 = 0;
-            $_etype73 = 0;
-            $xfer += $input->readListBegin($_etype73, $_size70);
-            for ($_i74 = 0; $_i74 < $_size70; ++$_i74)
+            $_size84 = 0;
+            $_etype87 = 0;
+            $xfer += $input->readListBegin($_etype87, $_size84);
+            for ($_i88 = 0; $_i88 < $_size84; ++$_i88)
             {
-              $elem75 = null;
-              $elem75 = new \Airavata\Model\Sharing\SearchCriteria();
-              $xfer += $elem75->read($input);
-              $this->filters []= $elem75;
+              $elem89 = null;
+              $elem89 = new \Airavata\Model\Sharing\SearchCriteria();
+              $xfer += $elem89->read($input);
+              $this->filters []= $elem89;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -10990,9 +12477,9 @@ class SharingRegistryService_searchEntities_args {
       {
         $output->writeListBegin(TType::STRUCT, count($this->filters));
         {
-          foreach ($this->filters as $iter76)
+          foreach ($this->filters as $iter90)
           {
-            $xfer += $iter76->write($output);
+            $xfer += $iter90->write($output);
           }
         }
         $output->writeListEnd();
@@ -11079,15 +12566,15 @@ class SharingRegistryService_searchEntities_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size77 = 0;
-            $_etype80 = 0;
-            $xfer += $input->readListBegin($_etype80, $_size77);
-            for ($_i81 = 0; $_i81 < $_size77; ++$_i81)
+            $_size91 = 0;
+            $_etype94 = 0;
+            $xfer += $input->readListBegin($_etype94, $_size91);
+            for ($_i95 = 0; $_i95 < $_size91; ++$_i95)
             {
-              $elem82 = null;
-              $elem82 = new \Airavata\Model\Sharing\Entity();
-              $xfer += $elem82->read($input);
-              $this->success []= $elem82;
+              $elem96 = null;
+              $elem96 = new \Airavata\Model\Sharing\Entity();
+              $xfer += $elem96->read($input);
+              $this->success []= $elem96;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -11123,9 +12610,9 @@ class SharingRegistryService_searchEntities_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter83)
+          foreach ($this->success as $iter97)
           {
-            $xfer += $iter83->write($output);
+            $xfer += $iter97->write($output);
           }
         }
         $output->writeListEnd();
@@ -11328,15 +12815,15 @@ class SharingRegistryService_getListOfSharedUsers_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size84 = 0;
-            $_etype87 = 0;
-            $xfer += $input->readListBegin($_etype87, $_size84);
-            for ($_i88 = 0; $_i88 < $_size84; ++$_i88)
+            $_size98 = 0;
+            $_etype101 = 0;
+            $xfer += $input->readListBegin($_etype101, $_size98);
+            for ($_i102 = 0; $_i102 < $_size98; ++$_i102)
             {
-              $elem89 = null;
-              $elem89 = new \Airavata\Model\Sharing\User();
-              $xfer += $elem89->read($input);
-              $this->success []= $elem89;
+              $elem103 = null;
+              $elem103 = new \Airavata\Model\Sharing\User();
+              $xfer += $elem103->read($input);
+              $this->success []= $elem103;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -11372,9 +12859,9 @@ class SharingRegistryService_getListOfSharedUsers_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter90)
+          foreach ($this->success as $iter104)
           {
-            $xfer += $iter90->write($output);
+            $xfer += $iter104->write($output);
           }
         }
         $output->writeListEnd();
@@ -11577,15 +13064,15 @@ class SharingRegistryService_getListOfSharedGroups_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size91 = 0;
-            $_etype94 = 0;
-            $xfer += $input->readListBegin($_etype94, $_size91);
-            for ($_i95 = 0; $_i95 < $_size91; ++$_i95)
+            $_size105 = 0;
+            $_etype108 = 0;
+            $xfer += $input->readListBegin($_etype108, $_size105);
+            for ($_i109 = 0; $_i109 < $_size105; ++$_i109)
             {
-              $elem96 = null;
-              $elem96 = new \Airavata\Model\Sharing\UserGroup();
-              $xfer += $elem96->read($input);
-              $this->success []= $elem96;
+              $elem110 = null;
+              $elem110 = new \Airavata\Model\Sharing\UserGroup();
+              $xfer += $elem110->read($input);
+              $this->success []= $elem110;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -11621,9 +13108,9 @@ class SharingRegistryService_getListOfSharedGroups_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter97)
+          foreach ($this->success as $iter111)
           {
-            $xfer += $iter97->write($output);
+            $xfer += $iter111->write($output);
           }
         }
         $output->writeListEnd();
@@ -12810,15 +14297,15 @@ class SharingRegistryService_getPermissionTypes_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size98 = 0;
-            $_etype101 = 0;
-            $xfer += $input->readListBegin($_etype101, $_size98);
-            for ($_i102 = 0; $_i102 < $_size98; ++$_i102)
+            $_size112 = 0;
+            $_etype115 = 0;
+            $xfer += $input->readListBegin($_etype115, $_size112);
+            for ($_i116 = 0; $_i116 < $_size112; ++$_i116)
             {
-              $elem103 = null;
-              $elem103 = new \Airavata\Model\Sharing\PermissionType();
-              $xfer += $elem103->read($input);
-              $this->success []= $elem103;
+              $elem117 = null;
+              $elem117 = new \Airavata\Model\Sharing\PermissionType();
+              $xfer += $elem117->read($input);
+              $this->success []= $elem117;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -12854,9 +14341,9 @@ class SharingRegistryService_getPermissionTypes_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter104)
+          foreach ($this->success as $iter118)
           {
-            $xfer += $iter104->write($output);
+            $xfer += $iter118->write($output);
           }
         }
         $output->writeListEnd();
@@ -12983,14 +14470,14 @@ class SharingRegistryService_shareEntityWithUsers_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->userList = array();
-            $_size105 = 0;
-            $_etype108 = 0;
-            $xfer += $input->readListBegin($_etype108, $_size105);
-            for ($_i109 = 0; $_i109 < $_size105; ++$_i109)
+            $_size119 = 0;
+            $_etype122 = 0;
+            $xfer += $input->readListBegin($_etype122, $_size119);
+            for ($_i123 = 0; $_i123 < $_size119; ++$_i123)
             {
-              $elem110 = null;
-              $xfer += $input->readString($elem110);
-              $this->userList []= $elem110;
+              $elem124 = null;
+              $xfer += $input->readString($elem124);
+              $this->userList []= $elem124;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -13042,9 +14529,9 @@ class SharingRegistryService_shareEntityWithUsers_args {
       {
         $output->writeListBegin(TType::STRING, count($this->userList));
         {
-          foreach ($this->userList as $iter111)
+          foreach ($this->userList as $iter125)
           {
-            $xfer += $output->writeString($iter111);
+            $xfer += $output->writeString($iter125);
           }
         }
         $output->writeListEnd();
@@ -13265,14 +14752,14 @@ class SharingRegistryService_revokeEntitySharingFromUsers_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->userList = array();
-            $_size112 = 0;
-            $_etype115 = 0;
-            $xfer += $input->readListBegin($_etype115, $_size112);
-            for ($_i116 = 0; $_i116 < $_size112; ++$_i116)
+            $_size126 = 0;
+            $_etype129 = 0;
+            $xfer += $input->readListBegin($_etype129, $_size126);
+            for ($_i130 = 0; $_i130 < $_size126; ++$_i130)
             {
-              $elem117 = null;
-              $xfer += $input->readString($elem117);
-              $this->userList []= $elem117;
+              $elem131 = null;
+              $xfer += $input->readString($elem131);
+              $this->userList []= $elem131;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -13317,9 +14804,9 @@ class SharingRegistryService_revokeEntitySharingFromUsers_args {
       {
         $output->writeListBegin(TType::STRING, count($this->userList));
         {
-          foreach ($this->userList as $iter118)
+          foreach ($this->userList as $iter132)
           {
-            $xfer += $output->writeString($iter118);
+            $xfer += $output->writeString($iter132);
           }
         }
         $output->writeListEnd();
@@ -13546,14 +15033,14 @@ class SharingRegistryService_shareEntityWithGroups_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->groupList = array();
-            $_size119 = 0;
-            $_etype122 = 0;
-            $xfer += $input->readListBegin($_etype122, $_size119);
-            for ($_i123 = 0; $_i123 < $_size119; ++$_i123)
+            $_size133 = 0;
+            $_etype136 = 0;
+            $xfer += $input->readListBegin($_etype136, $_size133);
+            for ($_i137 = 0; $_i137 < $_size133; ++$_i137)
             {
-              $elem124 = null;
-              $xfer += $input->readString($elem124);
-              $this->groupList []= $elem124;
+              $elem138 = null;
+              $xfer += $input->readString($elem138);
+              $this->groupList []= $elem138;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -13605,9 +15092,9 @@ class SharingRegistryService_shareEntityWithGroups_args {
       {
         $output->writeListBegin(TType::STRING, count($this->groupList));
         {
-          foreach ($this->groupList as $iter125)
+          foreach ($this->groupList as $iter139)
           {
-            $xfer += $output->writeString($iter125);
+            $xfer += $output->writeString($iter139);
           }
         }
         $output->writeListEnd();
@@ -13828,14 +15315,14 @@ class SharingRegistryService_revokeEntitySharingFromGroups_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->groupList = array();
-            $_size126 = 0;
-            $_etype129 = 0;
-            $xfer += $input->readListBegin($_etype129, $_size126);
-            for ($_i130 = 0; $_i130 < $_size126; ++$_i130)
+            $_size140 = 0;
+            $_etype143 = 0;
+            $xfer += $input->readListBegin($_etype143, $_size140);
+            for ($_i144 = 0; $_i144 < $_size140; ++$_i144)
             {
-              $elem131 = null;
-              $xfer += $input->readString($elem131);
-              $this->groupList []= $elem131;
+              $elem145 = null;
+              $xfer += $input->readString($elem145);
+              $this->groupList []= $elem145;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -13880,9 +15367,9 @@ class SharingRegistryService_revokeEntitySharingFromGroups_args {
       {
         $output->writeListBegin(TType::STRING, count($this->groupList));
         {
-          foreach ($this->groupList as $iter132)
+          foreach ($this->groupList as $iter146)
           {
-            $xfer += $output->writeString($iter132);
+            $xfer += $output->writeString($iter146);
           }
         }
         $output->writeListEnd();
