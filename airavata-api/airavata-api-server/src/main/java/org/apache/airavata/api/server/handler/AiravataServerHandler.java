@@ -1391,7 +1391,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             if(statusPublisher !=null) {
                 statusPublisher.publish(messageContext);
             }
-            logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            //logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            logger.info(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return experimentId;
@@ -1892,6 +1893,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             // For backwards compatibility, if there is no groupResourceProfileId, look up one that is shared with the user
             if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
                 List<GroupResourceProfile> groupResourceProfiles = getGroupResourceList(authzToken, gatewayId);
+                logger.info("Checking for groupResourceProfileId for ExpID: " + airavataExperimentId);
                 if (!groupResourceProfiles.isEmpty()) {
                     // Just pick the first one
                     final String groupResourceProfileId = groupResourceProfiles.get(0).getGroupResourceProfileId();
@@ -1929,6 +1931,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new InvalidRequestException("Application deployment doesn't exist for application interface " + appInterfaceId + " and host " + resourceHostId + " in gateway " + gatewayId);
             }
             submitExperiment(gatewayId, airavataExperimentId);
+            logger.info("ExpID:" + airavataExperimentId + " gatewayID: " + gatewayId + " experiment was submitted in gateway");
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
         } catch (InvalidRequestException|ExperimentNotFoundException|AuthorizationException e) {
