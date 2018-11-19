@@ -57,7 +57,7 @@ public class HelixParticipantMonitor implements PlatformMonitor {
                 PlatformMonitorError monitorError = new PlatformMonitorError();
                 monitorError.setReason("Helix participant " + instanceName + " is not active");
                 monitorError.setCategory("Participant");
-                monitorError.setCategory("P001");
+                monitorError.setErrorCode("P001");
                 return monitorError;
             }
         } catch (Exception e) {
@@ -65,7 +65,7 @@ public class HelixParticipantMonitor implements PlatformMonitor {
             monitorError.setError(e);
             monitorError.setReason("Failed to fetch Helix participant " + instanceName + " information");
             monitorError.setCategory("Participant");
-            monitorError.setCategory("P002");
+            monitorError.setErrorCode("P002");
             return monitorError;
         }
         return null;
@@ -83,7 +83,7 @@ public class HelixParticipantMonitor implements PlatformMonitor {
                 monitorError.setReason("Mock workflow failed to execute with status " + state.name() + ". " +
                         "Check whether Helix cluster is working properly");
                 monitorError.setCategory("Participant");
-                monitorError.setCategory("P003");
+                monitorError.setErrorCode("P003");
                 return monitorError;
             }
         } catch (Exception e) {
@@ -92,7 +92,7 @@ public class HelixParticipantMonitor implements PlatformMonitor {
             monitorError.setReason("Failed to launch mock workflow on helix cluster  " + helixClusterName + ". " +
                     "Check whether Helix cluster is working properly including the availability Controller and Participant");
             monitorError.setCategory("Participant");
-            monitorError.setCategory("P004");
+            monitorError.setErrorCode("P004");
             return monitorError;
         }
         return null;
