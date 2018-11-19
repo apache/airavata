@@ -37,6 +37,11 @@
             <artifactId>helix-spectator</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>platform-monitor</artifactId>
+            <version>0.17-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
