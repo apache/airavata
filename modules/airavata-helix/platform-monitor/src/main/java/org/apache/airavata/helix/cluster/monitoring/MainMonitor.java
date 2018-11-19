@@ -1,6 +1,7 @@
 package org.apache.airavata.helix.cluster.monitoring;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.helix.cluster.monitoring.agents.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,8 @@ public class MainMonitor {
     private final static Logger logger = LoggerFactory.getLogger(MainMonitor.class);
 
     public static void main(String args[]) throws ApplicationSettingsException {
+
+        logger.info("Starting platform monitor");
 
         List<PlatformMonitor> platformMonitors = Arrays.asList(new ApiServerMonitor(),
                 new DbMonitor(), new HelixControllerMonitor(),

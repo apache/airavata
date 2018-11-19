@@ -1,5 +1,7 @@
-package org.apache.airavata.helix.cluster.monitoring;
+package org.apache.airavata.helix.cluster.monitoring.agents;
 
+import org.apache.airavata.helix.cluster.monitoring.ErrorNotifier;
+import org.apache.airavata.helix.cluster.monitoring.PlatformMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
