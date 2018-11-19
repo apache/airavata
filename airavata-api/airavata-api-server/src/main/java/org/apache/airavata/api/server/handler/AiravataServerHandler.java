@@ -5106,15 +5106,22 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
                 throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
             }
-            // Prevent removing Admins WRITE access and Read Only Admins READ access
-            GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
-            if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
-                    && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.WRITE)) {
-                throw new Exception("Not allowed to remove Admins group's WRITE access.");
-            }
-            if (groupPermissionList.containsKey(gatewayGroups.getReadOnlyAdminsGroupId())
-                    && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.READ)) {
-                throw new Exception("Not allowed to remove Read Only Admins group's READ access.");
+            // For certain resource types, restrict them from being unshared with admin groups
+            ResourceType resourceType = getResourceType(sharingClient, gatewayId, resourceId);
+            Set<ResourceType> adminRestrictedResourceTypes = new HashSet<>(Arrays.asList(
+                    ResourceType.EXPERIMENT, ResourceType.APPLICATION_DEPLOYMENT, ResourceType.GROUP_RESOURCE_PROFILE
+            ));
+            if (adminRestrictedResourceTypes.contains(resourceType)) {
+                // Prevent removing Admins WRITE access and Read Only Admins READ access
+                GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
+                if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
+                        && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.WRITE)) {
+                    throw new Exception("Not allowed to remove Admins group's WRITE access.");
+                }
+                if (groupPermissionList.containsKey(gatewayGroups.getReadOnlyAdminsGroupId())
+                        && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.READ)) {
+                    throw new Exception("Not allowed to remove Read Only Admins group's READ access.");
+                }
             }
             for(Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()){
                 if(groupPermission.getValue().equals(ResourcePermissionType.WRITE))
@@ -5866,6 +5873,16 @@ public class AiravataServerHandler implements Airavata.Iface {
         } catch (Exception e) {
             throw new RuntimeException("Unable to check if user has access", e);
         }
+    }
+
+    private ResourceType getResourceType(SharingRegistryService.Client sharingClient, String domainId, String entityId) throws TException {
+        Entity entity = sharingClient.getEntity(domainId, entityId);
+        for (ResourceType resourceType : ResourceType.values()) {
+            if (entity.getEntityTypeId().equals(domainId + ":" + resourceType.name())) {
+                return resourceType;
+            }
+        }
+        throw new RuntimeException("Unrecognized entity type id: " + entity.getEntityTypeId());
     }
 
     private GatewayGroups retrieveGatewayGroups(RegistryService.Client regClient, String gatewayId) throws TException {
