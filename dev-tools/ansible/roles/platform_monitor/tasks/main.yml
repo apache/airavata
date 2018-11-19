@@ -25,9 +25,7 @@
   file: path="{{ helix_dir }}" state=directory owner={{ user }} group={{ group }} recurse=yes
 
 - name: Stop daemons if running
-  command: "{{ item.command }} chdir={{ helix_dir }}/{{ item.dir }}/"
-  with_items:
-  - { command: ./bin/platform-monitor-daemon.sh stop, dir: "{{ platform_monitor_version }}" }
+  command: "./bin/platform-monitor-daemon.sh stop chdir={{ helix_dir }}/{{ platform_monitor_version }}/"
   ignore_errors: yes
 
 # Copy required distributions to the deployment directory
@@ -40,31 +38,23 @@
 # Copy properties files & logback.xml files
 
 - name: Copy Airavata server properties files
-  template: "src={{ item.name }}/airavata-server.properties.j2
-            dest={{ helix_dir }}/{{ item.dir }}/conf/airavata-server.properties
+  template: "src=airavata-server.properties.j2
+            dest={{ helix_dir }}/{{ platform_monitor_version }}/conf/airavata-server.properties
             owner={{ user }}
             group={{ group }}
             mode=\"u=rw,g=r,o=r\""
-  with_items:
-  - { name: platform_monitor, dir: "{{ platform_monitor_version }}" }
 
 - name: Copy logback configuration file
-  template: "src={{ item.name }}/logback.xml.j2
-            dest={{ helix_dir }}/{{ item.dir }}/conf/logback.xml
+  template: "src=logback.xml.j2
+            dest={{ helix_dir }}/{{ platform_monitor_version }}/conf/logback.xml
             owner={{ user }}
             group={{ group }}
             mode=\"u=rw,g=r,o=r\""
-  with_items:
-  - { name: platform_monitor, dir: "{{ platform_monitor_version }}" }
 
 - name: Create logs directory
-  file: "path={{ item }} state=directory owner={{ user }} group={{ group }}"
-  with_items:
-  - "{{ platform_monitor_log_dir }}"
+  file: "path={{ platform_monitor_log_dir }} state=directory owner={{ user }} group={{ group }}"
 
 # Run bash-scripts
 - name: Start daemons
-  command: "{{ item.command }} chdir={{ helix_dir }}/{{ item.dir }}/"
-  with_items:
-  - { command: ./bin/platform-monitor-daemon.sh start, dir: "{{ platform_monitor_version }}" }
+  command: "./bin/platform-monitor-daemon.sh start chdir={{ helix_dir }}/{{ platform_monitor_version }}/"
 ...

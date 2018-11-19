@@ -20,6 +20,7 @@
 
 ---
 - hosts: helix
+  gather_facts: yes
   tags: helix, airavata
   roles:
     - role: common

@@ -1,6 +1,7 @@
 package org.apache.airavata.helix.cluster.monitoring;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.cluster.monitoring.agents.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,9 @@ public class MainMonitor {
 
         for (PlatformMonitor monitor : platformMonitors) {
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-            executorService.scheduleWithFixedDelay(() -> monitor.monitor(errorNotifier), 0, 1, TimeUnit.MINUTES);
+            executorService.scheduleWithFixedDelay(() -> monitor.monitor(errorNotifier), 0,
+                    Integer.parseInt(ServerSettings.getSetting("platform_monitor_interval_minutes")),
+                    TimeUnit.MINUTES);
         }
     }
 }
