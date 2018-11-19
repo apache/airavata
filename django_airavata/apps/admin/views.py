@@ -5,7 +5,10 @@ from django.urls import reverse
 
 @login_required
 def home(request):
-    return redirect(reverse('django_airavata_admin:app_catalog'))
+    if request.is_gateway_admin or request.is_read_only_gateway_admin:
+        return redirect(reverse('django_airavata_admin:app_catalog'))
+    else:
+        return redirect(reverse('django_airavata_admin:group_resource_profile'))
 
 
 @login_required
