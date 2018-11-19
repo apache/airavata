@@ -14,7 +14,9 @@
         </div>
       </template>
       <template slot="role" slot-scope="data">
-        <b-form-select v-if="group.isOwner" :value="data.item.role" @input="changeRole(data.item, $event)" :options="groupRoleOptions">
+        <!-- Can only change role if the user is the group owner but the role of the owner can't be changed -->
+        <b-form-select v-if="group.isOwner && data.item.role !== 'OWNER'" :value="data.item.role" @input="changeRole(data.item, $event)"
+          :options="groupRoleOptions">
         </b-form-select>
         <span v-else>{{ data.value }}</span>
       </template>
@@ -102,15 +104,18 @@ export default {
           .map(m => {
             const userProfile = this.userProfilesMap[m];
             const isAdmin = this.admins.indexOf(m) >= 0;
+            const isOwner = this.group.ownerId === m;
             // Owners can edit all members and admins can edit non-admin members
+            // (except the owners role isn't editable)
             const editable =
-              this.group.isOwner || (this.group.isAdmin && !isAdmin);
+              !isOwner &&
+              (this.group.isOwner || (this.group.isAdmin && !isAdmin));
             return {
               id: m,
               name: userProfile.firstName + " " + userProfile.lastName,
               username: userProfile.userId,
               email: userProfile.email,
-              role: isAdmin ? "ADMIN" : "MEMBER",
+              role: isOwner ? "OWNER" : isAdmin ? "ADMIN" : "MEMBER",
               editable: editable
             };
           })
