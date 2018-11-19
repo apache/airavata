@@ -23,4 +23,6 @@ platform_monitor_name: "platform-monitor"
 platform_monitor_version: "platform-monitor-{{ snapshot_version }}"
 platform_monitor_dist_name: "{{ platform_monitor_version }}-bin.tar.gz"
 platform_monitor_log_dir: "{{ helix_dir }}/{{ platform_monitor_version }}/logs"
+platform_monitor_interval_minutes: "10"
+platform_mock_workflow_timeout_ms: "300000"
 ...
