@@ -28,8 +28,8 @@
 
 # Create a django virtual host
 - hosts: django
-  # Limit to deploying to only 3 hosts at once. This is to lighten the load during the JavaScript build step.
-  serial: 3
+  # Limit to deploying to only 1 host at once. This is to lighten the load during the JavaScript build step.
+  serial: 1
   name: Create/update Django portal for gateway
   roles:
     - django
