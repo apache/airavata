@@ -69,7 +69,7 @@ api_secured: "false"
 tls_enable: "true"
 api_server_tls_port: "9930"
 enable_sharing: "true"
-iam_server_url: "https://iamdev.scigap.org/auth"
+iam_server_url: "https://iam.scigap.org/auth"
 iam_server_super_admin_username: "admin"
 iam_server_super_admin_password: "{{ vault_iam_server_super_admin_password }}"
 
