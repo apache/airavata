@@ -115,12 +115,16 @@ public class WorkflowOperator {
         // if the hfac that monitors a particular workflow, got killed due to some reason, who is taking the responsibility
 
         if (monitor) {
-            TaskState taskState = taskDriver.pollForWorkflowState(workflow.getName(),
-                    TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
+            TaskState taskState = pollForWorkflowCompletion(workflow.getName(), 3600000);
             logger.info("Workflow " + workflowName + " for process " + processId + " finished with state " + taskState.name());
 
         }
         return workflowName;
 
+    }
+
+    public synchronized TaskState pollForWorkflowCompletion(String workflowName, long timeout) throws InterruptedException {
+        return taskDriver.pollForWorkflowState(workflowName, timeout, TaskState.COMPLETED,
+                TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
     }
 }
