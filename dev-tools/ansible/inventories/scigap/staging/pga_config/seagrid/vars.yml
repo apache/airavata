@@ -20,7 +20,7 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "master"
+pga_git_branch: "staging"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
