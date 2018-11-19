@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     members() {
-      return this.group.members;
+      return this.group.members ? this.group.members : [];
     },
     admins() {
       return this.group.admins;
