@@ -145,6 +145,10 @@ helix_url: http://www-us.apache.org/dist//helix/{{helix_version}}/binaries/helix
 helix_dir: "{{ deployment_dir }}/airavata-helix"
 helix_cluster_name: "AiravataDemoCluster"
 snapshot_version: "0.17-SNAPSHOT"
+helix_controller_name: "helixcontroller"
+helix_participant_name: "helixparticipant"
+helix_pre_wm_name: "prewm"
+helix_post_wm_name: "postwm"
 
 # Listening port for kafka installations
 kafka_listener_port: 9092
@@ -160,3 +164,9 @@ realtime_monitor_broker_topic: "helix-airavata-mq"
 job_monitor_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
 job_monitor_broker_topic: "parsed-data"
 job_monitor_broker_consumer_group: "MonitoringConsumer"
+
+# Variables related to platform monitor
+platform_name: "Testing Environment"
+platform_monitor_email_address: "airavataplatformmonitor@gmail.com"
+platform_monitor_email_password: "{{ vault_platform_monitor_email_password }}"
+platform_monitor_target_email_addresses: "dimuthu.upeksha2@gmail.com,dwannipu@iu.edu"

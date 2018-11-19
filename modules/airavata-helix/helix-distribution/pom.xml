@@ -121,6 +121,21 @@
                             <attach>false</attach>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>platform-monitor-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${platform.monitor.archive.name}-${project.version}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/platform-monitor-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -132,5 +147,6 @@
         <pre.wm.archieve.name>helix-pre-wm</pre.wm.archieve.name>
         <post.wm.archieve.name>helix-post-wm</post.wm.archieve.name>
         <parser.wm.archive.name>helix-parser-wm</parser.wm.archive.name>
+        <platform.monitor.archive.name>platform-monitor</platform.monitor.archive.name>
     </properties>
 </project>
