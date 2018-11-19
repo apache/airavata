@@ -48,5 +48,8 @@ struct GroupModel{
     3: optional string ownerId,
     4: optional string description,
     5: optional list<string> members,
+    /**
+     * Note: each admin must also be a member of the group.
+     */
     6: optional list<string> admins,
 }

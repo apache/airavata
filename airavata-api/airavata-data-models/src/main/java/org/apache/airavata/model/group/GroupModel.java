@@ -52,6 +52,9 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     OWNER_ID((short)3, "ownerId"),
     DESCRIPTION((short)4, "description"),
     MEMBERS((short)5, "members"),
+    /**
+     * Note: each admin must also be a member of the group.
+     */
     ADMINS((short)6, "admins");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
@@ -329,10 +332,16 @@ public class GroupModel implements org.apache.thrift.TBase<GroupModel, GroupMode
     this.admins.add(elem);
   }
 
+  /**
+   * Note: each admin must also be a member of the group.
+   */
   public java.util.List<java.lang.String> getAdmins() {
     return this.admins;
   }
 
+  /**
+   * Note: each admin must also be a member of the group.
+   */
   public void setAdmins(java.util.List<java.lang.String> admins) {
     this.admins = admins;
   }
