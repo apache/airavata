@@ -98,7 +98,7 @@ public class HelixParticipantMonitor implements PlatformMonitor {
             PlatformMonitorError monitorError = new PlatformMonitorError();
             monitorError.setError(e);
             monitorError.setReason("Failed to launch mock workflow on helix cluster  " + helixClusterName + ". " +
-                    "Check whether Helix cluster is working properly including the availability Controller and Participant");
+                    "Check whether Helix cluster is working properly including the availability of Controller and Participant");
             monitorError.setCategory("Participant");
             monitorError.setErrorCode("P004");
             return monitorError;
