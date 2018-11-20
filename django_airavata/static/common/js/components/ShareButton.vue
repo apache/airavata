@@ -134,6 +134,7 @@ export default {
           this.autoAddDefaultGatewayUsersGroup
         ) {
           this.localSharedEntity.addGroup(this.defaultGatewayUsersGroup);
+          this.emitUnsavedEvent();
         }
       });
     },
