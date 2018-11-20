@@ -128,10 +128,7 @@ export default {
         .filter(group => currentGroupIds.indexOf(group.id) < 0)
         .map(group => {
           return {
-            // AIRAVATA-2927 Due to bad data, sometimes a user and a group will
-            // have the same id. To prevent issues distinguish them by appending
-            // the type of suggestion (-group)
-            id: group.id + '-group',
+            id: group.id,
             name: group.name,
             type: "group"
           };
@@ -148,10 +145,7 @@ export default {
         .filter(user => currentUserIds.indexOf(user.airavataInternalUserId) < 0)
         .map(user => {
           return {
-            // AIRAVATA-2927 Due to bad data, sometimes a user and a group will
-            // have the same id. To prevent issues distinguish them by appending
-            // the type of suggestion (-user)
-            id: user.airavataInternalUserId + '-user',
+            id: user.airavataInternalUserId,
             name:
               user.firstName +
               " " +
