@@ -16,7 +16,7 @@ public class MainMonitor {
 
     private final static Logger logger = LoggerFactory.getLogger(MainMonitor.class);
 
-    public static void main(String args[]) throws ApplicationSettingsException {
+    public static void main(String args[]) throws Exception {
 
         logger.info("Starting platform monitor");
 

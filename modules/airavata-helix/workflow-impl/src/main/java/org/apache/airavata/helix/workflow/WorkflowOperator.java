@@ -136,4 +136,8 @@ public class WorkflowOperator {
         return taskDriver.pollForWorkflowState(workflowName, timeout, TaskState.COMPLETED,
                 TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
     }
+
+    public TaskState getWorkflowState(String workflow) {
+        return taskDriver.getWorkflowContext(workflow).getWorkflowState();
+    }
 }
