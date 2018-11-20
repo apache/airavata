@@ -8,8 +8,8 @@
           </span>
           <span v-if="slotProps.suggestion.type == 'user'">
             <i class="fa fa-user"></i>
-            {{ slotProps.suggestion.user.firstName }} {{ slotProps.suggestion.user.lastName }} ({{ slotProps.suggestion.user.userId }})
-            - {{ slotProps.suggestion.user.email }}
+            {{ slotProps.suggestion.user.firstName }} {{ slotProps.suggestion.user.lastName }}
+            ({{ slotProps.suggestion.user.userId }}) - {{ slotProps.suggestion.user.email }}
           </span>
         </template>
       </autocomplete-text-input>
@@ -26,9 +26,9 @@
         <b-form-select v-model="data.item.permissionType" :options="permissionOptions" />
       </template>
       <template slot="remove" slot-scope="data">
-        <a href="#" @click.prevent="removeUser(data.item.user)">
+        <b-link @click="removeUser(data.item.user)">
           <span class="fa fa-trash"></span>
-        </a>
+        </b-link>
       </template>
     </b-table>
     <b-table v-if="groupsCount > 0" id="modal-group-table" hover :items="filteredGroupPermissions" :fields="groupFields">
@@ -36,12 +36,13 @@
         {{data.item.group.name}}
       </template>
       <template slot="permission" slot-scope="data">
-        <b-form-select v-model="data.item.permissionType" :options="permissionOptions" />
+        <b-form-select v-if="editingAllowed(data.item.group)" v-model="data.item.permissionType" :options="permissionOptions" />
+        <span v-else>{{ data.item.permissionType.name }}</span>
       </template>
       <template slot="remove" slot-scope="data">
-        <a href="#" @click.prevent="removeGroup(data.item.group)">
+        <b-link v-if="editingAllowed(data.item.group)" @click="removeGroup(data.item.group)">
           <span class="fa fa-trash"></span>
-        </a>
+        </b-link>
       </template>
     </b-table>
   </div>
@@ -66,6 +67,10 @@ export default {
     groups: {
       type: Array,
       required: true
+    },
+    disallowEditingAdminGroups: {
+      type: Boolean,
+      default: true
     }
   },
   components: {
@@ -175,6 +180,19 @@ export default {
         );
         this.data.addUser(user);
       }
+    },
+    /**
+     * For some entity types the backend automatically shares the entity with
+     * admin users and doesn't allow editing or removing those admin groups.
+     * For that reason the disallowEditingAdminGroups property was added and
+     * when it is true editing of the "Admins" and "Read Only Admins" groups
+     * should not be allowed.
+     */
+    editingAllowed(group) {
+      return (
+        !this.disallowEditingAdminGroups ||
+        !(group.isGatewayAdminsGroup || group.isReadOnlyGatewayAdminsGroup)
+      );
     }
   }
 };

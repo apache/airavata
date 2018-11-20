@@ -5,7 +5,7 @@
 
         <b-table striped hover :fields="fields" :items="slotProps.items">
           <template slot="sharing" slot-scope="data">
-            <share-button :entity-id="data.item.token" />
+            <share-button :entity-id="data.item.token" :disallow-editing-admin-groups="false" />
           </template>
           <template slot="action" slot-scope="data">
             <clipboard-copy-link :text="data.item.publicKey" class="mr-1" />
@@ -24,7 +24,7 @@
 
         <b-table striped hover :fields="fields" :items="slotProps.items">
           <template slot="sharing" slot-scope="data">
-            <share-button :entity-id="data.item.token" />
+            <share-button :entity-id="data.item.token" :disallow-editing-admin-groups="false"/>
           </template>
           <template slot="action" slot-scope="data">
             <delete-link v-if="data.item.userHasWriteAccess" @delete="deletePasswordCredential(data.item)">

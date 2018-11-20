@@ -6,8 +6,8 @@
     </b-button>
     <b-modal class="modal-share-settings" title="Sharing Settings" ref="sharingSettingsModal" ok-title="Save" @ok="saveSharedEntity"
       @cancel="cancelEditSharedEntity" no-close-on-esc no-close-on-backdrop hide-header-close @show="showSharingSettingsModal">
-      <shared-entity-editor v-if="localSharedEntity && users && groups" v-model="localSharedEntity" :users="users" :groups="groups"
-      />
+      <shared-entity-editor v-if="localSharedEntity && users && groups" v-model="localSharedEntity" :users="users"
+        :groups="groups" :disallow-editing-admin-groups="disallowEditingAdminGroups" />
     </b-modal>
   </div>
 </template>
@@ -22,6 +22,10 @@ export default {
     entityId: String,
     sharedEntity: models.SharedEntity,
     autoAddDefaultGatewayUsersGroup: {
+      type: Boolean,
+      default: true
+    },
+    disallowEditingAdminGroups: {
       type: Boolean,
       default: true
     }
@@ -108,15 +112,13 @@ export default {
         !this.defaultGatewayUsersGroup
       ) {
         promises.push(
-          services.GroupService
-            .list({ limit: -1 })
-            .then(groups => {
-              this.groups = groups;
-              // If a new sharedEntity, automatically add the defaultGatewayUsersGroup
-              groups
-                .filter(group => group.isDefaultGatewayUsersGroup)
-                .forEach(group => (this.defaultGatewayUsersGroup = group));
-            })
+          services.GroupService.list({ limit: -1 }).then(groups => {
+            this.groups = groups;
+            // If a new sharedEntity, automatically add the defaultGatewayUsersGroup
+            groups
+              .filter(group => group.isDefaultGatewayUsersGroup)
+              .forEach(group => (this.defaultGatewayUsersGroup = group));
+          })
         );
       }
       Promise.all(promises).then(() => {
@@ -188,11 +190,9 @@ export default {
           .then(users => (this.users = users));
       }
       if (!this.groups) {
-        services.GroupService
-          .list({ limit: -1 })
-          .then(groups => {
-            this.groups = groups;
-          });
+        services.GroupService.list({ limit: -1 }).then(groups => {
+          this.groups = groups;
+        });
       }
     }
   },
