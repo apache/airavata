@@ -109,7 +109,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     // These methods are protected by sharing registry authorization
     private final static String APPLICATION_DEPLOYMENT_METHODS =
             "/airavata/registerApplicationDeployment|/airavata/getApplicationDeployment|/airavata/updateApplicationDeployment" +
-                    "|/airavata/deleteApplicationDeployment|/airavata/getAllApplicationDeployments|/airavata/getAccessibleApplicationDeployments";
+                    "|/airavata/deleteApplicationDeployment|/airavata/getAllApplicationDeployments|/airavata/getAccessibleApplicationDeployments" +
+                    "|/airavata/getApplicationDeploymentsForAppModuleAndGroupResourceProfile";
     private final static String APPLICATION_MODULE_METHODS = "/airavata/getAccessibleAppModules";
     private final static String CREDENTIAL_TOKEN_METHODS = "/airavata/getCredentialSummary|/airavata/getAllCredentialSummaries|/airavata/generateAndRegisterSSHKeys|/airavata/registerPwdCredential|/airavata/deleteSSHPubKey|/airavata/deletePWDCredential";
     // Misc. other methods needed for group based authorization
