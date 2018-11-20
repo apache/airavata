@@ -25,8 +25,10 @@ public class HelixParticipantMonitor implements PlatformMonitor {
     private String helixClusterName = ServerSettings.getSetting("helix.cluster.name");
     private String instanceName = ServerSettings.getSetting("helix.participant.name");
     private String zkConnectionString = ServerSettings.getZookeeperConnection();
+    private WorkflowOperator operator;
 
-    public HelixParticipantMonitor() throws ApplicationSettingsException {
+    public HelixParticipantMonitor() throws Exception {
+        operator = new WorkflowOperator(helixClusterName, "mock-wf-operator", zkConnectionString);
     }
 
     public void monitor(ErrorNotifier notifier) {
@@ -81,7 +83,6 @@ public class HelixParticipantMonitor implements PlatformMonitor {
     private PlatformMonitorError checkMockWorkflow() {
         MockTask mockTask  = new MockTask();
         mockTask.setTaskId("Mock-" + UUID.randomUUID().toString());
-        WorkflowOperator operator = null;
         try {
             operator = new WorkflowOperator(helixClusterName, "mock-wf-operator", zkConnectionString);
             String workflow = operator.launchWorkflow(UUID.randomUUID().toString(), Collections.singletonList(mockTask), true, false);
@@ -102,10 +103,6 @@ public class HelixParticipantMonitor implements PlatformMonitor {
             monitorError.setCategory("Participant");
             monitorError.setErrorCode("P004");
             return monitorError;
-        } finally {
-            if (operator != null) {
-                operator.disconnect();
-            }
         }
         return null;
     }
