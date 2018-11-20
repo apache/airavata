@@ -296,8 +296,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroupPK.setGroupId(group.groupId);
             userGroupPK.setDomainId(group.domainId);
             UserGroup oldGroup = (new UserGroupRepository()).get(userGroupPK);
-            //Client created groups are always of type MULTI_USER
-            group.setGroupCardinality(GroupCardinality.MULTI_USER);
+            group.setGroupCardinality(oldGroup.getGroupCardinality());
             group.setCreatedTime(oldGroup.createdTime);
             group = getUpdatedObject(oldGroup, group);
 
