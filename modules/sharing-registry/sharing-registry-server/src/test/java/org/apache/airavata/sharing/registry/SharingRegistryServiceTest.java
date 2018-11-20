@@ -158,6 +158,16 @@ public class SharingRegistryServiceTest {
 
         sharingServiceClient.createUser(user7);
 
+        // Test updates to user and how it affects the user's SINGLE_USER group
+        UserGroup singleUserGroupUser7 = sharingServiceClient.getGroup(domainId, user7.getUserId());
+        Assert.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
+        user7.setFirstName("Johnny");
+        sharingServiceClient.updatedUser(user7);
+        User updatedUser7 = sharingServiceClient.getUser(domainId, user7.getUserId());
+        Assert.assertEquals("Johnny", updatedUser7.getFirstName());
+        singleUserGroupUser7 = sharingServiceClient.getGroup(domainId, user7.getUserId());
+        Assert.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
+
         UserGroup userGroup1 = new UserGroup();
         //required
         userGroup1.setGroupId("test-group-1");
