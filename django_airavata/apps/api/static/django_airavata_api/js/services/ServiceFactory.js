@@ -185,7 +185,7 @@ class ServiceFactory {
                     }
                 }
                 let paginationHandler = (data) => {
-                    if (config.pagination === true && data.next) {
+                    if (config.pagination === true && 'next' in data) {
                         return new PaginationIterator(data, config.modelClass);
                     } else if (data instanceof Array) {
                         return data.map(item => resultHandler(item));

@@ -19,7 +19,6 @@ export default {
     props: {
         paginator: utils.PaginationIterator,
     },
-    props: ['paginator'],
     name: 'pager',
     methods: {
         getNext: function() {
