@@ -173,7 +173,9 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment.experimentId = experiment_id
 
     def perform_update(self, serializer):
-        experiment = serializer.save()
+        experiment = serializer.save(
+            gatewayId=self.gateway_id,
+            userName=self.username)
         self.request.airavata_client.updateExperiment(
             self.authz_token, experiment.experimentId, experiment)
 

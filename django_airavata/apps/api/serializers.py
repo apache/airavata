@@ -235,7 +235,7 @@ class ProjectSerializer(
 
     class Meta:
         required = ('name',)
-        read_only = ('projectID', 'owner', 'gatewayId')
+        read_only = ('owner', 'gatewayId')
 
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:project-detail',
@@ -383,7 +383,7 @@ class ExperimentSerializer(
 
     class Meta:
         required = ('projectId', 'experimentType', 'experimentName')
-        read_only = ('experimentId', 'userName', 'gatewayId')
+        read_only = ('userName', 'gatewayId')
 
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:experiment-detail',
@@ -405,8 +405,11 @@ class ExperimentSerializer(
         view_name='django_airavata_api:shared-entity-detail',
         lookup_field='experimentId',
         lookup_url_kwarg='entity_id')
+    experimentInputs = serializers.ListField(
+        child=InputDataObjectTypeSerializer(),
+        allow_null=True)
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
-    experimentStatus = ExperimentStatusSerializer(many=True, read_only=True)
+    experimentStatus = ExperimentStatusSerializer(many=True, allow_null=True)
 
 
 class DataReplicaLocationSerializer(
