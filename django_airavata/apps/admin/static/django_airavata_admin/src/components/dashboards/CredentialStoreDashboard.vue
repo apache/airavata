@@ -8,7 +8,7 @@
             <share-button :entity-id="data.item.token" :disallow-editing-admin-groups="false" />
           </template>
           <template slot="action" slot-scope="data">
-            <clipboard-copy-link :text="data.item.publicKey" class="mr-1" />
+            <clipboard-copy-link :text="data.item.publicKey.trim()" class="mr-1" />
             <delete-link v-if="data.item.userHasWriteAccess" @delete="deleteSSHCredential(data.item)">
               Are you sure you want to delete the
               <strong>{{ data.item.description }}</strong> SSH credential?

@@ -89,9 +89,9 @@ export default {
     },
     copySSHPublicKeyText() {
       return this.selectedCredential
-        ? this.selectedCredential.publicKey
+        ? this.selectedCredential.publicKey.trim()
         : this.defaultCredentialSummary
-          ? this.defaultCredentialSummary.publicKey
+          ? this.defaultCredentialSummary.publicKey.trim()
           : null;
     }
   },
