@@ -43,8 +43,8 @@ public class HelixParticipantMonitor implements PlatformMonitor {
     }
 
     private PlatformMonitorError checkConnectivity() {
+        ZkClient zkclient = null;
         try {
-            ZkClient zkclient = null;
             zkclient = new ZkClient(zkConnectionString, ZkClient.DEFAULT_SESSION_TIMEOUT,
                     ZkClient.DEFAULT_CONNECTION_TIMEOUT, new ZNRecordSerializer());
             ZKHelixAdmin admin = new ZKHelixAdmin(zkclient);
@@ -70,6 +70,10 @@ public class HelixParticipantMonitor implements PlatformMonitor {
             monitorError.setCategory("Participant");
             monitorError.setErrorCode("P002");
             return monitorError;
+        } finally {
+            if (zkclient != null) {
+                zkclient.close();
+            }
         }
         return null;
     }
@@ -77,8 +81,9 @@ public class HelixParticipantMonitor implements PlatformMonitor {
     private PlatformMonitorError checkMockWorkflow() {
         MockTask mockTask  = new MockTask();
         mockTask.setTaskId("Mock-" + UUID.randomUUID().toString());
+        WorkflowOperator operator = null;
         try {
-            WorkflowOperator operator = new WorkflowOperator(helixClusterName, "mock-wf-operator", zkConnectionString);
+            operator = new WorkflowOperator(helixClusterName, "mock-wf-operator", zkConnectionString);
             String workflow = operator.launchWorkflow(UUID.randomUUID().toString(), Collections.singletonList(mockTask), true, false);
             TaskState state = operator.pollForWorkflowCompletion(workflow, Long.parseLong(ServerSettings.getSetting("platform_mock_workflow_timeout_ms")));
             if (state != TaskState.COMPLETED) {
@@ -97,6 +102,10 @@ public class HelixParticipantMonitor implements PlatformMonitor {
             monitorError.setCategory("Participant");
             monitorError.setErrorCode("P004");
             return monitorError;
+        } finally {
+            if (operator != null) {
+                operator.disconnect();
+            }
         }
         return null;
     }

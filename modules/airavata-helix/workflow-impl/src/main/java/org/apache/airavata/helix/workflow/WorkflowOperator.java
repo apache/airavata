@@ -47,10 +47,11 @@ public class WorkflowOperator {
     private static final String WORKFLOW_PREFIX = "Workflow_of_process_";
     private static final long WORKFLOW_EXPIRY_TIME = 30 * 60 * 1000;
     private TaskDriver taskDriver;
+    private HelixManager helixManager;
 
     public WorkflowOperator(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
 
-        HelixManager helixManager = HelixManagerFactory.getZKHelixManager(helixClusterName, instanceName,
+        helixManager = HelixManagerFactory.getZKHelixManager(helixClusterName, instanceName,
                 InstanceType.SPECTATOR, zkConnectionString);
         helixManager.connect();
 
@@ -58,12 +59,20 @@ public class WorkflowOperator {
                 new Thread() {
                     @Override
                     public void run() {
-                        helixManager.disconnect();
+                        if (helixManager != null && helixManager.isConnected()) {
+                            helixManager.disconnect();
+                        }
                     }
                 }
         );
 
         taskDriver = new TaskDriver(helixManager);
+    }
+
+    public void disconnect() {
+        if (helixManager != null && helixManager.isConnected()) {
+            helixManager.disconnect();
+        }
     }
 
     public synchronized String launchWorkflow(String processId, List<AbstractTask> tasks, boolean globalParticipant, boolean monitor) throws Exception {
