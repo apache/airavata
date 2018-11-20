@@ -5119,7 +5119,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     throw new Exception("Not allowed to remove Admins group's WRITE access.");
                 }
                 if (groupPermissionList.containsKey(gatewayGroups.getReadOnlyAdminsGroupId())
-                        && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.READ)) {
+                        && groupPermissionList.get(gatewayGroups.getReadOnlyAdminsGroupId()).equals(ResourcePermissionType.READ)) {
                     throw new Exception("Not allowed to remove Read Only Admins group's READ access.");
                 }
             }
