@@ -103,6 +103,7 @@ exports.services = {
   GroupResourceProfileService: ServiceFactory.service("GroupResourceProfiles"),
   GroupService: ServiceFactory.service("Groups"),
   LocaJobSubmissionService,
+  ParserService: ServiceFactory.service("Parsers"),
   ProjectService,
   SCPDataMovementService,
   ServiceFactory,

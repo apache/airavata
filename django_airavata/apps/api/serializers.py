@@ -29,6 +29,7 @@ from airavata.model.appcatalog.gatewayprofile.ttypes import (
 from airavata.model.appcatalog.groupresourceprofile.ttypes import (
     GroupResourceProfile
 )
+from airavata.model.appcatalog.parser.ttypes import Parser
 from airavata.model.appcatalog.storageresource.ttypes import (
     StorageResourceDescription
 )
@@ -724,3 +725,7 @@ class StorageResourceSerializer(
         lookup_url_kwarg='storage_resource_id')
     creationTime = UTCPosixTimestampDateTimeField()
     updateTime = UTCPosixTimestampDateTimeField()
+
+
+class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
+    pass

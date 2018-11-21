@@ -5,6 +5,7 @@ import CredentialSummary from "./models/CredentialSummary";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
+import Parser from "./models/Parser";
 import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
@@ -219,6 +220,21 @@ export default {
     pagination: true,
     queryParams: ["limit", "offset"],
     modelClass: Group
+  },
+  Parsers: {
+    url: "/api/parsers",
+    viewSet: [
+      {
+        name: "retrieve"
+      },
+      {
+        name: "create"
+      },
+      {
+        name: "update"
+      }
+    ],
+    modelClass: Parser
   },
   SharedEntities: {
     url: "/api/shared-entities",

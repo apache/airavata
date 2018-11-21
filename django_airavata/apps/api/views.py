@@ -1009,3 +1009,24 @@ class StoragePreferenceViewSet(APIBackedViewSet):
     def perform_destroy(self, instance):
         self.request.airavata_client.deleteGatewayStoragePreference(
             self.authz_token, settings.GATEWAY_ID, instance.storageResourceId)
+
+
+class ParserViewSet(mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    GenericAPIBackedViewSet):
+    serializer_class = serializers.ParserSerializer
+    lookup_field = 'parser_id'
+    lookup_value_regex = '[^/]+'
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getParser(
+            self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        parser = serializer.save()
+        self.request.airavata_client.saveParser(self.authz_token, parser)
+
+    def perform_update(self, serializer):
+        parser = serializer.save()
+        self.request.airavata_client.saveParser(self.authz_token, parser)

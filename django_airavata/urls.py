@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
     url(r'^api/', include('django_airavata.apps.api.urls')),
     url(r'^groups/', include('django_airavata.apps.groups.urls')),
+    url(r'^dataparsers/', include('django_airavata.apps.dataparsers.urls')),
     url(r'^home$', views.home, name='home'),
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
