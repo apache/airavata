@@ -1931,7 +1931,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new InvalidRequestException("Application deployment doesn't exist for application interface " + appInterfaceId + " and host " + resourceHostId + " in gateway " + gatewayId);
             }
             submitExperiment(gatewayId, airavataExperimentId);
-            logger.info("ExpID:" + airavataExperimentId + " gatewayID: " + gatewayId + " experiment was submitted in gateway");
+            logger.info("Experiment with ExpId: " + airavataExperimentId + " was submitted in gateway with gatewayID: " + gatewayId);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
         } catch (InvalidRequestException|ExperimentNotFoundException|AuthorizationException e) {
