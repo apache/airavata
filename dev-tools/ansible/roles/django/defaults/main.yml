@@ -40,6 +40,8 @@ django_vhost_template: "django-vhost.conf.j2"
 django_ssl_vhost_template: "django-ssl-vhost.conf.j2"
 django_settings_local_template: "settings_local.py.j2"
 
+django_wsgi_processes: 2
+
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
 oauth_client_key: "RuLl_Uw7i_KXaLoAGJkiasTfyBYa"

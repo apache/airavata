@@ -49,7 +49,7 @@
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
     </Directory>
 
-    WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes=2 user={{ user }} group={{ group }}
+    WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes={{ django_wsgi_processes }} user={{ user }} group={{ group }}
     WSGIProcessGroup {{ vhost_servername }}
 
     WSGIScriptAlias / {{ doc_root_dir }}/airavata-django-portal/django_airavata/wsgi.py
