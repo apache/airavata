@@ -65,6 +65,7 @@ const FIELDS = [
     type: ProcessModel,
     list: true,
   },
+  'workflow'
 ];
 
 export default class Experiment extends BaseModel {

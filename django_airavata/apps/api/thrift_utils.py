@@ -137,7 +137,9 @@ def create_serializer_class(thrift_data_type, enable_date_time_conversion=False)
                             params[field_name] = serializer.to_representation(
                                 params[field_name])
                 elif isinstance(serializer, Serializer):
-                    params[field_name] = serializer.create(params[field_name])
+                    if field_name in params and params[field_name] is not None:
+                        params[field_name] = serializer.create(
+                            params[field_name])
             return params
 
         def create(self, validated_data):
