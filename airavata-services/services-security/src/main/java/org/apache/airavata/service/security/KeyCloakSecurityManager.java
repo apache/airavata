@@ -295,6 +295,36 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
     }
 
+    @Override
+    public UserInfo getUserInfoFromAuthzToken(AuthzToken authzToken) throws AiravataSecurityException {
+        try {
+            initServiceClients();
+            final String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            final String token = authzToken.getAccessToken();
+            return getUserInfo(gatewayId, token);
+        } catch (Exception e) {
+            throw new AiravataSecurityException(e);
+        } finally {
+            closeServiceClients();
+        }
+    }
+
+    private UserInfo getUserInfo(String gatewayId, String token) throws Exception {
+        GatewayResourceProfile gwrp = registryServiceClient.getGatewayResourceProfile(gatewayId);
+        String identityServerRealm = gwrp.getIdentityServerTenant();
+        String openIdConnectUrl = getOpenIDConfigurationUrl(identityServerRealm);
+        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
+        String userInfoEndPoint = openIdConnectConfig.getString("userinfo_endpoint");
+        JSONObject userInfo = new JSONObject(getFromUrl(userInfoEndPoint, token));
+        return new UserInfo()
+                .setSub(userInfo.getString("sub"))
+                .setFullName(userInfo.getString("name"))
+                .setFirstName(userInfo.getString("given_name"))
+                .setLastName(userInfo.getString("family_name"))
+                .setEmailAddress(userInfo.getString("email"))
+                .setUsername(userInfo.getString("preferred_username"));
+    }
+
     private GatewayGroupMembership getGatewayGroupMembership(String username, String token, String gatewayId) throws Exception {
         validateToken(username, token, gatewayId);
         GatewayGroups gatewayGroups = getGatewayGroups(gatewayId);
@@ -315,13 +345,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     }
 
     private void validateToken(String username, String token, String gatewayId) throws Exception {
-        GatewayResourceProfile gwrp = registryServiceClient.getGatewayResourceProfile(gatewayId);
-        String identityServerRealm = gwrp.getIdentityServerTenant();
-        String openIdConnectUrl = getOpenIDConfigurationUrl(identityServerRealm);
-        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, token));
-        String userInfoEndPoint = openIdConnectConfig.getString("userinfo_endpoint");
-        JSONObject userInfo = new JSONObject(getFromUrl(userInfoEndPoint, token));
-        if (!username.equals(userInfo.get("preferred_username"))) {
+        UserInfo userInfo = getUserInfo(gatewayId, token);
+        if (!username.equals(userInfo.getUsername())) {
             throw new AiravataSecurityException("Subject name and username for the token doesn't match");
         }
     }

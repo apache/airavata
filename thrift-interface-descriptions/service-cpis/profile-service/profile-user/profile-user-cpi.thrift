@@ -38,6 +38,13 @@ const string USER_PROFILE_CPI_NAME = "UserProfileService"
 
 service UserProfileService {
 
+  /**
+   * Create an initial UserProfile based on information in the IAM service for this user.
+   */
+  string initializeUserProfile (1: required security_model.AuthzToken authzToken)
+                            throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                    2: airavata_errors.AuthorizationException ae);
+
   string addUserProfile (1: required security_model.AuthzToken authzToken,
                          2: required user_profile_model.UserProfile userProfile)
                       throws (1: profile_user_cpi_errors.UserProfileServiceException upe,

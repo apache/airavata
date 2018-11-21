@@ -229,7 +229,14 @@ public class KeyCloakSecurityManagerTest {
             userinfoUrl.openConnection();
             result = userinfoHttpURLConnection;
             userinfoHttpURLConnection.getInputStream();
-            result = new ByteArrayInputStream("{\"preferred_username\": \"test-user\"}".getBytes(StandardCharsets.UTF_8));
+            result = new ByteArrayInputStream(("{" +
+                    "\"preferred_username\": \"test-user\", " +
+                    "\"sub\": \"c7f06e26-120c-41d8-8e5f-d768d6be91cf\", " +
+                    "\"name\": \"Bob Smith\", " +
+                    "\"given_name\": \"Bob\", " +
+                    "\"family_name\": \"Smith\", " +
+                    "\"email\": \"bob@smith.name\"" +
+                    "}").getBytes(StandardCharsets.UTF_8));
         }};
     }
     
