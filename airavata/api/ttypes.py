@@ -21,6 +21,7 @@ import airavata.model.scheduling.ttypes
 import airavata.model.application.io.ttypes
 import airavata.model.appcatalog.appdeployment.ttypes
 import airavata.model.appcatalog.appinterface.ttypes
+import airavata.model.appcatalog.parser.ttypes
 import airavata.model.appcatalog.accountprovisioning.ttypes
 import airavata.model.appcatalog.computeresource.ttypes
 import airavata.model.appcatalog.storageresource.ttypes
@@ -29,7 +30,6 @@ import airavata.model.appcatalog.groupresourceprofile.ttypes
 import airavata.model.appcatalog.userresourceprofile.ttypes
 import airavata.model.data.movement.ttypes
 import airavata.model.appcatalog.gatewaygroups.ttypes
-import airavata.model.workflow.ttypes
 import airavata.model.data.replica.ttypes
 import airavata.model.group.ttypes
 import airavata.model.user.ttypes

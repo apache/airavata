@@ -70,7 +70,7 @@ class GroupModel(object):
      - ownerId
      - description
      - members
-     - admins
+     - admins: Note: each admin must also be a member of the group.
     """
 
     thrift_spec = (
