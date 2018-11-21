@@ -1,5 +1,6 @@
 -r requirements.txt
 flake8==3.5.0
 flake8-isort==2.5
+mkdocs==1.0.4
 
 -e ".[dev]"

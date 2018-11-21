@@ -1,0 +1,12 @@
+site_name: Airavata Django Portal
+
+repo_url: https://github.com/apache/airavata-django-portal/
+
+nav:
+  - Home: index.md
+  - User Guide:
+    - Using the integrated CMS: cms.md
+  - Developer Guide:
+    - Adding a Django App: dev/new_django_app.md
+
+theme: readthedocs

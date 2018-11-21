@@ -11,3 +11,5 @@ jsconfig.json
 airavata_django_portal.egg-info
 # AIRAVATA-2951 package-lock.json files cause the build to fail when deploying to server
 package-lock.json
+# mkdocs
+site/
