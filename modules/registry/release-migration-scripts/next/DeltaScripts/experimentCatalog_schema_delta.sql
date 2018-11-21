@@ -60,3 +60,6 @@ alter table JOB modify column TASK_ID VARCHAR(255) NOT NULL;
 alter table JOB_STATUS modify column TASK_ID VARCHAR(255) NOT NULL;
 alter table JOB_STATUS modify column JOB_ID VARCHAR(255) NOT NULL;
 set FOREIGN_KEY_CHECKS=1;
+
+-- AIRAVATA-2953
+alter table PROCESS_INPUT modify column METADATA VARCHAR(4096);
