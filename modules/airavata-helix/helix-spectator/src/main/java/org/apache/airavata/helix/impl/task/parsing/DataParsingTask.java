@@ -45,14 +45,18 @@ import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParserInput;
 import org.apache.airavata.model.appcatalog.parser.ParserOutput;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.replica.*;
+import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.DataProductType;
+import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
+import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
@@ -280,12 +284,12 @@ public class DataParsingTask extends AbstractTask {
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport) throws TaskOnFailException, TException, AgentException {
 
-        GroupResourceProfile groupResourceProfile = getRegistryServiceClient().getGroupResourceProfile(groupResourceProfileId);
         StoragePreference gatewayStoragePreference = getRegistryServiceClient().getGatewayStoragePreference(gatewayId, storageResourceId);
+        GatewayResourceProfile gatewayResourceProfile = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
 
         String token = gatewayStoragePreference.getResourceSpecificCredentialStoreToken();
         if (token == null || token.isEmpty()) {
-            token = groupResourceProfile.getDefaultCredentialStoreToken();
+            token = gatewayResourceProfile.getCredentialStoreToken();
         }
         if (gatewayStoragePreference == null) {
             logger.error("Could not find a gateway storage preference for storage " + storageResourceId + " gateway id " + gatewayId);
