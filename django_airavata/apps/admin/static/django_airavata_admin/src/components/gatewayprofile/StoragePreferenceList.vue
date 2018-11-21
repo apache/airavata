@@ -22,6 +22,12 @@
     <template slot="item-list" slot-scope="slotProps">
 
       <b-table striped hover :fields="fields" :items="slotProps.items" sort-by="storageResourceId">
+        <template slot="resourceSpecificCredentialStoreToken" slot-scope="data">
+          {{ data.value }}
+          <b-badge v-if="defaultCredentialStoreToken && !data.item.resourceSpecificCredentialStoreToken">
+            Default
+          </b-badge>
+        </template>
         <template slot="action" slot-scope="data">
           <b-link class="action-link" @click="toggleDetails(data)">
             Edit
@@ -158,7 +164,7 @@ export default {
     },
     getCredentialName(token) {
       if (token === null && this.defaultCredentialSummary) {
-        return this.defaultCredentialSummary.description + " (default)";
+        return this.defaultCredentialSummary.description;
       } else if (this.credentials) {
         const cred = this.credentials.find(cred => cred.token === token);
         if (cred) {
