@@ -37,8 +37,8 @@ import java.util.Map;
 public class UserProfileRepository extends AbstractRepository<UserProfile, UserProfileEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(UserProfileRepository.class);
 
-    public UserProfileRepository(Class<UserProfile> thriftGenericClass, Class<UserProfileEntity> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    public UserProfileRepository() {
+        super(UserProfile.class, UserProfileEntity.class);
     }
 
     @Override
@@ -86,6 +86,10 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         throw new UnsupportedOperationException("Please use updateUserProfile instead");
     }
 
+    public UserProfile createUserProfile(UserProfile userProfile) {
+        return updateUserProfile(userProfile, null);
+    }
+
     public UserProfile createUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
         return updateUserProfile(userProfile, postUpdateAction);
     }
@@ -96,7 +100,9 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         UserProfileEntity entity = mapper.map(userProfile, UserProfileEntity.class);
         UserProfileEntity persistedCopy = JPAUtils.execute(entityManager -> {
             UserProfileEntity result = entityManager.merge(entity);
-            postUpdateAction.run();
+            if (postUpdateAction != null) {
+                postUpdateAction.run();
+            }
             return result;
         });
         return mapper.map(persistedCopy, UserProfile.class);
