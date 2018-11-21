@@ -249,7 +249,7 @@ CREATE TABLE PROCESS_INPUT
         APPLICATION_ARGUMENT varchar(255),
         STANDARD_INPUT tinyint(1),
         USER_FRIENDLY_DESCRIPTION varchar(255),
-        METADATA varchar(255),
+        METADATA varchar(4096),
         INPUT_ORDER int(11),
         IS_REQUIRED tinyint(1),
         REQUIRED_TO_ADDED_TO_CMD tinyint(1),
