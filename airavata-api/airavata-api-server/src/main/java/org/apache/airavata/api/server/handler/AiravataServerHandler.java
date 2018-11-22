@@ -300,6 +300,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client client = registryClientPool.getResource();
         try {
             boolean isExists = client.isUserExists(gatewayId, userName);
+            logger.debug("Checking if the user" + userName + "exists in the gateway" + gatewayId);
             registryClientPool.returnResource(client);
             return isExists;
         } catch (Exception e) {
@@ -379,6 +380,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             registryClientPool.returnResource(registryClient);
             sharingClientPool.returnResource(sharingClient);
+            logger.debug("Airavata successfully created the gateway with " + gatewayId);
 
             return gatewayId;
         } catch (Exception e) {
@@ -448,6 +450,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             Gateway result = regClient.getGateway(gatewayId);
             registryClientPool.returnResource(regClient);
             return result;
+            logger.debug("Airavata found the gateway with " + gatewayId);
         } catch (Exception e) {
             logger.error("Error while getting the gateway", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -483,6 +486,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
+            logger.debug("Airavata searching for all gateways");
             List<Gateway> result = regClient.getAllGateways();
             registryClientPool.returnResource(regClient);
             return result;
@@ -502,6 +506,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
+            logger.debug("Airavata verifying if the gateway with " + gatewayId + "exits")
             boolean result = regClient.isGatewayExist(gatewayId);
             registryClientPool.returnResource(regClient);
             return result;
@@ -735,6 +740,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             CredentialSummary credentialSummary = csClient.getCredentialSummary(tokenId, gatewayId);
             csClientPool.returnResource(csClient);
             sharingClientPool.returnResource(sharingClient);
+            logger.debug("Airavata retrived the credential summary for token " + tokenId + "GatewayId: "+ gatewayId);
             return credentialSummary;
         } catch (AuthorizationException ae) {
             String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -774,6 +780,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<CredentialSummary> credentialSummaries = csClient.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
             csClientPool.returnResource(csClient);
             sharingClientPool.returnResource(sharingClient);
+            logger.debug("Airavata successfully retrived credential summaries of type " + type + " GatewayId: " + gatewayId);
             return credentialSummaries;
         } catch (Exception e) {
             String msg = "Error retrieving credential summaries of type " + type + ". GatewayId: "+ gatewayId;
@@ -5100,7 +5107,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean revokeSharingOfResourceFromGroups(AuthzToken authzToken, String resourceId,
-                                                     Map<String, ResourcePermissionType> groupPermissionList) 
+                                                     Map<String, ResourcePermissionType> groupPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
