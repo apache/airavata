@@ -449,8 +449,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             Gateway result = regClient.getGateway(gatewayId);
             registryClientPool.returnResource(regClient);
-            return result;
             logger.debug("Airavata found the gateway with " + gatewayId);
+            return result;
         } catch (Exception e) {
             logger.error("Error while getting the gateway", e);
             AiravataSystemException exception = new AiravataSystemException();
