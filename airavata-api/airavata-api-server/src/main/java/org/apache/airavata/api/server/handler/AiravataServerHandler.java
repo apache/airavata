@@ -506,7 +506,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            logger.debug("Airavata verifying if the gateway with " + gatewayId + "exits")
+            logger.debug("Airavata verifying if the gateway with " + gatewayId + "exits");
             boolean result = regClient.isGatewayExist(gatewayId);
             registryClientPool.returnResource(regClient);
             return result;
