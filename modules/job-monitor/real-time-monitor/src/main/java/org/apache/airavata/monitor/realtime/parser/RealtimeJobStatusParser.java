@@ -49,7 +49,7 @@ public class RealtimeJobStatusParser {
 
     private String getJobIdIdByJobNameWithRetry(String jobName) throws Exception {
         for (int  i = 0; i < 3; i++) {
-            String jobId= MonitoringUtil.getJobIdByJobName(this.curatorClient, jobName);
+            String jobId = MonitoringUtil.getJobIdByJobName(this.curatorClient, jobName);
             if (jobId == null) {
                 // Retry after 2s
                 logger.warn("No job id for job name " + jobName + ". Retrying in 2 seconds");
