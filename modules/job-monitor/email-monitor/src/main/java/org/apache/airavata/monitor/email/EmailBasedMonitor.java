@@ -61,6 +61,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
     private Message[] flushUnseenMessages;
     private Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
+    private long emailExpirationTimeMinutes;
 
 
     public EmailBasedMonitor() throws Exception {
@@ -75,6 +76,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         password = ServerSettings.getEmailBasedMonitorPassword();
         storeProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
         folderName = ServerSettings.getEmailBasedMonitorFolderName();
+        emailExpirationTimeMinutes = Long.parseLong(ServerSettings.getSetting("email.expiration.minutes"));
         if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
             throw new AiravataException("Unsupported store protocol , expected " +
                     IMAPS + " or " + POP3 + " but found " + storeProtocol);
@@ -239,7 +241,14 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 processedMessages.add(message);
             } catch (Exception e) {
                 log.error("Error in submitting job status to queue", e);
-                unreadMessages.add(message);
+                if ((System.currentTimeMillis() - message.getReceivedDate().getTime()) > emailExpirationTimeMinutes * 60 * 1000) {
+                    log.warn("Marking job status email as read as it was expired");
+                    processedMessages.add(message);
+                } else {
+                    log.warn("Keeping job status email as unread untill it is expired in " + emailExpirationTimeMinutes +
+                            " minutes. Email received time " + message.getReceivedDate());
+                    unreadMessages.add(message);
+                }
             }
         }
         if (!processedMessages.isEmpty()) {
