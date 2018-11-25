@@ -22,6 +22,7 @@ package org.apache.airavata.monitor.email;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.monitor.email.parser.EmailParser;
@@ -42,9 +43,8 @@ import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class EmailBasedMonitor implements Runnable {
+public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
@@ -61,7 +61,6 @@ public class EmailBasedMonitor implements Runnable {
     private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
     private Message[] flushUnseenMessages;
     private Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
-    private MessageProducer messageProducer = new MessageProducer();
 
 
     public EmailBasedMonitor() throws Exception {
@@ -236,10 +235,10 @@ public class EmailBasedMonitor implements Runnable {
             try {
                 JobStatusResult jobStatusResult = parse(message);
                 log.info(jobStatusResult.getJobId() + ", " + jobStatusResult.getJobName() + ", " + jobStatusResult.getState().getValue());
-                messageProducer.submitMessageToQueue(jobStatusResult);
+                submitJobStatus(jobStatusResult);
                 processedMessages.add(message);
-                //unreadMessages.add(message);
             } catch (Exception e) {
+                log.error("Error in submitting job status to queue", e);
                 unreadMessages.add(message);
             }
         }

@@ -21,9 +21,9 @@ package org.apache.airavata.monitor.realtime;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
-import org.apache.airavata.monitor.kafka.MessageProducer;
+import org.apache.airavata.monitor.MonitoringException;
 import org.apache.airavata.monitor.realtime.parser.RealtimeJobStatusParser;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -36,14 +36,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 
-public class RealtimeMonitor {
+public class RealtimeMonitor extends AbstractMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
 
     private RealtimeJobStatusParser parser;
-    private MessageProducer messageProducer = new MessageProducer();
 
 
     public RealtimeMonitor() throws ApplicationSettingsException {
@@ -81,12 +79,12 @@ public class RealtimeMonitor {
         }
     }
 
-    private void process(String value) throws InterruptedException, ExecutionException, ApplicationSettingsException {
+    private void process(String value) throws MonitoringException {
         logger.info("Received data " + value);
         JobStatusResult statusResult = parser.parse(value);
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
-            messageProducer.submitMessageToQueue(statusResult);
+            submitJobStatus(statusResult);
         } else {
             logger.warn("Ignoring message as it is invalid");
         }
