@@ -26,11 +26,11 @@ group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 vhost_servername: "ddstudio.scigap.org"
 #vhost_serveralias: "sciencegateway.searchsra.org"
-vhost_ssl: false
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/www.searchsra.org/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/www.searchsra.org/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/www.searchsra.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/ddstudio.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/ddstudio.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/ddstudio.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -53,7 +53,7 @@ gateway_id: "ddstudio"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCSqYzuDDUNK3uX4AG7sg9diKERh716i0lA5RfbvfUhm+hVmyJ1P+0/OLZqwrwqzd9+1v/U08GAhys/qeOD2+x0ujgyKtY+5cjk3Td01sVTEmcXJPYhhWyAOrhhUAVAL51Zh7u2Zd/0RWf3iG0fuPPQQaBCIEY3wApwuqsLVk9G0plMtZgzXPGLgK9Ou8xJ8806yGx92nc1b1grmgkYugv5SQTe2lhmrXI/WUnfuoweadNzU0uSwwL6AaZa9grCAV1YVnGq6IX+Euwpx/P1pSRNWkoNHkm8fpkz/6dqq5YFxgr3QN0JQU5OSbbwWTWQcXr1kWNx+yS4qCtDc42EHsf3"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDmZ5IkEh5n8g994e825SmnrzkjzTT6t07iEsWAXPOuK9RSg365MfDw2qXQnWkUSQO2ksqJoqxyEeeUMbEMdoHSq/NzXoXuhg3RyjA/WgBnt+zEc+H0rwzrD5aDPliOoHT4CnezX9IuKOIedxZsybFinI+9eOONJczKYoIXgHIOxv8ARqB7i/juoi3xFMHGw50VXM8vA7hOajojNwH9PvdnRNzZEvXg0hyAMgnxVGhbudqkATkEoD0OVYhY9Y+yFaMogIhfmbpeMhBnOvEBtkZxHI3oX12opskin78jPmYOUvOH0Qb690qy7TkBahEp/sN8U7yXY950s/Kg3AI7FZF"
 
 ## Portal related variables
 super_admin_portal: "false"
