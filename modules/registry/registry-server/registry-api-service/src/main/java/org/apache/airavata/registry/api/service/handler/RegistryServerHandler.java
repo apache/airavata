@@ -3579,6 +3579,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 exception.setMessage("Cannot create experiments with empty experiment name");
                 throw exception;
             }
+            logger.info("Creating experiment with name " + experiment.getExperimentName());
             if (!isGatewayExistInternal(gatewayId)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -3601,7 +3602,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
 
             String experimentId = (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, experiment, gatewayId);
-            logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            logger.info(experimentId, "Created new experiment with experiment name {} and id {}", experiment.getExperimentName(), experimentId);
             return experimentId;
         } catch (Exception e) {
             logger.error("Error while creating the experiment with experiment name {}", experiment.getExperimentName());

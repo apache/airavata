@@ -86,7 +86,7 @@ public class HelixParticipantMonitor implements PlatformMonitor {
         try {
             operator = new WorkflowOperator(helixClusterName, "mock-wf-operator", zkConnectionString);
             String workflow = operator.launchWorkflow(UUID.randomUUID().toString(), Collections.singletonList(mockTask), true, false);
-            TaskState state = operator.pollForWorkflowCompletion(workflow, Long.parseLong(ServerSettings.getSetting("platform_mock_workflow_timeout_ms")));
+            /*TaskState state = operator.pollForWorkflowCompletion(workflow, Long.parseLong(ServerSettings.getSetting("platform_mock_workflow_timeout_ms")));
             if (state != TaskState.COMPLETED) {
                 PlatformMonitorError monitorError = new PlatformMonitorError();
                 monitorError.setReason("Mock workflow failed to execute with status " + state.name() + ". " +
@@ -94,7 +94,7 @@ public class HelixParticipantMonitor implements PlatformMonitor {
                 monitorError.setCategory("Participant");
                 monitorError.setErrorCode("P003");
                 return monitorError;
-            }
+            }*/
         } catch (Exception e) {
             PlatformMonitorError monitorError = new PlatformMonitorError();
             monitorError.setError(e);
