@@ -1279,6 +1279,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public String createExperiment(AuthzToken authzToken, String gatewayId, ExperimentModel experiment) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        logger.info("Api server accepted experiment creation with name {}", experiment.getExperimentName());
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -1315,7 +1316,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if(statusPublisher !=null) {
                 statusPublisher.publish(messageContext);
             }
-            logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            logger.info(experimentId, "Created new experiment with experiment name {} and id ", experiment.getExperimentName(), experimentId);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return experimentId;
@@ -1802,6 +1803,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
             throws TException {
+        logger.info("Launching experiment {}", airavataExperimentId);
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
@@ -1811,6 +1813,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             submitExperiment(gatewayId, airavataExperimentId);
             registryClientPool.returnResource(regClient);
+            logger.info("Successfully launched experiment {}" , airavataExperimentId);
         } catch (Exception e1) {
             logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
             AiravataSystemException exception = new AiravataSystemException();
