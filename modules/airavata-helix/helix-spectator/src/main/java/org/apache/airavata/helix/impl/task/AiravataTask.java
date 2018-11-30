@@ -86,11 +86,20 @@ public abstract class AiravataTask extends AbstractTask {
         if (!skipTaskStatusPublish) {
             publishTaskState(TaskState.COMPLETED);
         }
+
+        try {
+            logger.info("Deleting task specific monitoring nodes");
+            MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
+        } catch (Exception e) {
+            logger.error("Failed to delete task specific nodes but continuing", e);
+        }
+
         return super.onSuccess(message);
     }
 
     protected TaskResult onFail(String reason, boolean fatal, Throwable error) {
-        int currentRetryCount = 0;
+        logger.error(reason, error);
+        int currentRetryCount = 1;
         try {
             currentRetryCount = getCurrentRetryCount();
         } catch (Exception e) {
@@ -98,11 +107,11 @@ public abstract class AiravataTask extends AbstractTask {
             fatal = true;
         }
 
-        logger.warn("Task failed with fatal = " + fatal + ".  Current retry count " + currentRetryCount);
+        logger.warn("Task failed with fatal = " + fatal + ".  Current retry count " + currentRetryCount + " total retry count " + getRetryCount());
 
         if (currentRetryCount < getRetryCount() && !fatal) {
             try {
-                markNewRetry();
+                markNewRetry(currentRetryCount);
             } catch (Exception e) {
                 logger.error("Failed to mark retry. So failing the task permanently", e);
                 fatal = true;
@@ -143,6 +152,14 @@ public abstract class AiravataTask extends AbstractTask {
                 saveProcessError(errorModel);
                 saveTaskError(errorModel);
             }
+
+            try {
+                logger.info("Deleting task specific monitoring nodes");
+                MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
+            } catch (Exception e) {
+                logger.error("Failed to delete task specific nodes but continuing", e);
+            }
+
             return onFail(errorMessage, fatal);
         } else {
             return onFail("Handover back to helix engine to retry", fatal);
@@ -330,8 +347,10 @@ public abstract class AiravataTask extends AbstractTask {
                 publishTaskState(TaskState.EXECUTING);
             }
             return onRun(helper, getTaskContext());
+        } catch (TaskOnFailException e) {
+            return onFail("Captured a task fail : " + e.getReason(), e.isCritical(), e);
         } catch (Exception e) {
-            return onFail("Unknown error while running task " + getTaskId(), true, e);
+            return onFail("Unknown error while running task " + getTaskId(), false, e);
         } finally {
             MDC.clear();
         }
@@ -349,6 +368,14 @@ public abstract class AiravataTask extends AbstractTask {
             if (!skipTaskStatusPublish) {
                 publishTaskState(TaskState.CANCELED);
             }
+
+            try {
+                logger.info("Deleting task specific monitoring nodes");
+                MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
+            } catch (Exception e) {
+                logger.error("Failed to delete task specific nodes but continuing", e);
+            }
+
             onCancel(getTaskContext());
         } finally {
             MDC.clear();
@@ -390,7 +417,7 @@ public abstract class AiravataTask extends AbstractTask {
 
         } catch (Exception e) {
             logger.error("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), e);
-            throw new TaskOnFailException("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), true, e);
+            throw new TaskOnFailException("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), false, e);
         }
     }
 

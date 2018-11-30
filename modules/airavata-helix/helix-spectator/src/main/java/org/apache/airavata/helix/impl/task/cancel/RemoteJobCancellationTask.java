@@ -2,6 +2,7 @@ package org.apache.airavata.helix.impl.task.cancel;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
@@ -16,6 +17,7 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 
 @TaskDef(name = "Remote Job Cancellation Task")
@@ -106,10 +108,10 @@ public class RemoteJobCancellationTask extends AiravataTask {
                     CommandOutput jobCancelOutput = adaptor.executeCommand(cancelCommand.getRawCommand(), null);
 
                     if (jobCancelOutput.getExitCode() != 0) {
-                        logger.error("Failed to execute job cancellation command for job " + jobId + " Sout : " +
+                        logger.warn("Failed to execute job cancellation command for job " + jobId + " Sout : " +
                                 jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError());
-                        return onFail("Failed to execute job cancellation command for job " + jobId + " Sout : " +
-                                jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError(), true, null);
+                        //return onFail("Failed to execute job cancellation command for job " + jobId + " Sout : " +
+                        //        jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError(), true, null);
                     }
                 } catch (Exception ex) {
                     logger.error("Unknown error while canceling job " + jobId + " of process " + getProcessId());
@@ -137,11 +139,6 @@ public class RemoteJobCancellationTask extends AiravataTask {
     }
 
     private List<String> getJobsOfProcess(String processId) throws Exception {
-        String path = "/registry/" + processId + "/jobs";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            return getCuratorClient().getChildren().forPath(path);
-        } else {
-            return null;
-        }
+        return Collections.singletonList(MonitoringUtil.getJobIdByProcessId(getCuratorClient(), processId));
     }
 }

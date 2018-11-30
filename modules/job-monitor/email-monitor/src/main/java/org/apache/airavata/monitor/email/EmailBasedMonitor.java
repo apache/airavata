@@ -22,6 +22,7 @@ package org.apache.airavata.monitor.email;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.monitor.email.parser.EmailParser;
@@ -42,9 +43,8 @@ import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class EmailBasedMonitor implements Runnable {
+public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
@@ -61,7 +61,7 @@ public class EmailBasedMonitor implements Runnable {
     private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
     private Message[] flushUnseenMessages;
     private Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
-    private MessageProducer messageProducer = new MessageProducer();
+    private long emailExpirationTimeMinutes;
 
 
     public EmailBasedMonitor() throws Exception {
@@ -76,6 +76,7 @@ public class EmailBasedMonitor implements Runnable {
         password = ServerSettings.getEmailBasedMonitorPassword();
         storeProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
         folderName = ServerSettings.getEmailBasedMonitorFolderName();
+        emailExpirationTimeMinutes = Long.parseLong(ServerSettings.getSetting("email.expiration.minutes"));
         if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
             throw new AiravataException("Unsupported store protocol , expected " +
                     IMAPS + " or " + POP3 + " but found " + storeProtocol);
@@ -236,11 +237,18 @@ public class EmailBasedMonitor implements Runnable {
             try {
                 JobStatusResult jobStatusResult = parse(message);
                 log.info(jobStatusResult.getJobId() + ", " + jobStatusResult.getJobName() + ", " + jobStatusResult.getState().getValue());
-                messageProducer.submitMessageToQueue(jobStatusResult);
+                submitJobStatus(jobStatusResult);
                 processedMessages.add(message);
-                //unreadMessages.add(message);
             } catch (Exception e) {
-                unreadMessages.add(message);
+                log.error("Error in submitting job status to queue", e);
+                if ((System.currentTimeMillis() - message.getReceivedDate().getTime()) > emailExpirationTimeMinutes * 60 * 1000) {
+                    log.warn("Marking job status email as read as it was expired");
+                    processedMessages.add(message);
+                } else {
+                    log.warn("Keeping job status email as unread untill it is expired in " + emailExpirationTimeMinutes +
+                            " minutes. Email received time " + message.getReceivedDate());
+                    unreadMessages.add(message);
+                }
             }
         }
         if (!processedMessages.isEmpty()) {

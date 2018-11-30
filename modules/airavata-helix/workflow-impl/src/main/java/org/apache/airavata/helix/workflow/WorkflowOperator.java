@@ -45,11 +45,13 @@ public class WorkflowOperator {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowOperator.class);
 
     private static final String WORKFLOW_PREFIX = "Workflow_of_process_";
+    private static final long WORKFLOW_EXPIRY_TIME = 30 * 60 * 1000;
     private TaskDriver taskDriver;
+    private HelixManager helixManager;
 
     public WorkflowOperator(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
 
-        HelixManager helixManager = HelixManagerFactory.getZKHelixManager(helixClusterName, instanceName,
+        helixManager = HelixManagerFactory.getZKHelixManager(helixClusterName, instanceName,
                 InstanceType.SPECTATOR, zkConnectionString);
         helixManager.connect();
 
@@ -57,12 +59,20 @@ public class WorkflowOperator {
                 new Thread() {
                     @Override
                     public void run() {
-                        helixManager.disconnect();
+                        if (helixManager != null && helixManager.isConnected()) {
+                            helixManager.disconnect();
+                        }
                     }
                 }
         );
 
         taskDriver = new TaskDriver(helixManager);
+    }
+
+    public void disconnect() {
+        if (helixManager != null && helixManager.isConnected()) {
+            helixManager.disconnect();
+        }
     }
 
     public synchronized String launchWorkflow(String processId, List<AbstractTask> tasks, boolean globalParticipant, boolean monitor) throws Exception {
@@ -86,6 +96,7 @@ public class WorkflowOperator {
             JobConfig.Builder job = new JobConfig.Builder()
                     .addTaskConfigs(taskBuilds)
                     .setFailureThreshold(0)
+                    .setExpiry(WORKFLOW_EXPIRY_TIME)
                     .setMaxAttemptsPerTask(data.getRetryCount());
 
             if (!globalParticipant) {
@@ -104,6 +115,7 @@ public class WorkflowOperator {
 
         WorkflowConfig.Builder config = new WorkflowConfig.Builder().setFailureThreshold(0);
         workflowBuilder.setWorkflowConfig(config.build());
+        workflowBuilder.setExpiry(WORKFLOW_EXPIRY_TIME);
         Workflow workflow = workflowBuilder.build();
 
         taskDriver.start(workflow);
@@ -112,12 +124,20 @@ public class WorkflowOperator {
         // if the hfac that monitors a particular workflow, got killed due to some reason, who is taking the responsibility
 
         if (monitor) {
-            TaskState taskState = taskDriver.pollForWorkflowState(workflow.getName(),
-                    TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
+            TaskState taskState = pollForWorkflowCompletion(workflow.getName(), 3600000);
             logger.info("Workflow " + workflowName + " for process " + processId + " finished with state " + taskState.name());
 
         }
         return workflowName;
 
+    }
+
+    public synchronized TaskState pollForWorkflowCompletion(String workflowName, long timeout) throws InterruptedException {
+        return taskDriver.pollForWorkflowState(workflowName, timeout, TaskState.COMPLETED,
+                TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
+    }
+
+    public TaskState getWorkflowState(String workflow) {
+        return taskDriver.getWorkflowContext(workflow).getWorkflowState();
     }
 }

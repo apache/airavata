@@ -1353,6 +1353,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createExperiment(AuthzToken authzToken, String gatewayId, ExperimentModel experiment) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         // TODO: verify that gatewayId and experiment.gatewayId match authzToken
+        logger.info("Api server accepted experiment creation with name {}", experiment.getExperimentName());
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -1392,7 +1393,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 statusPublisher.publish(messageContext);
             }
             //logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
-            logger.info(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            logger.info(experimentId, "Created new experiment with experiment name {} and id ", experiment.getExperimentName(), experimentId);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return experimentId;
@@ -1880,12 +1881,14 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
             throws AuthorizationException, AiravataSystemException, TException {
         // TODO: verify that gatewayId matches gatewayId in authzToken
+        logger.info("Launching experiment {}", airavataExperimentId);
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
 
             if (experiment == null) {
+                logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -1933,7 +1936,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             submitExperiment(gatewayId, airavataExperimentId);
             logger.info("Experiment with ExpId: " + airavataExperimentId + " was submitted in gateway with gatewayID: " + gatewayId);
             registryClientPool.returnResource(regClient);
-            sharingClientPool.returnResource(sharingClient);
         } catch (InvalidRequestException|ExperimentNotFoundException|AuthorizationException e) {
             logger.error(e.getMessage(), e);
             registryClientPool.returnResource(regClient);
@@ -5100,7 +5102,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean revokeSharingOfResourceFromGroups(AuthzToken authzToken, String resourceId,
-                                                     Map<String, ResourcePermissionType> groupPermissionList) 
+                                                     Map<String, ResourcePermissionType> groupPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
