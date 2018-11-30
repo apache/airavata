@@ -464,6 +464,10 @@ class ExperimentModel {
    * @var \Airavata\Model\Process\ProcessModel[]
    */
   public $processes = null;
+  /**
+   * @var \Airavata\Model\Workflow\AiravataWorkflow
+   */
+  public $workflow = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -574,6 +578,11 @@ class ExperimentModel {
             'class' => '\Airavata\Model\Process\ProcessModel',
             ),
           ),
+        20 => array(
+          'var' => 'workflow',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Workflow\AiravataWorkflow',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -633,6 +642,9 @@ class ExperimentModel {
       }
       if (isset($vals['processes'])) {
         $this->processes = $vals['processes'];
+      }
+      if (isset($vals['workflow'])) {
+        $this->workflow = $vals['workflow'];
       }
     }
   }
@@ -855,6 +867,14 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 20:
+          if ($ftype == TType::STRUCT) {
+            $this->workflow = new \Airavata\Model\Workflow\AiravataWorkflow();
+            $xfer += $this->workflow->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1036,6 +1056,14 @@ class ExperimentModel {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->workflow !== null) {
+      if (!is_object($this->workflow)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('workflow', TType::STRUCT, 20);
+      $xfer += $this->workflow->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

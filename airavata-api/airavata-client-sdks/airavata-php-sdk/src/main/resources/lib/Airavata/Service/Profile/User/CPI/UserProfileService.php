@@ -18,6 +18,15 @@ use Thrift\Exception\TApplicationException;
 
 interface UserProfileServiceIf {
   /**
+   * Create an initial UserProfile based on information in the IAM service for this user.
+   * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @return string
+   * @throws \Airavata\Service\Profile\User\CPI\Error\UserProfileServiceException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function initializeUserProfile(\Airavata\Model\Security\AuthzToken $authzToken);
+  /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\User\UserProfile $userProfile
    * @return string
@@ -138,6 +147,63 @@ class UserProfileServiceClient implements \Airavata\Service\Profile\User\CPI\Use
   public function __construct($input, $output=null) {
     $this->input_ = $input;
     $this->output_ = $output ? $output : $input;
+  }
+
+  public function initializeUserProfile(\Airavata\Model\Security\AuthzToken $authzToken)
+  {
+    $this->send_initializeUserProfile($authzToken);
+    return $this->recv_initializeUserProfile();
+  }
+
+  public function send_initializeUserProfile(\Airavata\Model\Security\AuthzToken $authzToken)
+  {
+    $args = new \Airavata\Service\Profile\User\CPI\UserProfileService_initializeUserProfile_args();
+    $args->authzToken = $authzToken;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'initializeUserProfile', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('initializeUserProfile', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_initializeUserProfile()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Profile\User\CPI\UserProfileService_initializeUserProfile_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Profile\User\CPI\UserProfileService_initializeUserProfile_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->upe !== null) {
+      throw $result->upe;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("initializeUserProfile failed: unknown result");
   }
 
   public function addUserProfile(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\User\UserProfile $userProfile)
@@ -497,6 +563,211 @@ class UserProfileServiceClient implements \Airavata\Service\Profile\User\CPI\Use
 
 
 // HELPER FUNCTIONS AND STRUCTURES
+
+class UserProfileService_initializeUserProfile_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'UserProfileService_initializeUserProfile_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('UserProfileService_initializeUserProfile_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class UserProfileService_initializeUserProfile_result {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Profile\User\CPI\Error\UserProfileServiceException
+   */
+  public $upe = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        1 => array(
+          'var' => 'upe',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Profile\User\CPI\Error\UserProfileServiceException',
+          ),
+        2 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['upe'])) {
+        $this->upe = $vals['upe'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'UserProfileService_initializeUserProfile_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->upe = new \Airavata\Service\Profile\User\CPI\Error\UserProfileServiceException();
+            $xfer += $this->upe->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('UserProfileService_initializeUserProfile_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->upe !== null) {
+      $xfer += $output->writeFieldBegin('upe', TType::STRUCT, 1);
+      $xfer += $this->upe->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 2);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
 
 class UserProfileService_addUserProfile_args {
   static $_TSPEC;
