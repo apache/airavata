@@ -1055,6 +1055,8 @@ class BatchQueueResourcePolicy {
  * batchQueueResourcePolicies:
  *  List of enforced policies on registered batch queues
  * 
+ * defaultCredentialStoreToken:
+ *  The default credential store token to use for compute resources that don't specify a resource specific credential store token.
  * 
  */
 class GroupResourceProfile {
@@ -1092,6 +1094,10 @@ class GroupResourceProfile {
    * @var int
    */
   public $updatedTime = null;
+  /**
+   * @var string
+   */
+  public $defaultCredentialStoreToken = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1143,6 +1149,10 @@ class GroupResourceProfile {
           'var' => 'updatedTime',
           'type' => TType::I64,
           ),
+        9 => array(
+          'var' => 'defaultCredentialStoreToken',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1169,6 +1179,9 @@ class GroupResourceProfile {
       }
       if (isset($vals['updatedTime'])) {
         $this->updatedTime = $vals['updatedTime'];
+      }
+      if (isset($vals['defaultCredentialStoreToken'])) {
+        $this->defaultCredentialStoreToken = $vals['defaultCredentialStoreToken'];
       }
     }
   }
@@ -1281,6 +1294,13 @@ class GroupResourceProfile {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 9:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->defaultCredentialStoreToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1368,6 +1388,11 @@ class GroupResourceProfile {
     if ($this->updatedTime !== null) {
       $xfer += $output->writeFieldBegin('updatedTime', TType::I64, 8);
       $xfer += $output->writeI64($this->updatedTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultCredentialStoreToken !== null) {
+      $xfer += $output->writeFieldBegin('defaultCredentialStoreToken', TType::STRING, 9);
+      $xfer += $output->writeString($this->defaultCredentialStoreToken);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
