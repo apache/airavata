@@ -76,13 +76,11 @@ import java.util.*;
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
 	private SimpleOrchestratorImpl orchestrator = null;
-	private static Integer mutex = new Integer(-1);
 	private String airavataUserName;
 	private String gatewayName;
 	private Publisher publisher;
 	private final Subscriber statusSubscribe;
 	private final Subscriber experimentSubscriber;
-	private CuratorFramework curatorClient;
 
     /**
 	 * Query orchestrator server to fetch the CPI version
@@ -104,7 +102,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
 			statusSubscribe = getStatusSubscriber();
 			experimentSubscriber  = getExperimentSubscriber();
-			startCurator();
 		} catch (OrchestratorException | AiravataException e) {
 			log.error(e.getMessage(), e);
 			throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -137,10 +134,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         ExperimentModel experiment = null;
 		final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            String experimentNodePath = GFacUtils.getExperimentNodePath (experimentId);
-			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
-			String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
             experiment = registryClient.getExperiment(experimentId);
             if (experiment == null) {
                 log.error("Error retrieving the Experiment by the given experimentID: {} ", experimentId);
@@ -461,21 +454,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 }
 
 				orchestrator.cancelExperiment(experimentModel, token);
-				// TODO deprecate this approach as we are replacing gfac
-				String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
-						experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-				Stat stat = curatorClient.checkExists().forPath(expCancelNodePath);
-				if (stat != null) {
-					curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
-							.getBytes());
-					ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
-					status.setReason("Experiment cancel request processed");
-					status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-					OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
-					log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
-					return true;
-				}
-				return false;
+
+				ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
+				status.setReason("Experiment cancel request processed");
+				status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+				OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+				log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
+				return true;
 		}
     }
 
@@ -489,12 +474,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 //        }
     }
 
-	private void startCurator() throws ApplicationSettingsException {
-		String connectionSting = ServerSettings.getZookeeperConnection();
-		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
-		curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
-		curatorClient.start();
-	}
     private class SingleAppExperimentRunner implements Runnable {
 
         String experimentId;

@@ -41,6 +41,15 @@
   - ./bin/helix-admin.sh --zkSvr {{ zookeeper_connection_url }} --addCluster {{ helix_cluster_name }}
   ignore_errors: yes
 
+- name: Stop daemons if running
+  command: "{{ item.command }} chdir={{ helix_dir }}/{{ item.dir }}/"
+  with_items:
+  - { command: ./bin/controller-daemon.sh stop, dir: "{{ helix_controller_version }}" }
+  - { command: ./bin/participant-daemon.sh stop, dir: "{{ helix_participant_version }}" }
+  - { command: ./bin/pre-wm-daemon.sh stop, dir: "{{ helix_pre_wm_version }}" }
+  - { command: ./bin/post-wm-daemon.sh stop, dir: "{{ helix_post_wm_version }}" }
+  ignore_errors: yes
+
 # Copy required distributions to the deployment directory
 - name: Copy distributions to airavata-helix deployment directory
   unarchive: "src={{ airavata_source_dir }}/modules/airavata-helix/helix-distribution/target/{{ item }}

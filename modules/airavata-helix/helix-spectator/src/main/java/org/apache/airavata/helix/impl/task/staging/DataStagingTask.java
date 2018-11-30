@@ -161,10 +161,10 @@ public abstract class DataStagingTask extends AiravataTask {
 
             File localFile = new File(localSourceFilePath);
             if (localFile.exists()) {
-                if (localFile.length() == 0) {
+                /*if (localFile.length() == 0) {
                     logger.warn("Local file " + localSourceFilePath +" size is 0 so ignoring the upload");
                     return false;
-                }
+                }*/
             } else {
                 throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, false, null);
             }

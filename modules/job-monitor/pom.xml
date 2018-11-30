@@ -66,6 +66,11 @@
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>5.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.airavata</groupId>
+                <artifactId>task-core</artifactId>
+                <version>0.17-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * TODO: Class level comments please
@@ -68,7 +71,13 @@ public class HelixController implements Runnable {
         }
     }
 
-    public void start() {
+    public void startServer() throws Exception {
+
+        //WorkflowCleanupAgent cleanupAgent = new WorkflowCleanupAgent();
+        //cleanupAgent.init();
+        //ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        //executor.scheduleWithFixedDelay(cleanupAgent, 10, 120, TimeUnit.SECONDS);
+
         new Thread(this).start();
         try {
             startLatch.await();
@@ -101,7 +110,7 @@ public class HelixController implements Runnable {
             logger.info("Starting helix controller");
 
             HelixController helixController = new HelixController();
-            helixController.start();
+            helixController.startServer();
 
         } catch (Exception e) {
             logger.error("Failed to start the helix controller", e);

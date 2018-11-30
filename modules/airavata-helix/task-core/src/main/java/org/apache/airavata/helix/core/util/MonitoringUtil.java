@@ -1,6 +1,7 @@
 package org.apache.airavata.helix.core.util;
 
 import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -13,6 +14,7 @@ public class MonitoringUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(MonitoringUtil.class);
 
+    private static final String PATH_PREFIX = "/airavata";
     private static final String MONITORING = "/monitoring/";
     private static final String REGISTRY = "/registry/";
 
@@ -31,8 +33,63 @@ public class MonitoringUtil {
 
     public static final String CANCEL = "cancel";
 
+    // TODO perform exception handling
+    @SuppressWarnings("WeakerAccess")
+    public static void createMonitoringNode(CuratorFramework curatorClient, String jobId, String jobName, String taskId, String processId,
+                                            String experimentId, String gateway) throws Exception {
+        logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
+                + processId + ", gateway : " + gateway);
+
+        // TODO add another children in job id path to store process id. Some cases different machines will return same job id
+        if (curatorClient.checkExists().forPath(PATH_PREFIX + MONITORING + jobId) != null) {
+            logger.warn("Path " + PATH_PREFIX + MONITORING + jobId + " exists. Deleting for new job");
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId);
+        }
+
+        if (curatorClient.checkExists().forPath(PATH_PREFIX + MONITORING + jobName) != null) {
+            logger.warn("Path " + PATH_PREFIX + MONITORING + jobName + " exists. Deleting for new job");
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobName);
+        }
+
+        if (curatorClient.checkExists().forPath(PATH_PREFIX + REGISTRY + processId) != null) {
+            logger.warn("Path " + PATH_PREFIX + REGISTRY + processId + " exists. Deleting for new job");
+            deleteIfExists(curatorClient, PATH_PREFIX + REGISTRY + processId);
+        }
+
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + MONITORING + jobId + LOCK, new byte[0]);
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + MONITORING + jobId + GATEWAY, gateway.getBytes());
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + MONITORING + jobId + PROCESS, processId.getBytes());
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + MONITORING + jobId + TASK, taskId.getBytes());
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + MONITORING + jobId + EXPERIMENT, experimentId.getBytes());
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + MONITORING + jobId + JOB_NAME, jobName.getBytes());
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + MONITORING + jobName + JOB_ID, jobId.getBytes());
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + REGISTRY + processId + JOBS, jobId.getBytes());
+    }
+
+    public static void registerWorkflow(CuratorFramework curatorClient, String processId, String workflowId) throws Exception {
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                PATH_PREFIX + REGISTRY + processId + WORKFLOWS + "/" + workflowId , new byte[0]);
+    }
+
+    public static void registerCancelProcess(CuratorFramework curatorClient, String processId) throws Exception {
+        String path = PATH_PREFIX + REGISTRY + processId + STATUS;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            curatorClient.delete().forPath(path);
+        }
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                path , CANCEL.getBytes());
+    }
+
     public static int getTaskRetryCount(CuratorFramework curatorClient, String taskId) throws Exception {
-        String path = TASK + "/" + taskId + RETRY;
+        String path = PATH_PREFIX + TASK + "/" + taskId + RETRY;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] processBytes = curatorClient.getData().forPath(path);
             return Integer.parseInt(new String(processBytes));
@@ -41,20 +98,17 @@ public class MonitoringUtil {
         }
     }
 
-    public static void increaseTaskRetryCount(CuratorFramework curatorClient, String takId) throws Exception {
-        String path = TASK + "/" + takId + RETRY;
-        int currentRetryCount = 2;
+    public static void increaseTaskRetryCount(CuratorFramework curatorClient, String takId, int currentRetryCount) throws Exception {
+        String path = PATH_PREFIX + TASK + "/" + takId + RETRY;
         if (curatorClient.checkExists().forPath(path) != null) {
-            byte[] processBytes = curatorClient.getData().forPath(path);
-            currentRetryCount = Integer.parseInt(new String(processBytes)) + 1;
             curatorClient.delete().forPath(path);
         }
         curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                path , (currentRetryCount + "").getBytes());
+                path , ((currentRetryCount + 1) + "").getBytes());
     }
 
     public static String getExperimentIdByJobId(CuratorFramework curatorClient, String jobId) throws Exception {
-        String path = MONITORING + jobId + EXPERIMENT;
+        String path = PATH_PREFIX + MONITORING + jobId + EXPERIMENT;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] processBytes = curatorClient.getData().forPath(path);
             return new String(processBytes);
@@ -64,7 +118,7 @@ public class MonitoringUtil {
     }
 
     public static String getTaskIdByJobId(CuratorFramework curatorClient, String jobId) throws Exception {
-        String path = MONITORING + jobId + TASK;
+        String path = PATH_PREFIX + MONITORING + jobId + TASK;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] processBytes = curatorClient.getData().forPath(path);
             return new String(processBytes);
@@ -74,7 +128,7 @@ public class MonitoringUtil {
     }
 
     public static String getProcessIdByJobId(CuratorFramework curatorClient, String jobId) throws Exception {
-        String path = MONITORING + jobId + PROCESS;
+        String path = PATH_PREFIX + MONITORING + jobId + PROCESS;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] processBytes = curatorClient.getData().forPath(path);
             return new String(processBytes);
@@ -84,7 +138,7 @@ public class MonitoringUtil {
     }
 
     public static String getGatewayByJobId(CuratorFramework curatorClient, String jobId) throws Exception {
-        String path = MONITORING + jobId + GATEWAY;
+        String path = PATH_PREFIX + MONITORING + jobId + GATEWAY;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] gatewayBytes = curatorClient.getData().forPath(path);
             return new String(gatewayBytes);
@@ -94,7 +148,7 @@ public class MonitoringUtil {
     }
 
     public static void updateStatusOfJob(CuratorFramework curatorClient, String jobId, JobState jobState) throws Exception {
-        String path = MONITORING + jobId + STATUS;
+        String path = PATH_PREFIX + MONITORING + jobId + STATUS;
         if (curatorClient.checkExists().forPath(path) != null) {
             curatorClient.delete().forPath(path);
         }
@@ -102,7 +156,7 @@ public class MonitoringUtil {
     }
 
     public static JobState getCurrentStatusOfJob(CuratorFramework curatorClient, String jobId) throws Exception {
-        String path = MONITORING + jobId + STATUS;
+        String path = PATH_PREFIX + MONITORING + jobId + STATUS;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] gatewayBytes = curatorClient.getData().forPath(path);
             return JobState.valueOf(new String(gatewayBytes));
@@ -111,48 +165,43 @@ public class MonitoringUtil {
         }
     }
 
+    public static String getJobIdByProcessId(CuratorFramework curatorClient, String processId) throws Exception {
+        String path = PATH_PREFIX + REGISTRY + processId + JOBS;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            byte[] gatewayBytes = curatorClient.getData().forPath(path);
+            return new String(gatewayBytes);
+        } else {
+            return null;
+        }
+    }
+
+    public static String getJobNameByJobId(CuratorFramework curatorClient, String jobId) throws Exception {
+        String path = PATH_PREFIX + MONITORING + jobId + JOB_NAME;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            byte[] gatewayBytes = curatorClient.getData().forPath(path);
+            return new String(gatewayBytes);
+        } else {
+            return null;
+        }
+    }
+
+    public static String getJobIdByJobName(CuratorFramework curatorClient, String jobName) throws Exception {
+        String path = PATH_PREFIX + MONITORING + jobName + JOB_ID;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            byte[] gatewayBytes = curatorClient.getData().forPath(path);
+            return new String(gatewayBytes);
+        } else {
+            return null;
+        }
+    }
+
     public static boolean hasMonitoringRegistered(CuratorFramework curatorClient, String jobId) throws Exception {
-        Stat stat = curatorClient.checkExists().forPath(MONITORING + jobId);
+        Stat stat = curatorClient.checkExists().forPath(PATH_PREFIX + MONITORING + jobId);
         return stat != null;
     }
 
-    // TODO perform exception handling
-    @SuppressWarnings("WeakerAccess")
-    public static void createMonitoringNode(CuratorFramework curatorClient, String jobId, String jobName, String taskId, String processId,
-                                            String experimentId, String gateway) throws Exception {
-        logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
-                + processId + ", gateway : " + gateway);
-
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                MONITORING + jobId + LOCK, new byte[0]);
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                MONITORING + jobId + GATEWAY, gateway.getBytes());
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                MONITORING + jobId + PROCESS, processId.getBytes());
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                MONITORING + jobId + TASK, taskId.getBytes());
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                MONITORING + jobId + EXPERIMENT, experimentId.getBytes());
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                MONITORING + jobId + JOB_NAME, jobName.getBytes());
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                MONITORING + jobName + JOB_ID, jobId.getBytes());
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                REGISTRY + processId + JOBS + "/" + jobId, new byte[0]);
-    }
-
-    public static void deleteMonitoringNode(CuratorFramework curatorClient, String jobId) {
-        logger.info("Deleting zookeeper paths in job monitoring for job id : " + jobId);
-
-    }
-
-    public static void registerWorkflow(CuratorFramework curatorClient, String processId, String workflowId) throws Exception {
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                REGISTRY + processId + WORKFLOWS + "/" + workflowId , new byte[0]);
-    }
-
     public static String getStatusOfProcess(CuratorFramework curatorClient, String processId) throws Exception {
-        String path = REGISTRY + processId + STATUS;
+        String path = PATH_PREFIX + REGISTRY + processId + STATUS;
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] statusBytes = curatorClient.getData().forPath(path);
             return new String(statusBytes);
@@ -161,21 +210,47 @@ public class MonitoringUtil {
         }
     }
 
-    public static void registerCancelProcess(CuratorFramework curatorClient, String processId) throws Exception {
-        String path = REGISTRY + processId + STATUS;
-        if (curatorClient.checkExists().forPath(path) != null) {
-            curatorClient.delete().forPath(path);
-        }
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                path , CANCEL.getBytes());
-    }
-
     public static List<String> getWorkflowsOfProcess(CuratorFramework curatorClient, String processId) throws Exception {
-        String path = REGISTRY + processId + WORKFLOWS;
+        String path = PATH_PREFIX + REGISTRY + processId + WORKFLOWS;
         if (curatorClient.checkExists().forPath(path) != null) {
             return curatorClient.getChildren().forPath(path);
         } else {
             return null;
         }
+    }
+
+    private static void deleteIfExists(CuratorFramework curatorClient, String path) throws Exception {
+        if (curatorClient.checkExists().forPath(path) != null) {
+            curatorClient.delete().deletingChildrenIfNeeded().forPath(path);
+        }
+    }
+
+    public static void deleteTaskSpecificNodes(CuratorFramework curatorClient, String takId) throws Exception {
+        deleteIfExists(curatorClient, PATH_PREFIX + TASK + "/" + takId + RETRY);
+    }
+
+    public static void deleteProcessSpecificNodes(CuratorFramework curatorClient, String processId) throws Exception {
+
+        String jobId = getJobIdByProcessId(curatorClient, processId);
+
+        if (jobId != null) {
+            logger.info("Deleting zookeeper paths in job monitoring for job id : " + jobId);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId + LOCK);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId + GATEWAY);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId + PROCESS);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId + TASK);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId + EXPERIMENT);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId + JOB_NAME);
+
+            String jobName = getJobNameByJobId(curatorClient, jobId);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobName + JOB_ID);
+
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobName);
+            deleteIfExists(curatorClient, PATH_PREFIX + MONITORING + jobId);
+        }
+
+        deleteIfExists(curatorClient, PATH_PREFIX + REGISTRY + processId + JOBS);
+        deleteIfExists(curatorClient, PATH_PREFIX + REGISTRY + processId + WORKFLOWS);
+        deleteIfExists(curatorClient, PATH_PREFIX + REGISTRY + processId);
     }
 }

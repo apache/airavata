@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.curator.RetryPolicy;
@@ -46,14 +47,18 @@ public class RealtimeJobStatusParser {
         this.curatorClient.start();
     }
 
-    private String getJobIdIdByJobName(String jobName) throws Exception {
-        String path = "/monitoring/" + jobName + "/jobId";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            byte[] processBytes = this.curatorClient.getData().forPath(path);
-            return new String(processBytes);
-        } else {
-            return null;
+    private String getJobIdIdByJobNameWithRetry(String jobName) throws Exception {
+        for (int  i = 0; i < 3; i++) {
+            String jobId = MonitoringUtil.getJobIdByJobName(this.curatorClient, jobName);
+            if (jobId == null) {
+                // Retry after 2s
+                logger.warn("No job id for job name " + jobName + ". Retrying in 2 seconds");
+                Thread.sleep(2000);
+            } else {
+                return jobId;
+            }
         }
+        return null;
     }
 
     public JobStatusResult parse(String rawMessage) {
@@ -67,7 +72,7 @@ public class RealtimeJobStatusParser {
                 if (jobName != null && status != null) {
 
                     try {
-                        String jobId = getJobIdIdByJobName(jobName);
+                        String jobId = getJobIdIdByJobNameWithRetry(jobName);
                         if (jobId == null) {
                             logger.error("No job id for job name " + jobName);
                             return null;

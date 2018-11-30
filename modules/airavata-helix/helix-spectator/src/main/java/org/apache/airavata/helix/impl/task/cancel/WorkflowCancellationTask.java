@@ -56,7 +56,9 @@ public class WorkflowCancellationTask extends AbstractTask {
         logger.info("Cancelling workflow " + cancellingWorkflowName);
 
         if (taskDriver.getWorkflowConfig(cancellingWorkflowName) == null) {
-            return onFail("Can not find a workflow with name " + cancellingWorkflowName, true);
+            // Workflow could be already deleted by cleanup agents
+            logger.warn("Can not find a workflow with name " + cancellingWorkflowName + " but continuing");
+            return onSuccess("Can not find a workflow with name " + cancellingWorkflowName + " but continuing");
         }
         try {
 

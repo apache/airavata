@@ -36,7 +36,8 @@ public enum JobState implements org.apache.thrift.TEnum {
   CANCELED(4),
   FAILED(5),
   SUSPENDED(6),
-  UNKNOWN(7);
+  UNKNOWN(7),
+  NON_CRITICAL_FAIL(8);
 
   private final int value;
 
@@ -73,6 +74,8 @@ public enum JobState implements org.apache.thrift.TEnum {
         return SUSPENDED;
       case 7:
         return UNKNOWN;
+      case 8:
+        return NON_CRITICAL_FAIL;
       default:
         return null;
     }

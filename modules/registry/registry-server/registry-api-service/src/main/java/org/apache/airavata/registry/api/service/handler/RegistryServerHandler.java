@@ -3690,6 +3690,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 exception.setMessage("Cannot create experiments with empty experiment name");
                 throw exception;
             }
+            logger.info("Creating experiment with name " + experiment.getExperimentName());
             if (!isGatewayExistInternal(gatewayId)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);

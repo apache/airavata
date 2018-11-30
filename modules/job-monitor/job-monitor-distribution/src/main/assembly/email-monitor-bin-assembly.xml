@@ -82,6 +82,7 @@
             <includes>
                 <include>org.apache.airavata:email-monitor:jar</include>
                 <include>org.apache.airavata:job-monitor-api:jar</include>
+                <include>org.apache.airavata:task-core:jar</include>
 
                 <include>org.apache.airavata:airavata-commons:jar</include>
                 <include>commons-cli:commons-cli</include>
@@ -96,6 +97,16 @@
                 <include>org.apache.kafka:kafka-clients:jar</include>
                 <include>org.lz4:lz4-java:jar</include>
                 <include>org.xerial.snappy:snappy-java:jar</include>
+
+                <!-- curator and zookeeper jars -->
+                <include>org.apache.curator:curator-framework:jar</include>
+                <include>org.apache.curator:curator-client:jar</include>
+                <include>com.google.guava:guava:jar</include>
+                <include>org.apache.zookeeper:zookeeper:jar</include>
+                <include>jline:jline:jar</include>
+                <include>org.jboss.netty:netty:jar</include>
+
+                <include>com.google.code.gson:gson:jar</include>
 
                 <!-- logging jars -->
                 <include>org.slf4j:slf4j-api:jar</include>

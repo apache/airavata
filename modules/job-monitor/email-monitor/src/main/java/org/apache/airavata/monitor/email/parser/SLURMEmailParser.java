@@ -73,7 +73,11 @@ public class SLURMEmailParser implements EmailParser {
                 }
                 return JobState.COMPLETE;
             case FAILED:
-                return JobState.FAILED;
+                if (subject.contains("NODE_FAIL")) {
+                    return JobState.NON_CRITICAL_FAIL;
+                } else {
+                    return JobState.FAILED;
+                }
             default:
                 log.error("[EJM]: Job State " + state + " isn't handle by SLURM parser");
                 return JobState.UNKNOWN;
