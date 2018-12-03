@@ -37,8 +37,8 @@ auth_options:
   password:
     name: "Next Generation Thermodynamics Gateway"
   external:
- #   - name: "Existing Institute"
- #     idp_alias: "cilogon"
+    - name: "Existing Institute"
+      idp_alias: "cilogon"
 
 gateway_id: "nexttdb"
 experiment_data_dir: "{{ user_data_dir }}/django-nexttdb"
