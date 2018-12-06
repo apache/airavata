@@ -27,9 +27,6 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
-import org.apache.airavata.gfac.core.GFacConstants;
-import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -49,6 +46,8 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.core.schedule.HostScheduler;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants;
@@ -291,7 +290,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ErrorModel details = new ErrorModel();
 			details.setActualErrorMessage(lve.getErrorMessage());
 			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-			registryClient.addErrors(GFacConstants.EXPERIMENT_ERROR, details, experimentId);
+			registryClient.addErrors(OrchestratorConstants.EXPERIMENT_ERROR, details, experimentId);
 			throw lve;
         } catch (OrchestratorException e) {
             log.error(experimentId, "Error while validating process", e);
