@@ -704,30 +704,19 @@
                 <module>airavata-api</module>
                 <module>modules/commons</module>
                 <module>modules/messaging</module>
-                <module>modules/gfac</module>
                 <module>modules/registry</module>
                 <module>modules/security</module>
                 <module>modules/credential-store</module>
                 <module>modules/orchestrator</module>
-                <module>modules/monitoring</module>
-                <module>modules/cloud</module>
                 <module>modules/server</module>
-                <module>modules/workflow</module>
                 <module>modules/sharing-registry</module>
                 <module>modules/cluster-monitoring</module>
                 <module>modules/user-profile-migration</module>
                 <module>airavata-services</module>
-                <module>modules/db-event-manager</module>
-                <!-- Deprecated Modules-->
-                <!--<module>modules/integration-tests</module>-->
-                <!--<module>modules/workflow-model</module>-->
-                <!--<module>modules/workflow</module>-->
-                <!--<module>modules/xbaya-gui</module>-->
-                <module>modules/distribution</module>
-                <!--<module>modules/test-suite</module>-->
-                <module>modules/compute-account-provisioning</module>
                 <module>modules/airavata-helix</module>
+                <module>modules/compute-account-provisioning</module>
                 <module>modules/job-monitor</module>
+                <module>modules/distribution</module>
             </modules>
         </profile>
         <profile>
