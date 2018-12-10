@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_airavata.apps.api.apps.ApiConfig',
     'django_airavata.apps.groups.apps.GroupsConfig',
-    'django_airavata.apps.dataparsers.apps.DataParsersConfig',
+    # 'django_airavata.apps.dataparsers.apps.DataParsersConfig',
 
     # wagtail related apps
     'wagtail.contrib.forms',
