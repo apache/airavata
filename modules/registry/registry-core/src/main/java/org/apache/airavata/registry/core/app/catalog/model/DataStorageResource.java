@@ -30,7 +30,7 @@ public class DataStorageResource implements Serializable {
 	
 	@Id
 	@Column(name = "STORAGE_RESOURCE_ID")
-	private String computeResourceId;
+	private String storageResourceId;
 	
 	@ManyToOne(cascade= CascadeType.MERGE)
 	@JoinColumn(name = "COMPUTE_RESOURCE_ID")
@@ -69,10 +69,10 @@ public class DataStorageResource implements Serializable {
     }
 
 
-    public String getComputeResourceId() {
-		return computeResourceId;
+	public String getStorageResourceId() {
+		return storageResourceId;
 	}
-	
+
 	public ComputeResource getComputeResource() {
 		return computeResource;
 	}
@@ -88,11 +88,11 @@ public class DataStorageResource implements Serializable {
 	public int getPriorityOrder() {
 		return priorityOrder;
 	}
-	
-	public void setComputeResourceId(String computeResourceId) {
-		this.computeResourceId=computeResourceId;
+
+	public void setStorageResourceId(String storageResourceId) {
+		this.storageResourceId = storageResourceId;
 	}
-	
+
 	public void setComputeResource(ComputeResource computeResource) {
 		this.computeResource=computeResource;
 	}
