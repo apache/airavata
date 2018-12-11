@@ -60,7 +60,7 @@ export default {
             computeResources: {},
             applicationDeployments: [],
             selectedGroupResourceProfileData: null,
-            resourceHostId: null,
+            resourceHostId: this.value.resourceHostId,
             // TODO: replace this with Loading spinner, better mechanism
             loadingCount: 0,
         }
@@ -113,7 +113,10 @@ export default {
             return this.selectedGroupResourceProfileData;
         },
         appDeploymentId: function() {
-            if (!this.resourceHostId) {
+            // We'll only be able to figure out the appDeploymentId when a
+            // resourceHostId is selected and the application deployments are
+            // loaded
+            if (!this.resourceHostId || this.applicationDeployments.length === 0) {
                 return null;
             }
             // Find application deployment that corresponds to this compute resource
