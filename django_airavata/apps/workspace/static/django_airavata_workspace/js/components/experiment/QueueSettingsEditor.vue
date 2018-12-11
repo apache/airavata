@@ -27,54 +27,127 @@
     <div class="row">
       <div class="col">
         <div v-if="!showConfiguration">
-          <i class="fa fa-cog text-secondary" aria-hidden="true"></i>
-          <a class="text-secondary" href="#" @click.prevent="showConfiguration = true">Configure Resource</a>
+          <i
+            class="fa fa-cog text-secondary"
+            aria-hidden="true"
+          ></i>
+          <a
+            class="text-secondary"
+            href="#"
+            @click.prevent="showConfiguration = true"
+          >Configure Resource</a>
         </div>
       </div>
     </div>
     <div v-if="showConfiguration">
       <div class="row">
         <div class="col">
-          <b-form-group label="Select a Queue" label-for="queue" :feedback="getValidationFeedback('queueName')" :state="getValidationState('queueName')">
-            <b-form-select id="queue" v-model="localComputationalResourceScheduling.queueName" :options="queueOptions" required @change="queueChanged"
-              :state="getValidationState('queueName')">
+          <b-form-group
+            label="Select a Queue"
+            label-for="queue"
+            :feedback="getValidationFeedback('queueName')"
+            :state="getValidationState('queueName')"
+          >
+            <b-form-select
+              id="queue"
+              v-model="localComputationalResourceScheduling.queueName"
+              :options="queueOptions"
+              required
+              @change="queueChanged"
+              :state="getValidationState('queueName')"
+            >
             </b-form-select>
             <div slot="description">
               {{ selectedQueueDefault.queueDescription }}
             </div>
           </b-form-group>
-          <b-form-group label="Node Count" label-for="node-count" :feedback="getValidationFeedback('nodeCount')" :state="getValidationState('nodeCount')">
-            <b-form-input id="node-count" type="number" min="1" :max="maxNodes" v-model="localComputationalResourceScheduling.nodeCount"
-              required @input="emitValueChanged" :state="getValidationState('nodeCount')">
+          <b-form-group
+            label="Node Count"
+            label-for="node-count"
+            :feedback="getValidationFeedback('nodeCount')"
+            :state="getValidationState('nodeCount')"
+          >
+            <b-form-input
+              id="node-count"
+              type="number"
+              min="1"
+              :max="maxNodes"
+              v-model="localComputationalResourceScheduling.nodeCount"
+              required
+              @input="emitValueChanged"
+              :state="getValidationState('nodeCount')"
+            >
             </b-form-input>
             <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              <i
+                class="fa fa-info-circle"
+                aria-hidden="true"
+              ></i>
               Max Allowed Nodes = {{ maxNodes }}
             </div>
           </b-form-group>
-          <b-form-group label="Total Core Count" label-for="core-count" :feedback="getValidationFeedback('totalCPUCount')" :state="getValidationState('totalCPUCount')">
-            <b-form-input id="core-count" type="number" min="1" :max="maxCPUCount" v-model="localComputationalResourceScheduling.totalCPUCount"
-              required @input="emitValueChanged" :state="getValidationState('totalCPUCount')">
+          <b-form-group
+            label="Total Core Count"
+            label-for="core-count"
+            :feedback="getValidationFeedback('totalCPUCount')"
+            :state="getValidationState('totalCPUCount')"
+          >
+            <b-form-input
+              id="core-count"
+              type="number"
+              min="1"
+              :max="maxCPUCount"
+              v-model="localComputationalResourceScheduling.totalCPUCount"
+              required
+              @input="emitValueChanged"
+              :state="getValidationState('totalCPUCount')"
+            >
             </b-form-input>
             <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              <i
+                class="fa fa-info-circle"
+                aria-hidden="true"
+              ></i>
               Max Allowed Cores = {{ maxCPUCount }}
             </div>
           </b-form-group>
-          <b-form-group label="Wall Time Limit" label-for="walltime-limit" :feedback="getValidationFeedback('wallTimeLimit')" :state="getValidationState('wallTimeLimit')">
+          <b-form-group
+            label="Wall Time Limit"
+            label-for="walltime-limit"
+            :feedback="getValidationFeedback('wallTimeLimit')"
+            :state="getValidationState('wallTimeLimit')"
+          >
             <b-input-group right="minutes">
-              <b-form-input id="walltime-limit" type="number" min="1" :max="maxWalltime" v-model="localComputationalResourceScheduling.wallTimeLimit"
-                required @input="emitValueChanged" :state="getValidationState('wallTimeLimit')">
+              <b-form-input
+                id="walltime-limit"
+                type="number"
+                min="1"
+                :max="maxWalltime"
+                v-model="localComputationalResourceScheduling.wallTimeLimit"
+                required
+                @input="emitValueChanged"
+                :state="getValidationState('wallTimeLimit')"
+              >
               </b-form-input>
             </b-input-group>
             <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              <i
+                class="fa fa-info-circle"
+                aria-hidden="true"
+              ></i>
               Max Allowed Wall Time = {{ maxWalltime }}
             </div>
           </b-form-group>
           <div>
-            <i class="fa fa-times text-secondary" aria-hidden="true"></i>
-            <a class="text-secondary" href="#" @click.prevent="showConfiguration = false">Hide Settings</a>
+            <i
+              class="fa fa-times text-secondary"
+              aria-hidden="true"
+            ></i>
+            <a
+              class="text-secondary"
+              href="#"
+              @click.prevent="showConfiguration = false"
+            >Hide Settings</a>
           </div>
         </div>
       </div>
@@ -186,7 +259,7 @@ export default {
     emitValueChanged: function() {
       this.$emit("input", this.localComputationalResourceScheduling);
     },
-    loadQueueDefaults: function() {
+    loadQueueDefaults: function(updateQueueSettings) {
       services.ApplicationDeploymentService.getQueues({
         lookup: this.appDeploymentId
       }).then(queueDefaults => {
@@ -203,21 +276,24 @@ export default {
               return a.queueName.localeCompare(b.queueName);
             }
           });
-        // Find the default queue and apply it's settings
-        const defaultQueue = this.queueDefaults[0];
 
-        this.localComputationalResourceScheduling.queueName =
-          defaultQueue.queueName;
-        this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(
-          defaultQueue
-        );
-        this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(
-          defaultQueue
-        );
-        this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(
-          defaultQueue
-        );
-        this.emitValueChanged();
+        if (updateQueueSettings) {
+          // Find the default queue and apply it's settings
+          const defaultQueue = this.queueDefaults[0];
+
+          this.localComputationalResourceScheduling.queueName =
+            defaultQueue.queueName;
+          this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(
+            defaultQueue
+          );
+          this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(
+            defaultQueue
+          );
+          this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(
+            defaultQueue
+          );
+          this.emitValueChanged();
+        }
       });
     },
     isQueueInComputeResourcePolicy: function(queueName) {
@@ -295,7 +371,10 @@ export default {
     }
   },
   mounted: function() {
-    this.loadQueueDefaults();
+    // For brand new queue settings (no queueName specified) load the default
+    // queue and its default values and apply them
+    const updateQueueSettings = !this.value.queueName;
+    this.loadQueueDefaults(updateQueueSettings);
   }
 };
 </script>
