@@ -30,8 +30,6 @@ import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
-import ExperimentService from "./services/ExperimentService";
-import ExperimentSearchService from "./services/ExperimentSearchService";
 import FullExperimentService from "./services/FullExperimentService";
 import ProjectService from "./services/ProjectService";
 import UserProfileService from "./services/UserProfileService";
