@@ -12,7 +12,7 @@
     "watch": "cross-env NODE_ENV=development webpack --watch",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
-  "dependencies": {
+  "peerDependencies": {
     "django-airavata-api": "^1.0.0-beta"
   },
   "devDependencies": {
