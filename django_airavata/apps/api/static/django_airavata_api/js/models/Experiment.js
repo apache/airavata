@@ -1,71 +1,75 @@
-
-import BaseModel from './BaseModel';
-import ErrorModel from './ErrorModel'
-import ExperimentState from './ExperimentState'
-import ExperimentStatus from './ExperimentStatus'
-import InputDataObjectType from './InputDataObjectType'
-import OutputDataObjectType from './OutputDataObjectType'
-import ProcessModel from './ProcessModel'
-import UserConfigurationData from './UserConfigurationData'
+import BaseModel from "./BaseModel";
+import ErrorModel from "./ErrorModel";
+import ExperimentState from "./ExperimentState";
+import ExperimentStatus from "./ExperimentStatus";
+import InputDataObjectType from "./InputDataObjectType";
+import OutputDataObjectType from "./OutputDataObjectType";
+import ProcessModel from "./ProcessModel";
+import UserConfigurationData from "./UserConfigurationData";
 
 const FIELDS = [
-  'experimentId',
-  'projectId',
-  'gatewayId',
+  "experimentId",
+  "projectId",
+  "gatewayId",
   {
-    name: 'experimentType',
-    type: 'number',
-    default: 0,
+    name: "experimentType",
+    type: "number",
+    default: 0
   },
-  'userName',
-  'experimentName',
+  "userName",
+  "experimentName",
   {
-    name: 'creationTime',
-    type: 'date'
+    name: "creationTime",
+    type: "date"
   },
-  'description',
-  'executionId',
+  "description",
+  "executionId",
   {
-    name: 'enableEmailNotification',
-    type: 'boolean',
-    default: false,
-  },
-  {
-    name: 'emailAddresses',
-    type: 'string',
-    list: true,
+    name: "enableEmailNotification",
+    type: "boolean",
+    default: false
   },
   {
-    name: 'userConfigurationData',
+    name: "emailAddresses",
+    type: "string",
+    list: true
+  },
+  {
+    name: "userConfigurationData",
     type: UserConfigurationData,
-    default: BaseModel.defaultNewInstance(UserConfigurationData),
+    default: BaseModel.defaultNewInstance(UserConfigurationData)
   },
   {
-    name: 'experimentInputs',
+    name: "experimentInputs",
     type: InputDataObjectType,
-    list: true,
+    list: true
   },
   {
-    name: 'experimentOutputs',
+    name: "experimentOutputs",
     type: OutputDataObjectType,
-    list: true,
+    list: true
   },
   {
-    name: 'experimentStatus',
+    name: "experimentStatus",
     type: ExperimentStatus,
-    list: true,
+    list: true
   },
   {
-    name: 'errors',
+    name: "errors",
     type: ErrorModel,
-    list: true,
+    list: true
   },
   {
-    name: 'processes',
+    name: "processes",
     type: ProcessModel,
-    list: true,
+    list: true
   },
-  'workflow'
+  "workflow",
+  {
+    name: "userHasWriteAccess",
+    type: "boolean",
+    default: true
+  }
 ];
 
 export default class Experiment extends BaseModel {
@@ -77,13 +81,16 @@ export default class Experiment extends BaseModel {
     let validationResults = {};
     const userConfigurationDataValidation = this.userConfigurationData.validate();
     if (Object.keys(userConfigurationDataValidation).length > 0) {
-      validationResults['userConfigurationData'] = userConfigurationDataValidation;
+      validationResults[
+        "userConfigurationData"
+      ] = userConfigurationDataValidation;
     }
     if (this.isEmpty(this.experimentName)) {
-      validationResults['experimentName'] = "Please provide a name for this experiment.";
+      validationResults["experimentName"] =
+        "Please provide a name for this experiment.";
     }
     if (this.isEmpty(this.projectId)) {
-      validationResults['projectId'] = "Please select a project.";
+      validationResults["projectId"] = "Please select a project.";
     }
     return validationResults;
   }
@@ -101,20 +108,33 @@ export default class Experiment extends BaseModel {
   }
 
   get hasLaunched() {
-    const hasLaunchedStates = [ExperimentState.SCHEDULED,
-    ExperimentState.LAUNCHED,
-    ExperimentState.EXECUTING,
-    ExperimentState.CANCELING,
-    ExperimentState.CANCELED,
-    ExperimentState.FAILED,
-    ExperimentState.COMPLETED];
-    return this.latestStatus
-      && hasLaunchedStates.indexOf(this.latestStatus.state) >= 0;
+    const hasLaunchedStates = [
+      ExperimentState.SCHEDULED,
+      ExperimentState.LAUNCHED,
+      ExperimentState.EXECUTING,
+      ExperimentState.CANCELING,
+      ExperimentState.CANCELED,
+      ExperimentState.FAILED,
+      ExperimentState.COMPLETED
+    ];
+    return (
+      this.latestStatus &&
+      hasLaunchedStates.indexOf(this.latestStatus.state) >= 0
+    );
+  }
+
+  get isEditable() {
+    return (
+      (!this.latestStatus || this.latestStatus.state === ExperimentState.CREATED) &&
+      this.userHasWriteAccess
+    );
   }
 
   populateInputsOutputsFromApplicationInterface(applicationInterface) {
     // Copy application inputs and outputs to the experiment
-    this.experimentInputs = applicationInterface.applicationInputs.map(input => input.clone());
+    this.experimentInputs = applicationInterface.applicationInputs.map(input =>
+      input.clone()
+    );
     this.experimentOutputs = applicationInterface.applicationOutputs.slice();
   }
 }

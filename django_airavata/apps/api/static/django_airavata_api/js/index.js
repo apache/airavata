@@ -94,10 +94,12 @@ exports.services = {
   CloudJobSubmissionService,
   ComputeResourceService: ServiceFactory.service("ComputeResources"),
   CredentialSummaryService: ServiceFactory.service("CredentialSummaries"),
-  ExperimentSearchService,
-  ExperimentService,
+  ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
+  ExperimentService: ServiceFactory.service("Experiments"),
   FullExperimentService,
-  GatewayResourceProfileService: ServiceFactory.service("GatewayResourceProfiles"),
+  GatewayResourceProfileService: ServiceFactory.service(
+    "GatewayResourceProfiles"
+  ),
   GlobusJobSubmissionService,
   GridFTPDataMovementService,
   GroupResourceProfileService: ServiceFactory.service("GroupResourceProfiles"),

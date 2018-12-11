@@ -149,7 +149,8 @@ export default {
         saveExperiment: function() {
             return this.uploadInputFiles()
                 .then(uploadResults => {
-                    return services.ExperimentService.save(this.localExperiment)
+                    // TODO: update if experiment already exists
+                    return services.ExperimentService.create({data: this.localExperiment})
                         .then(experiment => {
                             this.localExperiment = experiment;
                             console.log(JSON.stringify(experiment));
@@ -163,10 +164,11 @@ export default {
         saveAndLaunchExperiment: function() {
             return this.uploadInputFiles()
                 .then(uploadResults => {
-                    return services.ExperimentService.save(this.localExperiment)
+                    // TODO: update if experiment already exists
+                    return services.ExperimentService.create({data: this.localExperiment})
                         .then(experiment => {
                             this.localExperiment = experiment;
-                            return services.ExperimentService.launch(experiment.experimentId)
+                            return services.ExperimentService.launch({lookup: experiment.experimentId})
                             .then(result => {
                                 this.$emit('savedAndLaunched', experiment);
                             });

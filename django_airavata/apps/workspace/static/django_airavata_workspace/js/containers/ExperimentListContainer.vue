@@ -29,10 +29,13 @@
                     <span :title="experiment.creationTime">{{ fromNow(experiment.creationTime) }}</span>
                   </td>
                   <td>
-                    <experiment-status-badge :statusName="experiment.experimentStatus" />
+                    <experiment-status-badge :statusName="experiment.experimentStatus.name" />
                   </td>
                   <td>
-                    <a :href="viewLink(experiment)">View
+                    <a v-if="experiment.isEditable" :href="editLink(experiment)">Edit
+                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </a>
+                    <a v-else :href="viewLink(experiment)">View
                       <i class="fa fa-bar-chart" aria-hidden="true"></i>
                     </a>
                   </td>
@@ -78,6 +81,13 @@ export default {
     fromNow: function(date) {
       return moment(date).fromNow();
     },
+    editLink: function(experiment) {
+      return (
+        "/workspace/experiments/" +
+        encodeURIComponent(experiment.experimentId) +
+        "/edit"
+      );
+    },
     viewLink: function(experiment) {
       return (
         "/workspace/experiments/" +
@@ -113,7 +123,7 @@ export default {
     }
   },
   beforeMount: function() {
-    services.ExperimentSearchService.list(this.initialExperimentsData).then(
+    services.ExperimentSearchService.list({initialData: this.initialExperimentsData}).then(
       result => (this.experimentsPaginator = result)
     );
   }

@@ -66,6 +66,15 @@ def create_experiment(request, app_module_id):
 
 
 @login_required
+def edit_experiment(request, experiment_id):
+    request.active_nav_item = 'experiments'
+
+    return render(request,
+                  'django_airavata_workspace/edit_experiment.html',
+                  {'experiment_id': experiment_id})
+
+
+@login_required
 def view_experiment(request, experiment_id):
     request.active_nav_item = 'experiments'
 

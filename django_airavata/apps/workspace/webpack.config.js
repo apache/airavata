@@ -10,6 +10,7 @@ module.exports = {
       'create-experiment': './static/django_airavata_workspace/js/entry-create-experiment',
       'view-experiment': './static/django_airavata_workspace/js/entry-view-experiment',
       'experiment-list': './static/django_airavata_workspace/js/entry-experiment-list',
+      'edit-experiment': './static/django_airavata_workspace/js/entry-edit-experiment',
   },
   output: {
     path: path.resolve(__dirname, './static/django_airavata_workspace/dist/'),

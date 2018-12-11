@@ -1,7 +1,11 @@
 import ApplicationDeploymentDescription from "./models/ApplicationDeploymentDescription";
+import ApplicationInterfaceDefinition from "./models/ApplicationInterfaceDefinition";
 import ApplicationModule from "./models/ApplicationModule";
+import BatchQueue from "./models/BatchQueue";
 import ComputeResourceDescription from "./models/ComputeResourceDescription";
 import CredentialSummary from "./models/CredentialSummary";
+import Experiment from "./models/Experiment";
+import ExperimentSummary from "./models/ExperimentSummary";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
@@ -10,8 +14,6 @@ import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
 import UserProfile from "./models/UserProfile";
-import ApplicationInterfaceDefinition from "./models/ApplicationInterfaceDefinition";
-import BatchQueue from "./models/BatchQueue";
 
 const post = "post";
 const get = "get";
@@ -181,6 +183,45 @@ export default {
       }
     ],
     modelClass: CredentialSummary
+  },
+  Experiments: {
+    url: "/api/experiments/",
+    viewSet: [
+      {
+        name: "list"
+      },
+      {
+        name: "create"
+      },
+      {
+        name: "retrieve"
+      },
+      {
+        name: "update"
+      },
+      {
+        name: "delete"
+      },
+      {
+        name: "launch",
+        url: "/api/experiments/<lookup>/launch/",
+        requestType: "post",
+        modelClass: Experiment
+      }
+    ],
+    modelClass: Experiment
+  },
+  ExperimentSearch: {
+    url: "/api/experiment-search",
+    viewSet: [
+      {
+        name: "list",
+        initialDataParam: "initialData"
+      }
+    ],
+    modelClass: ExperimentSummary,
+    pagination: true,
+    queryParams: ["limit", "offset"]
   },
   GatewayResourceProfiles: {
     url: "/api/gateway-resource-profiles/",

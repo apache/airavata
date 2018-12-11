@@ -411,6 +411,13 @@ class ExperimentSerializer(
         allow_null=True)
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     experimentStatus = ExperimentStatusSerializer(many=True, allow_null=True)
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, experiment):
+        request = self.context['request']
+        return request.airavata_client.userHasAccess(
+            request.authz_token, experiment.experimentId,
+            ResourcePermissionType.WRITE)
 
 
 class DataReplicaLocationSerializer(
@@ -490,6 +497,13 @@ class ExperimentSummarySerializer(
         view_name='django_airavata_api:project-detail',
         lookup_field='projectId',
         lookup_url_kwarg='project_id')
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, experiment):
+        request = self.context['request']
+        return request.airavata_client.userHasAccess(
+            request.authz_token, experiment.experimentId,
+            ResourcePermissionType.WRITE)
 
 
 class UserProfileSerializer(

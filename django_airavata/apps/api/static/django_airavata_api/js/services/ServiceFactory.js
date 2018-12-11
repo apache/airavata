@@ -51,7 +51,9 @@ const parseServiceMapping = function (serviceConfiguration) {
             let pagination = defaultPagination;
             if (typeof(supportedFunctionName) !== "string") {
                 supportedFunctionName = supportedFunction.name
-                pagination = supportedFunction.pagination
+                if ('pagination' in supportedFunction) {
+                  pagination = supportedFunction.pagination
+                }
             }
             switch (supportedFunctionName) {
                 case "list":
@@ -60,6 +62,7 @@ const parseServiceMapping = function (serviceConfiguration) {
                         requestType: getKey,
                         modelClass: modelClass,
                         queryParams: queryParams,
+                        initialDataParam: supportedFunction.initialDataParam,
                     }
                     break;
                 case "create":
@@ -90,6 +93,7 @@ const parseServiceMapping = function (serviceConfiguration) {
                         requestType: getKey,
                         modelClass: modelClass,
                         queryParams: queryParams,
+                        initialDataParam: supportedFunction.initialDataParam,
                     }
                     break;
                 case "delete":
@@ -164,6 +168,7 @@ class ServiceFactory {
                 let paramKeys = Object.keys(params);
                 let queryParams = {};
                 let bodyParams = {};
+                let initialData = undefined;
                 for (let paramKey of paramKeys) {
                     if (paramKey in pathParamsMapping) {
                         if (pathParamsMapping[paramKey] !== null) {
@@ -182,6 +187,8 @@ class ServiceFactory {
                         bodyParams[paramKey] = params[paramKey];
                     } else if ((config.requestType == postKey || config.requestType == putKey) && config.bodyParams !== null && config.bodyParams.name == paramKey) {
                         bodyParams = params[paramKey];
+                    } else if (config.initialDataParam && paramKey === config.initialDataParam) {
+                        initialData = params[paramKey];
                     }
                 }
                 let paginationHandler = (data) => {
@@ -200,7 +207,11 @@ class ServiceFactory {
                     case postKey:
                         return FetchUtils.post(url, bodyParams, queryParams, { ignoreErrors }).then(resultHandler);
                     case getKey:
-                        return FetchUtils.get(url, queryParams, { ignoreErrors }).then(paginationHandler);
+                        if (initialData) {
+                          return Promise.resolve(paginationHandler(initialData));
+                        } else {
+                          return FetchUtils.get(url, queryParams, { ignoreErrors }).then(paginationHandler);
+                        }
                     case putKey:
                         return FetchUtils.put(url, bodyParams, { ignoreErrors }).then(resultHandler);
                     case delKey:
