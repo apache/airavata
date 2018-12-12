@@ -187,10 +187,9 @@ export default {
   methods: {
     saveExperiment: function() {
       return this.uploadInputFiles()
-        .then(uploadResults => this.saveOrUpdateExperiment)
+        .then(this.saveOrUpdateExperiment)
         .then(experiment => {
           this.localExperiment = experiment;
-          console.log(JSON.stringify(experiment));
           this.$emit("saved", experiment);
         })
         .catch(result => {
@@ -199,7 +198,7 @@ export default {
     },
     saveAndLaunchExperiment: function() {
       return this.uploadInputFiles()
-        .then(uploadResults => this.saveOrUpdateExperiment)
+        .then(this.saveOrUpdateExperiment)
         .then(experiment => {
           this.localExperiment = experiment;
           return services.ExperimentService.launch({
