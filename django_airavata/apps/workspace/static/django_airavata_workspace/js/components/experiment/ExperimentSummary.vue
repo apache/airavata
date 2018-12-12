@@ -34,13 +34,13 @@
                   <th scope="row">Outputs</th>
                   <td>
                     <template v-for="output in localFullExperiment.outputDataProducts">
-                      <span v-if="output.downloadURL">
+                      <span v-if="output.downloadURL" :key="output.productUri">
                         <a :href="output.downloadURL">
                           <i class="fa fa-download"></i>
                           {{ output.filename }}
                         </a>
                       </span>
-                      <span v-else>{{ output.filename }}</span>
+                      <span v-else :key="output.productUri">{{ output.filename }}</span>
                     </template>
                   </td>
                 </tr>
@@ -81,7 +81,7 @@
                         <th>Status</th>
                         <th>Creation Time</th>
                       </thead>
-                      <tr v-for="(jobDetail, index) in localFullExperiment.jobDetails">
+                      <tr v-for="(jobDetail, index) in localFullExperiment.jobDetails" :key="jobDetail.jobId">
                         <td>{{ jobDetail.jobName }}</td>
                         <td>{{ jobDetail.jobId }}</td>
                         <td>{{ jobDetail.jobStatusStateName }}</td>
@@ -131,13 +131,13 @@
                   <th scope="row">Inputs</th>
                   <td>
                     <template v-for="input in localFullExperiment.inputDataProducts">
-                      <span v-if="input.downloadURL">
+                      <span v-if="input.downloadURL" :key="input.productUri">
                         <a :href="input.downloadURL">
                           <i class="fa fa-download"></i>
                           {{ input.filename }}
                         </a>
                       </span>
-                      <span v-else>{{ input.filename }}</span>
+                      <span v-else :key="input.productUri">{{ input.filename }}</span>
                     </template>
                   </td>
                 </tr>
