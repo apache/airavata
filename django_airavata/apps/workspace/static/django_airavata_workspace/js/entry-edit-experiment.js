@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import BootstrapVue from 'bootstrap-vue'
-import EditExperimentContainer from './containers/EditExperimentContainer.vue'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import EditExperimentContainer from "./containers/EditExperimentContainer.vue";
 
 // This is imported globally on the website so no need to include it again in this view
 // import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
 Vue.use(BootstrapVue);
 
@@ -18,12 +18,12 @@ new Vue({
       props: {
         experimentId: this.experimentId
       }
-    })
+    });
   },
   data() {
     return {
       experimentId: null
-    }
+    };
   },
   beforeMount() {
     this.experimentId = this.$el.dataset.experimentId;

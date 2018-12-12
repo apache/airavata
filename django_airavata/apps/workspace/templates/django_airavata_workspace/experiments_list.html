@@ -1,19 +1,7 @@
 {% extends './base.html' %}
 
-{% load static %}
-
-{% block css %}
-{{ block.super }}
-<link rel=stylesheet type=text/css href="{% static 'django_airavata_workspace/dist/experiment-list.css' %}">
-{% endblock %}
-
 {% block content %}
 
-<div id="experiment-list" data-experiments-data="{{ experiments_data }}"></div>
+<div id="{{ bundle_name }}" data-experiments-data="{{ experiments_data }}"></div>
 
 {% endblock content %}
-
-{% block scripts %}
-{{ block.super }}
-<script src="{% static "django_airavata_workspace/dist/experiment-list.js" %}"></script>
-{% endblock %}

@@ -34,6 +34,7 @@ def experiments_list(request):
     response = ExperimentSearchViewSet.as_view({'get': 'list'})(request)
     experiments_json = JSONRenderer().render(response.data)
     return render(request, 'django_airavata_workspace/experiments_list.html', {
+        'bundle_name': 'experiment-list',
         'experiments_data': experiments_json
     })
 
@@ -41,7 +42,9 @@ def experiments_list(request):
 @login_required
 def dashboard(request):
     request.active_nav_item = 'dashboard'
-    return render(request, 'django_airavata_workspace/dashboard.html')
+    return render(request, 'django_airavata_workspace/base.html', {
+        'bundle_name': 'dashboard'
+    })
 
 
 @login_required
@@ -52,6 +55,7 @@ def projects_list(request):
     projects_json = JSONRenderer().render(response.data)
 
     return render(request, 'django_airavata_workspace/projects_list.html', {
+        'bundle_name': 'project-list',
         'projects_data': projects_json
     })
 
@@ -62,7 +66,8 @@ def create_experiment(request, app_module_id):
 
     return render(request,
                   'django_airavata_workspace/create_experiment.html',
-                  {'app_module_id': app_module_id})
+                  {'bundle_name': 'create-experiment',
+                   'app_module_id': app_module_id})
 
 
 @login_required
@@ -71,7 +76,8 @@ def edit_experiment(request, experiment_id):
 
     return render(request,
                   'django_airavata_workspace/edit_experiment.html',
-                  {'experiment_id': experiment_id})
+                  {'bundle_name': 'edit-experiment',
+                   'experiment_id': experiment_id})
 
 
 @login_required
@@ -84,6 +90,7 @@ def view_experiment(request, experiment_id):
     full_experiment_json = JSONRenderer().render(response.data)
 
     return render(request, 'django_airavata_workspace/view_experiment.html', {
+        'bundle_name': 'view-experiment',
         'full_experiment_data': full_experiment_json,
         'launching': json.dumps(launching),
     })

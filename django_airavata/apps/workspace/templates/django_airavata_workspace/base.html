@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load render_bundle from webpack_loader %}
 
 {% block css %}
-<link rel=stylesheet type=text/css href="{% static 'django_airavata_workspace/dist/common.css' %}">
+{% render_bundle 'vendor' 'css' 'WORKSPACE' %}
+{% render_bundle bundle_name 'css' 'WORKSPACE' %}
 {% endblock %}
 
 {% block nav-items %}
@@ -19,6 +21,11 @@
         </a>
 {% endblock %}
 
+{% block content %}
+<div id="{{ bundle_name }}"/>
+{% endblock content %}
+
 {% block scripts %}
-<script src="{% static "django_airavata_workspace/dist/common.js" %}"></script>
+{% render_bundle 'vendor' 'js' 'WORKSPACE' %}
+{% render_bundle bundle_name 'js' 'WORKSPACE' %}
 {% endblock %}

@@ -232,7 +232,19 @@ WEBPACK_LOADER = {
             'django_airavata_admin',
             'dist',
             'webpack-stats.json'),
-    }
+    },
+    'WORKSPACE': {
+        'BUNDLE_DIR_NAME': 'django_airavata_workspace/dist/',
+        'STATS_FILE': os.path.join(
+            BASE_DIR,
+            'django_airavata',
+            'apps',
+            'workspace',
+            'static',
+            'django_airavata_workspace',
+            'dist',
+            'webpack-stats.json'),
+    },
 }
 
 LOGGING = {
