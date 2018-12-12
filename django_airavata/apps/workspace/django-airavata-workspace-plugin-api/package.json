@@ -5,6 +5,7 @@
   "author": "Marcus Christie <machristie@apache.org>",
   "private": false,
   "main": "./dist/index.js",
+  "module": "./js/index.js",
   "license": "Apache-2.0",
   "repository": "https://github.com/apache/airavata-django-portal",
   "scripts": {

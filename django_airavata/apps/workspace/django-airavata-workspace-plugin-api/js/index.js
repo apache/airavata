@@ -1,3 +1,9 @@
 import InputEditorMixin from './input-editors/InputEditorMixin'
 
-exports.InputEditorMixin = InputEditorMixin
+export default {
+  InputEditorMixin
+};
+
+export {
+  InputEditorMixin
+};
