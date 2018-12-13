@@ -159,11 +159,11 @@ public class ExperimentInputEntity implements Serializable {
         this.inputOrder = inputOrder;
     }
 
-    public boolean isRequired() {
+    public boolean isIsRequired() {
         return isRequired;
     }
 
-    public void setRequired(boolean isRequired) {
+    public void setIsRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 

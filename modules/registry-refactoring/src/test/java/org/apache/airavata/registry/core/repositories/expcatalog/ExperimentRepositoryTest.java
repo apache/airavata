@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -129,6 +131,105 @@ public class ExperimentRepositoryTest extends TestBase {
         List<String> experimentIdList = experimentRepository.getExperimentIDs(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         assertTrue(experimentIdList.size() == 1);
         assertTrue(experimentIdList.get(0).equals(experimentId));
+
+        experimentRepository.removeExperiment(experimentId);
+        assertFalse(experimentRepository.isExperimentExist(experimentId));
+
+        gatewayRepository.removeGateway(gatewayId);
+        projectRepository.removeProject(projectId);
+    }
+
+    @Test
+    public void testExperimentInputs() throws RegistryException {
+
+        Gateway gateway = new Gateway();
+        gateway.setGatewayId("gateway");
+        gateway.setDomain("SEAGRID");
+        gateway.setEmailAddress("abc@d.com");
+        String gatewayId = gatewayRepository.addGateway(gateway);
+
+        Project project = new Project();
+        project.setName("projectName");
+        project.setOwner("user");
+        project.setGatewayId(gatewayId);
+
+        String projectId = projectRepository.addProject(project, gatewayId);
+
+        ExperimentModel experimentModel = new ExperimentModel();
+        experimentModel.setProjectId(projectId);
+        experimentModel.setGatewayId(gatewayId);
+        experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
+        experimentModel.setUserName("user");
+        experimentModel.setExperimentName("name");
+        experimentModel.setGatewayInstanceId("gateway-instance-id");
+
+        InputDataObjectType input1 = new InputDataObjectType();
+        input1.setName("name1");
+        input1.setIsRequired(true);
+        input1.setType(DataType.STRING);
+        input1.setInputOrder(0);
+        input1.setApplicationArgument("-arg1");
+        input1.setDataStaged(true);
+        input1.setIsReadOnly(true);
+        input1.setMetaData("{\"foo\": 123}");
+        input1.setRequiredToAddedToCommandLine(true);
+        input1.setStandardInput(true);
+        input1.setStorageResourceId("storageResourceId");
+        input1.setUserFriendlyDescription("First argument");
+        input1.setValue("value1");
+        experimentModel.addToExperimentInputs(input1);
+
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        assertTrue(experimentId != null);
+
+        ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
+        assertEquals(1, retrievedExperimentModel.getExperimentInputsSize());
+        InputDataObjectType retrievedInput1 = retrievedExperimentModel.getExperimentInputs().get(0);
+        assertEquals("name1", retrievedInput1.getName());
+        assertTrue(retrievedInput1.isIsRequired());
+        assertEquals(DataType.STRING, retrievedInput1.getType());
+        assertEquals(0, retrievedInput1.getInputOrder());
+        assertEquals("-arg1", retrievedInput1.getApplicationArgument());
+        assertTrue(retrievedInput1.isDataStaged());
+        assertTrue(retrievedInput1.isIsReadOnly());
+        assertEquals("{\"foo\": 123}", retrievedInput1.getMetaData());
+        assertTrue(retrievedInput1.isRequiredToAddedToCommandLine());
+        assertTrue(retrievedInput1.isStandardInput());
+        assertEquals("storageResourceId", retrievedInput1.getStorageResourceId());
+        assertEquals("First argument", retrievedInput1.getUserFriendlyDescription());
+        assertEquals("value1", retrievedInput1.getValue());
+
+        // Update values of the input
+        retrievedInput1.setIsRequired(false);
+        retrievedInput1.setType(DataType.URI);
+        retrievedInput1.setInputOrder(1);
+        retrievedInput1.setApplicationArgument("-arg1a");
+        retrievedInput1.setDataStaged(false);
+        retrievedInput1.setIsReadOnly(false);
+        retrievedInput1.setMetaData("{\"bar\": 456}");
+        retrievedInput1.setRequiredToAddedToCommandLine(false);
+        retrievedInput1.setStandardInput(false);
+        retrievedInput1.setStorageResourceId("storageResourceId2");
+        retrievedInput1.setUserFriendlyDescription("First argument~");
+        retrievedInput1.setValue("value1a");
+
+        experimentRepository.updateExperiment(retrievedExperimentModel, experimentId);
+
+        retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
+        assertEquals(1, retrievedExperimentModel.getExperimentInputsSize());
+        retrievedInput1 = retrievedExperimentModel.getExperimentInputs().get(0);
+        assertFalse(retrievedInput1.isIsRequired());
+        assertEquals(DataType.URI, retrievedInput1.getType());
+        assertEquals(1, retrievedInput1.getInputOrder());
+        assertEquals("-arg1a", retrievedInput1.getApplicationArgument());
+        assertFalse(retrievedInput1.isDataStaged());
+        assertFalse(retrievedInput1.isIsReadOnly());
+        assertEquals("{\"bar\": 456}", retrievedInput1.getMetaData());
+        assertFalse(retrievedInput1.isRequiredToAddedToCommandLine());
+        assertFalse(retrievedInput1.isStandardInput());
+        assertEquals("storageResourceId2", retrievedInput1.getStorageResourceId());
+        assertEquals("First argument~", retrievedInput1.getUserFriendlyDescription());
+        assertEquals("value1a", retrievedInput1.getValue());
 
         experimentRepository.removeExperiment(experimentId);
         assertFalse(experimentRepository.isExperimentExist(experimentId));
