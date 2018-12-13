@@ -11,6 +11,7 @@ import BatchQueue from "./models/BatchQueue";
 import BatchQueueResourcePolicy from "./models/BatchQueueResourcePolicy";
 import CommandObject from "./models/CommandObject";
 import ComputeResourcePolicy from "./models/ComputeResourcePolicy";
+import DataProduct from "./models/DataProduct";
 import DataType from "./models/DataType";
 import Experiment from "./models/Experiment";
 import ExperimentState from "./models/ExperimentState";
@@ -63,6 +64,7 @@ exports.models = {
   BatchQueueResourcePolicy,
   CommandObject,
   ComputeResourcePolicy,
+  DataProduct,
   DataType,
   Experiment,
   ExperimentState,
@@ -92,6 +94,7 @@ exports.services = {
   CloudJobSubmissionService,
   ComputeResourceService: ServiceFactory.service("ComputeResources"),
   CredentialSummaryService: ServiceFactory.service("CredentialSummaries"),
+  DataProductService: ServiceFactory.service("DataProducts"),
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
   ExperimentService: ServiceFactory.service("Experiments"),
   FullExperimentService,

@@ -17,7 +17,7 @@ import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
 import moment from "moment";
 
 export default {
-  name: "create-experiment-container",
+  name: "edit-experiment-container",
   props: {
     experimentId: {
       type: String,

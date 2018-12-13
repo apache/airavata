@@ -159,15 +159,7 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment = serializer.save(
             gatewayId=self.gateway_id,
             userName=self.username)
-        experiment.userConfigurationData.storageId = \
-            settings.GATEWAY_DATA_STORE_RESOURCE_ID
-        # Set the experimentDataDir
-        project = self.request.airavata_client.getProject(
-            self.authz_token, experiment.projectId)
-        exp_dir = datastore.get_experiment_dir(self.username,
-                                               project.name,
-                                               experiment.experimentName)
-        experiment.userConfigurationData.experimentDataDir = exp_dir
+        self._set_storage_id_and_data_dir(experiment)
         experiment_id = self.request.airavata_client.createExperiment(
             self.authz_token, self.gateway_id, experiment)
         experiment.experimentId = experiment_id
@@ -176,8 +168,28 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment = serializer.save(
             gatewayId=self.gateway_id,
             userName=self.username)
+        # The project or exp name may have changed, so update the exp data dir
+        self._set_storage_id_and_data_dir(experiment)
         self.request.airavata_client.updateExperiment(
             self.authz_token, experiment.experimentId, experiment)
+        # Process experiment._removed_input_files, removing them from storage
+        for removed_input_file in experiment._removed_input_files:
+            data_product = self.request.airavata_client.getDataProduct(
+                self.authz_token, removed_input_file)
+            datastore.delete(data_product)
+
+    def _set_storage_id_and_data_dir(self, experiment):
+        # Storage ID
+        experiment.userConfigurationData.storageId = \
+            settings.GATEWAY_DATA_STORE_RESOURCE_ID
+        # Create experiment dir and set it on model
+        project = self.request.airavata_client.getProject(
+            self.authz_token, experiment.projectId)
+        exp_dir = datastore.get_experiment_dir(self.username,
+                                               project.name,
+                                               experiment.experimentName)
+        experiment.userConfigurationData.experimentDataDir = exp_dir
+
 
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):
@@ -609,6 +621,17 @@ class LocalDataMovementView(APIView):
             thrift_utils.create_serializer(
                 LOCALDataMovement,
                 instance=data_movement).data)
+
+
+class DataProductViewSet(mixins.RetrieveModelMixin,
+                         GenericAPIBackedViewSet):
+    serializer_class = serializers.DataProductSerializer
+    lookup_field = 'product_uri'
+    lookup_value_regex = '.*'
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getDataProduct(
+            self.request.authz_token, lookup_value)
 
 
 @login_required

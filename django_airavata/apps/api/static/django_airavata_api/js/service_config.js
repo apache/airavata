@@ -4,6 +4,7 @@ import ApplicationModule from "./models/ApplicationModule";
 import BatchQueue from "./models/BatchQueue";
 import ComputeResourceDescription from "./models/ComputeResourceDescription";
 import CredentialSummary from "./models/CredentialSummary";
+import DataProduct from "./models/DataProduct";
 import Experiment from "./models/Experiment";
 import ExperimentSummary from "./models/ExperimentSummary";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
@@ -183,6 +184,15 @@ export default {
       }
     ],
     modelClass: CredentialSummary
+  },
+  DataProducts: {
+    url: "/api/data-products/",
+    viewSet: [
+      {
+        name: "retrieve"
+      }
+    ],
+    modelClass: DataProduct
   },
   Experiments: {
     url: "/api/experiments/",

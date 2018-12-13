@@ -33,15 +33,7 @@
                 <tr>
                   <th scope="row">Outputs</th>
                   <td>
-                    <template v-for="output in localFullExperiment.outputDataProducts">
-                      <span v-if="output.downloadURL" :key="output.productUri">
-                        <a :href="output.downloadURL">
-                          <i class="fa fa-download"></i>
-                          {{ output.filename }}
-                        </a>
-                      </span>
-                      <span v-else :key="output.productUri">{{ output.filename }}</span>
-                    </template>
+                    <data-product-viewer v-for="output in localFullExperiment.outputDataProducts" :data-product="output" class="data-product" :key="output.productUri"/>
                   </td>
                 </tr>
                 <!-- Going to leave this out for now -->
@@ -130,15 +122,8 @@
                 <tr>
                   <th scope="row">Inputs</th>
                   <td>
-                    <template v-for="input in localFullExperiment.inputDataProducts">
-                      <span v-if="input.downloadURL" :key="input.productUri">
-                        <a :href="input.downloadURL">
-                          <i class="fa fa-download"></i>
-                          {{ input.filename }}
-                        </a>
-                      </span>
-                      <span v-else :key="input.productUri">{{ input.filename }}</span>
-                    </template>
+                    <data-product-viewer v-for="input in localFullExperiment.inputDataProducts"
+                      :data-product="input" :input-file="true" class="data-product" :key="input.productUri"/>
                   </td>
                 </tr>
                 <tr>
@@ -157,6 +142,7 @@
 
 <script>
 import { models, services } from "django-airavata-api";
+import DataProductViewer from "./DataProductViewer.vue";
 
 import moment from "moment";
 
@@ -177,7 +163,9 @@ export default {
       localFullExperiment: this.fullExperiment.clone()
     };
   },
-  components: {},
+  components: {
+    DataProductViewer,
+  },
   computed: {
     creationTime: function() {
       return moment(this.localFullExperiment.experiment.creationTime).fromNow();
@@ -224,5 +212,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.data-product + .data-product {
+  margin-left: 0.5em;
+}
 </style>

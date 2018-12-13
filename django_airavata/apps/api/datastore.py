@@ -72,6 +72,20 @@ def save(username, project_name, experiment_name, file):
     return data_product
 
 
+def delete(data_product):
+    """Delete replica for data product in this data store."""
+    if exists(data_product):
+        filepath = _get_replica_filepath(data_product)
+        try:
+            experiment_data_storage.delete(filepath)
+        except Exception as e:
+            logger.error("Unable to delete file {} for data product uri {}"
+                         .format(filepath, data_product.productUri))
+            raise
+    else:
+        raise ObjectDoesNotExist("Replica file does not exist")
+
+
 def get_experiment_dir(username, project_name, experiment_name):
     """Return an experiment directory (full path) for the given experiment."""
     experiment_dir_name = os.path.join(

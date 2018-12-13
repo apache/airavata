@@ -41,6 +41,9 @@ router.register(r'storage-preferences',
                 views.StoragePreferenceViewSet,
                 base_name='storage-preference')
 router.register(r'parsers', views.ParserViewSet, base_name='parser')
+router.register(r'data-products',
+                views.DataProductViewSet,
+                base_name='data-product')
 
 app_name = 'django_airavata_api'
 urlpatterns = [
