@@ -190,7 +190,6 @@ class ExperimentViewSet(APIBackedViewSet):
                                                experiment.experimentName)
         experiment.userConfigurationData.experimentDataDir = exp_dir
 
-
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):
         try:
