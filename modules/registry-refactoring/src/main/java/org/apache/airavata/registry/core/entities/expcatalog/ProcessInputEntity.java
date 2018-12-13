@@ -159,11 +159,11 @@ public class ProcessInputEntity implements Serializable {
         this.inputOrder = inputOrder;
     }
 
-    public boolean isRequired() {
+    public boolean isIsRequired() {
         return isRequired;
     }
 
-    public void setRequired(boolean required) {
+    public void setIsRequired(boolean required) {
         isRequired = required;
     }
 
