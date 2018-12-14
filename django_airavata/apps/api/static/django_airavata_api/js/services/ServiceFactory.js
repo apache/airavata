@@ -134,7 +134,6 @@ class ServiceFactory {
         for (let serviceName of Object.keys(serviceConfigurations)) {
             parseServiceMapping(serviceConfigurations[serviceName]);
         }
-        console.log(serviceConfigurations);
         this.serviceConfigurations = serviceConfigurations;
     }
 
