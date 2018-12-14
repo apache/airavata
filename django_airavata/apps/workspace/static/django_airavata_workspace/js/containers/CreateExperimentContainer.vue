@@ -26,9 +26,7 @@ export default {
     handleSavedExperiment: function(experiment) {
       // Redirect to experiment view
       window.location.assign(
-        "/workspace/experiments/" +
-          encodeURIComponent(experiment.experimentId) +
-          "/"
+        "/workspace/experiments"
       );
     },
     handleSavedAndLaunchedExperiment: function(experiment) {
