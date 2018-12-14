@@ -245,6 +245,18 @@ WEBPACK_LOADER = {
             'dist',
             'webpack-stats.json'),
     },
+    'GROUPS': {
+        'BUNDLE_DIR_NAME': 'django_airavata_groups/dist/',
+        'STATS_FILE': os.path.join(
+            BASE_DIR,
+            'django_airavata',
+            'apps',
+            'groups',
+            'static',
+            'django_airavata_groups',
+            'dist',
+            'webpack-stats.json'),
+    },
 }
 
 LOGGING = {

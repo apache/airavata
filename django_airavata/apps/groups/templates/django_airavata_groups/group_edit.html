@@ -1,16 +1,5 @@
-{% extends 'base.html' %}
-
-{% load static %}
-
-{% block css %}
-{{ block.super }}
-<link rel=stylesheet type=text/css href="{% static 'django_airavata_groups/dist/group-edit.css' %}">
-{% endblock %}
+{% extends './base.html' %}
 
 {% block content %}
-<div id="edit-group" data-group-id="{{ group_id }}"></div>
+<div id="group-edit" data-group-id="{{ group_id }}"></div>
 {% endblock content %}
-
-{% block scripts %}
-<script src="{% static 'django_airavata_groups/dist/group-edit.js' %}"></script>
-{% endblock %}

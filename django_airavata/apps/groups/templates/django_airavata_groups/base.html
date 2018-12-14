@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load render_bundle from webpack_loader %}
 
 {% block css %}
-<link rel=stylesheet type=text/css href="{% static 'django_airavata_workspace/dist/common.css' %}">
+{% render_bundle 'vendor' 'css' 'GROUPS' %}
+{% render_bundle bundle_name 'css' 'GROUPS' %}
 {% endblock %}
 
 {% block nav-items %}
@@ -11,9 +13,14 @@
         <a href="{% url 'django_airavata_groups:manage' %}" class="c-nav__item {% if request.active_nav_item == 'manage' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Groups>
             <i class="fa fa-users"></i> <span class=sr-only>Groups</span>
         </a>
-        
+
 {% endblock %}
 
+{% block content %}
+<div id="{{ bundle_name }}"/>
+{% endblock content %}
+
 {% block scripts %}
-<script src="{% static "django_airavata_workspace/dist/common.js" %}"></script>
+{% render_bundle 'vendor' 'js' 'GROUPS' %}
+{% render_bundle bundle_name 'js' 'GROUPS' %}
 {% endblock %}

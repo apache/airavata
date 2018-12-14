@@ -31,7 +31,6 @@ import { components as comps } from 'django-airavata-common-ui'
 
 export default {
     name: 'groups-manage-container',
-    props: ['groupsDataOwners'],
     data () {
         return {
             groupPaginator: null,
