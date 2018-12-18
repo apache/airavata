@@ -17,6 +17,7 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -139,6 +140,16 @@ public class RemoteJobCancellationTask extends AiravataTask {
     }
 
     private List<String> getJobsOfProcess(String processId) throws Exception {
-        return Collections.singletonList(MonitoringUtil.getJobIdByProcessId(getCuratorClient(), processId));
+        List<String> rawJobs =  Collections.singletonList(MonitoringUtil.getJobIdByProcessId(getCuratorClient(), processId));
+        List<String> filteredJobs = new ArrayList<>();
+
+        if (rawJobs != null) {
+            rawJobs.forEach(job -> {
+                if (job != null && !"null".equals(job)) {
+                    filteredJobs.add(job);
+                }
+            });
+        }
+        return filteredJobs;
     }
 }
