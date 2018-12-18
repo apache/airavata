@@ -11,6 +11,7 @@ import org.apache.helix.InstanceType;
 import org.apache.helix.task.TaskDriver;
 import org.apache.helix.task.TaskResult;
 import org.apache.helix.task.TaskState;
+import org.apache.helix.task.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,22 +61,39 @@ public class WorkflowCancellationTask extends AbstractTask {
             logger.warn("Can not find a workflow with name " + cancellingWorkflowName + " but continuing");
             return onSuccess("Can not find a workflow with name " + cancellingWorkflowName + " but continuing");
         }
-        try {
 
-            TaskState workflowState = taskDriver.getWorkflowContext(cancellingWorkflowName).getWorkflowState();
+        try {
+            WorkflowContext workflowContext = taskDriver.getWorkflowContext(cancellingWorkflowName);
+
+            // if the workflow can not be found, ignore it
+            if (workflowContext == null) {
+                logger.warn("Can not find a workflow with id " + cancellingWorkflowName + ". So ignoring");
+                return onSuccess("Can not find a workflow with id " + cancellingWorkflowName + ". So ignoring");
+            }
+
+            TaskState workflowState = workflowContext.getWorkflowState();
             logger.info("Current state of workflow " + cancellingWorkflowName + " : " + workflowState.name());
 
             taskDriver.stop(cancellingWorkflowName);
 
+        } catch (Exception e) {
+            logger.error("Failed to stop workflow " + cancellingWorkflowName, e);
+            // in case of an error, retry
+            return onFail("Failed to stop workflow " + cancellingWorkflowName + ": " + e.getMessage(), false);
+        }
+
+        try {
             logger.info("Waiting maximum " + waitTime +"s for workflow " + cancellingWorkflowName + " state to change");
-            TaskState newWorkflowState = taskDriver.pollForWorkflowState(cancellingWorkflowName, waitTime * 1000, TaskState.COMPLETED, TaskState.FAILED,
-                    TaskState.STOPPED, TaskState.ABORTED, TaskState.NOT_STARTED);
+            TaskState newWorkflowState = taskDriver.pollForWorkflowState(cancellingWorkflowName, waitTime * 1000,
+                    TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED, TaskState.NOT_STARTED);
 
             logger.info("Workflow " + cancellingWorkflowName + " state changed to " + newWorkflowState.name());
             return onSuccess("Successfully cancelled workflow " + cancellingWorkflowName);
+
         } catch (Exception e) {
-            logger.error("Failed to stop workflow " + cancellingWorkflowName, e);
-            return onFail("Failed to stop workflow " + cancellingWorkflowName + ": " + e.getMessage(), true);
+            logger.warn("Failed while watching workflow to stop " + cancellingWorkflowName, e);
+            return onSuccess("Failed while watching workflow to stop " + cancellingWorkflowName +". But continuing");
+
         } finally {
 
             try {
