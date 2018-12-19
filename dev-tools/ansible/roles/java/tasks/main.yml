@@ -23,6 +23,8 @@
   stat:
     path: "{{ java_dir_source }}/{{ java_rpm_filename }}"
   register: rpm_stat_result
+  tags:
+    - always
 
 # Install Oracle Java
 - name: download oracle java 8 rpm
