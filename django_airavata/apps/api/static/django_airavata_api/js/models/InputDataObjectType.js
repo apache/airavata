@@ -1,53 +1,54 @@
-
-import BaseModel from './BaseModel';
-import DataType from './DataType';
-import ValidatorFactory from './validators/ValidatorFactory';
-import uuidv4 from 'uuid/v4';
+import BaseModel from "./BaseModel";
+import DataType from "./DataType";
+import DependencyEvaluator from "./dependencies/DependencyEvaluator";
+import uuidv4 from "uuid/v4";
+import ValidatorFactory from "./validators/ValidatorFactory";
 
 const FIELDS = [
-  'name',
-  'value',
+  "name",
+  "value",
   {
-    name: 'type',
+    name: "type",
     type: DataType,
-    default: DataType.STRING,
+    default: DataType.STRING
   },
-  'applicationArgument',
+  "applicationArgument",
   {
-    name: 'standardInput',
-    type: 'boolean',
-    default: false,
+    name: "standardInput",
+    type: "boolean",
+    default: false
   },
-  'userFriendlyDescription',
-  'metaData',
-  'inputOrder',
+  "userFriendlyDescription",
+  "metaData",
+  "inputOrder",
   {
-    name: 'isRequired',
-    type: 'boolean',
-    default: false,
-  },
-  {
-    name: 'requiredToAddedToCommandLine',
-    type: 'boolean',
-    default: false,
+    name: "isRequired",
+    type: "boolean",
+    default: false
   },
   {
-    name: 'dataStaged',
-    type: 'boolean',
-    default: false,
+    name: "requiredToAddedToCommandLine",
+    type: "boolean",
+    default: false
   },
-  'storageResourceId',
   {
-    name: 'isReadOnly',
-    type: 'boolean',
-    default: false,
+    name: "dataStaged",
+    type: "boolean",
+    default: false
   },
+  "storageResourceId",
+  {
+    name: "isReadOnly",
+    type: "boolean",
+    default: false
+  }
 ];
 
 export default class InputDataObjectType extends BaseModel {
   constructor(data = {}) {
     super(FIELDS, data);
     this._key = data.key ? data.key : uuidv4();
+    this.show = true;
   }
 
   get key() {
@@ -68,8 +69,12 @@ export default class InputDataObjectType extends BaseModel {
    */
   get editorUIComponentId() {
     const metadata = this._getMetadata();
-    if (metadata && 'editor' in metadata && 'ui-component-id' in metadata['editor']) {
-      return metadata['editor']['ui-component-id'];
+    if (
+      metadata &&
+      "editor" in metadata &&
+      "ui-component-id" in metadata["editor"]
+    ) {
+      return metadata["editor"]["ui-component-id"];
     } else {
       return null;
     }
@@ -92,8 +97,8 @@ export default class InputDataObjectType extends BaseModel {
    */
   get editorConfig() {
     const metadata = this._getMetadata();
-    if (metadata && 'editor' in metadata && 'config' in metadata['editor']) {
-      return metadata['editor']['config'];
+    if (metadata && "editor" in metadata && "config" in metadata["editor"]) {
+      return metadata["editor"]["config"];
     } else {
       return {};
     }
@@ -123,38 +128,106 @@ export default class InputDataObjectType extends BaseModel {
    */
   get editorValidations() {
     const metadata = this._getMetadata();
-    if (metadata && 'editor' in metadata && 'validations' in metadata['editor']) {
-      return metadata['editor']['validations'];
+    if (
+      metadata &&
+      "editor" in metadata &&
+      "validations" in metadata["editor"]
+    ) {
+      return metadata["editor"]["validations"];
     } else {
       return [];
+    }
+  }
+
+  /**
+   * Get the dependencies for the editor component. Returns empty object if
+   * there are no dependencies. See evaluateDependencies for a list of
+   * available kinds of dependencies.
+   *
+   * The expected JSON schema for the editor validations is the following:
+   * {
+   *   "editor": {
+   *     "dependencies": {
+   *       "show": {
+   *         "AND": [              // Boolean operator ("AND", "OR")
+   *           "INPUT_1": {        // Name of other application input
+   *             "type": "equals", // Name of comparison type
+   *             "value": "1"      // Value to compare with
+   *           },
+   *           "NOT": {            // "NOT" is given a single input comparison or "AND" or "OR" expression
+   *             "INPUT_2": {
+   *               ...
+   *             }
+   *           }
+   *           ... additional boolean expressions ("AND", "OR", "NOT")
+   *           ... additional application input comparisons
+   *         ]
+   *       }
+   *     }
+   *   }
+   * }
+   */
+  get editorDependencies() {
+    const metadata = this._getMetadata();
+    if (
+      metadata &&
+      "editor" in metadata &&
+      "dependencies" in metadata["editor"]
+    ) {
+      return metadata["editor"]["dependencies"];
+    } else {
+      return {};
     }
   }
 
   _getMetadata() {
     // metaData could really be anything, here we expect it to be an object
     // so safely check if it is first
-    if (this.metaData && typeof this.metaData === 'object') {
+    if (this.metaData && typeof this.metaData === "object") {
       return this.metaData;
     } else {
       return null;
     }
   }
 
-  validate(experiment, value = undefined) {
-    let inputValue = typeof value != 'undefined' ? value : this.value;
+  validate(value = undefined) {
+    let inputValue = typeof value != "undefined" ? value : this.value;
     let results = {};
+    // Skip running validations when the input isn't shown
+    if (!this.show) {
+      return results;
+    }
     let valueErrorMessages = [];
     if (this.isRequired && this.isEmpty(inputValue)) {
-      valueErrorMessages.push('This field is required.');
+      valueErrorMessages.push("This field is required.");
     }
     // Run through any validations if configured
     if (this.editorValidations.length > 0) {
       const validatorFactory = new ValidatorFactory();
-      valueErrorMessages = valueErrorMessages.concat(validatorFactory.validate(this.editorValidations, inputValue));
+      valueErrorMessages = valueErrorMessages.concat(
+        validatorFactory.validate(this.editorValidations, inputValue)
+      );
     }
     if (valueErrorMessages.length > 0) {
-      results['value'] = valueErrorMessages;
+      results["value"] = valueErrorMessages;
     }
     return results;
+  }
+
+  /**
+   * Evaluate dependencies on the values of other application inputs.
+   */
+  evaluateDependencies(inputValues) {
+    if (Object.keys(this.editorDependencies).length > 0) {
+      const dependencyEvaluator = new DependencyEvaluator();
+      const dependencyEvaluations = dependencyEvaluator.evaluateDependencies(
+        inputValues,
+        this.editorDependencies
+      );
+      // TODO: if show changes to false, set value to null? Save off current value to restore when shown again?
+      if ("show" in dependencyEvaluations) {
+        this.show = dependencyEvaluations["show"];
+      }
+    }
   }
 }

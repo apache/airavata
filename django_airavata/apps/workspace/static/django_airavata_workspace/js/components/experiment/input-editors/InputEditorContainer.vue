@@ -3,7 +3,6 @@
         :state="validationState" :feedback-messages="validationFeedback">
         <component :is="inputEditorComponentName"
             :id="inputEditorComponentId"
-            :experiment="experiment"
             :experiment-input="experimentInput"
             v-model="data"
             @invalid="recordInvalidInputEditorValue"
@@ -25,10 +24,6 @@ export default {
     name: 'input-editor-container',
     props: {
         value: {
-            required: true,
-        },
-        experiment: {
-            type: models.Experiment,
             required: true,
         },
         experimentInput: {

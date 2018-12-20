@@ -42,7 +42,8 @@ const FIELDS = [
   {
     name: "experimentInputs",
     type: InputDataObjectType,
-    list: true
+    list: true,
+    default: BaseModel.defaultNewInstance(Array)
   },
   {
     name: "experimentOutputs",
@@ -75,6 +76,7 @@ const FIELDS = [
 export default class Experiment extends BaseModel {
   constructor(data = {}) {
     super(FIELDS, data);
+    this.evaluateInputDependencies();
   }
 
   validate() {
@@ -125,7 +127,8 @@ export default class Experiment extends BaseModel {
 
   get isEditable() {
     return (
-      (!this.latestStatus || this.latestStatus.state === ExperimentState.CREATED) &&
+      (!this.latestStatus ||
+        this.latestStatus.state === ExperimentState.CREATED) &&
       this.userHasWriteAccess
     );
   }
@@ -135,6 +138,22 @@ export default class Experiment extends BaseModel {
     this.experimentInputs = applicationInterface.applicationInputs.map(input =>
       input.clone()
     );
+    this.evaluateInputDependencies();
     this.experimentOutputs = applicationInterface.applicationOutputs.slice();
+  }
+
+  evaluateInputDependencies() {
+    const inputValues = this._collectInputValues(this.experimentInputs);
+    for (const input of this.experimentInputs) {
+      input.evaluateDependencies(inputValues);
+    }
+  }
+
+  _collectInputValues() {
+    const result = {};
+    this.experimentInputs.forEach(inp => {
+      result[inp.name] = inp.value;
+    });
+    return result;
   }
 }

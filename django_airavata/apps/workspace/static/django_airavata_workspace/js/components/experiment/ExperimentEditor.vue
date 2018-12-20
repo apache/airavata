@@ -75,12 +75,13 @@
               </h2>
               <input-editor-container
                 v-for="experimentInput in localExperiment.experimentInputs"
-                :experiment="localExperiment"
                 :experiment-input="experimentInput"
                 v-model="experimentInput.value"
+                v-show="experimentInput.show"
                 :key="experimentInput.name"
                 @invalid="recordInvalidInputEditorValue(experimentInput.name)"
                 @valid="recordValidInputEditorValue(experimentInput.name)"
+                @input="inputValueChanged"
               />
             </div>
           </div>
@@ -260,7 +261,10 @@ export default {
         const index = this.invalidInputs.indexOf(experimentInputName);
         this.invalidInputs.splice(index, 1);
       }
-    }
+    },
+    inputValueChanged: function() {
+      this.localExperiment.evaluateInputDependencies();
+    },
   },
   watch: {
     experiment: function(newValue) {
