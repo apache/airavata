@@ -17,6 +17,10 @@ also be used as a development environment.
 The Airavata Django Portal is developed with Python 3.6 but should also work
 with 3.4 and 3.5. You'll need one of these versions installed locally.
 
+You'll also need npm 3.6+ to build the JavaScript frontend code.
+Please install [the most recent LTS version of
+Node.js](https://nodejs.org/en/download/).
+
 1.  Checkout this project and create a virtual environment.
 
     ```
