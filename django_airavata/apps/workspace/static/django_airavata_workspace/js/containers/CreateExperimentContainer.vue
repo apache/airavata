@@ -1,11 +1,21 @@
 <template>
-  <experiment-editor v-if="experiment" :experiment="experiment" :app-module="appModule" @saved="handleSavedExperiment" @savedAndLaunched="handleSavedAndLaunchedExperiment">
-    <span slot="title">Create a New Experiment</span>
-  </experiment-editor>
+  <div>
+    <notifications-display />
+    <experiment-editor
+      v-if="experiment"
+      :experiment="experiment"
+      :app-module="appModule"
+      @saved="handleSavedExperiment"
+      @savedAndLaunched="handleSavedAndLaunchedExperiment"
+    >
+      <span slot="title">Create a New Experiment</span>
+    </experiment-editor>
+  </div>
 </template>
 
 <script>
 import { models, services } from "django-airavata-api";
+import { components, notifications } from "django-airavata-common-ui";
 import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
 
 import moment from "moment";
@@ -20,14 +30,13 @@ export default {
     };
   },
   components: {
-    "experiment-editor": ExperimentEditor
+    "experiment-editor": ExperimentEditor,
+    "notifications-display": components.NotificationsDisplay
   },
   methods: {
     handleSavedExperiment: function(experiment) {
       // Redirect to experiment view
-      window.location.assign(
-        "/workspace/experiments"
-      );
+      window.location.assign("/workspace/experiments");
     },
     handleSavedAndLaunchedExperiment: function(experiment) {
       // Redirect to experiment view
@@ -41,22 +50,26 @@ export default {
   computed: {},
   mounted: function() {
     const experiment = new models.Experiment();
-    const loadAppModule = services.ApplicationModuleService.retrieve({
-      lookup: this.appModuleId
-    }).then(appModule => {
+    const loadAppModule = services.ApplicationModuleService.retrieve(
+      { lookup: this.appModuleId },
+      { ignoreErrors: true }
+    ).then(appModule => {
       experiment.experimentName =
         appModule.appModuleName + " on " + moment().format("lll");
       this.appModule = appModule;
     });
     const loadAppInterface = services.ApplicationModuleService.getApplicationInterface(
-      { lookup: this.appModuleId }
+      { lookup: this.appModuleId },
+      { ignoreErrors: true }
     ).then(appInterface => {
       experiment.populateInputsOutputsFromApplicationInterface(appInterface);
       experiment.executionId = appInterface.applicationInterfaceId;
     });
-    Promise.all([loadAppModule, loadAppInterface]).then(
-      () => (this.experiment = experiment)
-    );
+    Promise.all([loadAppModule, loadAppInterface])
+      .then(() => (this.experiment = experiment))
+      .catch(error => {
+        notifications.NotificationList.addError(error);
+      });
   }
 };
 </script>
