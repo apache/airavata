@@ -42,6 +42,13 @@ httpd_log_dir:
  Debian: /var/log/apache2
  RedHat: /var/log/httpd
 
+# PHP Config values set in httpd vhost config
+
+# Allow uploading files up to 64MB in size.
+# NOTE: if you change one of these values you will need to change the other one likewise.
+php_upload_max_filesize: "64M"
+php_post_max_size: "64M"
+
 pga_vhost_template: "pga-vhost.conf.j2"
 pga_ssl_vhost_template: "pga-ssl-vhost.conf.j2"
 pga_config_template: "pga_config.php.j2"
