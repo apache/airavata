@@ -180,6 +180,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 if (token != null) {
                     logger.debug("Adding password credential token " + token +" to the default gateway : " + ServerSettings.getDefaultUserGateway());
                     gatewayResourceProfile.setIdentityServerPwdCredToken(token);
+                    gatewayResourceProfile.setIdentityServerTenant(ServerSettings.getDefaultUserGateway());
                     registryClient.updateGatewayResourceProfile(ServerSettings.getDefaultUserGateway(), gatewayResourceProfile);
                 }
 
