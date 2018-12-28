@@ -60,7 +60,19 @@ public class SSHAccountManager {
      * @throws InvalidUsernameException
      */
     public static boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String userId) throws InvalidSetupException, InvalidUsernameException {
+        SSHAccountProvisioner sshAccountProvisioner = getSshAccountProvisioner(gatewayId, computeResourceId);
 
+
+        try {
+            return sshAccountProvisioner.hasAccount(userId);
+        } catch (InvalidUsernameException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("hasAccount call failed for userId [" + userId + "]: " + e.getMessage(), e);
+        }
+    }
+
+    private static SSHAccountProvisioner getSshAccountProvisioner(String gatewayId, String computeResourceId) throws InvalidSetupException {
         // get compute resource preferences for the gateway and hostname
         RegistryService.Client registryServiceClient = getRegistryServiceClient();
         ComputeResourcePreference computeResourcePreference = null;
@@ -81,15 +93,12 @@ public class SSHAccountManager {
         if (!computeResourcePreference.isSetSshAccountProvisioner()) {
             throw new InvalidSetupException("Compute resource [" + computeResourceId + "] does not have an SSH Account Provisioner configured for it.");
         }
-        SSHAccountProvisioner sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
+        return createSshAccountProvisioner(gatewayId, computeResourcePreference);
+    }
 
-        try {
-            return sshAccountProvisioner.hasAccount(userId);
-        } catch (InvalidUsernameException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("hasAccount call failed for userId [" + userId + "]: " + e.getMessage(), e);
-        }
+    public static boolean isSSHAccountSetupComplete(String gatewayId, String computeResourceId, String userId, SSHCredential sshCredential) throws InvalidSetupException, InvalidUsernameException {
+        SSHAccountProvisioner sshAccountProvisioner = getSshAccountProvisioner(gatewayId, computeResourceId);
+        return sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshCredential.getPublicKey());
     }
 
     /**

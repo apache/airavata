@@ -50,7 +50,7 @@ public class PBSEmailParser implements EmailParser {
         try {
             String content = ((String) message.getContent());
             parseContent(content, jobStatusResult);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new AiravataException("[EJM]: Error while reading content of the email message");
         }
         return jobStatusResult;

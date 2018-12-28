@@ -48,6 +48,11 @@ public class TestSSHAccountProvisioner implements SSHAccountProvisioner {
     }
 
     @Override
+    public boolean isSSHAccountProvisioningComplete(String userId, String sshPublicKey) throws InvalidUsernameException {
+        return false;
+    }
+
+    @Override
     public String installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
 
         return userId;

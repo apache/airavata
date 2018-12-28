@@ -127,6 +127,20 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     }
 
     @Override
+    public boolean isUserEnabled(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+            return keycloakclient.isUserAccountEnabled(isRealmAdminCredentials, gatewayId, username);
+        } catch (TException | ApplicationSettingsException ex) {
+            String msg = "Error while checking if user account is enabled, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
+    }
+
+    @Override
     @SecurityCheck
     public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword) throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
