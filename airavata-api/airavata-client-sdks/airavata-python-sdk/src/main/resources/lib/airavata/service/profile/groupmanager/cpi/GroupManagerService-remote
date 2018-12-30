@@ -28,7 +28,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool updateGroup(AuthzToken authzToken, GroupModel groupModel)')
     print('  bool deleteGroup(AuthzToken authzToken, string groupId, string ownerId)')
     print('  GroupModel getGroup(AuthzToken authzToken, string groupId)')
-    print('   getGroups(AuthzToken authzToken)')
     print('   getAllGroupsUserBelongs(AuthzToken authzToken, string userName)')
     print('  bool transferGroupOwnership(AuthzToken authzToken, string groupId, string newOwnerId)')
     print('  bool addGroupAdmins(AuthzToken authzToken, string groupId,  adminIds)')
@@ -137,12 +136,6 @@ elif cmd == 'getGroup':
         print('getGroup requires 2 args')
         sys.exit(1)
     pp.pprint(client.getGroup(eval(args[0]), args[1],))
-
-elif cmd == 'getGroups':
-    if len(args) != 1:
-        print('getGroups requires 1 args')
-        sys.exit(1)
-    pp.pprint(client.getGroups(eval(args[0]),))
 
 elif cmd == 'getAllGroupsUserBelongs':
     if len(args) != 2:

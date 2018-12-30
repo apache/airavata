@@ -159,6 +159,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool deleteGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageId)')
     print('   getSSHAccountProvisioners(AuthzToken authzToken)')
     print('  bool doesUserHaveSSHAccount(AuthzToken authzToken, string computeResourceId, string userId)')
+    print('  bool isSSHSetupCompleteForUserComputeResourcePreference(AuthzToken authzToken, string computeResourceId, string airavataCredStoreToken)')
     print('  UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(AuthzToken authzToken, string computeResourceId, string userId, string airavataCredStoreToken)')
     print('  string registerUserResourceProfile(AuthzToken authzToken, UserResourceProfile userResourceProfile)')
     print('  UserResourceProfile getUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID)')
@@ -1079,6 +1080,12 @@ elif cmd == 'doesUserHaveSSHAccount':
         print('doesUserHaveSSHAccount requires 3 args')
         sys.exit(1)
     pp.pprint(client.doesUserHaveSSHAccount(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'isSSHSetupCompleteForUserComputeResourcePreference':
+    if len(args) != 3:
+        print('isSSHSetupCompleteForUserComputeResourcePreference requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.isSSHSetupCompleteForUserComputeResourcePreference(eval(args[0]), args[1], args[2],))
 
 elif cmd == 'setupUserComputeResourcePreferencesForSSH':
     if len(args) != 4:
