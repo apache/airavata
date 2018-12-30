@@ -2920,6 +2920,17 @@ class Iface(object):
         """
         pass
 
+    def isSSHSetupCompleteForUserComputeResourcePreference(self, authzToken, computeResourceId, airavataCredStoreToken):
+        """
+        Check if SSH account setup is complete for this user on the given compute resource.
+
+        Parameters:
+         - authzToken
+         - computeResourceId
+         - airavataCredStoreToken
+        """
+        pass
+
     def setupUserComputeResourcePreferencesForSSH(self, authzToken, computeResourceId, userId, airavataCredStoreToken):
         """
         Setup and return a UserComputeResourcePreference object for this user to SSH into the given compute resource with
@@ -10914,6 +10925,51 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "doesUserHaveSSHAccount failed: unknown result")
 
+    def isSSHSetupCompleteForUserComputeResourcePreference(self, authzToken, computeResourceId, airavataCredStoreToken):
+        """
+        Check if SSH account setup is complete for this user on the given compute resource.
+
+        Parameters:
+         - authzToken
+         - computeResourceId
+         - airavataCredStoreToken
+        """
+        self.send_isSSHSetupCompleteForUserComputeResourcePreference(authzToken, computeResourceId, airavataCredStoreToken)
+        return self.recv_isSSHSetupCompleteForUserComputeResourcePreference()
+
+    def send_isSSHSetupCompleteForUserComputeResourcePreference(self, authzToken, computeResourceId, airavataCredStoreToken):
+        self._oprot.writeMessageBegin('isSSHSetupCompleteForUserComputeResourcePreference', TMessageType.CALL, self._seqid)
+        args = isSSHSetupCompleteForUserComputeResourcePreference_args()
+        args.authzToken = authzToken
+        args.computeResourceId = computeResourceId
+        args.airavataCredStoreToken = airavataCredStoreToken
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_isSSHSetupCompleteForUserComputeResourcePreference(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = isSSHSetupCompleteForUserComputeResourcePreference_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.ire is not None:
+            raise result.ire
+        if result.ace is not None:
+            raise result.ace
+        if result.ase is not None:
+            raise result.ase
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "isSSHSetupCompleteForUserComputeResourcePreference failed: unknown result")
+
     def setupUserComputeResourcePreferencesForSSH(self, authzToken, computeResourceId, userId, airavataCredStoreToken):
         """
         Setup and return a UserComputeResourcePreference object for this user to SSH into the given compute resource with
@@ -12664,6 +12720,7 @@ class Processor(Iface, TProcessor):
         self._processMap["deleteGatewayStoragePreference"] = Processor.process_deleteGatewayStoragePreference
         self._processMap["getSSHAccountProvisioners"] = Processor.process_getSSHAccountProvisioners
         self._processMap["doesUserHaveSSHAccount"] = Processor.process_doesUserHaveSSHAccount
+        self._processMap["isSSHSetupCompleteForUserComputeResourcePreference"] = Processor.process_isSSHSetupCompleteForUserComputeResourcePreference
         self._processMap["setupUserComputeResourcePreferencesForSSH"] = Processor.process_setupUserComputeResourcePreferencesForSSH
         self._processMap["registerUserResourceProfile"] = Processor.process_registerUserResourceProfile
         self._processMap["getUserResourceProfile"] = Processor.process_getUserResourceProfile
@@ -16908,6 +16965,37 @@ class Processor(Iface, TProcessor):
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("doesUserHaveSSHAccount", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_isSSHSetupCompleteForUserComputeResourcePreference(self, seqid, iprot, oprot):
+        args = isSSHSetupCompleteForUserComputeResourcePreference_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = isSSHSetupCompleteForUserComputeResourcePreference_result()
+        try:
+            result.success = self._handler.isSSHSetupCompleteForUserComputeResourcePreference(args.authzToken, args.computeResourceId, args.airavataCredStoreToken)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.api.error.ttypes.InvalidRequestException as ire:
+            msg_type = TMessageType.REPLY
+            result.ire = ire
+        except airavata.api.error.ttypes.AiravataClientException as ace:
+            msg_type = TMessageType.REPLY
+            result.ace = ace
+        except airavata.api.error.ttypes.AiravataSystemException as ase:
+            msg_type = TMessageType.REPLY
+            result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("isSSHSetupCompleteForUserComputeResourcePreference", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -45068,6 +45156,208 @@ class doesUserHaveSSHAccount_result(object):
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
         oprot.writeStructBegin('doesUserHaveSSHAccount_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.BOOL, 0)
+            oprot.writeBool(self.success)
+            oprot.writeFieldEnd()
+        if self.ire is not None:
+            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+            self.ire.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ace is not None:
+            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+            self.ace.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ase is not None:
+            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+            self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class isSSHSetupCompleteForUserComputeResourcePreference_args(object):
+    """
+    Attributes:
+     - authzToken
+     - computeResourceId
+     - airavataCredStoreToken
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.STRING, 'computeResourceId', 'UTF8', None, ),  # 2
+        (3, TType.STRING, 'airavataCredStoreToken', 'UTF8', None, ),  # 3
+    )
+
+    def __init__(self, authzToken=None, computeResourceId=None, airavataCredStoreToken=None,):
+        self.authzToken = authzToken
+        self.computeResourceId = computeResourceId
+        self.airavataCredStoreToken = airavataCredStoreToken
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.computeResourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.airavataCredStoreToken = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('isSSHSetupCompleteForUserComputeResourcePreference_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.computeResourceId is not None:
+            oprot.writeFieldBegin('computeResourceId', TType.STRING, 2)
+            oprot.writeString(self.computeResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.computeResourceId)
+            oprot.writeFieldEnd()
+        if self.airavataCredStoreToken is not None:
+            oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 3)
+            oprot.writeString(self.airavataCredStoreToken.encode('utf-8') if sys.version_info[0] == 2 else self.airavataCredStoreToken)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.computeResourceId is None:
+            raise TProtocolException(message='Required field computeResourceId is unset!')
+        if self.airavataCredStoreToken is None:
+            raise TProtocolException(message='Required field airavataCredStoreToken is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class isSSHSetupCompleteForUserComputeResourcePreference_result(object):
+    """
+    Attributes:
+     - success
+     - ire
+     - ace
+     - ase
+     - ae
+    """
+
+    thrift_spec = (
+        (0, TType.BOOL, 'success', None, None, ),  # 0
+        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
+        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
+    )
+
+    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+        self.success = success
+        self.ire = ire
+        self.ace = ace
+        self.ase = ase
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.BOOL:
+                    self.success = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
+                    self.ire.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ace = airavata.api.error.ttypes.AiravataClientException()
+                    self.ace.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
+                    self.ase.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('isSSHSetupCompleteForUserComputeResourcePreference_result')
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.BOOL, 0)
             oprot.writeBool(self.success)
