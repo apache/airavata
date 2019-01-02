@@ -39,7 +39,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 # With Keycloak, we have to have static role names
 #user_role_name: "airavata-user"
 initial_role_name: "gateway-provider"
-oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+oidc_discovery_url: "https://iamdev.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
   - name: "SciGaP"
