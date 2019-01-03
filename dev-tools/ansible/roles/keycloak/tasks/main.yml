@@ -30,7 +30,7 @@
       copy=no
       owner="{{ user }}"
       group="{{ group }}"
-      creates="{{user_home}}/{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar"
+      creates="{{user_home}}/{{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar"
   become: true
   become_user: "{{ user }}"
   tags:
