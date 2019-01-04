@@ -31,17 +31,16 @@ public class LoadClient {
             try (InputStream in = LoadClient.class.getResourceAsStream("/conf/load-config.yml")) {
                 Yaml yaml = new Yaml();
                 configurations = yaml.loadAs(in, Configurations.class);
-                createStorageResourceManagers(configurations);
             }
         } else {
             try (InputStream in = new FileInputStream(configFile)) {
                 Yaml yaml = new Yaml();
                 configurations = yaml.loadAs(in, Configurations.class);
-                createStorageResourceManagers(configurations);
             }
         }
 
         securityManager.loadCertificate(configurations.getApiHost(), configurations.getApiPort());
+        createStorageResourceManagers(configurations);
     }
 
     public void start() throws Exception {
