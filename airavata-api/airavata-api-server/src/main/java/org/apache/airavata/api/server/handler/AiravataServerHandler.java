@@ -151,7 +151,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
 
             GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(ServerSettings.getDefaultUserGateway());
-            if (gatewayResourceProfile != null && gatewayResourceProfile.getCredentialStoreToken() == null) {
+            if (gatewayResourceProfile != null && gatewayResourceProfile.getIdentityServerPwdCredToken() == null) {
 
                 logger.debug("Starting to add the password credential for default gateway : " +
                         ServerSettings.getDefaultUserGateway());
