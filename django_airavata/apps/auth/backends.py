@@ -101,7 +101,7 @@ class KeycloakBackend(object):
         token = oauth2_session.refresh_token(token_url=token_url,
                                              refresh_token=refresh_token,
                                              auth=auth,
-                                             verify_ssl=verify_ssl)
+                                             verify=verify_ssl)
         return token
 
     def _process_token(self, request, token):
