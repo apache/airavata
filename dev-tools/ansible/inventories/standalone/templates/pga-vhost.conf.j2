@@ -1,0 +1,26 @@
+{% if vhost_server_redirect is defined %}
+<VirtualHost *:{{pga_default_http_port}}>
+    ServerName {{ vhost_server_redirect }}
+    Redirect "/" "http://{{ vhost_servername }}"
+</VirtualHost>
+{% endif %}
+
+# Add a listen on the non-default port (8008)
+Listen {{pga_default_http_port}}
+
+<VirtualHost *:{{pga_default_http_port}}>
+    ServerName {{ vhost_servername }}
+    {% if vhost_serveralias is defined %}
+    ServerAlias {{ vhost_serveralias }}
+    {% endif %}
+
+    DocumentRoot {{ doc_root_dir }}/public
+    <Directory "{{ doc_root_dir }}/public">
+       AllowOverride All
+       php_value upload_max_filesize {{ php_upload_max_filesize }}
+       php_value post_max_size {{ php_post_max_size }}
+    </Directory>
+    ErrorLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.error.log
+    CustomLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.requests.log combined
+
+</VirtualHost>
