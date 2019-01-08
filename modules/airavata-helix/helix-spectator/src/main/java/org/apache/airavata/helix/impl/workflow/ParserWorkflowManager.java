@@ -89,7 +89,8 @@ public class ParserWorkflowManager extends WorkflowManager {
 
             // All the templates should be run
             // FIXME is it ApplicationInterfaceId or ApplicationName
-            List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(completionMessage.getExperimentId());
+            List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(completionMessage.getExperimentId(),
+                    completionMessage.getGatewayId());
 
             Map<String, Map<String, Set<ParserConnector>>> parentToChildParsers = new HashMap<>();
 
@@ -138,7 +139,7 @@ public class ParserWorkflowManager extends WorkflowManager {
                     throw  new Exception("Could not find a parent parser for template " + template.getId());
                 }
 
-                Parser parentParser = registryClient.getParser(parentParserId);
+                Parser parentParser = registryClient.getParser(parentParserId, completionMessage.getGatewayId());
 
                 DataParsingTask parentParserTask = createParentTask(parentParser, completionMessage, template.getInitialInputs(), registryClient);
 
@@ -249,7 +250,7 @@ public class ParserWorkflowManager extends WorkflowManager {
         if (parentToChild.containsKey(parentParserInfo.getId())) {
 
             for (ParserConnector connector : parentToChild.get(parentParserInfo.getId())) {
-                Parser childParserInfo = registryClient.getParser(connector.getChildParserId());
+                Parser childParserInfo = registryClient.getParser(connector.getChildParserId(), completionMessage.getGatewayId());
                 DataParsingTask parsingTask = new DataParsingTask();
                 parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + childParserInfo.getId() + "-" + UUID.randomUUID().toString()));
                 parsingTask.setGatewayId(completionMessage.getGatewayId());

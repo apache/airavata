@@ -109,7 +109,7 @@ public class DataParsingTask extends AbstractTask {
 
         try {
 
-            Parser parser = getRegistryServiceClient().getParser(parserId);
+            Parser parser = getRegistryServiceClient().getParser(parserId, gatewayId);
             String containerId = getTaskId() + "_PARSER_"+ parser.getId();
 
             String localInputDir = createLocalInputDir(containerId);
