@@ -36,6 +36,9 @@ public class ParsingTemplateEntity implements Serializable {
     @Column(name = "APP_INTERFACE_ID")
     private String applicationInterface;
 
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
     @OneToMany(targetEntity = ParsingTemplateInputEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "parsingTemplate", fetch = FetchType.EAGER)
     private List<ParsingTemplateInputEntity> initialInputs;
@@ -74,5 +77,13 @@ public class ParsingTemplateEntity implements Serializable {
 
     public void setParserConnections(List<ParserConnectorEntity> parserConnections) {
         this.parserConnections = parserConnections;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 }

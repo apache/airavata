@@ -391,6 +391,10 @@ class Parser {
    * @var \Airavata\Model\AppCatalog\Parser\ParserOutput[]
    */
   public $outputFiles = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -433,6 +437,10 @@ class Parser {
             'class' => '\Airavata\Model\AppCatalog\Parser\ParserOutput',
             ),
           ),
+        8 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -456,6 +464,9 @@ class Parser {
       }
       if (isset($vals['outputFiles'])) {
         $this->outputFiles = $vals['outputFiles'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -550,6 +561,13 @@ class Parser {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -620,6 +638,11 @@ class Parser {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 8);
+      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -1177,6 +1200,10 @@ class ParsingTemplate {
    * @var \Airavata\Model\AppCatalog\Parser\ParserConnector[]
    */
   public $parserConnections = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1207,6 +1234,10 @@ class ParsingTemplate {
             'class' => '\Airavata\Model\AppCatalog\Parser\ParserConnector',
             ),
           ),
+        5 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1221,6 +1252,9 @@ class ParsingTemplate {
       }
       if (isset($vals['parserConnections'])) {
         $this->parserConnections = $vals['parserConnections'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -1294,6 +1328,13 @@ class ParsingTemplate {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1349,6 +1390,11 @@ class ParsingTemplate {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 5);
+      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

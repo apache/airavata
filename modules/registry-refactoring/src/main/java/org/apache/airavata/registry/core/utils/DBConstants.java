@@ -171,7 +171,13 @@ public class DBConstants {
     }
 
     public static class ParsingTemplate {
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String APPLICATION_INTERFACE_ID = "applicationInterfaceId";
     }
+
+    public static class Parser {
+        public static final String GATEWAY_ID = "gatewayId";
+    }
+
 
 }

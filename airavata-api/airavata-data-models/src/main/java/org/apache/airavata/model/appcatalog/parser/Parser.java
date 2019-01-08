@@ -35,6 +35,7 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
   private static final org.apache.thrift.protocol.TField EXECUTION_COMMAND_FIELD_DESC = new org.apache.thrift.protocol.TField("executionCommand", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField INPUT_FILES_FIELD_DESC = new org.apache.thrift.protocol.TField("inputFiles", org.apache.thrift.protocol.TType.LIST, (short)6);
   private static final org.apache.thrift.protocol.TField OUTPUT_FILES_FIELD_DESC = new org.apache.thrift.protocol.TField("outputFiles", org.apache.thrift.protocol.TType.LIST, (short)7);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)8);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ParserStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ParserTupleSchemeFactory();
@@ -46,6 +47,7 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
   private java.lang.String executionCommand; // required
   private java.util.List<ParserInput> inputFiles; // required
   private java.util.List<ParserOutput> outputFiles; // required
+  private java.lang.String gatewayId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -55,7 +57,8 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
     INPUT_DIR_PATH((short)4, "inputDirPath"),
     EXECUTION_COMMAND((short)5, "executionCommand"),
     INPUT_FILES((short)6, "inputFiles"),
-    OUTPUT_FILES((short)7, "outputFiles");
+    OUTPUT_FILES((short)7, "outputFiles"),
+    GATEWAY_ID((short)8, "gatewayId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -84,6 +87,8 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
           return INPUT_FILES;
         case 7: // OUTPUT_FILES
           return OUTPUT_FILES;
+        case 8: // GATEWAY_ID
+          return GATEWAY_ID;
         default:
           return null;
       }
@@ -143,6 +148,8 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
     tmpMap.put(_Fields.OUTPUT_FILES, new org.apache.thrift.meta_data.FieldMetaData("outputFiles", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ParserOutput.class))));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Parser.class, metaDataMap);
   }
@@ -157,7 +164,8 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
     java.lang.String inputDirPath,
     java.lang.String executionCommand,
     java.util.List<ParserInput> inputFiles,
-    java.util.List<ParserOutput> outputFiles)
+    java.util.List<ParserOutput> outputFiles,
+    java.lang.String gatewayId)
   {
     this();
     this.id = id;
@@ -167,6 +175,7 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
     this.executionCommand = executionCommand;
     this.inputFiles = inputFiles;
     this.outputFiles = outputFiles;
+    this.gatewayId = gatewayId;
   }
 
   /**
@@ -202,6 +211,9 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
       }
       this.outputFiles = __this__outputFiles;
     }
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
+    }
   }
 
   public Parser deepCopy() {
@@ -217,6 +229,7 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
     this.executionCommand = null;
     this.inputFiles = null;
     this.outputFiles = null;
+    this.gatewayId = null;
   }
 
   public java.lang.String getId() {
@@ -410,6 +423,29 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
     }
   }
 
+  public java.lang.String getGatewayId() {
+    return this.gatewayId;
+  }
+
+  public void setGatewayId(java.lang.String gatewayId) {
+    this.gatewayId = gatewayId;
+  }
+
+  public void unsetGatewayId() {
+    this.gatewayId = null;
+  }
+
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
+  }
+
+  public void setGatewayIdIsSet(boolean value) {
+    if (!value) {
+      this.gatewayId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case ID:
@@ -468,6 +504,14 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
       }
       break;
 
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -494,6 +538,9 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
     case OUTPUT_FILES:
       return getOutputFiles();
 
+    case GATEWAY_ID:
+      return getGatewayId();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -519,6 +566,8 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
       return isSetInputFiles();
     case OUTPUT_FILES:
       return isSetOutputFiles();
+    case GATEWAY_ID:
+      return isSetGatewayId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -601,6 +650,15 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
         return false;
     }
 
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
+        return false;
+      if (!this.gatewayId.equals(that.gatewayId))
+        return false;
+    }
+
     return true;
   }
 
@@ -635,6 +693,10 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
     hashCode = hashCode * 8191 + ((isSetOutputFiles()) ? 131071 : 524287);
     if (isSetOutputFiles())
       hashCode = hashCode * 8191 + outputFiles.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetGatewayId()) ? 131071 : 524287);
+    if (isSetGatewayId())
+      hashCode = hashCode * 8191 + gatewayId.hashCode();
 
     return hashCode;
   }
@@ -717,6 +779,16 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -792,6 +864,14 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
       sb.append(this.outputFiles);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gatewayId);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -824,6 +904,10 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
 
     if (!isSetOutputFiles()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'outputFiles' is unset! Struct:" + toString());
+    }
+
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -941,6 +1025,14 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 8: // GATEWAY_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1003,6 +1095,11 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
         }
         oprot.writeFieldEnd();
       }
+      if (struct.gatewayId != null) {
+        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+        oprot.writeString(struct.gatewayId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1039,6 +1136,7 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
           _iter9.write(oprot);
         }
       }
+      oprot.writeString(struct.gatewayId);
     }
 
     @Override
@@ -1078,6 +1176,8 @@ public class Parser implements org.apache.thrift.TBase<Parser, Parser._Fields>, 
         }
       }
       struct.setOutputFilesIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
     }
   }
 

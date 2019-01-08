@@ -165,7 +165,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
     private WorkflowRepository workflowRepository = new WorkflowRepository();
     private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
-    private ParserRepository parserInfoRepository = new ParserRepository();
+    private ParserRepository parserRepository = new ParserRepository();
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
     private UserRepository userRepository = new UserRepository();
     private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
@@ -4805,19 +4805,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public Parser getParser(String parserId) throws RegistryServiceException, TException {
+    public Parser getParser(String parserId, String gatewayId) throws RegistryServiceException, TException {
+
         try {
-            if (!parserInfoRepository.isExists(parserId)) {
+            if (!parserRepository.isExists(parserId)) {
                 final String message = "No Parser Info entry exists for " + parserId;
                 logger.error(message);
                 throw new RegistryServiceException(message);
             }
-            return parserInfoRepository.get(parserId);
+            return parserRepository.get(parserId);
+
         } catch (RegistryServiceException e) {
             throw e; // re-throw
-        } catch (Exception e) {
 
-            final String message = "Error while retrieving Parser Info for id " + parserId + ".";
+        } catch (Exception e) {
+            final String message = "Error while retrieving parser with id " + parserId + ".";
             logger.error(message, e);
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + " More info: " + e.getMessage());
@@ -4827,12 +4829,62 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     @Override
     public String saveParser(Parser parser) throws RegistryServiceException, TException {
-        Parser created = parserInfoRepository.create(parser);
-        return created.getId();
+
+        try {
+            Parser created = parserRepository.create(parser);
+            return created.getId();
+
+        } catch (Exception e) {
+            final String message = "Error while saving parser with id " + parser.getId();
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+
+        }
     }
 
     @Override
-    public ParsingTemplate getParsingTemplate(String templateId) throws RegistryServiceException, TException {
+    public List<Parser> listAllParsers(String gatewayId) throws RegistryServiceException, TException {
+
+        try {
+            return parserRepository.getAllParsers(gatewayId);
+
+        } catch (Exception e) {
+            final String message = "Error while listing parsers for gateway " + gatewayId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public void removeParser(String parserId, String gatewayId) throws RegistryServiceException, TException {
+
+        try {
+            boolean exists = parserRepository.isExists(parserId);
+
+            if (exists && !gatewayId.equals(parserRepository.get(parserId).getGatewayId())) {
+                parserRepository.delete(parserId);
+            } else {
+                throw new RegistryServiceException("Parser " + parserId + " does not exist");
+            }
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+
+        } catch (Exception e) {
+            final String message = "Error while removing parser with id " + parserId + ".";
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public ParsingTemplate getParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException, TException {
+
         try {
             if (!parsingTemplateRepository.isExists(templateId)) {
                 final String message = "No Parsing Template entry exists for " + templateId;
@@ -4840,10 +4892,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new RegistryServiceException(message);
             }
             return parsingTemplateRepository.get(templateId);
+
         } catch (RegistryServiceException e) {
             throw e; // re-throw
-        } catch (Exception e) {
 
+        } catch (Exception e) {
             final String message = "Error while retrieving Parsing Template for id " + templateId + ".";
             logger.error(message, e);
             RegistryServiceException rse = new RegistryServiceException();
@@ -4853,17 +4906,77 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId) throws RegistryServiceException, TException {
-        List<ProcessModel> processes = getExperiment(experimentId).getProcesses();
-        if (processes.size() > 0) {
-            return parsingTemplateRepository.getParsingTemplatesForApplication(processes.get(processes.size() - 1).getApplicationInterfaceId());
+    public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId, String gatewayId) throws RegistryServiceException, TException {
+
+        try {
+            List<ProcessModel> processes = getExperiment(experimentId).getProcesses();
+            if (processes.size() > 0) {
+                return parsingTemplateRepository.getParsingTemplatesForApplication(processes.get(processes.size() - 1).getApplicationInterfaceId());
+            }
+            return Collections.emptyList();
+
+        } catch (Exception e) {
+            final String message = "Error while retrieving parsing templates for experiment id " + experimentId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
         }
-        return Collections.emptyList();
+
     }
 
     @Override
     public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException, TException {
-        ParsingTemplate saved = parsingTemplateRepository.create(parsingTemplate);
-        return saved.getId();
+
+        try {
+            ParsingTemplate saved = parsingTemplateRepository.create(parsingTemplate);
+            return saved.getId();
+
+        } catch (Exception e) {
+            final String message = "Error while saving parsing template with id " + parsingTemplate.getId();
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public List<ParsingTemplate> listAllParsingTemplates(String gatewayId) throws RegistryServiceException, TException {
+
+        try {
+            return parsingTemplateRepository.getAllParsingTemplates(gatewayId);
+
+        } catch (Exception e) {
+            final String message = "Error while listing parsing templates for gateway " + gatewayId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException, TException {
+
+        try {
+            boolean exists = parsingTemplateRepository.isExists(templateId);
+
+            if (exists && !gatewayId.equals(parsingTemplateRepository.get(templateId).getGatewayId())) {
+                parsingTemplateRepository.delete(templateId);
+            } else {
+                throw new RegistryServiceException("Parsing tempolate " + templateId + " does not exist");
+            }
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+
+        } catch (Exception e) {
+
+            final String message = "Error while removing parsing template with id " + templateId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
     }
 }

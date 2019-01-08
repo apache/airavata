@@ -20,4 +20,10 @@ public class ParsingTemplateRepository extends AppCatAbstractRepository<ParsingT
         queryParameters.put(DBConstants.ParsingTemplate.APPLICATION_INTERFACE_ID, applicationInterfaceId);
         return select(QueryConstants.FIND_PARSING_TEMPLATES_FOR_APPLICATION_INTERFACE_ID, -1, 0, queryParameters);
     }
+
+    public List<ParsingTemplate> getAllParsingTemplates(String gatewayId) {
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ParsingTemplate.GATEWAY_ID, gatewayId);
+        return select(QueryConstants.FIND_ALL_PARSING_TEMPLATES_FOR_GATEWAY_ID, -1, 0, queryParameters);
+    }
 }

@@ -3503,7 +3503,7 @@ service Airavata {
                                                                                          3: airavata_errors.AiravataSystemException ase,
                                                                                          4: airavata_errors.AuthorizationException ae)
 
- parser_model.Parser getParser(1: required security_model.AuthzToken authzToken, 2: required string parserId)
+ parser_model.Parser getParser(1: required security_model.AuthzToken authzToken, 2: required string parserId, 3: required string gatewayId)
                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
                                                                                          2: airavata_errors.AiravataClientException ace,
                                                                                          3: airavata_errors.AiravataSystemException ase,
@@ -3515,13 +3515,23 @@ service Airavata {
                                                                                          3: airavata_errors.AiravataSystemException ase,
                                                                                          4: airavata_errors.AuthorizationException ae)
 
- parser_model.ParsingTemplate getParsingTemplate(1: required security_model.AuthzToken authzToken, 2: required string templateId)
+ list<parser_model.Parser> listAllParsers(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ bool removeParser(1: required security_model.AuthzToken authzToken, 2: required string parserId, 3: required string gatewayId) throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae)
+ parser_model.ParsingTemplate getParsingTemplate(1: required security_model.AuthzToken authzToken, 2: required string templateId, 3: required string gatewayId)
                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
                                                                                          2: airavata_errors.AiravataClientException ace,
                                                                                          3: airavata_errors.AiravataSystemException ase,
                                                                                          4: airavata_errors.AuthorizationException ae);
 
- list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required security_model.AuthzToken authzToken, 2: required string experimentId)
+ list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required security_model.AuthzToken authzToken, 2: required string experimentId, 3: required string gatewayId)
                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
                                                                                          2: airavata_errors.AiravataClientException ace,
                                                                                          3: airavata_errors.AiravataSystemException ase,
@@ -3532,6 +3542,18 @@ service Airavata {
                                                                                          2: airavata_errors.AiravataClientException ace,
                                                                                          3: airavata_errors.AiravataSystemException ase,
                                                                                          4: airavata_errors.AuthorizationException ae);
+
+ bool removeParsingTemplate(1: required security_model.AuthzToken authzToken, 2: required string templateId, 3: required string gatewayId)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
+
+  list<parser_model.ParsingTemplate> listAllParsingTemplates(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
  //
  //End of API
  }

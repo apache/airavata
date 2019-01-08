@@ -133,6 +133,7 @@ class JobState(object):
     FAILED = 5
     SUSPENDED = 6
     UNKNOWN = 7
+    NON_CRITICAL_FAIL = 8
 
     _VALUES_TO_NAMES = {
         0: "SUBMITTED",
@@ -143,6 +144,7 @@ class JobState(object):
         5: "FAILED",
         6: "SUSPENDED",
         7: "UNKNOWN",
+        8: "NON_CRITICAL_FAIL",
     }
 
     _NAMES_TO_VALUES = {
@@ -154,6 +156,7 @@ class JobState(object):
         "FAILED": 5,
         "SUSPENDED": 6,
         "UNKNOWN": 7,
+        "NON_CRITICAL_FAIL": 8,
     }
 
 

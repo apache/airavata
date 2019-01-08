@@ -51,6 +51,7 @@ struct Parser {
     5: required string executionCommand;
     6: required list<ParserInput> inputFiles;
     7: required list<ParserOutput> outputFiles;
+    8: required string gatewayId;
 }
 
 struct ParserConnectorInput {
@@ -82,4 +83,5 @@ struct ParsingTemplate {
     2: required string applicationInterface;
     3: required list<ParsingTemplateInput> initialInputs;
     4: required list<ParserConnector> parserConnections;
+    5: required string gatewayId;
 }

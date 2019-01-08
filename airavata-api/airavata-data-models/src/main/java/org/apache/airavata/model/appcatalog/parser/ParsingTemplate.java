@@ -32,6 +32,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
   private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterface", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField INITIAL_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("initialInputs", org.apache.thrift.protocol.TType.LIST, (short)3);
   private static final org.apache.thrift.protocol.TField PARSER_CONNECTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("parserConnections", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ParsingTemplateStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ParsingTemplateTupleSchemeFactory();
@@ -40,13 +41,15 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
   private java.lang.String applicationInterface; // required
   private java.util.List<ParsingTemplateInput> initialInputs; // required
   private java.util.List<ParserConnector> parserConnections; // required
+  private java.lang.String gatewayId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
     APPLICATION_INTERFACE((short)2, "applicationInterface"),
     INITIAL_INPUTS((short)3, "initialInputs"),
-    PARSER_CONNECTIONS((short)4, "parserConnections");
+    PARSER_CONNECTIONS((short)4, "parserConnections"),
+    GATEWAY_ID((short)5, "gatewayId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -69,6 +72,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
           return INITIAL_INPUTS;
         case 4: // PARSER_CONNECTIONS
           return PARSER_CONNECTIONS;
+        case 5: // GATEWAY_ID
+          return GATEWAY_ID;
         default:
           return null;
       }
@@ -122,6 +127,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     tmpMap.put(_Fields.PARSER_CONNECTIONS, new org.apache.thrift.meta_data.FieldMetaData("parserConnections", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ParserConnector.class))));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ParsingTemplate.class, metaDataMap);
   }
@@ -133,13 +140,15 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     java.lang.String id,
     java.lang.String applicationInterface,
     java.util.List<ParsingTemplateInput> initialInputs,
-    java.util.List<ParserConnector> parserConnections)
+    java.util.List<ParserConnector> parserConnections,
+    java.lang.String gatewayId)
   {
     this();
     this.id = id;
     this.applicationInterface = applicationInterface;
     this.initialInputs = initialInputs;
     this.parserConnections = parserConnections;
+    this.gatewayId = gatewayId;
   }
 
   /**
@@ -166,6 +175,9 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       }
       this.parserConnections = __this__parserConnections;
     }
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
+    }
   }
 
   public ParsingTemplate deepCopy() {
@@ -178,6 +190,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     this.applicationInterface = null;
     this.initialInputs = null;
     this.parserConnections = null;
+    this.gatewayId = null;
   }
 
   public java.lang.String getId() {
@@ -302,6 +315,29 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     }
   }
 
+  public java.lang.String getGatewayId() {
+    return this.gatewayId;
+  }
+
+  public void setGatewayId(java.lang.String gatewayId) {
+    this.gatewayId = gatewayId;
+  }
+
+  public void unsetGatewayId() {
+    this.gatewayId = null;
+  }
+
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
+  }
+
+  public void setGatewayIdIsSet(boolean value) {
+    if (!value) {
+      this.gatewayId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case ID:
@@ -336,6 +372,14 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       }
       break;
 
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -352,6 +396,9 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
 
     case PARSER_CONNECTIONS:
       return getParserConnections();
+
+    case GATEWAY_ID:
+      return getGatewayId();
 
     }
     throw new java.lang.IllegalStateException();
@@ -372,6 +419,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       return isSetInitialInputs();
     case PARSER_CONNECTIONS:
       return isSetParserConnections();
+    case GATEWAY_ID:
+      return isSetGatewayId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -427,6 +476,15 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
         return false;
     }
 
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
+        return false;
+      if (!this.gatewayId.equals(that.gatewayId))
+        return false;
+    }
+
     return true;
   }
 
@@ -449,6 +507,10 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     hashCode = hashCode * 8191 + ((isSetParserConnections()) ? 131071 : 524287);
     if (isSetParserConnections())
       hashCode = hashCode * 8191 + parserConnections.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetGatewayId()) ? 131071 : 524287);
+    if (isSetGatewayId())
+      hashCode = hashCode * 8191 + gatewayId.hashCode();
 
     return hashCode;
   }
@@ -497,6 +559,16 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
     }
     if (isSetParserConnections()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parserConnections, other.parserConnections);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -552,6 +624,14 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
       sb.append(this.parserConnections);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gatewayId);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -572,6 +652,10 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
 
     if (!isSetParserConnections()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'parserConnections' is unset! Struct:" + toString());
+    }
+
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -665,6 +749,14 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 5: // GATEWAY_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -712,6 +804,11 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
         }
         oprot.writeFieldEnd();
       }
+      if (struct.gatewayId != null) {
+        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+        oprot.writeString(struct.gatewayId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -745,6 +842,7 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
           _iter33.write(oprot);
         }
       }
+      oprot.writeString(struct.gatewayId);
     }
 
     @Override
@@ -778,6 +876,8 @@ public class ParsingTemplate implements org.apache.thrift.TBase<ParsingTemplate,
         }
       }
       struct.setParserConnectionsIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
     }
   }
 
