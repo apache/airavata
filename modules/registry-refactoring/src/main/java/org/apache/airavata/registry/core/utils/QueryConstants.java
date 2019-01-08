@@ -172,8 +172,8 @@ public interface QueryConstants {
     String FIND_PARSING_TEMPLATES_FOR_APPLICATION_INTERFACE_ID = "SELECT PT FROM " + ParsingTemplateEntity.class.getSimpleName() + " PT " +
             "WHERE PT.applicationInterface = :" + DBConstants.ParsingTemplate.APPLICATION_INTERFACE_ID;
     String FIND_ALL_PARSING_TEMPLATES_FOR_GATEWAY_ID = "SELECT PT FROM " + ParsingTemplateEntity.class.getSimpleName() + " PT " +
-            "WHERE PT.gateway = :" + DBConstants.ParsingTemplate.GATEWAY_ID;
+            "WHERE PT.gatewayId = :" + DBConstants.ParsingTemplate.GATEWAY_ID;
 
     String FIND_ALL_PARSERS_FOR_GATEWAY_ID = "SELECT P FROM " + ParserEntity.class.getSimpleName() + " P " +
-            "WHERE P.gateway = :" + DBConstants.Parser.GATEWAY_ID;
+            "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
 }
