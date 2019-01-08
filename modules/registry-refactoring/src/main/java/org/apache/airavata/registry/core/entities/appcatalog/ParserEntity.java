@@ -45,6 +45,9 @@ public class ParserEntity implements Serializable {
     @Column(name = "EXECUTION_COMMAND")
     private String executionCommand;
 
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
     @OneToMany(targetEntity = ParserInputEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "parser", fetch = FetchType.EAGER)
     private List<ParserInputEntity> inputFiles;
@@ -107,5 +110,13 @@ public class ParserEntity implements Serializable {
 
     public void setOutputFiles(List<ParserOutputEntity> outputFiles) {
         this.outputFiles = outputFiles;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 }

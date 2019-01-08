@@ -5730,7 +5730,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             String msg = "Error retrieving Group compute resource policy list. GroupResourceProfileId: "+ groupResourceProfileId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
+            exception.setMessage(msg + " More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
@@ -5750,24 +5750,24 @@ public class AiravataServerHandler implements Airavata.Iface {
             String msg = "Error retrieving GatewayGroups for gateway: " + gatewayId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
+            exception.setMessage(msg + " More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
     }
 
     @Override
-    public Parser getParser(AuthzToken authzToken, String parserId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public Parser getParser(AuthzToken authzToken, String parserId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            Parser parser = regClient.getParser(parserId);
+            Parser parser = regClient.getParser(parserId, gatewayId);
             registryClientPool.returnResource(regClient);
             return parser;
         } catch (Exception e) {
             String msg = "Error retrieving parser with id: " + parserId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
+            exception.setMessage(msg + " More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
@@ -5784,17 +5784,52 @@ public class AiravataServerHandler implements Airavata.Iface {
             String msg = "Error while saving the parser";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
+            exception.setMessage(msg + " More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
     }
 
     @Override
-    public ParsingTemplate getParsingTemplate(AuthzToken authzToken, String templateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<Parser> listAllParsers(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            ParsingTemplate parsingTemplate = regClient.getParsingTemplate(templateId);
+            List<Parser> parsers = regClient.listAllParsers(gatewayId);
+            registryClientPool.returnResource(regClient);
+            return parsers;
+        } catch (Exception e) {
+            String msg = "Error while listing the parsers for gateway " + gatewayId ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean removeParser(AuthzToken authzToken, String parserId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            regClient.removeParser(parserId, gatewayId);
+            registryClientPool.returnResource(regClient);
+            return true;
+        } catch (Exception e) {
+            String msg = "Error while removing the parser " + parserId + " in gateway " + gatewayId ;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public ParsingTemplate getParsingTemplate(AuthzToken authzToken, String templateId, String gatewayId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            ParsingTemplate parsingTemplate = regClient.getParsingTemplate(templateId, gatewayId);
             registryClientPool.returnResource(regClient);
             return parsingTemplate;
         } catch (Exception e) {
@@ -5808,17 +5843,17 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<ParsingTemplate> getParsingTemplatesForExperiment(AuthzToken authzToken, String experimentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<ParsingTemplate> getParsingTemplatesForExperiment(AuthzToken authzToken, String experimentId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            List<ParsingTemplate> parsingTemplates = regClient.getParsingTemplatesForExperiment(experimentId);
+            List<ParsingTemplate> parsingTemplates = regClient.getParsingTemplatesForExperiment(experimentId, gatewayId);
             registryClientPool.returnResource(regClient);
             return parsingTemplates;
         } catch (Exception e) {
             String msg = "Error retrieving parsing templates for experiment: " + experimentId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg+" More info : " + e.getMessage());
+            exception.setMessage(msg + " More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
@@ -5836,6 +5871,40 @@ public class AiravataServerHandler implements Airavata.Iface {
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean removeParsingTemplate(AuthzToken authzToken, String templateId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            regClient.removeParsingTemplate(templateId, gatewayId);
+            registryClientPool.returnResource(regClient);
+            return true;
+        } catch (Exception e) {
+            String msg = "Error while removing the parsing template " + templateId + " in gateway " + gatewayId;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<ParsingTemplate> listAllParsingTemplates(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            List<ParsingTemplate> templates = regClient.listAllParsingTemplates(gatewayId);
+            registryClientPool.returnResource(regClient);
+            return templates;
+        } catch (Exception e) {
+            String msg = "Error while listing the parsing templates for gateway " + gatewayId;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
