@@ -205,11 +205,15 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('   getGroupBatchQueueResourcePolicyList(AuthzToken authzToken, string groupResourceProfileId)')
     print('   getGroupComputeResourcePolicyList(AuthzToken authzToken, string groupResourceProfileId)')
     print('  GatewayGroups getGatewayGroups(AuthzToken authzToken)')
-    print('  Parser getParser(AuthzToken authzToken, string parserId)')
+    print('  Parser getParser(AuthzToken authzToken, string parserId, string gatewayId)')
     print('  string saveParser(AuthzToken authzToken, Parser parser)')
-    print('  ParsingTemplate getParsingTemplate(AuthzToken authzToken, string templateId)')
-    print('   getParsingTemplatesForExperiment(AuthzToken authzToken, string experimentId)')
+    print('   listAllParsers(AuthzToken authzToken, string gatewayId)')
+    print('  bool removeParser(AuthzToken authzToken, string parserId, string gatewayId)')
+    print('  ParsingTemplate getParsingTemplate(AuthzToken authzToken, string templateId, string gatewayId)')
+    print('   getParsingTemplatesForExperiment(AuthzToken authzToken, string experimentId, string gatewayId)')
     print('  string saveParsingTemplate(AuthzToken authzToken, ParsingTemplate parsingTemplate)')
+    print('  bool removeParsingTemplate(AuthzToken authzToken, string templateId, string gatewayId)')
+    print('   listAllParsingTemplates(AuthzToken authzToken, string gatewayId)')
     print('')
     sys.exit(0)
 
@@ -1376,10 +1380,10 @@ elif cmd == 'getGatewayGroups':
     pp.pprint(client.getGatewayGroups(eval(args[0]),))
 
 elif cmd == 'getParser':
-    if len(args) != 2:
-        print('getParser requires 2 args')
+    if len(args) != 3:
+        print('getParser requires 3 args')
         sys.exit(1)
-    pp.pprint(client.getParser(eval(args[0]), args[1],))
+    pp.pprint(client.getParser(eval(args[0]), args[1], args[2],))
 
 elif cmd == 'saveParser':
     if len(args) != 2:
@@ -1387,23 +1391,47 @@ elif cmd == 'saveParser':
         sys.exit(1)
     pp.pprint(client.saveParser(eval(args[0]), eval(args[1]),))
 
-elif cmd == 'getParsingTemplate':
+elif cmd == 'listAllParsers':
     if len(args) != 2:
-        print('getParsingTemplate requires 2 args')
+        print('listAllParsers requires 2 args')
         sys.exit(1)
-    pp.pprint(client.getParsingTemplate(eval(args[0]), args[1],))
+    pp.pprint(client.listAllParsers(eval(args[0]), args[1],))
+
+elif cmd == 'removeParser':
+    if len(args) != 3:
+        print('removeParser requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeParser(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'getParsingTemplate':
+    if len(args) != 3:
+        print('getParsingTemplate requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getParsingTemplate(eval(args[0]), args[1], args[2],))
 
 elif cmd == 'getParsingTemplatesForExperiment':
-    if len(args) != 2:
-        print('getParsingTemplatesForExperiment requires 2 args')
+    if len(args) != 3:
+        print('getParsingTemplatesForExperiment requires 3 args')
         sys.exit(1)
-    pp.pprint(client.getParsingTemplatesForExperiment(eval(args[0]), args[1],))
+    pp.pprint(client.getParsingTemplatesForExperiment(eval(args[0]), args[1], args[2],))
 
 elif cmd == 'saveParsingTemplate':
     if len(args) != 2:
         print('saveParsingTemplate requires 2 args')
         sys.exit(1)
     pp.pprint(client.saveParsingTemplate(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'removeParsingTemplate':
+    if len(args) != 3:
+        print('removeParsingTemplate requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeParsingTemplate(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'listAllParsingTemplates':
+    if len(args) != 2:
+        print('listAllParsingTemplates requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.listAllParsingTemplates(eval(args[0]), args[1],))
 
 else:
     print('Unrecognized method %s' % cmd)

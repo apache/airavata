@@ -274,6 +274,7 @@ class Parser(object):
      - executionCommand
      - inputFiles
      - outputFiles
+     - gatewayId
     """
 
     thrift_spec = (
@@ -285,9 +286,10 @@ class Parser(object):
         (5, TType.STRING, 'executionCommand', 'UTF8', None, ),  # 5
         (6, TType.LIST, 'inputFiles', (TType.STRUCT, (ParserInput, ParserInput.thrift_spec), False), None, ),  # 6
         (7, TType.LIST, 'outputFiles', (TType.STRUCT, (ParserOutput, ParserOutput.thrift_spec), False), None, ),  # 7
+        (8, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 8
     )
 
-    def __init__(self, id=None, imageName=None, outputDirPath=None, inputDirPath=None, executionCommand=None, inputFiles=None, outputFiles=None,):
+    def __init__(self, id=None, imageName=None, outputDirPath=None, inputDirPath=None, executionCommand=None, inputFiles=None, outputFiles=None, gatewayId=None,):
         self.id = id
         self.imageName = imageName
         self.outputDirPath = outputDirPath
@@ -295,6 +297,7 @@ class Parser(object):
         self.executionCommand = executionCommand
         self.inputFiles = inputFiles
         self.outputFiles = outputFiles
+        self.gatewayId = gatewayId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -352,6 +355,11 @@ class Parser(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -396,6 +404,10 @@ class Parser(object):
                 iter13.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
+        if self.gatewayId is not None:
+            oprot.writeFieldBegin('gatewayId', TType.STRING, 8)
+            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -414,6 +426,8 @@ class Parser(object):
             raise TProtocolException(message='Required field inputFiles is unset!')
         if self.outputFiles is None:
             raise TProtocolException(message='Required field outputFiles is unset!')
+        if self.gatewayId is None:
+            raise TProtocolException(message='Required field gatewayId is unset!')
         return
 
     def __repr__(self):
@@ -790,6 +804,7 @@ class ParsingTemplate(object):
      - applicationInterface
      - initialInputs
      - parserConnections
+     - gatewayId
     """
 
     thrift_spec = (
@@ -798,13 +813,15 @@ class ParsingTemplate(object):
         (2, TType.STRING, 'applicationInterface', 'UTF8', None, ),  # 2
         (3, TType.LIST, 'initialInputs', (TType.STRUCT, (ParsingTemplateInput, ParsingTemplateInput.thrift_spec), False), None, ),  # 3
         (4, TType.LIST, 'parserConnections', (TType.STRUCT, (ParserConnector, ParserConnector.thrift_spec), False), None, ),  # 4
+        (5, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 5
     )
 
-    def __init__(self, id=None, applicationInterface=None, initialInputs=None, parserConnections=None,):
+    def __init__(self, id=None, applicationInterface=None, initialInputs=None, parserConnections=None, gatewayId=None,):
         self.id = id
         self.applicationInterface = applicationInterface
         self.initialInputs = initialInputs
         self.parserConnections = parserConnections
+        self.gatewayId = gatewayId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -847,6 +864,11 @@ class ParsingTemplate(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -879,6 +901,10 @@ class ParsingTemplate(object):
                 iter34.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
+        if self.gatewayId is not None:
+            oprot.writeFieldBegin('gatewayId', TType.STRING, 5)
+            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -891,6 +917,8 @@ class ParsingTemplate(object):
             raise TProtocolException(message='Required field initialInputs is unset!')
         if self.parserConnections is None:
             raise TProtocolException(message='Required field parserConnections is unset!')
+        if self.gatewayId is None:
+            raise TProtocolException(message='Required field gatewayId is unset!')
         return
 
     def __repr__(self):
