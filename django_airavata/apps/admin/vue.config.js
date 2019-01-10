@@ -8,7 +8,6 @@ module.exports = {
       : "/static/django_airavata_admin/dist/",
   outputDir: "./static/django_airavata_admin/dist",
   css: {
-    extract: true,
     loaderOptions: {
       postcss: {
         config: {
@@ -33,11 +32,13 @@ module.exports = {
        * See also: https://bitbucket.org/calidae/dejavu/src/d63d10b0030a951c3cafa6b574dad25b3bef3fe9/%7B%7Bcookiecutter.project_slug%7D%7D/frontend/vue.config.js?at=master&fileviewer=file-view-default#vue.config.js-27
        */
       splitChunks: {
+        /* NOTE: admin doesn't have a common chunk because it only has one entry point. */
         cacheGroups: {
-          commons: {
+          vendors: {
+            name: 'chunk-vendors',
             test: /[\\/]node_modules[\\/]/,
-            name: "vendor",
-            chunks: "all"
+            priority: -10,
+            chunks: 'initial'
           }
         }
       }

@@ -63,6 +63,7 @@ export {
   components,
   errors,
   layouts,
+  mixins,
   notifications,
   utils
 };

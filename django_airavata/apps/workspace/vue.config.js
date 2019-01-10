@@ -16,7 +16,6 @@ module.exports = {
       'edit-experiment': './static/django_airavata_workspace/js/entry-edit-experiment',
   },
   css: {
-    extract: true,
     loaderOptions: {
       postcss: {
         config: {
@@ -42,10 +41,18 @@ module.exports = {
        */
       splitChunks: {
         cacheGroups: {
-          commons: {
+          vendors: {
+            name: 'chunk-vendors',
             test: /[\\/]node_modules[\\/]/,
-            name: "vendor",
-            chunks: "all"
+            priority: -10,
+            chunks: 'initial'
+          },
+          common: {
+            name: 'chunk-common',
+            minChunks: 2,
+            priority: -20,
+            chunks: 'initial',
+            reuseExistingChunk: true
           }
         }
       }

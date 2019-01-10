@@ -30,13 +30,13 @@
     </div>
     <div class="row">
       <div class="col">
-        <b-button variant="primary" @click="saveAll" :disabled="readonly || !isDirty">
+        <b-button class="editor-button" variant="primary" @click="saveAll" :disabled="readonly || !isDirty">
           Save
         </b-button>
-        <delete-button v-if="id" :disabled="readonly" @delete="deleteApplication">
+        <delete-button class="editor-button" v-if="id" :disabled="readonly" @delete="deleteApplication">
           Are you sure you want to delete the {{ appModule ? appModule.appModuleName : "" }} application?
         </delete-button>
-        <b-button variant="secondary" @click="cancel">
+        <b-button class="editor-button" variant="secondary" @click="cancel">
           Cancel
         </b-button>
       </div>
@@ -623,10 +623,13 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 /* style the containing div, in base.html template */
 /* .main-content {
     background-color: #ffffff;
 } */
+.editor-button + .editor-button {
+  margin-left: 0.25em;
+}
 </style>
 
