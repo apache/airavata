@@ -32,6 +32,7 @@ import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -40,7 +41,6 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,6 +157,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         return new File(outputPath + getProcessId());
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                 getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
@@ -165,19 +166,44 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobIc) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
-        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobIc).getRawCommand(), null);
+    public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobId) throws Exception {
 
-        return jobManagerConfiguration.getParser().parseJobStatus(jobIc, commandOutput.getStdOut());
+        ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface());
+
+        if (resourceJobManager == null) {
+            throw new Exception("Resource job manager can not be null for protocol " + getTaskContext().getJobSubmissionProtocol() + " and job id " + jobId);
+        }
+
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+
+        if (jobManagerConfiguration == null) {
+            throw new Exception("Job manager configuration can not be null for protocol " + getTaskContext().getJobSubmissionProtocol() + " and job id " + jobId);
+        }
+
+        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobId).getRawCommand(), null);
+
+        return jobManagerConfiguration.getParser().parseJobStatus(jobId, commandOutput.getStdOut());
 
     }
 
     @SuppressWarnings("WeakerAccess")
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+
+        ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface());
+
+        if (resourceJobManager == null) {
+            throw new Exception("Resource job manager can not be null for protocol " + getTaskContext().getJobSubmissionProtocol()
+                    + " and job name " + jobName + " and user " + userName);
+        }
+
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+
+        if (jobManagerConfiguration == null) {
+            throw new Exception("Job manager configuration can not be null for protocol "
+                    + getTaskContext().getJobSubmissionProtocol() + " and job name " + jobName + " and user " + userName);
+        }
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
