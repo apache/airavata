@@ -67,7 +67,7 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
 
     @Test(groups = {"setupTests"})
     public void testSetup() throws Exception {
-        String version = this.client.getAPIVersion(null);
+        String version = this.client.getAPIVersion();
         Assert.assertNotNull(version);
         log("Airavata version - " + version);
 

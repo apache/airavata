@@ -201,7 +201,7 @@ public class SecureClient {
             authzToken.setClaimsMap(claimsMap);
             if (methodNumber == 1) {
 
-                String version = client.getAPIVersion(authzToken);
+                String version = client.getAPIVersion();
                 System.out.println("");
                 System.out.println("Airavata API version: " + version);
                 System.out.println("");
