@@ -1,6 +1,7 @@
 # Apache Airavata Django Portal
 
 [![Build Status](https://travis-ci.org/apache/airavata-django-portal.svg?branch=master)](https://travis-ci.org/apache/airavata-django-portal)
+[![Build Status](https://readthedocs.org/projects/apache-airavata-django-portal/badge/?version=latest)](https://apache-airavata-django-portal.readthedocs.io/en/latest/?badge=latest)
 
 The Airavata Django Portal is a web interface to the [Apache
 Airavata](http://airavata.apache.org/) API implemented using the Django web
@@ -72,7 +73,16 @@ Node.js](https://nodejs.org/en/download/).
 
 ## Documentation
 
-Documentation currently resides in the `docs` directory.
+Documentation currently is available at
+https://apache-airavata-django-portal.readthedocs.io/en/latest/ (built from
+the 'docs' directory).
+
+To build the documentation locally, first [set up a development
+environment](#setting-up-development-environment), then run the following in
+the root of the project:
+```
+mkdocs serve
+```
 
 ## Feedback
 
