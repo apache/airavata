@@ -32,6 +32,7 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.model.user.user_profile_modelConstants;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
@@ -59,6 +60,11 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     public UserProfileServiceHandler() {
 
         userProfileRepository = new UserProfileRepository();
+    }
+
+    @Override
+    public String getAPIVersion() throws UserProfileServiceException, TException {
+        return user_profile_modelConstants.USER_PROFILE_VERSION;
     }
 
     @Override

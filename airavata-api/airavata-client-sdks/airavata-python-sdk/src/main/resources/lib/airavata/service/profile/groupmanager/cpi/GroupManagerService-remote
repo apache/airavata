@@ -24,6 +24,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('Usage: ' + sys.argv[0] + ' [-h host[:port]] [-u url] [-f[ramed]] [-s[sl]] [-novalidate] [-ca_certs certs] [-keyfile keyfile] [-certfile certfile] function [arg1 [arg2...]]')
     print('')
     print('Functions:')
+    print('  string getAPIVersion()')
     print('  string createGroup(AuthzToken authzToken, GroupModel groupModel)')
     print('  bool updateGroup(AuthzToken authzToken, GroupModel groupModel)')
     print('  bool deleteGroup(AuthzToken authzToken, string groupId, string ownerId)')
@@ -116,7 +117,13 @@ protocol = TBinaryProtocol(transport)
 client = GroupManagerService.Client(protocol)
 transport.open()
 
-if cmd == 'createGroup':
+if cmd == 'getAPIVersion':
+    if len(args) != 0:
+        print('getAPIVersion requires 0 args')
+        sys.exit(1)
+    pp.pprint(client.getAPIVersion())
+
+elif cmd == 'createGroup':
     if len(args) != 2:
         print('createGroup requires 2 args')
         sys.exit(1)

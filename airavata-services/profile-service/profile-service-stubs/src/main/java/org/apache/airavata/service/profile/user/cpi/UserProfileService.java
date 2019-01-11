@@ -28,6 +28,8 @@ public class UserProfileService {
 
   public interface Iface {
 
+    public java.lang.String getAPIVersion() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException;
+
     /**
      * Create an initial UserProfile based on information in the IAM service for this user.
      * 
@@ -50,6 +52,8 @@ public class UserProfileService {
   }
 
   public interface AsyncIface {
+
+    public void getAPIVersion(org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException;
 
     public void initializeUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException;
 
@@ -85,6 +89,31 @@ public class UserProfileService {
 
     public Client(org.apache.thrift.protocol.TProtocol iprot, org.apache.thrift.protocol.TProtocol oprot) {
       super(iprot, oprot);
+    }
+
+    public java.lang.String getAPIVersion() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    {
+      send_getAPIVersion();
+      return recv_getAPIVersion();
+    }
+
+    public void send_getAPIVersion() throws org.apache.thrift.TException
+    {
+      getAPIVersion_args args = new getAPIVersion_args();
+      sendBase("getAPIVersion", args);
+    }
+
+    public java.lang.String recv_getAPIVersion() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    {
+      getAPIVersion_result result = new getAPIVersion_result();
+      receiveBase(result, "getAPIVersion");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.upe != null) {
+        throw result.upe;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result");
     }
 
     public java.lang.String initializeUserProfile(org.apache.airavata.model.security.AuthzToken authzToken) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
@@ -317,6 +346,35 @@ public class UserProfileService {
 
     public AsyncClient(org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.async.TAsyncClientManager clientManager, org.apache.thrift.transport.TNonblockingTransport transport) {
       super(protocolFactory, clientManager, transport);
+    }
+
+    public void getAPIVersion(org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getAPIVersion_call method_call = new getAPIVersion_call(resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getAPIVersion_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.String> {
+      public getAPIVersion_call(org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getAPIVersion", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getAPIVersion_args args = new getAPIVersion_args();
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public java.lang.String getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getAPIVersion();
+      }
     }
 
     public void initializeUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException {
@@ -589,6 +647,7 @@ public class UserProfileService {
     }
 
     private static <I extends Iface> java.util.Map<java.lang.String,  org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> getProcessMap(java.util.Map<java.lang.String, org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
+      processMap.put("getAPIVersion", new getAPIVersion());
       processMap.put("initializeUserProfile", new initializeUserProfile());
       processMap.put("addUserProfile", new addUserProfile());
       processMap.put("updateUserProfile", new updateUserProfile());
@@ -597,6 +656,30 @@ public class UserProfileService {
       processMap.put("getAllUserProfilesInGateway", new getAllUserProfilesInGateway());
       processMap.put("doesUserExist", new doesUserExist());
       return processMap;
+    }
+
+    public static class getAPIVersion<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getAPIVersion_args> {
+      public getAPIVersion() {
+        super("getAPIVersion");
+      }
+
+      public getAPIVersion_args getEmptyArgsInstance() {
+        return new getAPIVersion_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getAPIVersion_result getResult(I iface, getAPIVersion_args args) throws org.apache.thrift.TException {
+        getAPIVersion_result result = new getAPIVersion_result();
+        try {
+          result.success = iface.getAPIVersion();
+        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+          result.upe = upe;
+        }
+        return result;
+      }
     }
 
     public static class initializeUserProfile<I extends Iface> extends org.apache.thrift.ProcessFunction<I, initializeUserProfile_args> {
@@ -797,6 +880,7 @@ public class UserProfileService {
     }
 
     private static <I extends AsyncIface> java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
+      processMap.put("getAPIVersion", new getAPIVersion());
       processMap.put("initializeUserProfile", new initializeUserProfile());
       processMap.put("addUserProfile", new addUserProfile());
       processMap.put("updateUserProfile", new updateUserProfile());
@@ -805,6 +889,71 @@ public class UserProfileService {
       processMap.put("getAllUserProfilesInGateway", new getAllUserProfilesInGateway());
       processMap.put("doesUserExist", new doesUserExist());
       return processMap;
+    }
+
+    public static class getAPIVersion<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAPIVersion_args, java.lang.String> {
+      public getAPIVersion() {
+        super("getAPIVersion");
+      }
+
+      public getAPIVersion_args getEmptyArgsInstance() {
+        return new getAPIVersion_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<java.lang.String> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.lang.String>() { 
+          public void onComplete(java.lang.String o) {
+            getAPIVersion_result result = new getAPIVersion_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            getAPIVersion_result result = new getAPIVersion_result();
+            if (e instanceof org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) {
+              result.upe = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
+              result.setUpeIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getAPIVersion_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException {
+        iface.getAPIVersion(resultHandler);
+      }
     }
 
     public static class initializeUserProfile<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, initializeUserProfile_args, java.lang.String> {
@@ -1293,6 +1442,724 @@ public class UserProfileService {
       }
     }
 
+  }
+
+  public static class getAPIVersion_args implements org.apache.thrift.TBase<getAPIVersion_args, getAPIVersion_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAPIVersion_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAPIVersion_args");
+
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getAPIVersion_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getAPIVersion_argsTupleSchemeFactory();
+
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+;
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAPIVersion_args.class, metaDataMap);
+    }
+
+    public getAPIVersion_args() {
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getAPIVersion_args(getAPIVersion_args other) {
+    }
+
+    public getAPIVersion_args deepCopy() {
+      return new getAPIVersion_args(this);
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getAPIVersion_args)
+        return this.equals((getAPIVersion_args)that);
+      return false;
+    }
+
+    public boolean equals(getAPIVersion_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getAPIVersion_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getAPIVersion_args(");
+      boolean first = true;
+
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getAPIVersion_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAPIVersion_argsStandardScheme getScheme() {
+        return new getAPIVersion_argsStandardScheme();
+      }
+    }
+
+    private static class getAPIVersion_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getAPIVersion_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAPIVersion_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAPIVersion_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getAPIVersion_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAPIVersion_argsTupleScheme getScheme() {
+        return new getAPIVersion_argsTupleScheme();
+      }
+    }
+
+    private static class getAPIVersion_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getAPIVersion_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class getAPIVersion_result implements org.apache.thrift.TBase<getAPIVersion_result, getAPIVersion_result._Fields>, java.io.Serializable, Cloneable, Comparable<getAPIVersion_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAPIVersion_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField UPE_FIELD_DESC = new org.apache.thrift.protocol.TField("upe", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getAPIVersion_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getAPIVersion_resultTupleSchemeFactory();
+
+    public java.lang.String success; // required
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      UPE((short)1, "upe");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // UPE
+            return UPE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.UPE, new org.apache.thrift.meta_data.FieldMetaData("upe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException.class)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAPIVersion_result.class, metaDataMap);
+    }
+
+    public getAPIVersion_result() {
+    }
+
+    public getAPIVersion_result(
+      java.lang.String success,
+      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe)
+    {
+      this();
+      this.success = success;
+      this.upe = upe;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getAPIVersion_result(getAPIVersion_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
+      if (other.isSetUpe()) {
+        this.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.upe);
+      }
+    }
+
+    public getAPIVersion_result deepCopy() {
+      return new getAPIVersion_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.upe = null;
+    }
+
+    public java.lang.String getSuccess() {
+      return this.success;
+    }
+
+    public getAPIVersion_result setSuccess(java.lang.String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUpe() {
+      return this.upe;
+    }
+
+    public getAPIVersion_result setUpe(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+      this.upe = upe;
+      return this;
+    }
+
+    public void unsetUpe() {
+      this.upe = null;
+    }
+
+    /** Returns true if field upe is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpe() {
+      return this.upe != null;
+    }
+
+    public void setUpeIsSet(boolean value) {
+      if (!value) {
+        this.upe = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.lang.String)value);
+        }
+        break;
+
+      case UPE:
+        if (value == null) {
+          unsetUpe();
+        } else {
+          setUpe((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case UPE:
+        return getUpe();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case UPE:
+        return isSetUpe();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getAPIVersion_result)
+        return this.equals((getAPIVersion_result)that);
+      return false;
+    }
+
+    public boolean equals(getAPIVersion_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_upe = true && this.isSetUpe();
+      boolean that_present_upe = true && that.isSetUpe();
+      if (this_present_upe || that_present_upe) {
+        if (!(this_present_upe && that_present_upe))
+          return false;
+        if (!this.upe.equals(that.upe))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetSuccess()) ? 131071 : 524287);
+      if (isSetSuccess())
+        hashCode = hashCode * 8191 + success.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetUpe()) ? 131071 : 524287);
+      if (isSetUpe())
+        hashCode = hashCode * 8191 + upe.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getAPIVersion_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetUpe()).compareTo(other.isSetUpe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUpe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.upe, other.upe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getAPIVersion_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("upe:");
+      if (this.upe == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.upe);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getAPIVersion_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAPIVersion_resultStandardScheme getScheme() {
+        return new getAPIVersion_resultStandardScheme();
+      }
+    }
+
+    private static class getAPIVersion_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getAPIVersion_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAPIVersion_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // UPE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+                struct.upe.read(iprot);
+                struct.setUpeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAPIVersion_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.upe != null) {
+          oprot.writeFieldBegin(UPE_FIELD_DESC);
+          struct.upe.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getAPIVersion_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAPIVersion_resultTupleScheme getScheme() {
+        return new getAPIVersion_resultTupleScheme();
+      }
+    }
+
+    private static class getAPIVersion_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getAPIVersion_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetUpe()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
+        if (struct.isSetUpe()) {
+          struct.upe.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+          struct.upe.read(iprot);
+          struct.setUpeIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
   }
 
   public static class initializeUserProfile_args implements org.apache.thrift.TBase<initializeUserProfile_args, initializeUserProfile_args._Fields>, java.io.Serializable, Cloneable, Comparable<initializeUserProfile_args>   {

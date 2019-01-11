@@ -7,6 +7,7 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
+import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
@@ -30,6 +31,11 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
     public GroupManagerServiceHandler() {
 
+    }
+
+    @Override
+    public String getAPIVersion() throws GroupManagerServiceException, TException {
+        return group_manager_cpiConstants.GROUP_MANAGER_CPI_VERSION;
     }
 
     @Override

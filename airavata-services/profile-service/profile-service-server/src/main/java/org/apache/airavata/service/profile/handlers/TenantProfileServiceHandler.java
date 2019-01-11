@@ -64,16 +64,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    @SecurityCheck
-    public String getAPIVersion(AuthzToken authzToken) throws TenantProfileServiceException, AuthorizationException, TException {
-        try {
-            return profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
-        } catch (Exception ex) {
-            logger.error("Error getting API version, reason: " + ex.getMessage(), ex);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error getting API version, reason: " + ex.getMessage());
-            throw exception;
-        }
+    public String getAPIVersion() throws TenantProfileServiceException, TException {
+        return profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
     }
 
     @Override
