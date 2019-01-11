@@ -9,18 +9,22 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
 new Vue({
-  el: "#parser-details",
-  template:
-    '<parser-details-container v-bind:parser-id="parserId"></parser-details-container>',
-  data: {
-    parserId: null
+  render(h) {
+    return h(ParserDetailsContainer, {
+      props: {
+        parserId: this.parserId
+      }
+    });
   },
-  components: {
-    ParserDetailsContainer
+  data() {
+    return {
+      parserId: null,
+      launching: false
+    };
   },
-  beforeMount: function() {
+  beforeMount() {
     if (this.$el.dataset.parserId) {
       this.parserId = this.$el.dataset.parserId;
     }
   }
-});
+}).$mount("#parser-details");

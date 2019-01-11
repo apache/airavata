@@ -233,15 +233,15 @@ WEBPACK_LOADER = {
             'dist',
             'webpack-stats.json'),
     },
-    'WORKSPACE': {
-        'BUNDLE_DIR_NAME': 'django_airavata_workspace/dist/',
+    'DATAPARSERS': {
+        'BUNDLE_DIR_NAME': 'django_airavata_dataparsers/dist/',
         'STATS_FILE': os.path.join(
             BASE_DIR,
             'django_airavata',
             'apps',
-            'workspace',
+            'dataparsers',
             'static',
-            'django_airavata_workspace',
+            'django_airavata_dataparsers',
             'dist',
             'webpack-stats.json'),
     },
@@ -254,6 +254,18 @@ WEBPACK_LOADER = {
             'groups',
             'static',
             'django_airavata_groups',
+            'dist',
+            'webpack-stats.json'),
+    },
+    'WORKSPACE': {
+        'BUNDLE_DIR_NAME': 'django_airavata_workspace/dist/',
+        'STATS_FILE': os.path.join(
+            BASE_DIR,
+            'django_airavata',
+            'apps',
+            'workspace',
+            'static',
+            'django_airavata_workspace',
             'dist',
             'webpack-stats.json'),
     },

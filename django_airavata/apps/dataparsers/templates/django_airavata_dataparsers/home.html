@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block css %}
-{{ block.super }}
+{% comment %} {{ block.super }} {% endcomment %}
 {% comment %}Load any CSS specific to this page here, if necessary{% endcomment %}
 {% endblock %}
 
@@ -14,6 +14,6 @@
 {% endblock content %}
 
 {% block scripts %}
-{{ block.super }}
+{% comment %} {{ block.super }} {% endcomment %}
 {% comment %}Load any JS specific to this page here, if necessary{% endcomment %}
 {% endblock %}

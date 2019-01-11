@@ -14,7 +14,8 @@ def home(request):
 
 def parser_details(request, parser_id):
     return render(request, 'django_airavata_dataparsers/parser-details.html', {
-        "parser_id": parser_id
+        "parser_id": parser_id,
+        "bundle_name": "parser-details"
     })
 
 def edit_parser(request, parser_id):
