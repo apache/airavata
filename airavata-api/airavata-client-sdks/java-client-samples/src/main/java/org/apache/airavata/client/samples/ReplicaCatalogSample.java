@@ -40,7 +40,7 @@ public class ReplicaCatalogSample {
     public static void main(String[] args) {
         try {
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println(client.getAPIVersion(authzToken));
+            System.out.println(client.getAPIVersion());
 
             DataProductModel dataProductModel = new DataProductModel();
             dataProductModel.setGatewayId(DEFAULT_GATEWAY);

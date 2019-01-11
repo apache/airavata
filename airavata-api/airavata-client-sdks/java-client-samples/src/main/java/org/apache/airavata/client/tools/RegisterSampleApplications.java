@@ -148,7 +148,7 @@ public class RegisterSampleApplications {
     public static void main(String[] args) {
         try {
             Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavataClient.getAPIVersion(null));
+            System.out.println("API version is " + airavataClient.getAPIVersion());
 
             RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
 
