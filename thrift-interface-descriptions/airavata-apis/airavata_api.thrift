@@ -81,11 +81,10 @@ service Airavata {
    /**
    * Fetch Apache Airavata API version
    **/
-  string getAPIVersion(1: required security_model.AuthzToken authzToken)
+  string getAPIVersion()
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase,
-                4: airavata_errors.AuthorizationException ae)
+                3: airavata_errors.AiravataSystemException ase)
 
  /**
  * Verify if User Exists within Airavata.

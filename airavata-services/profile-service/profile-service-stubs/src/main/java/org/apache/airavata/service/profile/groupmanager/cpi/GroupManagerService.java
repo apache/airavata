@@ -28,6 +28,8 @@ public class GroupManagerService {
 
   public interface Iface {
 
+    public java.lang.String getAPIVersion() throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.thrift.TException;
+
     public java.lang.String createGroup(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.group.GroupModel groupModel) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
     public boolean updateGroup(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.group.GroupModel groupModel) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
@@ -57,6 +59,8 @@ public class GroupManagerService {
   }
 
   public interface AsyncIface {
+
+    public void getAPIVersion(org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException;
 
     public void createGroup(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.group.GroupModel groupModel, org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException;
 
@@ -104,6 +108,31 @@ public class GroupManagerService {
 
     public Client(org.apache.thrift.protocol.TProtocol iprot, org.apache.thrift.protocol.TProtocol oprot) {
       super(iprot, oprot);
+    }
+
+    public java.lang.String getAPIVersion() throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.thrift.TException
+    {
+      send_getAPIVersion();
+      return recv_getAPIVersion();
+    }
+
+    public void send_getAPIVersion() throws org.apache.thrift.TException
+    {
+      getAPIVersion_args args = new getAPIVersion_args();
+      sendBase("getAPIVersion", args);
+    }
+
+    public java.lang.String recv_getAPIVersion() throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.thrift.TException
+    {
+      getAPIVersion_result result = new getAPIVersion_result();
+      receiveBase(result, "getAPIVersion");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.gse != null) {
+        throw result.gse;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result");
     }
 
     public java.lang.String createGroup(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.group.GroupModel groupModel) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
@@ -519,6 +548,35 @@ public class GroupManagerService {
 
     public AsyncClient(org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.async.TAsyncClientManager clientManager, org.apache.thrift.transport.TNonblockingTransport transport) {
       super(protocolFactory, clientManager, transport);
+    }
+
+    public void getAPIVersion(org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getAPIVersion_call method_call = new getAPIVersion_call(resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getAPIVersion_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.String> {
+      public getAPIVersion_call(org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getAPIVersion", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getAPIVersion_args args = new getAPIVersion_args();
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public java.lang.String getResult() throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getAPIVersion();
+      }
     }
 
     public void createGroup(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.group.GroupModel groupModel, org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException {
@@ -1010,6 +1068,7 @@ public class GroupManagerService {
     }
 
     private static <I extends Iface> java.util.Map<java.lang.String,  org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> getProcessMap(java.util.Map<java.lang.String, org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
+      processMap.put("getAPIVersion", new getAPIVersion());
       processMap.put("createGroup", new createGroup());
       processMap.put("updateGroup", new updateGroup());
       processMap.put("deleteGroup", new deleteGroup());
@@ -1024,6 +1083,30 @@ public class GroupManagerService {
       processMap.put("hasAdminAccess", new hasAdminAccess());
       processMap.put("hasOwnerAccess", new hasOwnerAccess());
       return processMap;
+    }
+
+    public static class getAPIVersion<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getAPIVersion_args> {
+      public getAPIVersion() {
+        super("getAPIVersion");
+      }
+
+      public getAPIVersion_args getEmptyArgsInstance() {
+        return new getAPIVersion_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getAPIVersion_result getResult(I iface, getAPIVersion_args args) throws org.apache.thrift.TException {
+        getAPIVersion_result result = new getAPIVersion_result();
+        try {
+          result.success = iface.getAPIVersion();
+        } catch (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
+          result.gse = gse;
+        }
+        return result;
+      }
     }
 
     public static class createGroup<I extends Iface> extends org.apache.thrift.ProcessFunction<I, createGroup_args> {
@@ -1386,6 +1469,7 @@ public class GroupManagerService {
     }
 
     private static <I extends AsyncIface> java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
+      processMap.put("getAPIVersion", new getAPIVersion());
       processMap.put("createGroup", new createGroup());
       processMap.put("updateGroup", new updateGroup());
       processMap.put("deleteGroup", new deleteGroup());
@@ -1400,6 +1484,71 @@ public class GroupManagerService {
       processMap.put("hasAdminAccess", new hasAdminAccess());
       processMap.put("hasOwnerAccess", new hasOwnerAccess());
       return processMap;
+    }
+
+    public static class getAPIVersion<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAPIVersion_args, java.lang.String> {
+      public getAPIVersion() {
+        super("getAPIVersion");
+      }
+
+      public getAPIVersion_args getEmptyArgsInstance() {
+        return new getAPIVersion_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<java.lang.String> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.lang.String>() { 
+          public void onComplete(java.lang.String o) {
+            getAPIVersion_result result = new getAPIVersion_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            getAPIVersion_result result = new getAPIVersion_result();
+            if (e instanceof org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException) {
+              result.gse = (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException) e;
+              result.setGseIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getAPIVersion_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException {
+        iface.getAPIVersion(resultHandler);
+      }
     }
 
     public static class createGroup<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, createGroup_args, java.lang.String> {
@@ -2308,6 +2457,724 @@ public class GroupManagerService {
       }
     }
 
+  }
+
+  public static class getAPIVersion_args implements org.apache.thrift.TBase<getAPIVersion_args, getAPIVersion_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAPIVersion_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAPIVersion_args");
+
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getAPIVersion_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getAPIVersion_argsTupleSchemeFactory();
+
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+;
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAPIVersion_args.class, metaDataMap);
+    }
+
+    public getAPIVersion_args() {
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getAPIVersion_args(getAPIVersion_args other) {
+    }
+
+    public getAPIVersion_args deepCopy() {
+      return new getAPIVersion_args(this);
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getAPIVersion_args)
+        return this.equals((getAPIVersion_args)that);
+      return false;
+    }
+
+    public boolean equals(getAPIVersion_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getAPIVersion_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getAPIVersion_args(");
+      boolean first = true;
+
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getAPIVersion_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAPIVersion_argsStandardScheme getScheme() {
+        return new getAPIVersion_argsStandardScheme();
+      }
+    }
+
+    private static class getAPIVersion_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getAPIVersion_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAPIVersion_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAPIVersion_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getAPIVersion_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAPIVersion_argsTupleScheme getScheme() {
+        return new getAPIVersion_argsTupleScheme();
+      }
+    }
+
+    private static class getAPIVersion_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getAPIVersion_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class getAPIVersion_result implements org.apache.thrift.TBase<getAPIVersion_result, getAPIVersion_result._Fields>, java.io.Serializable, Cloneable, Comparable<getAPIVersion_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAPIVersion_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField GSE_FIELD_DESC = new org.apache.thrift.protocol.TField("gse", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getAPIVersion_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getAPIVersion_resultTupleSchemeFactory();
+
+    public java.lang.String success; // required
+    public org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      GSE((short)1, "gse");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // GSE
+            return GSE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.GSE, new org.apache.thrift.meta_data.FieldMetaData("gse", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException.class)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAPIVersion_result.class, metaDataMap);
+    }
+
+    public getAPIVersion_result() {
+    }
+
+    public getAPIVersion_result(
+      java.lang.String success,
+      org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse)
+    {
+      this();
+      this.success = success;
+      this.gse = gse;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getAPIVersion_result(getAPIVersion_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
+      if (other.isSetGse()) {
+        this.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException(other.gse);
+      }
+    }
+
+    public getAPIVersion_result deepCopy() {
+      return new getAPIVersion_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.gse = null;
+    }
+
+    public java.lang.String getSuccess() {
+      return this.success;
+    }
+
+    public getAPIVersion_result setSuccess(java.lang.String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException getGse() {
+      return this.gse;
+    }
+
+    public getAPIVersion_result setGse(org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
+      this.gse = gse;
+      return this;
+    }
+
+    public void unsetGse() {
+      this.gse = null;
+    }
+
+    /** Returns true if field gse is set (has been assigned a value) and false otherwise */
+    public boolean isSetGse() {
+      return this.gse != null;
+    }
+
+    public void setGseIsSet(boolean value) {
+      if (!value) {
+        this.gse = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.lang.String)value);
+        }
+        break;
+
+      case GSE:
+        if (value == null) {
+          unsetGse();
+        } else {
+          setGse((org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case GSE:
+        return getGse();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case GSE:
+        return isSetGse();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getAPIVersion_result)
+        return this.equals((getAPIVersion_result)that);
+      return false;
+    }
+
+    public boolean equals(getAPIVersion_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_gse = true && this.isSetGse();
+      boolean that_present_gse = true && that.isSetGse();
+      if (this_present_gse || that_present_gse) {
+        if (!(this_present_gse && that_present_gse))
+          return false;
+        if (!this.gse.equals(that.gse))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetSuccess()) ? 131071 : 524287);
+      if (isSetSuccess())
+        hashCode = hashCode * 8191 + success.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetGse()) ? 131071 : 524287);
+      if (isSetGse())
+        hashCode = hashCode * 8191 + gse.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getAPIVersion_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetGse()).compareTo(other.isSetGse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gse, other.gse);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getAPIVersion_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("gse:");
+      if (this.gse == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gse);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getAPIVersion_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAPIVersion_resultStandardScheme getScheme() {
+        return new getAPIVersion_resultStandardScheme();
+      }
+    }
+
+    private static class getAPIVersion_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getAPIVersion_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAPIVersion_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // GSE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException();
+                struct.gse.read(iprot);
+                struct.setGseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAPIVersion_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.gse != null) {
+          oprot.writeFieldBegin(GSE_FIELD_DESC);
+          struct.gse.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getAPIVersion_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getAPIVersion_resultTupleScheme getScheme() {
+        return new getAPIVersion_resultTupleScheme();
+      }
+    }
+
+    private static class getAPIVersion_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getAPIVersion_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetGse()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
+        if (struct.isSetGse()) {
+          struct.gse.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException();
+          struct.gse.read(iprot);
+          struct.setGseIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
   }
 
   public static class createGroup_args implements org.apache.thrift.TBase<createGroup_args, createGroup_args._Fields>, java.io.Serializable, Cloneable, Comparable<createGroup_args>   {

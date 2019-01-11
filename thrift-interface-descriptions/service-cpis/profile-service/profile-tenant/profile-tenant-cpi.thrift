@@ -37,9 +37,8 @@ const string TENANT_PROFILE_CPI_NAME = "TenantProfileService"
 
 service TenantProfileService {
 
-    string getAPIVersion (1: required security_model.AuthzToken authzToken)
-                       throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
-                               2: airavata_errors.AuthorizationException ae)
+    string getAPIVersion ()
+                       throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe)
 
     /**
      * Return the airavataInternalGatewayId assigned to given gateway.

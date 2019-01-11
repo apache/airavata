@@ -24,6 +24,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('Usage: ' + sys.argv[0] + ' [-h host[:port]] [-u url] [-f[ramed]] [-s[sl]] [-novalidate] [-ca_certs certs] [-keyfile keyfile] [-certfile certfile] function [arg1 [arg2...]]')
     print('')
     print('Functions:')
+    print('  string getAPIVersion()')
     print('  string initializeUserProfile(AuthzToken authzToken)')
     print('  string addUserProfile(AuthzToken authzToken, UserProfile userProfile)')
     print('  bool updateUserProfile(AuthzToken authzToken, UserProfile userProfile)')
@@ -110,7 +111,13 @@ protocol = TBinaryProtocol(transport)
 client = UserProfileService.Client(protocol)
 transport.open()
 
-if cmd == 'initializeUserProfile':
+if cmd == 'getAPIVersion':
+    if len(args) != 0:
+        print('getAPIVersion requires 0 args')
+        sys.exit(1)
+    pp.pprint(client.getAPIVersion())
+
+elif cmd == 'initializeUserProfile':
     if len(args) != 1:
         print('initializeUserProfile requires 1 args')
         sys.exit(1)

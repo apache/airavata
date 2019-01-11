@@ -16,13 +16,10 @@ from thrift.transport import TTransport
 
 
 class Iface(object):
-    def getAPIVersion(self, authzToken):
+    def getAPIVersion(self):
         """
         Fetch Apache Airavata API version
 
-
-        Parameters:
-         - authzToken
         """
         pass
 
@@ -3591,21 +3588,17 @@ class Client(Iface):
             self._oprot = oprot
         self._seqid = 0
 
-    def getAPIVersion(self, authzToken):
+    def getAPIVersion(self):
         """
         Fetch Apache Airavata API version
 
-
-        Parameters:
-         - authzToken
         """
-        self.send_getAPIVersion(authzToken)
+        self.send_getAPIVersion()
         return self.recv_getAPIVersion()
 
-    def send_getAPIVersion(self, authzToken):
+    def send_getAPIVersion(self):
         self._oprot.writeMessageBegin('getAPIVersion', TMessageType.CALL, self._seqid)
         args = getAPIVersion_args()
-        args.authzToken = authzToken
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -3629,8 +3622,6 @@ class Client(Iface):
             raise result.ace
         if result.ase is not None:
             raise result.ase
-        if result.ae is not None:
-            raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result")
 
     def isUserExists(self, authzToken, gatewayId, userName):
@@ -13790,7 +13781,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = getAPIVersion_result()
         try:
-            result.success = self._handler.getAPIVersion(args.authzToken)
+            result.success = self._handler.getAPIVersion()
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -13803,9 +13794,6 @@ class Processor(Iface, TProcessor):
         except airavata.api.error.ttypes.AiravataSystemException as ase:
             msg_type = TMessageType.REPLY
             result.ase = ase
-        except airavata.api.error.ttypes.AuthorizationException as ae:
-            msg_type = TMessageType.REPLY
-            result.ae = ae
         except Exception as ex:
             msg_type = TMessageType.EXCEPTION
             logging.exception(ex)
@@ -19711,18 +19699,9 @@ class Processor(Iface, TProcessor):
 
 
 class getAPIVersion_args(object):
-    """
-    Attributes:
-     - authzToken
-    """
 
     thrift_spec = (
-        None,  # 0
-        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
     )
-
-    def __init__(self, authzToken=None,):
-        self.authzToken = authzToken
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -19733,12 +19712,6 @@ class getAPIVersion_args(object):
             (fname, ftype, fid) = iprot.readFieldBegin()
             if ftype == TType.STOP:
                 break
-            if fid == 1:
-                if ftype == TType.STRUCT:
-                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
-                    self.authzToken.read(iprot)
-                else:
-                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -19749,16 +19722,10 @@ class getAPIVersion_args(object):
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
         oprot.writeStructBegin('getAPIVersion_args')
-        if self.authzToken is not None:
-            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-            self.authzToken.write(oprot)
-            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
     def validate(self):
-        if self.authzToken is None:
-            raise TProtocolException(message='Required field authzToken is unset!')
         return
 
     def __repr__(self):
@@ -19780,7 +19747,6 @@ class getAPIVersion_result(object):
      - ire
      - ace
      - ase
-     - ae
     """
 
     thrift_spec = (
@@ -19788,15 +19754,13 @@ class getAPIVersion_result(object):
         (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
         (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
         (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
-        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
     )
 
-    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    def __init__(self, success=None, ire=None, ace=None, ase=None,):
         self.success = success
         self.ire = ire
         self.ace = ace
         self.ase = ase
-        self.ae = ae
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -19830,12 +19794,6 @@ class getAPIVersion_result(object):
                     self.ase.read(iprot)
                 else:
                     iprot.skip(ftype)
-            elif fid == 4:
-                if ftype == TType.STRUCT:
-                    self.ae = airavata.api.error.ttypes.AuthorizationException()
-                    self.ae.read(iprot)
-                else:
-                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -19861,10 +19819,6 @@ class getAPIVersion_result(object):
         if self.ase is not None:
             oprot.writeFieldBegin('ase', TType.STRUCT, 3)
             self.ase.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ae is not None:
-            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
-            self.ae.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

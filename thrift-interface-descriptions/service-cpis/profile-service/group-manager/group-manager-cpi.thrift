@@ -37,6 +37,9 @@ const string GROUP_MANAGER_CPI_NAME = "GroupManagerService"
 
 service GroupManagerService {
 
+    string getAPIVersion ()
+                       throws (1: group_manager_cpi_errors.GroupManagerServiceException gse)
+
     string createGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                             2: airavata_errors.AuthorizationException ae);

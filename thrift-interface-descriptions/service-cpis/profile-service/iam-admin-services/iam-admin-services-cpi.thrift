@@ -39,9 +39,9 @@ const string IAM_ADMIN_SERVICES_CPI_NAME = "IamAdminServices"
 
 service IamAdminServices {
 
-    string getAPIVersion (1: required security_model.AuthzToken authzToken)
-                       throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
-                               2: airavata_errors.AuthorizationException ae)
+    string getAPIVersion ()
+                       throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse)
+
 
 
     workspace_model.Gateway setUpGateway (1: required security_model.AuthzToken authzToken,
