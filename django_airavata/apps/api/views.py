@@ -1036,14 +1036,18 @@ class StoragePreferenceViewSet(APIBackedViewSet):
 class ParserViewSet(mixins.CreateModelMixin,
                     mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
+                    mixins.ListModelMixin,
                     GenericAPIBackedViewSet):
     serializer_class = serializers.ParserSerializer
     lookup_field = 'parser_id'
     lookup_value_regex = '[^/]+'
 
+    def get_list(self):
+        return self.request.airavata_client.listAllParsers(self.authz_token, settings.GATEWAY_ID)
+
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getParser(
-            self.authz_token, lookup_value)
+            self.authz_token, lookup_value, settings.GATEWAY_ID)
 
     def perform_create(self, serializer):
         parser = serializer.save()

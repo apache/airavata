@@ -6,6 +6,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 module.exports = {
   entry: {
       'parser-details': './static/django_airavata_dataparsers/js/entry-parser-details',
+      'parser-list': './static/django_airavata_dataparsers/js/parser-listing-entry-point.js',
   },
   output: {
     path: path.resolve(__dirname, './static/django_airavata_dataparsers/dist/'),

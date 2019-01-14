@@ -274,17 +274,8 @@ export default {
   },
   Parsers: {
     url: "/api/parsers",
-    viewSet: [
-      {
-        name: "retrieve"
-      },
-      {
-        name: "create"
-      },
-      {
-        name: "update"
-      }
-    ],
+    viewSet: true,
+    queryParams: ["limit", "offset"],
     modelClass: Parser
   },
   SharedEntities: {
