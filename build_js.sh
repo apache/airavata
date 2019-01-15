@@ -9,6 +9,7 @@ echo -e "Running production JS builds"
 (cd $SCRIPT_DIR/django_airavata/apps/groups && npm install && npm run build) || exit 1
 (cd $SCRIPT_DIR/django_airavata/apps/workspace/django-airavata-workspace-plugin-api && npm install && npm run build) || exit 1
 (cd $SCRIPT_DIR/django_airavata/apps/workspace && npm install && npm run build) || exit 1
+(cd $SCRIPT_DIR/django_airavata/apps/dataparsers && npm install && npm run build) || exit 1
 
 echo -e "All builds finished successfully!"
 

@@ -115,11 +115,8 @@ export default {
         },
         {
           label: "Type",
-          key: "type"
-        },
-        {
-          label: "Action",
-          key: "action"
+          key: "type",
+          formatter: value => value.name
         }
       ],
       parserOutputFields: [
@@ -133,11 +130,8 @@ export default {
         },
         {
           label: "Type",
-          key: "type"
-        },
-        {
-          label: "Action",
-          key: "action"
+          key: "type",
+          formatter: value => value.name
         }
       ]
     };
