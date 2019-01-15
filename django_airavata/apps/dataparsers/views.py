@@ -16,3 +16,8 @@ def parser_details(request, parser_id):
     return render(request, 'django_airavata_dataparsers/parser-details.html', {
         "parser_id": parser_id
     })
+
+def edit_parser(request, parser_id):
+    return render(request, 'django_airavata_dataparsers/edit-parser.html', {
+        "parser_id": parser_id
+    })

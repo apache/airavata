@@ -4,9 +4,10 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Id</th>
+                <th>Name</th>
                 <th>Image Name</th>
                 <th>Execution Command</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>

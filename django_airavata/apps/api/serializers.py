@@ -764,9 +764,7 @@ class StorageResourceSerializer(
 
 
 class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
-    url = FullyEncodedHyperlinkedIdentityField(
+     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:parser-detail',
         lookup_field='id',
         lookup_url_kwarg='parser_id')
-    creationTime = UTCPosixTimestampDateTimeField()
-    updateTime = UTCPosixTimestampDateTimeField()

@@ -18,7 +18,8 @@ const FIELDS = [
     name: "outputFiles",
     list: true,
     type: ParserOutputFile
-  }
+  },
+  "gatewayId"
 ];
 
 export default class Parser extends BaseModel {
