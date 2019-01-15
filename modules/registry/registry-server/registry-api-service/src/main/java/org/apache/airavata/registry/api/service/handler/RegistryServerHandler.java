@@ -4831,7 +4831,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String saveParser(Parser parser) throws RegistryServiceException, TException {
 
         try {
-            Parser created = parserRepository.create(parser);
+            Parser created = parserRepository.saveParser(parser);
             return created.getId();
 
         } catch (Exception e) {
