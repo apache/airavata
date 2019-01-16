@@ -92,6 +92,8 @@ public class ParserWorkflowManager extends WorkflowManager {
             List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(completionMessage.getExperimentId(),
                     completionMessage.getGatewayId());
 
+            logger.info("Found " + parsingTemplates.size() + " parsing templated for experiment " + completionMessage.getExperimentId());
+
             Map<String, Map<String, Set<ParserConnector>>> parentToChildParsers = new HashMap<>();
 
             for (ParsingTemplate template : parsingTemplates) {
@@ -119,6 +121,7 @@ public class ParserWorkflowManager extends WorkflowManager {
 
             for (ParsingTemplate template : parsingTemplates) {
 
+                logger.info("Launching parsing template " + template.getId());
                 String parentParserId = null;
                 for (String parentId : parentToChildParsers.get(template.getId()).keySet()) {
                     boolean found = false;
