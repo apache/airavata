@@ -21,17 +21,20 @@ public class ParsingTriggeringTask extends AiravataTask {
 
     private final static Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
 
-    private Producer<String, ProcessCompletionMessage> producer;
+    private static Producer<String, ProcessCompletionMessage> producer;
 
     private void createProducer() throws ApplicationSettingsException {
-        Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                ServerSettings.getSetting("kafka.parsing.broker.url"));
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("kafka.parsing.broker.publisher.id"));
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class.getName());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ProcessCompletionMessageSerializer.class.getName());
-        this.producer = new KafkaProducer<String, ProcessCompletionMessage>(props);;
+
+        if (producer == null) {
+            Properties props = new Properties();
+            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                    ServerSettings.getSetting("kafka.parsing.broker.url"));
+            props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("kafka.parsing.broker.publisher.id"));
+            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                    StringSerializer.class.getName());
+            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ProcessCompletionMessageSerializer.class.getName());
+            producer = new KafkaProducer<String, ProcessCompletionMessage>(props);
+        }
     }
 
     public void submitMessageToParserEngine(ProcessCompletionMessage completionMessage) throws ExecutionException, InterruptedException, ApplicationSettingsException {
