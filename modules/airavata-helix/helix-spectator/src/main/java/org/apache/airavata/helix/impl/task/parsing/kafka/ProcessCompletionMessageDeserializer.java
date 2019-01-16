@@ -14,7 +14,7 @@ public class ProcessCompletionMessageDeserializer implements Deserializer<Proces
     @Override
     public ProcessCompletionMessage deserialize(String topic, byte[] data) {
         String deserialized = new String(data);
-        String parts[] = deserialized.split(",");
+        String parts[] = deserialized.split(";");
         ProcessCompletionMessage message = new ProcessCompletionMessage();
         message.setProcessId(parts[0]);
         message.setExperimentId(parts[1]);
