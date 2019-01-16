@@ -1,6 +1,7 @@
 import logging
 from contextlib import contextmanager
 
+import thrift_connector.connection_pool as connection_pool
 from django.conf import settings
 from thrift.protocol import TBinaryProtocol
 from thrift.protocol.TMultiplexedProtocol import TMultiplexedProtocol
@@ -184,3 +185,112 @@ def get_thrift_client(host, port, is_secure, client_generator):
             host, port, is_secure)
         log.debug(msg)
         raise ThriftConnectionException(msg) from e
+
+
+class CustomThriftClient(connection_pool.ThriftClient):
+    secure = False
+    validate = False
+
+    @classmethod
+    def get_socket_factory(cls):
+        if not cls.secure:
+            return super().get_socket_factory()
+        else:
+            def factory(host, port):
+                return TSSLSocket.TSSLSocket(host, port, validate=cls.validate)
+            return factory
+
+    def ping(self):
+        try:
+            self.client.getAPIVersion()
+        except Exception:
+            log.exception("getAPIVersion failed")
+            raise
+
+
+class MultiplexThriftClientMixin:
+    service_name = None
+
+    @classmethod
+    def get_protoco_factory(cls):
+        def factory(transport):
+            protocol = TBinaryProtocol.TBinaryProtocol(transport)
+            multiplex_prot = TMultiplexedProtocol(protocol, cls.service_name)
+            return multiplex_prot
+        return factory
+
+
+class AiravataAPIThriftClient(CustomThriftClient):
+    secure = settings.AIRAVATA_API_SECURE
+
+
+class GroupManagerServiceThriftClient(MultiplexThriftClientMixin,
+                                      CustomThriftClient):
+    service_name = GROUP_MANAGER_CPI_NAME
+    secure = settings.PROFILE_SERVICE_SECURE
+
+
+class IAMAdminServiceThriftClient(MultiplexThriftClientMixin,
+                                  CustomThriftClient):
+    service_name = IAM_ADMIN_SERVICES_CPI_NAME
+    secure = settings.PROFILE_SERVICE_SECURE
+
+
+class TenantProfileServiceThriftClient(MultiplexThriftClientMixin,
+                                       CustomThriftClient):
+    service_name = TENANT_PROFILE_CPI_NAME
+    secure = settings.PROFILE_SERVICE_SECURE
+
+
+class UserProfileServiceThriftClient(MultiplexThriftClientMixin,
+                                     CustomThriftClient):
+    service_name = USER_PROFILE_CPI_NAME
+    secure = settings.PROFILE_SERVICE_SECURE
+
+
+class SharingAPIThriftClient(CustomThriftClient):
+    secure = settings.SHARING_API_SECURE
+
+
+airavata_api_client_pool = connection_pool.ClientPool(
+    Airavata,
+    settings.AIRAVATA_API_HOST,
+    settings.AIRAVATA_API_PORT,
+    connection_class=AiravataAPIThriftClient,
+    keepalive=settings.THRIFT_CLIENT_POOL_KEEPALIVE
+)
+group_manager_client_pool = connection_pool.ClientPool(
+    GroupManagerService,
+    settings.PROFILE_SERVICE_HOST,
+    settings.PROFILE_SERVICE_PORT,
+    connection_class=GroupManagerServiceThriftClient,
+    keepalive=settings.THRIFT_CLIENT_POOL_KEEPALIVE
+)
+iamadmin_client_pool = connection_pool.ClientPool(
+    IamAdminServices,
+    settings.PROFILE_SERVICE_HOST,
+    settings.PROFILE_SERVICE_PORT,
+    connection_class=IAMAdminServiceThriftClient,
+    keepalive=settings.THRIFT_CLIENT_POOL_KEEPALIVE
+)
+tenant_profile_client_pool = connection_pool.ClientPool(
+    TenantProfileService,
+    settings.PROFILE_SERVICE_HOST,
+    settings.PROFILE_SERVICE_PORT,
+    connection_class=TenantProfileServiceThriftClient,
+    keepalive=settings.THRIFT_CLIENT_POOL_KEEPALIVE
+)
+user_profile_client_pool = connection_pool.ClientPool(
+    UserProfileService,
+    settings.PROFILE_SERVICE_HOST,
+    settings.PROFILE_SERVICE_PORT,
+    connection_class=UserProfileServiceThriftClient,
+    keepalive=settings.THRIFT_CLIENT_POOL_KEEPALIVE
+)
+sharing_api_client_pool = connection_pool.ClientPool(
+    SharingRegistryService,
+    settings.SHARING_API_HOST,
+    settings.SHARING_API_PORT,
+    connection_class=SharingAPIThriftClient,
+    keepalive=settings.THRIFT_CLIENT_POOL_KEEPALIVE
+)

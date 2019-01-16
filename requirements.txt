@@ -3,6 +3,7 @@ Django==1.11.16
 requests==2.13.0
 requests-oauthlib==0.7.0
 thrift==0.10.0
+thrift_connector==0.24
 djangorestframework==3.8.2
 
 wagtail==2.0

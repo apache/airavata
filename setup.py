@@ -26,6 +26,7 @@ setup(
             'requests',
             'requests-oauthlib',
             'thrift',
+            'thrift_connector',
             'wagtail',
             'wagtailfontawesome'
     ],

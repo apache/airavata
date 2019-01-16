@@ -211,6 +211,11 @@ AUTHENTICATION_OPTIONS = {
     # ]
 }
 
+# Seconds each connection in the pool is able to stay alive. If open connection
+# has lived longer than this period, it will be closed.
+# (https://github.com/Thriftpy/thrift_connector)
+THRIFT_CLIENT_POOL_KEEPALIVE = 10
+
 LOGGING = {
     'version': 1,
     'handlers': {

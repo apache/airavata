@@ -4,7 +4,7 @@ Wrapper around the IAM Admin Services client.
 
 import logging
 
-from django_airavata.utils import get_iam_admin_client
+from django_airavata.utils import iamadmin_client_pool
 
 from . import utils
 
@@ -12,42 +12,36 @@ logger = logging.getLogger(__name__)
 
 
 def is_username_available(username):
-    with get_iam_admin_client() as iam_admin_client:
-        authz_token = utils.get_service_account_authz_token()
-        return iam_admin_client.isUsernameAvailable(authz_token, username)
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.isUsernameAvailable(authz_token, username)
 
 
 def register_user(username, email_address, first_name, last_name, password):
-    with get_iam_admin_client() as iam_admin_client:
-        authz_token = utils.get_service_account_authz_token()
-        return iam_admin_client.registerUser(
-            authz_token,
-            username,
-            email_address,
-            first_name,
-            last_name,
-            password)
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.registerUser(
+        authz_token,
+        username,
+        email_address,
+        first_name,
+        last_name,
+        password)
 
 
 def is_user_enabled(username):
-    with get_iam_admin_client() as iam_admin_client:
-        authz_token = utils.get_service_account_authz_token()
-        return iam_admin_client.isUserEnabled(authz_token, username)
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.isUserEnabled(authz_token, username)
 
 
 def enable_user(username):
-    with get_iam_admin_client() as iam_admin_client:
-        authz_token = utils.get_service_account_authz_token()
-        return iam_admin_client.enableUser(authz_token, username)
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.enableUser(authz_token, username)
 
 
 def is_user_exist(username):
-    with get_iam_admin_client() as iam_admin_client:
-        authz_token = utils.get_service_account_authz_token()
-        return iam_admin_client.isUserExist(authz_token, username)
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.isUserExist(authz_token, username)
 
 
 def get_user(username):
-    with get_iam_admin_client() as iam_admin_client:
-        authz_token = utils.get_service_account_authz_token()
-        return iam_admin_client.getUser(authz_token, username)
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.getUser(authz_token, username)
