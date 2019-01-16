@@ -309,15 +309,19 @@ public class ParserWorkflowManager extends WorkflowManager {
     }
 
     private void runConsumer() throws ApplicationSettingsException {
-        final Properties props = new Properties();
-        final Consumer<String, ProcessCompletionMessage> consumer = new KafkaConsumer<>(props);
 
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.parser.broker.url"));
+        final Properties props = new Properties();
+
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.parsing.broker.url"));
         props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.parser.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ProcessCompletionMessageDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        final Consumer<String, ProcessCompletionMessage> consumer = new KafkaConsumer<>(props);
+
         consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("kafka.parser.topic")));
+
+        logger.info("Starting the kafka consumer..");
 
         while (true) {
             final ConsumerRecords<String, ProcessCompletionMessage> consumerRecords = consumer.poll(Long.MAX_VALUE);
