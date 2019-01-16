@@ -186,7 +186,7 @@ export default {
                 });
                 throw error;
               },
-              e => {
+              () => {
                 // In case JSON parsing fails
                 const error = new Error(response.statusText);
                 error.details = this.createErrorDetails({

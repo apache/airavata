@@ -16,10 +16,6 @@ import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
 import UserProfile from "./models/UserProfile";
 
-const post = "post";
-const get = "get";
-const put = "put";
-const del = "delete";
 /*
 examples:
 

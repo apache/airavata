@@ -2,7 +2,6 @@ import PaginationIterator from '../utils/PaginationIterator'
 import FetchUtils from '../utils/FetchUtils'
 import serviceConfiguration from '../service_config'
 
-const requestTypeKey = "requestType";
 const postKey = "post";
 const getKey = "get";
 const putKey = "put";

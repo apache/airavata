@@ -46,7 +46,6 @@ export default class PaginationIterator {
     toArray(){
         let results=[].concat(this.results);
         while (this.hasNext()){
-            console.log(this._next);
             results=results.concat(this.next().results);
         }
         return results;

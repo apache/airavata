@@ -21,7 +21,7 @@ export default class MinLengthValidator {
         return null;
     }
 
-    getErrorMessage(value) {
+    getErrorMessage() {
         if (this.customErrorMessage) {
             return this.customErrorMessage;
         } else {
