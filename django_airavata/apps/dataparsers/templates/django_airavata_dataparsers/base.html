@@ -7,7 +7,7 @@
 {% block css %}
 {% render_bundle 'chunk-vendors' 'css' 'DATAPARSERS' %}
 {% comment %} NOTE: dataparsers won't have a common chunk until it has more than one entry point. {% endcomment %}
-{% comment %} {% render_bundle 'chunk-common' 'css' 'DATAPARSERS' %} {% endcomment %}
+{% render_bundle 'chunk-common' 'css' 'DATAPARSERS' %}
 {% render_bundle bundle_name 'css' 'DATAPARSERS' %}
 {% endblock %}
 
@@ -26,6 +26,6 @@
 
 {% block scripts %}
 {% render_bundle 'chunk-vendors' 'js' 'DATAPARSERS' %}
-{% comment %} {% render_bundle 'chunk-common' 'js' 'DATAPARSERS' %} {% endcomment %}
+{% render_bundle 'chunk-common' 'js' 'DATAPARSERS' %}
 {% render_bundle bundle_name 'js' 'DATAPARSERS' %}
 {% endblock %}

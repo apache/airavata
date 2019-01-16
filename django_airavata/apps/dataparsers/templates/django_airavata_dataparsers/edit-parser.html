@@ -1,19 +1,7 @@
 {% extends './base.html' %}
 
-{% load static %}
-
-{% block css %}
-{{ block.super }}
-<link rel=stylesheet type=text/css href="{% static 'django_airavata_dataparsers/dist/parser-edit.css' %}">
-{% endblock %}
-
 {% block content %}
 
 <div id="edit-parser" data-parser-id="{{ parser_id }}"></div>
 
 {% endblock content %}
-
-{% block scripts %}
-{{ block.super }}
-<script src="{% static "django_airavata_dataparsers/dist/parser-edit.js" %}"></script>
-{% endblock %}

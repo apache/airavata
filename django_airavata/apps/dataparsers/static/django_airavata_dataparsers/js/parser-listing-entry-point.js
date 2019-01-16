@@ -9,14 +9,5 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue);
 
 new Vue({
-  el: "#parsers-manage",
-  template: '<parsers-manage-container></parsers-manage-container>',
-  data: {
-      groupsOwnersData: null,
-  },
-  components: {
-      ParsersManageContainer
-  },
-  beforeMount: function () {
-  }
-})
+  render: h => h(ParsersManageContainer)
+}).$mount("#parsers-manage");

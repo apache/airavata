@@ -8,18 +8,24 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue);
 
 new Vue({
-  el: "#edit-parser",
-  template: '<parser-edit-container :parserId="parserId"></parser-edit-container>',
-  data: {
-      parserId: null,
+  render(h) {
+    return h(ParserEditContainer, {
+      props: {
+        parserId: this.parserId
+      }
+    });
   },
-  components: {
-      ParserEditContainer,
+  data() {
+    return {
+      parserId: null
+    };
   },
-  beforeMount: function() {
+  beforeMount() {
       if (this.$el.dataset.parserId) {
           this.parserId = this.$el.dataset.parserId;
           console.log("parserId", this.parserId);
+      } else {
+        console.error("Missing data-parser-id attribute");
       }
   }
-})
+}).$mount("#edit-parser");
