@@ -4,24 +4,49 @@
   "version": "1.0.0-beta.2",
   "author": "Marcus Christie <machristie@apache.org>",
   "private": false,
-  "main": "./dist/index.js",
+  "main": "./dist/index.common.js",
   "module": "./js/index.js",
   "license": "Apache-2.0",
   "repository": "https://github.com/apache/airavata-django-portal",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
-    "watch": "cross-env NODE_ENV=development webpack --watch",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "watch": "vue-cli-service build --watch --target lib --name index js/index.js",
+    "build": "vue-cli-service build --target lib --name index js/index.js",
+    "lint": "vue-cli-service lint ./js/"
   },
   "peerDependencies": {
     "django-airavata-api": "^1.0.0-beta"
   },
   "devDependencies": {
-    "babel-core": "^6.0.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.5.1",
-    "cross-env": "^3.0.0",
-    "css-loader": "^0.25.0",
-    "webpack": "^3.6.0"
-  }
+    "@vue/cli-plugin-babel": "^3.1.1",
+    "@vue/cli-plugin-eslint": "^3.1.1",
+    "@vue/cli-service": "^3.1.1",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.8.0",
+    "eslint-plugin-vue": "^5.0.0-0",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
 }
