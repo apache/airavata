@@ -10,7 +10,7 @@
         <td>
             <a v-if="group.isOwner || group.isAdmin"
                 :href="'/groups/edit/' + encodeURIComponent(group.id) + '/'">
-                Edit <i class="fa fa-pencil"></i>
+                Edit <i class="fa fa-edit"></i>
             </a>
             <a href="#" v-if="deleteable" @click="show=true" :variant="deleteButtonVariant">
                 Delete <i class="fa fa-trash"></i>

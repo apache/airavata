@@ -221,6 +221,16 @@ THRIFT_CLIENT_POOL_KEEPALIVE = 10
 
 # Webpack loader
 WEBPACK_LOADER = {
+    'COMMON': {
+        'BUNDLE_DIR_NAME': 'common/dist/',
+        'STATS_FILE': os.path.join(
+            BASE_DIR,
+            'django_airavata',
+            'static',
+            'common',
+            'dist',
+            'webpack-stats.json'),
+    },
     'ADMIN': {
         'BUNDLE_DIR_NAME': 'django_airavata_admin/dist/',
         'STATS_FILE': os.path.join(

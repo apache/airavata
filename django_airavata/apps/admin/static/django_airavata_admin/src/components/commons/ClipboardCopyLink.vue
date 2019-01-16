@@ -2,7 +2,7 @@
   <div style="display: inline-block">
     <b-link ref="copyLink" :data-clipboard-text="text">
       Copy Key
-      <font-awesome-icon :icon="['far','clipboard']"></font-awesome-icon>
+      <i class="far fa-clipboard"></i>
     </b-link>
     <b-tooltip :show="show" :disabled="!show" :target="() => $refs.copyLink">Copied!</b-tooltip>
   </div>

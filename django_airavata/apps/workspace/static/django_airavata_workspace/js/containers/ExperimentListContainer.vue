@@ -33,10 +33,10 @@
                   </td>
                   <td>
                     <a v-if="experiment.isEditable" :href="editLink(experiment)">Edit
-                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                      <i class="fa fa-edit" aria-hidden="true"></i>
                     </a>
                     <a v-else :href="viewLink(experiment)">View
-                      <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                      <i class="fa fa-chart-bar" aria-hidden="true"></i>
                     </a>
                   </td>
                 </tr>

@@ -17,7 +17,7 @@
         <clipboard-copy-button variant="secondary" :disabled="!copySSHPublicKeyText" :text="copySSHPublicKeyText">
         </clipboard-copy-button>
         <b-button variant="secondary" @click="showNewSSHCredentialModal">
-          <font-awesome-icon icon="plus" />
+          <i class="fa fa-plus"></i>
         </b-button>
       </b-input-group-append>
     </b-input-group>

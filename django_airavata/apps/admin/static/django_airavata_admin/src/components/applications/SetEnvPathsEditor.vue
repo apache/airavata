@@ -2,7 +2,7 @@
   <b-card :title="title" title-tag="h5">
     <b-input-group v-for="setEnvPath in data" :key="setEnvPath.key" class="mb-1 align-items-center">
       <b-form-input type="text" v-model="setEnvPath.name" required placeholder="NAME" ref="nameInputs" :disabled="readonly" />
-      <font-awesome-icon icon="equals" class="mx-1" />
+      <i class="fa fa-equals mx-1"></i>
       <b-form-input type="text" v-model="setEnvPath.value" required placeholder="VALUE" :disabled="readonly" />
       <b-input-group-append v-if="!readonly">
         <b-button variant="secondary" @click="deleteEnvPath(setEnvPath)">

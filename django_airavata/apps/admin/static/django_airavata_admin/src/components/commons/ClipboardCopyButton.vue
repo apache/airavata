@@ -1,7 +1,7 @@
 <template>
   <b-button ref="copyButton" :variant="variant" :disabled="disabled" :data-clipboard-text="text">
     <slot></slot>
-    <font-awesome-icon :icon="['far','clipboard']"></font-awesome-icon>
+    <i class="far fa-clipboard"></i>
     <b-tooltip :show="show" :disabled="!show" :target="() => $refs.copyButton">Copied!</b-tooltip>
   </b-button>
 </template>

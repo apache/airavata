@@ -1,22 +1,14 @@
 {% load navigation_tags static %}
+{% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
 
 <head>
-  <link rel=stylesheet type=text/css href="{% static 'bootstrap-4.0.0-beta/css/bootstrap.min.css' %}">
-  <link rel=stylesheet type=text/css href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
-    <link rel=stylesheet type=text/css href="{% static 'common/dist/main.css' %}">
+  {% render_bundle 'chunk-vendors' 'css' 'COMMON' %}
+  {% render_bundle 'app' 'css' 'COMMON' %}
   {% block css %}
 
   {% endblock %}
 </head>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js'></script>
-<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js'></script>
-<script>
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  });
-</script>
 <style>
   #airavata-spinner {
     display: none;
@@ -159,7 +151,7 @@
     <div class=c-header__controls>
       <div class="btn-group">
         <div class=dropdown>
-          <a href=#0 class="dropdown-toggle text-dark" id=appDropdownMenuButton data-toggle=dropdown aria-haspopup=true
+          <a href=# class="dropdown-toggle text-dark" id=appDropdownMenuButton data-toggle=dropdown aria-haspopup=true
             aria-expanded=false>
             {% if current_airavata_app %}
             <i class="fa {{ current_airavata_app.fa_icon_class }} mr-2"></i>
@@ -185,7 +177,7 @@
       </div>
       <div class="btn-group ml-3">
         <div class=dropdown>
-          <a href=#0 class="dropdown-toggle text-dark" id=dropdownMenuButton data-toggle=dropdown aria-haspopup=true
+          <a href=# class="dropdown-toggle text-dark" id=dropdownMenuButton data-toggle=dropdown aria-haspopup=true
             aria-expanded=false>
             <i class="fa fa-user mr-2"></i>
             {{ request.session.USERINFO.given_name }}
@@ -194,7 +186,7 @@
           <div class=dropdown-menu aria-labelledby=dropdownMenuButton>
             <a class=dropdown-item href=#>User settings</a>
             <a class=dropdown-item href="{% url 'django_airavata_auth:logout' %}">
-              Logout <i class="fa fa-sign-out"></i>
+              Logout <i class="fa fa-sign-out-alt"></i>
             </a>
           </div>
         </div>
@@ -224,6 +216,8 @@
     </main>
   </div>
 
+  {% render_bundle 'chunk-vendors' 'js' 'COMMON' %}
+  {% render_bundle 'app' 'js' 'COMMON' %}
   {% block scripts %}
   {% endblock %}
 </body>

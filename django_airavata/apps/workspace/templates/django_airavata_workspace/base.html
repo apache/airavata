@@ -12,7 +12,7 @@
 {% block nav-items %}
 
         <a href="{% url 'django_airavata_workspace:dashboard' %}" class="c-nav__item {% if request.active_nav_item == 'dashboard' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Dashboard>
-            <i class="fa fa-dashboard"></i> <span class=sr-only>Dashboard</span>
+            <i class="fa fa-tachometer-alt"></i> <span class=sr-only>Dashboard</span>
         </a>
         <a href="{% url 'django_airavata_workspace:experiments' %}" class="c-nav__item {% if request.active_nav_item == 'experiments' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Experiments>
             <i class="fa fa-flask"></i> <span class=sr-only>Experiments</span>

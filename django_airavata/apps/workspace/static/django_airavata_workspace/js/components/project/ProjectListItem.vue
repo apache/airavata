@@ -3,7 +3,7 @@
         <td>{{ project.name }}</td>
         <td>{{ project.owner }}</td>
         <td v-bind:title="project.creationTime">{{ creationTime }}</td>
-        <td><a href="#">View <i class="fa fa-bar-chart" aria-hidden="true"></i></a></td>
+        <td><a href="#">View <i class="fa fa-chart-bar" aria-hidden="true"></i></a></td>
     </tr>
 </template>
 

@@ -4,21 +4,9 @@ import VueRouter from "vue-router";
 
 import App from "./App.vue";
 import BootstrapVue from "bootstrap-vue";
-// TODO: load the latest bootstrap css globally
-import "bootstrap/dist/css/bootstrap.css";
+// This is imported globally on the website so no need to include it again in this view
+// import 'bootstrap/dist/css/bootstrap.css'
 import "bootstrap-vue/dist/bootstrap-vue.css";
-import { library as faLibrary } from "@fortawesome/fontawesome-svg-core";
-import {
-  faGripVertical,
-  faEquals,
-  faPlus
-} from "@fortawesome/free-solid-svg-icons";
-import { faClipboard } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
-faLibrary.add(faGripVertical, faEquals, faClipboard, faPlus);
-
-Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 import { errors } from "django-airavata-common-ui";
 
