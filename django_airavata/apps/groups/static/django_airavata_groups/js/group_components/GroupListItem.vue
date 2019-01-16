@@ -66,13 +66,12 @@ export default {
       deleteGroup(id) {
           this.deleting = true;
           services.GroupService.delete({lookup: id})
-              .then(result => {
+              .then(() => {
                   this.$emit('deleteSuccess','Group Deleted Successfully!');
                   this.show = false;
                   this.deleting = false;
               })
-              .catch(error => {
-                  console.log(error);
+              .catch(() => {
                   this.$emit('deleteFailed', 'Group Delete Failed!');
                   this.show = false;
                   this.deleting = false;

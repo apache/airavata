@@ -86,7 +86,7 @@
 
 <script>
 import { models, services } from "django-airavata-api";
-import { components as comps, layouts } from "django-airavata-common-ui";
+import { layouts } from "django-airavata-common-ui";
 
 export default {
   props: {
@@ -166,7 +166,7 @@ export default {
           //const savedPArserId = data.id;
          // });
       }
-      persist.then(data => {
+      persist.then(() => {
         this.$emit("saved");
       });
     },

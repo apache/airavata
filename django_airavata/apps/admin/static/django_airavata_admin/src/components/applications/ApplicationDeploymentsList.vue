@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { services } from "django-airavata-api";
 import { components, layouts } from "django-airavata-common-ui";
 import ComputeResourcesModal from "../admin/ComputeResourcesModal.vue";
 

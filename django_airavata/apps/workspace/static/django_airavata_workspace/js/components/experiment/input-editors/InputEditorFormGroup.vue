@@ -3,7 +3,7 @@
         <slot></slot>
         <template slot="invalid-feedback">
             <ul v-if="feedbackMessages && feedbackMessages.length > 1">
-                <li v-for="feedback in feedbackMessages">{{ feedback }}</li>
+                <li v-for="feedback in feedbackMessages" :key="feedback">{{ feedback }}</li>
             </ul>
             <div v-else-if="feedbackMessages && feedbackMessages.length === 1">
                 {{ feedbackMessages[0] }}

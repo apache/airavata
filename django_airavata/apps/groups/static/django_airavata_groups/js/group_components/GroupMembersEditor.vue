@@ -5,7 +5,7 @@
         placeholder="Search for users to add to this group" />
     </b-form-group>
     <b-table v-if="membersCount > 0" hover :items="currentMembers" :fields="fields" sort-by="name">
-      <template slot="HEAD_role" slot-scope="data">
+      <template slot="HEAD_role">
         <div class="d-flex">
           <div>Role</div>
           <div class="ml-auto mr-2">

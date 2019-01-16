@@ -11,10 +11,8 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { services } from "django-airavata-api";
 import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
-
-import moment from "moment";
 
 export default {
   name: "edit-experiment-container",
@@ -34,7 +32,7 @@ export default {
     "experiment-editor": ExperimentEditor
   },
   methods: {
-    handleSavedExperiment: function(experiment) {
+    handleSavedExperiment: function() {
       // Redirect to experiments list view
       window.location.assign("/workspace/experiments");
     },

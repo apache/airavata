@@ -139,7 +139,7 @@ export default {
       });
     },
     loadSharedEntity(entityId) {
-      return services.SharedEntityService.retrieve({ lookup: this.entityId });
+      return services.SharedEntityService.retrieve({ lookup: entityId });
     },
     /**
      * Merge the persisted SharedEntity with the local SharedEntity
@@ -154,7 +154,7 @@ export default {
         this.emitSavedEvent();
       });
     },
-    saveSharedEntity: function(event) {
+    saveSharedEntity: function() {
       // If we don't have an entityId we can't create a SharedEntity. Instead,
       // we'll just emit 'unsaved' to let parent know that sharing has changed.
       // It will be up to parent to call `mergeAndSave(entityId)` once there is
@@ -177,13 +177,13 @@ export default {
     emitUnsavedEvent() {
       this.$emit("unsaved", this.localSharedEntity);
     },
-    cancelEditSharedEntity: function(event) {
+    cancelEditSharedEntity: function() {
       this.localSharedEntity = this.sharedEntityCopy;
     },
-    openSharingSettingsModal: function(event) {
+    openSharingSettingsModal: function() {
       this.$refs.sharingSettingsModal.show();
     },
-    showSharingSettingsModal: function(event) {
+    showSharingSettingsModal: function() {
       this.sharedEntityCopy = this.localSharedEntity.clone();
       if (!this.users) {
         services.ServiceFactory.service("UserProfiles")

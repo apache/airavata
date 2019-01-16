@@ -88,29 +88,20 @@ export default {
             return this.loadingCount > 0;
         },
         selectedComputeResourcePolicy: function() {
-            if (this.selectedGroupResourceProfile === null) {
+            if (this.selectedGroupResourceProfileData === null) {
                 return null;
             }
-            return this.selectedGroupResourceProfile.computeResourcePolicies.find(crp => {
+            return this.selectedGroupResourceProfileData.computeResourcePolicies.find(crp => {
                 return crp.computeResourceId === this.localComputationalResourceScheduling.resourceHostId;
             });
         },
         batchQueueResourcePolicies: function() {
-            if (this.selectedGroupResourceProfile === null) {
+            if (this.selectedGroupResourceProfileData === null) {
                 return null;
             }
-            return this.selectedGroupResourceProfile.batchQueueResourcePolicies.filter(bqrp => {
+            return this.selectedGroupResourceProfileData.batchQueueResourcePolicies.filter(bqrp => {
                 return bqrp.computeResourceId === this.localComputationalResourceScheduling.resourceHostId;
             });
-        },
-        selectedGroupResourceProfile: function() {
-            // Reload selectedGroupResourceProfile when group-resource-profile-id changes
-            if (this.selectedGroupResourceProfileData
-                    && this.selectedGroupResourceProfileData.groupResourceProfileId !== this.groupResourceProfileId) {
-                this.selectedGroupResourceProfileData = null;
-                this.loadGroupResourceProfile();
-            }
-            return this.selectedGroupResourceProfileData;
         },
         appDeploymentId: function() {
             // We'll only be able to figure out the appDeploymentId when a
@@ -182,6 +173,9 @@ export default {
         },
         groupResourceProfileId: function(newGroupResourceProfileId) {
             this.loadApplicationDeployments(this.appModuleId, newGroupResourceProfileId);
+            if (this.selectedGroupResourceProfileData && this.selectedGroupResourceProfileData.groupResourceProfileId !== newGroupResourceProfileId) {
+              this.loadGroupResourceProfile();
+            }
         }
     }
 }

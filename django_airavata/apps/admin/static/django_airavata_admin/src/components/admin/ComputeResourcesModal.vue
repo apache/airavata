@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { services } from "django-airavata-api";
 export default {
   name: "compute-resources-modal",
   props: {

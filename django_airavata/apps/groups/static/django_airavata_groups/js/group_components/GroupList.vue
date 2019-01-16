@@ -36,7 +36,7 @@ export default {
         GroupListItem
     },
     methods: {
-      deleteSuccess(value) {
+      deleteSuccess() {
         window.location.reload(true);
       },
       deleteFailed(value) {

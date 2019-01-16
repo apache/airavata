@@ -366,7 +366,7 @@ export default {
     value: function(newValue) {
       this.localComputationalResourceScheduling = newValue.clone();
     },
-    appDeploymentId: function(appDeploymentId) {
+    appDeploymentId: function() {
       this.loadQueueDefaults();
     }
   },

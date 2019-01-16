@@ -4,11 +4,9 @@
 
 <script>
 
-import GroupList from '../group_components/GroupList.vue';
 import GroupEditor from '../group_components/GroupEditor.vue';
 
-import { models, services } from 'django-airavata-api'
-import { components as comps } from 'django-airavata-common-ui'
+import { models } from 'django-airavata-api'
 
 export default {
     name: 'group-create-container',
@@ -21,7 +19,7 @@ export default {
         GroupEditor,
     },
     methods: {
-        handleSaved: function(group) {
+        handleSaved: function() {
             window.location.assign("/groups/");
         }
     },

@@ -192,9 +192,6 @@ export default {
         .then(experiment => {
           this.localExperiment = experiment;
           this.$emit("saved", experiment);
-        })
-        .catch(result => {
-          console.log("Save failed!", result);
         });
     },
     saveAndLaunchExperiment: function() {
@@ -204,12 +201,9 @@ export default {
           this.localExperiment = experiment;
           return services.ExperimentService.launch({
             lookup: experiment.experimentId
-          }).then(result => {
+          }).then(() => {
             this.$emit("savedAndLaunched", experiment);
           });
-        })
-        .catch(result => {
-          console.log("Launch failed!", result);
         });
     },
     saveOrUpdateExperiment: function() {

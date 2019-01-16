@@ -9,5 +9,6 @@ script:
   - python manage.py check
   # For now ignore long line endings
   - flake8 --ignore=E501 .
+  - ./lint_js.sh
   - ./build_js.sh
   - cd django_airavata/apps/api && npm run test

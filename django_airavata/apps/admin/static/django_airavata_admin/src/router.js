@@ -7,7 +7,6 @@ import ApplicationsDashboard from "./components/dashboards/ApplicationsDashboard
 import ComputePreference from "./components/admin/group_resource_preferences/ComputePreference";
 import ComputeResourcePreferenceDashboard from "./components/dashboards/ComputeResourcePreferenceDashboard";
 import CredentialStoreDashboard from "./components/dashboards/CredentialStoreDashboard";
-import ExperimentsDashboard from "./components/dashboards/ExperimentDashboard.vue";
 import GatewayResourceProfileEditorContainer from "./components/gatewayprofile/GatewayResourceProfileEditorContainer.vue";
 import GroupComputeResourcePreference from "./components/admin/group_resource_preferences/GroupComputeResourcePreference";
 import VueRouter from "vue-router";
@@ -79,11 +78,6 @@ const routes = [
     ]
   },
   { path: "/applications", component: ApplicationsDashboard },
-  {
-    path: "/experiments",
-    component: ExperimentsDashboard,
-    name: "experiments_dashboard"
-  },
   {
     path: "/group-resource-profiles/new",
     component: GroupComputeResourcePreference,

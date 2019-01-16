@@ -6,8 +6,7 @@
 
 import ParserEditor from '../parser-components/ParserEditor.vue';
 
-import { models, services } from 'django-airavata-api'
-import { components as comps } from 'django-airavata-common-ui'
+import { services } from 'django-airavata-api'
 
 export default {
     name: 'parser-edit-container',
@@ -26,10 +25,10 @@ export default {
         ParserEditor,
     },
     methods: {
-        handleSaved: function(parser) {
+        handleSaved: function() {
             window.location.assign("/dataparsers/");
         },
-        handleCancelled: function(parser) {
+        handleCancelled: function() {
           window.location.assign("/dataparsers/");
         },
     },

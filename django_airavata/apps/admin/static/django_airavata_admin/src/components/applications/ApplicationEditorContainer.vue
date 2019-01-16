@@ -106,7 +106,7 @@ export default {
       if (this.id) {
         this.loadApplicationModule(this.id);
         this.loadApplicationInterface(this.id);
-        this.loadApplicationDeployments(this.id).then(appDeployments => {
+        this.loadApplicationDeployments(this.id).then(() => {
           this.initializeDeploymentEditing();
         });
       } else {
@@ -178,7 +178,7 @@ export default {
           return Promise.reject(error);
         });
     },
-    deleteApplicationModule(appModule) {
+    deleteApplicationModule() {
       const deleteModule = this.id
         ? services.ApplicationModuleService.delete({
             lookup: this.id
@@ -483,7 +483,7 @@ export default {
           })
         : Promise.resolve(this.appModule);
       const interfaceSave = moduleSave.then(
-        appModule =>
+        () =>
           this.appInterfaceIsDirty
             ? this.saveApplicationInterface(this.appInterface).catch(error => {
                 // Navigate to the route that has the error
@@ -495,8 +495,7 @@ export default {
               })
             : Promise.resolve(this.appInterface)
       );
-      const deploymentsSave = interfaceSave
-        .then(appInterface => {
+      interfaceSave.then(() => {
           return Promise.all(
             this.dirtyAppDeploymentComputeHostIds.map(computeHostId => {
               const deployment = this.appDeployments.find(
@@ -523,7 +522,7 @@ export default {
             })
           );
         })
-        .then(appDeployments => {
+        .then(() => {
           return Promise.all(
             this.dirtyAppDeploymentSharedEntityComputeHostIds.map(
               computeHostId => {
@@ -560,7 +559,7 @@ export default {
             )
           );
         })
-        .then(sharedEntities => {
+        .then(() => {
           notifications.NotificationList.add(
             new notifications.Notification({
               type: "SUCCESS",
@@ -592,7 +591,7 @@ export default {
     cancel() {
       this.$router.push({ path: "/applications" });
     },
-    deleteApplication(appModule) {
+    deleteApplication() {
       const deleteAllDeployments = this.appDeployments.map(dep =>
         this.deleteApplicationDeployment(dep)
       );

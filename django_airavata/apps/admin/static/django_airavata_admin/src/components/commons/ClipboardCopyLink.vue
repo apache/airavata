@@ -33,7 +33,7 @@ export default {
     clipboard.destroy();
   },
   methods: {
-    onCopySuccess(e) {
+    onCopySuccess() {
       this.show = true;
       setTimeout(() => (this.show = false), 2000);
     }

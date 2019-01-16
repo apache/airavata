@@ -25,8 +25,7 @@
 
 import ParserList from '../parser-components/ParserList.vue';
 
-import { models, services } from 'django-airavata-api'
-import { components as comps } from 'django-airavata-common-ui'
+import { services } from 'django-airavata-api'
 
 export default {
     name: 'parsers-manage-container',
@@ -38,13 +37,12 @@ export default {
     },
     components: {
         'parser-list': ParserList,
-        'pager': comps.Pager,
     },
     methods: {
-        nextParsers: function(event) {
+        nextParsers: function() {
             this.parserPaginator.next();
         },
-        previousParsers: function(event) {
+        previousParsers: function() {
             this.parserPaginator.previous();
         },
     },

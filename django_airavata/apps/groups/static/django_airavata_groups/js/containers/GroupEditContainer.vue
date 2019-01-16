@@ -6,8 +6,7 @@
 
 import GroupEditor from '../group_components/GroupEditor.vue';
 
-import { models, services } from 'django-airavata-api'
-import { components as comps } from 'django-airavata-common-ui'
+import { services } from 'django-airavata-api'
 
 export default {
     name: 'group-edit-container',
@@ -26,7 +25,7 @@ export default {
         GroupEditor,
     },
     methods: {
-        handleSaved: function(group) {
+        handleSaved: function() {
             window.location.assign("/groups/");
         }
     },

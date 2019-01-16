@@ -61,7 +61,7 @@ export default {
                 })
                 .then(() => this.loading = false, () => this.loading = false);
         },
-        onUserInput: function(event) {
+        onUserInput: function() {
             this.userBeginsInput = true;
             // Clear server side validation data when user starts typing again
             this.newProjectServerValidationData = null;

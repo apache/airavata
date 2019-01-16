@@ -25,7 +25,6 @@ export default {
     name: 'parser-list',
     props: ['parsers'],
     data: function () {
-        console.log("Retrieved parsers");
         return {
           owner:"owner",
           alertMsg: null,

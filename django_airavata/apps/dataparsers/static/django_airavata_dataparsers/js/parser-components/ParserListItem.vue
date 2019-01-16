@@ -13,8 +13,6 @@
 
 <script>
 
-import { services } from 'django-airavata-api'
-
 export default {
     name: 'parser-list-item',
     data() {

@@ -4,7 +4,7 @@
             <a href="#" class="card-link text-dark" @click.prevent="handleAppClick">
                 <div class="card-body"  >
                     <h2 class="card-title h5">{{appModule.appModuleName}}</h2>
-                    <span class="badge badge-primary mr-1" v-for="tag in appModule.tags">{{tag}}</span>
+                    <span class="badge badge-primary mr-1" v-for="tag in appModule.tags" :key="tag">{{tag}}</span>
                     <span class="badge badge-primary mr-1" v-if="appModule.appModuleVersion" >{{appModule.appModuleVersion}}</span>
                     <p class="card-text card-text--small mt-3 text-secondary">{{appModule.appModuleDescription}}</p>
                 </div>
@@ -22,7 +22,7 @@ export default {
         };
     },
     methods: {
-        handleAppClick: function(event) {
+        handleAppClick: function() {
             this.$emit('app-selected', this.appModule);
         }
     }

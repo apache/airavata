@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { models } from "django-airavata-api";
 
 export default {
   name: "new-ssh-credential-modal",

@@ -186,7 +186,7 @@ export default {
     }
   },
   watch: {
-    sharedEntity(newValue, oldValue) {
+    sharedEntity(newValue) {
       this.localSharedEntity = newValue.clone();
     }
   }

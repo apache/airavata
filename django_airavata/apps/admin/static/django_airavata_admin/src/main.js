@@ -11,7 +11,6 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import { errors } from "django-airavata-common-ui";
 
 import router from "./router";
-import store from "./store/store";
 
 errors.GlobalErrorHandler.init();
 
@@ -23,6 +22,5 @@ Vue.use(VueRouter);
 
 new Vue({
   render: h => h(App),
-  router,
-  store
+  router
 }).$mount("#app");

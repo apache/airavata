@@ -197,7 +197,7 @@ export default {
             !this.localFullExperiment.experiment.hasLaunched) ||
           this.localFullExperiment.experiment.isProgressing
         ) {
-          this.loadExperiment().then(exp => {
+          this.loadExperiment().then(() => {
             setTimeout(pollExperiment.bind(this), 3000);
           });
         }

@@ -108,7 +108,7 @@ export default {
       this.$refs.newSSHCredentialModal.show();
     },
     createNewSSHCredential(data) {
-      services.CredentialSummaryService.createSSH({ data: data }).then(cred =>
+      services.CredentialSummaryService.createSSH({ data: data }).then(() =>
         this.fetchSSHKeys()
       );
     },
@@ -122,7 +122,7 @@ export default {
     },
     createNewPasswordCredential(data) {
       services.CredentialSummaryService.createPassword({ data: data }).then(
-        cred => this.fetchPasswordCredentials()
+        () => this.fetchPasswordCredentials()
       );
     },
     deletePasswordCredential(cred) {

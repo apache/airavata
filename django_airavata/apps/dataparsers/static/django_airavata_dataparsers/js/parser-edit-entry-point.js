@@ -23,9 +23,6 @@ new Vue({
   beforeMount() {
       if (this.$el.dataset.parserId) {
           this.parserId = this.$el.dataset.parserId;
-          console.log("parserId", this.parserId);
-      } else {
-        console.error("Missing data-parser-id attribute");
       }
   }
 }).$mount("#edit-parser");

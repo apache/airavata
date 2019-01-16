@@ -16,7 +16,7 @@
 
 <script>
 
-import { models, services } from 'django-airavata-api'
+import { services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
 
 export default {

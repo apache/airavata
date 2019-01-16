@@ -10,7 +10,6 @@
   </list-layout>
 </template>
 <script>
-import { mapActions, mapState } from "vuex";
 
 import { layouts, components as comps } from "django-airavata-common-ui";
 

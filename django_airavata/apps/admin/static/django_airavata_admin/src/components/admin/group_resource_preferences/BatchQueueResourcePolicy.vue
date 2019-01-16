@@ -60,7 +60,7 @@ export default {
         this.$emit("input", null);
       }
     },
-    numberFormatter: function(value, event) {
+    numberFormatter: function(value) {
       const num = parseInt(value);
       return !isNaN(num) ? num : null;
     }

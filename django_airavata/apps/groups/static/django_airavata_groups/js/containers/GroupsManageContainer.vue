@@ -26,7 +26,7 @@
 
 import GroupList from '../group_components/GroupList.vue';
 
-import { models, services } from 'django-airavata-api'
+import { services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
 
 export default {
@@ -41,10 +41,10 @@ export default {
         'pager': comps.Pager,
     },
     methods: {
-        nextGroups: function(event) {
+        nextGroups: function() {
             this.groupPaginator.next();
         },
-        previousGroups: function(event) {
+        previousGroups: function() {
             this.groupPaginator.previous();
         },
     },

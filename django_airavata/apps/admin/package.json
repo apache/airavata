@@ -7,7 +7,8 @@
   "scripts": {
     "serve": "vue-cli-service serve ./static/django_airavata_admin/src/main.js",
     "build": "vue-cli-service build ./static/django_airavata_admin/src/main.js",
-    "lint": "vue-cli-service lint ./static/django_airavata_admin/src/"
+    "lint": "vue-cli-service lint ./static/django_airavata_admin/src/",
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_admin/src/"
   },
   "dependencies": {
     "bootstrap": "^4.0.0",

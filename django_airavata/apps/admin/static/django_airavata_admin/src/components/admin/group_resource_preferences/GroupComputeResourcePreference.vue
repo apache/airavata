@@ -161,7 +161,7 @@ export default {
           return this.$refs.shareButton.mergeAndSave(groupResourceProfileId);
         });
       }
-      persist.then(data => {
+      persist.then(() => {
         this.$router.push("/group-resource-profiles");
       });
     },

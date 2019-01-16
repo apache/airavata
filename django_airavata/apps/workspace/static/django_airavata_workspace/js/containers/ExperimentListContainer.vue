@@ -72,10 +72,10 @@ export default {
     "experiment-status-badge": ExperimentStatusBadge
   },
   methods: {
-    nextExperiments: function(event) {
+    nextExperiments: function() {
       this.experimentsPaginator.next();
     },
-    previousExperiments: function(event) {
+    previousExperiments: function() {
       this.experimentsPaginator.previous();
     },
     fromNow: function(date) {

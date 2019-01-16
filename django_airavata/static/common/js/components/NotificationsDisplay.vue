@@ -14,7 +14,6 @@
 
 <script>
 import { errors } from "django-airavata-api";
-import Notification from "../notifications/Notification";
 import NotificationList from "../notifications/NotificationList";
 
 export default {

@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { models } from "django-airavata-api";
 import { mixins } from "django-airavata-common-ui"
 
 export default {

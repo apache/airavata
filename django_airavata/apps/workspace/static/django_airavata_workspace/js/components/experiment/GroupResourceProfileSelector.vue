@@ -17,8 +17,7 @@
 </template>
 
 <script>
-import {models, services} from 'django-airavata-api'
-import {utils} from 'django-airavata-common-ui'
+import {services} from 'django-airavata-api'
 
 export default {
     name: 'group-resource-profile-selector',

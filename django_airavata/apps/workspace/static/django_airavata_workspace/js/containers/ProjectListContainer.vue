@@ -26,7 +26,7 @@
 import ProjectButtonNew from '../components/project/ProjectButtonNew.vue'
 import ProjectList from '../components/project/ProjectList.vue'
 
-import { models, services } from 'django-airavata-api'
+import { services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
 
 export default {
@@ -43,13 +43,13 @@ export default {
         'pager': comps.Pager,
     },
     methods: {
-        nextProjects: function(event) {
+        nextProjects: function() {
             this.projectsPaginator.next();
         },
-        previousProjects: function(event) {
+        previousProjects: function() {
             this.projectsPaginator.previous();
         },
-        onNewProject: function(project) {
+        onNewProject: function() {
             services.ProjectService.list()
                 .then(result => this.projectsPaginator = result);
         },

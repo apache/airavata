@@ -11,7 +11,8 @@
   "scripts": {
     "watch": "vue-cli-service build --watch --target lib --name index js/index.js",
     "build": "vue-cli-service build --target lib --name index js/index.js",
-    "lint": "vue-cli-service lint ./js/"
+    "lint": "vue-cli-service lint ./js/",
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./js/"
   },
   "peerDependencies": {
     "django-airavata-api": "^1.0.0-beta"

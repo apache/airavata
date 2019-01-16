@@ -5,7 +5,7 @@
 
 <script>
 
-import {models, services} from 'django-airavata-api'
+import {services} from 'django-airavata-api'
 import ExperimentSummary from '../components/experiment/ExperimentSummary.vue'
 
 export default {

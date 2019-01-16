@@ -34,7 +34,7 @@ export default {
     "notifications-display": components.NotificationsDisplay
   },
   methods: {
-    handleSavedExperiment: function(experiment) {
+    handleSavedExperiment: function() {
       // Redirect to experiment view
       window.location.assign("/workspace/experiments");
     },

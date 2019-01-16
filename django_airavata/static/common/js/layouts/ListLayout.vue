@@ -62,10 +62,10 @@ export default {
     pager: Pager
   },
   methods: {
-    nextItems: function(event) {
+    nextItems: function() {
       this.itemsPaginator.next();
     },
-    previousItems: function(event) {
+    previousItems: function() {
       this.itemsPaginator.previous();
     },
     addNewItem: function() {
