@@ -14,7 +14,7 @@ public class ProcessCompletionMessageSerializer implements Serializer<ProcessCom
 
     @Override
     public byte[] serialize(String topic, ProcessCompletionMessage data) {
-        String serialized = data.getProcessId() + "," + data.getExperimentId() + "," + data.getGatewayId();
+        String serialized = data.getProcessId() + ";" + data.getExperimentId() + ";" + data.getGatewayId();
         return serialized.getBytes();
     }
 
