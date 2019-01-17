@@ -15,7 +15,7 @@
     "bootstrap-vue": "^2.0.0-rc.11",
     "django-airavata-api": "file:../api",
     "django-airavata-common-ui": "file:../../static/common",
-    "vue": "^2.5.17"
+    "vue": "^2.5.22"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.1.1",
@@ -24,8 +24,12 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0-0",
-    "vue-template-compiler": "^2.5.21",
-    "webpack-bundle-tracker": "^0.4.2-beta"
+    "vue-loader": "^15.5.1",
+    "vue-template-compiler": "^2.5.22",
+    "webpack": "^4.28.4",
+    "webpack-bundle-tracker": "^0.4.2-beta",
+    "webpack-dev-middleware": "^3.5.1",
+    "webpack-dev-server": "^3.1.14"
   },
   "eslintConfig": {
     "root": true,

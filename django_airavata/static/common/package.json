@@ -18,7 +18,7 @@
     "django-airavata-api": "file:../../apps/api",
     "jquery": "^3.3.1",
     "popper.js": "^1.14.6",
-    "vue": "^2.5.21"
+    "vue": "^2.5.22"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.1.1",
@@ -29,8 +29,11 @@
     "eslint-plugin-vue": "^5.0.0-0",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.5.17",
-    "webpack-bundle-tracker": "^0.4.2-beta"
+    "vue-loader": "^15.5.1",
+    "vue-template-compiler": "^2.5.22",
+    "webpack": "^4.28.4",
+    "webpack-bundle-tracker": "^0.4.2-beta",
+    "webpack-dev-middleware": "^3.5.1"
   },
   "eslintConfig": {
     "root": true,
