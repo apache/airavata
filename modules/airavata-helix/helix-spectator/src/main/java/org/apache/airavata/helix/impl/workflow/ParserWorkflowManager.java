@@ -71,9 +71,10 @@ public class ParserWorkflowManager extends WorkflowManager {
     }
 
     private boolean process(ProcessCompletionMessage completionMessage) {
-        try {
 
-            RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+        try {
             ProcessModel processModel;
             ApplicationInterfaceDescription appDescription;
             try {
@@ -83,8 +84,6 @@ public class ParserWorkflowManager extends WorkflowManager {
             } catch (Exception e) {
                 logger.error("Failed to fetch process or application description from registry associated with process id " + completionMessage.getProcessId(), e);
                 throw new Exception("Failed to fetch process or application description from registry associated with process id " + completionMessage.getProcessId(), e);
-            } finally {
-                getRegistryClientPool().returnResource(registryClient);
             }
 
             // All the templates should be run
@@ -154,11 +153,14 @@ public class ParserWorkflowManager extends WorkflowManager {
                         allTasks, true, false);
                 logger.info("Launched workflow " + workflow);
             }
+
+            getRegistryClientPool().returnResource(registryClient);
             return true;
 
 
         } catch (Exception e) {
             logger.error("Failed to create the DataParsing task DAG", e);
+            getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
