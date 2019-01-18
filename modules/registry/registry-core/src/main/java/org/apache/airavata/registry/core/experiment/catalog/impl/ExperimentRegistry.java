@@ -1295,7 +1295,8 @@ public class ExperimentRegistry {
 	                jobs.add(jobModel);
                 }
                 return jobs;
-            }else if (fieldName.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+
+            } else if (fieldName.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
                 TaskResource taskResource = new TaskResource();
                 taskResource.setTaskId((String) value);
                 List<JobResource> resources = taskResource.getJobList();
@@ -1312,7 +1313,25 @@ public class ExperimentRegistry {
                     jobs.add(jobModel);
                 }
                 return jobs;
-            }else {
+
+            } else if (fieldName.equals(Constants.FieldConstants.JobConstants.JOB_ID)) {
+                JobResource resource = new JobResource();
+                resource.setJobId((String)value);
+                List<JobResource> resources = resource.getJobsById();
+                for (JobResource jobResource : resources) {
+                    JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
+                    JobStatusResource latestSR = jobResource.getJobStatus();
+                    if (latestSR != null) {
+                        JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
+                        jobStatus.setReason(latestSR.getReason());
+                        List<JobStatus> statuses = new ArrayList<>();
+                        statuses.add(jobStatus);
+                        jobModel.setJobStatuses(statuses);
+                    }
+                    jobs.add(jobModel);
+                }
+                return jobs;
+            } else {
                 logger.error("Unsupported field name to retrieve job list...");
             }
         } catch (Exception e) {

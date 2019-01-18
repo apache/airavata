@@ -157,7 +157,6 @@ public class PreWorkflowManager extends WorkflowManager {
 
         String experimentId = processModel.getExperimentId();
 
-        MonitoringUtil.registerCancelProcess(getCuratorClient(), processId);
         List<String> workflows = MonitoringUtil.getWorkflowsOfProcess(getCuratorClient(), processId);
         final List<AbstractTask> allTasks = new ArrayList<>();
         if (workflows != null && workflows.size() > 0) {

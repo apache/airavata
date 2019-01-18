@@ -36,6 +36,7 @@ import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JobResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(JobResource.class);
@@ -137,6 +138,14 @@ public class JobResource extends AbstractExpCatResource {
 
     public void setExitCode(int exitCode) {
         this.exitCode = exitCode;
+    }
+
+    public List<JobResource> getJobsById() throws RegistryException {
+        List<ExperimentCatResource> experimentCatResources = get(ResourceType.JOB);
+        List<JobResource> jobResources = experimentCatResources.stream()
+                .map(experimentCatResource -> (JobResource)experimentCatResource)
+                .collect(Collectors.toList());
+        return jobResources;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
@@ -263,6 +272,19 @@ public class JobResource extends AbstractExpCatResource {
                         }
                     }
                     break;
+                case JOB:
+                    generator = new QueryGenerator(JOB);
+                    generator.setParameter(JobStatusConstants.JOB_ID, jobId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Job job = (Job) result;
+                            JobResource jobResource =
+                                    (JobResource) Utils.getResource(ResourceType.JOB, job);
+                            resourceList.add(jobResource);
+                        }
+                    }
                 default:
                     logger.error("Unsupported resource type for job resource.", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();

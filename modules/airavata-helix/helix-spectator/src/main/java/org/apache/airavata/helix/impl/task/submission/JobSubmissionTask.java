@@ -258,7 +258,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
         mapData.getPreJobCommands().add(0, "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
                 "-H \"Accept: application/vnd.kafka.v2+json\" " +
-                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\"}}]}' \"" +
+                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
                 ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
 
         if (mapData.getPostJobCommands() == null) {
@@ -267,7 +267,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
         mapData.getPostJobCommands().add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
                 "-H \"Accept: application/vnd.kafka.v2+json\" " +
-                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\"}}]}' \"" +
+                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
                 ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
     }
 }
