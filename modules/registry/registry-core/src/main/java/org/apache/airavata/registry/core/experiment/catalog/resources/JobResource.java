@@ -285,6 +285,7 @@ public class JobResource extends AbstractExpCatResource {
                             resourceList.add(jobResource);
                         }
                     }
+                    break;
                 default:
                     logger.error("Unsupported resource type for job resource.", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
