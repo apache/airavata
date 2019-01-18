@@ -222,12 +222,9 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
 
-    public void saveAndPublishJobStatus(String jobId, String processId, String experimentId, String gateway,
+    public void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
                                          JobState jobState) throws Exception {
         try {
-
-            String taskId = Optional.ofNullable(MonitoringUtil.getTaskIdByJobId(getCuratorClient(), jobId))
-                    .orElseThrow(() -> new Exception("Can not find the task for job id " + jobId));
 
             JobStatus jobStatus = new JobStatus();
             jobStatus.setReason(jobState.name());
@@ -250,7 +247,6 @@ public abstract class AiravataTask extends AbstractTask {
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             getStatusPublisher().publish(msgCtx);
 
-            MonitoringUtil.updateStatusOfJob(getCuratorClient(), jobId, jobState);
         } catch (Exception e) {
             logger.error("Error persisting job status " + e.getLocalizedMessage(), e);
         }

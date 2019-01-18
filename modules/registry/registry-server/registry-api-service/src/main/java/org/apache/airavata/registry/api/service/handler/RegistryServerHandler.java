@@ -67,6 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
@@ -1028,6 +1029,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+    @Override
+    public List<JobModel> getJobs(String queryType, String id) throws RegistryServiceException, TException {
+
+        try {
+            return fetchJobModels(queryType, id);
+        } catch (Exception e) {
+            logger.error(id, "Error while retrieving jobs for query " + queryType + " and id " + id, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving jobs for query " + queryType + " and id " + id + ". More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     private JobModel fetchJobModel(String queryType, String id) throws RegistryException {
         experimentCatalog = RegistryFactory.getDefaultExpCatalog();
         if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
@@ -1056,6 +1071,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
         }
         return null;
+    }
+
+    private List<JobModel> fetchJobModels(String queryType, String id) throws RegistryException {
+        experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+        List<Object> jobs = new ArrayList<>();
+        if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+            jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, id);
+        }
+        else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
+            jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+        }
+        return jobs.stream().map(obj -> (JobModel)obj).collect(Collectors.toList());
     }
 
     @Override

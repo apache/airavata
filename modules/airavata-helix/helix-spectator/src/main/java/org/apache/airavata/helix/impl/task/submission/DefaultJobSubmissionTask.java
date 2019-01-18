@@ -181,10 +181,6 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
             } else {
 
-                // creating monitoring nodes
-                MonitoringUtil.createMonitoringNode(getCuratorClient(), jobId, mapData.getJobName(), getTaskId(),
-                        getProcessId(), getExperimentId(), getGatewayId());
-
                 // usage reporting as the last step of job submission task
                 if (getComputeResourceDescription().isGatewayUsageReporting()){
                     String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();

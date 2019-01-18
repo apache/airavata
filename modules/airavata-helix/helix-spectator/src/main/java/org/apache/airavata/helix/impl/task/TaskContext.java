@@ -123,6 +123,10 @@ public class TaskContext {
         return processId;
     }
 
+    public String getTaskId() {
+        return taskId;
+    }
+
     public Publisher getStatusPublisher() {
         return statusPublisher;
     }

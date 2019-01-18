@@ -761,6 +761,9 @@ service RegistryService {
            job_model.JobModel getJob(1: required string queryType, 2: required string id)
                        throws (1: registry_api_errors.RegistryServiceException rse)
 
+           list<job_model.JobModel> getJobs(1: required string queryType, 2: required string id)
+                                  throws (1: registry_api_errors.RegistryServiceException rse)
+
 
            list<application_io_models.OutputDataObjectType> getProcessOutputs (1: required string processId)
                        throws (1: registry_api_errors.RegistryServiceException rse)

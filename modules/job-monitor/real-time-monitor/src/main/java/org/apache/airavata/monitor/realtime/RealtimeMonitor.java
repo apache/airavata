@@ -25,12 +25,12 @@ import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.MonitoringException;
 import org.apache.airavata.monitor.realtime.parser.RealtimeJobStatusParser;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +67,13 @@ public class RealtimeMonitor extends AbstractMonitor {
         while (true) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(1000);
             consumerRecords.forEach(record -> {
+                RegistryService.Client registryClient = getRegistryClientPool().getResource();
                 try {
-                    process(record.value());
+                    process(record.value(), registryClient);
+                    getRegistryClientPool().returnResource(registryClient);
                 } catch (Exception e) {
                     logger.error("Error while processing message " + record.value(), e);
+                    getRegistryClientPool().returnBrokenResource(registryClient);
                     // ignore this error
                 }
             });
@@ -79,9 +82,9 @@ public class RealtimeMonitor extends AbstractMonitor {
         }
     }
 
-    private void process(String value) throws MonitoringException {
+    private void process(String value, RegistryService.Client registryClient) throws MonitoringException {
         logger.info("Received data " + value);
-        JobStatusResult statusResult = parser.parse(value);
+        JobStatusResult statusResult = parser.parse(value, registryClient);
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
             submitJobStatus(statusResult);
