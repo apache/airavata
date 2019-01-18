@@ -1078,9 +1078,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
         List<Object> jobs = new ArrayList<>();
         if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
             jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, id);
-        }
-        else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
+        } else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
             jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+        } else if (queryType.equals(Constants.FieldConstants.JobConstants.JOB_ID)) {
+            jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.JOB_ID, id);
         }
         return jobs.stream().map(obj -> (JobModel)obj).collect(Collectors.toList());
     }
