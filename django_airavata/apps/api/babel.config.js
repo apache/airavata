@@ -8,4 +8,12 @@ const presets = [
 ];
 
 const plugins = ["@babel/plugin-transform-runtime"];
-module.exports = { presets, plugins };
+module.exports = {
+  presets,
+  plugins,
+  env: {
+    test: {
+      presets: ["@babel/env"]
+    }
+  }
+};
