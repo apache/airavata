@@ -73,16 +73,18 @@
               <h2 class="h6 mb-3">
                 Application Inputs
               </h2>
-              <input-editor-container
-                v-for="experimentInput in localExperiment.experimentInputs"
-                :experiment-input="experimentInput"
-                v-model="experimentInput.value"
-                v-show="experimentInput.show"
-                :key="experimentInput.name"
-                @invalid="recordInvalidInputEditorValue(experimentInput.name)"
-                @valid="recordValidInputEditorValue(experimentInput.name)"
-                @input="inputValueChanged"
-              />
+              <transition-group name="fade">
+                <input-editor-container
+                  v-for="experimentInput in localExperiment.experimentInputs"
+                  :experiment-input="experimentInput"
+                  v-model="experimentInput.value"
+                  v-show="experimentInput.show"
+                  :key="experimentInput.name"
+                  @invalid="recordInvalidInputEditorValue(experimentInput.name)"
+                  @valid="recordValidInputEditorValue(experimentInput.name)"
+                  @input="inputValueChanged"
+                />
+              </transition-group>
             </div>
           </div>
         </div>
@@ -258,7 +260,7 @@ export default {
     },
     inputValueChanged: function() {
       this.localExperiment.evaluateInputDependencies();
-    },
+    }
   },
   watch: {
     experiment: function(newValue) {
