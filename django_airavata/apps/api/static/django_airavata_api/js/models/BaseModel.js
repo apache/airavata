@@ -67,6 +67,9 @@ export default class BaseModel {
                     // Otherwise it is an integer that we need to convert to enum
                     return modelClass.byValue(fieldValue);
                 }
+            } else if (fieldValue instanceof modelClass) {
+                // No conversion necessary, just return the fieldValue
+                return fieldValue;
             } else {
                 return new modelClass(fieldValue);
             }

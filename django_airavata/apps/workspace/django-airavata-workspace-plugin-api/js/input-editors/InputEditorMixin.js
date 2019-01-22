@@ -58,6 +58,9 @@ export default {
     watch: {
         valid() {
           this.checkValidation();
+        },
+        value(newValue) {
+          this.data = newValue;
         }
     }
 }

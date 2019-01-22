@@ -1,14 +1,17 @@
 {
   "name": "django-airavata-workspace-views",
-  "description": "A Vue.js project",
   "version": "1.0.0",
-  "author": "Marcus Christie <machristie@apache.org>",
   "private": true,
+  "description": "A Vue.js project",
+  "author": "Marcus Christie <machristie@apache.org>",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint ./static/django_airavata_workspace/js",
-    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_workspace/js"
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_workspace/js",
+    "test": "npm run test:unit",
+    "test:unit": "vue-cli-service test:unit",
+    "test:unit:watch": "vue-cli-service test:unit --watch"
   },
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
@@ -22,8 +25,13 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.1.1",
     "@vue/cli-plugin-eslint": "^3.1.1",
+    "@vue/cli-plugin-unit-jest": "^3.3.0",
     "@vue/cli-service": "^3.1.1",
+    "@vue/test-utils": "^1.0.0-beta.28",
+    "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
+    "babel-jest": "^23.6.0",
+    "babel-loader": "^8.0.5",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0-0",
     "vue-loader": "^15.5.1",

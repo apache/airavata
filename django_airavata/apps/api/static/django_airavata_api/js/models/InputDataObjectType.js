@@ -222,7 +222,6 @@ export default class InputDataObjectType extends BaseModel {
       const booleanExpressionEvaluator = new BooleanExpressionEvaluator(
         inputValues
       );
-      // TODO: if show changes to false, set value to null? Save off current value to restore when shown again?
       if ("show" in this.editorDependencies) {
         this.show = booleanExpressionEvaluator.evaluate(
           this.editorDependencies.show

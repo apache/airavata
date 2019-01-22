@@ -19,13 +19,12 @@ import StringInputEditor from './StringInputEditor.vue'
 import TextareaInputEditor from './TextareaInputEditor.vue'
 
 import {models} from 'django-airavata-api'
+import { mixins } from 'django-airavata-common-ui';
 
 export default {
     name: 'input-editor-container',
+    mixins: [mixins.VModelMixin],
     props: {
-        value: {
-            required: true,
-        },
         experimentInput: {
             type: models.InputDataObjectType,
             required: true,
@@ -38,12 +37,19 @@ export default {
         StringInputEditor,
         TextareaInputEditor,
     },
+    created() {
+      if (!this.show) {
+        this.handleHidingInput();
+      }
+    },
     data: function() {
         return {
-            data: this.value,
             state: null,
             feedbackMessages: [],
             inputHasBegun: false,
+            // Store the current value when hiding input so we can restore it when shown again
+            oldValue: null,
+            show: this.experimentInput.show
         }
     },
     computed: {
@@ -86,8 +92,35 @@ export default {
         },
         valueChanged: function() {
             this.inputHasBegun = true;
-            this.$emit('input', this.data);
         },
+        handleHidingInput: function() {
+          this.oldValue = this.data;
+          this.data = null;
+        },
+        handleShowingInput: function() {
+          if (this.oldValue !== null) {
+            this.data = this.oldValue;
+          }
+        }
+    },
+    watch: {
+      // This is a bit of a workaround for testing purposes. Watcher for
+      // "experimentInput.show" does not get triggered during unit test so sync it
+      // to "show" data variable and then in the unit test manipulate "show"
+      // directly.
+      "experimentInput.show": function(newValue) {
+        this.show = newValue;
+      },
+      "show": function(newValue, oldValue) {
+        // Hiding
+        if (oldValue && !newValue) {
+          this.handleHidingInput();
+        }
+        // Showing
+        else if (newValue && !oldValue) {
+          this.handleShowingInput();
+        }
+      }
     }
 }
 </script>

@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "author": "Marcus Christie <machristie@apache.org>",
   "private": true,
+  "main": "./js/index.js",
   "module": "./js/index.js",
   "scripts": {
     "watch": "vue-cli-service build --watch",
