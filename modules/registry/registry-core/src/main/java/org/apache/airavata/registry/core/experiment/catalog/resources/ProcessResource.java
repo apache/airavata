@@ -544,6 +544,20 @@ public class ProcessResource extends AbstractExpCatResource {
 			            }
 		            }
 		            break;
+                case PROCESS_WORKFLOW:
+                    generator = new QueryGenerator(PROCESS_WORKFLOW);
+                    generator.setParameter(ProcessWorkflowConstants.PROCESS_ID, processId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            ProcessWorkflow processWorkflow = (ProcessWorkflow) result;
+                            JobResource jobResource =
+                                    (JobResource) Utils.getResource(ResourceType.PROCESS_WORKFLOW, processWorkflow);
+                            resourceList.add(jobResource);
+                        }
+                    }
+                    break;
                 default:
                     logger.error("Unsupported resource type for task resource.", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -634,7 +648,7 @@ public class ProcessResource extends AbstractExpCatResource {
         }
     }
 
-    public List<ProcessInputResource> getProcessInputs() throws RegistryException{
+    public List<ProcessInputResource> getProcessInputs() throws RegistryException {
         List<ProcessInputResource> processInputResources = new ArrayList();
         List<ExperimentCatResource> resources = get(ResourceType.PROCESS_INPUT);
         for (ExperimentCatResource resource : resources) {
@@ -644,7 +658,7 @@ public class ProcessResource extends AbstractExpCatResource {
         return processInputResources;
     }
 
-    public List<ProcessOutputResource> getProcessOutputs() throws RegistryException{
+    public List<ProcessOutputResource> getProcessOutputs() throws RegistryException {
         List<ProcessOutputResource> outputResources = new ArrayList();
         List<ExperimentCatResource> resources = get(ResourceType.PROCESS_OUTPUT);
         for (ExperimentCatResource resource : resources) {
@@ -654,7 +668,17 @@ public class ProcessResource extends AbstractExpCatResource {
         return outputResources;
     }
 
-    public List<ProcessStatusResource> getProcessStatuses() throws RegistryException{
+    public List<ProcessWorkflowResource> getProcessWorkflows() throws RegistryException {
+        List<ProcessWorkflowResource> processWorkflowResources = new ArrayList<>();
+        List<ExperimentCatResource> resources = get(ResourceType.PROCESS_WORKFLOW);
+        for (ExperimentCatResource resource : resources) {
+            ProcessWorkflowResource workflowResource = (ProcessWorkflowResource) resource;
+            processWorkflowResources.add(workflowResource);
+        }
+        return processWorkflowResources;
+    }
+
+    public List<ProcessStatusResource> getProcessStatuses() throws RegistryException {
         List<ProcessStatusResource> processStatusResources = new ArrayList();
         List<ExperimentCatResource> resources = get(ResourceType.PROCESS_STATUS);
         for (ExperimentCatResource resource : resources) {

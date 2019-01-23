@@ -50,6 +50,7 @@ import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
@@ -632,5 +633,20 @@ public class ThriftDataModelConversion {
             return notification;
         }
         return null;
+    }
+
+    public static List<ProcessWorkflow> getProcessWorkflows(List<ProcessWorkflowResource> resources) {
+        List<ProcessWorkflow> workflows = new ArrayList<>();
+        if (resources != null) {
+            for (ProcessWorkflowResource resource: resources) {
+                ProcessWorkflow processWorkflow = new ProcessWorkflow();
+                processWorkflow.setProcessId(resource.getProcessId());
+                processWorkflow.setWorkflowId(resource.getWorkflowId());
+                processWorkflow.setCreationTime(resource.getCreationTime().getTime());
+                processWorkflow.setType(resource.getType());
+                workflows.add(processWorkflow);
+            }
+        }
+        return workflows;
     }
 }

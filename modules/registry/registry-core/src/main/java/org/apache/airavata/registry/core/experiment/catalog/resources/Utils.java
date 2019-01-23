@@ -333,6 +333,13 @@ public class Utils {
                     logger.error("Object should be a JobStatus data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a JobStatus data.");
                 }
+            case PROCESS_WORKFLOW:
+                if (o instanceof ProcessWorkflow) {
+                    return createProcessWorkflowResource((ProcessWorkflow) o);
+                } else {
+                    logger.error("Object should be a ProcessWorkflow data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ProcessWorkflow data.");
+                }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
@@ -746,5 +753,16 @@ public class Utils {
         }
 
         return jobStatusResource;
+    }
+
+    private static ExperimentCatResource createProcessWorkflowResource(ProcessWorkflow pw) {
+        ProcessWorkflowResource pwr = new ProcessWorkflowResource();
+        if (pw != null) {
+            pwr.setProcessId(pw.getProcessId());
+            pwr.setWorkflowId(pw.getWorkflowId());
+            pwr.setCreationTime(pw.getCreationTime());
+            pwr.setType(pw.getType());
+        }
+        return pwr;
     }
 }

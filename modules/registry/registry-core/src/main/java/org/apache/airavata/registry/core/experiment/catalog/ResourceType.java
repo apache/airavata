@@ -43,5 +43,6 @@ public enum ResourceType {
     TASK_STATUS,
     JOB,
     JOB_STATUS,
-    QUEUE_STATUS
+    QUEUE_STATUS,
+    PROCESS_WORKFLOW
 }
