@@ -98,6 +98,7 @@ public class DerbyDBManager {
         }
     }
 
+    // TODO: move this into DerbyUtil
     public void destroyDatabase(String databaseName) {
 
         String jdbcUrl = "jdbc:derby:" + databaseName + ";create=true;user=" + jdbcUser + ";password=" + jdbcPassword;

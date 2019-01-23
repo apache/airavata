@@ -19,6 +19,7 @@
  *
  */
 
+/* registry-refactoring: app catalog DB init script */
 CREATE TABLE COMPUTE_RESOURCE
 (
         RESOURCE_ID VARCHAR (255) NOT NULL,

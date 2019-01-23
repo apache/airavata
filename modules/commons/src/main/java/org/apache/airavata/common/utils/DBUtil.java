@@ -53,6 +53,10 @@ public class DBUtil {
         init();
     }
 
+    public DBUtil(JDBCConfig jdbcConfig) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        this(jdbcConfig.getURL(), jdbcConfig.getUser(), jdbcConfig.getPassword(), jdbcConfig.getDriver());
+    }
+
     /**
      * Initializes and load driver. Must be called this before calling anyother method.
      * 

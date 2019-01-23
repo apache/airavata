@@ -19,6 +19,7 @@
  *
  */
 
+/* registry-refactoring: replica catalog DB init script */
 CREATE TABLE DATA_PRODUCT
 (
         PRODUCT_URI VARCHAR (255),
