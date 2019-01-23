@@ -97,6 +97,7 @@
         <class>org.apache.airavata.registry.core.experiment.catalog.model.JobStatus</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.Notification</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.QueueStatus</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ProcessWorkflow</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="replicacatalog_data">
