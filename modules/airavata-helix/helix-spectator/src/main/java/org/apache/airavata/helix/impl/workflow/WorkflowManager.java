@@ -13,6 +13,7 @@ import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.RegistryService;
@@ -120,5 +121,22 @@ public class WorkflowManager {
                 AiravataUtils.getId(MessageType.PROCESS.name()), gatewayId);
         msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         getStatusPublisher().publish(msgCtx);
+    }
+
+    protected void registerWorkflowForProcess(String processId, String workflowName, String workflowType) {
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        try {
+            ProcessWorkflow processWorkflow = new ProcessWorkflow();
+            processWorkflow.setProcessId(processId);
+            processWorkflow.setWorkflowId(workflowName);
+            processWorkflow.setType(workflowType);
+            processWorkflow.setCreationTime(System.currentTimeMillis());
+            registryClient.addProcessWorkflow(processWorkflow);
+            getRegistryClientPool().returnResource(registryClient);
+
+        } catch (Exception e) {
+            logger.error("Failed to save workflow " + workflowName + " of process " + processId + ". This will affect cancellation tasks", e);
+            getRegistryClientPool().returnBrokenResource(registryClient);
+        }
     }
 }
