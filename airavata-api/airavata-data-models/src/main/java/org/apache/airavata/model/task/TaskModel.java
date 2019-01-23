@@ -47,6 +47,8 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
   private static final org.apache.thrift.protocol.TField SUB_TASK_MODEL_FIELD_DESC = new org.apache.thrift.protocol.TField("subTaskModel", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField TASK_ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("taskErrors", org.apache.thrift.protocol.TType.LIST, (short)9);
   private static final org.apache.thrift.protocol.TField JOBS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobs", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField MAX_RETRY_FIELD_DESC = new org.apache.thrift.protocol.TField("maxRetry", org.apache.thrift.protocol.TType.I32, (short)11);
+  private static final org.apache.thrift.protocol.TField CURRENT_RETRY_FIELD_DESC = new org.apache.thrift.protocol.TField("currentRetry", org.apache.thrift.protocol.TType.I32, (short)12);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new TaskModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new TaskModelTupleSchemeFactory();
@@ -61,6 +63,8 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
   private java.nio.ByteBuffer subTaskModel; // optional
   private java.util.List<org.apache.airavata.model.commons.ErrorModel> taskErrors; // optional
   private java.util.List<org.apache.airavata.model.job.JobModel> jobs; // optional
+  private int maxRetry; // optional
+  private int currentRetry; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -77,7 +81,9 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     TASK_DETAIL((short)7, "taskDetail"),
     SUB_TASK_MODEL((short)8, "subTaskModel"),
     TASK_ERRORS((short)9, "taskErrors"),
-    JOBS((short)10, "jobs");
+    JOBS((short)10, "jobs"),
+    MAX_RETRY((short)11, "maxRetry"),
+    CURRENT_RETRY((short)12, "currentRetry");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -112,6 +118,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
           return TASK_ERRORS;
         case 10: // JOBS
           return JOBS;
+        case 11: // MAX_RETRY
+          return MAX_RETRY;
+        case 12: // CURRENT_RETRY
+          return CURRENT_RETRY;
         default:
           return null;
       }
@@ -154,8 +164,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private static final int __LASTUPDATETIME_ISSET_ID = 1;
+  private static final int __MAXRETRY_ISSET_ID = 2;
+  private static final int __CURRENTRETRY_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.TASK_DETAIL,_Fields.SUB_TASK_MODEL,_Fields.TASK_ERRORS,_Fields.JOBS};
+  private static final _Fields optionals[] = {_Fields.TASK_DETAIL,_Fields.SUB_TASK_MODEL,_Fields.TASK_ERRORS,_Fields.JOBS,_Fields.MAX_RETRY,_Fields.CURRENT_RETRY};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -182,6 +194,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     tmpMap.put(_Fields.JOBS, new org.apache.thrift.meta_data.FieldMetaData("jobs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.job.JobModel.class))));
+    tmpMap.put(_Fields.MAX_RETRY, new org.apache.thrift.meta_data.FieldMetaData("maxRetry", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.CURRENT_RETRY, new org.apache.thrift.meta_data.FieldMetaData("currentRetry", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TaskModel.class, metaDataMap);
   }
@@ -253,6 +269,8 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       }
       this.jobs = __this__jobs;
     }
+    this.maxRetry = other.maxRetry;
+    this.currentRetry = other.currentRetry;
   }
 
   public TaskModel deepCopy() {
@@ -274,6 +292,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     this.subTaskModel = null;
     this.taskErrors = null;
     this.jobs = null;
+    setMaxRetryIsSet(false);
+    this.maxRetry = 0;
+    setCurrentRetryIsSet(false);
+    this.currentRetry = 0;
   }
 
   public java.lang.String getTaskId() {
@@ -566,6 +588,50 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     }
   }
 
+  public int getMaxRetry() {
+    return this.maxRetry;
+  }
+
+  public void setMaxRetry(int maxRetry) {
+    this.maxRetry = maxRetry;
+    setMaxRetryIsSet(true);
+  }
+
+  public void unsetMaxRetry() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __MAXRETRY_ISSET_ID);
+  }
+
+  /** Returns true if field maxRetry is set (has been assigned a value) and false otherwise */
+  public boolean isSetMaxRetry() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __MAXRETRY_ISSET_ID);
+  }
+
+  public void setMaxRetryIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __MAXRETRY_ISSET_ID, value);
+  }
+
+  public int getCurrentRetry() {
+    return this.currentRetry;
+  }
+
+  public void setCurrentRetry(int currentRetry) {
+    this.currentRetry = currentRetry;
+    setCurrentRetryIsSet(true);
+  }
+
+  public void unsetCurrentRetry() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __CURRENTRETRY_ISSET_ID);
+  }
+
+  /** Returns true if field currentRetry is set (has been assigned a value) and false otherwise */
+  public boolean isSetCurrentRetry() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __CURRENTRETRY_ISSET_ID);
+  }
+
+  public void setCurrentRetryIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __CURRENTRETRY_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case TASK_ID:
@@ -652,6 +718,22 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       }
       break;
 
+    case MAX_RETRY:
+      if (value == null) {
+        unsetMaxRetry();
+      } else {
+        setMaxRetry((java.lang.Integer)value);
+      }
+      break;
+
+    case CURRENT_RETRY:
+      if (value == null) {
+        unsetCurrentRetry();
+      } else {
+        setCurrentRetry((java.lang.Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -687,6 +769,12 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     case JOBS:
       return getJobs();
 
+    case MAX_RETRY:
+      return getMaxRetry();
+
+    case CURRENT_RETRY:
+      return getCurrentRetry();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -718,6 +806,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       return isSetTaskErrors();
     case JOBS:
       return isSetJobs();
+    case MAX_RETRY:
+      return isSetMaxRetry();
+    case CURRENT_RETRY:
+      return isSetCurrentRetry();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -827,6 +919,24 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         return false;
     }
 
+    boolean this_present_maxRetry = true && this.isSetMaxRetry();
+    boolean that_present_maxRetry = true && that.isSetMaxRetry();
+    if (this_present_maxRetry || that_present_maxRetry) {
+      if (!(this_present_maxRetry && that_present_maxRetry))
+        return false;
+      if (this.maxRetry != that.maxRetry)
+        return false;
+    }
+
+    boolean this_present_currentRetry = true && this.isSetCurrentRetry();
+    boolean that_present_currentRetry = true && that.isSetCurrentRetry();
+    if (this_present_currentRetry || that_present_currentRetry) {
+      if (!(this_present_currentRetry && that_present_currentRetry))
+        return false;
+      if (this.currentRetry != that.currentRetry)
+        return false;
+    }
+
     return true;
   }
 
@@ -869,6 +979,14 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     hashCode = hashCode * 8191 + ((isSetJobs()) ? 131071 : 524287);
     if (isSetJobs())
       hashCode = hashCode * 8191 + jobs.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetMaxRetry()) ? 131071 : 524287);
+    if (isSetMaxRetry())
+      hashCode = hashCode * 8191 + maxRetry;
+
+    hashCode = hashCode * 8191 + ((isSetCurrentRetry()) ? 131071 : 524287);
+    if (isSetCurrentRetry())
+      hashCode = hashCode * 8191 + currentRetry;
 
     return hashCode;
   }
@@ -981,6 +1099,26 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetMaxRetry()).compareTo(other.isSetMaxRetry());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMaxRetry()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.maxRetry, other.maxRetry);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetCurrentRetry()).compareTo(other.isSetCurrentRetry());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCurrentRetry()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.currentRetry, other.currentRetry);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1078,6 +1216,18 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       } else {
         sb.append(this.jobs);
       }
+      first = false;
+    }
+    if (isSetMaxRetry()) {
+      if (!first) sb.append(", ");
+      sb.append("maxRetry:");
+      sb.append(this.maxRetry);
+      first = false;
+    }
+    if (isSetCurrentRetry()) {
+      if (!first) sb.append(", ");
+      sb.append("currentRetry:");
+      sb.append(this.currentRetry);
       first = false;
     }
     sb.append(")");
@@ -1262,6 +1412,22 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 11: // MAX_RETRY
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.maxRetry = iprot.readI32();
+              struct.setMaxRetryIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // CURRENT_RETRY
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.currentRetry = iprot.readI32();
+              struct.setCurrentRetryIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1350,6 +1516,16 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetMaxRetry()) {
+        oprot.writeFieldBegin(MAX_RETRY_FIELD_DESC);
+        oprot.writeI32(struct.maxRetry);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetCurrentRetry()) {
+        oprot.writeFieldBegin(CURRENT_RETRY_FIELD_DESC);
+        oprot.writeI32(struct.currentRetry);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1392,7 +1568,13 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       if (struct.isSetJobs()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetMaxRetry()) {
+        optionals.set(4);
+      }
+      if (struct.isSetCurrentRetry()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetTaskDetail()) {
         oprot.writeString(struct.taskDetail);
       }
@@ -1416,6 +1598,12 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
             _iter14.write(oprot);
           }
         }
+      }
+      if (struct.isSetMaxRetry()) {
+        oprot.writeI32(struct.maxRetry);
+      }
+      if (struct.isSetCurrentRetry()) {
+        oprot.writeI32(struct.currentRetry);
       }
     }
 
@@ -1444,7 +1632,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         }
       }
       struct.setTaskStatusesIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(4);
+      java.util.BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.taskDetail = iprot.readString();
         struct.setTaskDetailIsSet(true);
@@ -1480,6 +1668,14 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
           }
         }
         struct.setJobsIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.maxRetry = iprot.readI32();
+        struct.setMaxRetryIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.currentRetry = iprot.readI32();
+        struct.setCurrentRetryIsSet(true);
       }
     }
   }

@@ -452,6 +452,8 @@ public class ThriftDataModelConversion {
         model.setLastUpdateTime(taskResource.getLastUpdateTime().getTime());
         model.setTaskDetail(taskResource.getTaskDetail());
         model.setSubTaskModel(taskResource.getSubTaskModel());
+        model.setMaxRetry(taskResource.getMaxRetry());
+        model.setCurrentRetry(taskResource.getCurrentRetry());
 
         TaskStatus taskStatus = getTaskStatus(taskResource.getTaskStatus());
         if (taskStatus != null){

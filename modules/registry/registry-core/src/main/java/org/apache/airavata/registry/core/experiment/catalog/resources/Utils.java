@@ -656,6 +656,8 @@ public class Utils {
             taskResource.setLastUpdateTime(o.getLastUpdateTime());
             taskResource.setTaskDetail(o.getTaskDetail());
             taskResource.setSubTaskModel(o.getSetSubTaskModel());
+            taskResource.setMaxRetry(o.getMaxRetry());
+            taskResource.setCurrentRetry(o.getCurrentRetry());
         }
         return taskResource;
     }
