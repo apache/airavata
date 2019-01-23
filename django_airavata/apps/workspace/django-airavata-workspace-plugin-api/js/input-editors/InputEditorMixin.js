@@ -5,7 +5,7 @@ import {models} from 'django-airavata-api'
 export default {
     props: {
         value: {
-            required: true,
+            type: [String, File],
         },
         experimentInput: {
             type: models.InputDataObjectType,
@@ -33,7 +33,11 @@ export default {
             return this.validationMessages.length === 0;
         },
         componentValidState: function() {
-            return this.inputHasBegun && !this.valid ? 'invalid' : null;
+            if (this.inputHasBegun) {
+              return this.valid ? 'valid' : 'invalid';
+            } else {
+              return null;
+            }
         },
         editorConfig: function() {
             return this.experimentInput.editorConfig;
@@ -43,6 +47,7 @@ export default {
         valueChanged: function() {
             this.inputHasBegun = true;
             this.$emit('input', this.data);
+            this.checkValidation();
         },
         checkValidation: function() {
             if (this.valid) {
@@ -56,9 +61,6 @@ export default {
         this.checkValidation();
     },
     watch: {
-        valid() {
-          this.checkValidation();
-        },
         value(newValue) {
           this.data = newValue;
         }

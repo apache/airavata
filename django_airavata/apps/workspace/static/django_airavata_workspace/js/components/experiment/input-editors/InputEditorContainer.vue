@@ -82,7 +82,7 @@ export default {
     },
     methods: {
         recordValidInputEditorValue: function() {
-            this.state = null;
+            this.state = 'valid';
             this.$emit('valid');
         },
         recordInvalidInputEditorValue: function(feedbackMessages) {
