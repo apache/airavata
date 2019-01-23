@@ -23,11 +23,6 @@ public class MonitoringUtil {
     private static final String WORKFLOWS = "/workflows";
     private static final String RETRY = "/retry";
 
-    public static void registerWorkflow(CuratorFramework curatorClient, String processId, String workflowId) throws Exception {
-        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                PATH_PREFIX + REGISTRY + processId + WORKFLOWS + "/" + workflowId , new byte[0]);
-    }
-
     public static int getTaskRetryCount(CuratorFramework curatorClient, String taskId) throws Exception {
         String path = PATH_PREFIX + TASK + "/" + taskId + RETRY;
         if (curatorClient.checkExists().forPath(path) != null) {
@@ -45,15 +40,6 @@ public class MonitoringUtil {
         }
         curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 path , ((currentRetryCount + 1) + "").getBytes());
-    }
-
-    public static List<String> getWorkflowsOfProcess(CuratorFramework curatorClient, String processId) throws Exception {
-        String path = PATH_PREFIX + REGISTRY + processId + WORKFLOWS;
-        if (curatorClient.checkExists().forPath(path) != null) {
-            return curatorClient.getChildren().forPath(path);
-        } else {
-            return null;
-        }
     }
 
     private static void deleteIfExists(CuratorFramework curatorClient, String path) throws Exception {

@@ -30,6 +30,7 @@ import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.monitor.JobStateValidator;
@@ -259,13 +260,8 @@ public class PostWorkflowManager extends WorkflowManager {
 
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
-        try {
-            MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
-        } catch (Exception e) {
-            logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
-                    "This will affect cancellation tasks", e);
-        }
 
+        registerWorkflowForProcess(processId, workflowName, "POST");
     }
 
     private void runConsumer() throws ApplicationSettingsException {

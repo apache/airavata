@@ -25,6 +25,8 @@ import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.parsing.*;
+import org.apache.airavata.model.process.ProcessWorkflow;
+import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,13 +106,9 @@ public class ParserWorkflowManager extends WorkflowManager {
             String workflowName = getWorkflowOperator()
                     .launchWorkflow(processId + "-DataParsing-" + UUID.randomUUID().toString(),
                             new ArrayList<>(allTasks), true, false);
-            try {
-                MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
 
-            } catch (Exception e) {
-                logger.error("Failed to save workflow " + workflowName + " of process " + processId +
-                        " in zookeeper registry. " + "This will affect cancellation tasks", e);
-            }
+            registerWorkflowForProcess(processId, workflowName, "PARSER");
+
             return true;
 
         } catch (Exception e) {

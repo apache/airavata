@@ -38,6 +38,7 @@ import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
@@ -50,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PreWorkflowManager extends WorkflowManager {
 
@@ -130,12 +132,9 @@ public class PreWorkflowManager extends WorkflowManager {
 
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
-        try {
-            MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
-        } catch (Exception e) {
-            logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
-                    "This will affect cancellation tasks", e);
-        }
+
+        registerWorkflowForProcess(processId, workflowName, "PRE");
+
         return workflowName;
     }
 
@@ -157,7 +156,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
         String experimentId = processModel.getExperimentId();
 
-        List<String> workflows = MonitoringUtil.getWorkflowsOfProcess(getCuratorClient(), processId);
+        List<String> workflows = processModel.getProcessWorkflows().stream().map(ProcessWorkflow::getWorkflowId).collect(Collectors.toList());
         final List<AbstractTask> allTasks = new ArrayList<>();
         if (workflows != null && workflows.size() > 0) {
             for (String wf : workflows) {
