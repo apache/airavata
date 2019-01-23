@@ -19,13 +19,21 @@
  */
 package org.apache.airavata.registry.api.service;
 
-import org.apache.airavata.common.exception.AiravataException;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.airavata.common.utils.DBInitConfig;
+import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.registry.api.service.messaging.RegistryServiceDBEventMessagingFactory;
-import org.apache.airavata.registry.api.service.util.*;
+import org.apache.airavata.registry.api.service.util.Constants;
+import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
+import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
+import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -33,8 +41,6 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.InetSocketAddress;
 
 public class RegistryAPIServer implements IServer {
     private final static Logger logger = LoggerFactory.getLogger(RegistryAPIServer.class);
@@ -46,27 +52,23 @@ public class RegistryAPIServer implements IServer {
 
     private TServer server;
 
+    private List<DBInitConfig> dbInitConfigs = Arrays.asList(
+        new ExpCatalogDBInitConfig(),
+        new AppCatalogDBInitConfig(),
+        new ReplicaCatalogDBInitConfig());
+
     public RegistryAPIServer() {
         setStatus(ServerStatus.STOPPED);
     }
 
     public void StartRegistryServer(RegistryService.Processor<RegistryServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
-        // creating experiment catalog db
-        logger.info("Initializing ExperimentCatalog DB");
-        ExperimentCatalogInitUtil.initializeDB();
 
-        // creating app catalog db
-        logger.info("Initializing AppCatalog DB");
-        AppCatalogInitUtil.initializeDB();
-
-        // creating workflow catalog db
-        logger.info("Initializing WorkflowCatalog DB");
-        WorkflowCatalogInitUtil.initializeDB();
-
-        // creating replica catalog db
-        logger.info("Initializing ReplicaCatalog DB");
-        ReplicaCatalogInitUtil.initializeDB();
+        logger.info("Initialing databases...");
+        for (DBInitConfig dbInitConfig : dbInitConfigs) {
+            DBInitializer.initializeDB(dbInitConfig);
+        }
+        logger.info("Databases initialized successfully");
 
         final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.REGISTRY_SERVER_PORT, "8960"));
         try {

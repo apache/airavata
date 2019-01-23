@@ -19,6 +19,7 @@
  *
  */
 
+/* registry-refactoring: airavataworkflow catalog DB init script */
 CREATE TABLE AIRAVATA_WORKFLOW
 (
         ID VARCHAR (255) NOT NULL,

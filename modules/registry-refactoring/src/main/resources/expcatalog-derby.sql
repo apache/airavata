@@ -18,6 +18,8 @@
  * under the License.
  *
  */
+
+/* registry-refactoring: experiment catalog DB init script */
 CREATE TABLE GATEWAY
 (
         GATEWAY_ID VARCHAR(255),

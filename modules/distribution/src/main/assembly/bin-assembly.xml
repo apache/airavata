@@ -68,7 +68,7 @@
 
         <!-- ********************** copy database scripts ********************** -->
         <fileSet>
-            <directory>../registry/registry-core/src/main/resources/
+            <directory>../registry-refactoring/src/main/resources/
             </directory>
             <outputDirectory>bin/database_scripts
             </outputDirectory>
