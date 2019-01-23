@@ -29,6 +29,7 @@ import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
@@ -584,6 +585,21 @@ public class ExperimentRegistry {
         return jobID;
     }
 
+    public String addProcessWorkflow(ProcessWorkflow processWorkflow, String processId) throws RegistryException {
+        try {
+            ProcessWorkflowResource resource = new ProcessWorkflowResource();
+            resource.setProcessId(processId);
+            resource.setWorkflowId(processWorkflow.getWorkflowId());
+            resource.setCreationTime(AiravataUtils.getTime(processWorkflow.getCreationTime()));
+            resource.setType(processWorkflow.getType());
+            resource.save();
+        } catch (Exception e) {
+            logger.error("Failed to save process workflow for workflow id " + processWorkflow.getWorkflowId() + " and process " +processId);
+            throw new RegistryException(e);
+        }
+        return processId;
+    }
+
 
     //CPI Update Methods
     public void updateExperiment(ExperimentModel experiment, String expId) throws RegistryException {
@@ -1110,6 +1126,8 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getProcessOutputs(resource.getProcessOutputs());
             } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_RESOURCE_SCHEDULE)) {
                 return ThriftDataModelConversion.getProcessResourceSchedule(resource.getProcessResourceSchedule());
+            } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_WORKFLOW)) {
+                return ThriftDataModelConversion.getProcessWorkflows(resource.getProcessWorkflows());
             } else {
                 logger.error("Unsupported field name for process data..");
             }
@@ -1138,6 +1156,10 @@ public class ExperimentRegistry {
 
     public Object getProcessResourceSchedule(String processId) throws RegistryException {
         return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_RESOURCE_SCHEDULE);
+    }
+
+    public Object getProcessWorkflows(String processId) throws RegistryException {
+        return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_WORKFLOW);
     }
 
     public Object getTask(String taskId, String fieldName) throws RegistryException {

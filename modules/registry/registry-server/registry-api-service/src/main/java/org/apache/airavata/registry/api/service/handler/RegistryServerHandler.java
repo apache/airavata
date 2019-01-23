@@ -45,6 +45,7 @@ import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
@@ -1096,6 +1097,37 @@ public class RegistryServerHandler implements RegistryService.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving process outputs. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryServiceException, TException {
+
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            return (List<ProcessWorkflow>) experimentCatalog.get(ExperimentCatalogModelType.PROCESS_WORKFLOW, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while retrieving process workflows for process " + processId, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving process workflows for process " + processId
+                    + ". More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog.add(ExpCatChildDataType.PROCESS_WORKFLOW, processWorkflow, processWorkflow.getProcessId());
+        } catch (Exception e) {
+            logger.error("Error while adding process workflow for process " + processWorkflow.getProcessId(), e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding process workflow for process id " + processWorkflow.getProcessId()
+                    + ". More info : " + e.getMessage());
             throw exception;
         }
     }
