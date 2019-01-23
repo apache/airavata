@@ -427,6 +427,7 @@ public class ThriftDataModelConversion {
             processModel.setUserDn(processResource.getUserDn());
             processModel.setGenerateCert(processResource.isGenerateCert());
             processModel.setUserName(processResource.getUserName());
+            processModel.setProcessWorkflows(getProcessWorkflows(processResource.getProcessWorkflows()));
             return processModel;
         }
         return null;
