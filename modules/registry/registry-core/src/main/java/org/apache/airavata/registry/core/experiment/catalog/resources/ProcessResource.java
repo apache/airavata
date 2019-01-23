@@ -552,9 +552,9 @@ public class ProcessResource extends AbstractExpCatResource {
                     if (results.size() != 0) {
                         for (Object result : results) {
                             ProcessWorkflow processWorkflow = (ProcessWorkflow) result;
-                            ProcessWorkflowResource jobResource =
+                            ProcessWorkflowResource workflowResource =
                                     (ProcessWorkflowResource) Utils.getResource(ResourceType.PROCESS_WORKFLOW, processWorkflow);
-                            resourceList.add(jobResource);
+                            resourceList.add(workflowResource);
                         }
                     }
                     break;
