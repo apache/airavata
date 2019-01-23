@@ -395,6 +395,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         envSetupSubModel.setLocation(workingDir);
         byte[] envSetupSub = ThriftUtils.serializeThriftObject(envSetupSubModel);
         envSetupTask.setSubTaskModel(envSetupSub);
+        envSetupTask.setMaxRetry(3);
+        envSetupTask.setCurrentRetry(0);
         String envSetupTaskId = (String) registryClient.addTask(envSetupTask, processModel.getProcessId());
         envSetupTask.setTaskId(envSetupTaskId);
         envTaskIds.add(envSetupTaskId);
@@ -565,6 +567,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         submissionSubTask.setWallTime(wallTime);
         byte[] bytes = ThriftUtils.serializeThriftObject(submissionSubTask);
         taskModel.setSubTaskModel(bytes);
+        taskModel.setMaxRetry(1);
+        taskModel.setCurrentRetry(0);
         String taskId = registryClient.addTask(taskModel, processModel.getProcessId());
         taskModel.setTaskId(taskId);
         submissionTaskIds.add(taskModel.getTaskId());
@@ -635,6 +639,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         submodel.setProcessInput(processInput);
         submodel.setDestination(destination.toString());
         taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+        taskModel.setMaxRetry(3);
+        taskModel.setCurrentRetry(0);
         return taskModel;
     }
 
@@ -687,6 +693,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             // because destination is required field we set dummy destination
             submodel.setDestination("dummy://temp/file/location");
             taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+            taskModel.setMaxRetry(3);
+            taskModel.setCurrentRetry(0);
             return taskModel;
         } catch (OrchestratorException e) {
            throw new OrchestratorException("Error occurred while retrieving data movement from app catalog", e);
