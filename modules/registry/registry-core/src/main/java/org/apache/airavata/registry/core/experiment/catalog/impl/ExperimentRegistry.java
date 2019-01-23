@@ -467,6 +467,8 @@ public class ExperimentRegistry {
             taskResource.setLastUpdateTime(AiravataUtils.getTime(task.getLastUpdateTime()));
             taskResource.setTaskDetail(task.getTaskDetail());
             taskResource.setSubTaskModel(task.getSubTaskModel());
+            taskResource.setMaxRetry(task.getMaxRetry());
+            taskResource.setCurrentRetry(task.getCurrentRetry());
             taskResource.save();
 
             TaskStatus taskStatus = new TaskStatus();
@@ -930,6 +932,8 @@ public class ExperimentRegistry {
             taskResource.setLastUpdateTime(AiravataUtils.getTime(task.getLastUpdateTime()));
             taskResource.setTaskDetail(task.getTaskDetail());
             taskResource.setSubTaskModel(task.getSubTaskModel());
+            taskResource.setMaxRetry(task.getMaxRetry());
+            taskResource.setCurrentRetry(task.getCurrentRetry());
             taskResource.save();
 
             if(task.getTaskErrors() != null) {

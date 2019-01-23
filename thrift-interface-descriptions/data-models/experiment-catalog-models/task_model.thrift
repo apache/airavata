@@ -62,7 +62,9 @@ struct TaskModel {
     7: optional string taskDetail,
     8: optional binary subTaskModel,
     9: optional list<airavata_commons.ErrorModel> taskErrors,
-    10: optional list<job_model.JobModel> jobs
+    10: optional list<job_model.JobModel> jobs,
+    11: optional i32 maxRetry,
+    12: optional i32 currentRetry,
 }
 
 /**
