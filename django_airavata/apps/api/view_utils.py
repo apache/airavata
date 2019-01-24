@@ -10,6 +10,10 @@ from rest_framework.viewsets import GenericViewSet
 
 
 class GenericAPIBackedViewSet(GenericViewSet):
+    # Make lookup_value_regex to any set of non-forward-slash characters. Many
+    # Airavata ids contains period ('.') which the default lookup_value_regex
+    # in DRF doesn't allow.
+    lookup_value_regex = '[^/]+'
 
     def get_list(self):
         """

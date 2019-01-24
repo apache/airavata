@@ -402,7 +402,6 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
 class ApplicationDeploymentViewSet(APIBackedViewSet):
     serializer_class = serializers.ApplicationDeploymentDescriptionSerializer
     lookup_field = 'app_deployment_id'
-    lookup_value_regex = '[^/]+'
 
     def get_list(self):
         app_module_id = self.request.query_params.get('appModuleId', None)
@@ -467,7 +466,6 @@ class ComputeResourceViewSet(mixins.RetrieveModelMixin,
                              GenericAPIBackedViewSet):
     serializer_class = serializers.ComputeResourceDescriptionSerializer
     lookup_field = 'compute_resource_id'
-    lookup_value_regex = '[^/]+'
 
     def get_instance(self, lookup_value, format=None):
         return self.request.airavata_client.getComputeResource(
@@ -737,7 +735,6 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
                           GenericAPIBackedViewSet):
     serializer_class = serializers.SharedEntitySerializer
     lookup_field = 'entity_id'
-    lookup_value_regex = '[^/]+'
 
     def get_instance(self, lookup_value):
         users = {}
@@ -943,7 +940,6 @@ class CredentialSummaryViewSet(APIBackedViewSet):
 class GatewayResourceProfileViewSet(APIBackedViewSet):
     serializer_class = serializers.GatewayResourceProfileSerializer
     lookup_field = 'gateway_id'
-    lookup_value_regex = '[^/]+'
 
     def get_list(self):
         return self.request.airavata_client.getAllGatewayResourceProfiles(
@@ -985,7 +981,6 @@ class StorageResourceViewSet(mixins.RetrieveModelMixin,
                              GenericAPIBackedViewSet):
     serializer_class = serializers.StorageResourceSerializer
     lookup_field = 'storage_resource_id'
-    lookup_value_regex = '[^/]+'
 
     def get_instance(self, lookup_value, format=None):
         return self.request.airavata_client.getStorageResource(
@@ -1002,7 +997,6 @@ class StorageResourceViewSet(mixins.RetrieveModelMixin,
 class StoragePreferenceViewSet(APIBackedViewSet):
     serializer_class = serializers.StoragePreferenceSerializer
     lookup_field = 'storage_resource_id'
-    lookup_value_regex = '[^/]+'
 
     def get_list(self):
         return self.request.airavata_client.getAllGatewayStoragePreferences(
@@ -1040,7 +1034,6 @@ class ParserViewSet(mixins.CreateModelMixin,
                     GenericAPIBackedViewSet):
     serializer_class = serializers.ParserSerializer
     lookup_field = 'parser_id'
-    lookup_value_regex = '[^/]+'
 
     def get_list(self):
         return self.request.airavata_client.listAllParsers(self.authz_token, settings.GATEWAY_ID)
