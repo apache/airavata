@@ -240,7 +240,8 @@ public class DataParsingTask extends AbstractTask {
 
         logger.info("Successfully pulled image " + parser.getImageName());
 
-        CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parser.getImageName()).withCmd("/bin/sh", "-c", parser.getExecutionCommand()).withName(containerId)
+        String commands[] = parser.getExecutionCommand().split(" ");
+        CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parser.getImageName()).withCmd(commands).withName(containerId)
                 .withBinds(Bind.parse(localInputDir + ":" + parser.getInputDirPath()),
                         Bind.parse(localOutputDir + ":" + parser.getOutputDirPath()))
                 .withTty(true)
