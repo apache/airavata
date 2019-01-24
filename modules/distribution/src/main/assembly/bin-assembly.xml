@@ -77,6 +77,15 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>../credential-store/credential-store-service/src/main/resources/
+            </directory>
+            <outputDirectory>bin/database_scripts
+            </outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>../sharing-registry/sharing-registry-core/src/main/resources/
             </directory>
             <outputDirectory>bin/database_scripts

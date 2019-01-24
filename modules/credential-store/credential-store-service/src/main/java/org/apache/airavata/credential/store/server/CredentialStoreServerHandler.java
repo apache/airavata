@@ -20,6 +20,7 @@
 package org.apache.airavata.credential.store.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
@@ -31,7 +32,7 @@ import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
-import org.apache.airavata.credential.store.store.impl.util.CredentialStoreInitUtil;
+import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.credential.store.util.Utility;
 import org.apache.airavata.model.credential.store.*;
@@ -64,7 +65,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         String driverName = ServerSettings.getCredentialStoreDBDriver();
 
         log.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName + " driver name - " + driverName);
-        CredentialStoreInitUtil.initializeDB();
+        DBInitializer.initializeDB(new CredentialStoreDBInitConfig());
 
         dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
         sshCredentialWriter = new SSHCredentialWriter(dbUtil);
