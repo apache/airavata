@@ -39,6 +39,12 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>task-core</artifactId>
             <version>0.17-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
