@@ -39,19 +39,14 @@ a Vue template since we don't include the template compiler in the runtime. The
 entry point will generally have the following structure:
 
 ```javascript
-import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import { entry } from "django-airavata-common-ui";
 import SomethingListContainer from "./containers/SomethingListContainer.vue";
 
-// This is imported globally on the website so no need to include it again in this view
-// import 'bootstrap/dist/css/bootstrap.css'
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-Vue.use(BootstrapVue);
-
-new Vue({
-  render: h => h(SomethingListContainer)
-}).$mount("#something-list");
+entry(Vue => {
+  new Vue({
+    render: h => h(SomethingListContainer)
+  }).$mount("#something-list");
+});
 ```
 
 If you need to pass data into the Vue app, see below.
@@ -124,31 +119,26 @@ In the entry point, load the data attribute in the `mounted()` hook and pass to
 the Vue.js app container via a property:
 
 ```javascript
-import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import { entry } from "django-airavata-common-ui";
 import ViewSomethingContainer from "./containers/ViewSomethingContainer.vue";
 
-// This is imported globally on the website so no need to include it again in this view
-// import 'bootstrap/dist/css/bootstrap.css'
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-Vue.use(BootstrapVue);
-
-new Vue({
-  render(h) {
-    return h(ViewSomethingContainer, {
-      props: {
-        somethingId: this.somethingId
-      }
-    });
-  },
-  data() {
-    return {
-      somethingId: null
-    };
-  },
-  beforeMount() {
-    this.somethingId = this.$el.dataset.somethingId;
-  }
-}).$mount("#view-something");
+entry(Vue => {
+  new Vue({
+    render(h) {
+      return h(ViewSomethingContainer, {
+        props: {
+          somethingId: this.somethingId
+        }
+      });
+    },
+    data() {
+      return {
+        somethingId: null
+      };
+    },
+    beforeMount() {
+      this.somethingId = this.$el.dataset.somethingId;
+    }
+  }).$mount("#view-something");
+});
 ```

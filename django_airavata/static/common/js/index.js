@@ -20,6 +20,8 @@ import NotificationList from "./notifications/NotificationList";
 
 import * as utils from "./utils";
 
+import entry from "./entry";
+
 const components = {
   Pager,
   ApplicationCard,
@@ -52,6 +54,7 @@ const notifications = {
 
 export default {
   components,
+  entry,
   errors,
   layouts,
   mixins,
@@ -61,6 +64,7 @@ export default {
 
 export {
   components,
+  entry,
   errors,
   layouts,
   mixins,
