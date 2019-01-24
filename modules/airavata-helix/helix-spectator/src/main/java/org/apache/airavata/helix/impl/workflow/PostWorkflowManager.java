@@ -237,6 +237,7 @@ public class PostWorkflowManager extends WorkflowManager {
                     airavataTask.setExperimentId(experimentModel.getExperimentId());
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
+                    airavataTask.setRetryCount(taskModel.getMaxRetry());
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }
