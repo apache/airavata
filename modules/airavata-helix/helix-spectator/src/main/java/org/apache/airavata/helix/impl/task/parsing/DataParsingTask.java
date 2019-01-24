@@ -27,6 +27,7 @@ import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
+import com.github.dockerjava.core.command.PullImageResultCallback;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
@@ -231,6 +232,13 @@ public class DataParsingTask extends AbstractTask {
         DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
         DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
+
+        logger.info("Pulling image " + parser.getImageName());
+        dockerClient.pullImageCmd(parser.getImageName().split(":")[0])
+                .withTag(parser.getImageName().split(":")[1])
+                .exec(new PullImageResultCallback()).awaitSuccess();
+
+        logger.info("Successfully pulled image " + parser.getImageName());
 
         CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parser.getImageName()).withCmd("/bin/sh", "-c", parser.getExecutionCommand()).withName(containerId)
                 .withBinds(Bind.parse(localInputDir + ":" + parser.getInputDirPath()),
