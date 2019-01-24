@@ -21,30 +21,24 @@ package org.apache.airavata.sharing.registry;
 
 import org.junit.Assert;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
-import org.apache.airavata.sharing.registry.util.Initialize;
 import org.apache.thrift.TException;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SharingRegistryServerHandlerTest {
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandlerTest.class);
 
-    @BeforeClass
-    public static void setup() throws SharingRegistryException, SQLException {
-        Initialize initialize = new Initialize("sharing-registry-derby.sql");
-        initialize.initializeDB();
-    }
-
     @Test
     public void test() throws TException, ApplicationSettingsException {
+        SharingRegistryDBInitConfig sharingRegistryDBInitConfig = new SharingRegistryDBInitConfig();
+        sharingRegistryDBInitConfig.setDBInitScriptPrefix("sharing-registry");
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
 
         //Creating domain

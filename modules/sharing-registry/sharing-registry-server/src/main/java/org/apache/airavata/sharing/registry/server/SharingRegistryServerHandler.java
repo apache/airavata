@@ -20,10 +20,11 @@
 package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.sharing.registry.db.entities.*;
 import org.apache.airavata.sharing.registry.db.repositories.*;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
-import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
+import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -41,7 +42,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public static String OWNER_PERMISSION_NAME = "OWNER";
 
     public SharingRegistryServerHandler() throws ApplicationSettingsException, TException {
-        JPAUtils.initializeDB();
+        this(new SharingRegistryDBInitConfig());
+    }
+
+    public SharingRegistryServerHandler(SharingRegistryDBInitConfig sharingRegistryDBInitConfig)  throws ApplicationSettingsException, TException {
+        DBInitializer.initializeDB(sharingRegistryDBInitConfig);
     }
 
     /**

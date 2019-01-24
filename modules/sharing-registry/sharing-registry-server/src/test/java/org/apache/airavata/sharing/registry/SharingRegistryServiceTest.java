@@ -22,7 +22,7 @@ package org.apache.airavata.sharing.registry;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.sharing.registry.models.*;
-import org.apache.airavata.sharing.registry.server.ServerMain;
+import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -43,9 +43,10 @@ public class SharingRegistryServiceTest {
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServiceTest.class);
 
     @BeforeClass
-    public static void setUp() throws InterruptedException {
-        ServerMain serverMain = new ServerMain();
-        serverMain.main(new String[]{});
+    public static void setUp() throws Exception {
+        SharingRegistryServer server = new SharingRegistryServer();
+        server.setTestMode(true);
+        server.start();
         Thread.sleep(1000 * 2);
     }
 
