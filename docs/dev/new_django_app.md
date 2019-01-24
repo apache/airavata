@@ -283,7 +283,7 @@ const BundleTracker = require("webpack-bundle-tracker");
 const path = require("path");
 
 module.exports = {
-  baseUrl:
+  publicPath:
     process.env.NODE_ENV === "development"
       ? "http://localhost:9000/static/django_airavata_myapp/dist/"
       : "/static/django_airavata_myapp/dist/",
@@ -362,7 +362,7 @@ module.exports = {
 ```
 
 You'll customize _pages_ by modifying and/or adding additional entry points and
-you'll need to modify _baseUrl_ and _outputDir_ and the BundleTracker config to
+you'll need to modify _publicPath_ and _outputDir_ and the BundleTracker config to
 correspond to your folder structure.
 
 Now create a static folder for holding javascript code. For this example we

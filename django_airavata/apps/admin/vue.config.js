@@ -2,7 +2,7 @@ const BundleTracker = require("webpack-bundle-tracker");
 const path = require("path");
 
 module.exports = {
-  baseUrl:
+  publicPath:
     process.env.NODE_ENV === "development"
       ? "http://localhost:9000/static/django_airavata_admin/dist/"
       : "/static/django_airavata_admin/dist/",

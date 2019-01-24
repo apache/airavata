@@ -1,7 +1,7 @@
 const BundleTracker = require("webpack-bundle-tracker");
 
 module.exports = {
-  baseUrl: "/static/common/dist/",
+  publicPath: "/static/common/dist/",
   pages: {
     app: "./js/main.js",
     cms: "./js/cms.js"
