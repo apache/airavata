@@ -33,7 +33,6 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -126,7 +125,7 @@ class WorkflowInterpreter {
     }
 
     private String getWorkflow() throws AppCatalogException, WorkflowCatalogException {
-        WorkflowCatalog workflowCatalog = RegistryFactory.getAppCatalog().getWorkflowCatalog();
+        // WorkflowCatalog workflowCatalog = RegistryFactory.getAppCatalog().getWorkflowCatalog();
         //FIXME: parse workflowTemplateId or experimentId
 //        workflowCatalog.getWorkflow("");
         return "";

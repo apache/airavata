@@ -231,11 +231,6 @@
             <artifactId>airavata-orchestrator-client</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- JCR Support -->
         <!-- TODO need clean up -->

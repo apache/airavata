@@ -224,11 +224,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-model-component</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -262,11 +257,6 @@
             <!--<artifactId>airavata-workflow-tracking</artifactId>-->
             <!--<version>${project.version}</version>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- JCR Support -->
         <!-- TODO need clean up -->
         <dependency>
