@@ -106,7 +106,6 @@ public class PreWorkflowManager extends WorkflowManager {
                     airavataTask = new EnvSetupTask();
                 } else if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
                     airavataTask = new DefaultJobSubmissionTask();
-                    airavataTask.setRetryCount(1);
                     jobSubmissionFound = true;
                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                     if (!jobSubmissionFound) {
@@ -119,6 +118,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     airavataTask.setExperimentId(experimentModel.getExperimentId());
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
+                    airavataTask.setRetryCount(taskModel.getMaxRetry());
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() -1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }
