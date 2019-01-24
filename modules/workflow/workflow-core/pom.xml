@@ -46,11 +46,6 @@
             <artifactId>airavata-model-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!--Workflow Interpreter dependency-->
         <dependency>
