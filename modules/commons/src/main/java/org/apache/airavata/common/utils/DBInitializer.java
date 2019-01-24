@@ -55,10 +55,10 @@ public class DBInitializer {
         Connection conn = null;
         try {
             DBUtil dbUtil = new DBUtil(jdbcConfig);
-            conn = dbUtil.getConnection();
-            if (DatabaseCreator.getDatabaseType(conn) == DatabaseCreator.DatabaseType.derby && isDerbyStartEnabled()) {
+            if (DatabaseCreator.getDatabaseType(jdbcConfig.getURL()) == DatabaseCreator.DatabaseType.derby && isDerbyStartEnabled()) {
                 startDerbyInServerMode();
             }
+            conn = dbUtil.getConnection();
             if (!DatabaseCreator.isDatabaseStructureCreated(checkTableName, conn)) {
                 DatabaseCreator.createRegistryDatabase(initScriptPrefix, conn);
                 logger.info("New Database created from " + initScriptPrefix + " !!!");
