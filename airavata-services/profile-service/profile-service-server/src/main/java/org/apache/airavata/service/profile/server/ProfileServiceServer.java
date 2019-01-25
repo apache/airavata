@@ -21,6 +21,8 @@
 
 package org.apache.airavata.service.profile.server;
 
+import org.apache.airavata.common.utils.DBInitConfig;
+import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
@@ -33,6 +35,7 @@ import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstant
 import org.apache.airavata.service.profile.handlers.TenantProfileServiceHandler;
 import org.apache.airavata.service.profile.handlers.UserProfileServiceHandler;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
+import org.apache.airavata.service.profile.user.core.utils.UserProfileCatalogDBInitConfig;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.thrift.TMultiplexedProcessor;
@@ -45,7 +48,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by goshenoy on 03/08/2017.
@@ -59,6 +64,9 @@ public class ProfileServiceServer implements IServer {
 
     private ServerStatus status;
     private TServer server;
+    private List<DBInitConfig> dbInitConfigs = Arrays.asList(
+        new UserProfileCatalogDBInitConfig()
+    );
 
     public ProfileServiceServer() {
         setStatus(ServerStatus.STOPPED);
@@ -84,6 +92,13 @@ public class ProfileServiceServer implements IServer {
 
         try {
             setStatus(ServerStatus.STARTING);
+
+            logger.info("Initialing profile service databases...");
+            for (DBInitConfig dbInitConfig : dbInitConfigs) {
+                DBInitializer.initializeDB(dbInitConfig);
+            }
+            logger.info("Profile service databases initialized successfully");
+
             final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
             final String serverHost = ServerSettings.getProfileServiceServerHost();
 
