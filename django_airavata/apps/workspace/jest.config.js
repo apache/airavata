@@ -11,7 +11,9 @@ module.exports = {
     '^.+\\.jsx?$': 'babel-jest'
   },
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/static/django_airavata_workspace/js/$1'
+    '^@/(.*)$': '<rootDir>/static/django_airavata_workspace/js/$1',
+    // Ignore style imports. From https://jestjs.io/docs/en/webpack#handling-static-assets
+    "\\.(css|less)$": "<rootDir>/static/django_airavata_workspace/tests/__mocks__/styleMock.js"
   },
   snapshotSerializers: [
     'jest-serializer-vue'
