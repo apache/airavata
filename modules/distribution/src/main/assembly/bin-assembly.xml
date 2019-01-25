@@ -95,6 +95,15 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>../../airavata-services/profile-service/profile-user-core/src/main/resources/
+            </directory>
+            <outputDirectory>bin/database_scripts
+            </outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>777</fileMode>

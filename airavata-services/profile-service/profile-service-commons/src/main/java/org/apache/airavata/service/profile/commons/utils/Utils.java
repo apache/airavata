@@ -83,31 +83,6 @@ public class Utils {
         }
     }
 
-    public static String getDBType(){
-        try{
-            String jdbcURL = getJDBCURL();
-            String cleanURI = jdbcURL.substring(5);
-            URI uri = URI.create(cleanURI);
-            return uri.getScheme();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
-    }
-
-    public static boolean isDerbyStartEnabled(){
-        try {
-            String s = ServerSettings.getSetting(JPAConstants.KEY_DERBY_START_ENABLE);
-            if("true".equals(s)){
-                return true;
-            }
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            return false;
-        }
-        return false;
-    }
-
     public static String getJDBCUser(){
     	try {
 		    return ServerSettings.getSetting(JPAConstants.KEY_JDBC_USER);
