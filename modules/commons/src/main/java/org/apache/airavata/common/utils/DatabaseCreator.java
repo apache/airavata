@@ -45,7 +45,7 @@ public class DatabaseCreator {
     private final static Logger logger = LoggerFactory.getLogger(DatabaseCreator.class);
 
     public enum DatabaseType {
-        derby("(?i).*derby.*"), mysql("(?i).*mysql.*"), other("");
+        derby("(?i).*derby.*"), mysql("(?i).*(mysql|mariadb).*"), other("");
 
         private String pattern;
 
