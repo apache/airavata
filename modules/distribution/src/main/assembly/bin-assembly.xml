@@ -86,7 +86,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../sharing-registry/sharing-registry-core/src/main/resources/
+            <directory>../sharing-registry/sharing-registry-server/src/main/resources/
             </directory>
             <outputDirectory>bin/database_scripts
             </outputDirectory>
