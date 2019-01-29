@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class GatewayProfileRepositoryTest extends TestBase {
@@ -49,7 +52,13 @@ public class GatewayProfileRepositoryTest extends TestBase {
     }
 
     @Test
-    public void gatewayProfileRepositorytest() throws AppCatalogException {
+    public void gatewayProfileRepositorytest() throws AppCatalogException, ApplicationSettingsException {
+
+        // Verify that the default Gateway Resource Profile exists already
+        List<GatewayResourceProfile> defaultGatewayResourceProfileList = this.gwyResourceProfileRepository.getAllGatewayProfiles();
+        assertEquals(1, defaultGatewayResourceProfileList.size());
+        assertEquals(ServerSettings.getDefaultUserGateway(), defaultGatewayResourceProfileList.get(0).getGatewayID());
+
         GatewayResourceProfile gf = new GatewayResourceProfile();
         ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
         ComputeResourceDescription cm1 = new ComputeResourceDescription();
@@ -113,7 +122,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
 
         gwyResourceProfileRepository.addGatewayResourceProfile(gf1);
         List<GatewayResourceProfile> getGatewayResourceList = gwyResourceProfileRepository.getAllGatewayProfiles();
-        assertTrue(getGatewayResourceList.size() == 2);
+        assertEquals("should be 3 gateway profiles (1 default and 2 just added)", 3, getGatewayResourceList.size());
 
         List<ComputeResourcePreference> preferences = gwyResourceProfileRepository.getAllComputeResourcePreferences(gwId);
         System.out.println("compute preferences size : " + preferences.size());

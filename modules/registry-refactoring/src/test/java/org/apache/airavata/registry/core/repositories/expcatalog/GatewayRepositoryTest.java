@@ -21,21 +21,17 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.List;
 
 public class GatewayRepositoryTest extends TestBase {
-
-    private static final Logger logger = LoggerFactory.getLogger(GatewayRepositoryTest.class);
 
     private String testGatewayId = "testGateway";
     GatewayRepository gatewayRepository;
@@ -46,7 +42,12 @@ public class GatewayRepositoryTest extends TestBase {
     }
 
     @Test
-    public void GatewayRepositoryTest() throws ApplicationSettingsException, RegistryException {
+    public void gatewayRepositoryTest() throws ApplicationSettingsException, RegistryException {
+        // Verify that default Gateway is already created
+        List<Gateway> defaultGatewayList = gatewayRepository.getAllGateways();
+        assertEquals(1, defaultGatewayList.size());
+        assertEquals(ServerSettings.getDefaultUserGateway(), defaultGatewayList.get(0).getGatewayId());
+
         Gateway gateway = new Gateway();
         gateway.setGatewayId(testGatewayId);
         gateway.setDomain("SEAGRID");
@@ -67,7 +68,7 @@ public class GatewayRepositoryTest extends TestBase {
         assertEquals(gateway.getOauthClientId(), retrievedGateway.getOauthClientId());
         assertEquals(gateway.getOauthClientSecret(), retrievedGateway.getOauthClientSecret());
 
-        assertTrue(gatewayRepository.getAllGateways().size() == 1);
+        assertEquals("should be 2 gateways (1 default plus 1 just added)", 2, gatewayRepository.getAllGateways().size());
 
         gatewayRepository.removeGateway(gatewayId);
         assertFalse(gatewayRepository.isGatewayExist(gatewayId));

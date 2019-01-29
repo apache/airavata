@@ -27,6 +27,8 @@ import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProf
 
 public class AppCatalogDBInitConfig implements DBInitConfig {
 
+    private String dbInitScriptPrefix = "database_scripts/appcatalog";
+
     @Override
     public JDBCConfig getJDBCConfig() {
         return new AppCatalogJDBCConfig();
@@ -34,7 +36,12 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDBInitScriptPrefix() {
-        return "database_scripts/appcatalog";
+        return dbInitScriptPrefix;
+    }
+
+    public AppCatalogDBInitConfig setDbInitScriptPrefix(String dbInitScriptPrefix) {
+        this.dbInitScriptPrefix = dbInitScriptPrefix;
+        return this;
     }
 
     @Override

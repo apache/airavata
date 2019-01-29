@@ -24,13 +24,9 @@ import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity;
-import org.apache.airavata.registry.core.repositories.replicacatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,34 +37,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class DataReplicaLocationRepositoryTest {
+public class DataReplicaLocationRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
     private DataProductRepository dataProductRepository;
     private DataReplicaLocationRepository dataReplicaLocationRepository;
     private String gatewayId = "testGateway";
-    private static final Logger logger = LoggerFactory.getLogger(DataReplicaLocationRepositoryTest.class);
-
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("replicacatalog-derby.sql");
-            initialize.initializeDB();
-            dataProductRepository = new DataProductRepository();
-            dataReplicaLocationRepository = new DataReplicaLocationRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    
+    public DataReplicaLocationRepositoryTest() {
+        super(Database.REPLICA_CATALOG);
+        dataProductRepository = new DataProductRepository();
+        dataReplicaLocationRepository = new DataReplicaLocationRepository();
     }
 
     @Test
-    public void DataReplicaLocationRepositoryTest() throws ReplicaCatalogException {
+    public void dataReplicaLocationRepositoryTest() throws ReplicaCatalogException {
         DataProductModel testDataProductModel = new DataProductModel();
         testDataProductModel.setGatewayId(gatewayId);
         testDataProductModel.setOwnerName("testUser");

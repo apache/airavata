@@ -1,20 +1,26 @@
 package org.apache.airavata.registry.core.repositories.common;
 
+import org.apache.airavata.common.utils.DBInitConfig;
+import org.apache.airavata.common.utils.DBInitializer;
+import org.apache.airavata.common.utils.DerbyTestUtil;
+import org.apache.airavata.common.utils.DerbyUtil;
+import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepositoryTest;
+import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
+import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
+import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
+import org.apache.airavata.registry.core.utils.WorkflowCatalogDBInitConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
-
 public class TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationDeploymentRepositoryTest.class);
 
-    public enum Database {APP_CATALOG, EXP_CATALOG, REPLICA_CATALOG}
+    public enum Database {APP_CATALOG, EXP_CATALOG, REPLICA_CATALOG, WORKFLOW_CATALOG}
 
-    private DerbyDBManager dbManager = new DerbyDBManager();
     private Database[] databases;
 
     public TestBase(Database... databases) {
@@ -25,14 +31,14 @@ public class TestBase {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         try {
-            dbManager.startDatabaseServer();
+            DerbyUtil.startDerbyInServerMode("0.0.0.0", 20000, "airavata", "airavata");
 
             for (Database database: databases) {
                 logger.info("Creating database " + database.name());
-                dbManager.destroyDatabase(getDatabaseName(database));
-                dbManager.initializeDatabase(getDatabaseName(database), getDatabasePath(database));
+                DerbyTestUtil.destroyDatabase(getDatabaseJDBCConfig(database));
+                DBInitializer.initializeDB(getDBInitConfig(database));
             }
         } catch (Exception e) {
             logger.error("Failed to create the databases" , e);
@@ -44,32 +50,29 @@ public class TestBase {
     public void tearDown() throws Exception {
         for (Database database: databases) {
             System.out.println("Tearing down database " + database.name());
-            dbManager.destroyDatabase(getDatabaseName(database));
+            DerbyTestUtil.destroyDatabase(getDatabaseJDBCConfig(database));
         }
-        dbManager.stopDatabaseServer();
+        DerbyUtil.stopDerbyServer();
     }
 
-    private String getDatabasePath(Database database) {
-        switch (database) {
-            case APP_CATALOG:
-                return Objects.requireNonNull(getClass().getClassLoader().getResource("appcatalog-derby.sql")).getPath();
-            case EXP_CATALOG:
-                return Objects.requireNonNull(getClass().getClassLoader().getResource("expcatalog-derby.sql")).getPath();
-            case REPLICA_CATALOG:
-                return Objects.requireNonNull(getClass().getClassLoader().getResource("replicacatalog-derby.sql")).getPath();
-            default:
-                return null;
-        }
+    private JDBCConfig getDatabaseJDBCConfig(Database database) {
+        return getDBInitConfig(database).getJDBCConfig();
     }
 
-    private String getDatabaseName(Database database) {
+    private DBInitConfig getDBInitConfig(Database database) {
         switch (database) {
             case APP_CATALOG:
-                return "app_catalog";
+                return new AppCatalogDBInitConfig()
+                    .setDbInitScriptPrefix("appcatalog");
             case EXP_CATALOG:
-                return "experiment_catalog";
+                return new ExpCatalogDBInitConfig()
+                    .setDbInitScriptPrefix("expcatalog");
             case REPLICA_CATALOG:
-                return "replica_catalog";
+                return new ReplicaCatalogDBInitConfig()
+                    .setDbInitScriptPrefix("replicacatalog");
+            case WORKFLOW_CATALOG:
+                return new WorkflowCatalogDBInitConfig()
+                    .setDbInitScriptPrefix("airavataworkflowcatalog");
             default:
                 return null;
         }

@@ -25,4 +25,5 @@ public interface JDBCConfig {
     String getDriver();
     String getUser();
     String getPassword();
+    String getValidationQuery();
 }

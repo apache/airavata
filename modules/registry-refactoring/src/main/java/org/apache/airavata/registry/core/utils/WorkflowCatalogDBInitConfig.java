@@ -1,5 +1,4 @@
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,22 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.registry.core.repositories.replicacatalog;
+ */
+package org.apache.airavata.registry.core.utils;
 
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
-import org.apache.airavata.registry.core.utils.JPAUtil.RepCatalogJPAUtils;
+import org.apache.airavata.common.utils.DBInitConfig;
+import org.apache.airavata.common.utils.JDBCConfig;
 
-import javax.persistence.EntityManager;
+public class WorkflowCatalogDBInitConfig implements DBInitConfig {
 
-public class RepCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
+    private String dbInitScriptPrefix = "database_scripts/airavataworkflowcatalog";
 
-    public RepCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    @Override
+    public JDBCConfig getJDBCConfig() {
+        return new WorkflowCatalogJDBCConfig();
     }
 
     @Override
-    protected EntityManager getEntityManager() {
-        return RepCatalogJPAUtils.getEntityManager();
+    public String getDBInitScriptPrefix() {
+        return dbInitScriptPrefix;
+    }
+
+    public WorkflowCatalogDBInitConfig setDbInitScriptPrefix(String dbInitScriptPrefix) {
+        this.dbInitScriptPrefix = dbInitScriptPrefix;
+        return this;
+    }
+
+    @Override
+    public String getCheckTableName() {
+        return "CONFIGURATION";
     }
 }

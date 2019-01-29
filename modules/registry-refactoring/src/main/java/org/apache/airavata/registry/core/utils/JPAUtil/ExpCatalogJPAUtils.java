@@ -19,8 +19,8 @@
  */
 package org.apache.airavata.registry.core.utils.JPAUtil;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.registry.core.utils.ExpCatalogJDBCConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,26 +32,20 @@ public class ExpCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(ExpCatalogJPAUtils.class);
 
     private static final String PERSISTENCE_UNIT_NAME = "experiment_data_new";
-    private static final String EXPCATALOG_JDBC_DRIVER = "registry.jdbc.driver";
-    private static final String EXPCATALOG_JDBC_URL = "registry.jdbc.url";
-    private static final String EXPCATALOG_JDBC_USER = "registry.jdbc.user";
-    private static final String EXPCATALOG_JDBC_PASSWORD = "registry.jdbc.password";
-    private static final String EXPCATALOG_VALIDATION_QUERY = "validationQuery";
-    private static final String JPA_CACHE_SIZE = "jpa.cache.size";
-    private static final String JPA_CACHE_ENABLED = "cache.enable";
+    private static final JDBCConfig JDBC_CONFIG = new ExpCatalogJDBCConfig();
     @PersistenceUnit(unitName=PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
     @PersistenceContext(unitName=PERSISTENCE_UNIT_NAME)
     private static EntityManager expCatEntityManager;
 
 
-    public static EntityManager getEntityManager() throws ApplicationSettingsException {
+    public static EntityManager getEntityManager() {
         if (factory == null) {
-            String connectionProperties = "DriverClassName=" + readServerProperties(EXPCATALOG_JDBC_DRIVER) + "," +
-                    "Url=" + readServerProperties(EXPCATALOG_JDBC_URL) + "?autoReconnect=true," +
-                    "Username=" + readServerProperties(EXPCATALOG_JDBC_USER) + "," +
-                    "Password=" + readServerProperties(EXPCATALOG_JDBC_PASSWORD) +
-                    ",validationQuery=" + readServerProperties(EXPCATALOG_VALIDATION_QUERY);
+            String connectionProperties = "DriverClassName=" + JDBC_CONFIG.getDriver() + "," +
+                    "Url=" + JDBC_CONFIG.getURL() + "?autoReconnect=true," +
+                    "Username=" + JDBC_CONFIG.getUser() + "," +
+                    "Password=" + JDBC_CONFIG.getPassword() +
+                    ",validationQuery=" + JDBC_CONFIG.getValidationQuery();
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
@@ -72,14 +66,4 @@ public class ExpCatalogJPAUtils {
         expCatEntityManager = factory.createEntityManager();
         return expCatEntityManager;
     }
-
-    private static String readServerProperties(String propertyName) throws ApplicationSettingsException {
-        try {
-            return ServerSettings.getSetting(propertyName);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server.properties...", e);
-            throw new ApplicationSettingsException("Unable to read airavata-server.properties...");
-        }
-    }
-
 }

@@ -97,12 +97,11 @@
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
         </dependency>
-        <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
+        <!-- Testing -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-server-configuration</artifactId>

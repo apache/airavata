@@ -30,6 +30,8 @@ import org.apache.airavata.registry.core.repositories.expcatalog.UserRepository;
 
 public class ExpCatalogDBInitConfig implements DBInitConfig {
 
+    private String dbInitScriptPrefix = "database_scripts/expcatalog";
+
     @Override
     public JDBCConfig getJDBCConfig() {
         return new ExpCatalogJDBCConfig();
@@ -37,7 +39,12 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDBInitScriptPrefix() {
-        return "database_scripts/expcatalog";
+        return this.dbInitScriptPrefix;
+    }
+
+    public ExpCatalogDBInitConfig setDbInitScriptPrefix(String dbInitScriptPrefix) {
+        this.dbInitScriptPrefix = dbInitScriptPrefix;
+        return this;
     }
 
     @Override

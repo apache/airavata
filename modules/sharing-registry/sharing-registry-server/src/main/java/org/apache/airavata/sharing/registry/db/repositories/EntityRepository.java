@@ -19,20 +19,15 @@
  */
 package org.apache.airavata.sharing.registry.db.repositories;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.sharing.registry.db.entities.EntityEntity;
 import org.apache.airavata.sharing.registry.db.entities.EntityPK;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
-import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
+import org.apache.airavata.sharing.registry.db.utils.SharingRegistryJDBCConfig;
 import org.apache.airavata.sharing.registry.models.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
-    private final static Logger logger = LoggerFactory.getLogger(EntityRepository.class);
 
     public EntityRepository() {
         super(Entity.class, EntityEntity.class);
@@ -73,22 +68,16 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                             + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "') AND ";
                 }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)){
-                try {
-                    if(ServerSettings.getSetting(JPAUtils.SHARING_REG_JDBC_DRIVER).contains("derby")){
-                        query += "E.FULL_TEXT LIKE '%" + searchCriteria.getValue() + "%' AND ";
-                    }else{
-                        //FULL TEXT Search with Query Expansion
-                        String queryTerms = "";
-                        for(String word : searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")){
-                            queryTerms += queryTerms + " +" + word;
-                        }
-                        queryTerms = queryTerms.trim();
-                        query += "MATCH(E.FULL_TEXT) AGAINST ('" + queryTerms
-                                + "' IN BOOLEAN MODE) AND ";
+                if (new SharingRegistryJDBCConfig().getDriver().contains("derby")) {
+                    query += "E.FULL_TEXT LIKE '%" + searchCriteria.getValue() + "%' AND ";
+                } else {
+                    // FULL TEXT Search with Query Expansion
+                    String queryTerms = "";
+                    for (String word : searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")) {
+                        queryTerms += queryTerms + " +" + word;
                     }
-                } catch (ApplicationSettingsException e) {
-                    logger.error(e.getMessage(), e);
-                    throw new SharingRegistryException(e.getMessage());
+                    queryTerms = queryTerms.trim();
+                    query += "MATCH(E.FULL_TEXT) AGAINST ('" + queryTerms + "' IN BOOLEAN MODE) AND ";
                 }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.PARRENT_ENTITY_ID)){
                 if (searchCriteria.getSearchCondition() != null && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {

@@ -17,57 +17,49 @@
  * under the License.
  *
  */
-
-package org.apache.airavata.credential.store.store.impl.util;
+package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.ServerSettings;
 
-public class CredentialStoreJDBCConfig implements JDBCConfig {
+public class WorkflowCatalogJDBCConfig implements JDBCConfig {
+    private static final String WORKFLOW_CATALOG_JDBC_DRIVER = "workflowcatalog.jdbc.driver";
+    private static final String WORKFLOW_CATALOG_JDBC_URL = "workflowcatalog.jdbc.url";
+    private static final String WORKFLOW_CATALOG_JDBC_USER = "workflowcatalog.jdbc.user";
+    private static final String WORKFLOW_CATALOG_JDBC_PASSWORD = "workflowcatalog.jdbc.password";
+    private static final String WORKFLOW_CATALOG_VALIDATION_QUERY = "workflowcatalog.validationQuery";
 
     @Override
     public String getURL() {
-        try {
-            return ServerSettings.getCredentialStoreDBURL();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException(e);
-        }
+        return readServerProperties(WORKFLOW_CATALOG_JDBC_URL);
     }
 
     @Override
     public String getDriver() {
-        try {
-            return ServerSettings.getCredentialStoreDBDriver();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException(e);
-        }
+        return readServerProperties(WORKFLOW_CATALOG_JDBC_DRIVER);
     }
 
     @Override
     public String getUser() {
-        try {
-            return ServerSettings.getCredentialStoreDBUser();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException(e);
-        }
+        return readServerProperties(WORKFLOW_CATALOG_JDBC_USER);
     }
 
     @Override
     public String getPassword() {
-        try {
-            return ServerSettings.getCredentialStoreDBPassword();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException(e);
-        }
+        return readServerProperties(WORKFLOW_CATALOG_JDBC_PASSWORD);
     }
 
     @Override
     public String getValidationQuery() {
+        return readServerProperties(WORKFLOW_CATALOG_VALIDATION_QUERY);
+    }
+
+    private String readServerProperties(String propertyName) {
         try {
-            return ServerSettings.getSetting("credential.store.jdbc.validationQuery");
+            return ServerSettings.getSetting(propertyName);
         } catch (ApplicationSettingsException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to read airavata-server.properties...", e);
         }
     }
 }
