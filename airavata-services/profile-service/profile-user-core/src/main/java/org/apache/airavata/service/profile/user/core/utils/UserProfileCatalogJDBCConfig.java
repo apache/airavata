@@ -44,4 +44,9 @@ public class UserProfileCatalogJDBCConfig implements JDBCConfig {
     public String getPassword() {
         return Utils.getJDBCPassword();
     }
+
+    @Override
+    public String getValidationQuery() {
+        return Utils.getValidationQuery();
+    }
 }

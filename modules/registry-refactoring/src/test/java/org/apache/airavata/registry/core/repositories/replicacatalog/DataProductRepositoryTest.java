@@ -25,13 +25,9 @@ import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity;
-import org.apache.airavata.registry.core.repositories.replicacatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,34 +37,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class DataProductRepositoryTest {
+public class DataProductRepositoryTest extends TestBase {
 
-    private static Initialize initialize;
     private DataProductRepository dataProductRepository;
     private String gatewayId = "testGateway";
     private String userId = "testUser";
     private String productName = "testProduct";
-    private static final Logger logger = LoggerFactory.getLogger(DataProductRepositoryTest.class);
-
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("replicacatalog-derby.sql");
-            initialize.initializeDB();
-            dataProductRepository = new DataProductRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+    
+    public DataProductRepositoryTest() {
+        super(Database.REPLICA_CATALOG);
     }
 
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    public void setUp() throws Exception {
+        super.setUp();
+        dataProductRepository = new DataProductRepository();
     }
 
     @Test
-    public void DataProductRepositoryTest() throws ReplicaCatalogException {
+    public void dataProductRepositoryTest() throws ReplicaCatalogException {
         DataProductModel testDataProductModel1 = new DataProductModel();
         testDataProductModel1.setGatewayId(gatewayId);
         testDataProductModel1.setOwnerName(userId);

@@ -24,7 +24,9 @@ import org.apache.airavata.common.utils.JDBCConfig;
 
 public class ReplicaCatalogDBInitConfig implements DBInitConfig {
 
-    public static final String REPLICA_CATALOG = "DATA_PRODUCT";
+    public static final String CHECK_TABLE = "DATA_PRODUCT";
+    private String dbInitScriptPrefix = "database_scripts/replicacatalog";
+
     @Override
     public JDBCConfig getJDBCConfig() {
         return new ReplicaCatalogJDBCConfig();
@@ -32,11 +34,16 @@ public class ReplicaCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDBInitScriptPrefix() {
-        return "database_scripts/replicacatalog";
+        return dbInitScriptPrefix;
+    }
+
+    public ReplicaCatalogDBInitConfig setDbInitScriptPrefix(String dbInitScriptPrefix) {
+        this.dbInitScriptPrefix = dbInitScriptPrefix;
+        return this;
     }
 
     @Override
     public String getCheckTableName() {
-        return REPLICA_CATALOG;
+        return CHECK_TABLE;
     }
 }

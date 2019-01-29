@@ -28,6 +28,7 @@ public class ExpCatalogJDBCConfig implements JDBCConfig {
     private static final String EXPCATALOG_JDBC_URL = "registry.jdbc.url";
     private static final String EXPCATALOG_JDBC_USER = "registry.jdbc.user";
     private static final String EXPCATALOG_JDBC_PWD = "registry.jdbc.password";
+    private static final String EXPCATALOG_VALIDATION_QUERY = "validationQuery";
 
     @Override
     public String getURL() {
@@ -49,6 +50,11 @@ public class ExpCatalogJDBCConfig implements JDBCConfig {
         return readServerProperties(EXPCATALOG_JDBC_PWD);
     }
 
+    @Override
+    public String getValidationQuery() {
+        return readServerProperties(EXPCATALOG_VALIDATION_QUERY);
+    }
+
     private String readServerProperties(String propertyName) {
         try {
             return ServerSettings.getSetting(propertyName);
@@ -56,4 +62,5 @@ public class ExpCatalogJDBCConfig implements JDBCConfig {
             throw new RuntimeException("Unable to read airavata-server.properties...", e);
         }
     }
+
 }

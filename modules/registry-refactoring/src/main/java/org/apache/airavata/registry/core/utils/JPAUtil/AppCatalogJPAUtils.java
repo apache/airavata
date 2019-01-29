@@ -19,8 +19,8 @@
  */
 package org.apache.airavata.registry.core.utils.JPAUtil;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.registry.core.utils.AppCatalogJDBCConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,23 +37,19 @@ public class AppCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(AppCatalogJPAUtils.class);
     // TODO: we can rename this back to appcatalog_data once we completely replace the other appcatalog_data persistence context in airavata-registry-core
     private static final String PERSISTENCE_UNIT_NAME = "appcatalog_data_new";
-    private static final String APPCATALOG_JDBC_DRIVER = "appcatalog.jdbc.driver";
-    private static final String APPCATALOG_JDBC_URL = "appcatalog.jdbc.url";
-    private static final String APPCATALOG_JDBC_USER = "appcatalog.jdbc.user";
-    private static final String APPCATALOG_JDBC_PWD = "appcatalog.jdbc.password";
-    private static final String APPCATALOG_VALIDATION_QUERY = "appcatalog.validationQuery";
+    private static final JDBCConfig JDBC_CONFIG = new AppCatalogJDBCConfig();
     @PersistenceUnit(unitName = PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
     @PersistenceContext(unitName = PERSISTENCE_UNIT_NAME)
     private static EntityManager appCatEntityManager;
 
-    public static EntityManager getEntityManager() throws ApplicationSettingsException {
+    public static EntityManager getEntityManager() {
         if (factory == null) {
-            String connectionProperties = "DriverClassName=" + readServerProperties(APPCATALOG_JDBC_DRIVER) + "," +
-                    "Url=" + readServerProperties(APPCATALOG_JDBC_URL) + "?autoReconnect=true," +
-                    "Username=" + readServerProperties(APPCATALOG_JDBC_USER) + "," +
-                    "Password=" + readServerProperties(APPCATALOG_JDBC_PWD) +
-                    ",validationQuery=" + readServerProperties(APPCATALOG_VALIDATION_QUERY);
+            String connectionProperties = "DriverClassName=" + JDBC_CONFIG.getDriver() + "," +
+                    "Url=" + JDBC_CONFIG.getURL() + "?autoReconnect=true," +
+                    "Username=" + JDBC_CONFIG.getUser() + "," +
+                    "Password=" + JDBC_CONFIG.getPassword() +
+                    ",validationQuery=" + JDBC_CONFIG.getValidationQuery();
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
@@ -78,14 +74,5 @@ public class AppCatalogJPAUtils {
             appCatEntityManager.clear();
         }
         return appCatEntityManager;
-    }
-
-    private static String readServerProperties(String propertyName) throws ApplicationSettingsException {
-        try {
-            return ServerSettings.getSetting(propertyName);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server.properties...", e);
-            throw new ApplicationSettingsException("Unable to read airavata-server.properties...");
-        }
     }
 }

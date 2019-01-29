@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.registry.core.repositories.workflowcatalog;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
 import org.apache.airavata.registry.core.utils.JPAUtil.WorkflowCatalogJPAUtils;
 
@@ -34,10 +33,6 @@ public class WorkflowCatAbstractRepository<T, E, Id> extends AbstractRepository<
 
     @Override
     protected EntityManager getEntityManager() {
-        try {
-            return WorkflowCatalogJPAUtils.getEntityManager();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException("Failed to get Workflow Catalog EntityManager", e);
-        }
+        return WorkflowCatalogJPAUtils.getEntityManager();
     }
 }

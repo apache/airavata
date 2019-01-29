@@ -20,21 +20,15 @@
 package org.apache.airavata.registry.core.repositories.workflowcatalog;
 
 import org.apache.airavata.model.workflow.*;
-import org.apache.airavata.registry.core.repositories.workflowcatalog.util.Initialize;
+import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 
-public class WorkflowRepositoryTest {
+public class WorkflowRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(WorkflowRepositoryTest.class);
-
-    private static Initialize initialize;
     private WorkflowRepository workflowRepository;
 
     // Workflow related constants
@@ -60,21 +54,15 @@ public class WorkflowRepositoryTest {
     private String SAMPLE_HANDLER_INPUT_NAME = "handler_input";
     private String SAMPLE_HANDLER_OUTPUT_NAME = "handler_output";
 
-    @Before
-    public void setUp() {
-        try {
-            initialize = new Initialize("airavataworkflowcatalog-derby.sql");
-            initialize.initializeDB();
-            workflowRepository = new WorkflowRepository();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+    public WorkflowRepositoryTest() {
+        super(Database.WORKFLOW_CATALOG);
     }
 
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("********** TEAR DOWN ************");
-        initialize.stopDerbyServer();
+    @Before
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        workflowRepository = new WorkflowRepository();
     }
 
     @Test

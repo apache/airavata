@@ -20,16 +20,12 @@
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
 import org.apache.airavata.registry.core.utils.JPAUtil.AppCatalogJPAUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 
 public class AppCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
-    private final static Logger logger = LoggerFactory.getLogger(AppCatAbstractRepository.class);
 
     public AppCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
         super(thriftGenericClass, dbEntityGenericClass);
@@ -37,10 +33,6 @@ public class AppCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E,
 
     @Override
     protected EntityManager getEntityManager() {
-        try {
-            return AppCatalogJPAUtils.getEntityManager();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException("Failed to get App Catalog EntityManager", e);
-        }
+        return AppCatalogJPAUtils.getEntityManager();
     }
 }

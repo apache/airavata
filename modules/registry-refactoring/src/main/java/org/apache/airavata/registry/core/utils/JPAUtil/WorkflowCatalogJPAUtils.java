@@ -19,8 +19,8 @@
  */
 package org.apache.airavata.registry.core.utils.JPAUtil;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.registry.core.utils.WorkflowCatalogJDBCConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,25 +32,19 @@ public class WorkflowCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCatalogJPAUtils.class);
 
     private static final String PERSISTENCE_UNIT_NAME = "workflowcatalog_data_new";
-    private static final String WFCATALOG_JDBC_DRIVER = "workflowcatalog.jdbc.driver";
-    private static final String WFCATALOG_JDBC_URL = "workflowcatalog.jdbc.url";
-    private static final String WFCATALOG_JDBC_USER = "workflowcatalog.jdbc.user";
-    private static final String WFCATALOG_JDBC_PASSWORD = "workflowcatalog.jdbc.password";
-    private static final String WFCATALOG_VALIDATION_QUERY = "workflowcatalog.validationQuery";
-    private static final String JPA_CACHE_SIZE = "jpa.cache.size";
-    private static final String JPA_CACHE_ENABLED = "cache.enable";
+    private static final JDBCConfig JDBC_CONFIG = new WorkflowCatalogJDBCConfig();
     @PersistenceUnit(unitName=PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
     @PersistenceContext(unitName=PERSISTENCE_UNIT_NAME)
     private static EntityManager wfCatEntityManager;
 
-    public static EntityManager getEntityManager() throws ApplicationSettingsException {
+    public static EntityManager getEntityManager() {
         if (factory == null) {
-            String connectionProperties = "DriverClassName=" + readServerProperties(WFCATALOG_JDBC_DRIVER) + "," +
-                    "Url=" + readServerProperties(WFCATALOG_JDBC_URL) + "?autoReconnect=true," +
-                    "Username=" + readServerProperties(WFCATALOG_JDBC_USER) + "," +
-                    "Password=" + readServerProperties(WFCATALOG_JDBC_PASSWORD) +
-                    ",validationQuery=" + readServerProperties(WFCATALOG_VALIDATION_QUERY);
+            String connectionProperties = "DriverClassName=" + JDBC_CONFIG.getDriver() + "," +
+                    "Url=" + JDBC_CONFIG.getURL() + "?autoReconnect=true," +
+                    "Username=" + JDBC_CONFIG.getUser() + "," +
+                    "Password=" + JDBC_CONFIG.getPassword() +
+                    ",validationQuery=" + JDBC_CONFIG.getValidationQuery();
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
@@ -68,14 +62,4 @@ public class WorkflowCatalogJPAUtils {
         wfCatEntityManager = factory.createEntityManager();
         return wfCatEntityManager;
     }
-
-    private static String readServerProperties (String propertyName) throws ApplicationSettingsException {
-        try {
-            return ServerSettings.getSetting(propertyName);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server.properties...", e);
-            throw new ApplicationSettingsException("Unable to read airavata-server.properties...");
-        }
-    }
-
 }

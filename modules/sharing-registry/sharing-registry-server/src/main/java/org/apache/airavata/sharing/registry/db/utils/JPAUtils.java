@@ -19,27 +19,17 @@
  */
 package org.apache.airavata.sharing.registry.db.utils;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class JPAUtils {
-    private final static Logger logger = LoggerFactory.getLogger(JPAUtils.class);
 
     public static final String PERSISTENCE_UNIT_NAME = "airavata-sharing-registry";
-    public static final String SHARING_REG_JDBC_DRIVER = "sharingcatalog.jdbc.driver";
-    public static final String SHARING_REG_JDBC_URL = "sharingcatalog.jdbc.url";
-    public static final String SHARING_REG_JDBC_USER = "sharingcatalog.jdbc.user";
-    public static final String SHARING_REG_JDBC_PWD = "sharingcatalog.jdbc.password";
-    public static final String SHARING_REG_VALIDATION_QUERY = "sharingcatalog.validationQuery";
-    public static final String JPA_CACHE_SIZE = "jpa.cache.size";
-    public static final String JPA_CACHE_ENABLED = "cache.enable";
+    private static final JDBCConfig JDBC_CONFIG = new SharingRegistryJDBCConfig();
 
     @PersistenceUnit(unitName = PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
@@ -48,11 +38,11 @@ public class JPAUtils {
 
     public synchronized static EntityManager getEntityManager() throws SharingRegistryException {
         if (factory == null) {
-            String connectionProperties = "DriverClassName=" + readServerProperties(SHARING_REG_JDBC_DRIVER) + "," +
-                    "Url=" + readServerProperties(SHARING_REG_JDBC_URL) + "?autoReconnect=true," +
-                    "Username=" + readServerProperties(SHARING_REG_JDBC_USER) + "," +
-                    "Password=" + readServerProperties(SHARING_REG_JDBC_PWD) +
-                    ",validationQuery=" + readServerProperties(SHARING_REG_VALIDATION_QUERY);
+            String connectionProperties = "DriverClassName=" + JDBC_CONFIG.getDriver() + "," +
+                    "Url=" + JDBC_CONFIG.getURL() + "?autoReconnect=true," +
+                    "Username=" + JDBC_CONFIG.getUser() + "," +
+                    "Password=" + JDBC_CONFIG.getPassword() +
+                    ",validationQuery=" + JDBC_CONFIG.getValidationQuery();
 
 //            String connectionProperties = "DriverClassName=com.mysql.jdbc.Driver," +
 //                    "Url=jdbc:mysql://localhost:3306/airavata_sharing_catalog?autoReconnect=true," +
@@ -84,14 +74,5 @@ public class JPAUtils {
 
         entityManager = factory.createEntityManager();
         return entityManager;
-    }
-
-    public static String readServerProperties(String propertyName) throws SharingRegistryException {
-        try {
-            return ServerSettings.getSetting(propertyName);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server.properties...", e);
-            throw new SharingRegistryException("Unable to read airavata-server.properties...");
-        }
     }
 }

@@ -29,6 +29,7 @@ public class AppCatalogJDBCConfig implements JDBCConfig {
     private static final String APPCATALOG_JDBC_URL = "appcatalog.jdbc.url";
     private static final String APPCATALOG_JDBC_USER = "appcatalog.jdbc.user";
     private static final String APPCATALOG_JDBC_PWD = "appcatalog.jdbc.password";
+    private static final String APPCATALOG_JDBC_VALIDATION_QUERY = "appcatalog.validationQuery";
 
     @Override
     public String getURL() {
@@ -50,6 +51,11 @@ public class AppCatalogJDBCConfig implements JDBCConfig {
         return readServerProperties(APPCATALOG_JDBC_PWD);
     }
 
+    @Override
+    public String getValidationQuery() {
+        return readServerProperties(APPCATALOG_JDBC_VALIDATION_QUERY);
+    }
+
     private String readServerProperties(String propertyName) {
         try {
             return ServerSettings.getSetting(propertyName);
@@ -57,4 +63,5 @@ public class AppCatalogJDBCConfig implements JDBCConfig {
             throw new RuntimeException("Unable to read airavata-server.properties...", e);
         }
     }
+
 }

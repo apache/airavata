@@ -20,17 +20,13 @@
 
 package org.apache.airavata.common.utils;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
 import java.sql.Connection;
 
 public class DBInitializer {
     private static final Logger logger = LoggerFactory.getLogger(DBInitializer.class);
-
-    private static final String START_DERBY_ENABLE = "start.derby.server.mode";
 
     private JDBCConfig jdbcConfig;
     private String initScriptPrefix;
@@ -55,9 +51,6 @@ public class DBInitializer {
         Connection conn = null;
         try {
             DBUtil dbUtil = new DBUtil(jdbcConfig);
-            if (DatabaseCreator.getDatabaseType(jdbcConfig.getURL()) == DatabaseCreator.DatabaseType.derby && isDerbyStartEnabled()) {
-                startDerbyInServerMode();
-            }
             conn = dbUtil.getConnection();
             if (!DatabaseCreator.isDatabaseStructureCreated(checkTableName, conn)) {
                 DatabaseCreator.createRegistryDatabase(initScriptPrefix, conn);
@@ -74,37 +67,5 @@ public class DBInitializer {
             }
         }
 
-    }
-
-    private boolean isDerbyStartEnabled(){
-        try {
-            String s = ServerSettings.getSetting(START_DERBY_ENABLE);
-            if("true".equals(s)){
-                return true;
-            }
-        }  catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata server properties", e.getMessage(), e);
-            return false;
-        }
-        return false;
-    }
-
-    private void startDerbyInServerMode() {
-        try {
-            DerbyUtil.startDerbyInServerMode("0.0.0.0", getPort(jdbcConfig.getURL()), jdbcConfig.getUser(), jdbcConfig.getPassword());
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to start Derby in server mode", e);
-        }
-    }
-
-    private int getPort(String jdbcURL){
-        try{
-            String cleanURI = jdbcURL.substring(5);
-            URI uri = URI.create(cleanURI);
-            return uri.getPort();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return -1;
-        }
     }
 }

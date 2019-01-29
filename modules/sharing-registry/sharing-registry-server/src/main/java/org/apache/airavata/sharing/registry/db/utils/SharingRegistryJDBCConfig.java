@@ -26,10 +26,11 @@ import org.apache.airavata.common.utils.ServerSettings;
 
 public class SharingRegistryJDBCConfig implements JDBCConfig {
 
-    public static final String SHARING_REG_JDBC_DRIVER = "sharingcatalog.jdbc.driver";
-    public static final String SHARING_REG_JDBC_URL = "sharingcatalog.jdbc.url";
-    public static final String SHARING_REG_JDBC_USER = "sharingcatalog.jdbc.user";
-    public static final String SHARING_REG_JDBC_PWD = "sharingcatalog.jdbc.password";
+    private static final String SHARING_REG_JDBC_DRIVER = "sharingcatalog.jdbc.driver";
+    private static final String SHARING_REG_JDBC_URL = "sharingcatalog.jdbc.url";
+    private static final String SHARING_REG_JDBC_USER = "sharingcatalog.jdbc.user";
+    private static final String SHARING_REG_JDBC_PWD = "sharingcatalog.jdbc.password";
+    private static final String SHARING_REG_VALIDATION_QUERY = "sharingcatalog.validationQuery";
 
     @Override
     public String getURL() {
@@ -49,6 +50,11 @@ public class SharingRegistryJDBCConfig implements JDBCConfig {
     @Override
     public String getPassword() {
         return readServerProperties(SHARING_REG_JDBC_PWD);
+    }
+
+    @Override
+    public String getValidationQuery() {
+        return readServerProperties(SHARING_REG_VALIDATION_QUERY);
     }
 
     private String readServerProperties(String propertyName) {
