@@ -54,6 +54,7 @@ public class ComputeResourcePolicyEntity implements Serializable {
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
+    // TODO: Store COMPUTE_RESOURCE_ID and QUEUE_NAME in table so it can FK to BATCH_QUEUE
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="COMPUTE_RESOURCE_POLICY_QUEUES", joinColumns = {
             @JoinColumn(name = "RESOURCE_POLICY_ID")})
