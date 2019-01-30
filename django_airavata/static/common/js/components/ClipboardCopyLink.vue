@@ -1,10 +1,16 @@
 <template>
   <div style="display: inline-block">
-    <b-link ref="copyLink" :data-clipboard-text="text">
-      Copy Key
-      <i class="far fa-clipboard"></i>
+    <b-link ref="copyLink" :data-clipboard-text="text" :class="linkClasses">
+      <slot>
+        Copy Key
+      </slot>
+      <slot name="icon">
+        <i class="far fa-clipboard"></i>
+      </slot>
     </b-link>
-    <b-tooltip :show="show" :disabled="!show" :target="() => $refs.copyLink">Copied!</b-tooltip>
+    <b-tooltip :show="show" :disabled="!show" :target="() => $refs.copyLink">
+      <slot name="tooltip">Copied!</slot>
+    </b-tooltip>
   </div>
 </template>
 
@@ -17,6 +23,9 @@ export default {
     text: {
       type: String,
       required: true
+    },
+    linkClasses: {
+      type: Array
     }
   },
   data() {

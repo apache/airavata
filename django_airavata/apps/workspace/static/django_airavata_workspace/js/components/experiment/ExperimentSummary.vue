@@ -16,7 +16,15 @@
                 <tr>
                   <th scope="row">Name</th>
                   <td>
-                    <span :title="experiment.experimentId">{{ experiment.experimentName }}</span>
+                    <div :title="experiment.experimentId">{{ experiment.experimentName }}</div>
+                    <small class="text-muted">
+                    ID: {{ experiment.experimentId }}
+                    (<clipboard-copy-link :text="experiment.experimentId" :link-classes="['text-reset']">
+                      copy
+                      <span slot="icon"></span>
+                      <span slot="tooltip">Copied ID!</span>
+                    </clipboard-copy-link>)
+                    </small>
                   </td>
                 </tr>
                 <tr>
@@ -142,6 +150,7 @@
 
 <script>
 import { models, services } from "django-airavata-api";
+import { components } from "django-airavata-common-ui";
 import DataProductViewer from "./DataProductViewer.vue";
 
 import moment from "moment";
@@ -165,6 +174,7 @@ export default {
   },
   components: {
     DataProductViewer,
+    "clipboard-copy-link": components.ClipboardCopyLink
   },
   computed: {
     creationTime: function() {

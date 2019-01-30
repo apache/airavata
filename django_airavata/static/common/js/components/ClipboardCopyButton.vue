@@ -1,8 +1,12 @@
 <template>
   <b-button ref="copyButton" :variant="variant" :disabled="disabled" :data-clipboard-text="text">
     <slot></slot>
-    <i class="far fa-clipboard"></i>
-    <b-tooltip :show="show" :disabled="!show" :target="() => $refs.copyButton">Copied!</b-tooltip>
+    <slot name="icon">
+      <i class="far fa-clipboard"></i>
+    </slot>
+    <b-tooltip :show="show" :disabled="!show" :target="() => $refs.copyButton">
+      <slot name="tooltip">Copied!</slot>
+     </b-tooltip>
   </b-button>
 </template>
 
@@ -14,21 +18,21 @@ export default {
   props: {
     text: {
       type: String,
-      required: true
     },
     variant: {
       type: String,
       default: "secondary"
     },
-    disabled: {
-      type: Boolean,
-      default: false
-    }
   },
   data() {
     return {
       show: false
     };
+  },
+  computed: {
+    disabled() {
+      return !this.text;
+    }
   },
   mounted() {
     let clipboard = new ClipboardJS(this.$refs.copyButton);

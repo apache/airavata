@@ -14,7 +14,7 @@
         </option>
       </b-form-select>
       <b-input-group-append>
-        <clipboard-copy-button variant="secondary" :disabled="!copySSHPublicKeyText" :text="copySSHPublicKeyText">
+        <clipboard-copy-button variant="secondary" :text="copySSHPublicKeyText">
         </clipboard-copy-button>
         <b-button variant="secondary" @click="showNewSSHCredentialModal">
           <i class="fa fa-plus"></i>
@@ -27,8 +27,7 @@
 
 <script>
 import { services } from "django-airavata-api";
-import { mixins } from "django-airavata-common-ui";
-import ClipboardCopyButton from "../commons/ClipboardCopyButton.vue";
+import { components, mixins } from "django-airavata-common-ui";
 import NewSSHCredentialModal from "../credentials/NewSSHCredentialModal.vue";
 
 export default {
@@ -52,7 +51,7 @@ export default {
   },
   mixins: [mixins.VModelMixin],
   components: {
-    ClipboardCopyButton,
+    "clipboard-copy-button": components.ClipboardCopyButton,
     "new-ssh-credential-modal": NewSSHCredentialModal
   },
   data() {

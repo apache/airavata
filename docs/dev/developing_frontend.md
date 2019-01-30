@@ -18,6 +18,14 @@ npm run serve
 Then in your browser go to
 [http://localhost:8000/workspace/dashboard](http://localhost:8000/workspace/dashboard).
 
+Note: after stopping the dev server the portal will still keep trying to load
+the app's JS and CSS from the dev server URLs, which it will fail to do. To go
+back to a pre dev server state run:
+
+```
+npm run build
+```
+
 # Development
 
 ## Adding a dependency

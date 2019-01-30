@@ -1,5 +1,7 @@
 import ApplicationCard from "./components/ApplicationCard.vue";
 import AutocompleteTextInput from "./components/AutocompleteTextInput.vue";
+import ClipboardCopyButton from "./components/ClipboardCopyButton.vue";
+import ClipboardCopyLink from "./components/ClipboardCopyLink.vue";
 import ConfirmationDialog from "./components/ConfirmationDialog.vue";
 import DeleteButton from "./components/DeleteButton.vue";
 import DeleteLink from "./components/DeleteLink.vue";
@@ -26,6 +28,8 @@ const components = {
   Pager,
   ApplicationCard,
   AutocompleteTextInput,
+  ClipboardCopyButton,
+  ClipboardCopyLink,
   ConfirmationDialog,
   DeleteButton,
   DeleteLink,
