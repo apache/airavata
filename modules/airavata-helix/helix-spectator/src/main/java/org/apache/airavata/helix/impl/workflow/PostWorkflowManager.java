@@ -179,7 +179,7 @@ public class PostWorkflowManager extends WorkflowManager {
             }
         } catch (Exception e) {
             logger.error("Failed to process job : " + jobStatusResult.getJobId() + ", with status : " + jobStatusResult.getState().name(), e);
-            getRegistryClientPool().returnResource(registryClient);
+            getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
