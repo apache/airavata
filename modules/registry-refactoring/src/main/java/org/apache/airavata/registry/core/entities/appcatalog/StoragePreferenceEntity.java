@@ -24,7 +24,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * The persistent class for the data_storage_preference database table.
+ * The persistent class for the storage_preference database table.
  */
 @Entity
 @Table(name = "STORAGE_PREFERENCE")

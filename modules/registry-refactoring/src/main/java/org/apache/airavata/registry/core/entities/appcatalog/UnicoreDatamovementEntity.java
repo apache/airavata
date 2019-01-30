@@ -24,6 +24,8 @@ import org.apache.airavata.model.data.movement.SecurityProtocol;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -42,7 +44,8 @@ public class UnicoreDatamovementEntity implements Serializable {
 	@Column(name="DATAMOVEMENT_ID")
 	private String dataMovementInterfaceId;
 
-	@Column(name="SECURITY_PROTOCOL")
+	@Column(name="SECURITY_PROTOCAL")
+	@Enumerated(EnumType.STRING)
 	private SecurityProtocol securityProtocol;
 
 	@Column(name="UNICORE_ENDPOINT_URL")
