@@ -5,7 +5,6 @@ import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.DerbyTestUtil;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepositoryTest;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
@@ -17,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationDeploymentRepositoryTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestBase.class);
 
     public enum Database {APP_CATALOG, EXP_CATALOG, REPLICA_CATALOG, WORKFLOW_CATALOG}
 
