@@ -577,7 +577,11 @@ public class TaskContext {
     }
 
     public String getAllocationProjectNumber() {
-        return gatewayComputeResourcePreference.getAllocationProjectNumber();
+        if (isValid(processModel.getProcessResourceSchedule().getOverrideAllocationProjectNumber())) {
+            return processModel.getProcessResourceSchedule().getOverrideAllocationProjectNumber();
+        } else {
+            return gatewayComputeResourcePreference.getAllocationProjectNumber();
+        }
     }
 
     public String getReservation() {
