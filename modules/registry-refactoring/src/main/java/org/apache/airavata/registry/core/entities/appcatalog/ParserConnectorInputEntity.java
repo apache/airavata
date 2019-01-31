@@ -35,7 +35,7 @@ public class ParserConnectorInputEntity implements Serializable {
     @Column(name = "PARSER_INPUT_ID")
     private String inputId;
 
-    @Column(name = "PARENT_OUTPUT_ID")
+    @Column(name = "PARSER_OUTPUT_ID")
     private String parentOutputId;
 
     @Column(name = "VALUE")
