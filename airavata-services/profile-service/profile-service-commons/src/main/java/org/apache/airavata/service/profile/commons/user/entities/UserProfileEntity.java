@@ -94,7 +94,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_EMAIL", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
-    @Column(name = "EMAILS")
+    @Column(name = "EMAIL")
     public List<String> getEmails() {
         return emails;
     }
@@ -159,7 +159,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_PHONE", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
-    @Column(name = "PHONES")
+    @Column(name = "PHONE")
     public List<String> getPhones() {
         return phones;
     }
