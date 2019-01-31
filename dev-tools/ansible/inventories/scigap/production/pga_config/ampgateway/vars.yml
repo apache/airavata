@@ -24,12 +24,12 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "ampgateway.scigap.org"
-vhost_ssl: false
+vhost_servername: "ampgateway.org"
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/gemr.scigap.org/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/gemr.scigap.org/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/gemr.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/ampgateway.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/ampgateway.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/ampgateway.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
