@@ -110,6 +110,7 @@ public abstract class AbstractRepository<T, E, Id> {
         try {
             entityManager = getEntityManager();
         } catch (Exception e) {
+            logger.error("Failed to get EntityManager", e);
             throw new RuntimeException("Failed to get EntityManager", e);
         }
         try {

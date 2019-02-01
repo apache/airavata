@@ -133,6 +133,21 @@
                             <goal>enhance</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <!-- execute with `mvn compile openjpa:sql@generate-sql` or `mvn process-classes` -->
+                        <id>generate-sql</id>
+                        <configuration>
+                            <!-- openjpa:sql doesn't work well with multiple persistence-unit's in persistence.xml, so
+                            use this single persistence-unit persistence.xml to list any classes for which SQL schema
+                            generation is desired -->
+                            <persistenceXmlFile>${basedir}/src/main/resources/META-INF/generate-sql-persistence.xml</persistenceXmlFile>
+                            <sqlAction>build</sqlAction>
+                            <connectionDriverName>org.apache.derby.jdbc.ClientDriver</connectionDriverName>
+                        </configuration>
+                        <goals>
+                            <goal>sql</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
