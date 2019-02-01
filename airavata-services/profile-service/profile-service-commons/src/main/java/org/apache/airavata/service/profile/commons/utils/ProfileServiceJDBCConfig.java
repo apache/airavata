@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,24 +16,37 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
  */
-package org.apache.airavata.registry.core.utils.JPAUtil;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+package org.apache.airavata.service.profile.commons.utils;
 
 import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.common.utils.JPAUtils;
-import org.apache.airavata.registry.core.utils.ReplicaCatalogJDBCConfig;
+import org.apache.airavata.service.profile.commons.utils.Utils;
 
-public class RepCatalogJPAUtils {
+public class ProfileServiceJDBCConfig implements JDBCConfig {
 
-    // TODO: we can rename this back to replicacatalog_data once we completely replace the other replicacatalog_data persistence context in airavata-registry-core
-    private static final String PERSISTENCE_UNIT_NAME = "replicacatalog_data_new";
-    private static final JDBCConfig JDBC_CONFIG = new ReplicaCatalogJDBCConfig();
-    private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    @Override
+    public String getURL() {
+        return Utils.getJDBCURL();
+    }
 
-    public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+    @Override
+    public String getDriver() {
+        return Utils.getJDBCDriver();
+    }
+
+    @Override
+    public String getUser() {
+        return Utils.getJDBCUser();
+    }
+
+    @Override
+    public String getPassword() {
+        return Utils.getJDBCPassword();
+    }
+
+    @Override
+    public String getValidationQuery() {
+        return Utils.getValidationQuery();
     }
 }

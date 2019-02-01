@@ -57,7 +57,10 @@ public class HandlerErrorEntity implements Serializable {
     private String rootCauseErrorIdList;
 
     @ManyToOne(targetEntity = WorkflowHandlerEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID")
+    @JoinColumns({
+            @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID", nullable = false, updatable = false),
+            @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", nullable = false, updatable = false)
+    })
     private WorkflowHandlerEntity handler;
 
     public HandlerErrorEntity() {
