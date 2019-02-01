@@ -18,17 +18,22 @@
 # under the License.
 #
 
----
+# {{ansible_managed}}
 
-# Api server, Orchestrator related handlers
-- name: start api-orch
-  command: ./bin/airavata-server-start.sh api-orch -d
-           chdir="{{ api_orch_dir }}/{{ airavata_dist }}/"
-           creates="{{ api_orch_dir }}/{{ airavata_dist }}/bin/server_start_*"
+[Unit]
+Description=API-Orchestrator Service
+Before=
+After=network.target
+Wants=rabbitmq-server.service zookeeper.service mysql.service
 
-- name: stop api-orch
-  command: ./bin/airavata-server-stop.sh -f
-           chdir="{{ api_orch_dir }}/{{ airavata_dist }}/"
-           removes="{{ api_orch_dir }}/{{ airavata_dist }}/bin/server_start_*"
 
-...
+[Service]
+Type=forking
+ExecStart={{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh -d api-orch -log "{{ api_orch_log_dir }}/output.log"
+ExecStop={{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-stop.sh
+Restart=always
+TimeoutSec=300
+User={{ user }}
+
+[Install]
+WantedBy=multi-user.target
