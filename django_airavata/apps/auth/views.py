@@ -25,6 +25,17 @@ def start_login(request):
     })
 
 
+def start_username_password_login(request):
+    # TODO: raise bad request if password isn't configured
+    return render(request,
+                  'django_airavata_auth/login_username_password.html',
+                  {
+                      'next': request.GET.get('next', None),
+                      'options': settings.AUTHENTICATION_OPTIONS,
+                      'login_type': 'password'
+                  })
+
+
 def redirect_login(request, idp_alias):
     _validate_idp_alias(idp_alias)
     client_id = settings.KEYCLOAK_CLIENT_ID
@@ -62,11 +73,18 @@ def handle_login(request):
             next_url = request.POST.get('next', settings.LOGIN_REDIRECT_URL)
             return redirect(next_url)
         else:
+            # TODO: have mapping from login_type and specific template for that
+            # type
+            template = "django_airavata_auth/login.html"
+            login_type = request.POST.get('login_type', None)
+            if login_type and login_type == 'password':
+                template = "django_airavata_auth/login_username_password.html"
             messages.error(request, "Login failed. Please try again.")
-            return render(request, 'django_airavata_auth/login.html', {
+            return render(request, template, {
                 'username': username,
                 'next': request.POST.get('next', None),
                 'options': settings.AUTHENTICATION_OPTIONS,
+                'login_type': login_type,
             })
     except Exception as err:
         logger.exception("An error occurred while logging in with "
@@ -95,6 +113,8 @@ def callback(request):
 
 
 def auth_error(request):
+    # TODO: provide link to the login page through which the user came and a
+    # link to all login options
     return render(request, 'django_airavata_auth/auth_error.html', {
         'login_url': settings.LOGIN_URL
     })

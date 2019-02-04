@@ -6,6 +6,8 @@ from . import views
 app_name = 'django_airavata_auth'
 urlpatterns = [
     url(r'^login$', views.start_login, name='login'),
+    url(r'^login-password$', views.start_username_password_login,
+        name='login_with_password'),
     url(r'^redirect_login/(\w+)/$', views.redirect_login,
         name='redirect_login'),
     url(r'^handle_login$', views.handle_login, name='handle_login'),

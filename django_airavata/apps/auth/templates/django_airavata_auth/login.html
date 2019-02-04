@@ -27,39 +27,7 @@
     {% endif %}
 
     {% if options.password %}
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Log in with {{ options.password.name|default:"a username and password" }}</h5>
-                    {% if messages %}
-                      {% for message in messages %}
-                      <div class="alert {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}alert-danger{% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}alert-success{% else %}alert-secondary{% endif %}" role="alert">
-                        {{ message }}
-                      </div>
-                      {% endfor %}
-                    {% endif %}
-                    <form action="{% url 'django_airavata_auth:handle_login' %}" method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="username">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="{{ username }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                        </div>
-                        {% if next %}
-                        <input type="hidden" name="next" value="{{ next }}"/>
-                        {% endif %}
-                        <button type="submit" class="btn btn-primary btn-block">
-                            Sign in with {{ options.password.name|default:"a username and password" }}
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "./partials/username_password_login_form.html" %}
     {% endif %}
 </div>
 </div>
