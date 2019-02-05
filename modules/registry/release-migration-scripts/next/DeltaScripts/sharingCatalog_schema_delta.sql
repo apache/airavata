@@ -18,6 +18,8 @@
 -- under the License.
 --
 
+use sharing_catalog;
+
 -- AIRAVATA-2938: bring database schema into sync with registry-refactoring DB init scripts
 CREATE TABLE IF NOT EXISTS GROUP_ADMIN (
   ADMIN_ID VARCHAR(255) NOT NULL,
