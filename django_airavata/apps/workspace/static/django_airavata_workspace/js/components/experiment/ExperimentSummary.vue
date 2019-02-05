@@ -65,7 +65,7 @@
                   <th scope="row">Experiment Status</th>
                   <td>
                     <template v-if="localFullExperiment.experiment.isProgressing">
-                      <i class="fa fa-refresh fa-spin"></i>
+                      <i class="fa fa-sync-alt fa-spin"></i>
                       <span class="sr-only">Progressing...</span>
                     </template>
                     {{ localFullExperiment.experimentStatusName }}
