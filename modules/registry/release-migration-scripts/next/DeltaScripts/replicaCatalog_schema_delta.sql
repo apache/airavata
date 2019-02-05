@@ -18,6 +18,8 @@
 -- under the License.
 --
 
+use replica_catalog;
+
 -- AIRAVATA-2872: NOT NULL foreign key columsn
 set FOREIGN_KEY_CHECKS=0;
 alter table DATA_PRODUCT_METADATA modify column PRODUCT_URI VARCHAR(255) NOT NULL;
