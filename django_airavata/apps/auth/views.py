@@ -45,8 +45,9 @@ def redirect_login(request, idp_alias):
     base_authorize_url = settings.KEYCLOAK_AUTHORIZE_URL
     redirect_uri = request.build_absolute_uri(
         reverse('django_airavata_auth:callback'))
+    redirect_uri += '?idp_alias=' + quote(idp_alias)
     if 'next' in request.GET:
-        redirect_uri += "?next=" + quote(request.GET['next'])
+        redirect_uri += "&next=" + quote(request.GET['next'])
     oauth2_session = OAuth2Session(
         client_id, scope='openid', redirect_uri=redirect_uri)
     authorization_url, state = oauth2_session.authorization_url(
@@ -68,6 +69,10 @@ def _validate_idp_alias(idp_alias):
 def handle_login(request):
     username = request.POST['username']
     password = request.POST['password']
+    login_type = request.POST.get('login_type', None)
+    template = "django_airavata_auth/login.html"
+    if login_type and login_type == 'password':
+        template = "django_airavata_auth/login_username_password.html"
     user = authenticate(username=username, password=password, request=request)
     logger.debug("authenticated user: {}".format(user))
     try:
@@ -76,23 +81,16 @@ def handle_login(request):
             next_url = request.POST.get('next', settings.LOGIN_REDIRECT_URL)
             return redirect(next_url)
         else:
-            # TODO: have mapping from login_type and specific template for that
-            # type
-            template = "django_airavata_auth/login.html"
-            login_type = request.POST.get('login_type', None)
-            if login_type and login_type == 'password':
-                template = "django_airavata_auth/login_username_password.html"
             messages.error(request, "Login failed. Please try again.")
-            return render(request, template, {
-                'username': username,
-                'next': request.POST.get('next', None),
-                'options': settings.AUTHENTICATION_OPTIONS,
-                'login_type': login_type,
-            })
     except Exception as err:
-        logger.exception("An error occurred while logging in with "
-                         "username and password")
-        return redirect(reverse('django_airavata_auth:error'))
+        messages.error(request,
+                       "Login failed: {}. Please try again.".format(str(err)))
+    return render(request, template, {
+        'username': username,
+        'next': request.POST.get('next', None),
+        'options': settings.AUTHENTICATION_OPTIONS,
+        'login_type': login_type,
+    })
 
 
 def start_logout(request):
@@ -112,14 +110,27 @@ def callback(request):
     except Exception as err:
         logger.exception("An error occurred while processing OAuth2 "
                          "callback: {}".format(request.build_absolute_uri()))
-        return redirect(reverse('django_airavata_auth:error'))
+        messages.error(
+            request,
+            "Failed to process OAuth2 callback: {}".format(str(err)))
+        idp_alias = request.GET.get('idp_alias')
+        return redirect(reverse('django_airavata_auth:callback-error',
+                                args=(idp_alias,)))
 
 
-def auth_error(request):
-    # TODO: provide link to the login page through which the user came and a
-    # link to all login options
-    return render(request, 'django_airavata_auth/auth_error.html', {
-        'login_url': settings.LOGIN_URL
+def callback_error(request, idp_alias):
+    _validate_idp_alias(idp_alias)
+    # Create a filtered options object with just the given idp_alias
+    options = {
+        'external': []
+    }
+    for ext in settings.AUTHENTICATION_OPTIONS['external']:
+        if ext['idp_alias'] == idp_alias:
+            options['external'].append(ext.copy())
+
+    return render(request, 'django_airavata_auth/callback-error.html', {
+        'idp_alias': idp_alias,
+        'options': options,
     })
 
 
