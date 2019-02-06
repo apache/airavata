@@ -49,7 +49,7 @@ auth_options:
 #   logo: "/assets/cilogon-logo-24x24-b.png"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "mines"
+gateway_id: "distantreader"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
