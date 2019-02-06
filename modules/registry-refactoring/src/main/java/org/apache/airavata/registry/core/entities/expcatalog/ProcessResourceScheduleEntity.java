@@ -56,6 +56,18 @@ public class ProcessResourceScheduleEntity implements Serializable {
     @Column(name = "TOTAL_PHYSICAL_MEMORY")
     private int totalPhysicalMemory;
 
+    @Column(name = "STATIC_WORKING_DIR")
+    private String staticWorkingDir;
+
+    @Column(name = "OVERRIDE_LOGIN_USER_NAME")
+    private String overrideLoginUserName;
+
+    @Column(name = "OVERRIDE_SCRATCH_LOCATION")
+    private String overrideScratchLocation;
+
+    @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
+    private String overrideAllocationProjectNumber;
+
     @OneToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
     private ProcessEntity process;
@@ -125,6 +137,38 @@ public class ProcessResourceScheduleEntity implements Serializable {
 
     public void setTotalPhysicalMemory(int totalPhysicalMemory) {
         this.totalPhysicalMemory = totalPhysicalMemory;
+    }
+
+    public String getStaticWorkingDir() {
+        return staticWorkingDir;
+    }
+
+    public void setStaticWorkingDir(String staticWorkingDir) {
+        this.staticWorkingDir = staticWorkingDir;
+    }
+
+    public String getOverrideAllocationProjectNumber() {
+        return overrideAllocationProjectNumber;
+    }
+
+    public void setOverrideAllocationProjectNumber(String overrideAllocationProjectNumber) {
+        this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
+    }
+
+    public String getOverrideLoginUserName() {
+        return overrideLoginUserName;
+    }
+
+    public void setOverrideLoginUserName(String overrideLoginUserName) {
+        this.overrideLoginUserName = overrideLoginUserName;
+    }
+
+    public String getOverrideScratchLocation() {
+        return overrideScratchLocation;
+    }
+
+    public void setOverrideScratchLocation(String overrideScratchLocation) {
+        this.overrideScratchLocation = overrideScratchLocation;
     }
 
     public ProcessEntity getProcess() {
