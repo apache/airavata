@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.forms import ValidationError
+from django.http import HttpResponseBadRequest
 from django.http.request import split_domain_port
 from django.shortcuts import redirect, render, resolve_url
 from django.template import Context, Template
@@ -26,7 +27,9 @@ def start_login(request):
 
 
 def start_username_password_login(request):
-    # TODO: raise bad request if password isn't configured
+    # return bad request if password isn't a configured option
+    if 'password' not in settings.AUTHENTICATION_OPTIONS:
+        return HttpResponseBadRequest("Username/password login is not enabled")
     return render(request,
                   'django_airavata_auth/login_username_password.html',
                   {
