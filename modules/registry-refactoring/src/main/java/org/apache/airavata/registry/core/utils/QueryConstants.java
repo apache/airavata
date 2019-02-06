@@ -124,9 +124,11 @@ public interface QueryConstants {
             "WHERE P.owner LIKE :" + DBConstants.Project.OWNER;
 
     String GET_EXPERIMENTS_FOR_USER = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
-            "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME;
+            "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME + 
+            " AND E.gatewayId = :" + DBConstants.Experiment.GATEWAY_ID;
     String GET_EXPERIMENTS_FOR_PROJECT_ID = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
-            "WHERE E.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID;
+            "WHERE E.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID +
+            " AND E.gatewayId = :" + DBConstants.Experiment.GATEWAY_ID;
     String GET_EXPERIMENTS_FOR_GATEWAY_ID = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
             "WHERE E.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID;
 

@@ -30,13 +30,10 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -127,10 +124,6 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("static-working-dir", retrievedComputationalResourceScheduling.getStaticWorkingDir());
         assertEquals(1333, retrievedComputationalResourceScheduling.getTotalPhysicalMemory());
         assertEquals(77, retrievedComputationalResourceScheduling.getWallTimeLimit());
-
-        List<String> experimentIdList = experimentRepository.getExperimentIDs(DBConstants.Experiment.GATEWAY_ID, gatewayId);
-        assertTrue(experimentIdList.size() == 1);
-        assertTrue(experimentIdList.get(0).equals(experimentId));
 
         experimentRepository.removeExperiment(experimentId);
         assertFalse(experimentRepository.isExperimentExist(experimentId));

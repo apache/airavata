@@ -490,12 +490,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Get All Experiments of the Project
      * Get Experiments within project with pagination. Results will be sorted based on creation time DESC.
      *
-     * @param projectId Uniqie identifier of the project.
+     * @param gatewayId Unique identifier of the gateway.
+     * @param projectId Unique identifier of the project.
      * @param limit     Amount of results to be fetched.
      * @param offset    The starting point of the results to be fetched.
      */
     @Override
-    public List<ExperimentModel> getExperimentsInProject(String projectId, int limit, int offset) throws RegistryServiceException, TException {
+    public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset) throws RegistryServiceException, TException {
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
         if (!validateString(projectId)){
             logger.error("Project id cannot be empty. Please provide a valid project ID...");
             RegistryServiceException exception = new RegistryServiceException();
@@ -511,6 +516,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
 
             List<ExperimentModel> experiments = experimentRepository.getExperimentList(
+                    gatewayId,
                     Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId, limit, offset,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             logger.debug("Airavata retrieved experiments for project : " + projectId);
@@ -551,7 +557,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.warn("User does not exist in the system. Please provide a valid user..");
                 return experiments;
             }
-            experiments = experimentRepository.getExperimentList(
+            experiments = experimentRepository.getExperimentList(gatewayId,
                     Constants.FieldConstants.ExperimentConstants.USER_NAME, userName, limit, offset,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             logger.debug("Airavata retrieved experiments for user : " + userName);
