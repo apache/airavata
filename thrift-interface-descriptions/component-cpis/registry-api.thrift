@@ -392,9 +392,10 @@ service RegistryService {
            *       The starting point of the results to be fetched.
            *
            **/
-          list<experiment_model.ExperimentModel> getExperimentsInProject(1: required string projectId,
-                          2: required i32 limit,
-                          3: required i32 offset)
+          list<experiment_model.ExperimentModel> getExperimentsInProject(1: required string gatewayId,
+                          2: required string projectId,
+                          3: required i32 limit,
+                          4: required i32 offset)
                   throws (1: registry_api_errors.RegistryServiceException rse,
                           2: airavata_errors.ProjectNotFoundException pnfe)
 

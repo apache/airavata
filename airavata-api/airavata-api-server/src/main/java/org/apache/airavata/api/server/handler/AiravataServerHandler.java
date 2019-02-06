@@ -1262,10 +1262,10 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             Project project = regClient.getProject(projectId);
 
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             if(ServerSettings.isEnableSharing() && !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(project.getOwner())
                     || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(project.getGatewayId())){
                 try {
-                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                     if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
                             projectId, gatewayId + ":READ")){
@@ -1275,7 +1275,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     throw new AuthorizationException("User does not have permission to access this resource");
                 }
             }
-            List<ExperimentModel> result = regClient.getExperimentsInProject(projectId, limit, offset);
+            List<ExperimentModel> result = regClient.getExperimentsInProject(gatewayId, projectId, limit, offset);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;

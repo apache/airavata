@@ -145,11 +145,7 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         return experimentModel.getUserConfigurationData();
     }
 
-    public List<ExperimentModel> getExperimentList(String fieldName, Object value) throws RegistryException {
-        return getExperimentList(fieldName, value, -1, 0, null, null);
-    }
-
-    public List<ExperimentModel> getExperimentList(String fieldName, Object value, int limit, int offset,
+    public List<ExperimentModel> getExperimentList(String gatewayId, String fieldName, Object value, int limit, int offset,
                                                    Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         List<ExperimentModel> experimentModelList;
 
@@ -157,6 +153,7 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             logger.debug("Search criteria is Username");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Experiment.USER_NAME, value);
+            queryParameters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
             experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_USER, limit, offset, queryParameters);
         }
 
@@ -164,14 +161,8 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             logger.debug("Search criteria is ProjectId");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Experiment.PROJECT_ID, value);
+            queryParameters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
             experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_PROJECT_ID, limit, offset, queryParameters);
-        }
-
-        else if (fieldName.equals(DBConstants.Experiment.GATEWAY_ID)) {
-            logger.debug("Search criteria is GatewayId");
-            Map<String, Object> queryParameters = new HashMap<>();
-            queryParameters.put(DBConstants.Experiment.GATEWAY_ID, value);
-            experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_GATEWAY_ID, limit, offset, queryParameters);
         }
 
         else {
@@ -180,15 +171,6 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         }
 
         return experimentModelList;
-    }
-
-    public List<String> getExperimentIDs(String fieldName, Object value) throws RegistryException {
-        List<String> experimentIds = new ArrayList<>();
-        List<ExperimentModel> experimentModelList = getExperimentList(fieldName, value);
-        for (ExperimentModel experimentModel : experimentModelList) {
-            experimentIds.add(experimentModel.getExperimentId());
-        }
-        return experimentIds;
     }
 
     public boolean isExperimentExist(String experimentId) throws RegistryException {
