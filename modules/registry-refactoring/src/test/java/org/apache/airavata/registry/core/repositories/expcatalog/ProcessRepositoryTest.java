@@ -129,8 +129,17 @@ public class ProcessRepositoryTest extends TestBase {
         assertEquals(processId, processRepository.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));
 
         computationalResourceSchedulingModel.setQueueName("queue");
+        computationalResourceSchedulingModel.setStaticWorkingDir("staticWorkingDir");
+        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber("overrideAllocationProjectNumber");
+        computationalResourceSchedulingModel.setOverrideLoginUserName("overrideLoginUserName");
+        computationalResourceSchedulingModel.setOverrideScratchLocation("overrideScratchLocation");
         processRepository.updateProcessResourceSchedule(computationalResourceSchedulingModel, processId);
-        assertEquals("queue", processRepository.getProcessResourceSchedule(processId).getQueueName());
+        ComputationalResourceSchedulingModel updatedComputationalResourceSchedulingModel = processRepository.getProcessResourceSchedule(processId);
+        assertEquals("queue", updatedComputationalResourceSchedulingModel.getQueueName());
+        assertEquals("staticWorkingDir", updatedComputationalResourceSchedulingModel.getStaticWorkingDir());
+        assertEquals("overrideAllocationProjectNumber", updatedComputationalResourceSchedulingModel.getOverrideAllocationProjectNumber());
+        assertEquals("overrideLoginUserName", updatedComputationalResourceSchedulingModel.getOverrideLoginUserName());
+        assertEquals("overrideScratchLocation", updatedComputationalResourceSchedulingModel.getOverrideScratchLocation());
 
         List<String> processIdList = processRepository.getProcessIds(DBConstants.Process.EXPERIMENT_ID, experimentId);
         assertTrue(processIdList.size() == 1);
