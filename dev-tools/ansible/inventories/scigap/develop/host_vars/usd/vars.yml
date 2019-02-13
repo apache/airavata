@@ -37,6 +37,8 @@ auth_options:
   password:
     name: "USD Gateway"
   external:
+    - name: "USD"
+      idp_alias: "usd"
     - name: "CILogon"
       idp_alias: "cilogon"
 
