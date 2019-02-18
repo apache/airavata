@@ -1,14 +1,17 @@
-import { entry } from "django-airavata-common-ui";
+import { components, entry } from "django-airavata-common-ui";
 import ProjectListContainer from "./containers/ProjectListContainer.vue";
 
 entry(Vue => {
   new Vue({
     render(h) {
-      return h(ProjectListContainer, {
-        props: {
-          initialProjectsData: this.projectsData
-        }
-      });
+      return h("div", [
+        h(components.NotificationsDisplay),
+        h(ProjectListContainer, {
+          props: {
+            initialProjectsData: this.projectsData
+          }
+        })
+      ]);
     },
     data() {
       return {

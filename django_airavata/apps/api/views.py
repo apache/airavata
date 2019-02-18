@@ -207,6 +207,80 @@ class ExperimentViewSet(APIBackedViewSet):
             jobs, many=True, context={'request': request})
         return Response(serializer.data)
 
+    @detail_route(methods=['post'])
+    def clone(self, request, experiment_id=None):
+
+        # figure what project to clone into
+        experiment = self.request.airavata_client.getExperiment(
+            self.authz_token, experiment_id)
+        project_id = self._get_writeable_project(experiment)
+
+        # clone experiment
+        cloned_experiment_id = request.airavata_client.cloneExperiment(
+            self.authz_token, experiment_id,
+            "Clone of {}".format(experiment.experimentName), project_id)
+        cloned_experiment = request.airavata_client.getExperiment(
+            self.authz_token, cloned_experiment_id)
+
+        # Create a copy of the experiment input files
+        self._copy_cloned_experiment_input_uris(cloned_experiment)
+
+        self._set_storage_id_and_data_dir(cloned_experiment)
+        request.airavata_client.updateExperiment(
+            self.authz_token, cloned_experiment.experimentId, cloned_experiment
+        )
+        serializer = self.serializer_class(
+            cloned_experiment, context={'request': request})
+        return Response(serializer.data)
+
+    def _get_writeable_project(self, experiment):
+        # figure what project to clone into:
+        # 1) project of this experiment if writeable
+        # 2) else, first writeable project
+        project_id = experiment.projectId
+        can_write = self.request.airavata_client.userHasAccess(
+            self.authz_token, project_id, ResourcePermissionType.WRITE)
+        if not can_write:
+            user_projects = self.request.airavata_client.getUserProjects(
+                self.authz_token, self.gateway_id, self.username, -1, 0)
+            for user_project in user_projects:
+                can_write = self.request.airavata_client.userHasAccess(
+                    self.authz_token, user_project.projectID,
+                    ResourcePermissionType.WRITE)
+                if can_write:
+                    project_id = user_project.projectID
+                    break
+            if not can_write:
+                raise Exception(
+                    "Could not find writeable project for user {} in "
+                    "gateway {}".format(self.username, self.gateway_id))
+        return project_id
+
+    def _copy_cloned_experiment_input_uris(self, cloned_experiment):
+        # update the experimentInputs of type URI, copying files in data store
+        request = self.request
+        target_project = request.airavata_client.getProject(
+            self.authz_token, cloned_experiment.projectId)
+        for experiment_input in cloned_experiment.experimentInputs:
+            if experiment_input.type == DataType.URI:
+                source_data_product = request.airavata_client.getDataProduct(
+                    self.authz_token, experiment_input.value)
+                try:
+                    copied_data_product = datastore.copy(
+                        self.username,
+                        target_project.name,
+                        cloned_experiment.experimentName,
+                        source_data_product)
+                    data_product_uri = \
+                        request.airavata_client.registerDataProduct(
+                            self.authz_token, copied_data_product)
+                    experiment_input.value = data_product_uri
+                except ObjectDoesNotExist as odne:
+                    log.warning("Could not find file for source data "
+                                "product {}".format(source_data_product))
+                    log.warning("Setting cloned input {} to null".format(
+                        experiment_input.name))
+                    experiment_input.value = None
 
 class ExperimentSearchViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
     serializer_class = serializers.ExperimentSummarySerializer

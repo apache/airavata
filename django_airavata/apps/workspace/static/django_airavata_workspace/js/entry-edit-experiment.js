@@ -1,4 +1,4 @@
-import { entry } from "django-airavata-common-ui";
+import { components, entry } from "django-airavata-common-ui";
 import EditExperimentContainer from "./containers/EditExperimentContainer.vue";
 
 // Expect a template with id "edit-experiment" and experiment-id data attribute
@@ -8,11 +8,14 @@ import EditExperimentContainer from "./containers/EditExperimentContainer.vue";
 entry(Vue => {
   new Vue({
     render(h) {
-      return h(EditExperimentContainer, {
-        props: {
-          experimentId: this.experimentId
-        }
-      });
+      return h("div", [
+        h(components.NotificationsDisplay),
+        h(EditExperimentContainer, {
+          props: {
+            experimentId: this.experimentId
+          }
+        })
+      ]);
     },
     data() {
       return {

@@ -1,21 +1,18 @@
 <template>
-  <div>
-    <notifications-display />
-    <experiment-editor
-      v-if="experiment"
-      :experiment="experiment"
-      :app-module="appModule"
-      @saved="handleSavedExperiment"
-      @savedAndLaunched="handleSavedAndLaunchedExperiment"
-    >
-      <span slot="title">Create a New Experiment</span>
-    </experiment-editor>
-  </div>
+  <experiment-editor
+    v-if="experiment"
+    :experiment="experiment"
+    :app-module="appModule"
+    @saved="handleSavedExperiment"
+    @savedAndLaunched="handleSavedAndLaunchedExperiment"
+  >
+    <span slot="title">Create a New Experiment</span>
+  </experiment-editor>
 </template>
 
 <script>
 import { models, services } from "django-airavata-api";
-import { components, notifications } from "django-airavata-common-ui";
+import { notifications } from "django-airavata-common-ui";
 import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
 
 import moment from "moment";
@@ -30,8 +27,7 @@ export default {
     };
   },
   components: {
-    "experiment-editor": ExperimentEditor,
-    "notifications-display": components.NotificationsDisplay
+    "experiment-editor": ExperimentEditor
   },
   methods: {
     handleSavedExperiment: function() {

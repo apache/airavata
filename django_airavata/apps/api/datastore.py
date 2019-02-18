@@ -72,6 +72,12 @@ def save(username, project_name, experiment_name, file):
     return data_product
 
 
+def copy(username, project_name, experiment_name, data_product):
+    """Copy a data product into username/project_name/experiment_name dir."""
+    f = open(data_product)
+    return save(username, project_name, experiment_name, f)
+
+
 def delete(data_product):
     """Delete replica for data product in this data store."""
     if exists(data_product):

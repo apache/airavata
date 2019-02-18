@@ -213,6 +213,12 @@ export default {
         url: "/api/experiments/<lookup>/launch/",
         requestType: "post",
         modelClass: Experiment
+      },
+      {
+        name: "clone",
+        url: "/api/experiments/<lookup>/clone/",
+        requestType: "post",
+        modelClass: Experiment
       }
     ],
     modelClass: Experiment

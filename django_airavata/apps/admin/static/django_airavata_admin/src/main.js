@@ -1,9 +1,8 @@
-import { entry } from "django-airavata-common-ui";
+import { components, entry } from "django-airavata-common-ui";
 import VueResource from "vue-resource";
 import VueRouter from "vue-router";
 import App from "./App.vue";
 import router from "./router";
-
 
 entry(Vue => {
   Vue.config.productionTip = false;
@@ -12,7 +11,7 @@ entry(Vue => {
   Vue.use(VueRouter);
 
   new Vue({
-    render: h => h(App),
+    render: h => h("div", [h(components.NotificationsDisplay), h(App)]),
     router
   }).$mount("#app");
 });

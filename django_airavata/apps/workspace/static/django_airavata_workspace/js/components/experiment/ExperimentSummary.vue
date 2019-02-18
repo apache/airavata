@@ -1,10 +1,16 @@
 <template>
   <div>
     <div class="row">
-      <div class="col">
+      <div class="col-auto mr-auto">
         <h1 class="h4 mb-4">
           <slot name="title">Experiment Summary</slot>
         </h1>
+      </div>
+      <div class="col-auto">
+          <b-btn variant="primary" @click="clone">
+            Clone
+            <i class="fa fa-copy" aria-hidden="true"></i>
+          </b-btn>
       </div>
     </div>
     <div class="row">
@@ -213,6 +219,14 @@ export default {
         }
       }.bind(this);
       setTimeout(pollExperiment, 3000);
+    },
+    clone() {
+      services.ExperimentService.clone({
+        lookup: this.experiment.experimentId
+      }).then(clonedExperiment => {
+        window.location.assign("/workspace/experiments/"
+          + encodeURIComponent(clonedExperiment.experimentId) + "/edit");
+      })
     }
   },
   watch: {},
