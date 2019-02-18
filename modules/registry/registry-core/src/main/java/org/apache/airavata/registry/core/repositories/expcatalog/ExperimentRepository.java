@@ -54,10 +54,6 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
     }
 
     protected ExperimentEntity saveExperiment(ExperimentModel experimentModel) throws RegistryException {
-        if (experimentModel.getExperimentId() == null || experimentModel.getExperimentId().equals(airavata_commonsConstants.DEFAULT_ID)) {
-            logger.debug("Setting the Experiment's ExperimentId");
-            experimentModel.setExperimentId(AiravataUtils.getId(experimentModel.getExperimentName()));
-        }
         String experimentId = experimentModel.getExperimentId();
 
         if (experimentModel.getExperimentStatus() != null) {
@@ -117,6 +113,7 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         experimentStatus.setState(ExperimentState.CREATED);
         experimentStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         experimentModel.addToExperimentStatus(experimentStatus);
+        experimentModel.setExperimentId(AiravataUtils.getId(experimentModel.getExperimentName()));
 
         return saveExperimentModelData(experimentModel);
     }
