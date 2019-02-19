@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import CheckboxInputEditor from "./CheckboxInputEditor.vue";
 import FileInputEditor from './FileInputEditor.vue'
 import InputEditorFormGroup from './InputEditorFormGroup.vue'
 import RadioButtonInputEditor from './RadioButtonInputEditor.vue'
@@ -31,6 +32,7 @@ export default {
         },
     },
     components: {
+        CheckboxInputEditor,
         FileInputEditor,
         InputEditorFormGroup,
         RadioButtonInputEditor,
