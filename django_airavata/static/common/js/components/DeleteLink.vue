@@ -1,6 +1,6 @@
 <template>
   <div class="delete-link">
-    <b-link class="text-danger" @click="$refs.modal.show()">
+    <b-link class="text-danger action-link" @click="$refs.modal.show()">
       Delete
       <i class="fa fa-trash" aria-hidden="true"></i>
     </b-link>

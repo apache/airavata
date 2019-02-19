@@ -233,3 +233,11 @@ body {
 .fade-enter, .fade-leave-to {
   opacity: 0;
 }
+
+.btn + .btn,
+.action-link + .action-link {
+  margin-left: .25rem;
+}
+.action-link {
+  white-space: nowrap;
+}

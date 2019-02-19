@@ -199,9 +199,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.action-link {
-  white-space: nowrap;
-}
-</style>

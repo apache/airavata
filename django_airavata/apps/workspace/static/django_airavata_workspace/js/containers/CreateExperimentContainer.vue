@@ -14,6 +14,7 @@
 import { models, services } from "django-airavata-api";
 import { notifications } from "django-airavata-common-ui";
 import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
+import urls from "../utils/urls";
 
 import moment from "moment";
 
@@ -32,15 +33,11 @@ export default {
   methods: {
     handleSavedExperiment: function() {
       // Redirect to experiment view
-      window.location.assign("/workspace/experiments");
+      urls.navigateToExperimentsList();
     },
     handleSavedAndLaunchedExperiment: function(experiment) {
       // Redirect to experiment view
-      window.location.assign(
-        "/workspace/experiments/" +
-          encodeURIComponent(experiment.experimentId) +
-          "/?launching=true"
-      );
+      urls.navigateToViewExperiment(experiment, {launching: true});
     }
   },
   computed: {},

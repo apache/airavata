@@ -5,15 +5,15 @@
 
         <b-table striped hover :fields="fields" :items="slotProps.items" sort-by="computeHostId">
           <template slot="action" slot-scope="data">
-            <router-link v-if="!data.item.userHasWriteAccess" :to="{name: 'application_deployment', params: {id: id, deploymentId: data.item.appDeploymentId, readonly: true}}">
+            <router-link class="action-link" v-if="!data.item.userHasWriteAccess" :to="{name: 'application_deployment', params: {id: id, deploymentId: data.item.appDeploymentId, readonly: true}}">
               View
               <i class="fa fa-eye" aria-hidden="true"></i>
             </router-link>
-            <router-link v-if="data.item.userHasWriteAccess && data.item.appDeploymentId" :to="{name: 'application_deployment', params: {id: id, deploymentId: data.item.appDeploymentId, readonly: false}}">
+            <router-link class="action-link" v-if="data.item.userHasWriteAccess && data.item.appDeploymentId" :to="{name: 'application_deployment', params: {id: id, deploymentId: data.item.appDeploymentId, readonly: false}}">
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            <router-link v-if="data.item.userHasWriteAccess && !data.item.appDeploymentId" :to="{name: 'new_application_deployment', params: {id: id, hostId: data.item.computeHostId, readonly: false}}">
+            <router-link class="action-link" v-if="data.item.userHasWriteAccess && !data.item.appDeploymentId" :to="{name: 'new_application_deployment', params: {id: id, hostId: data.item.computeHostId, readonly: false}}">
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>

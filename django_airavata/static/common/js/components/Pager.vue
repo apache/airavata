@@ -1,13 +1,13 @@
 <template>
     <div class="pager">
         <span class="pager-element" v-if="hasPrevious">
-            <a href="#" v-on:click.prevent="getPrevious"><i class="fa fa-chevron-left" aria-hidden="true"></i> Previous</a>
+            <a href="#" class="action-link" v-on:click.prevent="getPrevious"><i class="fa fa-chevron-left" aria-hidden="true"></i> Previous</a>
         </span>
         <span class="pager-element">
             Showing {{ first }} - {{ last }}
         </span>
         <span class="pager-element" v-if="hasNext">
-            <a href="#" v-on:click.prevent="getNext">Next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+            <a href="#" class="action-link" v-on:click.prevent="getNext">Next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
         </span>
     </div>
 </template>

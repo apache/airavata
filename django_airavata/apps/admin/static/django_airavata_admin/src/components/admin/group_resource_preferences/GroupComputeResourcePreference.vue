@@ -31,7 +31,7 @@
             <compute-resource-policy-summary :compute-resource-id="row.item.computeResourceId" :group-resource-profile="data" />
           </template>
           <template slot="action" slot-scope="row">
-            <router-link :to="{
+            <router-link class="action-link" :to="{
                 name: 'compute_preference',
                 params: {
                   value: row.item,
@@ -45,7 +45,7 @@
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            <a href="#" class="text-danger" @click.prevent="removeComputePreference(row.item.computeResourceId)">
+            <a href="#" class="action-link text-danger" @click.prevent="removeComputePreference(row.item.computeResourceId)">
               Delete
               <i class="fa fa-trash" aria-hidden="true"></i>
             </a>

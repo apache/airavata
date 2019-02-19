@@ -22,7 +22,7 @@
               </thead>
               <tbody>
                 <tr v-for="experiment in experiments" :key="experiment.experimentId">
-                  <td>{{experiment.name}}</td>
+                  <td><b-link :href="viewLink(experiment)">{{experiment.name}}</b-link></td>
                   <td>{{applicationName(experiment)}}</td>
                   <td>{{experiment.userName}}</td>
                   <td>
@@ -32,12 +32,12 @@
                     <experiment-status-badge :statusName="experiment.experimentStatus.name" />
                   </td>
                   <td>
-                    <a v-if="experiment.isEditable" :href="editLink(experiment)">Edit
+                    <b-link v-if="experiment.isEditable" :href="editLink(experiment)" class="action-link">Edit
                       <i class="fa fa-edit" aria-hidden="true"></i>
-                    </a>
-                    <a v-else :href="viewLink(experiment)">View
-                      <i class="fa fa-chart-bar" aria-hidden="true"></i>
-                    </a>
+                    </b-link>
+                    <b-link v-else @click="clone(experiment)" class="action-link">Clone
+                      <i class="fa fa-copy" aria-hidden="true"></i>
+                    </b-link>
                   </td>
                 </tr>
               </tbody>
@@ -57,6 +57,7 @@ import { components as comps } from "django-airavata-common-ui";
 import ExperimentStatusBadge from "../components/experiment/ExperimentStatusBadge.vue";
 
 import moment from "moment";
+import urls from '../utils/urls';
 
 export default {
   props: ["initialExperimentsData"],
@@ -82,18 +83,10 @@ export default {
       return moment(date).fromNow();
     },
     editLink: function(experiment) {
-      return (
-        "/workspace/experiments/" +
-        encodeURIComponent(experiment.experimentId) +
-        "/edit"
-      );
+      return urls.editExperiment(experiment);
     },
     viewLink: function(experiment) {
-      return (
-        "/workspace/experiments/" +
-        encodeURIComponent(experiment.experimentId) +
-        "/"
-      );
+      return urls.viewExperiment(experiment);
     },
     applicationName: function(experiment) {
       if (experiment.executionId in this.applicationInterfaces) {
@@ -113,6 +106,13 @@ export default {
         this.$set(this.applicationInterfaces, experiment.executionId, request);
       }
       return "...";
+    },
+    clone(experiment) {
+      services.ExperimentService.clone({
+        lookup: experiment.experimentId
+      }).then(clonedExperiment => {
+        urls.navigateToEditExperiment(clonedExperiment);
+      });
     }
   },
   computed: {

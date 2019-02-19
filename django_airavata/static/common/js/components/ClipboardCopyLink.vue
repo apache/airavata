@@ -1,6 +1,6 @@
 <template>
   <div style="display: inline-block">
-    <b-link ref="copyLink" :data-clipboard-text="text" :class="linkClasses">
+    <b-link ref="copyLink" :data-clipboard-text="text" class="action-link" :class="linkClasses">
       <slot>
         Copy Key
       </slot>

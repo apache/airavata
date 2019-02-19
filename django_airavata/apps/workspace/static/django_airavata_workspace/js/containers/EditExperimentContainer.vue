@@ -13,6 +13,7 @@
 <script>
 import { services } from "django-airavata-api";
 import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
+import urls from "../utils/urls";
 
 export default {
   name: "edit-experiment-container",
@@ -34,15 +35,11 @@ export default {
   methods: {
     handleSavedExperiment: function() {
       // Redirect to experiments list view
-      window.location.assign("/workspace/experiments");
+      urls.navigateToExperimentsList();
     },
     handleSavedAndLaunchedExperiment: function(experiment) {
       // Redirect to experiment view
-      window.location.assign(
-        "/workspace/experiments/" +
-          encodeURIComponent(experiment.experimentId) +
-          "/?launching=true"
-      );
+      urls.navigateToViewExperiment(experiment, {launching: true});
     }
   },
   computed: {},

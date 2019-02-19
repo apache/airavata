@@ -18,6 +18,7 @@
 
 import { services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
+import urls from "../utils/urls";
 
 export default {
     name: 'dashboard-container',
@@ -31,7 +32,7 @@ export default {
     },
     methods: {
         handleAppSelected: function(appModule) {
-            window.location.pathname = "/workspace/applications/" + encodeURIComponent(appModule.appModuleId) + "/create_experiment";
+            urls.navigateToCreateExperiment(appModule);
         },
     },
     beforeMount: function () {

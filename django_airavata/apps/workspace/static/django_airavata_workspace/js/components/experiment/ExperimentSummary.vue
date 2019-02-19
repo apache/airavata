@@ -7,6 +7,10 @@
         </h1>
       </div>
       <div class="col-auto">
+          <b-link v-if="experiment.isEditable" class="btn btn-primary" :href="editLink">
+            Edit
+            <i class="fa fa-edit" aria-hidden="true"></i>
+          </b-link>
           <b-btn variant="primary" @click="clone">
             Clone
             <i class="fa fa-copy" aria-hidden="true"></i>
@@ -158,6 +162,7 @@
 import { models, services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 import DataProductViewer from "./DataProductViewer.vue";
+import urls from "../../utils/urls";
 
 import moment from "moment";
 
@@ -198,6 +203,9 @@ export default {
       return this.localFullExperiment.jobDetails.map(jobDetail =>
         moment(jobDetail.creationTime).fromNow()
       );
+    },
+    editLink() {
+      return urls.editExperiment(this.experiment);
     }
   },
   methods: {
@@ -224,8 +232,7 @@ export default {
       services.ExperimentService.clone({
         lookup: this.experiment.experimentId
       }).then(clonedExperiment => {
-        window.location.assign("/workspace/experiments/"
-          + encodeURIComponent(clonedExperiment.experimentId) + "/edit");
+        urls.navigateToEditExperiment(clonedExperiment);
       })
     }
   },

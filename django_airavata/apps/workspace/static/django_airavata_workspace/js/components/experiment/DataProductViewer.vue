@@ -1,7 +1,7 @@
 <template>
 
   <span v-if="dataProduct.downloadURL">
-    <a :href="dataProduct.downloadURL">
+    <a :href="dataProduct.downloadURL" class="action-link">
       <i class="fa fa-download"></i>
       {{ filename }}
     </a>

@@ -4,11 +4,11 @@
 
       <b-table striped hover :fields="fields" :items="slotProps.items">
         <template slot="action" slot-scope="data">
-          <router-link v-if="data.item.userHasWriteAccess" :to="{name: 'group_resource_preference', params: {value: data.item, id: data.item.groupResourceProfileId}}">
+          <router-link class="action-link" v-if="data.item.userHasWriteAccess" :to="{name: 'group_resource_preference', params: {value: data.item, id: data.item.groupResourceProfileId}}">
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </router-link>
-          <a href="#" class="text-danger" @click.prevent="removeGroupResourceProfile(data.item)" v-if="data.item.userHasWriteAccess">
+          <a href="#" class="action-link text-danger" @click.prevent="removeGroupResourceProfile(data.item)" v-if="data.item.userHasWriteAccess">
             Delete
             <i class="fa fa-trash" aria-hidden="true"></i>
           </a>

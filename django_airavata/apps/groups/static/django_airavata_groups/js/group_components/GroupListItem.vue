@@ -9,10 +9,11 @@
         <td>{{ group.description }}</td>
         <td>
             <a v-if="group.isOwner || group.isAdmin"
+                class="action-link"
                 :href="'/groups/edit/' + encodeURIComponent(group.id) + '/'">
                 Edit <i class="fa fa-edit"></i>
             </a>
-            <a href="#" v-if="deleteable" @click="show=true" :variant="deleteButtonVariant">
+            <a href="#" v-if="deleteable" class="action-link" @click="show=true" :variant="deleteButtonVariant">
                 Delete <i class="fa fa-trash"></i>
             </a>
             <b-modal :header-bg-variant="headerBgVariant" :header-text-variant="headerTextVariant" :body-bg-variant="bodyBgVariant" v-model="show" :id="'modal'+group.id" title="Are you sure?">

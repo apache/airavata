@@ -4,7 +4,7 @@
         <td>{{ parser.imageName }}</td>
         <td>{{ parser.executionCommand }}</td>
         <td>
-          <a :href="'/dataparsers/edit/' + encodeURIComponent(parser.id) + '/'">
+          <a class="action-link" :href="'/dataparsers/edit/' + encodeURIComponent(parser.id) + '/'">
             Edit <i class="fa fa-edit"></i>
           </a>
         </td>
