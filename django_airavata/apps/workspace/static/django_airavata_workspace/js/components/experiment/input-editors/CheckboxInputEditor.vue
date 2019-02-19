@@ -13,7 +13,7 @@ const CONFIG_OPTION_TEXT_KEY = 'text';
 const CONFIG_OPTION_VALUE_KEY = 'value';
 
 export default {
-    name: 'radio-button-input-editor',
+    name: 'checkbox-input-editor',
     mixins: [InputEditorMixin],
     props: {
         value: {
