@@ -695,15 +695,17 @@ class LocalDataMovementView(APIView):
                 instance=data_movement).data)
 
 
-class DataProductViewSet(mixins.RetrieveModelMixin,
-                         GenericAPIBackedViewSet):
-    serializer_class = serializers.DataProductSerializer
-    lookup_field = 'product_uri'
-    lookup_value_regex = '.*'
+class DataProductView(APIView):
 
-    def get_instance(self, lookup_value):
-        return self.request.airavata_client.getDataProduct(
-            self.request.authz_token, lookup_value)
+    serializer_class = serializers.DataProductSerializer
+
+    def get(self, request, format=None):
+        data_product_uri = request.query_params['product-uri']
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, data_product_uri)
+        serializer = self.serializer_class(
+            data_product, context={'request': request})
+        return Response(serializer.data)
 
 
 @login_required

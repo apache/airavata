@@ -450,10 +450,6 @@ class DataProductSerializer(
     lastModifiedTime = UTCPosixTimestampDateTimeField()
     replicaLocations = DataReplicaLocationSerializer(many=True)
     downloadURL = serializers.SerializerMethodField()
-    url = FullyEncodedHyperlinkedIdentityField(
-        view_name='django_airavata_api:data-product-detail',
-        lookup_field='productUri',
-        lookup_url_kwarg='product_uri')
 
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""

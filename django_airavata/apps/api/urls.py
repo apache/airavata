@@ -41,15 +41,14 @@ router.register(r'storage-preferences',
                 views.StoragePreferenceViewSet,
                 base_name='storage-preference')
 router.register(r'parsers', views.ParserViewSet, base_name='parser')
-router.register(r'data-products',
-                views.DataProductViewSet,
-                base_name='data-product')
 
 app_name = 'django_airavata_api'
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^upload$', views.upload_input_file, name='upload_input_file'),
     url(r'^download', views.download_file, name='download_file'),
+    url(r'^data-products', views.DataProductView.as_view(),
+        name='data-products-detail'),
     url(r'^job/submission/local', views.LocalJobSubmissionView.as_view(),
         name="local_job_submission"),
     url(r'^job/submission/cloud', views.CloudJobSubmissionView.as_view(),

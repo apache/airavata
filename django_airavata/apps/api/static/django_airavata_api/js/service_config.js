@@ -21,55 +21,45 @@ examples:
 
 Generating Services based on the API view set
 {
-serviceName:{
-url:'/example/api',
-viewSet:true,
-pagination: true/false,
-modelClass: ModelClass,
-}
+  serviceName:{
+    url:'/example/api',
+    viewSet:true, // or array of supported view set method names
+    pagination: true/false,
+    modelClass: ModelClass,
+  }
 }
 Normal service configuration:
 {
-serviceName:{
-serviceAction1:{
-url:'/example/api/<look_up>',  # the <look_up> implies a path parameter lok_up
-requestType:'post',
-bodyParams:[...] # body parameter names for json parameter if body params id=s a list of array else an object with the param name for the body object
-queryParams:[] # list query param names/ query param name to param name mapping
-pagination:true # whether to treat the response as a paginated response
-
-
-}
-}
+  serviceName:{
+    methods: {
+      serviceAction1:{
+        url:'/example/api/<look_up>',  # the <look_up> implies a path parameter lok_up, defaults to service's url
+        requestType:'post', # defaults to "get"
+        bodyParams:[...] # body parameter names for json parameter if body
+          params id=s a list of array else an object with the param name for the
+          body object
+        queryParams:[], # list query param names/ query param name to param
+          name mapping, defaults to service's queryParams
+        pagination:true, # whether to treat the response as a paginated
+          response, defaults to service's pagination
+        modelClass: ModelClass
+      }
+    }
+  }
 }
  */
 
 export default {
   ApplicationDeployments: {
     url: "/api/application-deployments",
-    viewSet: [
-      {
-        name: "list"
-      },
-      {
-        name: "create"
-      },
-      {
-        name: "retrieve"
-      },
-      {
-        name: "update"
-      },
-      {
-        name: "delete"
-      },
-      {
-        name: "getQueues",
+    viewSet: true,
+    methods: {
+      getQueues: {
         url: "/api/application-deployments/<lookup>/queues/",
         requestType: "get",
         modelClass: BatchQueue
       }
-    ],
+    },
     queryParams: ["appModuleId", "groupResourceProfileId"],
     modelClass: ApplicationDeploymentDescription
   },
@@ -80,88 +70,56 @@ export default {
   },
   ApplicationModules: {
     url: "/api/applications",
-    viewSet: [
-      {
-        name: "list"
-      },
-      {
-        name: "create"
-      },
-      {
-        name: "retrieve"
-      },
-      {
-        name: "update"
-      },
-      {
-        name: "delete"
-      },
-      {
-        name: "getApplicationInterface",
+    viewSet: true,
+    methods: {
+      getApplicationInterface: {
         url: "/api/applications/<lookup>/application_interface/",
         requestType: "get",
         modelClass: ApplicationInterfaceDefinition
       },
-      {
-        name: "getApplicationDeployments",
+      getApplicationDeployments: {
         url: "/api/applications/<lookup>/application_deployments/",
         requestType: "get",
         modelClass: ApplicationDeploymentDescription
       },
-      {
-        name: "listAll",
+      listAll: {
         url: "/api/applications/list_all/",
         requestType: "get",
         modelClass: ApplicationModule
       }
-    ],
+    },
     modelClass: ApplicationModule
   },
   ComputeResources: {
     url: "/api/compute-resources",
-    viewSet: [
-      {
-        name: "retrieve"
-      },
-      {
-        name: "names",
+    viewSet: ["retrieve"],
+    methods: {
+      names: {
         url: "/api/compute-resources/all_names/",
         requestType: "get"
       },
-      {
-        name: "namesList",
+      namesList: {
         url: "/api/compute-resources/all_names_list/",
         requestType: "get"
       }
-    ],
+    },
     modelClass: ComputeResourceDescription
   },
   CredentialSummaries: {
     url: "/api/credential-summaries/",
-    viewSet: [
-      {
-        name: "list"
-      },
-      {
-        name: "retrieve"
-      },
-      {
-        name: "delete"
-      },
-      {
-        name: "allSSHCredentials",
+    viewSet: ["list", "retrieve", "delete"],
+    methods: {
+      allSSHCredentials: {
         url: "/api/credential-summaries/ssh/",
         requestType: "get",
         modelClass: CredentialSummary
       },
-      {
-        name: "allPasswordCredentials",
+      allPasswordCredentials: {
         url: "/api/credential-summaries/password/",
         requestType: "get",
         modelClass: CredentialSummary
       },
-      {
-        name: "createSSH",
+      createSSH: {
         url: "/api/credential-summaries/create_ssh/",
         requestType: "post",
         bodyParams: {
@@ -169,8 +127,7 @@ export default {
         },
         modelClass: CredentialSummary
       },
-      {
-        name: "createPassword",
+      createPassword: {
         url: "/api/credential-summaries/create_password/",
         requestType: "post",
         bodyParams: {
@@ -178,49 +135,36 @@ export default {
         },
         modelClass: CredentialSummary
       }
-    ],
+    },
     modelClass: CredentialSummary
   },
   DataProducts: {
     url: "/api/data-products/",
-    viewSet: [
-      {
-        name: "retrieve"
+    methods: {
+      retrieve: {
+        requestType: "get",
+        queryParams: {
+          "lookup": "product-uri"
+        },
+        modelClass: DataProduct
       }
-    ],
-    modelClass: DataProduct
+    }
   },
   Experiments: {
     url: "/api/experiments/",
-    viewSet: [
-      {
-        name: "list"
-      },
-      {
-        name: "create"
-      },
-      {
-        name: "retrieve"
-      },
-      {
-        name: "update"
-      },
-      {
-        name: "delete"
-      },
-      {
-        name: "launch",
+    viewSet: true,
+    methods: {
+      launch: {
         url: "/api/experiments/<lookup>/launch/",
         requestType: "post",
         modelClass: Experiment
       },
-      {
-        name: "clone",
+      clone: {
         url: "/api/experiments/<lookup>/clone/",
         requestType: "post",
         modelClass: Experiment
       }
-    ],
+    },
     modelClass: Experiment
   },
   ExperimentSearch: {
@@ -237,29 +181,14 @@ export default {
   },
   GatewayResourceProfiles: {
     url: "/api/gateway-resource-profiles/",
-    viewSet: [
-      {
-        name: "list"
-      },
-      {
-        name: "create"
-      },
-      {
-        name: "retrieve"
-      },
-      {
-        name: "update"
-      },
-      {
-        name: "delete"
-      },
-      {
-        name: "current",
+    viewSet: true,
+    methods: {
+      current: {
         url: "/api/gateway-resource-profile/",
         requestType: "get",
         modelClass: GatewayResourceProfile
       }
-    ],
+    },
     modelClass: GatewayResourceProfile
   },
   GroupResourceProfiles: {
@@ -282,15 +211,9 @@ export default {
   },
   SharedEntities: {
     url: "/api/shared-entities",
-    viewSet: [
-      {
-        name: "retrieve"
-      },
-      {
-        name: "update"
-      },
-      {
-        name: "merge",
+    viewSet: ["retrieve", "update"],
+    methods: {
+      merge: {
         url: "/api/shared-entities/<lookup>/merge/",
         bodyParams: {
           name: "data"
@@ -298,7 +221,7 @@ export default {
         requestType: "put",
         modelClass: SharedEntity
       }
-    ],
+    },
     modelClass: SharedEntity
   },
   StoragePreferences: {
@@ -308,25 +231,18 @@ export default {
   },
   StorageResources: {
     url: "/api/storage-resources",
-    viewSet: [
-      {
-        name: "retrieve"
-      },
-      {
-        name: "names",
+    viewSet: ["retrieve"],
+    methods: {
+      names: {
         url: "/api/storage-resources/all_names/",
         requestType: "get"
       }
-    ],
+    },
     modelClass: StorageResourceDescription
   },
   UserProfiles: {
     url: "/api/user-profiles",
-    viewSet: [
-      {
-        name: "list"
-      }
-    ],
+    viewSet: ["list"],
     modelClass: UserProfile
   }
 };
