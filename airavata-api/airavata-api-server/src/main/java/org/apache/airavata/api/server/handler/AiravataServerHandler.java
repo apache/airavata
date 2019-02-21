@@ -2664,6 +2664,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
+        } catch (AuthorizationException checkedException) {
+            logger.error("Error while retrieving application deployments...", checkedException);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw checkedException;
         } catch (Exception e) {
             logger.error("Error while retrieving application deployments...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -5365,6 +5370,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return groupResourceProfile;
+        } catch (AuthorizationException checkedException) {
+            logger.error("Error while retrieving group resource profile. groupResourceProfileId: " + groupResourceProfileId, checkedException);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw checkedException;
         } catch (Exception e) {
             String msg = "Error retrieving group resource profile. groupResourceProfileId: "+ groupResourceProfileId;
             logger.error(msg, e);
