@@ -24,7 +24,7 @@ use experiment_catalog;
 alter table EXPERIMENT_INPUT modify METADATA VARCHAR(4096);
 
 -- AIRAVATA-2820
-alter table TASK drop column TASK_INTERNAL_STORE;
+alter table TASK drop column IF EXISTS TASK_INTERNAL_STORE;
 
 -- AIRAVATA-2827: OpenJPA 2.4.3 upgrade, convert BIT -> TINYINT(1)
 alter table PROCESS modify column USE_USER_CR_PREF tinyint(1);
