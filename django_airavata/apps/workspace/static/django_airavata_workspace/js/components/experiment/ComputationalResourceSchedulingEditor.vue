@@ -10,7 +10,7 @@
                         :options="computeResourceOptions" required
                         @change="computeResourceChanged"
                         :state="getValidationState('resourceHostId')"
-                        :disabled="loading">
+                        :disabled="!computeResourceOptions">
                         <template slot="first">
                             <option :value="null" disabled>Select a Compute Resource</option>
                         </template>
@@ -35,7 +35,7 @@
 
 <script>
 import QueueSettingsEditor from './QueueSettingsEditor.vue'
-import {models, services} from 'django-airavata-api'
+import {errors, models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
 export default {
@@ -61,8 +61,6 @@ export default {
             applicationDeployments: [],
             selectedGroupResourceProfileData: null,
             resourceHostId: this.value.resourceHostId,
-            // TODO: replace this with Loading spinner, better mechanism
-            loadingCount: 0,
         }
     },
     components: {
@@ -83,9 +81,6 @@ export default {
             });
             computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
             return computeResourceOptions;
-        },
-        loading: function() {
-            return this.loadingCount > 0;
         },
         selectedComputeResourcePolicy: function() {
             if (this.selectedGroupResourceProfileData === null) {
@@ -124,26 +119,36 @@ export default {
             this.emitValueChanged();
         },
         loadApplicationDeployments: function(appModuleId, groupResourceProfileId) {
-            this.loadingCount++;
-            services.ServiceFactory.service("ApplicationDeployments").list({appModuleId: appModuleId, groupResourceProfileId: groupResourceProfileId})
+            services.ApplicationDeploymentService.list({appModuleId: appModuleId, groupResourceProfileId: groupResourceProfileId}, {ignoreErrors: true})
                 .then(applicationDeployments => {
                     this.applicationDeployments = applicationDeployments;
                 })
-                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
+                .catch(error => {
+                  // Ignore unauthorized errors, force user to pick another GroupResourceProfile
+                  if (!errors.ErrorUtils.isUnauthorizedError(error)) {
+                    return Promise.reject(error);
+                  }
+                })
+                // Report all other error types
+                .catch(apiUtils.FetchUtils.reportError);
         },
         loadGroupResourceProfile: function() {
-            this.loadingCount++;
-            services.GroupResourceProfileService.retrieve({lookup: this.groupResourceProfileId})
+            services.GroupResourceProfileService.retrieve({lookup: this.groupResourceProfileId}, {ignoreErrors: true})
                 .then(groupResourceProfile => {
                     this.selectedGroupResourceProfileData = groupResourceProfile;
                 })
-                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
+                .catch(error => {
+                  // Ignore unauthorized errors, force user to pick a different GroupResourceProfile
+                  if (!errors.ErrorUtils.isUnauthorizedError(error)) {
+                    return Promise.reject(error);
+                  }
+                })
+                // Report all other error types
+                .catch(apiUtils.FetchUtils.reportError);
         },
         loadComputeResourceNames: function() {
-            this.loadingCount++;
-            services.ServiceFactory.service("ComputeResources").names()
+            services.ComputeResourceService.names()
                 .then(computeResourceNames => this.computeResources = computeResourceNames)
-                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
         queueSettingsChanged: function() {
             // QueueSettingsEditor updates the full

@@ -62,7 +62,7 @@ export default {
             services.GroupResourceProfileService.list()
                 .then(groupResourceProfiles => {
                     this.groupResourceProfiles = groupResourceProfiles;
-                    if (!this.value && this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
+                    if ((!this.value || !this.selectedValueInGroupResourceProfileList(groupResourceProfiles)) && this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
                         // Automatically pick the first one for now if none selected
                         // TODO: automatically select the last one user selected
                         this.groupResourceProfileId = this.groupResourceProfiles[0].groupResourceProfileId;
@@ -78,6 +78,9 @@ export default {
         emitValueChanged: function() {
             this.$emit('input', this.groupResourceProfileId);
         },
+        selectedValueInGroupResourceProfileList(groupResourceProfiles) {
+          return groupResourceProfiles.map(grp => grp.groupResourceProfileId).indexOf(this.value) >= 0;
+        }
     },
     watch: {
     }

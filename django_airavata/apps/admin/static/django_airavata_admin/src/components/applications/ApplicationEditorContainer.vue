@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { errors, models, services } from "django-airavata-api";
+import { errors, models, services, utils as apiUtils } from "django-airavata-api";
 import { components, notifications } from "django-airavata-common-ui";
 
 export default {
@@ -212,7 +212,7 @@ export default {
             throw error;
           }
         })
-        .catch(errors.UnhandledErrorDispatcher.reportUnhandledError);
+        .catch(apiUtils.FetchUtils.reportError);
     },
     createApplicationInterface(appInterface) {
       return services.ApplicationInterfaceService.create({
