@@ -10,7 +10,7 @@
                         :options="computeResourceOptions" required
                         @change="computeResourceChanged"
                         :state="getValidationState('resourceHostId')"
-                        :disabled="!computeResourceOptions">
+                        :disabled="!computeResourceOptions || computeResourceOptions.length === 0">
                         <template slot="first">
                             <option :value="null" disabled>Select a Compute Resource</option>
                         </template>
@@ -174,6 +174,7 @@ export default {
             // computeResourceOptions, reset it to null
             if (this.resourceHostId !== null && !newOptions.find(opt => opt.value === this.resourceHostId)) {
                 this.resourceHostId = null;
+                this.computeResourceChanged(null);
             }
         },
         groupResourceProfileId: function(newGroupResourceProfileId) {
