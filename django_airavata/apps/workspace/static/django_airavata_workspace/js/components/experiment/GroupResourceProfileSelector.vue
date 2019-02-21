@@ -62,8 +62,8 @@ export default {
             services.GroupResourceProfileService.list()
                 .then(groupResourceProfiles => {
                     this.groupResourceProfiles = groupResourceProfiles;
-                    if (this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
-                        // Automatically pick the first one for now
+                    if (!this.value && this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
+                        // Automatically pick the first one for now if none selected
                         // TODO: automatically select the last one user selected
                         this.groupResourceProfileId = this.groupResourceProfiles[0].groupResourceProfileId;
                         this.emitValueChanged();
