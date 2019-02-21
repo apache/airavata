@@ -24,7 +24,7 @@
         />
         <router-view name="deployments" v-if="appDeployments" :deployments="appDeployments" @new="createNewDeployment" @delete="deleteApplicationDeployment"
         />
-        <router-view name="deployment" v-if="currentDeployment" v-model="currentDeployment" :shared-entity="currentDeploymentSharedEntity"
+        <router-view name="deployment" v-if="currentDeployment && currentDeploymentSharedEntity" v-model="currentDeployment" :shared-entity="currentDeploymentSharedEntity"
           @sharing-changed="deploymentSharingChanged" @input="currentDeploymentChanged" />
       </div>
     </div>

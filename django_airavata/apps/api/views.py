@@ -54,9 +54,10 @@ class GroupViewSet(APIBackedViewSet):
 
         class GroupResultsIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
-                groups = view.request.profile_service['group_manager'].getGroups(
-                    view.authz_token)
-                return groups[offset:offset + limit] if groups else []
+                group_manager = view.request.profile_service['group_manager']
+                groups = group_manager.getGroups(view.authz_token)
+                end = offset + limit if limit > 0 else len(groups)
+                return groups[offset:end] if groups else []
 
         return GroupResultsIterator()
 
