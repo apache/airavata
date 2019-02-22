@@ -50,4 +50,11 @@ export default class Group extends BaseModel {
     }
     return null;
   }
+
+  /**
+   * Return true if group is either the "Gateway Admins" or the "Readonly Admins" group.
+   */
+  get isAdminGroup() {
+    return this.isReadOnlyGatewayAdminsGroup || this.isGatewayAdminsGroup;
+  }
 }

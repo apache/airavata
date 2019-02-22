@@ -1,8 +1,18 @@
 <template>
   <div>
-    <b-form-group label="Search for users/groups" labelFor="user-groups-autocomplete">
-      <autocomplete-text-input id="user-groups-autocomplete" :suggestions="usersAndGroupsSuggestions" @selected="suggestionSelected">
-        <template slot="suggestion" slot-scope="slotProps">
+    <b-form-group
+      label="Search for users/groups"
+      labelFor="user-groups-autocomplete"
+    >
+      <autocomplete-text-input
+        id="user-groups-autocomplete"
+        :suggestions="usersAndGroupsSuggestions"
+        @selected="suggestionSelected"
+      >
+        <template
+          slot="suggestion"
+          slot-scope="slotProps"
+        >
           <span v-if="slotProps.suggestion.type == 'group'">
             <i class="fa fa-users"></i> {{ slotProps.suggestion.name }}
           </span>
@@ -15,32 +25,82 @@
       </autocomplete-text-input>
     </b-form-group>
     <h5 v-if="totalCount > 0">Currently Shared With</h5>
-    <b-table v-if="usersCount > 0" id="modal-user-table" hover :items="data.userPermissions" :fields="userFields">
-      <template slot="name" slot-scope="data">
+    <b-table
+      v-if="usersCount > 0"
+      id="modal-user-table"
+      hover
+      :items="sortedUserPermissions"
+      :fields="userFields"
+    >
+      <template
+        slot="name"
+        slot-scope="data"
+      >
         <span :title="data.item.user.userId">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
       </template>
-      <template slot="email" slot-scope="data">
+      <template
+        slot="email"
+        slot-scope="data"
+      >
         {{data.item.user.email}}
       </template>
-      <template slot="permission" slot-scope="data">
-        <b-form-select v-model="data.item.permissionType" :options="permissionOptions" />
+      <template
+        slot="permission"
+        slot-scope="data"
+      >
+        <b-form-select
+          v-model="data.item.permissionType"
+          :options="permissionOptions"
+        />
       </template>
-      <template slot="remove" slot-scope="data">
+      <template
+        slot="remove"
+        slot-scope="data"
+      >
         <b-link @click="removeUser(data.item.user)">
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
     </b-table>
-    <b-table v-if="groupsCount > 0" id="modal-group-table" hover :items="filteredGroupPermissions" :fields="groupFields">
-      <template slot="name" slot-scope="data">
-        {{data.item.group.name}}
+    <b-table
+      v-if="groupsCount > 0"
+      id="modal-group-table"
+      hover
+      :items="sortedGroupPermissions"
+      :fields="groupFields"
+    >
+      <template
+        slot="name"
+        slot-scope="data"
+      >
+        <span v-if="editingAllowed(data.item.group)">{{data.item.group.name}}</span>
+        <span
+          v-else
+          class="text-muted font-italic"
+        >{{data.item.group.name}}</span>
       </template>
-      <template slot="permission" slot-scope="data">
-        <b-form-select v-if="editingAllowed(data.item.group)" v-model="data.item.permissionType" :options="permissionOptions" />
-        <span v-else>{{ data.item.permissionType.name }}</span>
+      <template
+        slot="permission"
+        slot-scope="data"
+      >
+        <b-form-select
+          v-if="editingAllowed(data.item.group)"
+          v-model="data.item.permissionType"
+          :options="permissionOptions"
+        />
+        <span
+          v-else
+          class="text-muted font-italic"
+        >{{ data.item.permissionType.name }}</span>
       </template>
-      <template slot="remove" slot-scope="data">
-        <b-link v-if="editingAllowed(data.item.group)" @click="removeGroup(data.item.group)">
+      <template
+        slot="remove"
+        slot-scope="data"
+      >
+        <b-link
+          v-if="editingAllowed(data.item.group)"
+          @click="removeGroup(data.item.group)"
+        >
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -49,7 +109,7 @@
 </template>
 
 <script>
-import { models } from "django-airavata-api";
+import { models, utils } from "django-airavata-api";
 import AutocompleteTextInput from "./AutocompleteTextInput.vue";
 import VModelMixin from "../mixins/VModelMixin";
 
@@ -79,8 +139,8 @@ export default {
   computed: {
     userFields: function() {
       return [
-        { key: "name", label: "User Name" },
-        { key: "email", label: "Email" },
+        { key: "name", label: "User Name", class: "text-truncate" },
+        { key: "email", label: "Email", class: "text-truncate" },
         { key: "permission", label: "Permission" },
         { key: "remove", label: "Remove" }
       ];
@@ -97,10 +157,32 @@ export default {
         ? this.data.userPermissions.length
         : 0;
     },
+    sortedUserPermissions: function() {
+      const userPermsCopy = this.data.userPermissions
+        ? this.data.userPermissions.slice()
+        : [];
+      return utils.StringUtils.sortIgnoreCase(
+        userPermsCopy,
+        userPerm => userPerm.user.lastName + ", " + userPerm.user.firstName
+      );
+    },
     filteredGroupPermissions: function() {
       return this.data && this.data.groupPermissions
         ? this.data.groupPermissions
         : [];
+    },
+    sortedGroupPermissions: function() {
+      const groupPermsCopy = this.filteredGroupPermissions.slice();
+      // Sort by name, then admin groups should come last if editing is disallowed
+      utils.StringUtils.sortIgnoreCase(groupPermsCopy, g => g.group.name);
+      if (this.disallowEditingAdminGroups) {
+        groupPermsCopy.sort((a, b) => {
+          if (a.group.isAdminGroup && !b.group.isAdminGroup) {
+            return 1;
+          }
+        });
+      }
+      return groupPermsCopy;
     },
     groupsCount: function() {
       return this.filteredGroupPermissions.length;
@@ -126,6 +208,14 @@ export default {
       );
       return this.groups
         .filter(group => currentGroupIds.indexOf(group.id) < 0)
+        .filter(group => {
+          // Filter out admin groups from options
+          if (this.disallowEditingAdminGroups) {
+            return !group.isAdminGroup;
+          } else {
+            return true;
+          }
+        })
         .map(group => {
           return {
             id: group.id,
@@ -189,12 +279,14 @@ export default {
      * should not be allowed.
      */
     editingAllowed(group) {
-      return (
-        !this.disallowEditingAdminGroups ||
-        !(group.isGatewayAdminsGroup || group.isReadOnlyGatewayAdminsGroup)
-      );
+      return !this.disallowEditingAdminGroups || !group.isAdminGroup;
     }
   }
 };
 </script>
 
+<style scoped>
+#modal-user-table {
+  table-layout: fixed;
+}
+</style>

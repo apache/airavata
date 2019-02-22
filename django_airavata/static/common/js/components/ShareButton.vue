@@ -68,9 +68,11 @@ export default {
         : null;
     },
     filteredGroupPermissions: function() {
-      return this.localSharedEntity && this.localSharedEntity.groupPermissions
-        ? this.localSharedEntity.groupPermissions
-        : [];
+      if (this.localSharedEntity && this.localSharedEntity.groupPermissions) {
+        return this.disallowEditingAdminGroups ? this.localSharedEntity.nonAdminGroupPermissions : this.localSharedEntity.groupPermissions;
+      } else {
+        return [];
+      }
     },
     groupNames: function() {
       return this.filteredGroupPermissions.map(
@@ -230,5 +232,9 @@ button {
   max-height: 50vh;
   min-height: 300px;
   overflow: auto;
+}
+.share-button >>> .modal-dialog {
+  max-width: 800px;
+  width: 60vw;
 }
 </style>

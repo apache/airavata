@@ -75,4 +75,14 @@ export default class SharedEntity extends BaseModel {
       groupPermission => groupPermission.group.id !== group.id
     );
   }
+
+  get nonAdminGroupPermissions() {
+    if (this.groupPermissions) {
+      return this.groupPermissions.filter(
+        groupPermission => !groupPermission.group.isAdminGroup
+      );
+    } else {
+      return [];
+    }
+  }
 }
