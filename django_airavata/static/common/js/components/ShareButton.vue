@@ -1,5 +1,5 @@
 <template>
-  <div class="share-button">
+  <div class="share-button btn-container">
     <b-button :variant="'outline-primary'" :title="title" :disabled="!shareButtonEnabled" @click="openSharingSettingsModal">
       Share
       <b-badge>{{ totalCount }}</b-badge>
@@ -222,6 +222,9 @@ export default {
 <style scoped>
 button {
   background-color: white;
+}
+.share-button {
+  display: inline-block;
 }
 .share-button >>> .modal-share-settings .modal-body {
   max-height: 50vh;

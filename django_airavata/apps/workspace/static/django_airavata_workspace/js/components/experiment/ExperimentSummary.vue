@@ -7,6 +7,7 @@
         </h1>
       </div>
       <div class="col-auto">
+          <share-button :entity-id="experiment.experimentId" />
           <b-link v-if="experiment.isEditable" class="btn btn-primary" :href="editLink">
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
@@ -185,7 +186,8 @@ export default {
   },
   components: {
     DataProductViewer,
-    "clipboard-copy-link": components.ClipboardCopyLink
+    "clipboard-copy-link": components.ClipboardCopyLink,
+    "share-button": components.ShareButton
   },
   computed: {
     creationTime: function() {

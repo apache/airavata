@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <div class="col">
+      <div class="col-auto mr-auto">
         <h1 class="h4 mb-4">
           <div
             v-if="appModule"
@@ -12,6 +12,13 @@
             ></i> {{ appModule.appModuleName }}</div>
           <slot name="title">Experiment Editor</slot>
         </h1>
+      </div>
+      <div class="col-auto">
+        <share-button
+          ref="shareButton"
+          :entity-id="localExperiment.experimentId"
+          :auto-add-default-gateway-users-group="false"
+        />
       </div>
     </div>
     <b-form novalidate>
@@ -139,7 +146,7 @@ import ComputationalResourceSchedulingEditor from "./ComputationalResourceSchedu
 import GroupResourceProfileSelector from "./GroupResourceProfileSelector.vue";
 import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
 import { models, services, utils as apiUtils } from "django-airavata-api";
-import { utils } from "django-airavata-common-ui";
+import { components, utils } from "django-airavata-common-ui";
 
 export default {
   name: "edit-experiment",
@@ -163,7 +170,8 @@ export default {
   components: {
     ComputationalResourceSchedulingEditor,
     GroupResourceProfileSelector,
-    InputEditorContainer
+    InputEditorContainer,
+    "share-button": components.ShareButton
   },
   mounted: function() {
     services.ProjectService.listAll().then(
@@ -217,6 +225,12 @@ export default {
       } else {
         return services.ExperimentService.create({
           data: this.localExperiment
+        }).then(experiment => {
+          // Can't save sharing settings for a new experiment until it has been
+          // created
+          return this.$refs.shareButton
+            .mergeAndSave(experiment.experimentId)
+            .then(() => experiment);
         });
       }
     },

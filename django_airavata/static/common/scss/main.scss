@@ -234,7 +234,13 @@ body {
   opacity: 0;
 }
 
+/**
+ * spacing between buttons. .btn-container is a class applied to a wrapper
+ * around a button that may be a sibling of a .btn or .action-link
+ */
+.btn-container + .btn,
 .btn + .btn,
+.btn-container + .action-link,
 .action-link + .action-link {
   margin-left: .25rem;
 }
