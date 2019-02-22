@@ -224,6 +224,7 @@ export default {
 <style scoped>
 button {
   background-color: white;
+  white-space: nowrap;
 }
 .share-button {
   display: inline-block;
