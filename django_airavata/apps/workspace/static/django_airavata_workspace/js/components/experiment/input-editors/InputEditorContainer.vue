@@ -20,7 +20,7 @@ import StringInputEditor from './StringInputEditor.vue'
 import TextareaInputEditor from './TextareaInputEditor.vue'
 
 import {models} from 'django-airavata-api'
-import { mixins } from 'django-airavata-common-ui';
+import { mixins, utils } from 'django-airavata-common-ui';
 
 export default {
     name: 'input-editor-container',
@@ -70,7 +70,7 @@ export default {
             return 'string-input-editor';
         },
         inputEditorComponentId: function() {
-            return this.experimentInput.name;
+            return utils.sanitizeHTMLId(this.experimentInput.name);
         },
         validationFeedback: function() {
             // Only display validation feedback after the user has provided
