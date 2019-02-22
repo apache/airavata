@@ -384,6 +384,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         URL url = new URL(urlToRead);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        conn.setDoInput(true);
         if (token != null) {
             String bearerAuth = "Bearer " + token;
             conn.setRequestProperty("Authorization", bearerAuth);

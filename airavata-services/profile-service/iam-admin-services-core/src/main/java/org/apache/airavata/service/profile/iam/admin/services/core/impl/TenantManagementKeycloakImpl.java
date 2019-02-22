@@ -22,6 +22,7 @@
 package org.apache.airavata.service.profile.iam.admin.services.core.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.user.Status;
@@ -45,8 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,18 +94,36 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static KeyStore loadKeyStore() {
 
-        FileInputStream fis = null;
+        InputStream is = null;
         try {
-            fis = new java.io.FileInputStream(ServerSettings.getTrustStorePath());
+
+            String trustStorePath =  ServerSettings.getTrustStorePath();
+            File trustStoreFile = new File(trustStorePath);
+
+            if (trustStoreFile.exists()) {
+                logger.debug("Loading trust store file from path " + trustStorePath);
+                is = new FileInputStream(trustStorePath);
+            } else {
+                logger.debug("Trying to load trust store file form class path " + trustStorePath);
+                is = SecurityUtil.class.getClassLoader().getResourceAsStream(trustStorePath);
+                if (is != null) {
+                    logger.debug("Trust store file was loaded form class path " + trustStorePath);
+                }
+            }
+
+            if (is == null) {
+                throw new RuntimeException("Could not find a trust store file in path " + trustStorePath);
+            }
+
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(fis, ServerSettings.getTrustStorePassword().toCharArray());
+            ks.load(is, ServerSettings.getTrustStorePassword().toCharArray());
             return ks;
         } catch (Exception e) {
             throw new RuntimeException("Failed to load trust store KeyStore instance", e);
         } finally {
-            if (fis != null) {
+            if (is != null) {
                 try {
-                    fis.close();
+                    is.close();
                 } catch (IOException e) {
                     logger.error("Failed to close trust store FileInputStream", e);
                 }

@@ -63,6 +63,8 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
                 Gateway gateway = new Gateway();
                 gateway.setGatewayId(defaultGatewayId);
                 gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
+                gateway.setOauthClientId(ServerSettings.getSetting("default.registry.oauth.client.id"));
+                gateway.setOauthClientSecret(ServerSettings.getSetting("default.registry.oauth.client.secret"));
                 gatewayRepository.addGateway(gateway);
             }
 
