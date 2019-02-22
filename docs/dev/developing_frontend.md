@@ -47,12 +47,13 @@ a Vue template since we don't include the template compiler in the runtime. The
 entry point will generally have the following structure:
 
 ```javascript
-import { entry } from "django-airavata-common-ui";
+import { components, entry } from "django-airavata-common-ui";
 import SomethingListContainer from "./containers/SomethingListContainer.vue";
 
 entry(Vue => {
   new Vue({
-    render: h => h(SomethingListContainer)
+    render: h =>
+      h("div", [h(components.NotificationsDisplay), h(SomethingListContainer)])
   }).$mount("#something-list");
 });
 ```
@@ -127,17 +128,20 @@ In the entry point, load the data attribute in the `mounted()` hook and pass to
 the Vue.js app container via a property:
 
 ```javascript
-import { entry } from "django-airavata-common-ui";
+import { components, entry } from "django-airavata-common-ui";
 import ViewSomethingContainer from "./containers/ViewSomethingContainer.vue";
 
 entry(Vue => {
   new Vue({
     render(h) {
-      return h(ViewSomethingContainer, {
-        props: {
-          somethingId: this.somethingId
-        }
-      });
+      return h("div", [
+        h(components.NotificationsDisplay),
+        h(ViewSomethingContainer, {
+          props: {
+            somethingId: this.somethingId
+          }
+        })
+      ]);
     },
     data() {
       return {
