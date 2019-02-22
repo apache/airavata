@@ -23,7 +23,9 @@ import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
 
 public class AppCatalogDBInitConfig implements DBInitConfig {
 
@@ -53,6 +55,7 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
     public void postInit() {
 
         GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+        UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
 
         try {
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
@@ -62,6 +65,15 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to create default gateway for app catalog", e);
+        }
+
+        try {
+            UserResourceProfile userResourceProfile = new UserResourceProfile();
+            userResourceProfile.setGatewayID(ServerSettings.getDefaultUserGateway());
+            userResourceProfile.setUserId(ServerSettings.getDefaultUser());
+            userResourceProfileRepository.addUserResourceProfile(userResourceProfile);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create default user resource profile for app catalog", e);
         }
     }
 

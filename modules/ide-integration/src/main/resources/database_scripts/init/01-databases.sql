@@ -1,0 +1,7 @@
+CREATE DATABASE IF NOT EXISTS `experiment_catalog`;
+CREATE DATABASE IF NOT EXISTS `app_catalog`;
+CREATE DATABASE IF NOT EXISTS `workflow_catalog`;
+CREATE DATABASE IF NOT EXISTS `replica_catalog`;
+CREATE DATABASE IF NOT EXISTS `credential_store`;
+CREATE DATABASE IF NOT EXISTS `sharing_catalog`;
+CREATE DATABASE IF NOT EXISTS `profile_service`;

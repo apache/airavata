@@ -770,6 +770,7 @@
                 <module>modules/airavata-helix</module>
                 <module>modules/job-monitor</module>
                 <module>tools</module>
+                <module>modules/ide-integration</module>
             </modules>
         </profile>
         <profile>
