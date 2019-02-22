@@ -48,3 +48,5 @@ export default class OutputDataObjectType extends BaseModel {
     return this._key;
   }
 }
+
+OutputDataObjectType.VALID_DATA_TYPES = DataType.values

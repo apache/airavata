@@ -90,7 +90,7 @@ export default {
   },
   computed: {
     inputTypeOptions() {
-      return models.DataType.values.map(dataType => {
+      return models.InputDataObjectType.VALID_DATA_TYPES.map(dataType => {
         return {
           value: dataType,
           text: dataType.name

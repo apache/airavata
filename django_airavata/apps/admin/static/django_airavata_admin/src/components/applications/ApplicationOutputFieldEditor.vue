@@ -53,7 +53,7 @@ export default {
   },
   computed: {
     outputTypeOptions() {
-      return models.DataType.values.map(dataType => {
+      return models.OutputDataObjectType.VALID_DATA_TYPES.map(dataType => {
         return {
           value: dataType,
           text: dataType.name
