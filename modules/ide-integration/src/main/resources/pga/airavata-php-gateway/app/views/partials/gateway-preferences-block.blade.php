@@ -27,14 +27,26 @@
                                 <label class="control-label col-md-12">{{ Session::get('theme') }} Credential Store Token</label>
                                 <div class="col-md-9">
                                     <select class="form-control gateway-credential-store-token" id="gateway-credential-store-token" name="resourceSpecificCredentialStoreToken"  data-gpid="{{$gp->gatewayId}}" >
+                                        <option value="">Select a Credential Token from Store</option>
                                         @if( isset( $gp->profile->credentialStoreToken) )
-                                        @foreach( $tokens as $token => $publicKey)
-                                            <option value="{{$token}}" @if( $token == $gp->profile->credentialStoreToken) selected @endif>{{$token}}</option>
+                                        @foreach( $tokens as $val)
+                                            <option value="{{$val->token}}" @if( $val->token == $gp->profile->credentialStoreToken) selected @endif>
+                                                @if($val->description)
+                                                    {{{$val->description}}}
+                                                @else
+                                                    NO DESCRIPTION: ({{{$val->token}}})
+                                                @endif
+                                            </option>
                                         @endforeach
                                         @else
-                                        <option value="">Select a Credential Token from Store</option>
-                                        @foreach( $tokens as $token => $publicKey)
-                                            <option value="{{$token}}">{{$token}}</option>
+                                        @foreach( $tokens as $val)
+                                            <option value="{{$val->token}}">
+                                                @if($val->description)
+                                                    {{{$val->description}}}
+                                                @else
+                                                    NO DESCRIPTION: ({{{$val->token}}})
+                                                @endif
+                                            </option>
                                         @endforeach
                                         @endif
                                         <option value="">DO-NO-SET</option>

@@ -34,6 +34,8 @@ Route::get("callback-url", "AccountController@oauthCallback");
 
 Route::get("logout", "AccountController@logout");
 
+Route::post("api-login", "AccountController@apiLoginSubmit");
+
 Route::get("forgot-password", "AccountController@forgotPassword");
 
 Route::get("reset-password", "AccountController@resetPassword");

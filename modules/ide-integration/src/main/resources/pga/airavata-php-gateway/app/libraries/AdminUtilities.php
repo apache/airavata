@@ -4,7 +4,7 @@ use Airavata\Model\Workspace\Gateway;
 use Airavata\Model\Workspace\GatewayApprovalStatus;
 use Airavata\Model\Workspace\Notification;
 use Airavata\Model\Workspace\NotificationPriority;
-use Airavata\Model\Credential\Store\CredentialOwnerType;
+use Airavata\Model\Credential\Store\SummaryType;
 use Illuminate\Support\Facades\Log;
 
 class AdminUtilities
@@ -310,42 +310,41 @@ class AdminUtilities
     }
 
     public static function create_ssh_token_for_gateway($description) {
-        return Airavata::generateAndRegisterSSHKeys(
-            Session::get('authz-token'), Session::get("gateway_id"), Session::get("username"), $description, CredentialOwnerType::GATEWAY);
+        $token = Airavata::generateAndRegisterSSHKeys(Session::get('authz-token'), $description);
     }
 
     public static function create_ssh_token_for_user($description) {
-        return Airavata::generateAndRegisterSSHKeys(
-            Session::get('authz-token'), Session::get("gateway_id"), Session::get("username"), $description, CredentialOwnerType::USER);
+        return Airavata::generateAndRegisterSSHKeys(Session::get('authz-token'), $description);
     }
 
     public static function create_pwd_token($inputs){
         $username = $inputs['username'];
         $password = $inputs['password'];
         $description = $inputs['description'];
-        return $newToken = Airavata::registerPwdCredential( Session::get('authz-token'), Session::get("gateway_id"),
-            Session::get("username"), $username, $password, $description);
+        return $newToken = Airavata::registerPwdCredential( Session::get('authz-token'),
+            $username, $password, $description);
 
     }
 
-    public static function get_all_ssh_tokens(){
-        return Airavata::getAllGatewaySSHPubKeys( Session::get('authz-token'), Session::get("gateway_id") );
+    public static function get_all_ssh_tokens_with_description(){
+        return Airavata::getAllCredentialSummaries( Session::get('authz-token'), "SSH");
     }
 
     public static function get_all_pwd_tokens(){
-        return Airavata::getAllGatewayPWDCredentials( Session::get('authz-token'), Session::get("gateway_id") );
-    }
-
-    public static function get_pubkey_from_token( $token){
-        return Airavata::getSSHPubKey( Session::get('authz-token'), $token, Session::get("gateway_id"));
+        $credential_summaries = Airavata::getAllCredentialSummaries(Session::get('authz-token'), SummaryType::PASSWD);
+        $result = [];
+        foreach ($credential_summaries as $credential_summary) {
+            $result[$credential_summary->token] = $credential_summary->description;
+        }
+        return $result;
     }
 
     public static function remove_ssh_token( $token){
-        return Airavata::deleteSSHPubKey( Session::get('authz-token'), $token, Session::get("gateway_id"));
+        return Airavata::deleteSSHPubKey( Session::get('authz-token'), $token);
     }
 
     public static function remove_pwd_token( $token){
-        return Airavata::deletePWDCredential( Session::get('authz-token'), $token, Session::get("gateway_id"));
+        return Airavata::deletePWDCredential( Session::get('authz-token'), $token);
     }
 
     public static function add_or_update_notice( $notifData, $update = false){

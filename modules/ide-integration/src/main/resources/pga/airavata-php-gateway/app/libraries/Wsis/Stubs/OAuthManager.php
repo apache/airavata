@@ -134,7 +134,6 @@ class OAuthManager
         curl_setopt($r, CURLOPT_ENCODING, 1);
 
         curl_setopt($r, CURLOPT_SSL_VERIFYPEER, $this->_verifyPeer);
-        curl_setopt($r, CURLOPT_SSL_VERIFYHOST, $this->_verify_peer);
         if($this->_verifyPeer){
             curl_setopt($r, CURLOPT_CAINFO, $this->_cafilePath);
         }

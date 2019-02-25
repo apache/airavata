@@ -121,7 +121,7 @@ class AdminController extends BaseController {
 		$gatewaysInfo = CRUtilities::getAllGatewayProfilesData();
 		$gateways = $gatewaysInfo["gateways"];
 		usort($gateways, array($this, "cmp"));
-		$tokens = AdminUtilities::get_all_ssh_tokens();
+		$tokens = AdminUtilities::get_all_ssh_tokens_with_description();
 		$pwdTokens = AdminUtilities::get_all_pwd_tokens();
 		$srData = SRUtilities::getEditSRData();
 		$crData = CRUtilities::getEditCRData();
@@ -345,7 +345,7 @@ class AdminController extends BaseController {
 
 	public function credentialStoreView(){
         Session::put("admin-nav", "credential-store");
-        $tokens = AdminUtilities::get_all_ssh_tokens();
+        $tokens = AdminUtilities::get_all_ssh_tokens_with_description();
 		$pwdTokens = AdminUtilities::get_all_pwd_tokens();
         //var_dump( $tokens); exit;
 		return View::make("admin/manage-credentials", array("tokens" => $tokens , "pwdTokens" => $pwdTokens) );
@@ -423,32 +423,32 @@ class AdminController extends BaseController {
     }
 
 	public function createSSH(){
-		$newToken = AdminUtilities::create_ssh_token_for_gateway(null);
-		$pubkey = AdminUtilities::get_pubkey_from_token( $newToken);
-		return Response::json( array( "token" => $newToken, "pubkey" => $pubkey));
-
+        $description = Input::get("description");
+        $newToken = AdminUtilities::create_ssh_token_for_gateway($description);
+        return Redirect::to("admin/dashboard/credential-store")->with("message", "SSH Key was successfully created");
 	}
 
 	public function createPWD(){
 		AdminUtilities::create_pwd_token(Input::all());
-		return $this->credentialStoreView();
+		return Redirect::to("admin/dashboard/credential-store")->with("message", "Password Credential was successfully created");
+
 	}
 
 	public function removeSSH(){
 		$removeToken = Input::get("token");
 		if( AdminUtilities::remove_ssh_token( $removeToken) )
-			return 1;
+            return Redirect::to("admin/dashboard/credential-store")->with("message", "SSH Key was successfully deleted");
 		else
-			return 0;
+            return Redirect::to("admin/dashboard/credential-store")->with("error-message", "Unable to delete SSH Key");
 
 	}
 
 	public function removePWD(){
 		$removeToken = Input::get("token");
 		if( AdminUtilities::remove_pwd_token( $removeToken) )
-			return 1;
+			return Redirect::to("admin/dashboard/credential-store")->with("message", "Password Credential was successfully deleted");
 		else
-			return 0;
+			return Redirect::to("admin/dashboard/credential-store")->with("error-message", "Unable to delete Password Credential"); 
 
 	}
 

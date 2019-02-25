@@ -40,8 +40,14 @@ dmi preference might be needed in the future
     <div class="col-md-9">
         <select class="form-control gateway-credential-store-token" name="resourceSpecificCredentialStoreToken" >
             <option value="">Select a Credential Token from Store</option>
-            @foreach( $tokens as $token => $publicKey)
-                <option value="{{$token}}" @if( isset( $preferences) ) @if( $token == $preferences->resourceSpecificCredentialStoreToken) selected @endif @endif>{{$token}}</option>
+            @foreach( $tokens as $val)
+                <option value="{{$val->token}}" @if( isset( $preferences) ) @if( $val->token == $preferences->resourceSpecificCredentialStoreToken) selected @endif @endif>
+                    @if($val->description)
+                        {{{$val->description}}}
+                    @else
+                        NO DESCRIPTION: ({{{$val->token}}})
+                    @endif
+                </option>
             @endforeach
             <option value="">DO-NO-SET</option>
         </select>
