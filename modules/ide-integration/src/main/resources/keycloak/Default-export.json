@@ -648,7 +648,7 @@
     "enabled" : true,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "9790c8c4-7d9b-4ccc-a820-ca5aac38d2ad",
-    "redirectUris" : [ "http://192.168.99.103:8008" ],
+    "redirectUris" : [ "http://localhost:8008", "http://airavata.host:8008" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
