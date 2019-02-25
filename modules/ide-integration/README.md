@@ -38,28 +38,6 @@
 
 * Go to org.apache.airavata.ide.integration.APIServerStarter class and right click on the editor and click Run option. This will start Airavata server
 
-### Starting PGA
-
-* Go to src/main/resources/pga directory and run 
-
- ```docker-compose up -d```
-
-* Run following command to get the ip address of host machine
-
- This command is for docker containers deployed on Mac OSX  
-
- ``` docker-compose exec pga getent hosts docker.for.mac.host.internal | awk '{ print $1 }'```
-
-* Update the host entries of pga container with above ip address
-
- ```docker-compose exec pga /bin/sh -c "echo '192.168.65.2 airavata.host' >> /etc/hosts"```
-
-* Now PGA should be accessible through http://airavata.host:8008
-
-o
-* Use the username : default-admin and password : 123456 to login to the portal
-* Use the username : default-admin and password : 123456 to login to the portal
-
 ### Starting Job Execution Engine
 
 * Go to org.apache.airavata.ide.integration.JobEngineStarter class and right click on the editor and click Run option. 
@@ -81,6 +59,26 @@ https://support.google.com/accounts/answer/6010255?hl=en
   
 * Go to org.apache.airavata.ide.integration.JobMonitorStarter class and right click on the editor and click Run option.
  
+### Starting PGA
+
+* Go to src/main/resources/pga directory and run 
+
+ ```docker-compose up -d```
+
+* Run following command to get the ip address of host machine
+
+ This command is for docker containers deployed on Mac OSX  
+
+ ``` docker-compose exec pga getent hosts docker.for.mac.host.internal | awk '{ print $1 }'```
+
+* Update the host entries of pga container with above ip address
+
+ ```docker-compose exec pga /bin/sh -c "echo '<host-machine ip> airavata.host' >> /etc/hosts"```
+
+* Now PGA should be accessible through http://airavata.host:8008
+
+* Use the username : default-admin and password : 123456 to login to the portal
+
 ### Stop all components
 
 * For each composer file, run 
