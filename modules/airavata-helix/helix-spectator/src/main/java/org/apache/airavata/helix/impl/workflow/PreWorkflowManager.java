@@ -61,9 +61,13 @@ public class PreWorkflowManager extends WorkflowManager {
         super(ServerSettings.getSetting("pre.workflow.manager.name"));
     }
 
-    private void initAllComponents() throws Exception {
+    public void startServer() throws Exception {
         super.initComponents();
         initLaunchSubscriber();
+    }
+
+    public void stopServer() {
+
     }
 
     private void initLaunchSubscriber() throws AiravataException {
@@ -208,7 +212,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
     public static void main(String[] args) throws Exception {
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-        preWorkflowManager.initAllComponents();
+        preWorkflowManager.startServer();
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {

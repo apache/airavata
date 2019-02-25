@@ -264,29 +264,31 @@ public class PostWorkflowManager extends WorkflowManager {
 
     }
 
-    private void runConsumer() throws ApplicationSettingsException {
+    public void startServer() throws Exception {
+
+        init();
         final Consumer<String, JobStatusResult> consumer = createConsumer();
+        new Thread(() -> {
 
-        while (true) {
-            final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
+            while (true) {
+                final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
 
-            for (TopicPartition partition : consumerRecords.partitions()) {
-                List<ConsumerRecord<String, JobStatusResult>> partitionRecords = consumerRecords.records(partition);
-                for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
-                    boolean success = process(record.value());
-                    logger.info("Status of processing " + record.value().getJobId() + " : " + success);
-                    if (success) {
-                        consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
+                for (TopicPartition partition : consumerRecords.partitions()) {
+                    List<ConsumerRecord<String, JobStatusResult>> partitionRecords = consumerRecords.records(partition);
+                    for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
+                        boolean success = process(record.value());
+                        logger.info("Status of processing " + record.value().getJobId() + " : " + success);
+                        if (success) {
+                            consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
+                        }
                     }
                 }
+
+                consumerRecords.forEach(record -> process(record.value()));
+
+                consumer.commitAsync();
             }
-
-            consumerRecords.forEach(record -> {
-                process(record.value());
-            });
-
-            consumer.commitAsync();
-        }
+        }).start();
     }
 
     private void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
@@ -329,10 +331,13 @@ public class PostWorkflowManager extends WorkflowManager {
         }
     }
 
+    public void stopServer() {
+
+    }
+
     public static void main(String[] args) throws Exception {
 
         PostWorkflowManager postManager = new PostWorkflowManager();
-        postManager.init();
-        postManager.runConsumer();
+        postManager.startServer();
     }
 }
