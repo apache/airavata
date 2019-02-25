@@ -26,7 +26,7 @@ class GrouperUtilities
             $key = $key . "@" . Config::get('pga_config.airavata')['gateway-id'];
             $newUserPermissionsMap[$key] = $value;
         }
-        Airavata::shareResourceWithUsers(Session::get('authz-token'), $resourceId, $dataResourceType, $newUserPermissionsMap);
+        Airavata::shareResourceWithUsers(Session::get('authz-token'), $resourceId, $newUserPermissionsMap);
     }
 
     /**
@@ -41,7 +41,7 @@ class GrouperUtilities
             $key = $key . "@" . Config::get('pga_config.airavata')['gateway-id'];
             $newUserPermissionsMap[$key] = $value;
         }
-        Airavata::revokeSharingOfResourceFromUsers(Session::get('authz-token'), $resourceId, $dataResourceType, $newUserPermissionsMap);
+        Airavata::revokeSharingOfResourceFromUsers(Session::get('authz-token'), $resourceId, $newUserPermissionsMap);
     }
 
     /**

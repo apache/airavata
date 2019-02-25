@@ -25,18 +25,8 @@ class SharingUtilities {
      * @return True if the user has read permission, false otherwise.
      */
     public static function userCanRead($uid, $resourceId, $dataResourceType) {
-        // If the user is the owner, then it is implied they can read the resource
-        $owner = SharingUtilities::getSharedResourceOwner($resourceId, $dataResourceType);
-        if ($uid == $owner) {
-            return true;
-        }
-        $read = GrouperUtilities::getAllAccessibleUsers($resourceId, $dataResourceType, ResourcePermissionType::READ);
-        foreach($read as $user) {
-            if (strcmp($uid, $user) === 0) {
-                return true;
-            }
-        }
-        return false;
+
+        return Airavata::userHasAccess(Session::get('authz-token'), $resourceId, ResourcePermissionType::READ);
     }
 
     /**
@@ -48,18 +38,8 @@ class SharingUtilities {
      * @return True if the user has write permission, false otherwise.
      */
     public static function userCanWrite($uid, $resourceId, $dataResourceType) {
-        // If the user is the owner, then it is implied they can write to the resource
-        $owner = SharingUtilities::getSharedResourceOwner($resourceId, $dataResourceType);
-        if ($uid == $owner) {
-            return true;
-        }
-        $write = GrouperUtilities::getAllAccessibleUsers($resourceId, $dataResourceType, ResourcePermissionType::WRITE);
-        foreach($write as $user) {
-            if (strcmp($uid, $user) === 0) {
-                return true;
-            }
-        }
-        return false;
+
+        return Airavata::userHasAccess(Session::get('authz-token'), $resourceId, ResourcePermissionType::WRITE);
     }
 
     /**

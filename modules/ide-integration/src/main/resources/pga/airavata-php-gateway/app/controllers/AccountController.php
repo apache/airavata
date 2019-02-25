@@ -71,7 +71,6 @@ class AccountController extends BaseController
 
     public function loginView()
     {
-
         // If user already logged in, redirect to home
         if(CommonUtilities::id_in_session()){
             return Redirect::to("home");
@@ -88,7 +87,6 @@ class AccountController extends BaseController
         if ($auth_password_option == null && count($auth_code_options) == 1) {
             return Redirect::away($auth_code_options[0]["auth_url"]);
         } else {
-
             return View::make('account/login', array(
                 "auth_password_option" => $auth_password_option,
                 "auth_code_options" => $auth_code_options,
@@ -185,6 +183,13 @@ class AccountController extends BaseController
                 . "&refresh_code=" . $refreshToken . "&valid_time=" . $expirationTime);
         }
 
+    }
+
+    public function apiLoginSubmit() {
+        $username = strtolower(Input::get("username"));
+        $password = Input::get("password");
+        $response = Keycloak::authenticate($username, $password);
+        return Response::json($response);
     }
 
     public function oauthCallback()

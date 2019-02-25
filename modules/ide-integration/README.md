@@ -52,10 +52,11 @@
 
 * Update the host entries of pga container with above ip address
 
- ```docker-compose exec pga /bin/sh -c "echo '<host-machine ip> airavata.host' >> /etc/hosts"```
+ ```docker-compose exec pga /bin/sh -c "echo '192.168.65.2 airavata.host' >> /etc/hosts"```
 
 * Now PGA should be accessible through http://airavata.host:8008
 
+o
 * Use the username : default-admin and password : 123456 to login to the portal
 * Use the username : default-admin and password : 123456 to login to the portal
 
