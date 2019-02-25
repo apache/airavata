@@ -59,6 +59,16 @@
             <artifactId>mariadb-java-client</artifactId>
             <version>2.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>helix-spectator</artifactId>
+            <version>0.17-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>email-monitor</artifactId>
+            <version>0.17-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
