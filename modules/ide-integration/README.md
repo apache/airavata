@@ -56,6 +56,9 @@
 
 * Now PGA should be accessible through http://airavata.host:8008
 
+* Use the username : default-admin and password : 123456 to login to the portal
+* Use the username : default-admin and password : 123456 to login to the portal
+
 ### Stop all components
 
 * For each composer file, run 
