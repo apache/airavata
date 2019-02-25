@@ -7,4 +7,4 @@ RUN mkdir /var/www/portals
 RUN a2enmod rewrite
 EXPOSE 80
 EXPOSE 443
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+CMD [ "/bin/sh", "-c", "composer --working-dir=/var/www/portals/default update && echo 'Starting sever..' && /usr/sbin/apache2ctl -D FOREGROUND"]
