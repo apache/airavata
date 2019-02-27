@@ -539,7 +539,7 @@
         <repository>
             <id>apache.snapshots</id>
             <name>Apache Snapshot Repository</name>
-            <url>http://repository.apache.org/snapshots</url>
+            <url>https://repository.apache.org/snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -547,7 +547,7 @@
         <repository>
             <id>central</id>
             <name>Maven Central</name>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -558,12 +558,12 @@
         <repository>
             <id>oauth</id>
             <name>OAuth Repository</name>
-            <url>http://oauth.googlecode.com/svn/code/maven</url>
+            <url>https://oauth.googlecode.com/svn/code/maven</url>
         </repository>
         <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
