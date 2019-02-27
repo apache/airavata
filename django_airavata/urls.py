@@ -34,5 +34,13 @@ urlpatterns = [
     url(r'^home$', views.home, name='home'),
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
+]
+
+# Add custom Django app urls patterns
+for custom_django_app in settings.CUSTOM_DJANGO_APPS:
+    urlpatterns.append(url(r'^' + custom_django_app.label + '/',
+                           include(custom_django_app.name + ".urls")))
+
+urlpatterns += [
     url(r'', include(wagtail_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
+from pkg_resources import iter_entry_points
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -70,6 +72,25 @@ INSTALLED_APPS = [
     # django-webpack-loader
     'webpack_loader',
 ]
+
+# AppConfig instances from custom Django apps
+CUSTOM_DJANGO_APPS = []
+
+# Add any custom apps installed in the virtual environment
+# Essentially this looks for the entry_points metadata in all installed Python packages. The format of the metadata in setup.py is the following:
+#
+#    setuptools.setup(
+#        ...
+#        entry_points="""
+#    [airavata.djangoapp]
+#    dynamic_djangoapp = dynamic_djangoapp.apps:DynamicDjangoAppConfig
+#    """,
+#        ...
+#    )
+#
+for entry_point in iter_entry_points(group='airavata.djangoapp'):
+    CUSTOM_DJANGO_APPS.append(entry_point.load())
+    INSTALLED_APPS.append(entry_point.name)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
