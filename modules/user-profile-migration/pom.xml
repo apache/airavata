@@ -24,12 +24,12 @@
     <repositories>
         <repository>
             <id>wso2-maven2-repository</id>
-            <url>http://dist.wso2.org/maven2</url>
+            <url>https://dist.wso2.org/maven2</url>
         </repository>
         <repository>
             <id>apache-maven2-repo</id>
             <name>Apache Maven2 Repository</name>
-            <url>http://repo1.maven.org/maven2/</url>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
     </repositories>
 
