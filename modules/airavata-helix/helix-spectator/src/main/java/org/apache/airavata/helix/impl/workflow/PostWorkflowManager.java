@@ -160,7 +160,7 @@ public class PostWorkflowManager extends WorkflowManager {
 
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
-                        executePostWorkflow(processId, gateway);
+                        executePostWorkflow(processId, gateway, false);
 
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled but process is not marked as cancelled yet");
@@ -184,7 +184,7 @@ public class PostWorkflowManager extends WorkflowManager {
         }
     }
 
-    private void executePostWorkflow(String processId, String gateway) throws Exception {
+    private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
 
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
@@ -238,6 +238,7 @@ public class PostWorkflowManager extends WorkflowManager {
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
                     airavataTask.setRetryCount(taskModel.getMaxRetry());
+                    airavataTask.setForceRunTask(forceRun);
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }
@@ -251,6 +252,7 @@ public class PostWorkflowManager extends WorkflowManager {
         completingTask.setExperimentId(experimentModel.getExperimentId());
         completingTask.setProcessId(processModel.getProcessId());
         completingTask.setTaskId("Completing-Task");
+        completingTask.setForceRunTask(forceRun);
         completingTask.setSkipTaskStatusPublish(true);
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));

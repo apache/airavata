@@ -394,10 +394,11 @@ public class TaskContext {
     }
 
     public TaskState getTaskState() {
-        if(getCurrentTaskModel().getTaskStatuses() != null)
+        if(getCurrentTaskModel() != null && getCurrentTaskModel().getTaskStatuses() != null) {
             return getCurrentTaskModel().getTaskStatuses().get(0).getState();
-        else
+        } else {
             return null;
+        }
     }
 
     public TaskStatus getTaskStatus() {
