@@ -2,7 +2,6 @@ package org.apache.airavata.helix.impl.task.cancel;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
@@ -18,9 +17,9 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @TaskDef(name = "Remote Job Cancellation Task")
 public class RemoteJobCancellationTask extends AiravataTask {
@@ -68,14 +67,31 @@ public class RemoteJobCancellationTask extends AiravataTask {
 
                 try {
                     logger.info("Fetching current job status for job id " + job.getJobId());
-                    RawCommandInfo monitorCommand = jobManagerConfiguration.getMonitorCommand(job.getJobId());
 
+                    if (job.getJobStatuses() != null) {
+                        // first check the monitoring job status
+                        JobStatus lastReceivedStatus = job.getJobStatuses().stream().sorted(Comparator.comparing(JobStatus::getTimeOfStateChange).reversed()).collect(Collectors.toList()).get(0);
+                        logger.info("Job " + job.getJobId() + " state is " + lastReceivedStatus.getJobState().name() + " according to monitoring");
+                        switch (lastReceivedStatus.getJobState()) {
+                            case FAILED:
+                            case CANCELED:
+                            case COMPLETE:
+                            case SUSPENDED:
+                                // if the job already is in above states, there is no use of trying cancellation
+                                // setting context variable to be used in the Cancel Completing Task
+                                setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
+                                return onSuccess("Job already is in a saturated state according to monitoring");
+                        }
+                    }
+
+                    // if monitoring status is not saturated, got to cluster and check
+                    RawCommandInfo monitorCommand = jobManagerConfiguration.getMonitorCommand(job.getJobId());
                     CommandOutput jobMonitorOutput = adaptor.executeCommand(monitorCommand.getRawCommand(), null);
 
                     if (jobMonitorOutput.getExitCode() == 0) {
                         JobStatus jobStatus = jobManagerConfiguration.getParser().parseJobStatus(job.getJobId(), jobMonitorOutput.getStdOut());
                         if (jobStatus != null) {
-                            logger.info("Job " + job.getJobId() + " state is " + jobStatus.getJobState().name());
+                            logger.info("Job " + job.getJobId() + " state is " + jobStatus.getJobState().name() + " according to cluster");
                             switch (jobStatus.getJobState()) {
                                 case COMPLETE:
                                 case CANCELED:
@@ -84,7 +100,7 @@ public class RemoteJobCancellationTask extends AiravataTask {
                                     // if the job already is in above states, there is no use of trying cancellation
                                     // setting context variable to be used in the Cancel Completing Task
                                     setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
-                                    return onSuccess("Job already is in a saturated state");
+                                    return onSuccess("Job already is in a saturated state according to cluster");
                             }
                         } else {
                             logger.warn("Job status for job " + job.getJobId() + " is null. Std out " + jobMonitorOutput.getStdOut() +
