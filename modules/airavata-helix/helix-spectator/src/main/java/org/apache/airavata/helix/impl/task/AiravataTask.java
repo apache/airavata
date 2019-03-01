@@ -81,6 +81,9 @@ public abstract class AiravataTask extends AbstractTask {
     @TaskParam(name = "Skip Status Publish")
     private boolean skipTaskStatusPublish = false;
 
+    @TaskParam(name ="Force Run Task")
+    private boolean forceRunTask = false;
+
     protected TaskResult onSuccess(String message) {
         logger.info(message);
         if (!skipTaskStatusPublish) {
@@ -339,6 +342,16 @@ public abstract class AiravataTask extends AbstractTask {
             MDC.put("gateway", getGatewayId());
             MDC.put("task", getTaskId());
             loadContext();
+            if (!forceRunTask) {
+                if (this.taskContext != null) {
+                    TaskState taskState = taskContext.getTaskState();
+                    if (taskState != null && taskState != TaskState.CREATED) {
+                        logger.warn("Task " + getTaskId() + " is not in CREATED state. So skipping execution");
+                        skipTaskStatusPublish = false;
+                        return onSuccess("Task " + getTaskId() + " is not in CREATED state. So skipping execution");
+                    }
+                }
+            }
             if (!skipTaskStatusPublish) {
                 publishTaskState(TaskState.EXECUTING);
             }
@@ -487,6 +500,14 @@ public abstract class AiravataTask extends AbstractTask {
 
     public boolean isSkipTaskStatusPublish() {
         return skipTaskStatusPublish;
+    }
+
+    public boolean isForceRunTask() {
+        return forceRunTask;
+    }
+
+    public void setForceRunTask(boolean forceRunTask) {
+        this.forceRunTask = forceRunTask;
     }
 
     // TODO this is inefficient. Try to use a connection pool

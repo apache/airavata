@@ -71,7 +71,7 @@ public class PreWorkflowManager extends WorkflowManager {
         this.subscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
     }
 
-    private String createAndLaunchPreWorkflow(String processId) throws Exception {
+    private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
 
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
@@ -119,6 +119,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
                     airavataTask.setRetryCount(taskModel.getMaxRetry());
+                    airavataTask.setForceRunTask(forceRun);
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() -1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }
@@ -232,7 +233,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
                 try {
                     logger.info("Launching the pre workflow for process " + processId + " of experiment " + experimentId + " in gateway " + gateway);
-                    String workflowName = createAndLaunchPreWorkflow(processId);
+                    String workflowName = createAndLaunchPreWorkflow(processId, false);
                     logger.info("Completed launching the pre workflow " + workflowName + " for process" + processId + " of experiment " + experimentId + " in gateway " + gateway);
 
                     // updating the process status
