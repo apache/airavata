@@ -189,7 +189,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     }
 
     public void setRetryCount(int retryCount) {
-        this.retryCount = retryCount;
+        // set the default retry count to 1
+        this.retryCount = retryCount <= 0 ? 1 : retryCount;
     }
 
     public OutPort getNextTask() {
