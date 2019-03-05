@@ -174,9 +174,19 @@ export default {
     "share-button": components.ShareButton
   },
   mounted: function() {
-    services.ProjectService.listAll().then(
-      projects => (this.projects = projects)
-    );
+    services.ProjectService.listAll().then(projects => {
+      this.projects = projects;
+      if (!this.localExperiment.projectId) {
+        services.WorkspacePreferencesService.get().then(
+          workspacePreferences => {
+            if (!this.localExperiment.projectId) {
+              this.localExperiment.projectId =
+                workspacePreferences.most_recent_project_id;
+            }
+          }
+        );
+      }
+    });
   },
   computed: {
     projectOptions: function() {

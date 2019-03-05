@@ -52,7 +52,7 @@ from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import Project
 
-from . import datastore, thrift_utils
+from . import datastore, models, thrift_utils
 
 log = logging.getLogger(__name__)
 
@@ -764,3 +764,10 @@ class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
         view_name='django_airavata_api:parser-detail',
         lookup_field='id',
         lookup_url_kwarg='parser_id')
+
+
+# ModelSerializers
+class WorkspacePreferencesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.WorkspacePreferences
+        exclude = ('username',)

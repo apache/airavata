@@ -37,7 +37,7 @@ from django_airavata.apps.api.view_utils import (
     GenericAPIBackedViewSet
 )
 
-from . import datastore, serializers, thrift_utils
+from . import datastore, models, serializers, thrift_utils
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -238,25 +238,28 @@ class ExperimentViewSet(APIBackedViewSet):
     def _get_writeable_project(self, experiment):
         # figure what project to clone into:
         # 1) project of this experiment if writeable
-        # 2) else, first writeable project
+        # 2) most recently used project if writeable
+        # 3) else, first writeable project
         project_id = experiment.projectId
-        can_write = self.request.airavata_client.userHasAccess(
-            self.authz_token, project_id, ResourcePermissionType.WRITE)
-        if not can_write:
-            user_projects = self.request.airavata_client.getUserProjects(
-                self.authz_token, self.gateway_id, self.username, -1, 0)
-            for user_project in user_projects:
-                can_write = self.request.airavata_client.userHasAccess(
-                    self.authz_token, user_project.projectID,
-                    ResourcePermissionType.WRITE)
-                if can_write:
-                    project_id = user_project.projectID
-                    break
-            if not can_write:
-                raise Exception(
-                    "Could not find writeable project for user {} in "
-                    "gateway {}".format(self.username, self.gateway_id))
-        return project_id
+        if self._can_write(project_id):
+            return project_id
+        workspace_preferences = models.WorkspacePreferences.filter(
+            username=self.username).first()
+        if (workspace_preferences and self._can_write(
+                workspace_preferences.most_recent_project_id)):
+            return workspace_preferences.most_recent_project_id
+        user_projects = self.request.airavata_client.getUserProjects(
+            self.authz_token, self.gateway_id, self.username, -1, 0)
+        for user_project in user_projects:
+            if self._can_write(user_project.projectID):
+                return user_project.projectID
+        raise Exception(
+            "Could not find writeable project for user {} in "
+            "gateway {}".format(self.username, self.gateway_id))
+
+    def _can_write(self, entity_id):
+        return self.request.airavata_client.userHasAccess(
+            self.authz_token, entity_id, ResourcePermissionType.WRITE)
 
     def _copy_cloned_experiment_input_uris(self, cloned_experiment):
         # update the experimentInputs of type URI, copying files in data store
@@ -1129,3 +1132,54 @@ class ParserViewSet(mixins.CreateModelMixin,
     def perform_update(self, serializer):
         parser = serializer.save()
         self.request.airavata_client.saveParser(self.authz_token, parser)
+
+
+class WorkspacePreferencesView(APIView):
+    serializer_class = serializers.WorkspacePreferencesSerializer
+
+    def get(self, request, format=None):
+        try:
+            workspace_preferences = models.WorkspacePreferences.objects.get(
+                username=request.user.username)
+            self._check(request, workspace_preferences)
+        except ObjectDoesNotExist as e:
+            workspace_preferences = self._create_default(request)
+            workspace_preferences.save()
+        serializer = self.serializer_class(
+            workspace_preferences, context={'request': request})
+        return Response(serializer.data)
+
+    def _create_default(self, request):
+        workspace_preferences = models.WorkspacePreferences.create(
+            request.user.username)
+        most_recent_project = self._get_most_recent_project(request)
+        workspace_preferences.most_recent_project_id = \
+            most_recent_project.projectID
+        return workspace_preferences
+
+    def _get_most_recent_project(self, request):
+        "Return most recent writeable project."
+        projects = request.airavata_client.getUserProjects(
+            request.authz_token, settings.GATEWAY_ID, request.user.username,
+            -1, 0)
+        for project in projects:
+            if self._can_write(request, project.projectID):
+                return project
+        return None
+
+    def _check(self, request, prefs):
+        "Validate preference values and update as needed."
+        if (not prefs.most_recent_project_id or
+                not self._can_write(request, prefs.most_recent_project_id)):
+            most_recent_project = self._get_most_recent_project(request)
+            log.warn(
+                "_check: updating most_recent_project_id to {}".format(
+                    most_recent_project.projectID))
+            prefs.most_recent_project_id = most_recent_project.projectID
+            prefs.save()
+
+    def _can_write(self, request, entity_id):
+        return request.airavata_client.userHasAccess(
+            request.authz_token,
+            entity_id,
+            ResourcePermissionType.WRITE)

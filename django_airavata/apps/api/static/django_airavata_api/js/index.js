@@ -116,7 +116,8 @@ const services = {
   StorageResourceService: ServiceFactory.service("StorageResources"),
   UnicoreDataMovementService,
   UnicoreJobSubmissionService,
-  UserProfileService
+  UserProfileService,
+  WorkspacePreferencesService: ServiceFactory.service("WorkspacePreferences")
 };
 
 const utils = {
@@ -132,9 +133,4 @@ export default {
   utils
 };
 
-export {
-  errors,
-  models,
-  services,
-  utils
-};
+export { errors, models, services, utils };

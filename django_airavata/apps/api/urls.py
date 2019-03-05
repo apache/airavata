@@ -70,6 +70,9 @@ urlpatterns = [
     url(r'^gateway-resource-profile',
         views.GetCurrentGatewayResourceProfile.as_view(),
         name="current_gateway_resource_profile"),
+    url(r'^workspace-preferences',
+        views.WorkspacePreferencesView.as_view(),
+        name="workspace-preferences"),
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

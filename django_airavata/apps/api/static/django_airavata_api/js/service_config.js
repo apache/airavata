@@ -15,6 +15,7 @@ import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
 import UserProfile from "./models/UserProfile";
+import WorkspacePreferences from "./models/WorkspacePreferences";
 
 /*
 examples:
@@ -144,7 +145,7 @@ export default {
       retrieve: {
         requestType: "get",
         queryParams: {
-          "lookup": "product-uri"
+          lookup: "product-uri"
         },
         modelClass: DataProduct
       }
@@ -244,5 +245,15 @@ export default {
     url: "/api/user-profiles",
     viewSet: ["list"],
     modelClass: UserProfile
+  },
+  WorkspacePreferences: {
+    url: "/api/workspace-preferences",
+    methods: {
+      get: {
+        url: "/api/workspace-preferences",
+        requestType: "get",
+        modelClass: WorkspacePreferences
+      }
+    }
   }
 };
