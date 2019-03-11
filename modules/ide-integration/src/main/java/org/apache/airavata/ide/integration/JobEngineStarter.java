@@ -49,6 +49,6 @@ public class JobEngineStarter {
         System.out.println("Starting Post Workflow Manager .......");
 
         PostWorkflowManager postWorkflowManager = new PostWorkflowManager();
-        //postWorkflowManager.startServer();
+        postWorkflowManager.startServer();
     }
 }

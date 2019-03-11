@@ -8,6 +8,8 @@
 
 * Git
 
+* python3
+
 ## Steps
 
 ### Setting up the development environment
@@ -58,8 +60,54 @@ https://support.google.com/accounts/answer/6010255?hl=en
   email.based.monitor.password=CHANGEME
   
 * Go to org.apache.airavata.ide.integration.JobMonitorStarter class and right click on the editor and click Run option.
- 
-### Starting PGA
+
+### Starting User Portal (Django Portal)
+
+* You can create and launch experiments and manage credentials using this portal
+
+* This is a separate project so you need to clone this in to a new directory outside the Airavata code base
+
+* git clone https://github.com/apache/airavata-django-portal
+
+* Go to airavata-django-portal directory and run 
+
+  ```
+  python3 -m venv venv
+  source venv/bin/activate
+  pip install -r requirements.txt
+  ```
+* Create a local settings file. Copy
+      `django_airavata/settings_local.py.ide` to
+      `django_airavata/settings_local.py` 
+
+* Run Django migrations
+
+    ```
+    python3 manage.py migrate
+    ```
+
+*  Build the JavaScript sources. There are a few JavaScript packages in the source tree, colocated with the Django apps in which they are used. The `build_js.sh` script will build them all.
+
+    ```
+    ./build_js.sh
+    ```
+
+*  Load the default Wagtail CMS pages.
+
+    ```
+    python3 manage.py load_default_gateway
+    ```
+
+*  Run the server
+
+    ```
+    python3 manage.py runserver  
+    
+* Point your browser to http://localhost:8000/auth/login. Use user name : default-admin and password : 123456 
+
+### Optional: Starting Super Admin Portal (PGA)
+
+* This portal is required when you are going to register new compute resources or storage resources into the gateway
 
 * Go to src/main/resources/pga directory and run 
 
@@ -81,8 +129,12 @@ https://support.google.com/accounts/answer/6010255?hl=en
 
 ### Stop all components
 
-* For each composer file, run 
+* For each composer file, run following commands to cleanup docker spawned components
 
- ```docker-compose down```
+ ```
+ docker-compose down
+ ```
  
- ```docker-compose rm```
+ ```
+ docker-compose rm
+ ```
