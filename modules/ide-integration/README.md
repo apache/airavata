@@ -1,3 +1,7 @@
+## Introduction 
+
+Using this module, you can setup a full Airavata installation inside Intelij IDEA for development purposes
+
 ## Prerequisites
 
 * Docker installed with 'docker-compose' utility
@@ -30,7 +34,7 @@
 
 * Browse to modules -> ide-integration module
 
-### Starting backend components
+### Starting backend components (Database, Keycloak, Kafka, RabbitMQ, SSHD Server)
 
 * Add a host entry to /etc/hosts file in local machine
 
@@ -45,6 +49,8 @@
   ```
 
 * Wait until all the services come up. This will initialize all utilities required to start Airavata server
+
+### Starting API Server
 
 * Go to org.apache.airavata.ide.integration.APIServerStarter class and right click on the editor and click Run option. This will start Airavata server
 
