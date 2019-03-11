@@ -1,4 +1,5 @@
 import logging
+import os
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -747,8 +748,9 @@ def download_file(request):
         data_file = datastore.open(data_product)
         response = FileResponse(data_file,
                                 content_type="application/octet-stream")
+        file_name = os.path.basename(data_file.name)
         response['Content-Disposition'] = ('attachment; filename="{}"'
-                                           .format(data_product.productName))
+                                           .format(file_name))
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
