@@ -10,6 +10,8 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
 * InteliJ IDEA with Java 8 installed
   https://www.jetbrains.com/idea/download/#section=mac
 
+* Maven
+
 * Git
 
 * python3
@@ -29,7 +31,11 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
   ```
   git checkout develop
   ```
+* Build the develop branch using Maven
 
+  ```
+  mvn clean install -DskipTests
+  ```
 * Open the project using InteliJ IDEA
 
 * Browse to modules -> ide-integration module
