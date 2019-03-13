@@ -49,6 +49,6 @@ services:
   sshd:
     image: dimuthuupe/sshd:1.0
     volumes:
-      - ./exp-data-dir:/var/www/portals/gateway-user-data
+      - /tmp:/tmp
     ports:
       - "22222:22"
