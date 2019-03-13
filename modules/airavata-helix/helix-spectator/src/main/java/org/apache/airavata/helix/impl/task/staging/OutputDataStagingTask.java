@@ -167,7 +167,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
 
             } else {
-                // Downloading input file from the storage resource
+                // Uploading output file to the storage resource
                 assert processOutput != null;
                 boolean transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
                 if (transferred) {

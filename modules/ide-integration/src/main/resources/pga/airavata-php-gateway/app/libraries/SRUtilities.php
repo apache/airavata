@@ -89,6 +89,7 @@ class SRUtilities
 
         } else if ($inputs["dataMovementProtocol"] == DataMovementProtocol::SCP) /* SCP */ {
             $scpDataMovement = new SCPDataMovement(array(
+                    "dataMovementInterfaceId" => $inputs["dmiId"],
                     "securityProtocol" => intval($inputs["securityProtocol"]),
                     "alternativeSCPHostName" => $inputs["alternativeSSHHostName"],
                     "sshPort" => intval($inputs["sshPort"])
