@@ -40,7 +40,7 @@ public class StorageResourceManager {
 
     public void init() throws IOException, AgentException {
         storageAdaptor.init(gatewayStoragePreference.getLoginUserName(),
-                storageResource.getHostName(),
+                storageResource.getHostName(), 22,
                 readFile(publicKeyFile, Charset.defaultCharset()),
                 readFile(privateKeyFile, Charset.defaultCharset()),
                 passPhrase);
