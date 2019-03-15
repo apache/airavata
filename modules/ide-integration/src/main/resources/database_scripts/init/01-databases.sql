@@ -3530,7 +3530,7 @@ USE `experiment_catalog`;
 /*!50001 SET collation_connection      = utf8mb4_unicode_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `experiment_summary` AS select `E`.`EXPERIMENT_ID` AS `EXPERIMENT_ID`,`E`.`PROJECT_ID` AS `PROJECT_ID`,`E`.`GATEWAY_ID` AS `GATEWAY_ID`,`E`.`USER_NAME` AS `USER_NAME`,`E`.`EXECUTION_ID` AS `EXECUTION_ID`,`E`.`EXPERIMENT_NAME` AS `EXPERIMENT_NAME`,`E`.`CREATION_TIME` AS `CREATION_TIME`,`E`.`DESCRIPTION` AS `DESCRIPTION`,`es`.`STATE` AS `STATE`,`UD`.`RESOURCE_HOST_ID` AS `RESOURCE_HOST_ID`,`es`.`TIME_OF_STATE_CHANGE` AS `TIME_OF_STATE_CHANGE` from ((`experiment` `E` left join `latest_experiment_status` `ES` on((`E`.`EXPERIMENT_ID` = `es`.`EXPERIMENT_ID`))) left join `user_configuration_data` `UD` on((`E`.`EXPERIMENT_ID` = `UD`.`EXPERIMENT_ID`))) where 1 */;
+/*!50001 VIEW `experiment_summary` AS select `E`.`EXPERIMENT_ID` AS `EXPERIMENT_ID`,`E`.`PROJECT_ID` AS `PROJECT_ID`,`E`.`GATEWAY_ID` AS `GATEWAY_ID`,`E`.`USER_NAME` AS `USER_NAME`,`E`.`EXECUTION_ID` AS `EXECUTION_ID`,`E`.`EXPERIMENT_NAME` AS `EXPERIMENT_NAME`,`E`.`CREATION_TIME` AS `CREATION_TIME`,`E`.`DESCRIPTION` AS `DESCRIPTION`,`es`.`STATE` AS `STATE`,`UD`.`RESOURCE_HOST_ID` AS `RESOURCE_HOST_ID`,`es`.`TIME_OF_STATE_CHANGE` AS `TIME_OF_STATE_CHANGE` from ((`EXPERIMENT` `E` left join `latest_experiment_status` `es` on((`E`.`EXPERIMENT_ID` = `es`.`EXPERIMENT_ID`))) left join `USER_CONFIGURATION_DATA` `UD` on((`E`.`EXPERIMENT_ID` = `UD`.`EXPERIMENT_ID`))) where 1 */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -3548,7 +3548,7 @@ USE `experiment_catalog`;
 /*!50001 SET collation_connection      = utf8mb4_unicode_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `latest_experiment_status` AS select `ES1`.`EXPERIMENT_ID` AS `EXPERIMENT_ID`,`ES1`.`STATE` AS `STATE`,`ES1`.`TIME_OF_STATE_CHANGE` AS `TIME_OF_STATE_CHANGE` from (`experiment_status` `ES1` left join `experiment_status` `ES2` on(((`ES1`.`EXPERIMENT_ID` = `ES2`.`EXPERIMENT_ID`) and (`ES1`.`TIME_OF_STATE_CHANGE` < `ES2`.`TIME_OF_STATE_CHANGE`)))) where isnull(`ES2`.`TIME_OF_STATE_CHANGE`) */;
+/*!50001 VIEW `latest_experiment_status` AS select `ES1`.`EXPERIMENT_ID` AS `EXPERIMENT_ID`,`ES1`.`STATE` AS `STATE`,`ES1`.`TIME_OF_STATE_CHANGE` AS `TIME_OF_STATE_CHANGE` from (`EXPERIMENT_STATUS` `ES1` left join `EXPERIMENT_STATUS` `ES2` on(((`ES1`.`EXPERIMENT_ID` = `ES2`.`EXPERIMENT_ID`) and (`ES1`.`TIME_OF_STATE_CHANGE` < `ES2`.`TIME_OF_STATE_CHANGE`)))) where isnull(`ES2`.`TIME_OF_STATE_CHANGE`) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
