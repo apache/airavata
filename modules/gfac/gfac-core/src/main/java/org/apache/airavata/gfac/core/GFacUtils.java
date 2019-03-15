@@ -457,6 +457,7 @@ public class GFacUtils {
         List<String> inputValues = getProcessInputValues(processModel.getProcessInputs());
         inputValues.addAll(getProcessOutputValues(processModel.getProcessOutputs()));
         groovyMap.add(Script.INPUTS, inputValues);
+        groovyMap.add(Script.EXPERIMENT_DATA_DIR, processModel.getExperimentDataDir());
 
         groovyMap.add(Script.USER_NAME, processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
         groovyMap.add(Script.SHELL_NAME, "/bin/bash");
