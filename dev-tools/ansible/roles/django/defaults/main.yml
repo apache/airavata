@@ -60,6 +60,7 @@ oauth_callback_url: "https://{{ vhost_servername }}/auth/callback"
 airavata_django_repo: "https://github.com/apache/airavata-django-portal.git"
 airavata_django_git_branch: "master"
 airavata_django_checkout: "{{ doc_root_dir}}/airavata-django-portal"
+airavata_django_extra_dependencies: []
 gateway_id: "{{ default_gateway }}"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}"

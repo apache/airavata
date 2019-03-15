@@ -19,7 +19,8 @@
 #
 
 ---
-airavata_django_git_branch: "simccs"
+airavata_django_extra_dependencies:
+  - git+https://github.com/SciGaP/simccs-maptool.git#egg=simccs-maptool
 doc_root_dir: "/data/portals/django-simccs"
 vhost_servername: "beta.simccs.org"
 vhost_ssl: True
