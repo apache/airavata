@@ -38,7 +38,13 @@ urlpatterns = [
 
 # Add custom Django app urls patterns
 for custom_django_app in settings.CUSTOM_DJANGO_APPS:
-    urlpatterns.append(url(r'^' + custom_django_app.label + '/',
+    # Custom Django apps may define a url_prefix, otherwise label will be used
+    # as url prefix
+    url_prefix = getattr(
+        custom_django_app,
+        'url_prefix',
+        custom_django_app.label)
+    urlpatterns.append(url(r'^' + url_prefix + '/',
                            include(custom_django_app.name + ".urls")))
 
 urlpatterns += [
