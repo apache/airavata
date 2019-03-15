@@ -44,6 +44,14 @@
   become: yes
   become_user: "{{user}}"
 
+- name: Install additional dependencies
+  pip:
+    name: "{{ airavata_django_extra_dependencies }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+  when: airavata_django_extra_dependencies | length > 0
+
 - name: Copy the settings_local.py file
   template: src={{ django_settings_local_template }} dest="{{ airavata_django_checkout }}/django_airavata/settings_local.py" owner="{{user}}" group="{{group}}"
   become: yes
