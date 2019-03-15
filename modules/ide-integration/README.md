@@ -16,6 +16,9 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
 
 * python3
 
+* npm (install or update to latest version)
+  https://www.npmjs.com/get-npm
+
 ## Steps
 
 ### Setting up the development environment
