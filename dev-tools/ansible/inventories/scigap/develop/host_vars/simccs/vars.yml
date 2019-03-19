@@ -28,6 +28,8 @@ vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/beta.simccs.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.simccs.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/beta.simccs.org/privkey.pem"
+# Custom vhost config file to specify the geoserver reverse proxy
+django_ssl_vhost_template: "{{ inventory_dir }}/host_vars/simccs/files/django-ssl-vhost.conf.j2"
 
 ## Keycloak related variables
 tenant_domain: "simccs"
