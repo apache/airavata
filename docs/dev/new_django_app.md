@@ -32,7 +32,6 @@ class MyAppConfig(AiravataAppConfig):
     name = 'django_airavata.apps.myapp'
     label = 'django_airavata_myapp'
     verbose_name = 'My App'
-    url_app_name = label
     app_order = 10
     url_home = 'django_airavata_myapp:home'
     fa_icon_class = 'fa-bolt'
@@ -48,7 +47,6 @@ properties:
 - _label_ - this needs to be unique across all installed Django apps. I just
   make this match the _app_name_ in `urls.py`.
 - _verbose_name_ - display name of app
-- _url_app_name_ - this needs to match the _app_name_ in `urls.py`
 - _app_order_ - order of app in the menu listing. Range is 0 - 100. See the
   other Django apps for their values to figure out how to order this app
   relative to them.

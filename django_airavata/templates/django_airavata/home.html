@@ -15,11 +15,29 @@
     {% if not forloop.counter|divisibleby:"2" %}
     <div class="row">
     {% endif %}
-        <div class="col-sm-6">
-            <div class="card">
+        <div class="col-sm-6 d-flex">
+            <div class="card flex-grow-1">
                 <div class="card-body">
                     <h5 class="card-title"><i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}</h5>
                     <p class="card-text">{{ app.app_description }}</p>
+                    <a href="{% url app.url_home %}" class="btn btn-primary">Go to {{ app.verbose_name }} »</a>
+                </div>
+            </div>
+        </div>
+    {% if forloop.counter|divisibleby:"2" %}
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for app in custom_apps %}
+    {% if not forloop.counter|divisibleby:"2" %}
+    <div class="row">
+    {% endif %}
+        <div class="col-sm-6 d-flex">
+            <div class="card flex-grow-1">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}</h5>
+                    <p class="card-text">{{ app.app_description|default:"" }}</p>
                     <a href="{% url app.url_home %}" class="btn btn-primary">Go to {{ app.verbose_name }} »</a>
                 </div>
             </div>

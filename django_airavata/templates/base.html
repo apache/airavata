@@ -172,6 +172,20 @@
             </a>
             {% endif %}
             {% endfor %}
+            {% if custom_apps|length > 0 %}
+              <div class="dropdown-divider"></div>
+              {% for app in custom_apps %}
+                {% if current_custom_app and app.label == current_custom_app.label %}
+                <a class="dropdown-item active" href="{% url app.url_home %}">
+                  <i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}
+                </a>
+                {% else %}
+                <a class="dropdown-item" href="{% url app.url_home %}">
+                  <i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}
+                </a>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
           </div>
         </div>
       </div>

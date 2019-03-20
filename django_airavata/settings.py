@@ -14,6 +14,8 @@ import os
 
 from pkg_resources import iter_entry_points
 
+from django_airavata.app_config import enhance_custom_app_config
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -89,7 +91,7 @@ CUSTOM_DJANGO_APPS = []
 #    )
 #
 for entry_point in iter_entry_points(group='airavata.djangoapp'):
-    CUSTOM_DJANGO_APPS.append(entry_point.load())
+    CUSTOM_DJANGO_APPS.append(enhance_custom_app_config(entry_point.load()))
     INSTALLED_APPS.append(entry_point.name)
 
 MIDDLEWARE = [
@@ -126,6 +128,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_airavata.context_processors.airavata_app_registry',
+                'django_airavata.context_processors.custom_app_registry',
                 # 'django_airavata.context_processors.resolver_match',
             ],
         },

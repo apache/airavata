@@ -5,9 +5,8 @@ class GroupsConfig(AiravataAppConfig):
     name = 'django_airavata.apps.groups'
     label = 'django_airavata_groups'
     verbose_name = 'Groups'
-    url_app_name = label
     app_order = 10
-    url_home = url_app_name + ':manage'
+    url_home = 'django_airavata_groups:manage'
     fa_icon_class = 'fa-users'
     app_description = """
         Create and manage user groups.
