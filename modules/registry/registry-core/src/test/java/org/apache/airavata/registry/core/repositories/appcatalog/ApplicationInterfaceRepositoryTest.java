@@ -179,6 +179,34 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         applicationInterfaceDescription.setApplicationInputs(new ArrayList<>());
         applicationInterfaceDescription.setApplicationOutputs(new ArrayList<>());
 
+        InputDataObjectType input = new InputDataObjectType();
+        input.setName("input1");
+        input.setApplicationArgument("Arg");
+        input.setDataStaged(true);
+        input.setInputOrder(0);
+        input.setIsReadOnly(true);
+        input.setIsRequired(true);
+        input.setRequiredToAddedToCommandLine(true);
+        input.setType(DataType.FLOAT);
+        input.setUserFriendlyDescription("User friendly description");
+        input.setValue("113");
+        input.setMetaData("Metadata");
+        input.setStandardInput(true);
+        applicationInterfaceDescription.addToApplicationInputs(input);
+
+        OutputDataObjectType output = new OutputDataObjectType();
+        output.setName("output1");
+        output.setValue("value");
+        output.setType(DataType.FLOAT);
+        output.setApplicationArgument("Argument");
+        output.setDataMovement(true);
+        output.setIsRequired(true);
+        output.setLocation("/home/");
+        output.setSearchQuery("Search query");
+        output.setRequiredToAddedToCommandLine(true);
+        output.setOutputStreaming(true);
+        applicationInterfaceDescription.addToApplicationOutputs(output);
+
         String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
 
         Assert.assertNotNull(applicationInterfaceRepository.getApplicationInterface(interfaceId));

@@ -21,6 +21,8 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import org.apache.airavata.model.application.io.DataType;
+import org.apache.openjpa.persistence.jdbc.ForeignKey;
+import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -77,8 +79,9 @@ public class ApplicationInputEntity implements Serializable {
 	@Column(name = "IS_READ_ONLY")
 	private boolean isReadOnly;
 
-	@ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
-	@JoinColumn(name = "INTERFACE_ID")
+	@ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
+	@JoinColumn(name = "INTERFACE_ID", nullable = false, updatable = false)
+	@ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
 	private ApplicationInterfaceEntity applicationInterface;
 
 	public ApplicationInputEntity() {
