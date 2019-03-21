@@ -32,7 +32,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>18</version>
+        <version>21</version>
     </parent>
 
     <groupId>org.apache.airavata</groupId>
@@ -791,6 +791,7 @@
                                 <exclude>sandbox/**/*</exclude>
                                 <exclude>**/vault.yml</exclude>
                                 <exclude>**/hosts</exclude>
+                                <exclude>**/*.md</exclude>
                             </excludes>
                         </configuration>
                         <executions>
