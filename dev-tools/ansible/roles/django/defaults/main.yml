@@ -42,6 +42,8 @@ django_settings_local_template: "settings_local.py.j2"
 
 django_wsgi_processes: 2
 
+django_debug: false
+
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
 oauth_client_key: "RuLl_Uw7i_KXaLoAGJkiasTfyBYa"
