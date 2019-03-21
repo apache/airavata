@@ -112,6 +112,7 @@
         <snakeyaml.version>1.15</snakeyaml.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
+        <maven.assembly.plugin>3.1.1</maven.assembly.plugin>
         <kafka-clients.version>0.8.2.2</kafka-clients.version>
         <logback.version>1.1.6</logback.version>
         <json.version>20160212</json.version>
