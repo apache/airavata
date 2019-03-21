@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata-gfac</artifactId>
-        <version>0.17-SNAPSHOT</version>
+        <version>0.19-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
