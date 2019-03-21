@@ -24,7 +24,7 @@
     <parent>
         <artifactId>airavata-gfac</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.17</version>
+        <version>0.18-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

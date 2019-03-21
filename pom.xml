@@ -38,7 +38,7 @@
     <artifactId>airavata</artifactId>
     <packaging>pom</packaging>
     <name>Airavata</name>
-    <version>0.17</version>
+    <version>0.18-SNAPSHOT</version>
 
     <url>http://airavata.apache.org/</url>
     <inceptionYear>2011</inceptionYear>
@@ -47,7 +47,7 @@
         <connection>scm:git:https://github.com/apache/airavata.git</connection>
         <developerConnection>scm:git:https://github.com/apache/airavata.git</developerConnection>
         <url>https://github.com/apache/airavata</url>
-        <tag>airavata-0.17</tag>
+        <tag>master</tag>
     </scm>
 
     <mailingLists>
