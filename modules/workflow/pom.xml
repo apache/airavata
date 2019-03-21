@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.17-SNAPSHOT</version>
+        <version>0.17</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     
     <artifactId>workflow</artifactId>
     <packaging>pom</packaging>
-    <version>0.17-SNAPSHOT</version>
+    <version>0.17</version>
     <name>Airavata Workflow</name>
     <modules>
         <module>workflow-core</module>
