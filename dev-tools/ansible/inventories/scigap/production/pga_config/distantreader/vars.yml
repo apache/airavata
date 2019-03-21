@@ -43,11 +43,11 @@ oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.wel
 auth_options:
   - name: "Distant Reader Gateway"
     oauth_grant_type: "password"
- - name: "Existing Institute Login"
+  - name: "Existing Institute Login"
     oauth_grant_type: "authorization_code"
-   oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
-   logo: "/assets/cilogon-logo-24x24-b.png"
-oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+    oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "distantreader"
 # relative to document root dir
