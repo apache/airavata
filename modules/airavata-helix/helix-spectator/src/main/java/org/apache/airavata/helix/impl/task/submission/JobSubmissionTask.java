@@ -177,10 +177,6 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
 
-        if (jobManagerConfiguration == null) {
-            throw new Exception("Job manager configuration can not be null for protocol " + getTaskContext().getJobSubmissionProtocol() + " and job id " + jobId);
-        }
-
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobId).getRawCommand(), null);
 
         return jobManagerConfiguration.getParser().parseJobStatus(jobId, commandOutput.getStdOut());
@@ -199,11 +195,6 @@ public abstract class JobSubmissionTask extends AiravataTask {
         }
 
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
-
-        if (jobManagerConfiguration == null) {
-            throw new Exception("Job manager configuration can not be null for protocol "
-                    + getTaskContext().getJobSubmissionProtocol() + " and job name " + jobName + " and user " + userName);
-        }
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
