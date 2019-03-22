@@ -91,8 +91,12 @@ CUSTOM_DJANGO_APPS = []
 #    )
 #
 for entry_point in iter_entry_points(group='airavata.djangoapp'):
-    CUSTOM_DJANGO_APPS.append(enhance_custom_app_config(entry_point.load()))
-    INSTALLED_APPS.append(entry_point.name)
+    custom_app = enhance_custom_app_config(entry_point.load())
+    CUSTOM_DJANGO_APPS.append(custom_app)
+    # Create path to AppConfig class (otherwise the ready() method doesn't get
+    # called)
+    INSTALLED_APPS.append("{}.{}".format(entry_point.module_name,
+                                         entry_point.attrs[0]))
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
