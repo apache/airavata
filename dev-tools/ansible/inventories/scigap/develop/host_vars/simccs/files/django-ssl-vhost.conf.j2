@@ -30,10 +30,6 @@
 <VirtualHost *:{{ httpd_default_http_port }}>
     ServerName {{ vhost_servername }}
 
-    # Reverse proxy to geoserver on gf8
-    ProxyPass /geoserver "http://gf8.ucs.indiana.edu/geoserver"
-    ProxyPassReverse /geoserver "http://gf8.ucs.indiana.edu/geoserver"
-    
     ## Redirect all http traffic to https
     RewriteEngine On
     RewriteCond %{HTTPS} off
@@ -43,6 +39,10 @@
 <VirtualHost *:{{ httpd_default_https_port }}>
     ServerName {{ vhost_servername }}
 
+    # Reverse proxy to geoserver on gf8
+    ProxyPass /geoserver "http://gf8.ucs.indiana.edu/geoserver"
+    ProxyPassReverse /geoserver "http://gf8.ucs.indiana.edu/geoserver"
+    
     Alias /robots.txt {{ doc_root_dir }}/static/robots.txt
     Alias /favicon.ico {{ doc_root_dir }}/static/favicon.ico
 
