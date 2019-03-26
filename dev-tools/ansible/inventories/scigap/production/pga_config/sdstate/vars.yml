@@ -53,7 +53,7 @@ gateway_id: "sdstate"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUEBwfmgyxXs1Yg3VOnBG7j/lTzwhQmc40PaWchTNM5xfWL1RnGQkVrSDIdSHZTIJ29DOfJxoLGlhdoK1vpGgBSbcdNEE/dVo/jpZbsKi5CNSOhMdYHmR4L3AjqS8sWxHu9kzkGuWhhmD2zDxA2lf3Aqs3rJvdvKJ97ZGToCbaQ0LamEy19B+Lj5ZF2ooyUWIx9kiqAZ7JmYllxCbWNnbdtnVl6TcHkVpF7PcXk92WUEB/0csAhcJ/ZxnQcWVglD4tNWjPLwEy8dAPPWkms+N8Ce/o+pPu58BBb9mDxDFkk4wAwjV17Lq3TpC+usxGItLvyUkttB2xPs6PoAxzwluL"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7vqwM+CWfqVWODe3iLsKN9leJ9nI+pKFZhrVUG8K/ODycXT5tQOxMhsC+HG6/wJ1W7+LeA6uvVnltnFlVozfTs2jeJzVQ71UvfUiZFVhXian3f8Nd4DXBvqPUY8dmhWP/UJCIKO47fSI/RC2ZlMa1K4yRYPdRgLRuSmtzG8Rb7YGVjkt1uDOLMh6hAS1KKpWVSxESFeqqoKj2xqOKBnbf2PdJt/D4/2R6H8D/WAM0cdZnls5fmiUysHK+bU8atzMukLQ6STglVv0WuqNGdAw6zWZH+Kaj8bP19jfkGCbMLP1vPYRkcxLmtnSzbg2Hams9npwdAA+xwwjuS6/tAX+p"
 
 ## Portal related variables
 super_admin_portal: "false"
