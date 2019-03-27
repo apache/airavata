@@ -24,13 +24,13 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "mines.scigap.org"
+vhost_servername: "qusp.mines.edu"
 #vhost_serveralias: "www.mines.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/mines.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/mines.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/mines.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/qusp.mines.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/qusp.mines.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/qusp.mines.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
