@@ -24,13 +24,13 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "distantreader.scigap.org"
-#vhost_serveralias: "distantreader.scigap.org"
-vhost_ssl: true
+vhost_servername: "sciencegateway.sdstate.edu"
+#vhost_serveralias: "www.mines.scigap.org"
+#vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/distantreader.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/distantreader.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/distantreader.scigap.org/privkey.pem"
+#ssl_certificate_file: "/etc/letsencrypt/live/mines.scigap.org/cert.pem"
+#ssl_certificate_chain_file: "/etc/letsencrypt/live/mines.scigap.org/fullchain.pem"
+#ssl_certificate_key_file: "/etc/letsencrypt/live/mines.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -41,26 +41,26 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "Distant Reader Gateway"
+  - name: "South Dakota State University Gateway"
     oauth_grant_type: "password"
-  - name: "Existing Institute Login"
-    oauth_grant_type: "authorization_code"
-    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
-    logo: "/assets/cilogon-logo-24x24-b.png"
-    oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+  #- name: "Existing Institute Login"
+  #  oauth_grant_type: "authorization_code"
+  #  oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+  #  logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "distantreader"
+gateway_id: "sdstate"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCCgAWzF/GHT0ZesTM9JtUtvYBmaunOc5V4ab5//jUjC7vjF7s1fon4MvALvWCoC1uPvppG3NRzq4huAQCX89wu/9zJErpuKDpkjjTf90cHl+YxzHGGFUUtllSTZzhSyhUaMXC1qzeJg7TLdzOct+21HyoqSIJe86Aj8DQuAMXky6l7XFz5YqMkzY9kG/sS0rFRfpjz4K3zWe/Y7a0lQnKzePM/d6zrcdkiYhlMrCbEFcrWWMYNpIkWq7psjQiQ9SlICrNso6NQQSNy4CeoItDGSe7GsXdQLqdRMXUKua22G7wrq2ibh4Kqcid+mVJ8kyYQJO2UCdC2cOYd0EljmHh/"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7vqwM+CWfqVWODe3iLsKN9leJ9nI+pKFZhrVUG8K/ODycXT5tQOxMhsC+HG6/wJ1W7+LeA6uvVnltnFlVozfTs2jeJzVQ71UvfUiZFVhXian3f8Nd4DXBvqPUY8dmhWP/UJCIKO47fSI/RC2ZlMa1K4yRYPdRgLRuSmtzG8Rb7YGVjkt1uDOLMh6hAS1KKpWVSxESFeqqoKj2xqOKBnbf2PdJt/D4/2R6H8D/WAM0cdZnls5fmiUysHK+bU8atzMukLQ6STglVv0WuqNGdAw6zWZH+Kaj8bP19jfkGCbMLP1vPYRkcxLmtnSzbg2Hams9npwdAA+xwwjuS6/tAX+p"
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgrc-iu-group@iu.edu','emorgan@nd.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu','Chad.Julius@sdstate.edu','Kevin.Brandt@sdstate.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-#portal_theme: "distantreader-gateway-theme"
+#portal_theme: "searchingsra-gateway-theme"
 #portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
-portal_title: "Distant Reader Gateway"
+portal_title: "South Dakota State University Gateway"
 ...
