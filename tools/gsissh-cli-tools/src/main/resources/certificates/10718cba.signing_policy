@@ -1,3 +1,0 @@
-access_id_CA   X509    '/DC=org/DC=cilogon/C=US/O=CILogon/CN=CILogon Silver CA 1'
-pos_rights     globus  CA:sign
-cond_subjects  globus  '/DC=org/DC=cilogon/C=US/*'
