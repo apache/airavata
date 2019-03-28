@@ -38,6 +38,9 @@ import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.helix.adaptor.wrapper.SCPFileTransferWrapper;
 import org.apache.airavata.helix.agent.ssh.StandardOutReader;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,12 +58,12 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     private PoolingSSHJClient sshjClient;
 
-    protected void createPoolingSSHJClient(String user, String host, String publicKey, String privateKey, String passphrase) throws IOException {
+    protected void createPoolingSSHJClient(String user, String host, int port, String publicKey, String privateKey, String passphrase) throws IOException {
         DefaultConfig defaultConfig = new DefaultConfig();
         defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
 
-        sshjClient = new PoolingSSHJClient(defaultConfig, host, 22);
-        sshjClient.addHostKeyVerifier((hostname, port, key) -> true);
+        sshjClient = new PoolingSSHJClient(defaultConfig, host, port == 0 ? 22 : port);
+        sshjClient.addHostKeyVerifier((h, p, key) -> true);
 
         sshjClient.setMaxSessionsForConnection(1);
 
@@ -96,9 +99,9 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         sshjClient.auth(user, am);
     }
 
-    public void init(String user, String host, String publicKey, String privateKey, String passphrase) throws AgentException {
+    public void init(String user, String host, int port, String publicKey, String privateKey, String passphrase) throws AgentException {
         try {
-            createPoolingSSHJClient(user, host, publicKey, privateKey, passphrase);
+            createPoolingSSHJClient(user, host, port, publicKey, privateKey, passphrase);
         } catch (IOException e) {
             logger.error("Error while initializing sshj agent for user " + user + " host " + host + " for key starting with " + publicKey.substring(0,10), e);
             throw new AgentException("Error while initializing sshj agent for user " + user + " host " + host + " for key starting with " + publicKey.substring(0,10), e);
@@ -108,17 +111,37 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     @Override
     public void init(String computeResource, String gatewayId, String userId, String token) throws AgentException {
         try {
+            logger.info("Initializing Compute Resource SSH Adaptor for compute resource : "+ computeResource + ", gateway : " +
+                    gatewayId +", user " + userId + ", token : " + token);
+
             ComputeResourceDescription computeResourceDescription = AgentUtils.getRegistryServiceClient().getComputeResource(computeResource);
+
+            logger.info("Fetching job submission interfaces for compute resource " + computeResource);
+
+            Optional<JobSubmissionInterface> jobSubmissionInterfaceOp = computeResourceDescription.getJobSubmissionInterfaces()
+                    .stream().filter(iface -> iface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH).findFirst();
+
+            JobSubmissionInterface sshInterface = jobSubmissionInterfaceOp
+                    .orElseThrow(() -> new AgentException("Could not find a SSH interface for compute resource " + computeResource));
+
+            SSHJobSubmission sshJobSubmission = AgentUtils.getRegistryServiceClient().getSSHJobSubmission(sshInterface.getJobSubmissionInterfaceId());
 
             logger.info("Fetching credentials for cred store token " + token);
 
             SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
             logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            createPoolingSSHJClient(userId, computeResourceDescription.getHostName(),
+            String alternateHostName = sshJobSubmission.getAlternativeSSHHostName();
+            String selectedHostName = (alternateHostName == null || "".equals(alternateHostName))?
+                    computeResourceDescription.getHostName() : alternateHostName;
+
+            int selectedPort = sshJobSubmission.getSshPort() == 0 ? 22 : sshJobSubmission.getSshPort();
+
+            createPoolingSSHJClient(userId, selectedHostName, selectedPort,
                     sshCredential.getPublicKey(), sshCredential.getPrivateKey(), sshCredential.getPassphrase());
 
         } catch (Exception e) {
