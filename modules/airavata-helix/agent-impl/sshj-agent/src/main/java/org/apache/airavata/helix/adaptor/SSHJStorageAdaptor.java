@@ -25,8 +25,13 @@ import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResourceAdaptor {
 
@@ -35,9 +40,20 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
     @Override
     public void init(String storageResourceId, String gatewayId, String loginUser, String token) throws AgentException {
         try {
-            logger.info("Initializing Storage Resource Adaptor for storage resource : "+ storageResourceId + ", gateway : " +
+            logger.info("Initializing Storage Resource SCP Adaptor for storage resource : "+ storageResourceId + ", gateway : " +
                     gatewayId +", user " + loginUser + ", token : " + token);
-            StorageResourceDescription storageResource = AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
+
+            StorageResourceDescription storageResourceDescription = AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
+
+            logger.info("Fetching data movement interfaces for storage resource " + storageResourceId);
+
+            Optional<DataMovementInterface> dmInterfaceOp = storageResourceDescription.getDataMovementInterfaces()
+                    .stream().filter(iface -> iface.getDataMovementProtocol() == DataMovementProtocol.SCP).findFirst();
+
+            DataMovementInterface scpInterface = dmInterfaceOp
+                    .orElseThrow(() -> new AgentException("Could not find a SCP interface for storage resource " + storageResourceId));
+
+            SCPDataMovement scpDataMovement = AgentUtils.getRegistryServiceClient().getSCPDataMovement(scpInterface.getDataMovementInterfaceId());
 
             logger.info("Fetching credentials for cred store token " + token);
 
@@ -45,9 +61,16 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
+
             logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            createPoolingSSHJClient(loginUser, storageResource.getHostName(), sshCredential.getPublicKey(),
+            String alternateHostName = scpDataMovement.getAlternativeSCPHostName();
+            String selectedHostName = (alternateHostName == null || "".equals(alternateHostName))?
+                    storageResourceDescription.getHostName() : alternateHostName;
+
+            int selectedPort = scpDataMovement.getSshPort() == 0 ? 22 : scpDataMovement.getSshPort();
+
+            createPoolingSSHJClient(loginUser, selectedHostName, selectedPort, sshCredential.getPublicKey(),
                     sshCredential.getPrivateKey(), sshCredential.getPassphrase());
 
         } catch (Exception e) {

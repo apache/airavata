@@ -245,7 +245,7 @@ public class PoolingSSHJClient extends SSHClient {
             sshClient.addHostKeyVerifier(hostKeyVerifier);
         }
 
-        sshClient.connect(host);
+        sshClient.connect(host, port);
 
         sshClient.getConnection().getKeepAlive().setKeepAliveInterval(5); //send keep alive signal every 5sec
 
