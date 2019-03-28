@@ -717,6 +717,7 @@
                 <module>modules/compute-account-provisioning</module>
                 <module>modules/job-monitor</module>
                 <module>modules/distribution</module>
+                <module>tools</module>
             </modules>
         </profile>
         <profile>
