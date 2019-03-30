@@ -34,6 +34,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ExperimentResource extends AbstractExpCatResource {
@@ -568,6 +569,18 @@ public class ExperimentResource extends AbstractExpCatResource {
         for (ExperimentCatResource resource : resources) {
             ExperimentStatusResource statusResource = (ExperimentStatusResource) resource;
             experimentStatusResources.add(statusResource);
+        }
+        experimentStatusResources.sort(Comparator.comparing(ExperimentStatusResource::getTimeOfStateChange).reversed());
+        for (int i = 0; i < experimentStatusResources.size(); i++) {
+
+            ExperimentStatusResource thisState = experimentStatusResources.get(i);
+            if  (thisState.getState().equals(ExperimentState.COMPLETED.toString()) ||
+                    thisState.getState().equals(ExperimentState.FAILED.toString()) ||
+                    thisState.getState().equals(ExperimentState.CANCELED.toString())) {
+                experimentStatusResources.remove(i);
+                experimentStatusResources.add(0, thisState);
+                break;
+            }
         }
         return experimentStatusResources;
     }

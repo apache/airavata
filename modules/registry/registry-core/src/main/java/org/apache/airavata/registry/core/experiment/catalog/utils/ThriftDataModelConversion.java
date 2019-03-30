@@ -66,6 +66,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ThriftDataModelConversion {
     private final static Logger logger = LoggerFactory.getLogger(ThriftDataModelConversion.class);
@@ -169,11 +170,10 @@ public class ThriftDataModelConversion {
             experiment.setExperimentInputs(getExpInputs(experimentInputs));
             List<ExperimentOutputResource> experimentOutputs = experimentResource.getExperimentOutputs();
             experiment.setExperimentOutputs(getExpOutputs(experimentOutputs));
-            ExperimentStatusResource experimentStatus = experimentResource.getExperimentStatus();
-            if (experimentStatus != null){
-                List<ExperimentStatus> experimentStatuses = new ArrayList<>();
-                experimentStatuses.add(getExperimentStatus(experimentStatus));
-                experiment.setExperimentStatus(experimentStatuses);
+            List<ExperimentStatusResource> experimentStatuses = experimentResource.getExperimentStatuses();
+            if (experimentStatuses != null){
+                experiment.setExperimentStatus(experimentStatuses.stream()
+                        .map(ThriftDataModelConversion::getExperimentStatus).collect(Collectors.toList()));
             }
             List<ExperimentErrorResource> errorDetails = experimentResource.getExperimentErrors();
             if (errorDetails!= null && !errorDetails.isEmpty()){
