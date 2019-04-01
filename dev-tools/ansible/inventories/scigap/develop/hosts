@@ -30,6 +30,7 @@ interactwel ansible_host=pgadev.scigap.org
 usd ansible_host=pgadev.scigap.org
 csbglsu ansible_host=pgadev.scigap.org
 nexttdb ansible_host=pgadev.scigap.org
+saver-x ansible_host=pgadev.scigap.org
 
 [helix]
 149.165.157.37
