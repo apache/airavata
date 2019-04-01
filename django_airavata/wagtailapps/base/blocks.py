@@ -290,6 +290,11 @@ class BootstrapCard(StructBlock):
     card_width = IntegerBlock(
         help_text="18 works best for card", required=False, blank=True)
     is_card_img = BooleanBlock(required=False)
+    is_card_img_overlay = BooleanBlock(
+        required=False,
+        default=False,
+        help_text="Use image as background for card",
+        label="Image Overlay?")
     card_img = ImageChooserBlock(required=False)
     card_img_width = IntegerBlock(
         required=False, help_text="provide an image width")
