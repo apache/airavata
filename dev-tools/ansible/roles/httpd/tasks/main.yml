@@ -1,7 +1,8 @@
 
 # SELinux configuration
 - name: set selinux to enforcing
-  selinux: state=enforcing policy=targeted
+# TODO: switch back to enforcing
+  selinux: state=permissive policy=targeted
   become: yes
   when: ansible_os_family == "RedHat"
 
