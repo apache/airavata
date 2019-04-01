@@ -26,11 +26,11 @@ group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 vhost_servername: "pfec-hydro.scigap.org"
 #vhost_serveralias: "www.mines.scigap.org"
-#vhost_ssl: true
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/qusp.mines.edu/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/qusp.mines.edu/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/qusp.mines.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -53,7 +53,7 @@ gateway_id: "pfec-hydro"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUEBwfmgyxXs1Yg3VOnBG7j/lTzwhQmc40PaWchTNM5xfWL1RnGQkVrSDIdSHZTIJ29DOfJxoLGlhdoK1vpGgBSbcdNEE/dVo/jpZbsKi5CNSOhMdYHmR4L3AjqS8sWxHu9kzkGuWhhmD2zDxA2lf3Aqs3rJvdvKJ97ZGToCbaQ0LamEy19B+Lj5ZF2ooyUWIx9kiqAZ7JmYllxCbWNnbdtnVl6TcHkVpF7PcXk92WUEB/0csAhcJ/ZxnQcWVglD4tNWjPLwEy8dAPPWkms+N8Ce/o+pPu58BBb9mDxDFkk4wAwjV17Lq3TpC+usxGItLvyUkttB2xPs6PoAxzwluL"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9qczDIVUhTxPmMsvF2J/NGIWo35HDgm3IUL41w1bUi5FX3CzuKwWtBh6IGoY4l+ibvWiRw2w9+MLWPhAWglLjXXekHCc/C5LuU8qi6zGZgQfD6U4yFpHXmkZLUHt30iKbLJXgypy7MaQ4n3sWDXJe2Dbsc4FMSK+KXFQ5KNZ/meOCCurEswcDyz4Mrvf9ZSZWzq6vPTXtdHo+/oRMmiGNZqhcBkqIWfz5alzyq4HTAidz5uc6fD8mqj1hg87qywv6OwMUAxB84S8glcLs5ZzuTbpGl3sdftVH9zqabx6eAGXX9V389qdLp1k//u45ph+INOk11HFCCxmh/YmqQM9f"
 
 ## Portal related variables
 super_admin_portal: "false"
