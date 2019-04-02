@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ExperimentRegistry {
     private GatewayResource gatewayResource;
@@ -216,7 +217,7 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = new ExperimentResource();
             experiment.setExperimentId(expId);
-            ExperimentStatusResource status = experiment.getExperimentStatus();
+            ExperimentStatusResource status = experiment.getLastExperimentStatus();
             ExperimentState newState = experimentStatus.getState();
             if (status == null) {
                 status = (ExperimentStatusResource) experiment.create(ResourceType.EXPERIMENT_STATUS);
@@ -568,7 +569,7 @@ public class ExperimentRegistry {
         try {
             JobResource jobResource = new JobResource();
             jobResource.setJobId(jobID);
-            JobStatusResource status = jobResource.getJobStatus();
+            JobStatusResource status = jobResource.getLastJobStatus();
             if (status == null) {
                 status = new JobStatusResource();
             }
@@ -1065,7 +1066,7 @@ public class ExperimentRegistry {
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_OUTPUTS)) {
                 return ThriftDataModelConversion.getExpOutputs(resource.getExperimentOutputs());
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
-                return ThriftDataModelConversion.getExperimentStatus(resource.getExperimentStatus());
+                return ThriftDataModelConversion.getExperimentStatus(resource.getLastExperimentStatus());
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ERRORS)) {
                 return ThriftDataModelConversion.getExperimentErrorList(resource.getExperimentErrors());
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_CONFIGURATION_DATA)) {
@@ -1204,7 +1205,7 @@ public class ExperimentRegistry {
 	        if (fieldName == null) {
 		        return ThriftDataModelConversion.getJobModel(resource);
 	        } else if (fieldName.equals(Constants.FieldConstants.JobConstants.JOB_STATUS)) {
-		        return ThriftDataModelConversion.getJobStatus(resource.getJobStatus());
+		        return ThriftDataModelConversion.getJobStatus(resource.getLastJobStatus());
 	        } else {
 		        logger.error("Unsupported field name for job basic data..");
 	        }
@@ -1310,14 +1311,10 @@ public class ExperimentRegistry {
                 List<JobResource> resources = processResource.getJobList();
                 for (JobResource jobResource : resources) {
                     JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
-                    JobStatusResource latestSR = jobResource.getJobStatus();
-	                if (latestSR != null) {
-		                JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
-		                jobStatus.setReason(latestSR.getReason());
-                        List<JobStatus> statuses = new ArrayList<>();
-                        statuses.add(jobStatus);
-		                jobModel.setJobStatuses(statuses);
-	                }
+                    List<JobStatusResource> jobStatusResources = jobResource.getJobStatuses();
+                    jobModel.setJobStatuses(jobStatusResources.stream()
+                            .map(ThriftDataModelConversion::getJobStatus)
+                            .collect(Collectors.toList()));
 	                jobs.add(jobModel);
                 }
                 return jobs;
@@ -1328,14 +1325,10 @@ public class ExperimentRegistry {
                 List<JobResource> resources = taskResource.getJobList();
                 for (JobResource jobResource : resources) {
                     JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
-                    JobStatusResource latestSR = jobResource.getJobStatus();
-                    if (latestSR != null) {
-                        JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
-                        jobStatus.setReason(latestSR.getReason());
-                        List<JobStatus> statuses = new ArrayList<>();
-                        statuses.add(jobStatus);
-                        jobModel.setJobStatuses(statuses);
-                    }
+                    List<JobStatusResource> jobStatusResources = jobResource.getJobStatuses();
+                    jobModel.setJobStatuses(jobStatusResources.stream()
+                            .map(ThriftDataModelConversion::getJobStatus)
+                            .collect(Collectors.toList()));
                     jobs.add(jobModel);
                 }
                 return jobs;
@@ -1346,14 +1339,10 @@ public class ExperimentRegistry {
                 List<JobResource> resources = resource.getJobsById();
                 for (JobResource jobResource : resources) {
                     JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
-                    JobStatusResource latestSR = jobResource.getJobStatus();
-                    if (latestSR != null) {
-                        JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
-                        jobStatus.setReason(latestSR.getReason());
-                        List<JobStatus> statuses = new ArrayList<>();
-                        statuses.add(jobStatus);
-                        jobModel.setJobStatuses(statuses);
-                    }
+                    List<JobStatusResource> jobStatusResources = jobResource.getJobStatuses();
+                    jobModel.setJobStatuses(jobStatusResources.stream()
+                            .map(ThriftDataModelConversion::getJobStatus)
+                            .collect(Collectors.toList()));
                     jobs.add(jobModel);
                 }
                 return jobs;

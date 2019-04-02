@@ -481,12 +481,10 @@ public class ThriftDataModelConversion {
         model.setComputeResourceConsumed(jobResource.getComputeResourceConsumed());
         model.setJobName(jobResource.getJobName());
         model.setWorkingDir(jobResource.getWorkingDir());
-        JobStatus jobStatus = getJobStatus(jobResource.getJobStatus());
-        if (jobStatus != null){
-            List<JobStatus> jobStatuses = new ArrayList<>();
-            jobStatuses.add(jobStatus);
-            model.setJobStatuses(jobStatuses);
-        }
+        List<JobStatusResource> jobStatusesResources = jobResource.getJobStatuses();
+        model.setJobStatuses(jobStatusesResources.stream()
+                .map(ThriftDataModelConversion::getJobStatus)
+                .collect(Collectors.toList()));
         model.setExitCode(jobResource.getExitCode());
         model.setStdOut(jobResource.getStdOut());
         model.setStdErr(jobResource.getStdErr());
