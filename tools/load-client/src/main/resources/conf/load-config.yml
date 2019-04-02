@@ -19,6 +19,6 @@ configurations:
     nodeCount: 1
     physicalMemory: 512
 
-    concurrentUsers: 1
-    iterationsPerUser: 2
+    concurrentUsers: 10
+    iterationsPerUser: 20
     randomMSDelayWithinSubmissions: 100
