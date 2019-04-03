@@ -69,6 +69,7 @@ public class DBEventManagerConstants {
      * @param entityType
      * @return
      */
+    @Deprecated
     public static String getDbEventServiceName(EntityType entityType) {
         for (DBEventService service : DBEventService.values()) {
             if (service.name().equals(entityType.name())) {

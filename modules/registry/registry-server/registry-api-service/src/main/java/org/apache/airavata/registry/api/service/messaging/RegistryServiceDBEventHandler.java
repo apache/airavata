@@ -54,6 +54,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);
     private final ThriftClientPool<RegistryService.Client> registryClientPool;
+    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.REGISTRY);
 
     public RegistryServiceDBEventHandler() throws ApplicationSettingsException, RegistryServiceException {
 
@@ -142,7 +143,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                                 if (defaultProject != null) {
 
                                     // Publish new PROJECT event (sharing service will listen for it and register this as a shared Entity)
-                                    DBEventPublisherUtils.publish(EntityType.PROJECT, CrudType.CREATE, defaultProject);
+                                    dbEventPublisherUtils.publish(EntityType.PROJECT, CrudType.CREATE, defaultProject);
                                 }
                                 logger.info("addUser Replication Success!");
                                 break;

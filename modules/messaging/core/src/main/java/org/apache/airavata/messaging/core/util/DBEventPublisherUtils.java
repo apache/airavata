@@ -25,7 +25,12 @@ import org.slf4j.LoggerFactory;
 public class DBEventPublisherUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(DBEventPublisherUtils.class);
-    private static Publisher dbEventPublisher = null;
+    private Publisher dbEventPublisher = null;
+    private DBEventService publisherService;
+
+    public DBEventPublisherUtils(DBEventService dbEventService) {
+        this.publisherService = dbEventService;
+    }
 
     /**
      * Publish DB Event for given entity.
@@ -33,10 +38,9 @@ public class DBEventPublisherUtils {
      * @param crudType
      * @param entityModel
      */
-    public static void publish(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
+    public void publish(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
 
-        DBEventPublisherUtils.getDbEventPublisher().publish(
-                DBEventPublisherUtils.getDBEventMessageContext(entityType, crudType, entityModel),
+        getDbEventPublisher().publish(getDBEventMessageContext(entityType, crudType, entityModel),
                 DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString()));
     }
 
@@ -45,9 +49,9 @@ public class DBEventPublisherUtils {
      * @return
      * @throws AiravataException
      */
-    private static Publisher getDbEventPublisher() throws AiravataException {
+    private Publisher getDbEventPublisher() throws AiravataException {
         if(null == dbEventPublisher){
-            synchronized (DBEventPublisherUtils.class){
+            synchronized (this){
                 if(null == dbEventPublisher){
                     logger.info("Creating DB Event publisher.....");
                     dbEventPublisher = MessagingFactory.getDBEventPublisher();
@@ -66,7 +70,7 @@ public class DBEventPublisherUtils {
      * @return
      * @throws AiravataException
      */
-    private static MessageContext getDBEventMessageContext(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
+    private MessageContext getDBEventMessageContext(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
         try {
             // set the publisherContext
             DBEventMessage dbEventMessage = new DBEventMessage();
@@ -84,7 +88,7 @@ public class DBEventPublisherUtils {
 
             // set dbEventMessage with messageContext
             dbEventMessage.setDbEventType(DBEventType.PUBLISHER);
-            dbEventMessage.setPublisherService(DBEventManagerConstants.getDbEventServiceName(entityType));
+            dbEventMessage.setPublisherService(this.publisherService.toString());
             dbEventMessage.setMessageContext(dbMessageContext);
 
             // construct and return messageContext
