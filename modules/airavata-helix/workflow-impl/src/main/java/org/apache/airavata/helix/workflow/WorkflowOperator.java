@@ -45,7 +45,7 @@ public class WorkflowOperator {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowOperator.class);
 
     private static final String WORKFLOW_PREFIX = "Workflow_of_process_";
-    private static final long WORKFLOW_EXPIRY_TIME = 30 * 60 * 1000;
+    private static final long WORKFLOW_EXPIRY_TIME = 1 * 1000;
     private TaskDriver taskDriver;
     private HelixManager helixManager;
 
