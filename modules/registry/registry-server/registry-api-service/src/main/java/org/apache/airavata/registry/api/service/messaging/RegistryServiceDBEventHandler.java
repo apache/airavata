@@ -138,7 +138,9 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                         switch (publisherContext.getCrudType()) {
                             case CREATE: {
                                 logger.info("Replicating addUser in Registry.");
-                                registryClient.addUser(userProfile);
+                                if (!registryClient.isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
+                                    registryClient.addUser(userProfile);
+                                }
                                 Project defaultProject = createDefaultProject(registryClient, userProfile);
                                 if (defaultProject != null) {
 
