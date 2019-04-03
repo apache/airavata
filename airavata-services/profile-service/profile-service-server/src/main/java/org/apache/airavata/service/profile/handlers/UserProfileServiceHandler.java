@@ -23,9 +23,9 @@ package org.apache.airavata.service.profile.handlers;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
@@ -40,7 +40,6 @@ import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamA
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
 import org.apache.airavata.service.security.AiravataSecurityManager;
 import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.airavata.service.security.UserInfo;
@@ -56,6 +55,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(UserProfileServiceHandler.class);
 
     private UserProfileRepository userProfileRepository;
+    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
     public UserProfileServiceHandler() {
 
@@ -94,10 +94,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
-                ProfileServiceUtils.getDbEventPublisher().publish(
-                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile),
-                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
-                );
+                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
                 // return userId
                 return userProfile.getUserId();
             } else {
@@ -122,10 +119,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
-                ProfileServiceUtils.getDbEventPublisher().publish(
-                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile),
-                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
-                );
+                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
                 // return userId
                 return userProfile.getUserId();
             } else {
@@ -150,10 +144,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             if(userProfileRepository.updateUserProfile(userProfile, iamUserProfileUpdater) != null) {
                 logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
-                ProfileServiceUtils.getDbEventPublisher().publish(
-                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile),
-                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
-                );
+                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile);
                 return true;
             }
             return false;
@@ -209,10 +200,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
 
             if (deleteSuccess) {
                 // delete userProfile at end-places
-                ProfileServiceUtils.getDbEventPublisher().publish(
-                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.DELETE, userProfile),
-                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
-                );
+                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.DELETE, userProfile);
             }
             return deleteSuccess;
         } catch (Exception e) {
