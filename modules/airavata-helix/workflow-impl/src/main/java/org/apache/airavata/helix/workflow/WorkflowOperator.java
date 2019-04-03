@@ -97,7 +97,9 @@ public class WorkflowOperator {
                     .addTaskConfigs(taskBuilds)
                     .setFailureThreshold(0)
                     .setExpiry(WORKFLOW_EXPIRY_TIME)
+                    .setNumConcurrentTasksPerInstance(20)
                     .setMaxAttemptsPerTask(data.getRetryCount());
+
 
             if (!globalParticipant) {
                 job.setInstanceGroupTag(taskType);
