@@ -65,21 +65,6 @@ public class DBEventManagerConstants {
     }
 
     /**
-     * Get serviceName from EntityType
-     * @param entityType
-     * @return
-     */
-    @Deprecated
-    public static String getDbEventServiceName(EntityType entityType) {
-        for (DBEventService service : DBEventService.values()) {
-            if (service.name().equals(entityType.name())) {
-                return service.toString();
-            }
-        }
-        return null;
-    }
-
-    /**
      * Get the service as enum, given the service-name as string
      * @param dbEventService
      * @return
