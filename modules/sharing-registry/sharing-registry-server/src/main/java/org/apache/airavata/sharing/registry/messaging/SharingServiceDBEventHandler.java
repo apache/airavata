@@ -32,8 +32,10 @@ import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.Domain;
+import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
@@ -251,6 +253,52 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         }
 
 
+                        break;
+                    
+                    case PROJECT :
+                        log.info("Project specific DB Event communicated by " + dbEventMessage.getPublisherService());
+
+                        Project project = new Project();
+                        ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), project);
+                        final String domainId = project.getGatewayId();
+                        final String entityId = project.getProjectID();
+
+                        switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
+
+                            case CREATE:
+                            case UPDATE:
+
+                                Entity entity = new Entity();
+                                entity.setEntityId(entityId);
+                                entity.setDomainId(domainId);
+                                entity.setEntityTypeId(domainId + ":" + ResourceType.PROJECT.name());
+                                entity.setOwnerId(project.getOwner() + "@" + domainId);
+                                entity.setName(project.getName());
+                                entity.setDescription(project.getDescription());
+
+                                if (!sharingRegistryClient.isEntityExists(domainId, entityId)) {
+                                    log.info("Creating project entity. Entity Id : " + entityId);
+                                    sharingRegistryClient.createEntity(entity);
+                                    log.info("Project entity created. Entity Id : " + entityId);
+                                } else {
+                                    log.info("Updating project entity. Entity Id : " + entityId);
+                                    sharingRegistryClient.updateEntity(entity);
+                                    log.info("Project entity updated. Entity Id : " + entityId);
+                                }
+
+                                break;
+
+                            case READ:
+                                log.info("Ignoring READ crud operation for entity type PROJECT");
+                                break;
+
+                            case DELETE:
+                                log.info("Deleting project entity. Entity Id : " + entityId);
+                                sharingRegistryClient.deleteEntity(domainId, entityId);
+                                log.info("Project entity deleted. Entity Id : " + entityId);
+
+                                break;
+                        }
                         break;
 
                     default: log.error("Handler not defined for " + dBEventMessageContext.getPublisher().getPublisherContext().getEntityType());
