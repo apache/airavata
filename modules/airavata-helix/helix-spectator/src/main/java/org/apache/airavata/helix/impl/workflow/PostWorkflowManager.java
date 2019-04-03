@@ -251,7 +251,7 @@ public class PostWorkflowManager extends WorkflowManager {
         completingTask.setGatewayId(experimentModel.getGatewayId());
         completingTask.setExperimentId(experimentModel.getExperimentId());
         completingTask.setProcessId(processModel.getProcessId());
-        completingTask.setTaskId("Completing-Task");
+        completingTask.setTaskId("Completing-Task-" + UUID.randomUUID().toString() +"-");
         completingTask.setForceRunTask(forceRun);
         completingTask.setSkipTaskStatusPublish(true);
         if (allTasks.size() > 0) {
