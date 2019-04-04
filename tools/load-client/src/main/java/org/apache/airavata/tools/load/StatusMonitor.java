@@ -33,14 +33,14 @@ public class StatusMonitor {
 
     public void monitorExperiments(List<String> experiments) throws TException {
 
-        Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(apiHost, apiPort, trustStorePath, trustStorePassword, 100000);
-
         Map<String, JobModel> jobModelMap = new HashMap<>();
         Map<String, ExperimentModel> experimentModelMap = new HashMap<>();
 
-
-        while(experiments.size() > jobModelMap.size()) {
+        Airavata.Client airavataClient;
+        long monitoringStartTime = System.currentTimeMillis();
+        while (experiments.size() > jobModelMap.size()) {
             System.out.println("Running a monitoring round....");
+            airavataClient = AiravataClientFactory.createAiravataSecureClient(apiHost, apiPort, trustStorePath, trustStorePassword, 100000);
 
             for (String experiment : experiments) {
 
@@ -57,6 +57,8 @@ public class StatusMonitor {
                     System.out.println("Error while monitoring experiment " + experiment);
                 }
             }
+
+            System.out.println("Jobs " + jobModelMap.size() + "/" + experiments.size() + " submitted");
             try {
                 Thread.sleep(20*1000);
             } catch (InterruptedException e) {
@@ -64,23 +66,54 @@ public class StatusMonitor {
             }
         }
 
+        airavataClient = AiravataClientFactory.createAiravataSecureClient(apiHost, apiPort, trustStorePath, trustStorePassword, 100000);
+
         for (String experiment : experiments) {
             experimentModelMap.put(experiment, airavataClient.getExperiment(authzToken, experiment));
         }
 
         long totalTime = 0;
+        long totalExperiments = 0;
 
+        System.out.println("EXP ID,CREATE_TIME,LAUNCHED_TIME,EXECUTING_TIME,JOB_SUBMIT_TIME");
         for (String experiment : experiments) {
-            long jobSubmittedTime = jobModelMap.get(experiment)
-                    .getJobStatuses().stream().filter(st -> st.getJobState() == JobState.SUBMITTED).findFirst()
-                    .get().getTimeOfStateChange();
-            long expExecutedTime = experimentModelMap.get(experiment)
-                    .getExperimentStatus().stream().filter(es -> es.getState() == ExperimentState.EXECUTING).findFirst()
-                    .get().getTimeOfStateChange();
-            System.out.println("Experiment " + experiment + " executed " + expExecutedTime + " job submitted " + jobSubmittedTime);
-            totalTime += jobSubmittedTime - expExecutedTime;
+            try {
+
+                long expCreatedTime = experimentModelMap.get(experiment)
+                        .getExperimentStatus().stream().filter(es -> es.getState() == ExperimentState.CREATED).findFirst()
+                        .get().getTimeOfStateChange();
+
+                long expLaunchedTime = experimentModelMap.get(experiment)
+                        .getExperimentStatus().stream().filter(es -> es.getState() == ExperimentState.LAUNCHED).findFirst()
+                        .get().getTimeOfStateChange();
+
+                long expExecutedTime = experimentModelMap.get(experiment)
+                        .getExperimentStatus().stream().filter(es -> es.getState() == ExperimentState.EXECUTING).findFirst()
+                        .get().getTimeOfStateChange();
+
+                long jobSubmittedTime = jobModelMap.get(experiment)
+                        .getJobStatuses().stream().filter(st -> st.getJobState() == JobState.SUBMITTED).findFirst()
+                        .get().getTimeOfStateChange();
+
+                //long jobCompletedTime = jobModelMap.get(experiment)
+                //        .getJobStatuses().stream().filter(st -> st.getJobState() == JobState.COMPLETE).findFirst()
+                //        .get().getTimeOfStateChange();
+
+                //long expCompletedTime = experimentModelMap.get(experiment)
+                //        .getExperimentStatus().stream().filter(es -> es.getState() == ExperimentState.COMPLETED).findFirst()
+                //        .get().getTimeOfStateChange();
+                System.out.println(experiment + "," + expCreatedTime + "," + expLaunchedTime + "," + expExecutedTime + ","
+                        + jobSubmittedTime);
+                totalTime += jobSubmittedTime - expExecutedTime;
+                totalExperiments ++;
+            } catch (Exception e) {
+                System.out.println("Error parsing " + experiment + ". Err "+ e.getMessage());
+            }
         }
-        System.out.println("All jobs created");
-        System.out.println("Average time " + (totalTime *1.0/experiments.size())/1000 + " s");
+        long monitoringStopTime = System.currentTimeMillis();
+
+        System.out.println("All jobs completed");
+        System.out.println("Average time " + (totalTime *1.0/totalExperiments)/1000 + " s");
+        System.out.println("Time for monitoring " + (monitoringStopTime - monitoringStartTime)/1000 + "s");
     }
 }
