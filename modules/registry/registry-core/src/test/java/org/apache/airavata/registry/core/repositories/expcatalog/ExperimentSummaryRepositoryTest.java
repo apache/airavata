@@ -115,14 +115,15 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         filters.put(DBConstants.Experiment.PROJECT_ID, projectId);
 
+        List<String> allExperimentIds = Arrays.asList( experimentIdOne, expertimentIdTwo);
         List<ExperimentSummaryModel> experimentSummaryModelList = experimentSummaryRepository.
-                searchExperiments(filters, -1, 0, null, null);
+                searchAllAccessibleExperiments(allExperimentIds, filters, -1, 0, null, null);
         assertEquals(2, experimentSummaryModelList.size());
 
         filters.put(DBConstants.Experiment.EXECUTION_ID, "executionIdTwo");
 
         experimentSummaryModelList = experimentSummaryRepository.
-                searchExperiments(filters, -1, 0, null, null);
+                searchAllAccessibleExperiments(allExperimentIds, filters, -1, 0, null, null);
         assertTrue(experimentSummaryModelList.size() == 1);
         assertEquals(expertimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
 
@@ -132,7 +133,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         filters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
         filters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
         experimentSummaryModelList = experimentSummaryRepository.
-                searchExperiments(filters, -1, 0, null, null);
+                searchAllAccessibleExperiments(allExperimentIds, filters, -1, 0, null, null);
         assertTrue(experimentSummaryModelList.size() == 1);
         assertEquals(expertimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
 
@@ -147,6 +148,13 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
                 searchAllAccessibleExperiments(accessibleExperimentIds, filters, -1, 0, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
         assertTrue(experimentSummaryModelList.size() == 1);
         assertEquals(experimentIdOne, experimentSummaryModelList.get(0).getExperimentId());
+
+        // Test with empty accessibleExperimentIds
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                Collections.emptyList(),
+                                Collections.singletonMap(DBConstants.Experiment.GATEWAY_ID, gatewayId), -1, 0,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should return no experiments since none are accessible", 0, experimentSummaryModelList.size());
 
         filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
