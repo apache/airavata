@@ -1,33 +1,63 @@
-package org.apache.airavata.service.profile.utils;
+package org.apache.airavata.messaging.core.util;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
+import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.dbevent.*;
+import org.apache.airavata.model.dbevent.CrudType;
+import org.apache.airavata.model.dbevent.DBEventMessage;
+import org.apache.airavata.model.dbevent.DBEventMessageContext;
+import org.apache.airavata.model.dbevent.DBEventPublisher;
+import org.apache.airavata.model.dbevent.DBEventPublisherContext;
+import org.apache.airavata.model.dbevent.DBEventType;
+import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by goshenoy on 3/28/17.
+ * DBEventPublisherUtils
  */
-public class ProfileServiceUtils {
+public class DBEventPublisherUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger(ProfileServiceUtils.class);
-    private static Publisher dbEventPublisher = null;
+    private final static Logger logger = LoggerFactory.getLogger(DBEventPublisherUtils.class);
+    private Publisher dbEventPublisher = null;
+    private DBEventService publisherService;
+
+    public DBEventPublisherUtils(DBEventService dbEventService) {
+        this.publisherService = dbEventService;
+    }
+
+    /**
+     * Publish DB Event for given entity.
+     * @param entityType
+     * @param crudType
+     * @param entityModel
+     */
+    public void publish(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
+
+        getDbEventPublisher().publish(getDBEventMessageContext(entityType, crudType, entityModel),
+                DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString()));
+    }
 
     /**
      * Returns singleton instance of dbEventPublisher
      * @return
      * @throws AiravataException
      */
-    public static Publisher getDbEventPublisher() throws AiravataException {
-        if (dbEventPublisher == null) {
-            dbEventPublisher = MessagingFactory.getDBEventPublisher();
+    private Publisher getDbEventPublisher() throws AiravataException {
+        if(null == dbEventPublisher){
+            synchronized (this){
+                if(null == dbEventPublisher){
+                    logger.info("Creating DB Event publisher.....");
+                    dbEventPublisher = MessagingFactory.getDBEventPublisher();
+                    logger.info("DB Event publisher created");
+                }
+            }
         }
         return dbEventPublisher;
     }
@@ -40,7 +70,7 @@ public class ProfileServiceUtils {
      * @return
      * @throws AiravataException
      */
-    public static MessageContext getDBEventMessageContext(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
+    private MessageContext getDBEventMessageContext(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
         try {
             // set the publisherContext
             DBEventMessage dbEventMessage = new DBEventMessage();
@@ -58,7 +88,7 @@ public class ProfileServiceUtils {
 
             // set dbEventMessage with messageContext
             dbEventMessage.setDbEventType(DBEventType.PUBLISHER);
-            dbEventMessage.setPublisherService(DBEventManagerConstants.getDbEventServiceName(entityType));
+            dbEventMessage.setPublisherService(this.publisherService.toString());
             dbEventMessage.setMessageContext(dbMessageContext);
 
             // construct and return messageContext

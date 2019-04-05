@@ -22,12 +22,12 @@ package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
@@ -40,7 +40,6 @@ import org.apache.airavata.service.profile.tenant.core.repositories.TenantProfil
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
-import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -57,6 +56,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
     private TenantProfileRepository tenantProfileRepository;
+    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
 
     public TenantProfileServiceHandler() {
         logger.debug("Initializing TenantProfileServiceHandler");
@@ -85,10 +85,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
                     // replicate tenant at end-places only if status is APPROVED
                     if (gateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.APPROVED)) {
                         logger.info("Gateway with ID: {}, is now APPROVED, replicating to subscribers.", gateway.getGatewayId());
-                        ProfileServiceUtils.getDbEventPublisher().publish(
-                                ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.CREATE, gateway),
-                                DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
-                        );
+                        dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.CREATE, gateway);
                     }
                     // return internal id
                     return gateway.getAiravataInternalGatewayId();
@@ -123,10 +120,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             if (tenantProfileRepository.update(updatedGateway) != null) {
                 logger.debug("Updated gateway-profile with ID: " + updatedGateway.getGatewayId());
                 // replicate tenant at end-places
-                ProfileServiceUtils.getDbEventPublisher().publish(
-                        ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.UPDATE, updatedGateway),
-                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
-                );
+                dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.UPDATE, updatedGateway);
                 return true;
             } else {
                 return false;
@@ -164,16 +158,10 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             boolean deleteSuccess = tenantProfileRepository.delete(airavataInternalGatewayId);
             if (deleteSuccess) {
                 // delete tenant at end-places
-                ProfileServiceUtils.getDbEventPublisher().publish(
-                        ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.DELETE,
-                                 // pass along gateway datamodel, with correct gatewayId;
-                                 // approvalstatus is not used for delete, hence set dummy value
-                                new Gateway(gatewayId,
-                                        GatewayApprovalStatus.DEACTIVATED
-                                )
-                        ),
-                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
-                );
+                dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.DELETE,
+                        // pass along gateway datamodel, with correct gatewayId;
+                        // approvalstatus is not used for delete, hence set dummy value
+                        new Gateway(gatewayId, GatewayApprovalStatus.DEACTIVATED));
             }
             return deleteSuccess;
         } catch (Exception ex) {
