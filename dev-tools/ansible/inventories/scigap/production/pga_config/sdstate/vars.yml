@@ -57,7 +57,7 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7vqwM
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgrc-iu-group@iu.edu','Chad.Julius@sdstate.edu','Kevin.Brandt@sdstate.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu','Chad.Julius@sdstate.edu','Kevin.Brandt@sdstate.edu','luke.gassman@sdstate.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 #portal_theme: "searchingsra-gateway-theme"
