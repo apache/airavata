@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +40,6 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
     private final static Logger logger = LoggerFactory.getLogger(ExperimentSummaryRepository.class);
 
     public ExperimentSummaryRepository() { super(ExperimentSummaryModel.class, ExperimentSummaryEntity.class); }
-
-    public List<ExperimentSummaryModel> searchExperiments(Map<String, String> filters, int limit,
-                                                          int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        return searchAllAccessibleExperiments(null, filters, limit, offset, orderByIdentifier, resultOrderType);
-    }
 
     public List<ExperimentSummaryModel> searchAllAccessibleExperiments(List<String> accessibleExperimentIds, Map<String, String> filters, int limit,
                                                                        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException, IllegalArgumentException {
@@ -113,15 +109,15 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
         }
 
-        if (accessibleExperimentIds != null && !accessibleExperimentIds.isEmpty()) {
+        if (!accessibleExperimentIds.isEmpty()) {
             logger.debug("Filter Experiments by Accessible Experiment IDs");
             queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIds);
             query += " ES.experimentId IN :" + DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS;
         }
 
         else {
-            logger.debug("Removing the last operator from the query");
-            query = query.substring(0, query.length() - 5);
+            // If no experiments are accessible then immediately return an empty list
+            return new ArrayList<ExperimentSummaryModel>();
         }
 
         if (orderByIdentifier != null && resultOrderType != null && orderByIdentifier.equals(DBConstants.Experiment.CREATION_TIME)) {
