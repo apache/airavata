@@ -57,7 +57,8 @@ public class PreWorkflowManager extends WorkflowManager {
     private Subscriber subscriber;
 
     public PreWorkflowManager() throws ApplicationSettingsException {
-        super(ServerSettings.getSetting("pre.workflow.manager.name"));
+        super(ServerSettings.getSetting("pre.workflow.manager.name"),
+                Boolean.parseBoolean(ServerSettings.getSetting("pre.workflow.manager.loadbalance.clusters")));
     }
 
     private void initAllComponents() throws Exception {
