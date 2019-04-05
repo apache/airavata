@@ -38,7 +38,7 @@ auth_options:
     name: "Saver-X"
   external:
     - name: "Existing Institute Login"
-     idp_alias: "cilogon"
+      idp_alias: "cilogon"
 
 gateway_id: "saver-x"
 experiment_data_dir: "{{ user_data_dir }}/django-saver-x"
