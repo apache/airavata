@@ -122,7 +122,7 @@ public class WorkflowManager {
 
     public WorkflowOperator getWorkflowOperator() {
         currentOperator++;
-        if (workflowOperators.size() >= currentOperator) {
+        if (workflowOperators.size() <= currentOperator) {
             currentOperator = 0;
         }
         return workflowOperators.get(currentOperator);
