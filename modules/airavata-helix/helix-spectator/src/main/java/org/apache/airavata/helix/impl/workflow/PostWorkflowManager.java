@@ -59,7 +59,8 @@ public class PostWorkflowManager extends WorkflowManager {
     private final static Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
 
     public PostWorkflowManager() throws ApplicationSettingsException {
-        super(ServerSettings.getSetting("post.workflow.manager.name"));
+        super(ServerSettings.getSetting("post.workflow.manager.name"),
+                Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
 
     private void init() throws Exception {

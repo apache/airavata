@@ -47,7 +47,8 @@ public class ParserWorkflowManager extends WorkflowManager {
     private ParserRequest parserRequest;
 
     public ParserWorkflowManager(ParserRequest parserRequest) throws ApplicationSettingsException {
-        super(ServerSettings.getSetting("parser.workflow.manager.name"));
+        super(ServerSettings.getSetting("parser.workflow.manager.name"),
+                Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
         this.parserRequest = parserRequest;
     }
 

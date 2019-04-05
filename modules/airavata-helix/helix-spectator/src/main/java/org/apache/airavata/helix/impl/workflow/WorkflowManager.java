@@ -22,10 +22,15 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.helix.manager.zk.ZKHelixAdmin;
+import org.apache.helix.manager.zk.ZNRecordSerializer;
+import org.apache.helix.manager.zk.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class WorkflowManager {
 
@@ -33,26 +38,47 @@ public class WorkflowManager {
 
     private Publisher statusPublisher;
     private CuratorFramework curatorClient = null;
-    private WorkflowOperator workflowOperator;
+    private List<WorkflowOperator> workflowOperators = new ArrayList<>();
     private ThriftClientPool<RegistryService.Client> registryClientPool;
     private String workflowManagerName;
+    private ZKHelixAdmin zkHelixAdmin;
+    private boolean loadBalanceClusters;
 
-    public WorkflowManager(String workflowManagerName) {
+    private int currentOperator = 0;
+
+    public WorkflowManager(String workflowManagerName, boolean loadBalanceClusters) {
         this.workflowManagerName = workflowManagerName;
+        this.loadBalanceClusters = loadBalanceClusters;
     }
 
     protected void initComponents() throws Exception {
         initRegistryClientPool();
-        initWorkflowOperatorr();
+        initHelixAdmin();
+        initWorkflowOperators();
         initStatusPublisher();
         initCuratorClient();
+
     }
 
-    private void initWorkflowOperatorr() throws Exception {
-        workflowOperator = new WorkflowOperator(
-                ServerSettings.getSetting("helix.cluster.name"),
-                workflowManagerName,
-                ServerSettings.getZookeeperConnection());
+    private void initWorkflowOperators() throws Exception {
+
+        if (!loadBalanceClusters) {
+            logger.info("Using default cluster " + ServerSettings.getSetting("helix.cluster.name") + " to submit workflows");
+            workflowOperators.add(new WorkflowOperator(
+                    ServerSettings.getSetting("helix.cluster.name"),
+                    workflowManagerName,
+                    ServerSettings.getZookeeperConnection()));
+        } else {
+            logger.info("Load balancing workflows among existing clusters");
+            List<String> clusters = zkHelixAdmin.getClusters();
+            logger.info("Total available clusters " + clusters.size());
+            for (String cluster : clusters) {
+                workflowOperators.add(new WorkflowOperator(
+                        cluster,
+                        workflowManagerName,
+                        ServerSettings.getZookeeperConnection()));
+            }
+        }
     }
 
     private void initStatusPublisher() throws AiravataException {
@@ -65,6 +91,11 @@ public class WorkflowManager {
         this.curatorClient.start();
     }
 
+    private void initHelixAdmin() throws ApplicationSettingsException {
+        ZkClient zkClient = new ZkClient(ServerSettings.getZookeeperConnection(), ZkClient.DEFAULT_SESSION_TIMEOUT,
+                ZkClient.DEFAULT_CONNECTION_TIMEOUT, new ZNRecordSerializer());
+        zkHelixAdmin = new ZKHelixAdmin(zkClient);
+    }
     private void initRegistryClientPool() throws ApplicationSettingsException {
 
         GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
@@ -90,7 +121,11 @@ public class WorkflowManager {
     }
 
     public WorkflowOperator getWorkflowOperator() {
-        return workflowOperator;
+        currentOperator++;
+        if (workflowOperators.size() >= currentOperator) {
+            currentOperator = 0;
+        }
+        return workflowOperators.get(currentOperator);
     }
 
     public ThriftClientPool<RegistryService.Client> getRegistryClientPool() {
