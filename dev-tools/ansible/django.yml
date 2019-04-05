@@ -24,6 +24,8 @@
   name: webserver setup
   roles:
     - env_setup
+    # Oracle JDK is needed by Django apps that call Java code (e.g., SimCCS Maptool)
+    - java
     - httpd
 
 # Create a django virtual host

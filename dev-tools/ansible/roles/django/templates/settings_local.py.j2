@@ -106,3 +106,8 @@ SHARING_API_SECURE = False
 
 # Portal settings
 PORTAL_TITLE = '{{ portal_title }}'
+
+# Extra settings
+{% for extra_setting in django_extra_settings.items() | list %}
+{{ extra_setting[0] }} = '{{ extra_setting[1] }}'
+{% endfor %}

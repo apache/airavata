@@ -49,6 +49,9 @@ auth_options:
     - name: "CILogon"
       idp_alias: "cilogon"
 
+django_extra_settings:
+  JAVA_HOME: "/usr/java/default"
+
 gateway_id: "simccs"
 experiment_data_dir: "{{ user_data_dir }}/django-simccs"
 
