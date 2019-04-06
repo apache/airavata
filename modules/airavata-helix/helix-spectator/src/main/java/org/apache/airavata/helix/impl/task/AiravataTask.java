@@ -189,38 +189,14 @@ public abstract class AiravataTask extends AbstractTask {
                 status.setTimeOfStateChange(status.getTimeOfStateChange());
             }
             getRegistryServiceClient().addProcessStatus(status, getProcessId());
-            ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
+            /*ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
             ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
             MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
                     AiravataUtils.getId(MessageType.PROCESS.name()), getGatewayId());
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
+            getStatusPublisher().publish(msgCtx);*/
         } catch (Exception e) {
             logger.error("Failed to save process status of process " + getProcessId(), e);
-        }
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    protected void saveAndPublishTaskStatus() {
-        try {
-            TaskState state = getTaskContext().getTaskState();
-            // first we save job jobModel to the registry for sa and then save the job status.
-            TaskStatus status = getTaskContext().getTaskStatus();
-            if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
-                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            }else {
-                status.setTimeOfStateChange(status.getTimeOfStateChange());
-            }
-            getRegistryServiceClient().addTaskStatus(status, getTaskId());
-            TaskIdentifier identifier = new TaskIdentifier(getTaskId(), getProcessId(), getExperimentId(), getGatewayId());
-            TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(state,
-                    identifier);
-            MessageContext msgCtx = new MessageContext(taskStatusChangeEvent, MessageType.TASK, AiravataUtils.getId
-                    (MessageType.TASK.name()), getGatewayId());
-            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
-        } catch (Exception e) {
-            logger.error("Failed to publist task status of task " + getTaskId());
         }
     }
 
@@ -242,13 +218,13 @@ public abstract class AiravataTask extends AbstractTask {
 
             getRegistryServiceClient().addJobStatus(jobStatus, taskId, jobId);
 
-            JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
+            /*JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
 
             JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
             MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
                     (MessageType.JOB.name()), gateway);
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
+            getStatusPublisher().publish(msgCtx);*/
 
         } catch (Exception e) {
             logger.error("Error persisting job status " + e.getLocalizedMessage(), e);
@@ -320,17 +296,6 @@ public abstract class AiravataTask extends AbstractTask {
             logger.error("expId: " + getExperimentId() + " processId: " + getProcessId() + " taskId: " + getTaskId()
                     + " : - Error while updating task errors", e);
         }
-    }
-
-    protected Publisher getStatusPublisher() throws AiravataException {
-        if (statusPublisher == null) {
-            synchronized (RabbitMQPublisher.class) {
-                if (statusPublisher == null) {
-                    statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
-                }
-            }
-        }
-        return statusPublisher;
     }
 
     @Override
@@ -419,7 +384,6 @@ public abstract class AiravataTask extends AbstractTask {
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId())
                     .setRegistryClient(getRegistryServiceClient())
                     .setProcessModel(getProcessModel())
-                    .setStatusPublisher(getStatusPublisher())
                     .setGatewayResourceProfile(getRegistryServiceClient().getGatewayResourceProfile(gatewayId))
                     .setGatewayComputeResourcePreference(
                             getRegistryServiceClient().getGatewayComputeResourcePreference(gatewayId,
@@ -445,14 +409,14 @@ public abstract class AiravataTask extends AbstractTask {
             taskStatus.setState(ts);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             getRegistryServiceClient().addTaskStatus(taskStatus, getTaskId());
-            TaskIdentifier identifier = new TaskIdentifier(getTaskId(),
+            /*TaskIdentifier identifier = new TaskIdentifier(getTaskId(),
                     getProcessId(), getExperimentId(), getGatewayId());
             TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(ts,
                     identifier);
             MessageContext msgCtx = new MessageContext(taskStatusChangeEvent, MessageType.TASK, AiravataUtils.getId
                     (MessageType.TASK.name()), getGatewayId());
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            statusPublisher.publish(msgCtx);
+            statusPublisher.publish(msgCtx);*/
         } catch (Exception e) {
             logger.error("Failed to publish task status " + (ts != null ? ts.name(): "null") +" of task " + getTaskId());
         }
