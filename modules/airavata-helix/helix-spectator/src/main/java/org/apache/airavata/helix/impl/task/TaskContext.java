@@ -59,7 +59,6 @@ public class TaskContext {
 
     private final static Logger logger = LoggerFactory.getLogger(TaskContext.class);
     // process model
-    private Publisher statusPublisher;
     private final String processId;
     private final String gatewayId;
     //private final String tokenId;
@@ -125,14 +124,6 @@ public class TaskContext {
 
     public String getTaskId() {
         return taskId;
-    }
-
-    public Publisher getStatusPublisher() {
-        return statusPublisher;
-    }
-
-    public void setStatusPublisher(Publisher statusPublisher) {
-        this.statusPublisher = statusPublisher;
     }
 
     public ProcessModel getProcessModel() {
@@ -695,7 +686,6 @@ public class TaskContext {
         private final String gatewayId;
         private final String taskId;
         private RegistryService.Client registryClient;
-        private Publisher statusPublisher;
         private GatewayResourceProfile gatewayResourceProfile;
         private ComputeResourcePreference gatewayComputeResourcePreference;
         private StoragePreference gatewayStorageResourcePreference;
@@ -736,11 +726,6 @@ public class TaskContext {
             return this;
         }
 
-        public TaskContextBuilder setStatusPublisher(Publisher statusPublisher) {
-            this.statusPublisher = statusPublisher;
-            return this;
-        }
-
         public TaskContext build() throws Exception {
             if (notValid(gatewayResourceProfile)) {
                 throwError("Invalid GatewayResourceProfile");
@@ -757,13 +742,9 @@ public class TaskContext {
             if (notValid(registryClient)) {
                 throwError("Invalid Registry Client");
             }
-            if (notValid(statusPublisher)) {
-                throwError("Invalid Status Publisher");
-            }
 
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
             ctx.setRegistryClient(registryClient);
-            ctx.setStatusPublisher(statusPublisher);
             ctx.setProcessModel(processModel);
             ctx.setGatewayResourceProfile(gatewayResourceProfile);
             ctx.setGatewayComputeResourcePreference(gatewayComputeResourcePreference);
