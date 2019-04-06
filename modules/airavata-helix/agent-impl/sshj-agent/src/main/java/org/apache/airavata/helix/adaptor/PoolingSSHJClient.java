@@ -63,7 +63,7 @@ public class PoolingSSHJClient extends SSHClient {
     private String host;
     private int port;
 
-    private int maxSessionsForConnection = 1;
+    private int maxSessionsForConnection = 10;
     private long maxConnectionIdleTimeMS = 10 * 60 * 1000;
 
     public void addHostKeyVerifier(HostKeyVerifier verifier) {
