@@ -20,6 +20,7 @@
 
 ---
 doc_root_dir: "/var/www/django-{{ gateway_id }}"
+static_root_dir: "{{ doc_root_dir }}/static/"
 user_data_dir: "/var/www/user_data"
 django_venv_dir: "{{ doc_root_dir }}/venv"
 # real_user_data_dir is the same as user_data_dir but without symbolic links in it
