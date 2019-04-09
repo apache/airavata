@@ -1,4 +1,5 @@
 const BundleTracker = require("webpack-bundle-tracker");
+const staticDir = process.env.STATIC_ROOT ? process.env.STATIC_ROOT + "common/" : "./";
 
 module.exports = {
   publicPath: "/static/common/dist/",
@@ -10,7 +11,7 @@ module.exports = {
     plugins: [
       new BundleTracker({
         filename: "webpack-stats.json",
-        path: "./dist/"
+        path: staticDir + "dist/"
       })
     ]
   }
