@@ -2,10 +2,13 @@
   <div>
     <div class="row">
       <div class="col">
-        <h1 class="h4 mb-4">
+        <h1 class="h4 mb-1">
           {{ name }}
         </h1>
-        <share-button v-if="localSharedEntity" :shared-entity="localSharedEntity" @saved="savedSharedEntity" @unsaved="unsavedSharedEntity"
+        <p v-if="owner" class="mb-2 text-muted">
+          Created by <span :title="ownerTitle">{{ ownerUserId }}</span>
+        </p>
+        <share-button class="mt-2 mb-2" v-if="localSharedEntity" :shared-entity="localSharedEntity" @saved="savedSharedEntity" @unsaved="unsavedSharedEntity"
         />
         <b-form-group label="Application Executable Path" label-for="executable-path">
           <b-form-input id="executable-path" type="text" v-model="data.executablePath" required :disabled="readonly"></b-form-input>
@@ -145,6 +148,15 @@ export default {
     },
     defaultQueueAttributesDisabled() {
       return !this.data.defaultQueueName || this.readonly;
+    },
+    owner() {
+      return this.localSharedEntity && this.localSharedEntity.owner ? this.localSharedEntity.owner : null;
+    },
+    ownerUserId() {
+      return this.owner ? this.owner.userId : null;
+    },
+    ownerTitle() {
+      return this.owner ? this.owner.firstName + " " + this.owner.lastName + " (" + this.owner.email + ")": null;
     }
   },
   created() {
