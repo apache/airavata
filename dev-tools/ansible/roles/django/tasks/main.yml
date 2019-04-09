@@ -68,6 +68,8 @@
 
 - name: Build JS
   command: bash {{ airavata_django_checkout }}/build_js.sh
+  environment:
+    STATIC_ROOT: "{{ static_root_dir }}"
   become: yes
   become_user: "{{user}}"
 
