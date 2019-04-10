@@ -82,7 +82,7 @@
                 Application Inputs
               </h2>
 
-
+              <transition-group name="fade">
               <input-editor-container id="experimentInputValue"
               v-for="experimentInput in localExperiment.experimentInputs"
                                       :experiment-input="experimentInput"
@@ -93,7 +93,7 @@
                                       @valid="recordValidInputEditorValue(experimentInput.name)"
                                       @input="inputValueChanged"
               />
-
+              </transition-group>
 
             </div>
           </div>
