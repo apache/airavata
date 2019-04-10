@@ -46,11 +46,11 @@
 
 - name: Install additional dependencies
   pip:
-    name: "{{ airavata_django_extra_dependencies }}"
+    name: "{{ item }}"
     virtualenv: "{{ django_venv_dir }}"
   become: yes
   become_user: "{{user}}"
-  when: airavata_django_extra_dependencies | length > 0
+  with_list: "{{ airavata_django_extra_dependencies }}"
 
 - name: Copy the settings_local.py file
   template: src={{ django_settings_local_template }} dest="{{ airavata_django_checkout }}/django_airavata/settings_local.py" owner="{{user}}" group="{{group}}"
@@ -120,6 +120,12 @@
   notify:
     - restart httpd
   when: ansible_os_family == "RedHat"
+
+- name: Allow Django code to execute Java code (Pyjnius, see https://github.com/SciGaP/simccs-maptool)
+  seboolean:
+    name: httpd_execmem
+    state: yes
+    persistent: yes
 
 - name: run restorecon on those directories
   command: restorecon -F -R {{ doc_root_dir }}
