@@ -3,6 +3,7 @@ db.sqlite3
 settings_local.py
 .DS_Store
 node_modules
+.idea/
 dist/
 ENV
 venv/
