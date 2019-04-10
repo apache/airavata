@@ -37,7 +37,7 @@ from django_airavata.apps.api.view_utils import (
     GenericAPIBackedViewSet
 )
 
-from . import datastore, models, serializers, thrift_utils
+from . import datastore, helpers, models, serializers, thrift_utils
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -122,11 +122,13 @@ class ProjectViewSet(APIBackedViewSet):
         project_id = self.request.airavata_client.createProject(
             self.authz_token, self.gateway_id, project)
         project.projectID = project_id
+        self._update_most_recent_project(project_id)
 
     def perform_update(self, serializer):
         project = serializer.save()
         self.request.airavata_client.updateProject(
             self.authz_token, project.projectID, project)
+        self._update_most_recent_project(project.projectID)
 
     @list_route()
     def list_all(self, request):
@@ -143,6 +145,11 @@ class ProjectViewSet(APIBackedViewSet):
         serializer = serializers.ExperimentSerializer(
             experiments, many=True, context={'request': request})
         return Response(serializer.data)
+
+    def _update_most_recent_project(self, project_id):
+        prefs = helpers.WorkspacePreferencesHelper().get(self.request)
+        prefs.most_recent_project_id = project_id
+        prefs.save()
 
 
 class ExperimentViewSet(APIBackedViewSet):
@@ -164,6 +171,7 @@ class ExperimentViewSet(APIBackedViewSet):
         self._set_storage_id_and_data_dir(experiment)
         experiment_id = self.request.airavata_client.createExperiment(
             self.authz_token, self.gateway_id, experiment)
+        self._update_most_recent_project(experiment.projectId)
         experiment.experimentId = experiment_id
 
     def perform_update(self, serializer):
@@ -174,6 +182,7 @@ class ExperimentViewSet(APIBackedViewSet):
         self._set_storage_id_and_data_dir(experiment)
         self.request.airavata_client.updateExperiment(
             self.authz_token, experiment.experimentId, experiment)
+        self._update_most_recent_project(experiment.projectId)
         # Process experiment._removed_input_files, removing them from storage
         for removed_input_file in experiment._removed_input_files:
             data_product = self.request.airavata_client.getDataProduct(
@@ -286,6 +295,11 @@ class ExperimentViewSet(APIBackedViewSet):
                     log.warning("Setting cloned input {} to null".format(
                         experiment_input.name))
                     experiment_input.value = None
+
+    def _update_most_recent_project(self, project_id):
+        prefs = helpers.WorkspacePreferencesHelper().get(self.request)
+        prefs.most_recent_project_id = project_id
+        prefs.save()
 
 
 class ExperimentSearchViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
@@ -1138,48 +1152,8 @@ class WorkspacePreferencesView(APIView):
     serializer_class = serializers.WorkspacePreferencesSerializer
 
     def get(self, request, format=None):
-        try:
-            workspace_preferences = models.WorkspacePreferences.objects.get(
-                username=request.user.username)
-            self._check(request, workspace_preferences)
-        except ObjectDoesNotExist as e:
-            workspace_preferences = self._create_default(request)
-            workspace_preferences.save()
+        helper = helpers.WorkspacePreferencesHelper()
+        workspace_preferences = helper.get(request)
         serializer = self.serializer_class(
             workspace_preferences, context={'request': request})
         return Response(serializer.data)
-
-    def _create_default(self, request):
-        workspace_preferences = models.WorkspacePreferences.create(
-            request.user.username)
-        most_recent_project = self._get_most_recent_project(request)
-        workspace_preferences.most_recent_project_id = \
-            most_recent_project.projectID
-        return workspace_preferences
-
-    def _get_most_recent_project(self, request):
-        "Return most recent writeable project."
-        projects = request.airavata_client.getUserProjects(
-            request.authz_token, settings.GATEWAY_ID, request.user.username,
-            -1, 0)
-        for project in projects:
-            if self._can_write(request, project.projectID):
-                return project
-        return None
-
-    def _check(self, request, prefs):
-        "Validate preference values and update as needed."
-        if (not prefs.most_recent_project_id or
-                not self._can_write(request, prefs.most_recent_project_id)):
-            most_recent_project = self._get_most_recent_project(request)
-            log.warn(
-                "_check: updating most_recent_project_id to {}".format(
-                    most_recent_project.projectID))
-            prefs.most_recent_project_id = most_recent_project.projectID
-            prefs.save()
-
-    def _can_write(self, request, entity_id):
-        return request.airavata_client.userHasAccess(
-            request.authz_token,
-            entity_id,
-            ResourcePermissionType.WRITE)
