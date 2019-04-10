@@ -97,8 +97,6 @@ public interface QueryConstants {
     String FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES = "SELECT G FROM " + GroupResourceProfileEntity.class.getSimpleName() + " G " +
             "WHERE G.gatewayId LIKE :" + DBConstants.GroupResourceProfile.GATEWAY_ID + " AND G.groupResourceProfileId IN :"
             + DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS;
-    String FIND_ALL_GROUP_RESOURCE_PROFILES = "SELECT G FROM " + GroupResourceProfileEntity.class.getSimpleName() + " G " +
-            "WHERE G.gatewayId LIKE :" + DBConstants.GroupResourceProfile.GATEWAY_ID;
     String FIND_ALL_GROUP_COMPUTE_PREFERENCES = "SELECT GC FROM "+ GroupComputeResourcePrefEntity.class.getSimpleName() + " GC " +
             "WHERE GC.groupResourceProfileId LIKE :" + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
     String FIND_ALL_GROUP_BATCH_QUEUE_RESOURCE_POLICY = "SELECT BQ FROM "+ BatchQueueResourcePolicyEntity.class.getSimpleName() + " BQ " +

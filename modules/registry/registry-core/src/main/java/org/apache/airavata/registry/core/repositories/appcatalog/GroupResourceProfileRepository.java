@@ -29,6 +29,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfil
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,9 +108,9 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         if (accessibleGroupResProfileIds != null && !accessibleGroupResProfileIds.isEmpty()) {
             queryParameters.put(DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS, accessibleGroupResProfileIds);
             return select(QueryConstants.FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES, -1, 0, queryParameters);
+        } else {
+            return Collections.emptyList();
         }
-        List<GroupResourceProfile> groupResourceProfileList = select(QueryConstants.FIND_ALL_GROUP_RESOURCE_PROFILES, -1, 0, queryParameters);
-        return groupResourceProfileList;
     }
 
     public boolean removeGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId) {

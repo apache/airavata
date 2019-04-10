@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -203,7 +204,8 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         assertTrue(getBatchQueuePolicy.getMaxAllowedCores() == 3);
         assertTrue(getBatchQueuePolicy.getMaxAllowedWalltime() == 12);
 
-        assertTrue(groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, null).size() == 1);
+        assertTrue(groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, null).size() == 0);
+        assertTrue(groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, Collections.emptyList()).size() == 0);
         assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId).size() == 2);
         assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId).size() == 2);
         assertTrue(groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId).size() == 2);
