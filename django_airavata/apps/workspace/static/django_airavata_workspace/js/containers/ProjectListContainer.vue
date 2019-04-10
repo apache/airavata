@@ -5,6 +5,7 @@
                 <h1 class="h4 mb-4">Browse Projects</h1>
             </div>
             <div id="col-new-project" class="col">
+                <add-file-button></add-file-button>
                 <project-button-new @new-project="onNewProject"/>
             </div>
         </div>
@@ -28,6 +29,7 @@ import ProjectList from '../components/project/ProjectList.vue'
 
 import { services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
+import AddFileButton from "../components/project/AddFileButton";
 
 export default {
     props: ['initialProjectsData'],
@@ -40,7 +42,9 @@ export default {
     components: {
         'project-list': ProjectList,
         'project-button-new': ProjectButtonNew,
+        'add-file-button':AddFileButton,
         'pager': comps.Pager,
+
     },
     methods: {
         nextProjects: function() {
