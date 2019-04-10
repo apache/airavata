@@ -53,6 +53,12 @@
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
     </Directory>
 
+    Alias /media/ {{ airavata_django_checkout }}/django_airavata/media/
+
+    <Directory {{ airavata_django_checkout }}/django_airavata/media>
+        Require all granted
+    </Directory>
+
     WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes={{ django_wsgi_processes }} user={{ user }} group={{ group }}
     WSGIProcessGroup {{ vhost_servername }}
 
