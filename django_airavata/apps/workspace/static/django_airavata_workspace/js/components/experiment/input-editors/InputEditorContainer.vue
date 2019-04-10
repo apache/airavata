@@ -12,6 +12,8 @@
 </template>
 
 <script>
+
+import UserFileInputEditor from "./UserFileInputEditor.vue";
 import CheckboxInputEditor from "./CheckboxInputEditor.vue";
 import FileInputEditor from './FileInputEditor.vue'
 import InputEditorFormGroup from './InputEditorFormGroup.vue'
@@ -33,6 +35,7 @@ export default {
     },
     components: {
         CheckboxInputEditor,
+        UserFileInputEditor,
         FileInputEditor,
         InputEditorFormGroup,
         RadioButtonInputEditor,
@@ -56,16 +59,18 @@ export default {
     },
     computed: {
         inputEditorComponentName: function() {
-            // If input specifices an editor UI component, use that
-            if (this.experimentInput.editorUIComponentId) {
-                return this.experimentInput.editorUIComponentId;
-            }
-            // Default UI components based on input type
-            if (this.experimentInput.type === models.DataType.STRING) {
-                return 'string-input-editor';
-            } else if (this.experimentInput.type === models.DataType.URI) {
-                return 'file-input-editor';
-            }
+
+          if (this.experimentInput.editorUIComponentId) {
+            return this.experimentInput.editorUIComponentId;
+          }
+// Default UI components based on input type
+          if (this.experimentInput.type === models.DataType.STRING) {
+            return 'string-input-editor';
+          } else if (this.experimentInput.type === models.DataType.URI) {
+            return 'user-file-input-editor';
+            // return 'file-input-editor';
+          }
+
             // Default
             return 'string-input-editor';
         },

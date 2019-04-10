@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -7,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
+from django.core.files.storage import FileSystemStorage
 from rest_framework.decorators import action, detail_route, list_route
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
@@ -36,6 +38,8 @@ from django_airavata.apps.api.view_utils import (
     APIResultPagination,
     GenericAPIBackedViewSet
 )
+
+from django_airavata.apps.workspace.models import User_Files
 
 from . import datastore, serializers, thrift_utils
 
@@ -709,6 +713,102 @@ class DataProductView(APIView):
             data_product, context={'request': request})
         return Response(serializer.data)
 
+experiment_data_storage = FileSystemStorage(
+    location=settings.GATEWAY_DATA_STORE_DIR)
+
+@login_required
+def get_user_files(request):
+    try:
+
+        dirs=[]
+        for o in User_Files.objects.values_list('file_name','file_dpu'):
+            #print(o)
+            file_details={}
+            file_details['file_name']=o[0];
+            file_details['file_dpu']=o[1];
+            dirs.append(file_details);
+
+
+        #print (dirs)
+        dirs_result=json.dumps(dirs)
+        return JsonResponse({'uploaded': True,'user-files':dirs_result})
+
+    except Exception as e:
+        resp = JsonResponse({'found': False, 'error': str(e)})
+        resp.status_code = 500
+        return resp
+
+@login_required
+def upload_user_file(request):
+    try:
+        username = request.user.username
+        input_file = request.FILES['file']
+
+        file_details={}
+
+        #check user_file.name already exists or not
+
+        if User_Files.objects.filter(file_name = input_file.name).exists():
+            resp = JsonResponse({'uploaded': False, 'error': "File already exists"})
+            resp.status_code = 400
+            return resp
+
+        else:
+
+            data_product = datastore.save_user(username, input_file)
+            data_product_uri = request.airavata_client.registerDataProduct(
+                request.authz_token, data_product)
+            # print("CAME HERE ON FILE UPLOAD",data_product_uri)
+
+            #save in userfiles database
+            d=User_Files(file_name=input_file.name, file_dpu=data_product_uri)
+            d.save()
+            file_details['file_name']=d.file_name
+            file_details['file_dpu']=d.file_dpu
+
+        #print(data_product_uri)
+        #save file and data_product_uri to database
+        # print("printing from database: ")
+        # print(d.file_name,d.file_dpu)
+
+        return JsonResponse({'uploaded': True,
+                             'upload-file': file_details})
+    except Exception as e:
+        log.error("Failed to upload file", exc_info=True)
+        resp = JsonResponse({'uploaded': False, 'error': str(e)})
+        resp.status_code = 500
+        return resp
+
+@login_required
+def delete_user_file(request):
+    try:
+        username = request.user.username
+        data_product_uri = request.body.decode('utf-8');
+        data_product = None
+        try:
+            data_product = request.airavata_client.getDataProduct(
+                request.authz_token, data_product_uri)
+
+        except Exception as e:
+            log.warning("Failed to load DataProduct for {}"
+            .format(data_product_uri), exc_info=True)
+            raise Http404("data product does not exist")(e)
+
+        if datastore.delete(data_product) :
+            User_Files.objects.filter(file_dpu=data_product_uri).delete()
+
+        # print(request)
+        # print(request.user.username)
+
+
+
+        return JsonResponse({'deleted': True})
+
+    except Exception as e:
+        log.error("Failed to delete file", exc_info=True)
+        resp = JsonResponse({'deleted': False, 'error': str(e)})
+        resp.status_code = 500
+        return resp
 
 @login_required
 def upload_input_file(request):
@@ -723,6 +823,8 @@ def upload_input_file(request):
                                       input_file)
         data_product_uri = request.airavata_client.registerDataProduct(
             request.authz_token, data_product)
+        print("CAME HERE ON FILE UPLOAD",data_product_uri)
+
         return JsonResponse({'uploaded': True,
                              'data-product-uri': data_product_uri})
     except Exception as e:

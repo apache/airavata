@@ -80,25 +80,26 @@
               <h2 class="h6 mb-3">
                 Application Inputs
               </h2>
-              <transition-group name="fade">
-                <input-editor-container
-                  v-for="experimentInput in localExperiment.experimentInputs"
-                  :experiment-input="experimentInput"
-                  v-model="experimentInput.value"
-                  v-show="experimentInput.show"
-                  :key="experimentInput.name"
-                  @invalid="recordInvalidInputEditorValue(experimentInput.name)"
-                  @valid="recordValidInputEditorValue(experimentInput.name)"
-                  @input="inputValueChanged"
-                />
-              </transition-group>
+
+
+              <input-editor-container id="experimentInputValue"
+              v-for="experimentInput in localExperiment.experimentInputs"
+                                      :experiment-input="experimentInput"
+                                      v-model="experimentInput.value"
+                                      v-show="experimentInput.show"
+                                      :key="experimentInput.name"
+                                      @invalid="recordInvalidInputEditorValue(experimentInput.name)"
+                                      @valid="recordValidInputEditorValue(experimentInput.name)"
+                                      @input="inputValueChanged"
+              />
+
+
             </div>
           </div>
         </div>
-      </div>
-      <div class="row">
+
         <div class="col">
-          <h2 class="h4 mt-4 mb-3">
+          <h2 class="h4 mt-4 mb-3">dat
             Resource Selection
           </h2>
         </div>
@@ -163,8 +164,10 @@ export default {
   data() {
     return {
       projects: [],
+      userfiles:{},
       localExperiment: this.experiment.clone(),
-      invalidInputs: []
+      invalidInputs: [],
+      input_name:''
     };
   },
   components: {
@@ -184,7 +187,9 @@ export default {
         value: project.projectID,
         text: project.name
       }));
+
     },
+
     valid: function() {
       const validation = this.localExperiment.validate();
       return (
@@ -237,29 +242,41 @@ export default {
     uploadInputFiles: function() {
       let uploads = [];
       this.localExperiment.experimentInputs.forEach(input => {
-        if (
-          input.type === models.DataType.URI &&
-          input.value &&
-          input.value instanceof File
-        ) {
-          let data = new FormData();
-          data.append("file", input.value);
-          data.append("project-id", this.localExperiment.projectId);
-          data.append("experiment-name", this.localExperiment.experimentName);
-          let uploadRequest = apiUtils.FetchUtils.post(
-            "/api/upload",
-            data
-          ).then(result => (input.value = result["data-product-uri"]));
-          uploads.push(uploadRequest);
-        }
-      });
-      return Promise.all(uploads);
+              if (
+                input.type === models.DataType.URI &&
+                input.value &&
+                input.value instanceof File
+              ) {
+                let data = new FormData();
+                data.append("file", input.value);
+                data.append("project-id", this.localExperiment.projectId);
+                data.append("experiment-name", this.localExperiment.experimentName);
+                let uploadRequest = apiUtils.FetchUtils.post(
+                  "/api/upload",
+                  data
+                ).then(result => (input.value = result["data-product-uri"]));
+                uploads.push(uploadRequest);
+              }
+            });
+            return Promise.all(uploads);
+      // if(this.userfiles[this.input_name]){
+      //   this.localExperiment.experimentInputs.value=this.userfiles[this.input_name]
+      //   this.localExperiment.experimentInputs.type=models.DataType.URI
+      //   uploads.push({'uploaded': 'True'});
+      // }
+      //
+      // return Promise.all(uploads);
+
+
     },
     getValidationFeedback: function(properties) {
       return utils.getProperty(this.localExperiment.validate(), properties);
     },
     getValidationState: function(properties) {
       return this.getValidationFeedback(properties) ? "invalid" : null;
+
+
+
     },
     recordInvalidInputEditorValue: function(experimentInputName) {
       if (!this.invalidInputs.includes(experimentInputName)) {
