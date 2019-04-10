@@ -31,7 +31,6 @@ import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
-import FullExperimentService from "./services/FullExperimentService";
 import ProjectService from "./services/ProjectService";
 import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
@@ -97,7 +96,7 @@ const services = {
   DataProductService: ServiceFactory.service("DataProducts"),
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
   ExperimentService: ServiceFactory.service("Experiments"),
-  FullExperimentService,
+  FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
     "GatewayResourceProfiles"
   ),

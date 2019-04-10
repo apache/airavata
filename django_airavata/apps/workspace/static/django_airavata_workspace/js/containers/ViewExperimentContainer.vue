@@ -32,7 +32,7 @@ export default {
     computed: {
     },
     beforeMount: function () {
-        services.FullExperimentService.get(this.initialFullExperimentData.experimentId, this.initialFullExperimentData)
+        services.FullExperimentService.retrieve({lookup: this.initialFullExperimentData.experimentId, initialFullExperimentData: this.initialFullExperimentData})
             .then(exp => this.fullExperiment = exp);
     }
 }

@@ -7,6 +7,7 @@ import CredentialSummary from "./models/CredentialSummary";
 import DataProduct from "./models/DataProduct";
 import Experiment from "./models/Experiment";
 import ExperimentSummary from "./models/ExperimentSummary";
+import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
@@ -179,6 +180,16 @@ export default {
     modelClass: ExperimentSummary,
     pagination: true,
     queryParams: ["limit", "offset"]
+  },
+  FullExperiments: {
+    url: "/api/full-experiments",
+    viewSet: [
+      {
+        name: "retrieve",
+        initialDataParam: "initialFullExperimentData"
+      }
+    ],
+    modelClass: FullExperiment
   },
   GatewayResourceProfiles: {
     url: "/api/gateway-resource-profiles/",

@@ -70,7 +70,7 @@ export default {
     url,
     body,
     queryParams = "",
-    { mediaType = "application/json", ignoreErrors = false } = {}
+    { mediaType = "application/json", ignoreErrors = false, showSpinner = true } = {}
   ) {
     var headers = this.createHeaders(mediaType);
     // Browsers automatically handle content type for FormData request bodies
@@ -86,13 +86,14 @@ export default {
           : JSON.stringify(body),
       headers: headers,
       credentials: "same-origin",
-      ignoreErrors
+      ignoreErrors,
+      showSpinner
     });
   },
   put: function(
     url,
     body,
-    { mediaType = "application/json", ignoreErrors = false } = {}
+    { mediaType = "application/json", ignoreErrors = false, showSpinner = true } = {}
   ) {
     var headers = this.createHeaders(mediaType);
     return this.processFetch(url, {
@@ -103,13 +104,14 @@ export default {
           : JSON.stringify(body),
       headers: headers,
       credentials: "same-origin",
-      ignoreErrors
+      ignoreErrors,
+      showSpinner
     });
   },
   get: function(
     url,
     queryParams = "",
-    { mediaType = "application/json", ignoreErrors = false } = {}
+    { mediaType = "application/json", ignoreErrors = false, showSpinner = true } = {}
   ) {
     if (queryParams && typeof queryParams != "string") {
       queryParams = Object.keys(queryParams)
@@ -127,16 +129,18 @@ export default {
       method: "get",
       headers: headers,
       credentials: "same-origin",
-      ignoreErrors
+      ignoreErrors,
+      showSpinner
     });
   },
-  delete: function(url, { ignoreErrors = false } = {}) {
+  delete: function(url, { ignoreErrors = false, showSpinner = true } = {}) {
     var headers = this.createHeaders();
     return this.processFetch(url, {
       method: "delete",
       headers: headers,
       credentials: "same-origin",
-      ignoreErrors
+      ignoreErrors,
+      showSpinner
     });
   },
   processFetch: function(
@@ -146,7 +150,8 @@ export default {
       headers,
       credentials = "same-origin",
       body,
-      ignoreErrors = false
+      ignoreErrors = false,
+      showSpinner = true
     }
   ) {
     const fetchConfig = {
@@ -157,11 +162,15 @@ export default {
     if (body) {
       fetchConfig.body = body;
     }
-    incrementCount();
+    if (showSpinner) {
+      incrementCount();
+    }
     return fetch(url, fetchConfig)
       .then(
         response => {
-          decrementCount();
+          if (showSpinner) {
+            decrementCount();
+          }
           if (response.ok) {
             // No response body
             if (response.status === 204) {
@@ -200,7 +209,9 @@ export default {
           }
         },
         error => {
-          decrementCount();
+          if (showSpinner) {
+            decrementCount();
+          }
           error.details = this.createErrorDetails({ url, body });
           throw error;
         }

@@ -198,7 +198,7 @@ class ServiceFactory {
       let queryParamsMapping = parseQueryMapping(config.queryParams);
       serviceObj[functionName] = function(
         params = {},
-        { ignoreErrors } = { ignoreErrors: false }
+        { ignoreErrors, showSpinner } = { ignoreErrors: false, showSpinner: true }
       ) {
         let url = config.url;
         let paramKeys = Object.keys(params);
@@ -258,22 +258,23 @@ class ServiceFactory {
         switch (config.requestType.toLowerCase()) {
           case postKey:
             return FetchUtils.post(url, bodyParams, queryParams, {
-              ignoreErrors
+              ignoreErrors,
+              showSpinner
             }).then(resultHandler);
           case getKey:
             if (initialData) {
               return Promise.resolve(paginationHandler(initialData));
             } else {
-              return FetchUtils.get(url, queryParams, { ignoreErrors }).then(
+              return FetchUtils.get(url, queryParams, { ignoreErrors, showSpinner }).then(
                 paginationHandler
               );
             }
           case putKey:
-            return FetchUtils.put(url, bodyParams, { ignoreErrors }).then(
+            return FetchUtils.put(url, bodyParams, { ignoreErrors, showSpinner }).then(
               resultHandler
             );
           case delKey:
-            return FetchUtils.delete(url, { ignoreErrors });
+            return FetchUtils.delete(url, { ignoreErrors, showSpinner });
         }
       };
     }

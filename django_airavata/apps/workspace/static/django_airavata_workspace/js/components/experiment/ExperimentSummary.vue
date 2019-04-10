@@ -212,8 +212,9 @@ export default {
   },
   methods: {
     loadExperiment: function() {
-      return services.FullExperimentService.get(
-        this.localFullExperiment.experiment.experimentId
+      return services.FullExperimentService.retrieve(
+        { lookup: this.localFullExperiment.experiment.experimentId },
+        { showSpinner: false }
       ).then(exp => (this.localFullExperiment = exp));
     },
     initPollingExperiment: function() {
