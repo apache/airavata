@@ -720,16 +720,14 @@ experiment_data_storage = FileSystemStorage(
 def get_user_files(request):
     try:
 
-        dirs=[]
+        dirs=[] # a list with file_name and file_dpu for each file
+
         for o in User_Files.objects.values_list('file_name','file_dpu'):
-            #print(o)
             file_details={}
             file_details['file_name']=o[0];
             file_details['file_dpu']=o[1];
             dirs.append(file_details);
 
-
-        #print (dirs)
         dirs_result=json.dumps(dirs)
         return JsonResponse({'uploaded': True,'user-files':dirs_result})
 
@@ -746,7 +744,7 @@ def upload_user_file(request):
 
         file_details={}
 
-        #check user_file.name already exists or not
+        #To avoid duplicate file names
 
         if User_Files.objects.filter(file_name = input_file.name).exists():
             resp = JsonResponse({'uploaded': False, 'error': "File already exists"})
@@ -758,18 +756,12 @@ def upload_user_file(request):
             data_product = datastore.save_user(username, input_file)
             data_product_uri = request.airavata_client.registerDataProduct(
                 request.authz_token, data_product)
-            # print("CAME HERE ON FILE UPLOAD",data_product_uri)
-
             #save in userfiles database
             d=User_Files(file_name=input_file.name, file_dpu=data_product_uri)
             d.save()
             file_details['file_name']=d.file_name
             file_details['file_dpu']=d.file_dpu
 
-        #print(data_product_uri)
-        #save file and data_product_uri to database
-        # print("printing from database: ")
-        # print(d.file_name,d.file_dpu)
 
         return JsonResponse({'uploaded': True,
                              'upload-file': file_details})
@@ -794,12 +786,10 @@ def delete_user_file(request):
             .format(data_product_uri), exc_info=True)
             raise Http404("data product does not exist")(e)
 
-        if datastore.delete(data_product) :
-            User_Files.objects.filter(file_dpu=data_product_uri).delete()
 
-        # print(request)
-        # print(request.user.username)
-
+        #remove file_details entry from database and delete from datastore
+        User_Files.objects.filter(file_dpu=data_product_uri).delete()
+        datastore.delete(data_product)
 
 
         return JsonResponse({'deleted': True})

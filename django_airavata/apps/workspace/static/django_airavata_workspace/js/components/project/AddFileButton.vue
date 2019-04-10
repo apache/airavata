@@ -14,14 +14,9 @@
             :key="userfile.file_dpu"
             :value="userfile.file_dpu">
 
-       <label class="file-option">{{ userfile.file_name}}</label>
+        <label class="file-option">{{ userfile.file_name}}</label>
 
        </b-form-checkbox>
-
-       <!--<div>-->
-         <!--Selected: <strong>{{ selected }}</strong><br>-->
-       <!--</div>-->
-
 
       <footer id="modal-add-file___BV_modal_footer_" class="modal-footer">
 
@@ -44,15 +39,13 @@
 
 <script>
 
-
-  import { utils as apiUtils } from "django-airavata-api";
+import { utils as apiUtils } from "django-airavata-api";
 
   export default {
     name: 'add-file-button',
     data () {
       return {
         userfiles:[],
-        file_dpu:'',
         selected: [],
         files:'',
         value:''
@@ -112,11 +105,7 @@
     computed: {
 
     },
-    // beforeMount: function() {
-    //   return apiUtils.FetchUtils.get(
-    //     "/api/get-path"
-    //   ).then(res => (this.userfiles = JSON.parse(res['user-files'])));
-    // }
+
   }
 
 </script>
@@ -137,33 +126,11 @@
     opacity: 0;
   }
 
-
-
   .modal-body {
     float: left;
     flex-flow: column;
     flex-direction: column;
   }
-  /*.form-check {*/
-    /*position: relative;*/
-    /*display: block;*/
-    /*padding: inherit;*/
-
-  /*}*/
-  /*.custom-control {*/
-    /*position: relative;*/
-    /*display: block;*/
-    /*min-height: 1rem;*/
-    /*padding-left: 0rem;*/
-    /*float: left;*/
-  /*}*/
-
-  /*.file-option{*/
-
-    /*padding-right: 100%;*/
-    /*margin-right: 100%;*/
-
-  /*}*/
 
 
 </style>

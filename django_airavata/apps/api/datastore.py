@@ -23,7 +23,6 @@ def exists(data_product):
     """Check if replica for data product exists in this data store."""
     filepath = _get_replica_filepath(data_product)
     try:
-        print("I could pass get_replica fucntion")
         return experiment_data_storage.exists(filepath) if filepath else False
     except SuspiciousFileOperation as e:
         logger.warning("Unable to find file at {} for data product uri {}"
@@ -118,11 +117,8 @@ def delete(data_product):
 
     """Delete replica for data product in this data store."""
     if exists(data_product):
-
-        print("HEY FILE PATH EXISTS")
         filepath = _get_replica_filepath(data_product)
         try:
-            print("TRYING TO DELETE FILE PATH")
             experiment_data_storage.delete(filepath)
         except Exception as e:
             logger.error("Unable to delete file {} for data product uri {}"
@@ -151,8 +147,6 @@ def get_experiment_dir(username, project_name, experiment_name):
 
 
 def _get_replica_filepath(data_product):
-    print("I came to get_replica_function")
-    print(data_product.replicaLocations)
     replica_filepaths = [rep.filePath
                          for rep in data_product.replicaLocations
                          if rep.replicaLocationCategory ==
