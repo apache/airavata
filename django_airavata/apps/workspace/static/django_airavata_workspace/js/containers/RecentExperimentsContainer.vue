@@ -38,9 +38,24 @@ export default {
             statusName: e.experimentStatus.name,
             title: e.name,
             url: urls.viewExperiment(e),
-            timestamp: e.statusUpdateTime
+            timestamp: e.statusUpdateTime,
+            interfaceId: e.executionId,
+            type: null,
           };
         });
+        const applicationInterfaceIds = {};
+        experiments.results.forEach(e => applicationInterfaceIds[e.executionId] = true);
+        Promise.all(Object.keys(applicationInterfaceIds).map(interfaceId => {
+            return services.ApplicationInterfaceService.retrieve({
+              lookup: interfaceId
+            });
+          })
+        ).then(applicationInterfaces => {
+          this.feedItems.forEach(feedItem => {
+            const applicationInterface = applicationInterfaces.find( i => i.applicationInterfaceId === feedItem.interfaceId);
+            feedItem.type = applicationInterface.applicationName;
+          })
+        })
       }
     );
   },
