@@ -109,6 +109,10 @@ body {
     padding: 1rem;
     overflow-y: scroll;
     max-width: 1200px;
+
+    &--with-sidebar {
+      max-width: none;
+    }
 }
 
 /* Add extra padding at the bottom to accommodate for the scrolling under the fixed width header */

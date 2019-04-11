@@ -214,7 +214,7 @@
       {% block nav-items %}
       {% endblock %}
     </nav>
-    <main class="main-content">
+    <main class="main-content{% if sidebar %} main-content--with-sidebar{% endif %}">
       <div class="container-fluid">
         <div id="airavata-spinner" class="loading">
           <div class="sk-folding-cube" :style="{ color: color }">
@@ -228,6 +228,13 @@
         {% endblock %}
       </div>
     </main>
+    {% if sidebar %}
+
+      <aside class="sidebar">
+      {% block sidebar %}
+      {% endblock sidebar %}
+      </aside>
+    {% endif %}
   </div>
 
   {% render_bundle 'chunk-vendors' 'js' 'COMMON' %}

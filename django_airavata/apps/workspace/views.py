@@ -42,8 +42,9 @@ def experiments_list(request):
 @login_required
 def dashboard(request):
     request.active_nav_item = 'dashboard'
-    return render(request, 'django_airavata_workspace/base.html', {
-        'bundle_name': 'dashboard'
+    return render(request, 'django_airavata_workspace/dashboard.html', {
+        'bundle_name': 'dashboard',
+        'sidebar': True,
     })
 
 

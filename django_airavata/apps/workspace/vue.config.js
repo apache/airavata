@@ -15,6 +15,7 @@ module.exports = {
       'view-experiment': './static/django_airavata_workspace/js/entry-view-experiment',
       'experiment-list': './static/django_airavata_workspace/js/entry-experiment-list',
       'edit-experiment': './static/django_airavata_workspace/js/entry-edit-experiment',
+      'recent-experiments': './static/django_airavata_workspace/js/entry-recent-experiments',
   },
   css: {
     loaderOptions: {

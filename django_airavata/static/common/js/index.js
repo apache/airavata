@@ -8,6 +8,8 @@ import DeleteLink from "./components/DeleteLink.vue";
 import NotificationsDisplay from "./components/NotificationsDisplay.vue";
 import Pager from "./components/Pager.vue";
 import ShareButton from "./components/ShareButton.vue";
+import SidebarFeed from "./components/SidebarFeed.vue";
+import SidebarHeader from "./components/SidebarHeader.vue";
 import UnsavedChangesGuard from "./components/UnsavedChangesGuard.vue";
 
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
@@ -35,6 +37,8 @@ const components = {
   DeleteLink,
   NotificationsDisplay,
   ShareButton,
+  SidebarFeed,
+  SidebarHeader,
   UnsavedChangesGuard
 };
 
