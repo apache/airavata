@@ -64,7 +64,7 @@ public class RegistryAPIServer implements IServer {
     public void StartRegistryServer(RegistryService.Processor<RegistryServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
 
-        logger.info("Initialing databases...");
+        logger.info("Initializing databases...");
         for (DBInitConfig dbInitConfig : dbInitConfigs) {
             DBInitializer.initializeDB(dbInitConfig);
         }
@@ -88,8 +88,8 @@ public class RegistryAPIServer implements IServer {
             new Thread() {
                 public void run() {
                     server.serve();
-                    setStatus(ServerStatus.STARTING);
-                    logger.info("Starting Registry Server ... ");
+                    setStatus(ServerStatus.STOPPED);
+                    logger.info("Registry Server Stopped.");
                 }
             }.start();
             new Thread() {
