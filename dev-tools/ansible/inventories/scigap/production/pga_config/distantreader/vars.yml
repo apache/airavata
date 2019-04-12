@@ -24,13 +24,13 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "distantreader.scigap.org"
+vhost_servername: "distantreader.org"
 #vhost_serveralias: "distantreader.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/distantreader.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/distantreader.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/distantreader.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/distantreader.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/distantreader.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/distantreader.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
