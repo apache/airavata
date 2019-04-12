@@ -40,12 +40,13 @@ def open(data_product):
 
 def save_user(username, file):
     """Save file to username/project name/experiment_name in data store."""
-    exp_dir = os.path.join(
-        experiment_data_storage.get_valid_name(username))
+    user_dir = os.path.join(
+        experiment_data_storage.get_valid_name(username),
+        'MyFiles')
     # file.name may be full path, so get just the name of the file
     file_name = os.path.basename(file.name)
     file_path = os.path.join(
-        exp_dir,
+        user_dir,
         experiment_data_storage.get_valid_name(file_name))
     input_file_name = experiment_data_storage.save(file_path, file)
     input_file_fullpath = experiment_data_storage.path(input_file_name)
@@ -82,7 +83,6 @@ def save(username, project_name, experiment_name, file):
     file_path = os.path.join(
         exp_dir,
         experiment_data_storage.get_valid_name(file_name))
-    print("The default file path is ", file_path);
     input_file_name = experiment_data_storage.save(file_path, file)
     input_file_fullpath = experiment_data_storage.path(input_file_name)
     # Create DataProductModel instance with DataReplicaLocationModel
@@ -124,11 +124,11 @@ def delete(data_product):
             logger.error("Unable to delete file {} for data product uri {}"
                          .format(filepath, data_product.productUri))
             raise
-        return True
+
     else:
         raise ObjectDoesNotExist("Replica file does not exist")
 
-    return False
+
 
 def get_experiment_dir(username, project_name, experiment_name):
     """Return an experiment directory (full path) for the given experiment."""

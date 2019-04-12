@@ -9,40 +9,27 @@
 
 </template>
 
-
-
-
 <script>
 
-//This option serves to choose file from already uploaded files
 
-    import { InputEditorMixin } from 'django-airavata-workspace-plugin-api';
+import { InputEditorMixin } from 'django-airavata-workspace-plugin-api';
     import { utils as apiUtils } from "django-airavata-api";
 
-
-    export default {
-
-    name: "user-file-input-editor",
-
-    mixins: [InputEditorMixin],
-
-     data() {
-        return {
-
-          userfiles:[]
-
-        };
-     },
-      // This gets the list of file entries in django database UserFiles
-    beforeMount: function() {
-      let findPath = apiUtils.FetchUtils.get(
-        "/api/get-ufiles"
-      ).then(res => (this.userfiles = JSON.parse(res['user-files'])));
-    }
-
-
-
-    }
+export default {
+  name: "user-file-input-editor",
+  mixins: [InputEditorMixin],
+  data() {
+    return {
+      userfiles:[]
+    };
+  },
+  beforeMount: function() {
+    // loads the list of file entries in django UserFiles model
+    let findPath = apiUtils.FetchUtils.get(
+      "/api/get-ufiles"
+    ).then(res => (this.userfiles = res['user-files']));
+  }
+}
 </script>
 
 <style scoped>

@@ -5,8 +5,8 @@
                 <h1 class="h4 mb-4">Browse Projects</h1>
             </div>
             <div id="col-new-project" class="col">
-                <add-file-button></add-file-button>
                 <project-button-new @new-project="onNewProject"/>
+                <add-file-button class="mt-1"></add-file-button>
             </div>
         </div>
         <div class="row">

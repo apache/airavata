@@ -718,7 +718,6 @@ experiment_data_storage = FileSystemStorage(
 
 @login_required
 def get_user_files(request):
-    try:
 
         dirs=[] # a list with file_name and file_dpu for each file
 
@@ -728,17 +727,11 @@ def get_user_files(request):
             file_details['file_dpu']=o[1];
             dirs.append(file_details);
 
-        dirs_result=json.dumps(dirs)
-        return JsonResponse({'uploaded': True,'user-files':dirs_result})
+        return JsonResponse({'uploaded': True,'user-files':dirs})
 
-    except Exception as e:
-        resp = JsonResponse({'found': False, 'error': str(e)})
-        resp.status_code = 500
-        return resp
 
 @login_required
 def upload_user_file(request):
-    try:
         username = request.user.username
         input_file = request.FILES['file']
 
@@ -765,15 +758,11 @@ def upload_user_file(request):
 
         return JsonResponse({'uploaded': True,
                              'upload-file': file_details})
-    except Exception as e:
-        log.error("Failed to upload file", exc_info=True)
-        resp = JsonResponse({'uploaded': False, 'error': str(e)})
-        resp.status_code = 500
-        return resp
+
 
 @login_required
 def delete_user_file(request):
-    try:
+
         username = request.user.username
         data_product_uri = request.body.decode('utf-8');
         data_product = None
@@ -794,11 +783,6 @@ def delete_user_file(request):
 
         return JsonResponse({'deleted': True})
 
-    except Exception as e:
-        log.error("Failed to delete file", exc_info=True)
-        resp = JsonResponse({'deleted': False, 'error': str(e)})
-        resp.status_code = 500
-        return resp
 
 @login_required
 def upload_input_file(request):
@@ -813,8 +797,6 @@ def upload_input_file(request):
                                       input_file)
         data_product_uri = request.airavata_client.registerDataProduct(
             request.authz_token, data_product)
-        print("CAME HERE ON FILE UPLOAD",data_product_uri)
-
         return JsonResponse({'uploaded': True,
                              'data-product-uri': data_product_uri})
     except Exception as e:
