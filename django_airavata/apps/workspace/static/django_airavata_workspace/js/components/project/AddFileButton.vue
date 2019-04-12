@@ -66,7 +66,7 @@ import { utils as apiUtils } from "django-airavata-api";
           apiUtils.FetchUtils.post(
             "/api/upload-ufiles",
             formData
-          ).then(res => (this.userfiles.push(JSON.parse(res['file_details']))));
+          ).then(res => (this.userfiles.push(res['file_details'])));
 
         }
 
@@ -84,7 +84,7 @@ import { utils as apiUtils } from "django-airavata-api";
          apiUtils.FetchUtils.post(
            "/api/delete-ufiles",
            entry
-         ).then(res => (this.value = JSON.parse(res['deleted'])));
+         ).then(res => (this.value = res['deleted']));
 
         }
 
@@ -94,7 +94,7 @@ import { utils as apiUtils } from "django-airavata-api";
       getUserFiles(){
         return apiUtils.FetchUtils.get(
           "/api/get-ufiles"
-        ).then(res => (this.userfiles = JSON.parse(res['user-files'])));
+        ).then(res => (this.userfiles =res['user-files']));
 
       },
       closeModal(){
