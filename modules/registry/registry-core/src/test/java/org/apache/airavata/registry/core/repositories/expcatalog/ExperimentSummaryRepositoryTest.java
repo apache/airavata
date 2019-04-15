@@ -156,6 +156,16 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
                                 DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
         assertEquals("should return no experiments since none are accessible", 0, experimentSummaryModelList.size());
 
+        // Test with a userName filter
+        filters.clear();
+        filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
+        filters.put(DBConstants.Experiment.USER_NAME, "userOne");
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, -1, 0,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should return only userOne's exp", 1, experimentSummaryModelList.size());
+        assertEquals("userOne", experimentSummaryModelList.get(0).getUserName());
+
         filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         filters.put(DBConstants.Experiment.USER_NAME, "userTwo");
