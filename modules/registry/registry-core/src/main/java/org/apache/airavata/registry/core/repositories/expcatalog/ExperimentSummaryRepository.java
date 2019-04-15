@@ -109,6 +109,12 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
         }
 
+        if (filters.get(DBConstants.Experiment.USER_NAME) != null) {
+            logger.debug("Filter Experiments by Username");
+            queryParameters.put(DBConstants.Experiment.USER_NAME, filters.get(DBConstants.Experiment.USER_NAME));
+            query += "ES.userName = :" + DBConstants.Experiment.USER_NAME + " AND ";
+        }
+
         if (!accessibleExperimentIds.isEmpty()) {
             logger.debug("Filter Experiments by Accessible Experiment IDs");
             queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIds);
