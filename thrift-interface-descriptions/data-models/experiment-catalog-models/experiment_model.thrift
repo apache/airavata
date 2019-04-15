@@ -42,7 +42,8 @@ enum ExperimentSearchFields {
     FROM_DATE,
     TO_DATE,
     STATUS,
-    PROJECT_ID
+    PROJECT_ID,
+    USER_NAME,
 }
 
 enum ProjectSearchFields {
