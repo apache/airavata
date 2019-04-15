@@ -14,6 +14,7 @@ import ComputeResourcePolicy from "./models/ComputeResourcePolicy";
 import DataProduct from "./models/DataProduct";
 import DataType from "./models/DataType";
 import Experiment from "./models/Experiment";
+import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentState from "./models/ExperimentState";
 import FullExperiment from "./models/FullExperiment";
 import Group from "./models/Group";
@@ -66,6 +67,7 @@ const models = {
   DataProduct,
   DataType,
   Experiment,
+  ExperimentSearchFields,
   ExperimentState,
   FullExperiment,
   Group,

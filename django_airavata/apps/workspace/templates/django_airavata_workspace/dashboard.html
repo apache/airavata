@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block sidebar %}
-<div id="recent-experiments" data-view-all-experiments="{% url 'django_airavata_workspace:experiments' %}"/>
+<div id="recent-experiments" data-view-all-experiments="{% url 'django_airavata_workspace:experiments' %}" data-username="{{ request.user.username }}" />
 {% endblock sidebar %}
 
 {% block scripts %}

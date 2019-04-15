@@ -6,6 +6,7 @@ import ComputeResourceDescription from "./models/ComputeResourceDescription";
 import CredentialSummary from "./models/CredentialSummary";
 import DataProduct from "./models/DataProduct";
 import Experiment from "./models/Experiment";
+import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentSummary from "./models/ExperimentSummary";
 import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
@@ -179,7 +180,7 @@ export default {
     ],
     modelClass: ExperimentSummary,
     pagination: true,
-    queryParams: ["limit", "offset"]
+    queryParams: ["limit", "offset"].concat(ExperimentSearchFields.values.map(f => f.name))
   },
   FullExperiments: {
     url: "/api/full-experiments",

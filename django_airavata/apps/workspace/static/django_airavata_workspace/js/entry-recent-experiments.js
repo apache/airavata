@@ -6,17 +6,20 @@ entry(Vue => {
     render(h) {
       return h(RecentExperimentsContainer, {
         props: {
-          viewAllExperiments: this.viewAllExperiments
+          viewAllExperiments: this.viewAllExperiments,
+          username: this.username
         }
       });
     },
     data() {
       return {
-        viewAllExperiments: null
+        viewAllExperiments: null,
+        username: null
       };
     },
     beforeMount() {
       this.viewAllExperiments = this.$el.dataset.viewAllExperiments;
+      this.username = this.$el.dataset.username;
     }
   }).$mount("#recent-experiments");
 });

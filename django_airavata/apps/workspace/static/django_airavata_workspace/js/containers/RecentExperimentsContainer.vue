@@ -1,7 +1,7 @@
 <template>
   <div>
     <sidebar-header
-      title="Recent Experiments"
+      title="My Recent Experiments"
       :view-all-url="viewAllExperiments"
     />
     <sidebar-feed :feed-items="feedItems">
@@ -22,12 +22,13 @@
 <script>
 import ExperimentStatusBadge from "../components/experiment/ExperimentStatusBadge.vue";
 import urls from "../utils/urls";
-import { services } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 export default {
   name: "recent-experiments-container",
   props: {
-    viewAllExperiments: String
+    viewAllExperiments: String,
+    username: String
   },
   components: {
     "sidebar-header": components.SidebarHeader,
@@ -52,7 +53,8 @@ export default {
       return services.ExperimentSearchService.list(
         {
           limit: 5,
-          offset: 0
+          offset: 0,
+          // [models.ExperimentSearchFields.USER_NAME.name]: this.username
         },
         {
           showSpinner: false
