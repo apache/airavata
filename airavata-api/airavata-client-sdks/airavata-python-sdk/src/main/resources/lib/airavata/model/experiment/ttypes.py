@@ -42,6 +42,7 @@ class ExperimentSearchFields(object):
     TO_DATE = 4
     STATUS = 5
     PROJECT_ID = 6
+    USER_NAME = 7
 
     _VALUES_TO_NAMES = {
         0: "EXPERIMENT_NAME",
@@ -51,6 +52,7 @@ class ExperimentSearchFields(object):
         4: "TO_DATE",
         5: "STATUS",
         6: "PROJECT_ID",
+        7: "USER_NAME",
     }
 
     _NAMES_TO_VALUES = {
@@ -61,6 +63,7 @@ class ExperimentSearchFields(object):
         "TO_DATE": 4,
         "STATUS": 5,
         "PROJECT_ID": 6,
+        "USER_NAME": 7,
     }
 
 
