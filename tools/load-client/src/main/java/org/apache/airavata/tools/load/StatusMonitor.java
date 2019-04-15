@@ -8,9 +8,9 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
 import org.apache.thrift.TException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +76,7 @@ public class StatusMonitor {
         long totalExperiments = 0;
 
         System.out.println("EXP ID,CREATE_TIME,LAUNCHED_TIME,EXECUTING_TIME,JOB_SUBMIT_TIME");
+        List<String> lines = new ArrayList<>();
         for (String experiment : experiments) {
             try {
 
@@ -102,16 +103,20 @@ public class StatusMonitor {
                 //long expCompletedTime = experimentModelMap.get(experiment)
                 //        .getExperimentStatus().stream().filter(es -> es.getState() == ExperimentState.COMPLETED).findFirst()
                 //        .get().getTimeOfStateChange();
-                System.out.println(experiment + "," + expCreatedTime + "," + expLaunchedTime + "," + expExecutedTime + ","
+                lines.add(experiment + "," + expCreatedTime + "," + expLaunchedTime + "," + expExecutedTime + ","
                         + jobSubmittedTime);
                 totalTime += jobSubmittedTime - expExecutedTime;
                 totalExperiments ++;
             } catch (Exception e) {
                 System.out.println("Error parsing " + experiment + ". Err "+ e.getMessage());
+                e.printStackTrace();
             }
         }
         long monitoringStopTime = System.currentTimeMillis();
 
+        for (String line: lines) {
+            System.out.println(line);
+        }
         System.out.println("All jobs completed");
         System.out.println("Average time " + (totalTime *1.0/totalExperiments)/1000 + " s");
         System.out.println("Time for monitoring " + (monitoringStopTime - monitoringStartTime)/1000 + "s");
