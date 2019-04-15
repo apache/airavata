@@ -2,16 +2,6 @@
 
 {% load render_bundle from webpack_loader %}
 
-{% block css %}
-{{ block.super }}
-{% render_bundle 'recent-experiments' 'css' 'WORKSPACE' %}
-{% endblock %}
-
-{% block sidebar %}
-<div id="recent-experiments" data-view-all-experiments="{% url 'django_airavata_workspace:experiments' %}" data-username="{{ request.user.username }}" />
-{% endblock sidebar %}
-
-{% block scripts %}
-{{ block.super }}
-{% render_bundle 'recent-experiments' 'js' 'WORKSPACE' %}
-{% endblock %}
+{% block content %}
+<div id="dashboard" data-view-all-experiments="{% url 'django_airavata_workspace:experiments' %}" data-username="{{ request.user.username }}" />
+{% endblock content %}

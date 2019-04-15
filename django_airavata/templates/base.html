@@ -210,31 +210,24 @@
   </header>
 
   <div class=stage>
+    <div id="airavata-spinner" class="loading">
+      <div class="sk-folding-cube" :style="{ color: color }">
+        <div class="sk-cube1 sk-cube"></div>
+        <div class="sk-cube2 sk-cube"></div>
+        <div class="sk-cube4 sk-cube"></div>
+        <div class="sk-cube3 sk-cube"></div>
+      </div>
+    </div>
     <nav class=c-nav>
       {% block nav-items %}
       {% endblock %}
     </nav>
-    <main class="main-content{% if sidebar %} main-content--with-sidebar{% endif %}">
-      <div class="container-fluid">
-        <div id="airavata-spinner" class="loading">
-          <div class="sk-folding-cube" :style="{ color: color }">
-            <div class="sk-cube1 sk-cube"></div>
-            <div class="sk-cube2 sk-cube"></div>
-            <div class="sk-cube4 sk-cube"></div>
-            <div class="sk-cube3 sk-cube"></div>
-          </div>
-        </div>
-        {% block content %}
-        {% endblock %}
-      </div>
-    </main>
-    {% if sidebar %}
-
-      <aside class="sidebar">
-      {% block sidebar %}
-      {% endblock sidebar %}
-      </aside>
-    {% endif %}
+    {% comment %}
+    See MainLayout.vue which should always be the root component rendered in
+    the 'content' block
+    {% endcomment %}
+    {% block content %}
+    {% endblock %}
   </div>
 
   {% render_bundle 'chunk-vendors' 'js' 'COMMON' %}

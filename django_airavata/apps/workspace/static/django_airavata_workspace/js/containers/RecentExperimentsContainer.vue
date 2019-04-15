@@ -54,7 +54,7 @@ export default {
         {
           limit: 5,
           offset: 0,
-          // [models.ExperimentSearchFields.USER_NAME.name]: this.username
+          [models.ExperimentSearchFields.USER_NAME.name]: this.username
         },
         {
           showSpinner: false

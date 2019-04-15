@@ -5,6 +5,7 @@ import ClipboardCopyLink from "./components/ClipboardCopyLink.vue";
 import ConfirmationDialog from "./components/ConfirmationDialog.vue";
 import DeleteButton from "./components/DeleteButton.vue";
 import DeleteLink from "./components/DeleteLink.vue";
+import MainLayout from "./components/MainLayout.vue";
 import NotificationsDisplay from "./components/NotificationsDisplay.vue";
 import Pager from "./components/Pager.vue";
 import ShareButton from "./components/ShareButton.vue";
@@ -35,6 +36,7 @@ const components = {
   ConfirmationDialog,
   DeleteButton,
   DeleteLink,
+  MainLayout,
   NotificationsDisplay,
   ShareButton,
   SidebarFeed,
