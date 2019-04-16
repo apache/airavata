@@ -162,6 +162,13 @@ export default class InputDataObjectType extends BaseModel {
    *           ... additional boolean expressions ("AND", "OR", "NOT")
    *           ... additional application input comparisons
    *         ]
+   *       },
+   *       "showOptions": {        // Optional
+   *         "toggle": [
+   *           "requiredToAddedToCommandLine", // Names of properties on this application
+   *                                           // input to toggle when show changes
+   *           ...
+   *         ]
    *       }
    *     }
    *   }
@@ -226,6 +233,13 @@ export default class InputDataObjectType extends BaseModel {
         this.show = booleanExpressionEvaluator.evaluate(
           this.editorDependencies.show
         );
+        if ("showOptions" in this.editorDependencies) {
+          if ("toggle" in this.editorDependencies.showOptions) {
+            this.editorDependencies.showOptions.toggle.forEach(prop => {
+              this[prop] = this.show;
+            });
+          }
+        }
       }
     }
   }
