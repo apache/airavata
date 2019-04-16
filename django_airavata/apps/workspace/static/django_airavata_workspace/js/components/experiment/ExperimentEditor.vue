@@ -80,23 +80,24 @@
               <h2 class="h6 mb-3">
                 Application Inputs
               </h2>
+
               <transition-group name="fade">
-                <input-editor-container
-                  v-for="experimentInput in localExperiment.experimentInputs"
-                  :experiment-input="experimentInput"
-                  v-model="experimentInput.value"
-                  v-show="experimentInput.show"
-                  :key="experimentInput.name"
-                  @invalid="recordInvalidInputEditorValue(experimentInput.name)"
-                  @valid="recordValidInputEditorValue(experimentInput.name)"
-                  @input="inputValueChanged"
-                />
+              <input-editor-container id="experimentInputValue"
+              v-for="experimentInput in localExperiment.experimentInputs"
+                                      :experiment-input="experimentInput"
+                                      v-model="experimentInput.value"
+                                      v-show="experimentInput.show"
+                                      :key="experimentInput.name"
+                                      @invalid="recordInvalidInputEditorValue(experimentInput.name)"
+                                      @valid="recordValidInputEditorValue(experimentInput.name)"
+                                      @input="inputValueChanged"
+              />
               </transition-group>
+
             </div>
           </div>
         </div>
-      </div>
-      <div class="row">
+
         <div class="col">
           <h2 class="h4 mt-4 mb-3">
             Resource Selection
@@ -164,7 +165,8 @@ export default {
     return {
       projects: [],
       localExperiment: this.experiment.clone(),
-      invalidInputs: []
+      invalidInputs: [],
+      input_name:''
     };
   },
   components: {
@@ -184,7 +186,9 @@ export default {
         value: project.projectID,
         text: project.name
       }));
+
     },
+
     valid: function() {
       const validation = this.localExperiment.validate();
       return (
@@ -253,13 +257,18 @@ export default {
           uploads.push(uploadRequest);
         }
       });
+
       return Promise.all(uploads);
+
     },
     getValidationFeedback: function(properties) {
       return utils.getProperty(this.localExperiment.validate(), properties);
     },
     getValidationState: function(properties) {
       return this.getValidationFeedback(properties) ? "invalid" : null;
+
+
+
     },
     recordInvalidInputEditorValue: function(experimentInputName) {
       if (!this.invalidInputs.includes(experimentInputName)) {
