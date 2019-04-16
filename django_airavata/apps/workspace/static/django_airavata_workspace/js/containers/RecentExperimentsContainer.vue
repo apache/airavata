@@ -48,6 +48,9 @@ export default {
           }.bind(this),
           this.refreshDelay
         );
+      }).catch(() => {
+        // If loading experiments fails, just ignore. This can happen if the
+        // user navigates away from the page while a request is executing.
       });
     },
     loadExperiments() {
@@ -58,7 +61,8 @@ export default {
           [models.ExperimentSearchFields.USER_NAME.name]: this.username
         },
         {
-          showSpinner: false
+          showSpinner: false,
+          ignoreErrors: true
         }
       ).then(experiments => {
         this.feedItems = experiments.results.map(e => {
