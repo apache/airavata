@@ -39,6 +39,7 @@
               :state="getValidationState('experimentName')"
             ></b-form-input>
           </b-form-group>
+          <experiment-description-editor v-model="localExperiment.description"/>
         </div>
       </div>
       <div class="row">
@@ -143,6 +144,7 @@
 
 <script>
 import ComputationalResourceSchedulingEditor from "./ComputationalResourceSchedulingEditor.vue";
+import ExperimentDescriptionEditor from "./ExperimentDescriptionEditor.vue";
 import GroupResourceProfileSelector from "./GroupResourceProfileSelector.vue";
 import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
 import { models, services, utils as apiUtils } from "django-airavata-api";
@@ -169,6 +171,7 @@ export default {
   },
   components: {
     ComputationalResourceSchedulingEditor,
+    ExperimentDescriptionEditor,
     GroupResourceProfileSelector,
     InputEditorContainer,
     "share-button": components.ShareButton
