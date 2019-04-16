@@ -9,6 +9,8 @@
       id="experiment-description"
       v-model="data"
       rows="3"
+      ref="description"
+      maxlength="255"
     ></b-form-textarea>
     <div class="mt-1">
       <b-button
@@ -66,6 +68,7 @@ export default {
     startEditing() {
       this.originalValue = this.data;
       this.isEditing = true;
+      this.$nextTick(() => this.$refs.description.focus());
     },
     cancelEditing() {
       this.data = this.originalValue;
