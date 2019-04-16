@@ -1,6 +1,6 @@
 <template>
 
-  <div class="d-flex flex-grow-1">
+  <div class="main-content-wrapper">
     <main
       class="main-content"
       :class="{'main-content--with-sidebar': hasSidebar}"
@@ -9,12 +9,7 @@
         <slot />
       </div>
     </main>
-    <aside
-      v-if="hasSidebar"
-      class="sidebar"
-    >
-      <slot name="sidebar" />
-    </aside>
+    <slot name="sidebar" />
   </div>
 </template>
 
@@ -23,7 +18,7 @@ export default {
   name: "main-layout",
   computed: {
     hasSidebar() {
-      return !!this.$slots.sidebar;
+      return this.$slots.sidebar;
     }
   }
 };

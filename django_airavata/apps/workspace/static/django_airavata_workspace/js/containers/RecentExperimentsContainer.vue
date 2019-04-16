@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <sidebar>
     <sidebar-header
       title="My Recent Experiments"
       :view-all-url="viewAllExperiments"
@@ -16,7 +16,7 @@
         ></i>
       </template>
     </sidebar-feed>
-  </div>
+  </sidebar>
 </template>
 
 <script>
@@ -31,6 +31,7 @@ export default {
     username: String
   },
   components: {
+    "sidebar": components.Sidebar,
     "sidebar-header": components.SidebarHeader,
     "sidebar-feed": components.SidebarFeed,
     ExperimentStatusBadge

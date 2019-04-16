@@ -103,6 +103,14 @@ body {
     }
 }
 
+/*
+ * Wrapper around .main-content and .sidebar
+ */
+.main-content-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
 
 .main-content {
     flex-grow: 1;
