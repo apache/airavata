@@ -709,7 +709,6 @@ class DataProductView(APIView):
             data_product, context={'request': request})
         return Response(serializer.data)
 
-
 @login_required
 def upload_input_file(request):
     try:
