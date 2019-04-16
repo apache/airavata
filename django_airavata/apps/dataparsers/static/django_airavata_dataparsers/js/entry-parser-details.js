@@ -1,14 +1,16 @@
-import { entry } from "django-airavata-common-ui";
+import { components, entry } from "django-airavata-common-ui";
 import ParserDetailsContainer from "./containers/ParserDetailsContainer.vue";
 
 entry(Vue => {
   new Vue({
     render(h) {
-      return h(ParserDetailsContainer, {
-        props: {
-          parserId: this.parserId
-        }
-      });
+      return h(components.MainLayout, [
+        h(ParserDetailsContainer, {
+          props: {
+            parserId: this.parserId
+          }
+        })
+      ]);
     },
     data() {
       return {

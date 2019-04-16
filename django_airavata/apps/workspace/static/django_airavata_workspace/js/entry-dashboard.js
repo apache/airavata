@@ -6,7 +6,6 @@ entry(Vue => {
   new Vue({
     render(h) {
       return h(components.MainLayout, [
-        h(components.NotificationsDisplay),
         h(DashboardContainer),
         h(RecentExperimentsContainer, {
           props: {

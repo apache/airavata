@@ -53,7 +53,7 @@ import SomethingListContainer from "./containers/SomethingListContainer.vue";
 entry(Vue => {
   new Vue({
     render: h =>
-      h("div", [h(components.NotificationsDisplay), h(SomethingListContainer)])
+      h(components.MainLayout, [h(SomethingListContainer)])
   }).$mount("#something-list");
 });
 ```
@@ -134,8 +134,7 @@ import ViewSomethingContainer from "./containers/ViewSomethingContainer.vue";
 entry(Vue => {
   new Vue({
     render(h) {
-      return h("div", [
-        h(components.NotificationsDisplay),
+      return h(components.MainLayout, [
         h(ViewSomethingContainer, {
           props: {
             somethingId: this.somethingId

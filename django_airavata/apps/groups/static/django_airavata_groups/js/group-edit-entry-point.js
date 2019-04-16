@@ -1,14 +1,14 @@
-import { entry } from "django-airavata-common-ui";
+import { components, entry } from "django-airavata-common-ui";
 import GroupEditContainer from "./containers/GroupEditContainer.vue";
 
 entry(Vue => {
 new Vue({
   render(h) {
-    return h(GroupEditContainer, {
+    return h(components.MainLayout, [h(GroupEditContainer, {
       props: {
         groupId: this.groupId
       }
-    });
+    })]);
   },
   data() {
     return {

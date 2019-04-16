@@ -4,8 +4,7 @@ import ProjectListContainer from "./containers/ProjectListContainer.vue";
 entry(Vue => {
   new Vue({
     render(h) {
-      return h("div", [
-        h(components.NotificationsDisplay),
+      return h(components.MainLayout, [
         h(ProjectListContainer, {
           props: {
             initialProjectsData: this.projectsData

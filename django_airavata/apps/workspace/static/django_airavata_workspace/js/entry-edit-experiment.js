@@ -8,8 +8,7 @@ import EditExperimentContainer from "./containers/EditExperimentContainer.vue";
 entry(Vue => {
   new Vue({
     render(h) {
-      return h("div", [
-        h(components.NotificationsDisplay),
+      return h(components.MainLayout, [
         h(EditExperimentContainer, {
           props: {
             experimentId: this.experimentId

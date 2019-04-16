@@ -4,8 +4,7 @@ import ViewExperimentContainer from "./containers/ViewExperimentContainer.vue";
 entry(Vue => {
   new Vue({
     render(h) {
-      return h("div", [
-        h(components.NotificationsDisplay),
+      return h(components.MainLayout, [
         h(ViewExperimentContainer, {
           props: {
             initialFullExperimentData: this.fullExperimentData,

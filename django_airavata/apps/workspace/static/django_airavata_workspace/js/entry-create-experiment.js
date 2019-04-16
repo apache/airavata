@@ -4,8 +4,7 @@ import CreateExperimentContainer from "./containers/CreateExperimentContainer.vu
 entry(Vue => {
   new Vue({
     render(h) {
-      return h("div", [
-        h(components.NotificationsDisplay),
+      return h(components.MainLayout, [
         h(CreateExperimentContainer, {
           props: {
             appModuleId: this.appModuleId

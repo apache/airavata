@@ -11,7 +11,7 @@ entry(Vue => {
   Vue.use(VueRouter);
 
   new Vue({
-    render: h => h("div", [h(components.NotificationsDisplay), h(App)]),
+    render: h => h(components.MainLayout, [h(App)]),
     router
   }).$mount("#app");
 });
