@@ -168,7 +168,7 @@ export default {
       projects: [],
       localExperiment: this.experiment.clone(),
       invalidInputs: [],
-      input_name:''
+      invalidComputationalResourceSchedulingEditor: false
     };
   },
   components: {

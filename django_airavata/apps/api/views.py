@@ -1,6 +1,5 @@
 import logging
 import os
-import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -737,79 +736,6 @@ class DataProductView(APIView):
             data_product, context={'request': request})
         return Response(serializer.data)
 
-experiment_data_storage = FileSystemStorage(
-    location=settings.GATEWAY_DATA_STORE_DIR)
-
-@login_required
-def get_user_files(request):
-
-        dirs=[] # a list with file_name and file_dpu for each file
-
-        for o in User_Files.objects.values_list('file_name','file_dpu'):
-            file_details={}
-            file_details['file_name']=o[0];
-            file_details['file_dpu']=o[1];
-            dirs.append(file_details);
-
-        return JsonResponse({'uploaded': True,'user-files':dirs})
-
-
-@login_required
-def upload_user_file(request):
-        username = request.user.username
-        input_file = request.FILES['file']
-
-        file_details={}
-
-        #To avoid duplicate file names
-
-        if User_Files.objects.filter(file_name = input_file.name).exists():
-            resp = JsonResponse({'uploaded': False, 'error': "File already exists"})
-            resp.status_code = 400
-            return resp
-
-        else:
-
-            data_product = datastore.save_user(username, input_file)
-            data_product_uri = request.airavata_client.registerDataProduct(
-                request.authz_token, data_product)
-            #save in userfiles database
-            d=User_Files(file_name=input_file.name, file_dpu=data_product_uri)
-            d.save()
-            file_details['file_name']=d.file_name
-            file_details['file_dpu']=d.file_dpu
-
-
-        return JsonResponse({'uploaded': True,
-                             'upload-file': file_details})
-
-
-@login_required
-def delete_user_file(request):
-
-        username = request.user.username
-        data_product_uri = request.body.decode('utf-8');
-        data_product = None
-        try:
-            data_product = request.airavata_client.getDataProduct(
-                request.authz_token, data_product_uri)
-
-        except Exception as e:
-            log.warning("Failed to load DataProduct for {}"
-            .format(data_product_uri), exc_info=True)
-            raise Http404("data product does not exist")(e)
-
-
-        #remove file_details entry from database and delete from datastore
-        User_Files.objects.filter(file_dpu=data_product_uri).delete()
-        datastore.delete(data_product)
-
-
-        return JsonResponse({'deleted': True})
-
-
-experiment_data_storage = FileSystemStorage(
-    location=settings.GATEWAY_DATA_STORE_DIR)
 
 @login_required
 def get_user_files(request):

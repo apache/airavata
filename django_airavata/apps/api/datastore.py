@@ -38,6 +38,7 @@ def open(data_product):
     else:
         raise ObjectDoesNotExist("Replica file does not exist")
 
+
 def save_user(username, file):
     """Save file to username/project name/experiment_name in data store."""
     user_dir = os.path.join(
@@ -127,7 +128,6 @@ def delete(data_product):
 
     else:
         raise ObjectDoesNotExist("Replica file does not exist")
-
 
 
 def get_experiment_dir(username, project_name, experiment_name):

@@ -25,7 +25,7 @@ export default {
   },
   beforeMount: function() {
     // loads the list of file entries in django UserFiles model
-    let findPath = apiUtils.FetchUtils.get(
+    return apiUtils.FetchUtils.get(
       "/api/get-ufiles"
     ).then(res => (this.userfiles = res['user-files']));
   }
