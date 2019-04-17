@@ -5,8 +5,7 @@
                 <b-form-select id="group-resource-profile"
                     v-model="groupResourceProfileId"
                     :options="groupResourceProfileOptions" required
-                    @change="groupResourceProfileChanged"
-                    :disabled="loading">
+                    @change="groupResourceProfileChanged">
                     <template slot="first">
                         <option :value="null" disabled>Select an allocation</option>
                     </template>
@@ -30,8 +29,6 @@ export default {
         return {
             groupResourceProfileId: this.value,
             groupResourceProfiles: [],
-            // TODO: replace this with Loading spinner, better mechanism
-            loadingCount: 0,
         }
     },
     mounted: function () {
@@ -52,13 +49,9 @@ export default {
                 return [];
             }
         },
-        loading: function() {
-            return this.loadingCount > 0;
-        },
     },
     methods: {
         loadGroupResourceProfiles: function() {
-            this.loadingCount++;
             services.GroupResourceProfileService.list()
                 .then(groupResourceProfiles => {
                     this.groupResourceProfiles = groupResourceProfiles;
@@ -69,7 +62,6 @@ export default {
                         this.emitValueChanged();
                     }
                 })
-                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
         groupResourceProfileChanged: function(groupResourceProfileId) {
             this.groupResourceProfileId = groupResourceProfileId
