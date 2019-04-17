@@ -20,7 +20,7 @@ export default class ComputationalResourceSchedulingModel extends BaseModel {
         super(FIELDS, data);
     }
 
-    validate(queueInfo = {}, batchQueueResourcePolicy = null) {
+    validate(queueInfo, batchQueueResourcePolicy = null) {
         const validationResults = {};
         if (this.isEmpty(this.resourceHostId)) {
             validationResults['resourceHostId'] = "Please select a compute resource.";

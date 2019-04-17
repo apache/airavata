@@ -65,7 +65,7 @@
             label="Node Count"
             label-for="node-count"
             :feedback="getValidationFeedback('nodeCount')"
-            :state="getValidationState('nodeCount')"
+            :state="getValidationState('nodeCount', true)"
           >
             <b-form-input
               id="node-count"
@@ -75,7 +75,7 @@
               v-model="localComputationalResourceScheduling.nodeCount"
               required
               @input="emitValueChanged"
-              :state="getValidationState('nodeCount')"
+              :state="getValidationState('nodeCount', true)"
             >
             </b-form-input>
             <div slot="description">
@@ -90,7 +90,7 @@
             label="Total Core Count"
             label-for="core-count"
             :feedback="getValidationFeedback('totalCPUCount')"
-            :state="getValidationState('totalCPUCount')"
+            :state="getValidationState('totalCPUCount', true)"
           >
             <b-form-input
               id="core-count"
@@ -100,7 +100,7 @@
               v-model="localComputationalResourceScheduling.totalCPUCount"
               required
               @input="emitValueChanged"
-              :state="getValidationState('totalCPUCount')"
+              :state="getValidationState('totalCPUCount', true)"
             >
             </b-form-input>
             <div slot="description">
@@ -115,7 +115,7 @@
             label="Wall Time Limit"
             label-for="walltime-limit"
             :feedback="getValidationFeedback('wallTimeLimit')"
-            :state="getValidationState('wallTimeLimit')"
+            :state="getValidationState('wallTimeLimit', true)"
           >
             <b-input-group right="minutes">
               <b-form-input
@@ -126,7 +126,7 @@
                 v-model="localComputationalResourceScheduling.wallTimeLimit"
                 required
                 @input="emitValueChanged"
-                :state="getValidationState('wallTimeLimit')"
+                :state="getValidationState('wallTimeLimit', true)"
               >
               </b-form-input>
             </b-input-group>
@@ -238,6 +238,15 @@ export default {
         );
       }
       return this.selectedQueueDefault.maxRunTime;
+    },
+    validation() {
+      return this.localComputationalResourceScheduling.validate(
+        this.selectedQueueDefault,
+        this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)
+      );
+    },
+    valid() {
+      return Object.keys(this.validation).length === 0;
     }
   },
   methods: {
@@ -256,11 +265,19 @@ export default {
       );
       this.emitValueChanged();
     },
+    validate() {
+      if (!this.valid) {
+        this.$emit("invalid");
+      } else {
+        this.$emit("valid");
+      }
+    },
     emitValueChanged: function() {
+      this.validate();
       this.$emit("input", this.localComputationalResourceScheduling);
     },
     loadQueueDefaults: function(updateQueueSettings) {
-      services.ApplicationDeploymentService.getQueues({
+      return services.ApplicationDeploymentService.getQueues({
         lookup: this.appDeploymentId
       }).then(queueDefaults => {
         // Sort queue defaults
@@ -350,16 +367,14 @@ export default {
       return queueDefault.defaultWalltime;
     },
     getValidationFeedback: function(properties) {
-      return utils.getProperty(
-        this.localComputationalResourceScheduling.validate(
-          this.selectedQueueDefault,
-          this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)
-        ),
-        properties
-      );
+      return utils.getProperty(this.validation, properties);
     },
-    getValidationState: function(properties) {
-      return this.getValidationFeedback(properties) ? "invalid" : null;
+    getValidationState: function(properties, showValidState) {
+      return this.getValidationFeedback(properties)
+        ? "invalid"
+        : showValidState
+        ? "valid"
+        : null;
     }
   },
   watch: {
@@ -374,7 +389,7 @@ export default {
     // For brand new queue settings (no queueName specified) load the default
     // queue and its default values and apply them
     const updateQueueSettings = !this.value.queueName;
-    this.loadQueueDefaults(updateQueueSettings);
+    this.loadQueueDefaults(updateQueueSettings).then(() => this.validate());
   }
 };
 </script>

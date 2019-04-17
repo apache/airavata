@@ -39,7 +39,7 @@
               :state="getValidationState('experimentName')"
             ></b-form-input>
           </b-form-group>
-          <experiment-description-editor v-model="localExperiment.description"/>
+          <experiment-description-editor v-model="localExperiment.description" />
         </div>
       </div>
       <div class="row">
@@ -113,6 +113,8 @@
             v-if="localExperiment.userConfigurationData.groupResourceProfileId"
             :app-module-id="appModule.appModuleId"
             :group-resource-profile-id="localExperiment.userConfigurationData.groupResourceProfileId"
+            @invalid="invalidComputationalResourceSchedulingEditor = true"
+            @valid="invalidComputationalResourceSchedulingEditor = false"
           >
           </computational-resource-scheduling-editor>
         </div>
@@ -166,7 +168,8 @@ export default {
     return {
       projects: [],
       localExperiment: this.experiment.clone(),
-      invalidInputs: []
+      invalidInputs: [],
+      invalidComputationalResourceSchedulingEditor: false
     };
   },
   components: {
@@ -201,7 +204,9 @@ export default {
     valid: function() {
       const validation = this.localExperiment.validate();
       return (
-        Object.keys(validation).length === 0 && this.invalidInputs.length === 0
+        Object.keys(validation).length === 0 &&
+        this.invalidInputs.length === 0 &&
+        !this.invalidComputationalResourceSchedulingEditor
       );
     },
     isSaveDisabled: function() {

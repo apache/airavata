@@ -81,12 +81,6 @@ export default class Experiment extends BaseModel {
 
   validate() {
     let validationResults = {};
-    const userConfigurationDataValidation = this.userConfigurationData.validate();
-    if (Object.keys(userConfigurationDataValidation).length > 0) {
-      validationResults[
-        "userConfigurationData"
-      ] = userConfigurationDataValidation;
-    }
     if (this.isEmpty(this.experimentName)) {
       validationResults["experimentName"] =
         "Please provide a name for this experiment.";
