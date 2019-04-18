@@ -39,8 +39,8 @@ ssl_certificate_key_file: "/etc/letsencrypt/live/seagrid.org/privkey.pem"
 #ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.seagrid.org/fullchain.pem"
 #ssl_certificate_key_file: "/etc/letsencrypt/live/beta.seagrid.org/privkey.pem"
 
-php_upload_max_filesize: "640M"
-php_post_max_size: "1640M"
+php_upload_max_filesize: "5000M"
+php_post_max_size: "5500M"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"

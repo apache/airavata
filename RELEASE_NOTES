@@ -2,6 +2,189 @@ Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+
+Release Notes - Airavata - Version 0.17
+
+** Epic
+    * [AIRAVATA-1601] - Support multi tenancy inside airavata
+
+** Story
+    * [AIRAVATA-439] - GFAC/Orchestrator exception handling and notifications
+    * [AIRAVATA-1603] - Support multi-tenant in GFac
+    * [AIRAVATA-2117] - User Compute Resource Preference
+
+** New Feature
+    * [AIRAVATA-609] - There should be a way to stop workflow running in the interpreter service
+    * [AIRAVATA-1322] - Implement simple role scheme for Application Catalog
+    * [AIRAVATA-1716] - Enable Email based monitor for PSC Blacklight
+    * [AIRAVATA-1792] - Implement ability for admin to search for experiments using the created user as well
+    * [AIRAVATA-2185] - Add OWNER ResourcePermissionType to sharing API
+    * [AIRAVATA-2250] - Implement user preference usage in desktop client
+    * [AIRAVATA-2291] - Database Migration Dev to Master
+    * [AIRAVATA-2312] - Avoid manually adding user roles to gateway users on gateway PI request
+    * [AIRAVATA-2370] - Cannot create a new gateway request
+
+** Improvement
+    * [AIRAVATA-268] - Make XBaya error window size smaller
+    * [AIRAVATA-402] - Optional outputs from a application
+    * [AIRAVATA-461] - Allow users skip the workflow Nodes which already ran and invoke the rest of the Nodes
+    * [AIRAVATA-518] - XBaya needs a "get version number" feature in the UI
+    * [AIRAVATA-800] - Remove copy-dependencies maven plugin from modules/xbaya-gui
+    * [AIRAVATA-819] - Support the workflows with ForEach inputs to get inputs from file
+    * [AIRAVATA-866] - Automatically updating the user context (XBaya)
+    * [AIRAVATA-940] - To see the result by clicking Xbaya's output component view button.
+    * [AIRAVATA-973] - Improving XBays.java '-workflow' option to accept URL as well
+    * [AIRAVATA-1081] - Airavata README is obsolete
+    * [AIRAVATA-1118] - Adding Permission attribute to XBaya main jar to follow recent JAVA security update guide line
+    * [AIRAVATA-1397] - PGA gateway needs to gracefully handle attempts to upload files that are too large.
+    * [AIRAVATA-1639] - Fixing warnings and errors during airavata start up
+    * [AIRAVATA-1880] - In Application Interface ability to make inputs unchangeable by the end user.
+    * [AIRAVATA-2124] - Replace XSLT base script generation with Groovy Template Engine.
+    * [AIRAVATA-2163] - optimize credential store data models
+    * [AIRAVATA-2184] - Get project/experiment ownership from sharing service
+    * [AIRAVATA-2225] - Can we hide 'Enable Auto Scheduling' in create, clone and edit experiment unless Gateway request it?
+    * [AIRAVATA-2258] - Implement the notifications display in the SEAGrid Rich Client
+    * [AIRAVATA-2620] - Force post processing functionality
+
+** Wish
+    * [AIRAVATA-482] - color change between pending and active state of a task
+
+** Task
+    * [AIRAVATA-558] - Save workflow notifications from XBaya
+    * [AIRAVATA-793] - Add Cloud-Bursting configurability support for XBaya
+    * [AIRAVATA-1324] - Add per-community account support to gateway profile
+    * [AIRAVATA-1325] - Improve and modify Airavata start up script with reference to zookeeper start up script.
+    * [AIRAVATA-1677] - Refactor XBaya
+    * [AIRAVATA-2002] - Update License and Notice files for 0.17 release
+    * [AIRAVATA-2283] - Write integration test suit
+
+** Question
+    * [AIRAVATA-1984] - What is 'Update Priority' in job submission interface and data movement interface used for?
+    * [AIRAVATA-2139] - What was intended to achieve by 'Is the Input required?' in application interface
+
+** Documentation
+    * [AIRAVATA-1086] - INSTALL is out of date
+
+** Sub-task
+    * [AIRAVATA-794] - Create unit tests and/or tutorial to show cloud bursting feature in Airavata using XBaya
+    * [AIRAVATA-1233] - Deprecate Workflow Execution Context
+    * [AIRAVATA-1361] - Search for experiments created, launched within a given time frame
+    * [AIRAVATA-1679] - Setup amqp monitoring configuration using XBaya GUI
+    * [AIRAVATA-1871] - Currently gateway admins see all the roles in PGA; Some meaningless at gateway level for gateway admins. Exists due to IS requirements.
+    * [AIRAVATA-2001] - When an experiment shared with a user, he cannot view the experiment.
+    * [AIRAVATA-2178] - GFAC changes for user specific compute resource preferences
+    * [AIRAVATA-2292] - Generate Delta SQL Scripts for addressing immediate migration from Dev to Master
+    * [AIRAVATA-2576] - Modify PGA to fetch customized dashboard attributes from profile service
+
+
+** Bug
+    * [AIRAVATA-511] - String inputs are accepted only till the first occurrence of space while running workflows
+    * [AIRAVATA-542] - Can't run workflows which have Memo Components in Xbaya.
+    * [AIRAVATA-779] - Xbaya: handling of StringArray is not consistent with URIArray
+    * [AIRAVATA-943] - Xbaya output component's notification bug.
+    * [AIRAVATA-959] - Provenance Aware workflow processing is not working
+    * [AIRAVATA-971] - XBaya run workflow window does not render correctly for a workflow which has lot of inputs
+    * [AIRAVATA-976] - Same INSTALL, README, NOTICE files are duplicated in many places
+    * [AIRAVATA-1012] - Exception thrown at Edit > WorkFlow Properties and Edit > Parameter Properties when WorkFlow is not opened
+    * [AIRAVATA-1705] - In PGA when Project name, description updated and saved, modified information does not get saved
+    * [AIRAVATA-1765] - In PGA users can create user account entering same email.
+    * [AIRAVATA-1841] - Display a proper message in PGA when Airavata server is down; currently page crashes with an error
+    * [AIRAVATA-1863] - Please validate existence of defined application inputs at Create and Launch Experiment level in Airavata
+    * [AIRAVATA-1864] - GFAC-core - fix to NPE when no DataMovementInterfaces defined
+    * [AIRAVATA-1868] - When modified and saved the changes are not applied to application interface
+    * [AIRAVATA-1873] - Once the user is logged in should not prompt the login screen again
+    * [AIRAVATA-1878] - Adding App Module and Deployment pages closes if user clicks outside background page
+    * [AIRAVATA-1885] - Cannot add data movement interface for a new storage resource as scigap admin. Page crashes in PGA
+    * [AIRAVATA-1887] - Fixes to 'Detailed Experiment Information' in Admin Dashboard
+    * [AIRAVATA-1890] - the gateway preference fails with a nullpointer error when no uncelectedCRs are in the database..
+    * [AIRAVATA-1910] - Button to add input files in Create Experiment is not clickable when opened in Chrome
+    * [AIRAVATA-1936] - When a compute resource is deleted related other entries are not getting deleted from the database
+    * [AIRAVATA-1940] - When Unicore experiments are cloned US3INPUTTARG and UserDN are not cloned
+    * [AIRAVATA-1944] - When adding 'Local' job submission protocol do we need, Select resource manager type, Parallelism Prefixes, etc?
+    * [AIRAVATA-1957] - When experiments are cloned there are two data directories getting created in the Storage
+    * [AIRAVATA-1961] - Creating a project name including '&' gives attached error
+    * [AIRAVATA-1971] - 'Launch Selected' and 'Delete Selected' buttons are not working in SEAGrid desktop client
+    * [AIRAVATA-1990] - Adding seperate reservations in slurm script for multiple resources
+    * [AIRAVATA-1997] - Gateway ID saved as project name. Default Project not existing for new users.
+    * [AIRAVATA-1999] - Exception thrown when updated the Default Project name and description
+    * [AIRAVATA-2003] - When SciGaP admin click 'APPROVE' for a new gateway page crashes.
+    * [AIRAVATA-2004] - Once a gateway request is APPROVED or DENIED a status should get updated
+    * [AIRAVATA-2009] - Wrong Canonical ASF git repo URL for Airavata web site
+    * [AIRAVATA-2032] - In PGA --> Admin Dashboard --> Experiment Statistics page cannot close the tabs opened due to searching experiments
+    * [AIRAVATA-2041] - Provide proper error message when searched non existing experiment ID in Experiment Statistics page
+    * [AIRAVATA-2062] - When added multiple QOS for a single resource in Gateway Profile Experiment job submission fails.
+    * [AIRAVATA-2063] - When QOS added in one gateway (seagrid) it is also taken as the qos of the other gateway (testdrive) linked with airavata
+    * [AIRAVATA-2096] - Experiment in EXECUTING state even when the cluster initialization fails and job cannot be launched at the resource.
+    * [AIRAVATA-2112] - Email monitoring not working on Jetstream Torque cluster when running Quantum Espresso
+    * [AIRAVATA-2142] - Experiment name having period character '.' creates issue for experiment status updates
+    * [AIRAVATA-2146] - Improve Credential store token and key generation
+    * [AIRAVATA-2165] - In Firefox, portal pages are loaded twice more, with errors
+    * [AIRAVATA-2176] - Error submitting Phasta job: "Undefined index: Input Configuration"
+    * [AIRAVATA-2180] - Experiment status is not getting updated to FAILED when SSH connection couldnt be established
+    * [AIRAVATA-2181] - Cannot view the experiment outputs from PGA. Getting exception: The file "/var/www/portals/gateway-user-data/dev-seagrid/" does not exist
+    * [AIRAVATA-2182] - Updated an experiment with notification email but upon saving it does not appear in Experiment Summary
+    * [AIRAVATA-2186] - Abaqus experiment on Comet is in EXECUTING. Not moving further and no errors in logs as well
+    * [AIRAVATA-2190] - User A shared a single experiment with User B, read access. Project is also shared now with User B.
+    * [AIRAVATA-2191] - Experiment of User A got automatically shared with User B when User A shares another experiment with user C
+    * [AIRAVATA-2192] - user A shared a project which has two experiments with user B. Exception thrown, User B cannot view the experiment summary
+    * [AIRAVATA-2193] - When projects of other users are available for experiment creation cannot figure out to whom it belongs
+    * [AIRAVATA-2194] - In Experiment the sharing window cannot be closed. The heading of the window also need to change.
+    * [AIRAVATA-2196] - Both users with 'Read' access and 'Write' access should NOT have the same set of privileges in PGA
+    * [AIRAVATA-2200] - Allow user to select their own compute resource account when creating experiment
+    * [AIRAVATA-2201] - Application working directory is not getting archived. ARCHIVE directory is empty in PGA
+    * [AIRAVATA-2207] - Gateway admins cannot view experiments launched by gateway users in Experiment Statistics
+    * [AIRAVATA-2211] - Improve User Resource Profile Management UIs
+    * [AIRAVATA-2212] - Experiment Auto Refresh may try to reload the page while reloading the page
+    * [AIRAVATA-2216] - Sharing button doesn't work on Create Project when page hasn't finished loading
+    * [AIRAVATA-2217] - Sharing service should prevent removing sharing of experiments from the project's owner
+    * [AIRAVATA-2218] - Cannot change name of project
+    * [AIRAVATA-2219] - With groovey scripts some of the post job commands with special characters are failing
+    * [AIRAVATA-2223] - Support for data sharing disabled
+    * [AIRAVATA-2228] - Improvements to Experiment Actions
+    * [AIRAVATA-2230] - getQueueView: Error while retrieving compute resource
+    * [AIRAVATA-2231] - UserResourceProfileResource.save() looks up existing UserResourceProfile by user_id instead of by (user_id, gateway_id)
+    * [AIRAVATA-2241] - Experiments are not getting launched. Just states in CREATED state after launched.
+    * [AIRAVATA-2242] - SQL migration script for 0.17 release
+    * [AIRAVATA-2252] - personal resource specific submission fails with Jsch error
+    * [AIRAVATA-2261] - When User B clones User A's experiment notification email is of the original user A and cannot change.
+    * [AIRAVATA-2266] - When tried to create tenant it asked to enter the auth key and the secret
+    * [AIRAVATA-2269] - The gateway admin cannot get access to the gateway even with 'admin' role
+    * [AIRAVATA-2270] - When experiment ID consists '<' character cannot view the experiment details in experiment statistics.
+    * [AIRAVATA-2273] - When the Total Physical Memory is given in create experiment UI it is not appearing in job script as MBs
+    * [AIRAVATA-2274] - Cannot upload multiple optional files in a cloned experiment. Exception thrown
+    * [AIRAVATA-2275] - In automated tenant creation for gateway requests have adding and publishing policy
+    * [AIRAVATA-2278] - Hide Roles UI from Admin dashboard.
+    * [AIRAVATA-2282] - Notifications are not displaying in reverse creation date order
+    * [AIRAVATA-2284] - Airavata session cacheing Creates issues for job submissions on remote clusters
+    * [AIRAVATA-2290] - Experiments at failing at input DATA_STAGING
+    * [AIRAVATA-2294] - When invalid credential store token is provided fail the experiment.
+    * [AIRAVATA-2295] - Cannot open 'Compute Resource page in User settings; exception thrown
+    * [AIRAVATA-2297] - Upgrade PHPMailer to >= 5.2.20 to address CVE-2016-10045
+    * [AIRAVATA-2302] - when user accounts confirmed users see 'Airavata servers down' message even when the servers are up and running. also the role change does not trigger changes in gateway privileges
+    * [AIRAVATA-2314] - Job notification emails from tandy super computer at OII are not processed by gfac.
+    * [AIRAVATA-2319] - When 'Gateway Id for Usage Reporting' is updated in the gateway preferences it is saved in place of 'Allocation Project Number'
+    * [AIRAVATA-2329] - file staging seem to hang in dev.seagrid desktop client based job launch
+    * [AIRAVATA-2339] - Default ssh key use for individual user accounts failing. Cannot ssh to compute resource
+    * [AIRAVATA-2343] - In airavata 0.17 JS deployment cannot browse projects
+    * [AIRAVATA-2344] - In airavata 0.17 JS deployment cannot create and save new project
+    * [AIRAVATA-2345] - In airavata 0.17 JS deployment gateway admin cannot view other users experiment summary and statistics
+    * [AIRAVATA-2346] - In airavata 0.17 JS deployment user who owns a project cannot edit that project and cannot create experiments in that project
+    * [AIRAVATA-2348] - Cannot update an existing project after adding a shared user.
+    * [AIRAVATA-2349] - Airavata system exception when tried to open Credential Store and Gateway Management pages.
+    * [AIRAVATA-2350] - USER_RESOURCE_PROFILE DB Primary Key should include the gateway_id
+    * [AIRAVATA-2364] - Keep getting 'Maximum execution time of 30 seconds exceeded' when tried to create a project
+    * [AIRAVATA-2376] - Duplicating experiment records in Experiment statistics and Experiment browse
+    * [AIRAVATA-2377] - Cannot download the MAC desktop client from https://seagrid.org
+    * [AIRAVATA-2437] - Cannot edit or share previous projects or new projects
+    * [AIRAVATA-2439] - Cannot create new experiments
+    * [AIRAVATA-2440] - With keycloak, my username is changed, results a new data directory creation
+    * [AIRAVATA-2447] - When given user-pending role to a user with admin role at re-login exception thrown
+    * [AIRAVATA-2771] - Apache Server Foundation is written on home page instead of Apache Software Founation
+    * [AIRAVATA-2783] - Gateway output file (.tar.gz) not existing when staging out but in real it exists in the working directory
+    * [AIRAVATA-2784] - Airavata unable to connect with the compute resource, comet.sdsc.edu
+    * [AIRAVATA-2789] - Experiment failed with unexpected error in opening a session channel
+    * [AIRAVATA-2790] - File uploading error due to session channel opening error occurred!
+
 Apache Airavata - Version 0.16 Released on 2016-07-12
 =====================================================
 Below you will find the detail list of JIRA tasks/issues resolutions incorporated in 0.16.
