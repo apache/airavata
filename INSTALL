@@ -1,7 +1,7 @@
 For detailed installation and further instructions please refer http://airavata.apache.org/:
 Documentation section in left hand panel. The website lists step by step instructions
 
-Installing  Apache Airavata 0.16
+Installing  Apache Airavata 0.17
 ------------------------------------------------
 
 Prerequisites
@@ -29,5 +29,4 @@ Running Tests
 
 Tutorials 
 ----------
-The airavata website has instructions for basic tutorials:
-* Describing and executing applications using Airavata - follow "XBAYA Quick-Start Tutorial" tutorial at https://cwiki.apache.org/confluence/display/AIRAVATA/XBAYA+Quick-Start+Tutorial
+The airavata documentation has instructions for basic tutorials at https://airavata.readthedocs.io/en/latest/

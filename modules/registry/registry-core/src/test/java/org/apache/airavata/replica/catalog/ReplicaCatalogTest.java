@@ -20,8 +20,10 @@
 package org.apache.airavata.replica.catalog;
 
 import org.apache.airavata.replica.catalog.util.Initialize;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.core.replica.catalog.utils.ReplicaCatalogJPAUtils;
 import org.apache.airavata.registry.cpi.ReplicaCatalog;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.junit.AfterClass;
@@ -41,11 +43,14 @@ public class ReplicaCatalogTest {
     private static DataReplicaLocationModel replicaLocationModel;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws ApplicationSettingsException {
         try {
             System.out.println("********** SET UP ************");
             initialize = new Initialize("replicacatalog-derby.sql");
             initialize.initializeDB();
+            // Create EntityManagerFactory before any Entities to trigger
+            // dynamic enhancement of Entity classes
+            ReplicaCatalogJPAUtils.getEntityManager();
             replicacatalog = RegistryFactory.getReplicaCatalog();
             dataProductModel = new DataProductModel();
             dataProductModel.setProductName("test-file.txt");

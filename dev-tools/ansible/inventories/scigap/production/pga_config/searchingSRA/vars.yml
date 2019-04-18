@@ -32,6 +32,9 @@ ssl_certificate_file: "/etc/letsencrypt/live/www.searchsra.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/www.searchsra.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/www.searchsra.org/privkey.pem"
 
+php_upload_max_filesize: "10M"
+php_post_max_size: "60M"
+
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
 admin_username: "admin"
