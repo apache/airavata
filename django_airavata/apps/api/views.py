@@ -7,7 +7,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
-from django.core.files.storage import FileSystemStorage
 from rest_framework.decorators import action, detail_route, list_route
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
@@ -741,11 +740,10 @@ class DataProductView(APIView):
 def get_user_files(request):
 
         dirs=[] # a list with file_name and file_dpu for each file
-
         for o in User_Files.objects.values_list('file_name','file_dpu'):
             file_details={}
-            file_details['file_name']=o[0];
-            file_details['file_dpu']=o[1];
+            file_details['file_name']=o[0]
+            file_details['file_dpu']=o[1]
             dirs.append(file_details);
 
         return JsonResponse({'uploaded': True,'user-files':dirs})
@@ -755,7 +753,6 @@ def get_user_files(request):
 def upload_user_file(request):
         username = request.user.username
         input_file = request.FILES['file']
-
         file_details={}
 
         #To avoid duplicate file names
@@ -770,11 +767,10 @@ def upload_user_file(request):
             data_product = datastore.save_user(username, input_file)
             data_product_uri = request.airavata_client.registerDataProduct(
                 request.authz_token, data_product)
-            #save in userfiles database
             d=User_Files(file_name=input_file.name, file_dpu=data_product_uri)
             d.save()
-            file_details['file_name']=d.file_name
-            file_details['file_dpu']=d.file_dpu
+            file_details['file_name'] = d.file_name
+            file_details['file_dpu'] = d.file_dpu
 
 
         return JsonResponse({'uploaded': True,
@@ -783,10 +779,7 @@ def upload_user_file(request):
 
 @login_required
 def delete_user_file(request):
-
-        username = request.user.username
-        data_product_uri = request.body.decode('utf-8');
-        data_product = None
+        data_product_uri = request.body.decode('utf-8')
         try:
             data_product = request.airavata_client.getDataProduct(
                 request.authz_token, data_product_uri)
@@ -796,11 +789,9 @@ def delete_user_file(request):
             .format(data_product_uri), exc_info=True)
             raise Http404("data product does not exist")(e)
 
-
         #remove file_details entry from database and delete from datastore
         User_Files.objects.filter(file_dpu=data_product_uri).delete()
         datastore.delete(data_product)
-
 
         return JsonResponse({'deleted': True})
 
