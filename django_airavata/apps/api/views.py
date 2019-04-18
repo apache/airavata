@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404, JsonResponse
 from django.urls import reverse
+from django_airavata.apps.workspace.models import User_Files
 from rest_framework import mixins
 from rest_framework.decorators import action, detail_route, list_route
 from rest_framework.exceptions import ParseError
@@ -39,7 +40,6 @@ from django_airavata.apps.api.view_utils import (
 )
 
 from . import datastore, helpers, models, serializers, thrift_utils
-from django_airavata.apps.workspace.models import User_Files
 
 READ_PERMISSION_TYPE = '{}:READ'
 
