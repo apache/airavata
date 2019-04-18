@@ -30,14 +30,14 @@
     <div class="row">
       <div class="col">
         <queue-settings-editor
-          v-model="localComputationalResourceScheduling"
+          v-model="data"
           v-if="appDeploymentId"
           :app-deployment-id="appDeploymentId"
           :compute-resource-policy="selectedComputeResourcePolicy"
           :batch-queue-resource-policies="batchQueueResourcePolicies"
           @input="queueSettingsChanged"
-          @valid="invalidQueueSettings = false"
-          @invalid="invalidQueueSettings = true"
+          @valid="queueSettingsValidityChanged(true)"
+          @invalid="queueSettingsValidityChanged(false)"
         >
         </queue-settings-editor>
       </div>
@@ -53,14 +53,14 @@ import {
   services,
   utils as apiUtils
 } from "django-airavata-api";
-import { utils } from "django-airavata-common-ui";
+import { mixins, utils } from "django-airavata-common-ui";
 
 export default {
   name: "computational-resource-scheduling-editor",
+  mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: models.ComputationalResourceSchedulingModel,
-      required: true
     },
     appModuleId: {
       type: String,
@@ -73,7 +73,6 @@ export default {
   },
   data() {
     return {
-      localComputationalResourceScheduling: this.value.clone(),
       computeResources: {},
       applicationDeployments: [],
       selectedGroupResourceProfileData: null,
@@ -92,8 +91,12 @@ export default {
     this.loadComputeResourceNames();
     this.loadGroupResourceProfile();
     this.validate();
+    this.$on('input', () => this.validate());
   },
   computed: {
+    localComputationalResourceScheduling() {
+      return this.data;
+    },
     computeResourceOptions: function() {
       const computeResourceOptions = this.applicationDeployments.map(dep => {
         return {
@@ -161,8 +164,7 @@ export default {
   },
   methods: {
     computeResourceChanged: function(selectedComputeResourceId) {
-      this.localComputationalResourceScheduling.resourceHostId = selectedComputeResourceId;
-      this.emitValueChanged();
+      this.data.resourceHostId = selectedComputeResourceId;
     },
     loadApplicationDeployments: function(appModuleId, groupResourceProfileId) {
       services.ApplicationDeploymentService.list(
@@ -212,7 +214,10 @@ export default {
       // the resourceHostId so we need to copy it back into the instance
       // whenever it changes
       this.localComputationalResourceScheduling.resourceHostId = this.resourceHostId;
-      this.emitValueChanged();
+    },
+    queueSettingsValidityChanged(valid) {
+      this.invalidQueueSettings = !valid;
+      this.validate();
     },
     validate() {
       if (!this.valid) {

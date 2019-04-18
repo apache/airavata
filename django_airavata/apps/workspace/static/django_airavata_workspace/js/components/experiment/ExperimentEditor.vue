@@ -1,5 +1,6 @@
 <template>
   <div>
+    <unsaved-changes-guard :dirty="dirty" />
     <div class="row">
       <div class="col-auto mr-auto">
         <h1 class="h4 mb-4">
@@ -104,7 +105,9 @@
           </h2>
         </div>
       </div>
-      <group-resource-profile-selector v-model="localExperiment.userConfigurationData.groupResourceProfileId">
+      <group-resource-profile-selector
+        v-model="localExperiment.userConfigurationData.groupResourceProfileId"
+      >
       </group-resource-profile-selector>
       <div class="row">
         <div class="col">
@@ -169,7 +172,8 @@ export default {
       projects: [],
       localExperiment: this.experiment.clone(),
       invalidInputs: [],
-      invalidComputationalResourceSchedulingEditor: false
+      invalidComputationalResourceSchedulingEditor: false,
+      dirty: false
     };
   },
   components: {
@@ -177,7 +181,8 @@ export default {
     ExperimentDescriptionEditor,
     GroupResourceProfileSelector,
     InputEditorContainer,
-    "share-button": components.ShareButton
+    "share-button": components.ShareButton,
+    "unsaved-changes-guard": components.UnsavedChangesGuard
   },
   mounted: function() {
     services.ProjectService.listAll().then(projects => {
@@ -291,12 +296,19 @@ export default {
       }
     },
     inputValueChanged: function() {
+      this.dirty = true;
       this.localExperiment.evaluateInputDependencies();
     }
   },
   watch: {
     experiment: function(newValue) {
       this.localExperiment = newValue.clone();
+    },
+    localExperiment: {
+      handler() {
+        this.dirty = true;
+      },
+      deep: true
     }
   }
 };
