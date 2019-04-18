@@ -740,13 +740,13 @@ class DataProductView(APIView):
 def get_user_files(request):
 
         dirs = []      # a list with file_name and file_dpu for each file
-        for o in User_Files.objects.values_list('file_name' ,'file_dpu'):
+        for o in User_Files.objects.values_list('file_name', 'file_dpu'):
             file_details = {}
             file_details['file_name'] = o[0]
             file_details['file_dpu'] = o[1]
             dirs.append(file_details)
 
-        return JsonResponse({'uploaded': True ,'user-files': dirs})
+        return JsonResponse({'uploaded': True, 'user-files': dirs})
 
 
 @login_required
