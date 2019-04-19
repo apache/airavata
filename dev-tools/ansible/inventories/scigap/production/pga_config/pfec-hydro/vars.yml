@@ -32,8 +32,8 @@ ssl_certificate_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/privkey.pem"
 
-php_upload_max_filesize: "500M"
-php_post_max_size: "2500M"
+php_upload_max_filesize: "6000M"
+php_post_max_size: "6500M"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
