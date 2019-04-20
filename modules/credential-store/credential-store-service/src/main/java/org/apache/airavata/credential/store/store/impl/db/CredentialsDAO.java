@@ -101,9 +101,8 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setBinaryStream(3, isCert);
 
             preparedStatement.setString(4, credential.getPortalUserName());
-
-            java.util.Date date = new java.util.Date();
-            Timestamp timestamp = new Timestamp(date.getTime());
+            
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
             preparedStatement.setTimestamp(5, timestamp);
 
