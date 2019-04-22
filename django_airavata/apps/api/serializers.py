@@ -33,7 +33,7 @@ from airavata.model.appcatalog.parser.ttypes import Parser
 from airavata.model.appcatalog.storageresource.ttypes import (
     StorageResourceDescription
 )
-from airavata.model.application.io.ttypes import DataType, InputDataObjectType
+from airavata.model.application.io.ttypes import InputDataObjectType
 from airavata.model.credential.store.ttypes import (
     CredentialSummary,
     SummaryType
