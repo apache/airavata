@@ -53,24 +53,7 @@ def save(username, project_name, experiment_name, file):
     input_file_name = experiment_data_storage.save(file_path, file)
     input_file_fullpath = experiment_data_storage.path(input_file_name)
     # Create DataProductModel instance with DataReplicaLocationModel
-    data_product = DataProductModel()
-    data_product.gatewayId = settings.GATEWAY_ID
-    data_product.ownerName = username
-    data_product.productName = file_name
-    data_product.dataProductType = DataProductType.FILE
-    data_replica_location = DataReplicaLocationModel()
-    data_replica_location.storageResourceId = \
-        settings.GATEWAY_DATA_STORE_RESOURCE_ID
-    data_replica_location.replicaName = \
-        "{} gateway data store copy".format(file_name)
-    data_replica_location.replicaLocationCategory = \
-        ReplicaLocationCategory.GATEWAY_DATA_STORE
-    data_replica_location.replicaPersistentType = \
-        ReplicaPersistentType.TRANSIENT
-    data_replica_location.filePath = \
-        "file://{}:{}".format(settings.GATEWAY_DATA_STORE_HOSTNAME,
-                              input_file_fullpath)
-    data_product.replicaLocations = [data_replica_location]
+    data_product = _create_data_product(username, input_file_fullpath)
     return data_product
 
 
@@ -110,6 +93,28 @@ def get_experiment_dir(username, project_name, experiment_name):
     return experiment_dir
 
 
+def user_file_exists(username, file_path):
+    """Check if file path exists in user's data storage space."""
+    try:
+        return experiment_data_storage.exists(
+            os.path.join(username, file_path))
+    except SuspiciousFileOperation as e:
+        logger.warning(
+            "File does not exist for user {} at file path {}".format(
+                username, file_path))
+        return False
+
+
+def get_data_product(username, file_path):
+    """Get a DataProduct instance for file in user's data storage space."""
+    if user_file_exists(username, file_path):
+        full_path = experiment_data_storage.path(
+            os.path.join(username, file_path))
+        return _create_data_product(username, full_path)
+    else:
+        raise ObjectDoesNotExist("User file does not exist")
+
+
 def _get_replica_filepath(data_product):
     replica_filepaths = [rep.filePath
                          for rep in data_product.replicaLocations
@@ -120,3 +125,26 @@ def _get_replica_filepath(data_product):
     if replica_filepath:
         return urlparse(replica_filepath).path
     return None
+
+
+def _create_data_product(username, full_path):
+    data_product = DataProductModel()
+    data_product.gatewayId = settings.GATEWAY_ID
+    data_product.ownerName = username
+    file_name = os.path.basename(full_path)
+    data_product.productName = file_name
+    data_product.dataProductType = DataProductType.FILE
+    data_replica_location = DataReplicaLocationModel()
+    data_replica_location.storageResourceId = \
+        settings.GATEWAY_DATA_STORE_RESOURCE_ID
+    data_replica_location.replicaName = \
+        "{} gateway data store copy".format(file_name)
+    data_replica_location.replicaLocationCategory = \
+        ReplicaLocationCategory.GATEWAY_DATA_STORE
+    data_replica_location.replicaPersistentType = \
+        ReplicaPersistentType.TRANSIENT
+    data_replica_location.filePath = \
+        "file://{}:{}".format(settings.GATEWAY_DATA_STORE_HOSTNAME,
+                              full_path)
+    data_product.replicaLocations = [data_replica_location]
+    return data_product

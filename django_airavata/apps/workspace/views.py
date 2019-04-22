@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 
+from airavata.model.application.io.ttypes import DataType
 from airavata.model.data.replica.ttypes import (
     DataProductModel,
     DataProductType,
@@ -18,7 +19,9 @@ from airavata.model.data.replica.ttypes import (
     ReplicaLocationCategory,
     ReplicaPersistentType
 )
+from django_airavata.apps.api import datastore
 from django_airavata.apps.api.views import (
+    ApplicationModuleViewSet,
     ExperimentSearchViewSet,
     FullExperimentViewSet,
     ProjectViewSet
@@ -65,10 +68,28 @@ def projects_list(request):
 def create_experiment(request, app_module_id):
     request.active_nav_item = 'dashboard'
 
+    # User input files can be passed as query parameters
+    # <input name>=<path/to/user_file>
+    app_interface = ApplicationModuleViewSet.as_view(
+        {'get': 'application_interface'})(request, app_module_id=app_module_id)
+    user_input_files = {}
+    for app_input in app_interface.data['applicationInputs']:
+        if (app_input['type'] ==
+                DataType.URI and app_input['name'] in request.GET):
+            user_file_path = request.GET[app_input['name']]
+            if datastore.user_file_exists(
+                    request.user.username, user_file_path):
+                data_product = datastore.get_data_product(
+                    request.user.username, user_file_path)
+                data_product_uri = request.airavata_client.registerDataProduct(
+                    request.authz_token, data_product)
+                user_input_files[app_input['name']] = data_product_uri
+
     return render(request,
                   'django_airavata_workspace/create_experiment.html',
                   {'bundle_name': 'create-experiment',
-                   'app_module_id': app_module_id})
+                   'app_module_id': app_module_id,
+                   'user_input_files': json.dumps(user_input_files)})
 
 
 @login_required
