@@ -214,7 +214,7 @@ export default {
     loadExperiment: function() {
       return services.FullExperimentService.retrieve(
         { lookup: this.localFullExperiment.experiment.experimentId },
-        { showSpinner: false }
+        { ignoreErrors: true, showSpinner: false }
       ).then(exp => (this.localFullExperiment = exp));
     },
     initPollingExperiment: function() {
@@ -226,6 +226,9 @@ export default {
         ) {
           this.loadExperiment().then(() => {
             setTimeout(pollExperiment.bind(this), 3000);
+          }).catch(error => {
+            // Wait 30 seconds after an error and then try again
+            setTimeout(pollExperiment.bind(this), 30000);
           });
         }
       }.bind(this);
