@@ -173,7 +173,8 @@ export default {
       localExperiment: this.experiment.clone(),
       invalidInputs: [],
       invalidComputationalResourceSchedulingEditor: false,
-      dirty: false
+      edited: false,
+      saved: false
     };
   },
   components: {
@@ -216,6 +217,9 @@ export default {
     },
     isSaveDisabled: function() {
       return !this.valid;
+    },
+    dirty() {
+      return this.edited && !this.saved;
     }
   },
   methods: {
@@ -244,6 +248,9 @@ export default {
         return services.ExperimentService.update({
           lookup: this.localExperiment.experimentId,
           data: this.localExperiment
+        }).then(experiment => {
+          this.saved = true;
+          return experiment;
         });
       } else {
         return services.ExperimentService.create({
@@ -251,6 +258,7 @@ export default {
         }).then(experiment => {
           // Can't save sharing settings for a new experiment until it has been
           // created
+          this.saved = true;
           return this.$refs.shareButton
             .mergeAndSave(experiment.experimentId)
             .then(() => experiment);
@@ -296,7 +304,6 @@ export default {
       }
     },
     inputValueChanged: function() {
-      this.dirty = true;
       this.localExperiment.evaluateInputDependencies();
     }
   },
@@ -306,7 +313,7 @@ export default {
     },
     localExperiment: {
       handler() {
-        this.dirty = true;
+        this.edited = true;
       },
       deep: true
     }
