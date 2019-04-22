@@ -86,6 +86,7 @@
                 <input-editor-container
                   v-for="experimentInput in localExperiment.experimentInputs"
                   :experiment-input="experimentInput"
+                  :experiment="localExperiment"
                   v-model="experimentInput.value"
                   v-show="experimentInput.show"
                   :key="experimentInput.name"

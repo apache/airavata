@@ -4,6 +4,7 @@
         <component :is="inputEditorComponentName"
             :id="inputEditorComponentId"
             :experiment-input="experimentInput"
+            :experiment="experiment"
             v-model="data"
             @invalid="recordInvalidInputEditorValue"
             @valid="recordValidInputEditorValue"
@@ -15,6 +16,7 @@
 import CheckboxInputEditor from "./CheckboxInputEditor.vue";
 import FileInputEditor from './FileInputEditor.vue'
 import InputEditorFormGroup from './InputEditorFormGroup.vue'
+import MultiFileInputEditor from "./MultiFileInputEditor.vue";
 import RadioButtonInputEditor from './RadioButtonInputEditor.vue'
 import SelectInputEditor from "./SelectInputEditor.vue";
 import StringInputEditor from './StringInputEditor.vue'
@@ -31,6 +33,10 @@ export default {
             type: models.InputDataObjectType,
             required: true,
         },
+        experiment: {
+          type: models.Experiment,
+          required: true
+        }
     },
     components: {
         CheckboxInputEditor,

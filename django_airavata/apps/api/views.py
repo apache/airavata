@@ -3,8 +3,8 @@ import os
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import FileResponse, Http404, JsonResponse
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
 from rest_framework.decorators import action, detail_route, list_route
@@ -777,6 +777,28 @@ def download_file(request):
         response['Content-Disposition'] = ('attachment; filename="{}"'
                                            .format(file_name))
         return response
+    except ObjectDoesNotExist as e:
+        raise Http404(str(e)) from e
+
+
+@login_required
+def delete_file(request):
+    # TODO check that user has write access to this file using sharing API
+    data_product_uri = request.GET.get('data-product-uri', '')
+    data_product = None
+    try:
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, data_product_uri)
+    except Exception as e:
+        log.warning("Failed to load DataProduct for {}"
+                    .format(data_product_uri), exc_info=True)
+        raise Http404("data product does not exist") from e
+    try:
+        if (data_product.gatewayId != settings.GATEWAY_ID or
+                data_product.ownerName != request.user.username):
+            raise PermissionDenied()
+        datastore.delete(data_product)
+        return HttpResponse(status=204)
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
 

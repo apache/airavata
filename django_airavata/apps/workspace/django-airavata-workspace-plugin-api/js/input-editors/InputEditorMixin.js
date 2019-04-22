@@ -5,11 +5,15 @@ import {models} from 'django-airavata-api'
 export default {
     props: {
         value: {
-            type: [String, File],
+            type: String
         },
         experimentInput: {
             type: models.InputDataObjectType,
             required: true,
+        },
+        experiment: {
+          type: models.Experiment,
+          required: true,
         },
         id: {
             type: String,
