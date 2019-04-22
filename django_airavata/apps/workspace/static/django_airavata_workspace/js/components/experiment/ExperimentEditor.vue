@@ -225,16 +225,14 @@ export default {
   },
   methods: {
     saveExperiment: function() {
-      return this.uploadInputFiles()
-        .then(this.saveOrUpdateExperiment)
+      return this.saveOrUpdateExperiment()
         .then(experiment => {
           this.localExperiment = experiment;
           this.$emit("saved", experiment);
         });
     },
     saveAndLaunchExperiment: function() {
-      return this.uploadInputFiles()
-        .then(this.saveOrUpdateExperiment)
+      return this.saveOrUpdateExperiment()
         .then(experiment => {
           this.localExperiment = experiment;
           return services.ExperimentService.launch({
@@ -265,27 +263,6 @@ export default {
             .then(() => experiment);
         });
       }
-    },
-    uploadInputFiles: function() {
-      let uploads = [];
-      this.localExperiment.experimentInputs.forEach(input => {
-        if (
-          input.type === models.DataType.URI &&
-          input.value &&
-          input.value instanceof File
-        ) {
-          let data = new FormData();
-          data.append("file", input.value);
-          data.append("project-id", this.localExperiment.projectId);
-          data.append("experiment-name", this.localExperiment.experimentName);
-          let uploadRequest = apiUtils.FetchUtils.post(
-            "/api/upload",
-            data
-          ).then(result => (input.value = result["data-product-uri"]));
-          uploads.push(uploadRequest);
-        }
-      });
-      return Promise.all(uploads);
     },
     getValidationFeedback: function(properties) {
       return utils.getProperty(this.localExperiment.validate(), properties);
