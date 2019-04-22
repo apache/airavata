@@ -153,7 +153,7 @@ import ComputationalResourceSchedulingEditor from "./ComputationalResourceSchedu
 import ExperimentDescriptionEditor from "./ExperimentDescriptionEditor.vue";
 import GroupResourceProfileSelector from "./GroupResourceProfileSelector.vue";
 import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
-import { models, services, utils as apiUtils } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
 import { components, utils } from "django-airavata-common-ui";
 
 export default {

@@ -65,8 +65,8 @@ export default {
       this.fileEntries.splice(index, 1);
     },
     createValueArray(value) {
-      if (this.value && typeof this.value === "string") {
-        return this.value.split(",");
+      if (value && typeof value === "string") {
+        return value.split(",");
       } else {
         return [];
       }

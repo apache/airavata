@@ -86,7 +86,7 @@ export default {
         data.append("file", this.file);
         data.append("project-id", this.experiment.projectId);
         data.append("experiment-name", this.experiment.experimentName);
-        let uploadRequest = utils.FetchUtils.post("/api/upload", data).then(
+        utils.FetchUtils.post("/api/upload", data).then(
           result => {
             this.data = result["data-product-uri"];
             // TODO: change upload to return serialized data product

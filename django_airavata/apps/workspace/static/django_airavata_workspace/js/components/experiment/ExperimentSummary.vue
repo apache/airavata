@@ -226,7 +226,7 @@ export default {
         ) {
           this.loadExperiment().then(() => {
             setTimeout(pollExperiment.bind(this), 3000);
-          }).catch(error => {
+          }).catch(() => {
             // Wait 30 seconds after an error and then try again
             setTimeout(pollExperiment.bind(this), 30000);
           });
