@@ -42,6 +42,7 @@ export default {
         CheckboxInputEditor,
         FileInputEditor,
         InputEditorFormGroup,
+        MultiFileInputEditor,
         RadioButtonInputEditor,
         SelectInputEditor,
         StringInputEditor,
@@ -73,6 +74,8 @@ export default {
                 return 'string-input-editor';
             } else if (this.experimentInput.type === models.DataType.URI) {
                 return 'file-input-editor';
+            } else if (this.experimentInput.type === models.DataType.URI_COLLECTION) {
+                return 'multi-file-input-editor';
             }
             // Default
             return 'string-input-editor';

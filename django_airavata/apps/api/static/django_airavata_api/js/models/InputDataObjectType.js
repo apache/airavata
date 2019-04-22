@@ -245,4 +245,10 @@ export default class InputDataObjectType extends BaseModel {
   }
 }
 
-InputDataObjectType.VALID_DATA_TYPES = [DataType.STRING, DataType.INTEGER, DataType.FLOAT, DataType.URI];
+InputDataObjectType.VALID_DATA_TYPES = [
+  DataType.STRING,
+  DataType.INTEGER,
+  DataType.FLOAT,
+  DataType.URI,
+  DataType.URI_COLLECTION
+];
