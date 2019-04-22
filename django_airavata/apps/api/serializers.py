@@ -419,24 +419,6 @@ class ExperimentSerializer(
             request.authz_token, experiment.experimentId,
             ResourcePermissionType.WRITE)
 
-    def update(self, instance, validated_data):
-        result = super().update(instance, validated_data)
-        removed_input_files = self._find_removed_input_files(
-            instance.experimentInputs, result.experimentInputs)
-        result._removed_input_files = removed_input_files
-        return result
-
-    def _find_removed_input_files(self,
-                                  old_experiment_inputs,
-                                  new_experiment_inputs):
-        old_input_data_product_uris = set(
-            inp.value for inp in old_experiment_inputs
-            if inp.type == DataType.URI)
-        new_input_data_product_uris = set(
-            inp.value for inp in new_experiment_inputs
-            if inp.type == DataType.URI)
-        return old_input_data_product_uris - new_input_data_product_uris
-
 
 class DataReplicaLocationSerializer(
         thrift_utils.create_serializer_class(DataReplicaLocationModel)):

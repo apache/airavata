@@ -184,11 +184,6 @@ class ExperimentViewSet(APIBackedViewSet):
         self.request.airavata_client.updateExperiment(
             self.authz_token, experiment.experimentId, experiment)
         self._update_most_recent_project(experiment.projectId)
-        # Process experiment._removed_input_files, removing them from storage
-        for removed_input_file in experiment._removed_input_files:
-            data_product = self.request.airavata_client.getDataProduct(
-                self.authz_token, removed_input_file)
-            datastore.delete(data_product)
 
     def _set_storage_id_and_data_dir(self, experiment):
         # Storage ID
