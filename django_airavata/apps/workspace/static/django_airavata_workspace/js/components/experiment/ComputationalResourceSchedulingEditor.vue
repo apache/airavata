@@ -214,6 +214,7 @@ export default {
       // the resourceHostId so we need to copy it back into the instance
       // whenever it changes
       this.localComputationalResourceScheduling.resourceHostId = this.resourceHostId;
+      this.$emit('input', this.data);
     },
     queueSettingsValidityChanged(valid) {
       this.invalidQueueSettings = !valid;
