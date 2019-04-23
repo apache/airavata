@@ -48,7 +48,7 @@ export default {
             // Prevent hiding modal, hide it programmatically when project gets created
             event.preventDefault();
             this.loading = true;
-            services.ProjectService.create(this.newProject)
+            services.ProjectService.create({data: this.newProject})
                 .then(result => {
                     this.$refs.modalNewProject.hide();
                     this.$emit('new-project', result);

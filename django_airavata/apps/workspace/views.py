@@ -65,6 +65,16 @@ def projects_list(request):
 
 
 @login_required
+def edit_project(request, project_id):
+    request.active_nav_item = 'projects'
+
+    return render(request, 'django_airavata_workspace/edit_project.html', {
+        'bundle_name': 'edit-project',
+        'project_id': project_id
+    })
+
+
+@login_required
 def create_experiment(request, app_module_id):
     request.active_nav_item = 'dashboard'
 
