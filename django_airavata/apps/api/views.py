@@ -273,24 +273,50 @@ class ExperimentViewSet(APIBackedViewSet):
             self.authz_token, cloned_experiment.projectId)
         for experiment_input in cloned_experiment.experimentInputs:
             if experiment_input.type == DataType.URI:
-                source_data_product = request.airavata_client.getDataProduct(
-                    self.authz_token, experiment_input.value)
-                try:
-                    copied_data_product = datastore.copy(
-                        self.username,
-                        target_project.name,
-                        cloned_experiment.experimentName,
-                        source_data_product)
-                    data_product_uri = \
-                        request.airavata_client.registerDataProduct(
-                            self.authz_token, copied_data_product)
-                    experiment_input.value = data_product_uri
-                except ObjectDoesNotExist as odne:
-                    log.warning("Could not find file for source data "
-                                "product {}".format(source_data_product))
+                data_product_uri = self._copy_experiment_input_uri(
+                    experiment_input.value, target_project, cloned_experiment)
+                if data_product_uri is None:
                     log.warning("Setting cloned input {} to null".format(
                         experiment_input.name))
-                    experiment_input.value = None
+                experiment_input.value = data_product_uri
+            elif experiment_input.type == DataType.URI_COLLECTION:
+                data_product_uris = experiment_input.value.split(
+                    ",") if experiment_input.value else []
+                cloned_data_product_uris = []
+                for data_product_uri in data_product_uris:
+                    cloned_data_product_uri = self._copy_experiment_input_uri(
+                        data_product_uri, target_project, cloned_experiment)
+                    if cloned_data_product_uri is None:
+                        log.warning(
+                            "Omitting a cloned input value for {}".format(
+                                experiment_input.name))
+                    else:
+                        cloned_data_product_uris.append(
+                            cloned_data_product_uri)
+                experiment_input.value = ",".join(cloned_data_product_uris)
+
+    def _copy_experiment_input_uri(
+            self,
+            source_data_product_uri,
+            project,
+            experiment):
+        request = self.request
+        source_data_product = request.airavata_client.getDataProduct(
+            self.authz_token, source_data_product_uri)
+        try:
+            copied_data_product = datastore.copy(
+                self.username,
+                project.name,
+                experiment.experimentName,
+                source_data_product)
+            data_product_uri = \
+                request.airavata_client.registerDataProduct(
+                    self.authz_token, copied_data_product)
+            return data_product_uri
+        except ObjectDoesNotExist as odne:
+            log.warning("Could not find file for source data "
+                        "product {}".format(source_data_product))
+            return None
 
     def _update_most_recent_project(self, project_id):
         prefs = helpers.WorkspacePreferencesHelper().get(self.request)
