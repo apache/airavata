@@ -371,6 +371,13 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 output.type in (DataType.URI,
                                 DataType.STDOUT,
                                 DataType.STDERR))]
+        outputDataProducts += [
+            self.request.airavata_client.getDataProduct(self.authz_token, dp)
+            for output in experimentModel.experimentOutputs
+            if (output.value and
+                output.type == DataType.URI_COLLECTION)
+            for dp in output.value.split(',')
+            if output.value.startswith('airavata-dp')]
         inputDataProducts = [
             self.request.airavata_client.getDataProduct(self.authz_token,
                                                         inp.value)
@@ -380,6 +387,13 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 inp.type in (DataType.URI,
                              DataType.STDOUT,
                              DataType.STDERR))]
+        inputDataProducts += [
+            self.request.airavata_client.getDataProduct(self.authz_token, dp)
+            for inp in experimentModel.experimentInputs
+            if (inp.value and
+                inp.type == DataType.URI_COLLECTION)
+            for dp in inp.value.split(',')
+            if inp.value.startswith('airavata-dp')]
         appInterfaceId = experimentModel.executionId
         applicationInterface = self.request.airavata_client \
             .getApplicationInterface(self.authz_token, appInterfaceId)
