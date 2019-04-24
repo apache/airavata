@@ -13,6 +13,8 @@
           :experiment="experiment"
           :experiment-input="experimentInput"
           @input="updatedFile($event, fileEntry)"
+          @uploadstart="uploadStart(fileEntry)"
+          @uploadend="uploadEnd(fileEntry)"
           class="flex-grow-1"
         />
         <b-button variant="link" class="text-muted" v-if="!fileEntry.value" @click="removeFile(fileEntry)">
@@ -51,7 +53,8 @@ export default {
     addFile() {
       this.fileEntries.push({
         id: this.id + "-" + this.newFileCount++,
-        value: null
+        value: null,
+        uploading: false
       });
     },
     updatedFile(newValue, fileEntry) {
@@ -79,10 +82,21 @@ export default {
       return valueArray.map(v => {
         return {
           id: this.id + "-" + v,
-          value: v
+          value: v,
+          uploading: false
         };
       });
     },
+    uploadStart(fileEntry) {
+      fileEntry.uploading = true;
+      this.$emit('uploadstart');
+    },
+    uploadEnd(fileEntry) {
+      fileEntry.uploading = false;
+      if (this.fileEntries.every(fe => !fe.uploading)) {
+        this.$emit('uploadend');
+      }
+    }
   },
   watch: {
     value(newValue) {

@@ -86,14 +86,15 @@ export default {
         data.append("file", this.file);
         data.append("project-id", this.experiment.projectId);
         data.append("experiment-name", this.experiment.experimentName);
-        utils.FetchUtils.post("/api/upload", data).then(
+        this.$emit('uploadstart');
+        utils.FetchUtils.post("/api/upload", data, "", {showSpinner: false}).then(
           result => {
             this.data = result["data-product-uri"];
             // TODO: change upload to return serialized data product
             this.loadDataProduct(this.data);
             this.valueChanged();
           }
-        );
+        ).finally(() => this.$emit('uploadend'));
       }
     },
     unselect() {

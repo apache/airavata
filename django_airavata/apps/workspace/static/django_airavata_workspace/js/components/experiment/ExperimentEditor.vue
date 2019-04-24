@@ -93,6 +93,8 @@
                   @invalid="recordInvalidInputEditorValue(experimentInput.name)"
                   @valid="recordValidInputEditorValue(experimentInput.name)"
                   @input="inputValueChanged"
+                  @uploadstart="uploadStart(experimentInput.name)"
+                  @uploadend="uploadEnd(experimentInput.name)"
                 />
               </transition-group>
             </div>
@@ -175,7 +177,8 @@ export default {
       invalidInputs: [],
       invalidComputationalResourceSchedulingEditor: false,
       edited: false,
-      saved: false
+      saved: false,
+      uploadingInputs: [],
     };
   },
   components: {
@@ -217,10 +220,13 @@ export default {
       );
     },
     isSaveDisabled: function() {
-      return !this.valid;
+      return !this.valid && this.hasUploadingInputs;
     },
     dirty() {
       return this.edited && !this.saved;
+    },
+    hasUploadingInputs() {
+      return this.uploadingInputs.length > 0;
     }
   },
   methods: {
@@ -279,6 +285,17 @@ export default {
       if (this.invalidInputs.includes(experimentInputName)) {
         const index = this.invalidInputs.indexOf(experimentInputName);
         this.invalidInputs.splice(index, 1);
+      }
+    },
+    uploadStart(experimentInputName) {
+      if (!this.uploadingInputs.includes(experimentInputName)) {
+        this.uploadingInputs.push(experimentInputName);
+      }
+    },
+    uploadEnd(experimentInputName) {
+      if (this.uploadingInputs.includes(experimentInputName)) {
+        const index = this.uploadingInputs.indexOf(experimentInputName);
+        this.uploadingInputs.splice(index, 1);
       }
     },
     inputValueChanged: function() {

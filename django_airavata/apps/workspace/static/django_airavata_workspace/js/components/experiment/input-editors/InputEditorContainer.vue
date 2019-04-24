@@ -8,7 +8,9 @@
             v-model="data"
             @invalid="recordInvalidInputEditorValue"
             @valid="recordValidInputEditorValue"
-            @input="valueChanged"/>
+            @input="valueChanged"
+            @uploadstart="uploadStart"
+            @uploadend="uploadEnd"/>
     </input-editor-form-group>
 </template>
 
@@ -114,6 +116,12 @@ export default {
           if (this.oldValue !== null) {
             this.data = this.oldValue;
           }
+        },
+        uploadStart() {
+          this.$emit('uploadstart');
+        },
+        uploadEnd() {
+          this.$emit('uploadend');
         }
     },
     watch: {
