@@ -15,6 +15,9 @@
           @input="updatedFile($event, fileEntry)"
           class="flex-grow-1"
         />
+        <b-button variant="link" class="text-muted" v-if="!fileEntry.value" @click="removeFile(fileEntry)">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </b-button>
       </div>
     </template>
     <b-button @click="addFile">Add File</b-button>
