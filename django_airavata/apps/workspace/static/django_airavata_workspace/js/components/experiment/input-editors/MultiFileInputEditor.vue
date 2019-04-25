@@ -1,28 +1,38 @@
 <template>
 
   <div>
-    <!-- TODO: rework layout here -->
-    <template v-for="fileEntry in fileEntries">
-      <div
-        class="d-flex mb-2"
-        :key="fileEntry.id"
+    <div
+      class="row mb-2"
+      v-for="fileEntry in fileEntries"
+      :key="fileEntry.id"
+    >
+      <file-input-editor
+        :value="fileEntry.value"
+        :id="fileEntry.id"
+        :experiment="experiment"
+        :experiment-input="experimentInput"
+        @input="updatedFile($event, fileEntry)"
+        @uploadstart="uploadStart(fileEntry)"
+        @uploadend="uploadEnd(fileEntry)"
+        class="col-auto flex-grow-1"
+      />
+      <b-button
+        variant="link"
+        class="col-auto text-muted"
+        v-if="!fileEntry.value"
+        @click="removeFile(fileEntry)"
       >
-        <file-input-editor
-          :value="fileEntry.value"
-          :id="fileEntry.id"
-          :experiment="experiment"
-          :experiment-input="experimentInput"
-          @input="updatedFile($event, fileEntry)"
-          @uploadstart="uploadStart(fileEntry)"
-          @uploadend="uploadEnd(fileEntry)"
-          class="flex-grow-1"
-        />
-        <b-button variant="link" class="text-muted" v-if="!fileEntry.value" @click="removeFile(fileEntry)">
-          <i class="fa fa-times" aria-hidden="true"></i>
-        </b-button>
+        <i
+          class="fa fa-times"
+          aria-hidden="true"
+        ></i>
+      </b-button>
+    </div>
+    <div class="row">
+      <div class="col">
+        <b-button @click="addFile">Add File</b-button>
       </div>
-    </template>
-    <b-button @click="addFile">Add File</b-button>
+    </div>
   </div>
 
 </template>
@@ -89,12 +99,12 @@ export default {
     },
     uploadStart(fileEntry) {
       fileEntry.uploading = true;
-      this.$emit('uploadstart');
+      this.$emit("uploadstart");
     },
     uploadEnd(fileEntry) {
       fileEntry.uploading = false;
       if (this.fileEntries.every(fe => !fe.uploading)) {
-        this.$emit('uploadend');
+        this.$emit("uploadend");
       }
     }
   },
