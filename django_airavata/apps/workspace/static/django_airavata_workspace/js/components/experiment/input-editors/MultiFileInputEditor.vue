@@ -1,8 +1,7 @@
 <template>
-
   <div>
     <div
-      class="row mb-2"
+      class="mb-2"
       v-for="fileEntry in fileEntries"
       :key="fileEntry.id"
     >
@@ -14,27 +13,9 @@
         @input="updatedFile($event, fileEntry)"
         @uploadstart="uploadStart(fileEntry)"
         @uploadend="uploadEnd(fileEntry)"
-        class="col-auto flex-grow-1"
       />
-      <b-button
-        variant="link"
-        class="col-auto text-muted"
-        v-if="!fileEntry.value"
-        @click="removeFile(fileEntry)"
-      >
-        <i
-          class="fa fa-times"
-          aria-hidden="true"
-        ></i>
-      </b-button>
-    </div>
-    <div class="row">
-      <div class="col">
-        <b-button @click="addFile">Add File</b-button>
-      </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -73,7 +54,10 @@ export default {
       } else {
         fileEntry.value = newValue;
       }
-      this.data = this.fileEntries.map(e => e.value).join(",");
+      this.data = this.fileEntries
+        .filter(e => e.value) // exclude null entries
+        .map(e => e.value)
+        .join(",");
       this.valueChanged();
     },
     removeFile(fileEntry) {
@@ -89,13 +73,20 @@ export default {
     },
     createFileEntries(value) {
       const valueArray = this.createValueArray(value);
-      return valueArray.map(v => {
+      const fileEntries = valueArray.map(v => {
         return {
           id: this.id + "-" + v,
           value: v,
           uploading: false
         };
       });
+      // Add a null entry to accept an additional upload
+      fileEntries.push({
+        id: this.id + "-" + this.newFileCount++,
+        value: null,
+        uploading: false
+      });
+      return fileEntries;
     },
     uploadStart(fileEntry) {
       fileEntry.uploading = true;
@@ -110,9 +101,8 @@ export default {
   },
   watch: {
     value(newValue) {
-      this.data = this.createFileEntries(newValue);
+      this.fileEntries = this.createFileEntries(newValue);
     }
   }
 };
 </script>
-
