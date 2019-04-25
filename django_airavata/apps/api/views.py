@@ -783,8 +783,11 @@ def upload_input_file(request):
                                       input_file)
         data_product_uri = request.airavata_client.registerDataProduct(
             request.authz_token, data_product)
+        data_product.productUri = data_product_uri
+        serializer = serializers.DataProductSerializer(
+            data_product, context={'request': request})
         return JsonResponse({'uploaded': True,
-                             'data-product-uri': data_product_uri})
+                             'data-product': serializer.data})
     except Exception as e:
         log.error("Failed to upload file", exc_info=True)
         resp = JsonResponse({'uploaded': False, 'error': str(e)})

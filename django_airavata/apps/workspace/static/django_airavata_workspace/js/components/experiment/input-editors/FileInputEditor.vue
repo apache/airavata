@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { services, utils } from "django-airavata-api";
+import { models, services, utils } from "django-airavata-api";
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
 import DataProductViewer from "../DataProductViewer.vue";
 import { components } from "django-airavata-common-ui";
@@ -89,9 +89,8 @@ export default {
         this.$emit('uploadstart');
         utils.FetchUtils.post("/api/upload", data, "", {showSpinner: false}).then(
           result => {
-            this.data = result["data-product-uri"];
-            // TODO: change upload to return serialized data product
-            this.loadDataProduct(this.data);
+            this.dataProduct = new models.DataProduct(result['data-product']);
+            this.data = this.dataProduct.productUri;
             this.valueChanged();
           }
         ).finally(() => this.$emit('uploadend'));
