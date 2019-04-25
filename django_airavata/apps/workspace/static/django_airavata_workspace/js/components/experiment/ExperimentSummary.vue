@@ -58,9 +58,10 @@
                         <template v-if="output.type.isSimpleValueType">
                           {{ output.value }}
                         </template>
-                        <data-product-viewer v-for="dp in getDataProducts(output, localFullExperiment.outputDataProducts)"
-                          v-else-if="output.type.isFileValueType"
-                          :data-product="dp" class="data-product" :key="dp.productUri"/>
+                        <template v-else-if="output.type.isFileValue">
+                          <data-product-viewer v-for="dp in getDataProducts(output, localFullExperiment.outputDataProducts)"
+                            :data-product="dp" class="data-product" :key="dp.productUri"/>
+                        </template>
                       </li>
                     </ul>
                   </td>
@@ -261,13 +262,16 @@ export default {
       })
     },
     getDataProducts(io, collection) {
+      if (!io.value || !collection) {
+        return [];
+      }
       let dataProducts = null;
       if (io.type === models.DataType.URI_COLLECTION) {
         const dataProductURIs = io.value.split(',');
         dataProducts = dataProductURIs.map(uri => collection.find(dp => dp.productUri === uri));
       } else {
         const dataProductURI = io.value;
-        dataProducts = collection.find(dp => dp.productUri === dataProductURI);
+        dataProducts = collection.filter(dp => dp.productUri === dataProductURI);
       }
       return dataProducts ? dataProducts.filter(dp => dp ? true : false) : [];
     }
