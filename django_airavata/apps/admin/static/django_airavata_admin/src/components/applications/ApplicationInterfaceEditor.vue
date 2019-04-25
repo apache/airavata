@@ -16,8 +16,9 @@
       </div>
       <div class="col">
         <b-form-group label="Enable Optional File Inputs" label-for="optional-file-inputs">
-          <b-form-radio-group id="optional-file-inputs" v-model="data.hasOptionalFileInputs" :options="trueFalseOptions" :disabled="readonly">
+          <b-form-radio-group id="optional-file-inputs" v-model="data.hasOptionalFileInputs" :options="trueFalseOptions" :disabled="true">
           </b-form-radio-group>
+          <div slot="description"><b>Removed</b>: please add an input of Type URI_COLLECTION with Required set to False instead.</div>
         </b-form-group>
       </div>
     </div>
