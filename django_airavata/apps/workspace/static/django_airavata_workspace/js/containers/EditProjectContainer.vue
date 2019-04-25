@@ -1,14 +1,9 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="col">
-        <project-editor v-if="project" v-model="project" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <b-button @click="saveProject" variant="primary">Save</b-button>
-      </div>
+  <div v-if="project">
+    <project-editor v-model="project" @save="saveProject" @valid="valid = true" @invalid="valid = false"/>
+    <div class="d-flex justify-content-end">
+        <b-button @click="saveProject" variant="primary" :disabled="!valid">Save</b-button>
+        <b-button @click="cancel" variant="secondary">Cancel</b-button>
     </div>
   </div>
 </template>
@@ -29,6 +24,7 @@ export default {
   data() {
     return {
       project: null,
+      valid: false
     };
   },
   components: {
@@ -40,10 +36,15 @@ export default {
   },
   methods: {
     saveProject() {
-      services.ProjectService.update({lookup: this.projectId, data: this.project})
-      .then(() => {
-        urls.navigateToProjectsList();
-      });
+      if (this.valid) {
+        services.ProjectService.update({lookup: this.projectId, data: this.project})
+        .then(() => {
+          urls.navigateToProjectsList();
+        });
+      }
+    },
+    cancel() {
+      urls.navigateToProjectsList();
     }
   }
 };

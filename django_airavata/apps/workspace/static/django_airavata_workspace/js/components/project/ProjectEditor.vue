@@ -1,43 +1,43 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col-auto mr-auto">
-        <h1 class="h4 mb-4">
-          <slot name="title">Edit Project</slot>
-        </h1>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <b-form-group
-          label="Project Name"
-          label-for="project-name"
-          :feedback="nameFeedback"
+    <slot name="title">
+      <h1 class="h4 mb-4">
+        Edit Project
+      </h1>
+    </slot>
+    <b-form
+      @submit="onSubmit"
+      @input="onUserInput"
+      novalidate
+    >
+      <b-form-group
+        label="Project Name"
+        label-for="project-name"
+        :feedback="nameFeedback"
+        :state="nameState"
+      >
+        <b-form-input
+          id="project-name"
+          type="text"
+          v-model="data.name"
+          required
+          placeholder="Project name"
           :state="nameState"
-        >
-          <b-form-input
-            id="project-name"
-            type="text"
-            v-model="data.name"
-            required
-            placeholder="Project name"
-            :state="nameState"
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Project Description"
-          label-for="project-description"
-        >
-          <b-form-textarea
-            id="project-description"
-            type="text"
-            v-model="data.description"
-            placeholder="(Optional) Project description"
-            :rows="3"
-          ></b-form-textarea>
-        </b-form-group>
-      </div>
-    </div>
+        ></b-form-input>
+      </b-form-group>
+      <b-form-group
+        label="Project Description"
+        label-for="project-description"
+      >
+        <b-form-textarea
+          id="project-description"
+          type="text"
+          v-model="data.description"
+          placeholder="(Optional) Project description"
+          :rows="3"
+        ></b-form-textarea>
+      </b-form-group>
+    </b-form>
   </div>
 </template>
 
@@ -56,28 +56,59 @@ export default {
   },
   mounted() {
     this.$on("input", this.validate);
+    this.validate();
   },
   data() {
     return {
-      validation: {
-        name: null
-      }
+      userBeginsInput: false
     };
   },
   computed: {
     nameFeedback() {
-      if (this.validation.name) {
+      if (this.userBeginsInput && this.validation.name) {
         return this.validation.name.join("; ");
+      } else {
+        return null;
       }
     },
     nameState() {
-      return !this.validation.name || this.validation.name.length === 0;
+      if (this.validation.name) {
+        if (this.userBeginsInput) {
+          return false;
+        } else {
+          return null;
+        }
+      } else {
+        return true;
+      }
+    },
+    validation() {
+      const v = this.data.validate();
+      return v ? v : {};
     }
   },
   methods: {
     validate() {
-      const v = this.data.validate();
-      this.validation = v ? v : {};
+      if (Object.keys(this.validation).length > 0) {
+        this.$emit("invalid");
+      } else {
+        this.$emit("valid");
+      }
+    },
+    onUserInput() {
+      this.userBeginsInput = true;
+    },
+    onSubmit(event) {
+      event.preventDefault();
+      this.$emit("save");
+    },
+    reset() {
+      this.userBeginsInput = false;
+    }
+  },
+  watch: {
+    value() {
+      this.validate();
     }
   }
 };
