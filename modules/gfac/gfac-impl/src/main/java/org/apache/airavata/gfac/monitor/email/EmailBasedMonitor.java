@@ -309,7 +309,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                     processedMessages.add(message);
 
                 } else if (!jobStatusResult.isAuthoritative()
-                        && (new Date()).getTime() - message.getSentDate().getTime() > 1000 * 60 * 5) {
+                        && (System.currentTimeMillis() - message.getSentDate().getTime() > 1000 * 60 * 5) {
                     //marking old custom Airavata emails as read
                     processedMessages.add(message);
                     log.info("Marking old Airavata custom emails as read, message subject --> {}", message.getSubject());

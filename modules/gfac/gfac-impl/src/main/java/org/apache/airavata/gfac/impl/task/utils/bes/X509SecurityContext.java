@@ -162,7 +162,7 @@ public class X509SecurityContext extends AbstractSecurityContext {
         } else {
             try {
             	
-            	final long remainingTime = x509Credentials.getCertificate().getNotAfter().getTime() - new Date().getTime();
+            	final long remainingTime = x509Credentials.getCertificate().getNotAfter().getTime() - System.currentTimeMillis();
             	
                 if (remainingTime < CREDENTIAL_RENEWING_THRESH_HOLD) {
                 	//                    return renewCredentials();
