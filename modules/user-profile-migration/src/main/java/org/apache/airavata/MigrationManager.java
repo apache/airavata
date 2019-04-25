@@ -307,8 +307,8 @@ public class MigrationManager {
             airavataUserProfile.setHomeOrganization(ISProfile.getOrganization());
             airavataUserProfile.setPhones(ISProfile.getPhones());
             airavataUserProfile.setCountry(ISProfile.getCountry());
-            airavataUserProfile.setCreationTime(new Date().getTime());
-            airavataUserProfile.setLastAccessTime(new Date().getTime());
+            airavataUserProfile.setCreationTime(System.currentTimeMillis());
+            airavataUserProfile.setLastAccessTime(System.currentTimeMillis());
             airavataUserProfile.setValidUntil(-1);
             airavataUserProfile.setState(Status.ACTIVE);
             //TODO: fix authtzToken, for now we are using empty token, but need to properly populate claims map

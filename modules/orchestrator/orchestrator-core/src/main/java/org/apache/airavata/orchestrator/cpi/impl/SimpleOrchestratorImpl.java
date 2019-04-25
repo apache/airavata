@@ -551,7 +551,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         List<String> submissionTaskIds = new ArrayList<>();
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
-        taskModel.setCreationTime(new Date().getTime());
+        taskModel.setCreationTime(System.currentTimeMillis());
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -572,7 +572,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 || monitorMode == MonitorMode.CLOUD_JOB_MONITOR) {
             TaskModel monitorTaskModel = new TaskModel();
             monitorTaskModel.setParentProcessId(processModel.getProcessId());
-            monitorTaskModel.setCreationTime(new Date().getTime());
+            monitorTaskModel.setCreationTime(System.currentTimeMillis());
             monitorTaskModel.setLastUpdateTime(monitorTaskModel.getCreationTime());
             TaskStatus monitorTaskStatus = new TaskStatus(TaskState.CREATED);
             monitorTaskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
