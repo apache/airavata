@@ -847,7 +847,7 @@ public class GFacEngineImpl implements GFacEngine {
 
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processContext.getProcessId());
-        taskModel.setCreationTime(new Date().getTime());
+        taskModel.setCreationTime(System.currentTimeMillis());
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());

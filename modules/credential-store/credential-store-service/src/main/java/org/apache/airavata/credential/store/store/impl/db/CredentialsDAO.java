@@ -177,7 +177,7 @@ public class CredentialsDAO extends ParentDAO {
 
             preparedStatement.setString(2, credential.getPortalUserName());
 
-            preparedStatement.setTimestamp(3, new Timestamp(new java.util.Date().getTime()));
+            preparedStatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             preparedStatement.setString(4, credential.getDescription());
             preparedStatement.setString(5, credential.getCredentialOwnerType().toString());
             preparedStatement.setString(6, gatewayId);
