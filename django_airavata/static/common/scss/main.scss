@@ -110,22 +110,23 @@ body {
   display: flex;
   flex-direction: row;
   flex-grow: 1;
+  overflow-y: auto;
 }
 
 .main-content {
     flex-grow: 1;
     padding: 1rem;
-    overflow-y: scroll;
     max-width: 1200px;
 
     &--with-sidebar {
       max-width: none;
+      overflow-y: auto;
     }
 }
 
 /* Add extra padding at the bottom to accommodate for the scrolling under the fixed width header */
 .main-content > :last-child {
-    padding-bottom: 70px;
+    padding-bottom: 90px;
 }
 
 .sidebar {
