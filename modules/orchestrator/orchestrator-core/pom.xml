@@ -38,27 +38,17 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-cpi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-commons</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-core</artifactId>
+            <artifactId>airavata-messaging-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-client</artifactId>
+            <artifactId>airavata-credential-store</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -104,6 +94,11 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-server-configuration</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>registry-api-stubs</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

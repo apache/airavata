@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -34,6 +34,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ExperimentResource extends AbstractExpCatResource {
@@ -380,7 +381,7 @@ public class ExperimentResource extends AbstractExpCatResource {
     }
 
     public List<ExperimentCatResource> get(ResourceType type) throws RegistryException{
-        List<ExperimentCatResource> resourceList = new ArrayList<ExperimentCatResource>();
+        List<ExperimentCatResource> resourceList = new ArrayList<>();
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
@@ -543,7 +544,7 @@ public class ExperimentResource extends AbstractExpCatResource {
     }
 
     public List<ExperimentInputResource> getExperimentInputs() throws RegistryException{
-        List<ExperimentInputResource> experimentInputResources = new ArrayList();
+        List<ExperimentInputResource> experimentInputResources = new ArrayList<>();
         List<ExperimentCatResource> resources = get(ResourceType.EXPERIMENT_INPUT);
         for (ExperimentCatResource resource : resources) {
             ExperimentInputResource inputResource = (ExperimentInputResource) resource;
@@ -553,7 +554,7 @@ public class ExperimentResource extends AbstractExpCatResource {
     }
 
     public List<ExperimentOutputResource> getExperimentOutputs() throws RegistryException{
-        List<ExperimentOutputResource> outputResources = new ArrayList();
+        List<ExperimentOutputResource> outputResources = new ArrayList<>();
         List<ExperimentCatResource> resources = get(ResourceType.EXPERIMENT_OUTPUT);
         for (ExperimentCatResource resource : resources) {
             ExperimentOutputResource outputResource = (ExperimentOutputResource) resource;
@@ -563,38 +564,34 @@ public class ExperimentResource extends AbstractExpCatResource {
     }
 
     public List<ExperimentStatusResource> getExperimentStatuses() throws RegistryException{
-        List<ExperimentStatusResource> experimentStatusResources = new ArrayList();
+        List<ExperimentStatusResource> experimentStatusResources = new ArrayList<>();
         List<ExperimentCatResource> resources = get(ResourceType.EXPERIMENT_STATUS);
         for (ExperimentCatResource resource : resources) {
             ExperimentStatusResource statusResource = (ExperimentStatusResource) resource;
             experimentStatusResources.add(statusResource);
         }
+        experimentStatusResources.sort(Comparator.comparing(ExperimentStatusResource::getTimeOfStateChange).reversed());
+        for (int i = 0; i < experimentStatusResources.size(); i++) {
+
+            ExperimentStatusResource thisState = experimentStatusResources.get(i);
+            if  (thisState.getState().equals(ExperimentState.COMPLETED.toString()) ||
+                    thisState.getState().equals(ExperimentState.FAILED.toString()) ||
+                    thisState.getState().equals(ExperimentState.CANCELED.toString())) {
+                experimentStatusResources.remove(i);
+                experimentStatusResources.add(0, thisState);
+                break;
+            }
+        }
         return experimentStatusResources;
     }
 
-    public ExperimentStatusResource getExperimentStatus() throws RegistryException{
+    public ExperimentStatusResource getLastExperimentStatus() throws RegistryException{
         List<ExperimentStatusResource> experimentStatusResources = getExperimentStatuses();
-        if(experimentStatusResources.size() == 0){
-            return null;
-        }else{
-            ExperimentStatusResource max = experimentStatusResources.get(0);
-            for(int i=1; i<experimentStatusResources.size();i++){
-                Timestamp timeOfStateChange = experimentStatusResources.get(i).getTimeOfStateChange();
-                if (timeOfStateChange != null) {
-                    if (timeOfStateChange.after(max.getTimeOfStateChange())
-                            || (timeOfStateChange.equals(max.getTimeOfStateChange()) && experimentStatusResources.get(i).getState().equals(ExperimentState.COMPLETED.toString()))
-                            || (timeOfStateChange.equals(max.getTimeOfStateChange()) && experimentStatusResources.get(i).getState().equals(ExperimentState.FAILED.toString()))
-                            || (timeOfStateChange.equals(max.getTimeOfStateChange()) && experimentStatusResources.get(i).getState().equals(ExperimentState.CANCELED.toString()))){
-                        max = experimentStatusResources.get(i);
-                    }
-                }
-            }
-            return max;
-        }
+        return experimentStatusResources.size() > 0 ? experimentStatusResources.get(0) : null;
     }
 
     public List<ExperimentErrorResource> getExperimentErrors() throws RegistryException{
-        List<ExperimentErrorResource> experimentErrorResources = new ArrayList();
+        List<ExperimentErrorResource> experimentErrorResources = new ArrayList<>();
         List<ExperimentCatResource> resources = get(ResourceType.EXPERIMENT_ERROR);
         for (ExperimentCatResource resource : resources) {
             ExperimentErrorResource errorResource = (ExperimentErrorResource) resource;
@@ -624,7 +621,7 @@ public class ExperimentResource extends AbstractExpCatResource {
     }
 
     public List<ProcessResource> getProcessList() throws RegistryException{
-        List<ProcessResource> processResources = new ArrayList();
+        List<ProcessResource> processResources = new ArrayList<>();
         List<ExperimentCatResource> resources = get(ResourceType.PROCESS);
         for (ExperimentCatResource resource : resources) {
             ProcessResource processResource = (ProcessResource) resource;

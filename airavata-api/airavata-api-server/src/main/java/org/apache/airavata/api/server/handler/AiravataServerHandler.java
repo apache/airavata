@@ -22,7 +22,7 @@ package org.apache.airavata.api.server.handler;
 import org.apache.airavata.accountprovisioning.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
-import org.apache.airavata.api.server.util.ThriftClientPool;
+import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -60,7 +60,6 @@ import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
-import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.job.JobModel;
@@ -1004,7 +1003,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                 searchCriteria.setValue(gatewayId + ":PROJECT");
                 filters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, filters, offset, limit).stream().forEach(p -> accessibleProjectIds.add(p.entityId));
+                        userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleProjectIds
+                        .add(p.entityId));
                 List<Project> result = regClient.searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
                 registryClientPool.returnResource(regClient);
                 sharingClientPool.returnResource(sharingClient);
@@ -1279,6 +1279,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public String createExperiment(AuthzToken authzToken, String gatewayId, ExperimentModel experiment) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        logger.info("Api server accepted experiment creation with name {}", experiment.getExperimentName());
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
@@ -1315,7 +1316,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if(statusPublisher !=null) {
                 statusPublisher.publish(messageContext);
             }
-            logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            logger.info(experimentId, "Created new experiment with experiment name {} and id ", experiment.getExperimentName(), experimentId);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return experimentId;
@@ -1802,6 +1803,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
             throws TException {
+        logger.info("Launching experiment {}", airavataExperimentId);
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
@@ -1811,6 +1813,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             submitExperiment(gatewayId, airavataExperimentId);
             registryClientPool.returnResource(regClient);
+            logger.info("Successfully launched experiment {}" , airavataExperimentId);
         } catch (Exception e1) {
             logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
             AiravataSystemException exception = new AiravataSystemException();
@@ -4858,121 +4861,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage(msg + " More info : " + e.getMessage());
             sharingClientPool.returnBrokenResource(sharingClient);
             registryClientPool.returnBrokenResource(regClient);
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public String createGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            //TODO Validations for authorization
-            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-
-            UserGroup sharingUserGroup = new UserGroup();
-            sharingUserGroup.setGroupId(UUID.randomUUID().toString());
-            sharingUserGroup.setName(groupModel.getName());
-            sharingUserGroup.setDescription(groupModel.getDescription());
-            sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
-            sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
-
-            String groupId = sharingClient.createGroup(sharingUserGroup);
-            sharingClient.addUsersToGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupModel.getMembers(), groupId);
-            return groupId;
-        } catch (Exception e) {
-            String msg = "Error Creating Group" ;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            //TODO Validations for authorization
-            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-
-            UserGroup sharingUserGroup = new UserGroup();
-            sharingUserGroup.setGroupId(groupModel.getId());
-            sharingUserGroup.setName(groupModel.getName());
-            sharingUserGroup.setDescription(groupModel.getDescription());
-            sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
-            sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
-
-            //adding and removal of users should be handle separately
-            sharingClient.updateGroup(sharingUserGroup);
-            return true;
-        } catch (Exception e) {
-            String msg = "Error Updating Group" ;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId) throws
-            InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            //TODO Validations for authorization
-            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-
-            sharingClient.deleteGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
-            return true;
-        } catch (Exception e) {
-            String msg = "Error Deleting Group. Group ID: " + groupId ;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public GroupModel getGroup(AuthzToken authzToken, String groupId) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-            UserGroup userGroup = sharingClient.getGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
-
-            GroupModel groupModel = new GroupModel();
-            groupModel.setId(userGroup.getGroupId());
-            groupModel.setName(userGroup.getName());
-            groupModel.setDescription(userGroup.getDescription());
-            groupModel.setOwnerId(userGroup.getOwnerId());
-
-            sharingClient.getGroupMembersOfTypeUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, 0, -1).stream().forEach(user->
-                    groupModel.addToMembers(user.getUserId())
-            );
-
-            return groupModel;
-        } catch (Exception e) {
-            String msg = "Error Retreiving Group. Group ID: " + groupId ;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        try {
-            throw new UnsupportedOperationException("Method not supported yet");
-        } catch (Exception e) {
-            String msg = "Error Retreiving All Groups for User. User ID: " + userName ;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
             throw exception;
         }
     }

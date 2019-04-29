@@ -19,18 +19,19 @@
  */
 package org.apache.airavata.sharing.registry;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.ServerMain;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.databene.contiperf.junit.ContiPerfRule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +42,6 @@ import java.util.Arrays;
 public class SharingRegistryServiceTest {
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServiceTest.class);
 
-    @Rule
-    public ContiPerfRule i = new ContiPerfRule();
-
     @BeforeClass
     public static void setUp() throws InterruptedException {
         ServerMain serverMain = new ServerMain();
@@ -53,15 +51,26 @@ public class SharingRegistryServiceTest {
 
 
     @Test
-//    @PerfTest(invocations = 50, threads = 10)
-    public void test() throws TException, InterruptedException {
+    public void test() throws TException, InterruptedException, ApplicationSettingsException {
         String serverHost = "localhost";
         int serverPort = 7878;
 
-        TTransport transport = new TSocket(serverHost, serverPort);
-        transport.open();
-        TProtocol protocol = new TBinaryProtocol(transport);
-        SharingRegistryService.Client sharingServiceClient = new SharingRegistryService.Client(protocol);
+        SharingRegistryService.Client sharingServiceClient;
+        if (!ServerSettings.isSharingTLSEnabled()) {
+            TTransport transport = new TSocket(serverHost, serverPort);
+            transport.open();
+            TProtocol protocol = new TBinaryProtocol(transport);
+            sharingServiceClient = new SharingRegistryService.Client(protocol);
+        }else{
+            TSSLTransportFactory.TSSLTransportParameters params =
+                    new TSSLTransportFactory.TSSLTransportParameters();
+            params.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
+            params.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
+
+            TTransport transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
+            TProtocol protocol = new TBinaryProtocol(transport);
+            sharingServiceClient = new SharingRegistryService.Client(protocol);
+        }
 
         Domain domain = new Domain();
         //has to be one word
@@ -169,6 +178,21 @@ public class SharingRegistryServiceTest {
         sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-3"), "test-group-2");
 
         sharingServiceClient.addChildGroupsToParentGroup(domainId, Arrays.asList("test-group-2"), "test-group-1");
+
+        //Group roles
+        Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-1"));
+
+        // user has admin access
+        Assert.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-2")));
+        Assert.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
+        Assert.assertTrue(sharingServiceClient.removeGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-2")));
+        Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
+
+        // transfer group ownership
+        Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-2"));
+        Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
+        Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-1"));
+        Assert.assertFalse(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
 
         PermissionType permissionType1 = new PermissionType();
         //required
@@ -354,7 +378,5 @@ public class SharingRegistryServiceTest {
         searchCriteria.setSearchField(EntitySearchField.OWNER_ID);
         filters.add(searchCriteria);
         Assert.assertTrue(sharingServiceClient.searchEntities(domainId, "test-user-2", filters, 0, -1).size() == 0);
-
-        transport.close();
     }
 }

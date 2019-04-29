@@ -23,8 +23,6 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.gfac.client.GFACInstance;
-import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
@@ -35,6 +33,7 @@ import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
@@ -63,12 +62,6 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
         }
     }
 
-    public GFACInstance selectGFACInstance() throws OrchestratorException {
-        // currently we only support one instance but future we have to pick an
-        // instance
-        return null;
-    }
-
     /**
      * Submit the job to a shared launch.queue accross multiple gfac instances
      *
@@ -81,7 +74,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
     public boolean submit(String experimentId, String processId, String tokenId) throws OrchestratorException {
         try {
             String gatewayId = null;
-            CredentialReader credentialReader = GFacUtils.getCredentialReader();
+            CredentialReader credentialReader = OrchestratorUtils.getCredentialReader();
             if (credentialReader != null) {
                 try {
                     gatewayId = credentialReader.getGatewayID(tokenId);
@@ -116,7 +109,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
     public boolean terminate(String experimentId, String processId, String tokenId) throws OrchestratorException {
         String gatewayId = null;
         try {
-            CredentialReader credentialReader = GFacUtils.getCredentialReader();
+            CredentialReader credentialReader = OrchestratorUtils.getCredentialReader();
             if (credentialReader != null) {
                 try {
                     gatewayId = credentialReader.getGatewayID(tokenId);

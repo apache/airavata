@@ -1,0 +1,67 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+pga_git_branch: "staging"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+vhost_servername: "testing.seagrid.org"
+vhost_ssl: True
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/letsencrypt/live/testing.seagrid.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/testing.seagrid.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/testing.seagrid.org/privkey.pem"
+
+
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
+admin_username: "admin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iamdev.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "SEAGrid"
+    oauth_grant_type: "password"
+  - name: "CILogon"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+gateway_id: "seagrid"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/seagrid"
+gateway_data_store_resource_id: "testing.seagrid.org_20dbec4c-223e-4568-a267-63d7efc6267e"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFgLWSw6Mf0tPbkeSyzPMxgT50cNEXFDiE9UnEx0tIm+is9C3hIK78Ct8NAWgPxdXy1vd/9NBVIqkR516NZ7VyGbUHkrtPLOYL+Of9IyvxOQmrLzTLQNS9yVkxwxykJzBePZySyLcOKQdG8YoNj6+2iRolzfo5/w4Gz+MSqKmPJcVH8hjwTdoE5s0hYU4MaLF966hh6LUH7SG31BcTadtEgnE8nYfxeoa20oj0h0n1LKO06OZgVXVN3iulHimQ1paQiW71X9UPUhgpLnYAiI99BmYOQqEM4IndwZLZPwDeb23A0Dh3bLO8CAPgPRcG5b1Da6kABi5i5gcIt3WCJze"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['pamidigs@iu.edu', 'sgrc-iu-group@iu.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+portal_theme: "seagrid"
+portal_theme_repo: "https://github.com/SciGaP/seagrid-website-theme.git"
+portal_title: "SEAGrid Portal"
+#pga_google_analytics_id: "UA-110457476-1"
+...

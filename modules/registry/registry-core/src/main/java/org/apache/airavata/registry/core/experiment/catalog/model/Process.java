@@ -51,6 +51,7 @@ public class Process {
     private Collection<ProcessOutput> processOutputs;
     private ProcessResourceSchedule processResourceSchedule;
     private Collection<ProcessStatus> processStatuses;
+    private Collection<ProcessWorkflow> processWorkflows;
     private Collection<Task> tasks;
     private String userDn;
     private boolean generateCert;
@@ -301,6 +302,15 @@ public class Process {
 
     public void setProcessStatuses(Collection<ProcessStatus> processStatusesByProcessId) {
         this.processStatuses = processStatusesByProcessId;
+    }
+
+    @OneToMany(mappedBy = "process")
+    public Collection<ProcessWorkflow> getProcessWorkflows() {
+        return processWorkflows;
+    }
+
+    public void setProcessWorkflows(Collection<ProcessWorkflow> processWorkflows) {
+        this.processWorkflows = processWorkflows;
     }
 
     @OneToMany(mappedBy = "process")

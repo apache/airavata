@@ -29,6 +29,7 @@ import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ExperimentRegistry {
     private GatewayResource gatewayResource;
@@ -215,7 +217,7 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = new ExperimentResource();
             experiment.setExperimentId(expId);
-            ExperimentStatusResource status = experiment.getExperimentStatus();
+            ExperimentStatusResource status = experiment.getLastExperimentStatus();
             ExperimentState newState = experimentStatus.getState();
             if (status == null) {
                 status = (ExperimentStatusResource) experiment.create(ResourceType.EXPERIMENT_STATUS);
@@ -466,6 +468,8 @@ public class ExperimentRegistry {
             taskResource.setLastUpdateTime(AiravataUtils.getTime(task.getLastUpdateTime()));
             taskResource.setTaskDetail(task.getTaskDetail());
             taskResource.setSubTaskModel(task.getSubTaskModel());
+            taskResource.setMaxRetry(task.getMaxRetry());
+            taskResource.setCurrentRetry(task.getCurrentRetry());
             taskResource.save();
 
             TaskStatus taskStatus = new TaskStatus();
@@ -565,7 +569,7 @@ public class ExperimentRegistry {
         try {
             JobResource jobResource = new JobResource();
             jobResource.setJobId(jobID);
-            JobStatusResource status = jobResource.getJobStatus();
+            JobStatusResource status = jobResource.getLastJobStatus();
             if (status == null) {
                 status = new JobStatusResource();
             }
@@ -582,6 +586,21 @@ public class ExperimentRegistry {
             throw new RegistryException(e);
         }
         return jobID;
+    }
+
+    public String addProcessWorkflow(ProcessWorkflow processWorkflow, String processId) throws RegistryException {
+        try {
+            ProcessWorkflowResource resource = new ProcessWorkflowResource();
+            resource.setProcessId(processId);
+            resource.setWorkflowId(processWorkflow.getWorkflowId());
+            resource.setCreationTime(AiravataUtils.getTime(processWorkflow.getCreationTime()));
+            resource.setType(processWorkflow.getType());
+            resource.save();
+        } catch (Exception e) {
+            logger.error("Failed to save process workflow for workflow id " + processWorkflow.getWorkflowId() + " and process " +processId);
+            throw new RegistryException(e);
+        }
+        return processId;
     }
 
 
@@ -914,6 +933,8 @@ public class ExperimentRegistry {
             taskResource.setLastUpdateTime(AiravataUtils.getTime(task.getLastUpdateTime()));
             taskResource.setTaskDetail(task.getTaskDetail());
             taskResource.setSubTaskModel(task.getSubTaskModel());
+            taskResource.setMaxRetry(task.getMaxRetry());
+            taskResource.setCurrentRetry(task.getCurrentRetry());
             taskResource.save();
 
             if(task.getTaskErrors() != null) {
@@ -1045,7 +1066,7 @@ public class ExperimentRegistry {
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_OUTPUTS)) {
                 return ThriftDataModelConversion.getExpOutputs(resource.getExperimentOutputs());
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
-                return ThriftDataModelConversion.getExperimentStatus(resource.getExperimentStatus());
+                return ThriftDataModelConversion.getExperimentStatus(resource.getLastExperimentStatus());
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ERRORS)) {
                 return ThriftDataModelConversion.getExperimentErrorList(resource.getExperimentErrors());
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_CONFIGURATION_DATA)) {
@@ -1110,6 +1131,8 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getProcessOutputs(resource.getProcessOutputs());
             } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_RESOURCE_SCHEDULE)) {
                 return ThriftDataModelConversion.getProcessResourceSchedule(resource.getProcessResourceSchedule());
+            } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_WORKFLOW)) {
+                return ThriftDataModelConversion.getProcessWorkflows(resource.getProcessWorkflows());
             } else {
                 logger.error("Unsupported field name for process data..");
             }
@@ -1138,6 +1161,10 @@ public class ExperimentRegistry {
 
     public Object getProcessResourceSchedule(String processId) throws RegistryException {
         return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_RESOURCE_SCHEDULE);
+    }
+
+    public Object getProcessWorkflows(String processId) throws RegistryException {
+        return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_WORKFLOW);
     }
 
     public Object getTask(String taskId, String fieldName) throws RegistryException {
@@ -1178,7 +1205,7 @@ public class ExperimentRegistry {
 	        if (fieldName == null) {
 		        return ThriftDataModelConversion.getJobModel(resource);
 	        } else if (fieldName.equals(Constants.FieldConstants.JobConstants.JOB_STATUS)) {
-		        return ThriftDataModelConversion.getJobStatus(resource.getJobStatus());
+		        return ThriftDataModelConversion.getJobStatus(resource.getLastJobStatus());
 	        } else {
 		        logger.error("Unsupported field name for job basic data..");
 	        }
@@ -1284,35 +1311,42 @@ public class ExperimentRegistry {
                 List<JobResource> resources = processResource.getJobList();
                 for (JobResource jobResource : resources) {
                     JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
-                    JobStatusResource latestSR = jobResource.getJobStatus();
-	                if (latestSR != null) {
-		                JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
-		                jobStatus.setReason(latestSR.getReason());
-                        List<JobStatus> statuses = new ArrayList<>();
-                        statuses.add(jobStatus);
-		                jobModel.setJobStatuses(statuses);
-	                }
+                    List<JobStatusResource> jobStatusResources = jobResource.getJobStatuses();
+                    jobModel.setJobStatuses(jobStatusResources.stream()
+                            .map(ThriftDataModelConversion::getJobStatus)
+                            .collect(Collectors.toList()));
 	                jobs.add(jobModel);
                 }
                 return jobs;
-            }else if (fieldName.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+
+            } else if (fieldName.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
                 TaskResource taskResource = new TaskResource();
                 taskResource.setTaskId((String) value);
                 List<JobResource> resources = taskResource.getJobList();
                 for (JobResource jobResource : resources) {
                     JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
-                    JobStatusResource latestSR = jobResource.getJobStatus();
-                    if (latestSR != null) {
-                        JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
-                        jobStatus.setReason(latestSR.getReason());
-                        List<JobStatus> statuses = new ArrayList<>();
-                        statuses.add(jobStatus);
-                        jobModel.setJobStatuses(statuses);
-                    }
+                    List<JobStatusResource> jobStatusResources = jobResource.getJobStatuses();
+                    jobModel.setJobStatuses(jobStatusResources.stream()
+                            .map(ThriftDataModelConversion::getJobStatus)
+                            .collect(Collectors.toList()));
                     jobs.add(jobModel);
                 }
                 return jobs;
-            }else {
+
+            } else if (fieldName.equals(Constants.FieldConstants.JobConstants.JOB_ID)) {
+                JobResource resource = new JobResource();
+                resource.setJobId((String)value);
+                List<JobResource> resources = resource.getJobsById();
+                for (JobResource jobResource : resources) {
+                    JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
+                    List<JobStatusResource> jobStatusResources = jobResource.getJobStatuses();
+                    jobModel.setJobStatuses(jobStatusResources.stream()
+                            .map(ThriftDataModelConversion::getJobStatus)
+                            .collect(Collectors.toList()));
+                    jobs.add(jobModel);
+                }
+                return jobs;
+            } else {
                 logger.error("Unsupported field name to retrieve job list...");
             }
         } catch (Exception e) {

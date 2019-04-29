@@ -27,6 +27,7 @@ import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.CustomDashboard;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;

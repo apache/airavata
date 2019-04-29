@@ -44,5 +44,6 @@ public enum ExperimentCatalogModelType {
     TASK_ERROR,
     JOB,
     JOB_STATUS,
-    QUEUE_STATUS
+    QUEUE_STATUS,
+    PROCESS_WORKFLOW
 }

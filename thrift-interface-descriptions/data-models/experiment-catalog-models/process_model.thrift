@@ -27,7 +27,7 @@ include "scheduling_model.thrift"
 namespace java org.apache.airavata.model.process
 namespace php Airavata.Model.Process
 namespace cpp apache.airavata.model.process
-namespace py apache.airavata.model.process
+namespace py airavata.model.process
 
 
 /**
@@ -64,4 +64,12 @@ struct ProcessModel {
     22: optional string experimentDataDir,
     23: optional string userName,
     24: optional bool useUserCRPref;
+    25: optional list<ProcessWorkflow> processWorkflows;
+}
+
+struct ProcessWorkflow {
+    1: required string processId;
+    2: required string workflowId;
+    3: optional i64 creationTime;
+    4: optional string type;
 }

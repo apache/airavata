@@ -1,0 +1,34 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+zookeeper.server.connection={{ zookeeper_connection_url }}
+zookeeper.timeout=30000
+
+realtime.monitor.broker.url={{ realtime_monitor_broker_url }}
+realtime.monitor.broker.consumer.group={{ realtime_monitor_broker_consumer_group }}
+realtime.monitor.broker.topic={{ realtime_monitor_broker_topic }}
+
+job.monitor.broker.url={{ job_monitor_broker_url }}
+job.monitor.broker.topic={{ job_monitor_broker_topic }}
+job.monitor.broker.publisher.id={{ realtime_monitor_broker_publisher }}
+
+###########################################################################
+#  Registry Server Configurations
+###########################################################################
+regserver.server.host={{ registry_host }}
+regserver.server.port={{ registry_port }}

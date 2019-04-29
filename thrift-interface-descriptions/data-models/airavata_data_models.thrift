@@ -40,7 +40,7 @@ include "credential-store-models/credential_store_data_models.thrift"
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
 namespace cpp apache.airavata.model
-namespace py apache.airavata.model
+namespace py airavata.model
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the

@@ -1,0 +1,48 @@
+config:
+ resources:
+   - jobManagerType: PBS
+     emailParser: org.apache.airavata.monitor.email.parser.PBSEmailParser
+     resourceEmailAddresses:
+       - pbsconsult@sdsc.edu  # gordon
+       - adm@trident.bigred2.uits.iu.edu # Bigred2
+       - root <adm@trident.bigred2.uits.iu.edu> # Bigred2
+       - root <adm@scyld.localdomain> # alamo
+       - root <adm@m1.mason.indiana.edu> #mason
+       - smic3 <smic@mail.hpc.lsu.edu> # philip.hpc.lsu
+       - adm@jetstream-cloud.org
+       - root <adm@alamo.uthscsa.edu> #alamo
+       - adm@s1.carbonate.uits.iu.edu
+
+   - jobManagerType: SLURM
+     emailParser: org.apache.airavata.monitor.email.parser.SLURMEmailParser
+     resourceEmailAddresses:
+       - SDSC Admin <slurm@comet-fe3.sdsc.edu> # comet
+       - slurm@batch1.stampede.tacc.utexas.edu # stampede
+       - slurm@helix-slurm-headnode.novalocal
+       - slurm@comet-fe4.sdsc.edu
+       - Slurm <slurm@psc.edu> # bridges
+       - Slurm Daemon <slurm@odin.oscer.ou.edu> # OU Schooner
+       - slurm@lnet28.stampede.tacc.utexas.edu # stampede2
+       - Slurm service account <slurm@chpc.utah.edu> # Utah Ember
+       - SLURM workload manager <slurm@jetstream.chemcompute.org> # JS Mark Cluster
+       - root@master.ls5.tacc.utexas.edu
+       - batch-jsc@fz-juelich.de # Jureca Email
+       - Slurm <slurm@br003.pvt.bridges.psc.edu>
+       - slurm@jetstream-cloud.org
+       - slurm@slurm-example.novalocal
+       - slurm@tutorial-headnode.novalocal # Jetstream Ultrascan static cluster with 10 nodes
+       - slurm@batch1.stampede2.tacc.utexas.edu #Stampede2
+       - slurm@sra-master.jetstreamlocal #Searching SRA
+       - Slurm Admin <slurmadmin@hpclogin01.rs.gsu.edu> #GSU cluster
+       - slurm@head.cluster #USD cluster
+       - slurm@js-169-158.jetstream-cloud.org
+       - slurm@joker.nmsu.edu
+
+   - jobManagerType: UGE
+     emailParser: org.apache.airavata.monitor.email.parser.UGEEmailParser
+     resourceEmailAddresses:
+       - ls4.tacc.utexas.edu # contain Lonestar
+       - root <root@local> # USD HPC Cluster
+       - root <littledog@siu.edu> # SIU Little Dog
+       - sge@bigdog.research.siu.edu # SIU Big Dog
+       - root <root@legacy.usd.edu> # USD HPC Cluster

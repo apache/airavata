@@ -29,6 +29,7 @@ import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
@@ -185,6 +186,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.addJob((JobModel) newObjectToAdd, (String) dependentIdentifier);
                 case JOB_STATUS:
                     return experimentRegistry.addJobStatus((JobStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+                case PROCESS_WORKFLOW:
+                    return experimentRegistry.addProcessWorkflow((ProcessWorkflow) newObjectToAdd, (String)dependentIdentifier);
                 default:
                     logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -349,6 +352,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.getProcessInputs((String) identifier);
                 case PROCESS_OUTPUT:
                     return experimentRegistry.getProcessOutputs((String) identifier);
+                case PROCESS_WORKFLOW:
+                    return experimentRegistry.getProcessWorkflows((String)identifier);
                 case PROCESS_STATUS:
                     return experimentRegistry.getProcessStatus((String) identifier);
                 case PROCESS_ERROR:

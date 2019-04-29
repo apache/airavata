@@ -19,7 +19,6 @@
  */
 package org.apache.airavata.orchestrator.core.job;
 
-import org.apache.airavata.gfac.client.GFACInstance;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
@@ -34,13 +33,6 @@ public interface JobSubmitter {
 
 
     void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException;
-
-    /**
-     * This will return a single GFACInstance among multiple if available
-     * @return
-     */
-    GFACInstance selectGFACInstance() throws OrchestratorException;
-
 
     /**
      * This is similar to submit with expId and taskId but this has extra param called token

@@ -41,6 +41,8 @@ public class Task {
     private Process process;
     private Collection<TaskError> taskErrors;
     private Collection<TaskStatus> taskStatuses;
+    private int maxRetry;
+    private int currentRetry;
 
     @Id
     @Column(name = "TASK_ID")
@@ -107,7 +109,25 @@ public class Task {
         this.setSubTaskModel = taskInternalStore;
     }
 
-//    @Override
+    @Column(name = "MAX_RETRY")
+    public int getMaxRetry() {
+        return maxRetry;
+    }
+
+    public void setMaxRetry(int maxRetry) {
+        this.maxRetry = maxRetry;
+    }
+
+    @Column(name = "CURRENT_RETRY")
+    public int getCurrentRetry() {
+        return currentRetry;
+    }
+
+    public void setCurrentRetry(int currentRetry) {
+        this.currentRetry = currentRetry;
+    }
+
+    //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;
 //        if (o == null || getClass() != o.getClass()) return false;

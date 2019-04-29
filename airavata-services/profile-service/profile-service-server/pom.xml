@@ -64,6 +64,11 @@
             <artifactId>iam-admin-services-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-sharing-registry-stubs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
 </project>

@@ -27,6 +27,8 @@ include "../data-models/airavata_data_models.thrift"
 include "../data-models/user-tenant-group-models/user_profile_model.thrift"
 include "../data-models/experiment-catalog-models/status_models.thrift"
 include "../data-models/experiment-catalog-models/job_model.thrift"
+include "../data-models/experiment-catalog-models/process_model.thrift"
+include "../data-models/experiment-catalog-models/task_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"
 include "../data-models/experiment-catalog-models/workspace_model.thrift"
 include "../data-models/experiment-catalog-models/scheduling_model.thrift"
@@ -41,6 +43,7 @@ include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../airavata-apis/airavata_errors.thrift"
+include "../airavata-apis/airavata_commons.thrift"
 
 include "registry_api_errors.thrift"
 
@@ -685,9 +688,104 @@ service RegistryService {
            *
            **/
            map<string, status_models.JobStatus> getJobStatuses(1: required string airavataExperimentId)
-                       throws (1: registry_api_errors.RegistryServiceException rse,
-                               2: airavata_errors.ExperimentNotFoundException enf)
+                                  throws (1: registry_api_errors.RegistryServiceException rse,
+                                          2: airavata_errors.ExperimentNotFoundException enf)
 
+           /**
+           *
+           * Add Experiment/Process outputs
+           *
+           **/
+           void addExperimentProcessOutputs (1: required string outputType, 2: required list<application_io_models.OutputDataObjectType> outputs, 3: required string id)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           /**
+           *
+           * Add Errors
+           * EXPERIMENT_ERROR, PROCESS_ERROR, TASK_ERROR
+           *
+           **/
+           void addErrors (1: required string errorType, 2: required airavata_commons.ErrorModel errorModel, 3: string id)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           void addTaskStatus (1: required status_models.TaskStatus taskStatus, 2: required string taskId )
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           void addProcessStatus (1: required status_models.ProcessStatus processStatus, 2: required string processId )
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           void updateProcessStatus (1: required status_models.ProcessStatus processStatus, 2: required string processId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           void updateExperimentStatus (1: required status_models.ExperimentStatus experimentStatus, 2: required string experimentId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           void addJobStatus (1: required status_models.JobStatus jobStatus, 2: required string taskId, 3: required string jobId )
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           void addJob (1: required job_model.JobModel jobModel, 2: required string processId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           string addProcess (1: required process_model.ProcessModel processModel, 2: required string experimentId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           void updateProcess (1: required process_model.ProcessModel processModel, 2: required string processId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           string addTask (1: required task_model.TaskModel taskModel, 2: required string processId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           experiment_model.UserConfigurationDataModel getUserConfigurationData(1: required string experimentId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           process_model.ProcessModel getProcess(1: required string processId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           list<process_model.ProcessModel> getProcessList(1: required string experimentId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           status_models.ProcessStatus getProcessStatus(1: required string processId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           /*
+           * queryType can be TASK_ID OR PROCESS_ID
+           *
+           */
+           bool isJobExist(1: required string queryType, 2: required string id)
+                       throws (1: registry_api_errors.RegistryServiceException rse)
+
+           /*
+           * queryType can be TASK_ID OR PROCESS_ID
+           *
+           */
+           job_model.JobModel getJob(1: required string queryType, 2: required string id)
+                       throws (1: registry_api_errors.RegistryServiceException rse)
+
+           /*
+           * queryType can be TASK_ID, PROCESS_ID or JOB_ID
+           *
+           */
+           list<job_model.JobModel> getJobs(1: required string queryType, 2: required string id)
+                                  throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+           list<application_io_models.OutputDataObjectType> getProcessOutputs (1: required string processId)
+                       throws (1: registry_api_errors.RegistryServiceException rse)
+
+           /*
+           * Returns number of Helix workflows that are currently registered for the process id
+           */
+           list<process_model.ProcessWorkflow> getProcessWorkflows(1: required string processId)
+                       throws (1: registry_api_errors.RegistryServiceException rse)
+
+           /*
+           * Register a new Helix workflow to process
+           */
+           void addProcessWorkflow(1: required process_model.ProcessWorkflow processWorkflow)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+           list<string> getProcessIds(1: required string experimentId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
            /**
            *
            * Get Job Details for all the jobs within an Experiment.
@@ -888,6 +986,17 @@ service RegistryService {
             */
             list<string> getAppModuleDeployedResources(1: required string appModuleId)
                 	throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+            /**
+            *
+            * Fetch Application Deployment Description list
+            *
+            * @param appModuleId
+            *   The identifier for the requested application module
+            */
+            list<application_deployment_model.ApplicationDeploymentDescription> getApplicationDeployments (1: required string appModuleId)
+                    throws (1: registry_api_errors.RegistryServiceException rse)
 
           /*
            *

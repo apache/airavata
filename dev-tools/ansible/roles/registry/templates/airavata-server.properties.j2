@@ -166,7 +166,7 @@ gfac.server.name={{ gfac_name }}
 gfac.server.host={{ gfac_host }}
 gfac.server.port={{ gfac_port }}
 gfac.thread.pool.size=50
-host.scheduler=org.apache.airavata.gfac.impl.DefaultHostScheduler
+host.scheduler=org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler
 
 
 
@@ -273,7 +273,7 @@ experiment.launch..queue.name=experiment.launch.queue
 # Zookeeper Server Configuration
 ###########################################################################
 embedded.zk=false
-zookeeper.server.connection={{ zookeeper_url }}
+zookeeper.server.connection={{ zookeeper_connection_url }}
 zookeeper.timeout=30000
 
 ########################################################################

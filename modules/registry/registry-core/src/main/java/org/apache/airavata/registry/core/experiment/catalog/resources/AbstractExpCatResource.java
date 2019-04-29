@@ -51,6 +51,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
     public static final String TASK_STATUS = "TaskStatus";
     public static final String JOB = "Job";
     public static final String JOB_STATUS = "JobStatus";
+    public static final String PROCESS_WORKFLOW = "ProcessWorkflow";
 
 
 	// Gateway Table
@@ -216,6 +217,10 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
     //Process Table
     public final class ProcessConstants {
         public static final String EXPERIMENT_ID = "experimentId";
+        public static final String PROCESS_ID = "processId";
+    }
+
+    public final class ProcessWorkflowConstants {
         public static final String PROCESS_ID = "processId";
     }
 
