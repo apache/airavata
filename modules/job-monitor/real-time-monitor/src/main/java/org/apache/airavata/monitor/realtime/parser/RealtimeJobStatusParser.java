@@ -85,6 +85,27 @@ public class RealtimeJobStatusParser {
                             case "COMPLETED":
                                 jobState = JobState.COMPLETE;
                                 break;
+                            case "FAILED":
+                                jobState = JobState.FAILED;
+                                break;
+                            case "SUBMITTED":
+                                jobState = JobState.SUBMITTED;
+                                break;
+                            case "QUEUED":
+                                jobState = JobState.QUEUED;
+                                break;
+                            case "CANCELED":
+                                jobState = JobState.CANCELED;
+                                break;
+                            case "SUSPENDED":
+                                jobState = JobState.SUSPENDED;
+                                break;
+                            case "UNKNOWN":
+                                jobState = JobState.UNKNOWN;
+                                break;
+                            case "NON_CRITICAL_FAIL":
+                                jobState = JobState.NON_CRITICAL_FAIL;
+                                break;
                         }
 
                         if (jobState == null) {
