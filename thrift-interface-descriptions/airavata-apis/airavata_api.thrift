@@ -51,7 +51,7 @@ namespace java org.apache.airavata.api
 namespace php Airavata.API
 namespace cpp apache.airavata.api
 namespace perl ApacheAiravataAPI
-namespace py apache.airavata.api
+namespace py airavata.api
 namespace js ApacheAiravataAPI
 
 /**
@@ -3471,36 +3471,6 @@ service Airavata {
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
-
-string createGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                                                  2: airavata_errors.AiravataClientException ace,
-                                                  3: airavata_errors.AiravataSystemException ase,
-                                                  4: airavata_errors.AuthorizationException ae)
-
- bool updateGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
-                 throws (1: airavata_errors.InvalidRequestException ire,
-                                                   2: airavata_errors.AiravataClientException ace,
-                                                   3: airavata_errors.AiravataSystemException ase,
-                                                   4: airavata_errors.AuthorizationException ae)
-
- bool deleteGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string ownerId)
-                 throws (1: airavata_errors.InvalidRequestException ire,
-                                                    2: airavata_errors.AiravataClientException ace,
-                                                    3: airavata_errors.AiravataSystemException ase,
-                                                    4: airavata_errors.AuthorizationException ae)
-
- group_manager_model.GroupModel getGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId)
-                  throws (1: airavata_errors.InvalidRequestException ire,
-                                                     2: airavata_errors.AiravataClientException ace,
-                                                     3: airavata_errors.AiravataSystemException ase,
-                                                     4: airavata_errors.AuthorizationException ae)
-
- list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName)
-                   throws (1: airavata_errors.InvalidRequestException ire,
-                                                      2: airavata_errors.AiravataClientException ace,
-                                                      3: airavata_errors.AiravataSystemException ase,
-                                                      4: airavata_errors.AuthorizationException ae)
  //
  //End of API
  }

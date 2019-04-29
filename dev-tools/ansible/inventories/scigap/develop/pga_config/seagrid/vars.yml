@@ -42,7 +42,7 @@ oidc_discovery_url: "https://iamdev.scigap.org/auth/realms/seagrid/.well-known/o
 auth_options:
   - name: "SEAGrid"
     oauth_grant_type: "password"
-  - name: "CILogon"
+  - name: "existing accounts"
     oauth_grant_type: "authorization_code"
     oauth_authorize_url_extra_params: "kc_idp_hint=oidc"
     logo: "/assets/cilogon-logo-24x24-b.png"

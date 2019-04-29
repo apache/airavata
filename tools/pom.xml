@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.17-SNAPSHOT</version>
+        <version>0.18-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -34,7 +34,7 @@
     <packaging>pom</packaging>
     <name>Airavata Tools</name>
     <url>http://airavata.apache.org/</url>
-    
+
     <profiles>
         <profile>
             <id>default</id>
@@ -42,13 +42,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-		<module>registry-tool</module>
-		<module>gsissh</module>
-        </modules>
+                <module>load-client</module>
+            </modules>
         </profile>
     </profiles>
-    <!--<properties>-->
-        <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-        <!--<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>-->
-    <!--</properties>-->
 </project>

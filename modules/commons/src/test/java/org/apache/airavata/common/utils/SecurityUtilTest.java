@@ -23,6 +23,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.security.KeyStore;
 
@@ -36,14 +37,14 @@ public class SecurityUtilTest {
     @Test
      public void testEncryptString() throws Exception {
 
-        URL url = this.getClass().getClassLoader().getResource("mykeystore.jks");
+        URI uri = this.getClass().getClassLoader().getResource("mykeystore.jks").toURI();
 
-        assert url != null;
+        assert uri != null;
 
         String stringToEncrypt = "Test string to encrypt";
-        byte[] encrypted = SecurityUtil.encryptString(url.getPath(), "mykey", new TestKeyStoreCallback(), stringToEncrypt);
+        byte[] encrypted = SecurityUtil.encryptString(uri.getPath(), "mykey", new TestKeyStoreCallback(), stringToEncrypt);
 
-        String decrypted = SecurityUtil.decryptString(url.getPath(), "mykey", new TestKeyStoreCallback(), encrypted);
+        String decrypted = SecurityUtil.decryptString(uri.getPath(), "mykey", new TestKeyStoreCallback(), encrypted);
         Assert.assertTrue(stringToEncrypt.equals(decrypted));
 
     }
@@ -51,15 +52,15 @@ public class SecurityUtilTest {
     @Test
     public void testEncryptBytes() throws Exception {
 
-        URL url = this.getClass().getClassLoader().getResource("mykeystore.jks");
+        URI uri = this.getClass().getClassLoader().getResource("mykeystore.jks").toURI();
 
-        assert url != null;
+        assert uri != null;
 
         String stringToEncrypt = "Test string to encrypt";
-        byte[] encrypted = SecurityUtil.encrypt(url.getPath(), "mykey", new TestKeyStoreCallback(),
+        byte[] encrypted = SecurityUtil.encrypt(uri.getPath(), "mykey", new TestKeyStoreCallback(),
                 stringToEncrypt.getBytes("UTF-8"));
 
-        byte[] decrypted = SecurityUtil.decrypt(url.getPath(), "mykey", new TestKeyStoreCallback(), encrypted);
+        byte[] decrypted = SecurityUtil.decrypt(uri.getPath(), "mykey", new TestKeyStoreCallback(), encrypted);
         Assert.assertTrue(stringToEncrypt.equals(new String(decrypted, "UTF-8")));
 
     }
@@ -75,10 +76,10 @@ public class SecurityUtilTest {
 
     @Test
     public void testLoadKeyStoreFromFile() throws Exception{
-        URL url = this.getClass().getClassLoader().getResource("mykeystore.jks");
+        URI uri = this.getClass().getClassLoader().getResource("mykeystore.jks").toURI();
 
-        assert url != null;
-        KeyStore ks = SecurityUtil.loadKeyStore(url.getPath(), "jceks", new TestKeyStoreCallback());
+        assert uri != null;
+        KeyStore ks = SecurityUtil.loadKeyStore(uri.getPath(), "jceks", new TestKeyStoreCallback());
         Assert.assertNotNull(ks);
 
     }

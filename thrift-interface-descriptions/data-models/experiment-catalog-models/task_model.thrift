@@ -28,7 +28,7 @@ include "job_model.thrift"
 namespace java org.apache.airavata.model.task
 namespace php Airavata.Model.Task
 namespace cpp apache.airavata.model.task
-namespace py apache.airavata.model.task
+namespace py airavata.model.task
 
 /**
  * TaskTypes: An enumerated list of TaskTypes. Task being generic, the task type will provide the concrete interpretation.
@@ -62,7 +62,9 @@ struct TaskModel {
     7: optional string taskDetail,
     8: optional binary subTaskModel,
     9: optional list<airavata_commons.ErrorModel> taskErrors,
-    10: optional list<job_model.JobModel> jobs
+    10: optional list<job_model.JobModel> jobs,
+    11: optional i32 maxRetry,
+    12: optional i32 currentRetry,
 }
 
 /**

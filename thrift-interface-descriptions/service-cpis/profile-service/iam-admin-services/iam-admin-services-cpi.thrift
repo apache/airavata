@@ -32,6 +32,7 @@ include "iam_admin_services_cpi_errors.thrift"
 
 namespace java org.apache.airavata.service.profile.iam.admin.services.cpi
 namespace php Airavata.Service.Iam.Admin.Services.CPI
+namespace py airavata.service.profile.iam.admin.services.cpi
 
 const string IAM_ADMIN_SERVICES_CPI_VERSION = "0.17"
 const string IAM_ADMIN_SERVICES_CPI_NAME = "IamAdminServices"

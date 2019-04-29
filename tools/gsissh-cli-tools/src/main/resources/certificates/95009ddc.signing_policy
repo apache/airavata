@@ -1,3 +1,0 @@
-access_id_CA	X509	'/CN=PurdueCA/O=Purdue University/ST=Indiana/C=US'
-pos_rights	globus	CA:sign
-cond_subjects	globus	'/CN=Purdue TeraGrid RA/OU=Purdue TeraGrid/O=Purdue University/ST=Indiana/C=US'

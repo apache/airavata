@@ -66,7 +66,7 @@ rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabb
 
 # Zoookeeper related variables
 zookeeper_client_port: 2181
-zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
+zookeeper_connection_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
 
 # API Server related variables
 api_server_name: "apiserver-node0"

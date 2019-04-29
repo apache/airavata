@@ -50,6 +50,7 @@ import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
@@ -65,6 +66,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ThriftDataModelConversion {
     private final static Logger logger = LoggerFactory.getLogger(ThriftDataModelConversion.class);
@@ -168,11 +170,10 @@ public class ThriftDataModelConversion {
             experiment.setExperimentInputs(getExpInputs(experimentInputs));
             List<ExperimentOutputResource> experimentOutputs = experimentResource.getExperimentOutputs();
             experiment.setExperimentOutputs(getExpOutputs(experimentOutputs));
-            ExperimentStatusResource experimentStatus = experimentResource.getExperimentStatus();
-            if (experimentStatus != null){
-                List<ExperimentStatus> experimentStatuses = new ArrayList<>();
-                experimentStatuses.add(getExperimentStatus(experimentStatus));
-                experiment.setExperimentStatus(experimentStatuses);
+            List<ExperimentStatusResource> experimentStatuses = experimentResource.getExperimentStatuses();
+            if (experimentStatuses != null){
+                experiment.setExperimentStatus(experimentStatuses.stream()
+                        .map(ThriftDataModelConversion::getExperimentStatus).collect(Collectors.toList()));
             }
             List<ExperimentErrorResource> errorDetails = experimentResource.getExperimentErrors();
             if (errorDetails!= null && !errorDetails.isEmpty()){
@@ -426,6 +427,7 @@ public class ThriftDataModelConversion {
             processModel.setUserDn(processResource.getUserDn());
             processModel.setGenerateCert(processResource.isGenerateCert());
             processModel.setUserName(processResource.getUserName());
+            processModel.setProcessWorkflows(getProcessWorkflows(processResource.getProcessWorkflows()));
             return processModel;
         }
         return null;
@@ -450,6 +452,8 @@ public class ThriftDataModelConversion {
         model.setLastUpdateTime(taskResource.getLastUpdateTime().getTime());
         model.setTaskDetail(taskResource.getTaskDetail());
         model.setSubTaskModel(taskResource.getSubTaskModel());
+        model.setMaxRetry(taskResource.getMaxRetry());
+        model.setCurrentRetry(taskResource.getCurrentRetry());
 
         TaskStatus taskStatus = getTaskStatus(taskResource.getTaskStatus());
         if (taskStatus != null){
@@ -477,12 +481,10 @@ public class ThriftDataModelConversion {
         model.setComputeResourceConsumed(jobResource.getComputeResourceConsumed());
         model.setJobName(jobResource.getJobName());
         model.setWorkingDir(jobResource.getWorkingDir());
-        JobStatus jobStatus = getJobStatus(jobResource.getJobStatus());
-        if (jobStatus != null){
-            List<JobStatus> jobStatuses = new ArrayList<>();
-            jobStatuses.add(jobStatus);
-            model.setJobStatuses(jobStatuses);
-        }
+        List<JobStatusResource> jobStatusesResources = jobResource.getJobStatuses();
+        model.setJobStatuses(jobStatusesResources.stream()
+                .map(ThriftDataModelConversion::getJobStatus)
+                .collect(Collectors.toList()));
         model.setExitCode(jobResource.getExitCode());
         model.setStdOut(jobResource.getStdOut());
         model.setStdErr(jobResource.getStdErr());
@@ -632,5 +634,20 @@ public class ThriftDataModelConversion {
             return notification;
         }
         return null;
+    }
+
+    public static List<ProcessWorkflow> getProcessWorkflows(List<ProcessWorkflowResource> resources) {
+        List<ProcessWorkflow> workflows = new ArrayList<>();
+        if (resources != null) {
+            for (ProcessWorkflowResource resource: resources) {
+                ProcessWorkflow processWorkflow = new ProcessWorkflow();
+                processWorkflow.setProcessId(resource.getProcessId());
+                processWorkflow.setWorkflowId(resource.getWorkflowId());
+                processWorkflow.setCreationTime(resource.getCreationTime().getTime());
+                processWorkflow.setType(resource.getType());
+                workflows.add(processWorkflow);
+            }
+        }
+        return workflows;
     }
 }

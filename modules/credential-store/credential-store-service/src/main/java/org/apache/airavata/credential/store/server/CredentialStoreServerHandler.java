@@ -27,7 +27,6 @@ import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.CredentialOwnerType;
-import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
@@ -35,6 +34,7 @@ import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.util.CredentialStoreInitUtil;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.credential.store.util.Utility;
+import org.apache.airavata.model.credential.store.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -163,7 +163,9 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         try {
             Credential credential = credentialReader.getCredential(gatewayId, tokenId);
-            if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+            if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                    && !(credential instanceof org.apache.airavata.credential.store.credential.impl.password
+                            .PasswordCredential)) {
                 org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                 SSHCredential sshCredential = new SSHCredential();
                 sshCredential.setUsername(credential1.getPortalUserName());
@@ -192,7 +194,9 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         try {
             if(type.equals(SummaryType.SSH)){
                 Credential credential = credentialReader.getCredential(gatewayId, tokenId);
-                if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                        && !(credential instanceof org.apache.airavata.credential.store.credential.impl.password
+                        .PasswordCredential)) {
                     org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                     CredentialSummary sshCredentialSummary = new CredentialSummary();
                     sshCredentialSummary.setType(SummaryType.SSH);
@@ -287,7 +291,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             List<Credential> allCredentials = credentialReader.getAllCredentials();
             if (allCredentials != null && !allCredentials.isEmpty()){
                 for (Credential credential : allCredentials) {
-                    if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                    if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                            && !(credential instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential)) {
                         org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                         String portalUserName = sshCredential.getPortalUserName();
                         if (portalUserName != null && sshCredential.getCredentialOwnerType() == CredentialOwnerType.USER){
@@ -315,7 +320,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
             if (allCredentials != null && !allCredentials.isEmpty()){
                 for (Credential credential : allCredentials) {
-                    if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                    if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                            && !(credential instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential)) {
                         org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                         byte[] publicKey = sshCredential.getPublicKey();
                         if (publicKey != null && sshCredential.getCredentialOwnerType() == CredentialOwnerType.GATEWAY) {
@@ -342,6 +348,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 if (allCredentials != null && !allCredentials.isEmpty()){
                     for (Credential credential : allCredentials) {
                         if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                                && !(credential instanceof org.apache.airavata.credential.store.credential.impl
+                                .password.PasswordCredential)
                                 && credential.getCredentialOwnerType() == CredentialOwnerType.GATEWAY) {
                             org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                             CredentialSummary sshCredentialSummary = new CredentialSummary();
@@ -375,7 +383,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 List<Credential> allCredentials = credentialReader.getAllCredentials();
                 if (allCredentials != null && !allCredentials.isEmpty()){
                     for (Credential credential : allCredentials) {
-                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                                && !(credential instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential)) {
                             org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                             String portalUserName = sshCredential.getPortalUserName();
                             String gateway = sshCredential.getGateway();

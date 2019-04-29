@@ -26,6 +26,7 @@
 
 namespace java org.apache.airavata.service.profile.tenant.cpi.exception
 namespace php Airavata.Service.Profile.Tenant.CPI.Error
+namespace py airavata.service.profile.tenant.cpi.error
 
 exception TenantProfileServiceException {
   1: required string message

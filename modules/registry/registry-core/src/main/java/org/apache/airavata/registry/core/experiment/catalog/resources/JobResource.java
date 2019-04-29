@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -35,7 +35,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JobResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(JobResource.class);
@@ -137,6 +139,14 @@ public class JobResource extends AbstractExpCatResource {
 
     public void setExitCode(int exitCode) {
         this.exitCode = exitCode;
+    }
+
+    public List<JobResource> getJobsById() throws RegistryException {
+        List<ExperimentCatResource> experimentCatResources = get(ResourceType.JOB);
+        List<JobResource> jobResources = experimentCatResources.stream()
+                .map(experimentCatResource -> (JobResource)experimentCatResource)
+                .collect(Collectors.toList());
+        return jobResources;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
@@ -263,6 +273,20 @@ public class JobResource extends AbstractExpCatResource {
                         }
                     }
                     break;
+                case JOB:
+                    generator = new QueryGenerator(JOB);
+                    generator.setParameter(JobStatusConstants.JOB_ID, jobId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Job job = (Job) result;
+                            JobResource jobResource =
+                                    (JobResource) Utils.getResource(ResourceType.JOB, job);
+                            resourceList.add(jobResource);
+                        }
+                    }
+                    break;
                 default:
                     logger.error("Unsupported resource type for job resource.", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -355,30 +379,30 @@ public class JobResource extends AbstractExpCatResource {
     }
 
     public List<JobStatusResource> getJobStatuses() throws RegistryException{
-        List<JobStatusResource> jobStatusResources = new ArrayList();
+        List<JobStatusResource> jobStatusResources = new ArrayList<>();
         List<ExperimentCatResource> resources = get(ResourceType.JOB_STATUS);
         for (ExperimentCatResource resource : resources) {
             JobStatusResource statusResource = (JobStatusResource) resource;
             jobStatusResources.add(statusResource);
         }
+
+        jobStatusResources.sort(Comparator.comparing(JobStatusResource::getTimeOfStateChange).reversed());
+        for (int i = 0; i < jobStatusResources.size(); i++) {
+
+            JobStatusResource thisState = jobStatusResources.get(i);
+            if  (thisState.getState().equals(JobState.COMPLETE.toString()) ||
+                    thisState.getState().equals(JobState.FAILED.toString()) ||
+                    thisState.getState().equals(JobState.CANCELED.toString())) {
+                jobStatusResources.remove(i);
+                jobStatusResources.add(0, thisState);
+                break;
+            }
+        }
         return jobStatusResources;
     }
 
-    public JobStatusResource getJobStatus() throws RegistryException{
-        List<JobStatusResource> jobStatusResources = getJobStatuses();
-        if(jobStatusResources.size() == 0){
-            return null;
-        }else{
-            JobStatusResource max = jobStatusResources.get(0);
-            for(int i=1; i<jobStatusResources.size();i++) {
-                if (jobStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())
-                   || (jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && jobStatusResources.get(i).getState().equals(JobState.COMPLETE.toString()))
-                   || (jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && jobStatusResources.get(i).getState().equals(JobState.FAILED.toString()))
-                   || (jobStatusResources.get(i).getTimeOfStateChange().equals(max.getTimeOfStateChange()) && jobStatusResources.get(i).getState().equals(JobState.CANCELED.toString()))) {
-                    max = jobStatusResources.get(i);
-                }
-            }
-            return max;
-        }
+    public JobStatusResource getLastJobStatus() throws RegistryException{
+        List<JobStatusResource> jobStatuses = getJobStatuses();
+        return jobStatuses.size() > 0 ? jobStatuses.get(0): null;
     }
 }

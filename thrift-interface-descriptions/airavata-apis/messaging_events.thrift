@@ -25,7 +25,7 @@ include "airavata_commons.thrift"
 namespace java org.apache.airavata.model.messaging.event
 namespace php Airavata.Model.Messaging.Event
 namespace cpp apache.airavata.model.messaging.event
-namespace py apache.airavata.model.messaging.event
+namespace py airavata.model.messaging.event
 
 enum MessageLevel {
     INFO,

@@ -69,6 +69,7 @@ public class Constants {
             public static final String PROCESS_INPUTS = "processInputs";
             public static final String PROCESS_OUTPUTS = "processOutputs";
             public static final String PROCESS_RESOURCE_SCHEDULE = "processResourceSchedule";
+            public static final String PROCESS_WORKFLOW = "processWorkflow";
         }
 
         public final class TaskConstants {

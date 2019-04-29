@@ -41,11 +41,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-sharing-registry-stubs</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-commons</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

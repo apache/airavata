@@ -28,12 +28,14 @@ import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.airavata.sharing.registry.utils.Constants;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class SharingRegistryServer implements IServer {
@@ -73,15 +75,25 @@ public class SharingRegistryServer implements IServer {
 
             TServerTransport serverTransport;
 
-            if (serverHost == null) {
-                serverTransport = new TServerSocket(serverPort);
-            } else {
+            if (!ServerSettings.isSharingTLSEnabled()) {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
                 serverTransport = new TServerSocket(inetSocketAddress);
+                TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
+                options.minWorkerThreads = 30;
+                server = new TThreadPoolServer(options.processor(processor));
+            }else{
+                TSSLTransportFactory.TSSLTransportParameters TLSParams =
+                        new TSSLTransportFactory.TSSLTransportParameters();
+                TLSParams.requireClientAuth(true);
+                TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
+                TLSParams.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
+                TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
+                        serverPort, ServerSettings.getTLSClientTimeout(),
+                        InetAddress.getByName(serverHost), TLSParams);
+                TThreadPoolServer.Args options = new TThreadPoolServer.Args(TLSServerTransport);
+                options.minWorkerThreads = 30;
+                server = new TThreadPoolServer(options.processor(processor));
             }
-            TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-            options.minWorkerThreads = 30;
-            server = new TThreadPoolServer(options.processor(processor));
 
             new Thread() {
                 public void run() {
@@ -102,18 +114,15 @@ public class SharingRegistryServer implements IServer {
                     if (server.isServing()) {
 
                         try {
-
                             logger.info("Register sharing service with DB Event publishers");
                             SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
 
                             logger.info("Start sharing service DB Event subscriber");
                             SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
-
                         } catch (AiravataException | SharingRegistryException e) {
                             logger.error("Error starting sharing service. Error setting up DB event services.");
                             server.stop();
                         }
-
                         setStatus(IServer.ServerStatus.STARTED);
                         logger.info("Starting Sharing Registry Server on Port " + serverPort);
                         logger.info("Listening to Sharing Registry server clients ....");

@@ -47,6 +47,8 @@ public class TaskResource extends AbstractExpCatResource {
     private Timestamp lastUpdateTime;
     private String taskDetail;
     private byte[] subTaskModel;
+    private int maxRetry;
+    private int currentRetry;
 
     public String getTaskId() {
         return taskId;
@@ -102,6 +104,22 @@ public class TaskResource extends AbstractExpCatResource {
 
     public void setSubTaskModel(byte[] subTaskModel) {
         this.subTaskModel = subTaskModel;
+    }
+
+    public int getMaxRetry() {
+        return maxRetry;
+    }
+
+    public void setMaxRetry(int maxRetry) {
+        this.maxRetry = maxRetry;
+    }
+
+    public int getCurrentRetry() {
+        return currentRetry;
+    }
+
+    public void setCurrentRetry(int currentRetry) {
+        this.currentRetry = currentRetry;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
@@ -360,6 +378,8 @@ public class TaskResource extends AbstractExpCatResource {
             task.setLastUpdateTime(lastUpdateTime);
             task.setTaskDetail(taskDetail);
             task.setSetSubTaskModel(subTaskModel);
+            task.setCurrentRetry(currentRetry);
+            task.setMaxRetry(maxRetry);
             if (existingTask == null){
                 em.persist(task);
             }else {

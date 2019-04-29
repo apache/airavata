@@ -404,6 +404,10 @@ public class ServerSettings extends ApplicationSettings {
         return Boolean.valueOf(getSetting(Constants.IS_TLS_ENABLED));
     }
 
+    public static boolean isSharingTLSEnabled() throws ApplicationSettingsException {
+        return Boolean.valueOf(getSetting(Constants.IS_SHARING_TLS_ENABLED));
+    }
+
     public static int getTLSServerPort() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(Constants.TLS_SERVER_PORT));
     }
