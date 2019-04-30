@@ -43,7 +43,6 @@
             </activation>
             <modules>
                 <module>load-client</module>
-                <module>user-profile-migration</module>
             </modules>
         </profile>
     </profiles>
