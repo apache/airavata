@@ -1,5 +1,4 @@
 <!--
-
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -37,15 +36,16 @@
 <assembly>
     <id>bin</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${post.wm.archieve.name}-${version}</baseDirectory>
+    <baseDirectory>${email.monitor.dist.name}</baseDirectory>
     <formats>
         <format>tar.gz</format>
         <format>zip</format>
     </formats>
 
     <fileSets>
+
         <fileSet>
-            <directory>src/main/resources/post-wm/bin</directory>
+            <directory>src/main/resources/email-monitor/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>777</fileMode>
             <includes>
@@ -53,13 +53,17 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources/post-wm/conf</directory>
+            <directory>src/main/resources/email-monitor/conf</directory>
             <outputDirectory>conf</outputDirectory>
+            <fileMode>777</fileMode>
             <includes>
                 <include>airavata-server.properties</include>
+                <include>email-config.yaml</include>
                 <include>logback.xml</include>
             </includes>
         </fileSet>
+
+        <!-- Create logs directory -->
         <fileSet>
             <directory>./</directory>
             <outputDirectory>logs</outputDirectory>
@@ -67,19 +71,54 @@
                 <exclude>*/**</exclude>
             </excludes>
         </fileSet>
+
     </fileSets>
 
     <dependencySets>
+
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>*:*:jar</include>
+                <include>org.apache.airavata:email-monitor:jar</include>
+                <include>org.apache.airavata:job-monitor-api:jar</include>
+                <include>org.apache.airavata:task-core:jar</include>
+                <include>org.apache.airavata:registry-api-stubs:jar</include>
+
+                <include>org.apache.airavata:airavata-commons:jar</include>
+                <include>commons-cli:commons-cli</include>
+                <include>commons-pool:commons-pool</include>
+                <include>org.apache.airavata:airavata-data-models:jar</include>
+                <include>org.apache.thrift:libthrift:jar</include>
+
+                <include>javax.mail:mail:jar</include>
+                <include>javax.activation:activation:jar</include>
+                <include>org.yaml:snakeyaml:jar</include>
+
+                <!-- kafka specific jars -->
+                <include>org.apache.kafka:kafka-clients:jar</include>
+                <include>org.lz4:lz4-java:jar</include>
+                <include>org.xerial.snappy:snappy-java:jar</include>
+
+                <!-- curator and zookeeper jars -->
+                <include>org.apache.curator:curator-framework:jar</include>
+                <include>org.apache.curator:curator-client:jar</include>
+                <include>com.google.guava:guava:jar</include>
+                <include>org.apache.zookeeper:zookeeper:jar</include>
+                <include>jline:jline:jar</include>
+                <include>org.jboss.netty:netty:jar</include>
+
+                <include>com.google.code.gson:gson:jar</include>
+
+                <!-- logging jars -->
+                <include>org.slf4j:slf4j-api:jar</include>
+                <include>ch.qos.logback:logback-classic:jar</include>
+                <include>ch.qos.logback:logback-core:jar</include>
+                <include>org.slf4j:log4j-over-slf4j:jar</include>
+                <include>com.github.danielwegener:logback-kafka-appender:jar</include>
+                <include>net.logstash.logback:logstash-logback-encoder:jar</include>
             </includes>
-            <excludes>
-                <exclude>mysql:mysql-connector-java:jar</exclude>
-                <exclude>log4j:log4j:jar</exclude>
-            </excludes>
         </dependencySet>
     </dependencySets>
+
 </assembly>

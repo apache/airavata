@@ -22,7 +22,7 @@
 <assembly>
     <id>src</id>
     <includeBaseDirectory>true</includeBaseDirectory> 
-    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <baseDirectory>${api.server.dist.name}</baseDirectory>
     <formats>
         <format>tar.gz</format>  
         <format>zip</format>
