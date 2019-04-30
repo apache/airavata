@@ -523,7 +523,7 @@
                         </goals>
                         <configuration>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${participant.dist.name}-${project.version}</finalName>
+                            <finalName>${participant.dist.name}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/participant-bin-assembly.xml</descriptor>
                             </descriptors>
@@ -538,7 +538,7 @@
                         </goals>
                         <configuration>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${pre.wm.dist.name}-${project.version}</finalName>
+                            <finalName>${pre.wm.dist.name}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/pre-wm-bin-assembly.xml</descriptor>
                             </descriptors>
@@ -553,7 +553,7 @@
                         </goals>
                         <configuration>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${post.wm.dist.name}-${project.version}</finalName>
+                            <finalName>${post.wm.dist.name}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/post-wm-bin-assembly.xml</descriptor>
                             </descriptors>
@@ -568,7 +568,7 @@
                         </goals>
                         <configuration>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${platform.monitor.dist.name}-${project.version}</finalName>
+                            <finalName>${platform.monitor.dist.name}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/platform-monitor-bin-assembly.xml</descriptor>
                             </descriptors>
@@ -583,7 +583,7 @@
                         </goals>
                         <configuration>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${email.monitor.dist.name}-${project.version}</finalName>
+                            <finalName>${email.monitor.dist.name}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/email-monitor-bin-assembly.xml</descriptor>
                             </descriptors>
@@ -598,7 +598,7 @@
                         </goals>
                         <configuration>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${realtime.monitor.dist.name}-${project.version}</finalName>
+                            <finalName>${realtime.monitor.dist.name}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/realtime-monitor-bin-assembly.xml</descriptor>
                             </descriptors>
