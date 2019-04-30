@@ -46,7 +46,7 @@
 
 # Copy job monitoring distributions to the deployment directory
 - name: Copy Job monitoring distributions to airavata-helix deployment directory
-  unarchive: "src={{ airavata_source_dir }}/modules/job-monitor/job-monitor-distribution/target/{{ item }}
+  unarchive: "src={{ airavata_source_dir }}/modules/distribution/target/{{ item }}
               dest={{ helix_dir }}/ copy=no"
   with_items:
   - "{{ email_monitor_dist_name }}"
