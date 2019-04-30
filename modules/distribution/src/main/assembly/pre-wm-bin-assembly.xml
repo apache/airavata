@@ -49,6 +49,31 @@
             <outputDirectory>bin</outputDirectory>
             <fileMode>777</fileMode>
             <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/pre-wm/conf</directory>
+            <outputDirectory>conf</outputDirectory>
+            <includes>
+                <include>airavata-server.properties</include>
+                <include>logback.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>./</directory>
+            <outputDirectory>logs</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
                 <include>javax.activation:activation:jar</include>
                 <include>org.apache.airavata:agent-api:jar</include>
                 <include>org.apache.airavata:airavata-commons:jar</include>
@@ -131,31 +156,6 @@
                 <include>org.ogce:xpp5:jar</include>
                 <include>com.101tec:zkclient:jar</include>
                 <include>org.apache.zookeeper:zookeeper:jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/resources/pre-wm/conf</directory>
-            <outputDirectory>conf</outputDirectory>
-            <includes>
-                <include>airavata-server.properties</include>
-                <include>logback.xml</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>./</directory>
-            <outputDirectory>logs</outputDirectory>
-            <excludes>
-                <exclude>*/**</exclude>
-            </excludes>
-        </fileSet>
-    </fileSets>
-
-    <dependencySets>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>*:*:jar</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
