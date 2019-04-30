@@ -40,7 +40,6 @@
         <module>task-core</module>
         <module>workflow-impl</module>
         <module>helix-spectator</module>
-        <module>helix-distribution</module>
         <module>platform-monitor</module>
     </modules>
 

@@ -34,7 +34,6 @@
         <module>job-monitor-api</module>
         <module>email-monitor</module>
         <module>real-time-monitor</module>
-        <module>job-monitor-distribution</module>
     </modules>
 
     <dependencyManagement>

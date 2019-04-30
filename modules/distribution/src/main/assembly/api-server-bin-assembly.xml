@@ -38,7 +38,7 @@
 <assembly>
     <id>bin</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <baseDirectory>${api.server.dist.name}</baseDirectory>
     <formats>
         <format>tar.gz</format>
         <format>zip</format>
@@ -56,7 +56,7 @@
         </fileSet>
         <!-- ********************** copy licenses, readme etc. ********************** -->
         <fileSet>
-            <directory>src/main/resources/</directory>
+            <directory>src/main/resources/api-server</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>LICENSE</include>
@@ -86,7 +86,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources/bin</directory>
+            <directory>src/main/resources/api-server/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>777</fileMode>
             <includes>
@@ -94,15 +94,6 @@
                 <include>*.bat</include>
                 <include>logo.txt</include>
                 <include>startNetworkServer</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/resources/samples</directory>
-            <outputDirectory>samples</outputDirectory>
-            <fileMode>777</fileMode>
-            <includes>
-                <include>*.sh</include>
-                <include>**/*.sh</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -137,18 +128,6 @@
                 <exclude>*/**</exclude>
             </excludes>
         </fileSet>
-
-        <!-- ********************** Copy samples ********************** -->
-        <fileSet>
-            <directory>${project.build.directory}/samples/applications
-            </directory>
-            <outputDirectory>samples</outputDirectory>
-            <includes>
-                <include>*.sh</include>
-                <include>*.bat</include>
-            </includes>
-        </fileSet>
-
     </fileSets>
 
     <dependencySets>
