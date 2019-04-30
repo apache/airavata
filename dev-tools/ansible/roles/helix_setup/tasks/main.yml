@@ -71,7 +71,7 @@
 
 # Copy required distributions to the deployment directory
 - name: Copy distributions to airavata-helix deployment directory
-  unarchive: "src={{ airavata_source_dir }}/modules/airavata-helix/helix-distribution/target/{{ item }}
+  unarchive: "src={{ airavata_source_dir }}/modules/distribution/target/{{ item }}
               dest={{ helix_dir }}/ copy=no"
   with_items:
   - "{{ helix_controller_dist_name }}"

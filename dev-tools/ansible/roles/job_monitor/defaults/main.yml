@@ -26,13 +26,13 @@ helix_pre_wm_name: "prewm"
 helix_post_wm_name: "postwm"
 
 # Variables related to email monitor
-email_monitor_version: "email-monitor-{{ snapshot_version }}"
+email_monitor_version: "apache-airavata-email-monitor-{{ snapshot_version }}"
 email_monitor_dist_name: "{{ email_monitor_version }}-bin.tar.gz"
 email_monitor_log_dir: "{{ helix_dir }}/{{ email_monitor_version }}/logs"
 email_job_monitor_broker_publisher: "EmailBasedProducer"
 
 # Variables related to realtime monitor
-realtime_monitor_version: "realtime-monitor-{{ snapshot_version }}"
+realtime_monitor_version: "apache-airavata-realtime-monitor-{{ snapshot_version }}"
 realtime_monitor_dist_name: "{{ realtime_monitor_version }}-bin.tar.gz"
 realtime_monitor_log_dir: "{{ helix_dir }}/{{ realtime_monitor_version }}/logs"
 realtime_monitor_broker_publisher: "RealtimeProducer"
