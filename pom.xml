@@ -716,7 +716,6 @@
                 <module>modules/server</module>
                 <module>modules/sharing-registry</module>
                 <module>modules/cluster-monitoring</module>
-                <module>modules/user-profile-migration</module>
                 <module>airavata-services</module>
                 <module>modules/db-event-manager</module>
                 <module>modules/airavata-helix</module>
