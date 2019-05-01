@@ -1,10 +1,14 @@
 <template>
   <div>
-    <slot name="title">
-      <h1 class="h4 mb-4">
-        Edit Project
-      </h1>
-    </slot>
+    <div class="d-flex">
+      <slot name="title">
+        <h1 class="h4 mb-4 mr-auto">
+          Edit Project
+        </h1>
+      </slot>
+      <slot name="buttons">
+      </slot>
+    </div>
     <b-form
       @submit="onSubmit"
       @input="onUserInput"
