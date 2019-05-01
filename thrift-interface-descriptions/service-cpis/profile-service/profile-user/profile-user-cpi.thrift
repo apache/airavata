@@ -27,16 +27,16 @@ include "../../../airavata-apis/airavata_errors.thrift"
 include "../../../airavata-apis/security_model.thrift"
 include "../../../data-models/user-tenant-group-models/user_profile_model.thrift"
 include "profile_user_cpi_errors.thrift"
-
+include "../../../base-api/base_api.thrift"
 
 namespace java org.apache.airavata.service.profile.user.cpi
 namespace php Airavata.Service.Profile.User.CPI
 namespace py airavata.service.profile.user.cpi
 
-const string USER_PROFILE_CPI_VERSION = "0.17"
+const string USER_PROFILE_CPI_VERSION = "0.18.0"
 const string USER_PROFILE_CPI_NAME = "UserProfileService"
 
-service UserProfileService {
+service UserProfileService extends base_api.BaseAPI {
 
   string addUserProfile (1: required security_model.AuthzToken authzToken,
                          2: required user_profile_model.UserProfile userProfile)

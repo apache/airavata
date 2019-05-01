@@ -85,8 +85,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	/**
 	 * Query orchestrator server to fetch the CPI version
 	 */
-	public String getOrchestratorCPIVersion() throws TException {
-		return orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
+	@Override
+	public String getAPIVersion() throws TException {
+		return null;
 	}
 
 	public OrchestratorServerHandler() throws OrchestratorException, TException {
@@ -476,7 +477,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 //        }
     }
 
-    private class SingleAppExperimentRunner implements Runnable {
+	private class SingleAppExperimentRunner implements Runnable {
 
         String experimentId;
         String airavataCredStoreToken;

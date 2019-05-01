@@ -16,7 +16,7 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
-interface GroupManagerServiceIf {
+interface GroupManagerServiceIf extends \Airavata\Base\API\BaseAPIIf {
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\Group\GroupModel $groupModel
@@ -106,15 +106,9 @@ interface GroupManagerServiceIf {
 }
 
 
-class GroupManagerServiceClient implements \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerServiceIf {
-  protected $input_ = null;
-  protected $output_ = null;
-
-  protected $seqid_ = 0;
-
+class GroupManagerServiceClient extends \Airavata\Base\API\BaseAPIClient implements \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerServiceIf {
   public function __construct($input, $output=null) {
-    $this->input_ = $input;
-    $this->output_ = $output ? $output : $input;
+    parent::__construct($input, $output);
   }
 
   public function createGroup(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Group\GroupModel $groupModel)

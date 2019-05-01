@@ -44,19 +44,15 @@ include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../airavata-apis/airavata_errors.thrift"
 include "../airavata-apis/airavata_commons.thrift"
+include "../base-api/base_api.thrift"
 
 include "registry_api_errors.thrift"
 
 namespace java org.apache.airavata.registry.api
 
-const string REGISTRY_API_VERSION = "0.17.0"
+const string REGISTRY_API_VERSION = "0.18.0"
 
-service RegistryService {
-    /**
-       * Fetch Apache Registry API version
-       **/
-      string getAPIVersion()
-            throws (1: registry_api_errors.RegistryServiceException rse)
+service RegistryService extends base_api.BaseAPI {
 
      /**
      * Verify if User Exists within Airavata.

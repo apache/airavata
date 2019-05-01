@@ -93,6 +93,8 @@ setup() {
     CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
     PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/src/main/resources/lib/'
 
+    BASE_API_SRC_DIR='../airavata-api/airavata-base-api/src/main/java'
+
     # Initialize the thrift arguments.
     #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
     #  Generate all the files in target directory
@@ -213,6 +215,10 @@ generate_java_stubs() {
     # Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
     #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
     copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/api ${JAVA_API_SDK_DIR}/org/apache/airavata/api
+
+    # This will copy the base API java stubs to airavata-base-api module
+    mkdir -p ${BASE_API_SRC_DIR}/org/apache/airavata/base
+    copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/base ${BASE_API_SRC_DIR}/org/apache/airavata/base
 
     echo "Successfully generated new java sources, compared against exiting code and replaced the changed files"
 }

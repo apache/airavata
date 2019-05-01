@@ -22,7 +22,7 @@ final class Constant extends \Thrift\Type\TConstant {
   static protected $GROUP_MANAGER_CPI_NAME;
 
   static protected function init_GROUP_MANAGER_CPI_VERSION() {
-    return "0.17";
+    return "0.18.0";
   }
 
   static protected function init_GROUP_MANAGER_CPI_NAME() {
