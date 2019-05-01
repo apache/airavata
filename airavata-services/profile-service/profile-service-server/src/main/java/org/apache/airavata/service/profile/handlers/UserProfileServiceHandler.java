@@ -36,6 +36,7 @@ import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamA
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
@@ -53,6 +54,11 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     public UserProfileServiceHandler() {
 
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
+    }
+
+    @Override
+    public String getAPIVersion() throws TException {
+        return profile_user_cpiConstants.USER_PROFILE_CPI_VERSION;
     }
 
     @Override

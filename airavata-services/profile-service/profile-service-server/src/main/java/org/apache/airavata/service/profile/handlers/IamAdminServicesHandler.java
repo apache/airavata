@@ -49,17 +49,9 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
 
-
     @Override
-    public String getAPIVersion(AuthzToken authzToken) throws IamAdminServicesException, AuthorizationException {
-        try {
-            return iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
-        } catch (Exception ex) {
-            logger.error("Error getting API version, reason: " + ex.getMessage(), ex);
-            IamAdminServicesException exception = new IamAdminServicesException();
-            exception.setMessage("Error getting API version, reason: " + ex.getMessage());
-            throw exception;
-        }
+    public String getAPIVersion() throws TException {
+        return iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 
     @Override
