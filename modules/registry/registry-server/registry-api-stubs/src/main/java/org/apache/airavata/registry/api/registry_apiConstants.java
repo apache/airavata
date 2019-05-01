@@ -25,6 +25,6 @@ package org.apache.airavata.registry.api;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class registry_apiConstants {
 
-  public static final java.lang.String REGISTRY_API_VERSION = "0.17.0";
+  public static final java.lang.String REGISTRY_API_VERSION = "0.18.0";
 
 }

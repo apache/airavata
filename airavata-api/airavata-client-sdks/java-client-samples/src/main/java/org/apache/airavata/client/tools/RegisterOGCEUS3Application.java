@@ -66,7 +66,7 @@ public class RegisterOGCEUS3Application {
     public static void main(String[] args) {
         try {
 			airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-			System.out.println("API version is " + airavataClient.getAPIVersion(null));
+			System.out.println("API version is " + airavataClient.getAPIVersion());
 
 			//Register all compute hosts
 			registerXSEDEHosts();

@@ -82,7 +82,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Fetch Apache Registry API version
      */
     @Override
-    public String getAPIVersion() throws RegistryServiceException, TException {
+    public String getAPIVersion() throws TException {
         return registry_apiConstants.REGISTRY_API_VERSION;
     }
 

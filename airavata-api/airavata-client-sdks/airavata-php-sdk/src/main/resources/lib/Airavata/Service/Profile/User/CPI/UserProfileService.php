@@ -16,7 +16,7 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
-interface UserProfileServiceIf {
+interface UserProfileServiceIf extends \Airavata\Base\API\BaseAPIIf {
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\User\UserProfile $userProfile
@@ -129,15 +129,9 @@ interface UserProfileServiceIf {
 }
 
 
-class UserProfileServiceClient implements \Airavata\Service\Profile\User\CPI\UserProfileServiceIf {
-  protected $input_ = null;
-  protected $output_ = null;
-
-  protected $seqid_ = 0;
-
+class UserProfileServiceClient extends \Airavata\Base\API\BaseAPIClient implements \Airavata\Service\Profile\User\CPI\UserProfileServiceIf {
   public function __construct($input, $output=null) {
-    $this->input_ = $input;
-    $this->output_ = $output ? $output : $input;
+    parent::__construct($input, $output);
   }
 
   public function addUserProfile(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\User\UserProfile $userProfile)

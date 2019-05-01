@@ -25,6 +25,6 @@ package org.apache.airavata.orchestrator.cpi;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class orchestrator_cpiConstants {
 
-  public static final java.lang.String ORCHESTRATOR_CPI_VERSION = "0.16.0";
+  public static final java.lang.String ORCHESTRATOR_CPI_VERSION = "0.18.0";
 
 }

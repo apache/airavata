@@ -25,14 +25,13 @@
 
 include "../airavata-apis/airavata_errors.thrift"
 include "../data-models/experiment-catalog-models/process_model.thrift"
+include "../base-api/base_api.thrift"
+
 namespace java org.apache.airavata.orchestrator.cpi
 
-const string ORCHESTRATOR_CPI_VERSION = "0.16.0"
+const string ORCHESTRATOR_CPI_VERSION = "0.18.0"
 
-service OrchestratorService {
-
-  /** Query orchestrator server to fetch the CPI version */
-  string getOrchestratorCPIVersion(),
+service OrchestratorService extends base_api.BaseAPI {
 
     /**
      * After creating the experiment Data user have the

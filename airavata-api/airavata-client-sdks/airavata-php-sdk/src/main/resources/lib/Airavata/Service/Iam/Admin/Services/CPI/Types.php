@@ -22,7 +22,7 @@ final class Constant extends \Thrift\Type\TConstant {
   static protected $IAM_ADMIN_SERVICES_CPI_NAME;
 
   static protected function init_IAM_ADMIN_SERVICES_CPI_VERSION() {
-    return "0.17";
+    return "0.18.0";
   }
 
   static protected function init_IAM_ADMIN_SERVICES_CPI_NAME() {
