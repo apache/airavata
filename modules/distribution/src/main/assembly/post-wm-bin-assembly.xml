@@ -75,6 +75,7 @@
             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>javax.activation:activation:jar</include>
+                <include>org.apache.airavata:airavata-base-api:jar</include>
                 <include>org.apache.airavata:agent-api:jar</include>
                 <include>org.apache.airavata:airavata-commons:jar</include>
                 <include>org.apache.airavata:airavata-credential-store-stubs:jar</include>
