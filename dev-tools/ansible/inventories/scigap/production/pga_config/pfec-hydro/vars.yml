@@ -44,7 +44,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "PfEC Hydro Gateway"
+  - name: "Future Water Gateway"
     oauth_grant_type: "password"
   - name: "Existing Institute Login"
     oauth_grant_type: "authorization_code"
@@ -65,5 +65,5 @@ portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 #portal_theme: "qusp-gateway-theme"
 #portal_theme_repo: "https://github.com/SciGaP/qusp-gateway-theme.git"
-portal_title: "PfEC Hydro Gateway"
+portal_title: "Future Water Gateway"
 ...
