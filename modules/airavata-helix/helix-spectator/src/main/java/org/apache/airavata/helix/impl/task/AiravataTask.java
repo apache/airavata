@@ -189,12 +189,12 @@ public abstract class AiravataTask extends AbstractTask {
                 status.setTimeOfStateChange(status.getTimeOfStateChange());
             }
             getRegistryServiceClient().addProcessStatus(status, getProcessId());
-            /*ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
+            ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
             ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
             MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
                     AiravataUtils.getId(MessageType.PROCESS.name()), getGatewayId());
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);*/
+            getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             logger.error("Failed to save process status of process " + getProcessId(), e);
         }
@@ -218,13 +218,13 @@ public abstract class AiravataTask extends AbstractTask {
 
             getRegistryServiceClient().addJobStatus(jobStatus, taskId, jobId);
 
-            /*JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
+            JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
 
             JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
             MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
                     (MessageType.JOB.name()), gateway);
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);*/
+            getStatusPublisher().publish(msgCtx);
 
         } catch (Exception e) {
             logger.error("Error persisting job status " + e.getLocalizedMessage(), e);
@@ -296,6 +296,17 @@ public abstract class AiravataTask extends AbstractTask {
             logger.error("expId: " + getExperimentId() + " processId: " + getProcessId() + " taskId: " + getTaskId()
                     + " : - Error while updating task errors", e);
         }
+    }
+
+    protected Publisher getStatusPublisher() throws AiravataException {
+        if (statusPublisher == null) {
+            synchronized (RabbitMQPublisher.class) {
+                if (statusPublisher == null) {
+                    statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+                }
+            }
+        }
+        return statusPublisher;
     }
 
     @Override
