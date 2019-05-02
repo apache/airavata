@@ -22,9 +22,12 @@ namespace java org.apache.airavata.sharing.registry.service.cpi
 namespace php Airavata.API.Sharing
 namespace py airavata.api.sharing
 
-include "./sharing_models.thrift"
+include "../data-models/sharing-models/sharing_models.thrift"
+include "../base-api/base_api.thrift"
 
-service SharingRegistryService {
+const string SHARING_CPI_VERSION = "0.18.0"
+
+service SharingRegistryService extends base_api.BaseAPI {
 
     /**
       <p>API method to create a new domain</p>

@@ -26,6 +26,7 @@ import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.sharing.registry.service.cpi.sharing_cpiConstants;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -42,6 +43,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
     public SharingRegistryServerHandler() throws ApplicationSettingsException, TException {
         JPAUtils.initializeDB();
+    }
+
+    @Override
+    public String getAPIVersion() throws TException {
+        return sharing_cpiConstants.SHARING_CPI_VERSION;
     }
 
     /**

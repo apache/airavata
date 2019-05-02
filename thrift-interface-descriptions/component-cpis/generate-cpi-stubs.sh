@@ -27,7 +27,8 @@ show_usage() {
 	echo "options:"
 	echo -e "\tcs Generate/Update Credential Store Stubs"
 	echo -e "\torch Generate/Update Orchestrator Stubs"
-	echo -e "\registry Generate/Update Registry Stubs"
+	echo -e "\tregistry Generate/Update Registry Stubs"
+	echo -e "\tsharing Generate/Update Sharing Registry Stubs"
 	echo -e "\tall Generate/Update all stubs (Credential Store, Orchestrator, Registry)."
 	echo -e "\t-h[elp] Print the usage options of this script"
 	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
@@ -82,6 +83,9 @@ setup() {
 
     REGISTRY_THRIFT_FILE="$BASEDIR/component-cpis/registry-api.thrift"
     REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
+
+    SHARING_REGISTRY_THRIFT_FILE="$BASEDIR/component-cpis/sharing_cpi.thrift"
+    SHARING_REGISTRY_SRC_DIR='../../modules/sharing-registry/sharing-registry-stubs/src/main/java/'
 
     BASE_API_SRC_DIR='../../airavata-api/airavata-base-api/src/main/java'
 
@@ -203,6 +207,7 @@ do
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            generate_thrift_stubs ${SHARING_REGISTRY_THRIFT_FILE} ${SHARING_REGISTRY_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
             setup
@@ -215,6 +220,10 @@ do
     registry)    echo "Generate Registry Stubs"
             setup
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            ;;
+    sharing)    echo "Generate Sharing Registry Stubs"
+            setup
+            generate_thrift_stubs ${SHARING_REGISTRY_THRIFT_FILE} ${SHARING_REGISTRY_SRC_DIR}
             ;;
     --native-thrift)
             THRIFT_NATIVE="true"
