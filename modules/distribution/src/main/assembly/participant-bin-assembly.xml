@@ -147,7 +147,7 @@
                 <include>org.slf4j:slf4j-api:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>
                 <include>org.xerial.snappy:snappy-java:jar</include>
-                <include>ssh-agent:jar</include>
+                <include>org.apache.airavata:ssh-agent:jar</include>
                 <include>com.hierynomus:sshj:jar</include>
                 <include>org.apache.airavata:sshj-agent:jar</include>
                 <include>org.apache.airavata:task-api:jar</include>
