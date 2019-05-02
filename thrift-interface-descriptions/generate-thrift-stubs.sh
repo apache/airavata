@@ -81,13 +81,14 @@ setup() {
     AIRAVATA_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/airavata-apis/airavata_api.thrift"
     SHARING_API_THRIFT_FILE="${BASEDIR}/modules/sharing-registry/thrift_models/sharing_cpi.thrift"
     DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/airavata_data_models.thrift"
-    SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}/modules/sharing-registry/thrift_models/sharing_models.thrift"
+    SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/sharing-models/sharing_models.thrift"
     APP_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/app-catalog-models/app_catalog_models.thrift"
     RESOURCE_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/resource-catalog-models/resource_catalog_models.thrift"
     WORKFLOW_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/workflow-models/workflow_data_model.thrift"
     PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/service-cpis/profile-service/profile-service-cpi.thrift"
 
     DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
+    SHARING_DATAMODEL_SRC_DIR='../modules/sharing-registry/sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/models'
     JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
     PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
     CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
@@ -193,6 +194,17 @@ generate_java_stubs() {
 
     # Compare the newly generated beans with existing sources and replace the changed ones.
     copy_changed_files ${JAVA_BEAN_GEN_DIR} ${DATAMODEL_SRC_DIR}
+
+    # Clear Bean generation directory as sharing data models are transferred to a different directory
+    rm -rf ${JAVA_BEAN_GEN_DIR}
+
+    # Generate data models for sharing registry
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${SHARING_DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on sharing registry model
+
+    add_license_header $JAVA_BEAN_GEN_DIR
+
+    mkdir -p ${SHARING_DATAMODEL_SRC_DIR}
+    copy_changed_files ${JAVA_BEAN_GEN_DIR}/org/apache/airavata/sharing/registry/models ${SHARING_DATAMODEL_SRC_DIR}
 
     ###############################################################################
     # Generate/Update source used by Airavata Server Skeletons & Java Client Stubs #

@@ -42,8 +42,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-base-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-data-models</artifactId>
-            <version>0.18-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
