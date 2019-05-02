@@ -147,7 +147,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 Domain domain = new Domain();
                                 domain.setDomainId(gateway.getGatewayId());
                                 domain.setName(gateway.getGatewayName());
-                                domain.setDescription("Domain entry for " + domain.name);
+                                domain.setDescription("Domain entry for " + domain.getName());
                                 try{
                                     sharingRegistryClient.createDomain(domain);
                                     log.debug("Domain created. Id : " + gateway.getGatewayId());
@@ -156,70 +156,70 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 }
 
                                 //Creating Entity Types for each domain
-                                log.info("Creating entity type. Id : " + domain.domainId+":PROJECT");
+                                log.info("Creating entity type. Id : " + domain.getDomainId()+":PROJECT");
                                 org.apache.airavata.sharing.registry.models.EntityType entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.domainId+":PROJECT");
-                                entityType.setDomainId(domain.domainId);
+                                entityType.setEntityTypeId(domain.getDomainId()+":PROJECT");
+                                entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("PROJECT");
                                 entityType.setDescription("Project entity type");
                                 try {
                                     sharingRegistryClient.createEntityType(entityType);
-                                    log.debug("Entity type created. Id : " + domain.domainId+":PROJECT");
+                                    log.debug("Entity type created. Id : " + domain.getDomainId()+":PROJECT");
                                 } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.domainId+":PROJECT", ex);
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.getDomainId()+":PROJECT", ex);
                                 }
 
-                                log.info("Creating entity type. Id : " + domain.domainId+":EXPERIMENT");
+                                log.info("Creating entity type. Id : " + domain.getDomainId()+":EXPERIMENT");
                                 entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
-                                entityType.setDomainId(domain.domainId);
+                                entityType.setEntityTypeId(domain.getDomainId()+":EXPERIMENT");
+                                entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("EXPERIMENT");
                                 entityType.setDescription("Experiment entity type");
                                 try{
                                     sharingRegistryClient.createEntityType(entityType);
-                                    log.debug("Entity type created. Id : " + domain.domainId+":EXPERIMENT");
+                                    log.debug("Entity type created. Id : " + domain.getDomainId()+":EXPERIMENT");
                                 } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.domainId+":EXPERIMENT", ex);
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.getDomainId()+":EXPERIMENT", ex);
                                 }
 
-                                log.info("Creating entity type. Id : " + domain.domainId+":FILE");
+                                log.info("Creating entity type. Id : " + domain.getDomainId()+":FILE");
                                 entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.domainId+":FILE");
-                                entityType.setDomainId(domain.domainId);
+                                entityType.setEntityTypeId(domain.getDomainId()+":FILE");
+                                entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("FILE");
                                 entityType.setDescription("File entity type");
                                 try {
                                     sharingRegistryClient.createEntityType(entityType);
-                                    log.debug("Entity type created. Id : " + domain.domainId + ":FILE");
+                                    log.debug("Entity type created. Id : " + domain.getDomainId() + ":FILE");
                                 } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.domainId+":FILE", ex);
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.getDomainId()+":FILE", ex);
                                 }
 
                                 //Creating Permission Types for each domain
-                                log.info("Creating Permission Type. Id : " + domain.domainId+":READ");
+                                log.info("Creating Permission Type. Id : " + domain.getDomainId()+":READ");
                                 PermissionType permissionType = new PermissionType();
-                                permissionType.setPermissionTypeId(domain.domainId+":READ");
-                                permissionType.setDomainId(domain.domainId);
+                                permissionType.setPermissionTypeId(domain.getDomainId()+":READ");
+                                permissionType.setDomainId(domain.getDomainId());
                                 permissionType.setName("READ");
                                 permissionType.setDescription("Read permission type");
                                 try {
                                     sharingRegistryClient.createPermissionType(permissionType);
-                                    log.debug("Permission Type created. Id : " + domain.domainId + ":READ");
+                                    log.debug("Permission Type created. Id : " + domain.getDomainId() + ":READ");
                                 } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.domainId+":READ", ex);
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.getDomainId()+":READ", ex);
                                 }
 
-                                log.info("Creating Permission Type. Id : " + domain.domainId+":WRITE");
+                                log.info("Creating Permission Type. Id : " + domain.getDomainId()+":WRITE");
                                 permissionType = new PermissionType();
-                                permissionType.setPermissionTypeId(domain.domainId+":WRITE");
-                                permissionType.setDomainId(domain.domainId);
+                                permissionType.setPermissionTypeId(domain.getDomainId()+":WRITE");
+                                permissionType.setDomainId(domain.getDomainId());
                                 permissionType.setName("WRITE");
                                 permissionType.setDescription("Write permission type");
                                 try {
                                     sharingRegistryClient.createPermissionType(permissionType);
-                                    log.debug("Permission Type created. Id : " + domain.domainId + ":WRITE");
+                                    log.debug("Permission Type created. Id : " + domain.getDomainId() + ":WRITE");
                                 } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.domainId + ":WRITE", ex);
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.getDomainId() + ":WRITE", ex);
                                 }
 
                                 break;
