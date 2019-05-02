@@ -911,7 +911,10 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             lookup_value, ResourcePermissionType.WRITE))
         owner_ids = self._load_accessible_users(lookup_value,
                                                 ResourcePermissionType.OWNER)
-        # Assume that there is one and only one owner
+        # Assume that there is one and only one DIRECT owner (there may be one
+        # or more INDIRECT cascading owners, which would the owners of the
+        # ancestor entities, but getAllAccessibleUsers does not return
+        # indirectly cascading owners)
         owner_id = list(owner_ids.keys())[0]
         # Remove owner from the users list
         del users[owner_id]
