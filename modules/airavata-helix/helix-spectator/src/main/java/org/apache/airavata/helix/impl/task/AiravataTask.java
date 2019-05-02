@@ -420,14 +420,14 @@ public abstract class AiravataTask extends AbstractTask {
             taskStatus.setState(ts);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             getRegistryServiceClient().addTaskStatus(taskStatus, getTaskId());
-            /*TaskIdentifier identifier = new TaskIdentifier(getTaskId(),
+            TaskIdentifier identifier = new TaskIdentifier(getTaskId(),
                     getProcessId(), getExperimentId(), getGatewayId());
             TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(ts,
                     identifier);
             MessageContext msgCtx = new MessageContext(taskStatusChangeEvent, MessageType.TASK, AiravataUtils.getId
                     (MessageType.TASK.name()), getGatewayId());
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            statusPublisher.publish(msgCtx);*/
+            statusPublisher.publish(msgCtx);
         } catch (Exception e) {
             logger.error("Failed to publish task status " + (ts != null ? ts.name(): "null") +" of task " + getTaskId());
         }
