@@ -24,13 +24,13 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "pfec-hydro.scigap.org"
+vhost_servername: "futurewater.indiana.edu"
 #vhost_serveralias: "www.mines.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/futurewater.indiana.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/futurewater.indiana.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/futurewater.indiana.edu/privkey.pem"
 
 php_upload_max_filesize: "6000M"
 php_post_max_size: "6500M"
