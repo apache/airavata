@@ -18,4 +18,11 @@
 -- under the License.
 --
 
--- no differences
+use sharing_catalog;
+
+CREATE TABLE IF NOT EXISTS `GROUP_ADMIN` (
+ `ADMIN_ID` varchar(255) NOT NULL,
+ `DOMAIN_ID` varchar(255) NOT NULL,
+ `GROUP_ID` varchar(255) NOT NULL,
+ PRIMARY KEY (`ADMIN_ID`,`DOMAIN_ID`,`GROUP_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
