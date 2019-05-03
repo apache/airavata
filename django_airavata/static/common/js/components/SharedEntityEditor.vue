@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-form-group
+      v-if="!readonly"
       label="Search for users/groups"
       labelFor="user-groups-autocomplete"
     >
@@ -24,40 +25,48 @@
         </template>
       </autocomplete-text-input>
     </b-form-group>
-    <h5 v-if="totalCount > 0">Currently Shared With</h5>
+    <h5 v-if="totalCount > 0">
+      <slot name="permissions-header">Currently Shared With</slot>
+    </h5>
     <b-table
       v-if="usersCount > 0"
       id="modal-user-table"
       hover
-      :items="sortedUserPermissions"
+      :items="sortedUserPermissionsData"
       :fields="userFields"
     >
       <template
         slot="name"
         slot-scope="data"
       >
-        <span :title="data.item.user.userId">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
+        <span :title="data.item.user.userId" :class="data.item.classes">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
       </template>
       <template
         slot="email"
         slot-scope="data"
       >
-        {{data.item.user.email}}
+        <span :class="data.item.classes">{{data.item.user.email}}</span>
       </template>
       <template
         slot="permission"
         slot-scope="data"
       >
         <b-form-select
+          v-if="!data.item.readonly"
           v-model="data.item.permissionType"
           :options="permissionOptions"
         />
+        <span
+          v-else
+          class="text-uppercase"
+          :class="data.item.classes"
+        >{{ data.item.permissionTypeLabel }}</span>
       </template>
       <template
         slot="remove"
         slot-scope="data"
       >
-        <b-link @click="removeUser(data.item.user)">
+        <b-link v-if="!data.item.readonly" @click="removeUser(data.item.user)">
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -131,6 +140,17 @@ export default {
     disallowEditingAdminGroups: {
       type: Boolean,
       default: true
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
+    parentEntityOwner: {
+      type: models.UserProfile,
+    },
+    parentEntityLabel: {
+      type: String,
+      default: "Parent"
     }
   },
   components: {
@@ -157,14 +177,33 @@ export default {
         ? this.data.userPermissions.length
         : 0;
     },
-    sortedUserPermissions: function() {
+    sortedUserPermissionsData: function() {
       const userPermsCopy = this.data.userPermissions
         ? this.data.userPermissions.slice()
         : [];
-      return utils.StringUtils.sortIgnoreCase(
+      const sorted = utils.StringUtils.sortIgnoreCase(
         userPermsCopy,
         userPerm => userPerm.user.lastName + ", " + userPerm.user.firstName
       );
+      const sortedData = sorted.map(up => {
+        return {
+          user: up.user,
+          permissionType: up.permissionType,
+          permissionTypeLabel: up.permissionType.name,
+          readonly: this.readonly,
+          classes: this.readonly ? ['text-muted', 'font-italic'] : null
+        }
+      });
+      if (this.parentEntityOwner) {
+        sortedData.push({
+          user: this.parentEntityOwner,
+          permissionType: models.ResourcePermissionType.OWNER,
+          permissionTypeLabel: this.parentEntityLabel + " OWNER",
+          readonly: true,
+          classes: ['text-muted', 'font-italic']
+        });
+      }
+      return sortedData;
     },
     filteredGroupPermissions: function() {
       return this.data && this.data.groupPermissions
@@ -279,7 +318,7 @@ export default {
      * should not be allowed.
      */
     editingAllowed(group) {
-      return !this.disallowEditingAdminGroups || !group.isAdminGroup;
+      return !this.readonly && (!this.disallowEditingAdminGroups || !group.isAdminGroup);
     }
   }
 };

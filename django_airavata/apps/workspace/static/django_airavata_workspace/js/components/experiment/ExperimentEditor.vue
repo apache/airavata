@@ -18,6 +18,9 @@
         <share-button
           ref="shareButton"
           :entity-id="localExperiment.experimentId"
+          :entity-label="'Experiment'"
+          :parent-entity-id="localExperiment.projectId"
+          :parent-entity-label="'Project'"
           :auto-add-default-gateway-users-group="false"
         />
       </div>

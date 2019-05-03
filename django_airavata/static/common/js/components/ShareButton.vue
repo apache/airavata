@@ -1,13 +1,52 @@
 <template>
   <div class="share-button btn-container">
-    <b-button :variant="'outline-primary'" :title="title" :disabled="!shareButtonEnabled" @click="openSharingSettingsModal">
+    <b-button
+      :variant="'outline-primary'"
+      :title="title"
+      :disabled="!shareButtonEnabled"
+      @click="openSharingSettingsModal"
+    >
       Share
       <b-badge>{{ totalCount }}</b-badge>
     </b-button>
-    <b-modal class="modal-share-settings" title="Sharing Settings" ref="sharingSettingsModal" ok-title="Save" @ok="saveSharedEntity"
-      @cancel="cancelEditSharedEntity" no-close-on-esc no-close-on-backdrop hide-header-close @show="showSharingSettingsModal">
-      <shared-entity-editor v-if="localSharedEntity && users && groups" v-model="localSharedEntity" :users="users"
-        :groups="groups" :disallow-editing-admin-groups="disallowEditingAdminGroups" />
+    <b-modal
+      class="modal-share-settings"
+      title="Sharing Settings"
+      ref="sharingSettingsModal"
+      ok-title="Save"
+      @ok="saveSharedEntity"
+      @cancel="cancelEditSharedEntity"
+      no-close-on-esc
+      no-close-on-backdrop
+      hide-header-close
+      @show="showSharingSettingsModal"
+    >
+      <shared-entity-editor
+        v-if="localSharedEntity && users && groups"
+        v-model="localSharedEntity"
+        :users="users"
+        :groups="groups"
+        :parent-entity-owner="parentEntityOwner"
+        :parent-entity-label="parentEntityLabel"
+        :disallow-editing-admin-groups="disallowEditingAdminGroups"
+      />
+      <!-- Only show parent entity permissions for new entities -->
+      <template v-if="!entityId && hasParentSharedEntityPermissions">
+        <shared-entity-editor
+          v-if="parentSharedEntity && users && groups"
+          v-model="parentSharedEntity"
+          :users="users"
+          :groups="groups"
+          :readonly="true"
+          class="mt-5"
+        >
+          <span slot="permissions-header">Inherited {{ parentEntityLabel }} Permissions</span>
+        </shared-entity-editor>
+        <small class="text-muted">These permissions are inherited when your <span class="text-lowercase">{{ entityLabel
+            }}</span> is initially
+          created but can be updated
+          afterwards.</small>
+      </template>
     </b-modal>
   </div>
 </template>
@@ -20,6 +59,15 @@ export default {
   name: "share-button",
   props: {
     entityId: String,
+    parentEntityId: String,
+    parentEntityLabel: {
+      type: String,
+      default: "Parent"
+    },
+    entityLabel: {
+      type: String,
+      default: "Entity"
+    },
     sharedEntity: models.SharedEntity,
     autoAddDefaultGatewayUsersGroup: {
       type: Boolean,
@@ -36,6 +84,7 @@ export default {
   data: function() {
     return {
       localSharedEntity: null,
+      parentSharedEntity: null,
       sharedEntityCopy: null,
       defaultGatewayUsersGroup: null,
       users: null,
@@ -69,7 +118,9 @@ export default {
     },
     filteredGroupPermissions: function() {
       if (this.localSharedEntity && this.localSharedEntity.groupPermissions) {
-        return this.disallowEditingAdminGroups ? this.localSharedEntity.nonAdminGroupPermissions : this.localSharedEntity.groupPermissions;
+        return this.disallowEditingAdminGroups
+          ? this.localSharedEntity.nonAdminGroupPermissions
+          : this.localSharedEntity.groupPermissions;
       } else {
         return [];
       }
@@ -91,6 +142,16 @@ export default {
         this.localSharedEntity &&
         (!this.localSharedEntity.entityId || this.localSharedEntity.isOwner)
       );
+    },
+    hasParentSharedEntityPermissions() {
+      return (
+        this.parentSharedEntity &&
+        (this.parentSharedEntity.userPermissions.length > 0 ||
+          this.parentSharedEntity.groupPermissions.length > 0)
+      );
+    },
+    parentEntityOwner() {
+      return this.parentSharedEntity && this.parentSharedEntity.owner;
     }
   },
   methods: {
@@ -121,6 +182,13 @@ export default {
               .filter(group => group.isDefaultGatewayUsersGroup)
               .forEach(group => (this.defaultGatewayUsersGroup = group));
           })
+        );
+      }
+      if (this.parentEntityId) {
+        promises.push(
+          this.loadSharedEntity(this.parentEntityId).then(
+            sharedEntity => (this.parentSharedEntity = sharedEntity)
+          )
         );
       }
       Promise.all(promises).then(() => {
@@ -216,6 +284,11 @@ export default {
           sharedEntity => (this.localSharedEntity = sharedEntity)
         );
       }
+    },
+    parentEntityId(newParentEntityId) {
+      this.loadSharedEntity(newParentEntityId).then(sharedEntity => {
+        this.parentSharedEntity = sharedEntity;
+      });
     }
   }
 };
