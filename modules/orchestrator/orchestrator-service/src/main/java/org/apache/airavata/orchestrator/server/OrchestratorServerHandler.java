@@ -45,6 +45,8 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.schedule.HostScheduler;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
@@ -354,19 +356,29 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws TException {
 		final RegistryService.Client registryClient = getRegistryServiceClient();
 		try {
-			ProcessModel processModel = registryClient.getProcess(processId);
-            String applicationId = processModel.getApplicationInterfaceId();
-			if (applicationId == null) {
-                log.error(processId, "Application interface id shouldn't be null.");
-				throw new OrchestratorException("Error executing the job, application interface id shouldn't be null.");
-			}
-			// set application deployment id to process model
-            ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(registryClient, processModel, applicationId);
-            processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
-			// set compute resource id to process model, default we set the same in the user preferred compute host id
-			processModel.setComputeResourceId(processModel.getProcessResourceSchedule().getResourceHostId());
-			registryClient.updateProcess(processModel,processModel.getProcessId());
-		    return orchestrator.launchProcess(processModel, airavataCredStoreToken);
+            ProcessStatus processStatus = registryClient.getProcessStatus(processId);
+
+            switch (processStatus.getState()) {
+                case CREATED: case VALIDATED:
+                    ProcessModel processModel = registryClient.getProcess(processId);
+                    String applicationId = processModel.getApplicationInterfaceId();
+                    if (applicationId == null) {
+                        log.error(processId, "Application interface id shouldn't be null.");
+                        throw new OrchestratorException("Error executing the job, application interface id shouldn't be null.");
+                    }
+                    // set application deployment id to process model
+                    ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(registryClient, processModel, applicationId);
+                    processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
+                    // set compute resource id to process model, default we set the same in the user preferred compute host id
+                    processModel.setComputeResourceId(processModel.getProcessResourceSchedule().getResourceHostId());
+                    registryClient.updateProcess(processModel, processModel.getProcessId());
+                    return orchestrator.launchProcess(processModel, airavataCredStoreToken);
+
+                default:
+                    log.warn("Process " + processId + " is already launched. So it can not be relaunched");
+                    return false;
+            }
+
 		} catch (Exception e) {
             log.error(processId, "Error while launching process ", e);
             throw new TException(e);
