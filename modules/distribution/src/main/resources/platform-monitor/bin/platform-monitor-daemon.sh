@@ -53,6 +53,17 @@ case $1 in
             PID=$(cat $PID_PATH_NAME);
             echo "$SERVICE_NAME stoping ..."
             kill $PID;
+            RETRY=0
+            while kill -0 $PID 2> /dev/null; do
+                echo "Waiting for the process $PID to be stopped"
+                RETRY=`expr ${RETRY} + 1`
+                if [ "${RETRY}" -gt "20" ]
+                then
+                    echo "Forcefully killing the process as it is not responding ..."
+                    kill -9 $PID
+                fi
+                sleep 1
+            done
             echo "$SERVICE_NAME stopped ..."
             rm $PID_PATH_NAME
         else
@@ -64,6 +75,17 @@ case $1 in
             PID=$(cat $PID_PATH_NAME);
             echo "$SERVICE_NAME stopping ...";
             kill $PID;
+            RETRY=0
+            while kill -0 $PID 2> /dev/null; do
+                echo "Waiting for the process $PID to be stopped"
+                RETRY=`expr ${RETRY} + 1`
+                if [ "${RETRY}" -gt "20" ]
+                then
+                    echo "Forcefully killing the process as it is not responding ..."
+                    kill -9 $PID
+                fi
+                sleep 1
+            done
             echo "$SERVICE_NAME stopped ...";
             rm $PID_PATH_NAME
             echo "$SERVICE_NAME starting ..."
