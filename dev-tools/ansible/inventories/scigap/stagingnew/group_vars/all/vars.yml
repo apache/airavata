@@ -30,9 +30,8 @@ user_home: "/home/{{ user }}"
 deployment_dir: "{{ user_home }}/staging-deployment"
 airavata_source_dir: "{{ user_home }}/staging-source"
 airavata_repo: "https://github.com/apache/airavata.git"
-airavata_dist: "apache-airavata-server-0.18-SNAPSHOT"
+airavata_dist: "apache-airavata-api-server-0.18-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
-old_airavata_dist: "apache-airavata-server-0.18-SNAPSHOT"
 git_branch: master
 
 # Database related variables
@@ -99,15 +98,8 @@ cred_store_server_host: "{{ groups['api-orch'][0] }}"
 cred_store_port: "8960"
 keystores_location: "{{ deployment_dir }}/keystores"
 
-# Gfac related variables
-#gfac_name: "gfac-node0"
-#gfac_host: "{{ groups['gfac'][0] }}"
-#gfac_port: "8950"
-#gfac_dir: "{{ deployment_dir }}/gfac-instance"
-#gfac_log_dir: "{{ gfac_dir }}/logs"
-
 # Monitoring variables
-monitor_email_address: "stagingjobs@scigap.org"
+monitor_email_address: "newstagingjobsairavata@gmail.com"
 monitor_email_password: "{{ vault_monitor_email_password }}"
 
 # PGA variables
@@ -115,7 +107,6 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user_data_dir: "/var/www/portals/gateway-user-data"
 real_user_data_dir: "/data/gateway-user-data"
 ## Airavata Client related variables
-#airavata_server: "tls://gw77.iu.xsede.org"
 airavata_server: "tls://{{ groups['api-orch'][0] }}"
 airavata_port: "9930"
 airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
@@ -144,7 +135,7 @@ helix_version: 0.7.1
 helix_url: http://www-us.apache.org/dist//helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
 helix_dir: "{{ deployment_dir }}/airavata-helix"
 helix_cluster_name: "AiravataDemoCluster"
-snapshot_version: "0.17-SNAPSHOT"
+snapshot_version: "0.18-SNAPSHOT"
 helix_controller_name: "helixcontroller"
 helix_participant_name: "helixparticipant"
 helix_pre_wm_name: "prewm"
