@@ -200,9 +200,11 @@ export default {
     }
   },
   data() {
+
     return {
       localFullExperiment: this.fullExperiment.clone()
     };
+
   },
   components: {
     DataProductViewer,
@@ -210,6 +212,34 @@ export default {
     "share-button": components.ShareButton
   },
   computed: {
+    stringInputs: function() {
+      return this.localFullExperiment.experiment.experimentInputs.filter(function (e) {
+          return e.type.value == 0
+      })
+    },
+    dataProductInputs: function(){
+      // Filters out only data products. These objects will contain
+      // name of the file and inputOrder also
+      var allFileInputs = this.localFullExperiment.experiment.experimentInputs.filter(function (e) {
+            return e.type.value == 3;
+      });
+
+      // For each data product, find the "name" and "inputOrder" field for it
+      // from the array evaluated above. Product URI is used as a key to find
+      // matching data products (as it is unique to each file)
+      // Returns the array sorted by inputOrder in ascending order
+      var allDataProducts =  this.localFullExperiment.inputDataProducts.filter(function (dp) {
+        for(var i = 0; i < allFileInputs.length; i++){
+          if(allFileInputs[i]["value"] == dp["productUri"]){
+            dp["name"] = allFileInputs[i]["name"]
+            dp["inputOrder"] = allFileInputs[i]["inputOrder"]
+          }
+        }
+        return dp
+      })
+
+      return sortByKey(allDataProducts, "inputOrder");
+    },
     creationTime: function() {
       return moment(this.localFullExperiment.experiment.creationTime).fromNow();
     },
@@ -281,10 +311,34 @@ export default {
     this.initPollingExperiment();
   }
 };
+/**
+*  Generic function that sorts an array
+*  of objects by key
+*  Default sorting order is ascending
+*  @param {Array} array
+*  @param {string} key
+*  @param {string} order (either asc or desc)
+*/
+function sortByKey(array, key, order = "asc") {
+  return array.sort(function(obj1, obj2) {
+    // If key doesn't exist, returns 0
+    if(!obj1.hasOwnProperty(key) || !obj2.hasOwnProperty(key)) {
+      return 0;
+    }
+    let sortOrder = (order == 'desc') ? -1 : 1;
+    var val1 = (typeof obj1[key] === 'string') ? obj1[key].toLowerCase() : obj1[key];
+    var val2 = (typeof obj2[key] === 'string') ? obj2[key].toLowerCase() : obj2[key];
+    return ((val1 < val2) ? -1 * sortOrder : ((val1 > val2) ? 1 * sortOrder : 0));
+    });
+  }
 </script>
 
 <style scoped>
 .data-product + .data-product {
   margin-left: 0.5em;
+}
+.input-list {
+  padding-left: .5em;
+  margin-bottom: 0;
 }
 </style>
