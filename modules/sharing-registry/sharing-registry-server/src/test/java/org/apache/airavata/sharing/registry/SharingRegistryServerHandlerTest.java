@@ -338,5 +338,40 @@ public class SharingRegistryServerHandlerTest {
 
         Assert.assertTrue(sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId1, domainId + ":OWNER").size()==1);
 
+        // test changing parent - old INDIRECT_CASCADING permissions removed, new is added
+        // entityId2's parent is entityId1. entityId1 is shared with userId2
+        Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId1, permissionTypeId1));
+        Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1));
+        Assert.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1));
+        // create a different parent entity
+        Entity entity6 = new Entity();
+        entity6.setEntityId(domainId+":Entity6");
+        entity6.setDomainId(domainId);
+        entity6.setEntityTypeId(entityTypeId1);
+        entity6.setOwnerId(userId1);
+        entity6.setName("Project name 2");
+        entity6.setDescription("Project description");
+        entity6.setFullText("Project name project description");
+        entity6.setCreatedTime(System.currentTimeMillis());
+        entity6.setUpdatedTime(System.currentTimeMillis());
+        String entityId6 = sharingRegistryServerHandler.createEntity(entity6);
+        Assert.assertNotNull(entityId6);
+
+        sharingRegistryServerHandler.shareEntityWithUsers(domainId, entityId6, Arrays.asList(userId3), permissionTypeId1, true);
+        Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId6, permissionTypeId1));
+        // Make sure entityId2 isn't shared with userId7 and then share it directly
+        Assert.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
+        sharingRegistryServerHandler.shareEntityWithUsers(domainId, entityId2, Arrays.asList(userId7), permissionTypeId1, true);
+        Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
+        entity2.setParentEntityId(entityId6);
+        logger.debug("Updating entity2");
+        Assert.assertTrue(sharingRegistryServerHandler.updateEntity(entity2));
+        Entity entity2Updated = sharingRegistryServerHandler.getEntity(domainId, entityId2);
+        Assert.assertEquals(entityId6, entity2Updated.getParentEntityId());
+        // parent changed so entityId2 should now be shared with entityId6's shared users (userId3)
+        Assert.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1));
+        Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1));
+        // entityId2 should still be shared with userId7 since that was directly shared
+        Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
     }
 }
