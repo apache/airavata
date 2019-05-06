@@ -863,10 +863,23 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             (new SharingRepository()).create(newSharing);
 
-            //creating records for inherited permissions
-            if(entity.getParentEntityId() != null && entity.getParentEntityId() != ""){
-                List<Sharing> sharings = (new SharingRepository()).getCascadingPermissionsForEntity(entity.domainId, entity.parentEntityId);
-                for(Sharing sharing : sharings){
+            // creating records for inherited permissions
+            if (entity.getParentEntityId() != null && entity.getParentEntityId() != "") {
+                addCascadingPermissionsForEntity(entity);
+            }
+
+            return entity.entityId;
+        }catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    private void addCascadingPermissionsForEntity(Entity entity) throws SharingRegistryException {
+        Sharing newSharing;
+        List<Sharing> sharings = (new SharingRepository()).getCascadingPermissionsForEntity(entity.domainId,
+                entity.parentEntityId);
+        for (Sharing sharing : sharings) {
                     newSharing = new Sharing();
                     newSharing.setPermissionTypeId(sharing.permissionTypeId);
                     newSharing.setEntityId(entity.entityId);
@@ -881,13 +894,6 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 }
             }
 
-            return entity.entityId;
-        }catch (Throwable ex) {
-            logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
-        }
-    }
-
     @Override
     public boolean updateEntity(Entity entity) throws SharingRegistryException, TException {
         try{
@@ -898,6 +904,19 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityPK.setEntityId(entity.entityId);
             Entity oldEntity = (new EntityRepository()).get(entityPK);
             entity.setCreatedTime(oldEntity.createdTime);
+            // check if parent entity changed and re-add inherited permissions
+            if (!Objects.equals(oldEntity.getParentEntityId(), entity.getParentEntityId())) {
+                logger.debug("Parent entity changed for {}, updating inherited permissions", entity.entityId);
+                if (oldEntity.getParentEntityId() != null && oldEntity.getParentEntityId() != "") {
+                    logger.debug("Removing inherited permissions from {} that were inherited from parent {}", entity.entityId, oldEntity.getParentEntityId());
+                    (new SharingRepository()).removeAllIndirectCascadingPermissionsForEntity(entity.domainId, entity.entityId);
+                }
+                if (entity.getParentEntityId() != null && entity.getParentEntityId() != "") {
+                    // re-add INDIRECT_CASCADING permissions
+                    logger.debug("Adding inherited permissions to {} that are inherited from parent {}", entity.entityId, entity.getParentEntityId());
+                    addCascadingPermissionsForEntity(entity);
+                }
+            }
             entity = getUpdatedObject(oldEntity, entity);
             entity.setSharedCount((new SharingRepository()).getSharedCount(entity.domainId, entity.entityId));
             (new EntityRepository()).update(entity);
