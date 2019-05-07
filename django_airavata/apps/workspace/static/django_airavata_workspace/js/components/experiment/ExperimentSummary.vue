@@ -59,7 +59,7 @@
                           {{ output.value }}
                         </template>
                         <template v-else-if="output.type.isFileValueType">
-                          <data-product-viewer v-for="dp in getDataProducts(output, localFullExperiment.outputDataProducts)"
+                          <data-product-viewer v-for="dp in outputDataProducts[output.name]"
                             :data-product="dp" class="data-product" :key="dp.productUri"/>
                         </template>
                       </li>
@@ -158,7 +158,7 @@
                         <template v-if="input.type.isSimpleValueType">
                           {{ input.value }}
                         </template>
-                        <data-product-viewer v-for="dp in getDataProducts(input, localFullExperiment.inputDataProducts)"
+                        <data-product-viewer v-for="dp in inputDataProducts[input.name]"
                           v-else-if="input.type.isFileValueType"
                           :data-product="dp" :input-file="true" class="data-product" :key="dp.productUri"/>
                       </li>
@@ -212,33 +212,23 @@ export default {
     "share-button": components.ShareButton
   },
   computed: {
-    stringInputs: function() {
-      return this.localFullExperiment.experiment.experimentInputs.filter(function (e) {
-          return e.type.value == 0
-      })
+    inputDataProducts() {
+      const result = {};
+      if (this.localFullExperiment && this.localFullExperiment.inputDataProducts) {
+        this.localFullExperiment.experiment.experimentInputs.forEach(input => {
+          result[input.name] = this.getDataProducts(input, this.localFullExperiment.inputDataProducts);
+        });
+      }
+      return result;
     },
-    dataProductInputs: function(){
-      // Filters out only data products. These objects will contain
-      // name of the file and inputOrder also
-      var allFileInputs = this.localFullExperiment.experiment.experimentInputs.filter(function (e) {
-            return e.type.value == 3;
-      });
-
-      // For each data product, find the "name" and "inputOrder" field for it
-      // from the array evaluated above. Product URI is used as a key to find
-      // matching data products (as it is unique to each file)
-      // Returns the array sorted by inputOrder in ascending order
-      var allDataProducts =  this.localFullExperiment.inputDataProducts.filter(function (dp) {
-        for(var i = 0; i < allFileInputs.length; i++){
-          if(allFileInputs[i]["value"] == dp["productUri"]){
-            dp["name"] = allFileInputs[i]["name"]
-            dp["inputOrder"] = allFileInputs[i]["inputOrder"]
-          }
-        }
-        return dp
-      })
-
-      return sortByKey(allDataProducts, "inputOrder");
+    outputDataProducts() {
+      const result = {};
+      if (this.localFullExperiment && this.localFullExperiment.outputDataProducts) {
+        this.localFullExperiment.experiment.experimentOutputs.forEach(output => {
+          result[output.name] = this.getDataProducts(output, this.localFullExperiment.outputDataProducts);
+        });
+      }
+      return result;
     },
     creationTime: function() {
       return moment(this.localFullExperiment.experiment.creationTime).fromNow();
