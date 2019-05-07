@@ -33,7 +33,7 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/futurewater.indiana.edu/fullc
 ssl_certificate_key_file: "/etc/letsencrypt/live/futurewater.indiana.edu/privkey.pem"
 
 php_upload_max_filesize: "6000M"
-php_post_max_size: "6500M"
+php_post_max_size: "15000M"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
