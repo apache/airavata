@@ -82,6 +82,7 @@
               <h2 class="h6 mb-3">
                 Application Inputs
               </h2>
+
               <transition-group name="fade">
                 <input-editor-container
                   v-for="experimentInput in localExperiment.experimentInputs"
@@ -97,11 +98,11 @@
                   @uploadend="uploadEnd(experimentInput.name)"
                 />
               </transition-group>
+
             </div>
           </div>
         </div>
-      </div>
-      <div class="row">
+
         <div class="col">
           <h2 class="h4 mt-4 mb-3">
             Resource Selection
@@ -210,7 +211,9 @@ export default {
         value: project.projectID,
         text: project.name
       }));
+
     },
+
     valid: function() {
       const validation = this.localExperiment.validate();
       return (
@@ -275,6 +278,9 @@ export default {
     },
     getValidationState: function(properties) {
       return this.getValidationFeedback(properties) ? "invalid" : null;
+
+
+
     },
     recordInvalidInputEditorValue: function(experimentInputName) {
       if (!this.invalidInputs.includes(experimentInputName)) {

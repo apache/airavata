@@ -39,6 +39,40 @@ def open(data_product):
         raise ObjectDoesNotExist("Replica file does not exist")
 
 
+def save_user(username, file):
+    """Save file to username/project name/experiment_name in data store."""
+    user_dir = os.path.join(
+        experiment_data_storage.get_valid_name(username),
+        'MyFiles')
+    # file.name may be full path, so get just the name of the file
+    file_name = os.path.basename(file.name)
+    file_path = os.path.join(
+        user_dir,
+        experiment_data_storage.get_valid_name(file_name))
+    input_file_name = experiment_data_storage.save(file_path, file)
+    input_file_fullpath = experiment_data_storage.path(input_file_name)
+    # Create DataProductModel instance with DataReplicaLocationModel
+    data_product = DataProductModel()
+    data_product.gatewayId = settings.GATEWAY_ID
+    data_product.ownerName = username
+    data_product.productName = file_name
+    data_product.dataProductType = DataProductType.FILE
+    data_replica_location = DataReplicaLocationModel()
+    data_replica_location.storageResourceId = \
+        settings.GATEWAY_DATA_STORE_RESOURCE_ID
+    data_replica_location.replicaName = \
+        "{} gateway data store copy".format(file_name)
+    data_replica_location.replicaLocationCategory = \
+        ReplicaLocationCategory.GATEWAY_DATA_STORE
+    data_replica_location.replicaPersistentType = \
+        ReplicaPersistentType.TRANSIENT
+    data_replica_location.filePath = \
+        "file://{}:{}".format(settings.GATEWAY_DATA_STORE_HOSTNAME,
+                              input_file_fullpath)
+    data_product.replicaLocations = [data_replica_location]
+    return data_product
+
+
 def save(username, project_name, experiment_name, file):
     """Save file to username/project name/experiment_name in data store."""
     exp_dir = os.path.join(
@@ -64,6 +98,7 @@ def copy(username, project_name, experiment_name, data_product):
 
 
 def delete(data_product):
+
     """Delete replica for data product in this data store."""
     if exists(data_product):
         filepath = _get_replica_filepath(data_product)
@@ -73,6 +108,7 @@ def delete(data_product):
             logger.error("Unable to delete file {} for data product uri {}"
                          .format(filepath, data_product.productUri))
             raise
+
     else:
         raise ObjectDoesNotExist("Replica file does not exist")
 

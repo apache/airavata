@@ -15,6 +15,8 @@
 </template>
 
 <script>
+
+import UserFileInputEditor from "./UserFileInputEditor.vue";
 import CheckboxInputEditor from "./CheckboxInputEditor.vue";
 import FileInputEditor from './FileInputEditor.vue'
 import InputEditorFormGroup from './InputEditorFormGroup.vue'
@@ -42,6 +44,7 @@ export default {
     },
     components: {
         CheckboxInputEditor,
+        UserFileInputEditor,
         FileInputEditor,
         InputEditorFormGroup,
         MultiFileInputEditor,
@@ -67,6 +70,7 @@ export default {
     },
     computed: {
         inputEditorComponentName: function() {
+
             // If input specifices an editor UI component, use that
             if (this.experimentInput.editorUIComponentId) {
                 return this.experimentInput.editorUIComponentId;
