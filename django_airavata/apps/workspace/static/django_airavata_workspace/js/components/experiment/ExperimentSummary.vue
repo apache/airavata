@@ -58,7 +58,7 @@
                         <template v-if="output.type.isSimpleValueType">
                           {{ output.value }}
                         </template>
-                        <template v-else-if="output.type.isFileValue">
+                        <template v-else-if="output.type.isFileValueType">
                           <data-product-viewer v-for="dp in getDataProducts(output, localFullExperiment.outputDataProducts)"
                             :data-product="dp" class="data-product" :key="dp.productUri"/>
                         </template>
