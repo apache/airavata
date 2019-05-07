@@ -102,12 +102,6 @@
             </div>
           </div>
         </div>
-
-        <div class="col">
-          <h2 class="h4 mt-4 mb-3">
-            Resource Selection
-          </h2>
-        </div>
       </div>
       <group-resource-profile-selector
         v-model="localExperiment.userConfigurationData.groupResourceProfileId"
