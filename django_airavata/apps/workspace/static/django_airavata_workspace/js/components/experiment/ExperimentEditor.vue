@@ -223,7 +223,7 @@ export default {
       );
     },
     isSaveDisabled: function() {
-      return !this.valid && this.hasUploadingInputs;
+      return !this.valid || this.hasUploadingInputs;
     },
     dirty() {
       return this.edited && !this.saved;
