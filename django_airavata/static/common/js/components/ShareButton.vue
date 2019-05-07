@@ -105,16 +105,35 @@ export default {
       );
     },
     usersCount: function() {
-      return this.localSharedEntity && this.localSharedEntity.userPermissions
-        ? this.localSharedEntity.userPermissions.length
-        : 0;
+      return this.combinedUsers.length;
     },
     userNames: function() {
-      return this.localSharedEntity && this.localSharedEntity.userPermissions
-        ? this.localSharedEntity.userPermissions.map(
-            userPerm => userPerm.user.firstName + " " + userPerm.user.lastName
-          )
-        : null;
+      return this.combinedUsers.map(u => u.firstName + " " + u.lastName);
+    },
+    combinedUsers() {
+      const users = [];
+      if (this.localSharedEntity && this.localSharedEntity.userPermissions) {
+        users.push(
+          ...this.localSharedEntity.userPermissions.map(up => up.user)
+        );
+      }
+      if (this.parentSharedEntity) {
+        // Only add in inherited permissions if we haven't saved yet because
+        // once saved the inherited permissions are already copied in
+        if (
+          this.localSharedEntity &&
+          !this.localSharedEntity.entityId &&
+          this.parentSharedEntity.userPermissions
+        ) {
+          users.push(
+            ...this.parentSharedEntity.userPermissions.map(up => up.user)
+          );
+        }
+        if (this.parentEntityOwner) {
+          users.push(this.parentEntityOwner);
+        }
+      }
+      return users;
     },
     filteredGroupPermissions: function() {
       if (this.localSharedEntity && this.localSharedEntity.groupPermissions) {
@@ -125,13 +144,28 @@ export default {
         return [];
       }
     },
+    combinedGroups() {
+      const groups = [];
+      groups.push(...this.filteredGroupPermissions.map(gp => gp.group));
+      // Only add in inherited permissions if we haven't saved yet because
+      // once saved the inherited permissions are already copied in
+      if (
+        this.localSharedEntity &&
+        !this.localSharedEntity.entityId &&
+        this.parentSharedEntity &&
+        this.parentSharedEntity.groupPermissions
+      ) {
+        groups.push(
+          ...this.parentSharedEntity.groupPermissions.map(gp => gp.group)
+        );
+      }
+      return groups;
+    },
     groupNames: function() {
-      return this.filteredGroupPermissions.map(
-        groupPerm => groupPerm.group.name
-      );
+      return this.combinedGroups.map(g => g.name);
     },
     groupsCount: function() {
-      return this.filteredGroupPermissions.length;
+      return this.combinedGroups.length;
     },
     totalCount: function() {
       return this.usersCount + this.groupsCount;
@@ -151,7 +185,12 @@ export default {
       );
     },
     parentEntityOwner() {
-      return this.parentSharedEntity && this.parentSharedEntity.owner;
+      // Only show the parent entity owner when not the same as current user
+      if (this.parentSharedEntity && !this.parentSharedEntity.isOwner) {
+        return this.parentSharedEntity.owner;
+      } else {
+        return null;
+      }
     }
   },
   methods: {

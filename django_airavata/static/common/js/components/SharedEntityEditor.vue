@@ -173,9 +173,7 @@ export default {
       ];
     },
     usersCount: function() {
-      return this.data && this.data.userPermissions
-        ? this.data.userPermissions.length
-        : 0;
+      return this.sortedUserPermissionsData.length;
     },
     sortedUserPermissionsData: function() {
       const userPermsCopy = this.data.userPermissions
