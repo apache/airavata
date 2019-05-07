@@ -33,5 +33,14 @@ export default {
   },
   navigateToCreateExperiment(appModule) {
     window.location.assign(this.createExperiment(appModule));
+  },
+  editProject(project) {
+    return "/workspace/projects/" + encodeURIComponent(project.projectID) + "/";
+  },
+  projectsList() {
+    return "/workspace/projects";
+  },
+  navigateToProjectsList() {
+    window.location.assign(this.projectsList());
   }
 };

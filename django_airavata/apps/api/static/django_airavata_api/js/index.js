@@ -32,7 +32,6 @@ import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
-import ProjectService from "./services/ProjectService";
 import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
@@ -108,7 +107,7 @@ const services = {
   GroupService: ServiceFactory.service("Groups"),
   LocaJobSubmissionService,
   ParserService: ServiceFactory.service("Parsers"),
-  ProjectService,
+  ProjectService: ServiceFactory.service("Projects"),
   SCPDataMovementService,
   ServiceFactory,
   SharedEntityService: ServiceFactory.service("SharedEntities"),

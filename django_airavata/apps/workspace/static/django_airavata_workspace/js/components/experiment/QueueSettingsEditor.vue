@@ -3,7 +3,7 @@
   <div>
     <div class="row">
       <div class="col">
-        <div class="card border-default">
+        <div class="card border-default" :class="{ 'border-danger': !valid }">
           <div class="card-body">
             <h5 class="card-title mb-4">Settings for queue {{ localComputationalResourceScheduling.queueName }}</h5>
             <div class="row">
@@ -50,7 +50,7 @@
           >
             <b-form-select
               id="queue"
-              v-model="localComputationalResourceScheduling.queueName"
+              v-model="data.queueName"
               :options="queueOptions"
               required
               @change="queueChanged"
@@ -65,17 +65,16 @@
             label="Node Count"
             label-for="node-count"
             :feedback="getValidationFeedback('nodeCount')"
-            :state="getValidationState('nodeCount')"
+            :state="getValidationState('nodeCount', true)"
           >
             <b-form-input
               id="node-count"
               type="number"
               min="1"
               :max="maxNodes"
-              v-model="localComputationalResourceScheduling.nodeCount"
+              v-model="data.nodeCount"
               required
-              @input="emitValueChanged"
-              :state="getValidationState('nodeCount')"
+              :state="getValidationState('nodeCount', true)"
             >
             </b-form-input>
             <div slot="description">
@@ -90,17 +89,16 @@
             label="Total Core Count"
             label-for="core-count"
             :feedback="getValidationFeedback('totalCPUCount')"
-            :state="getValidationState('totalCPUCount')"
+            :state="getValidationState('totalCPUCount', true)"
           >
             <b-form-input
               id="core-count"
               type="number"
               min="1"
               :max="maxCPUCount"
-              v-model="localComputationalResourceScheduling.totalCPUCount"
+              v-model="data.totalCPUCount"
               required
-              @input="emitValueChanged"
-              :state="getValidationState('totalCPUCount')"
+              :state="getValidationState('totalCPUCount', true)"
             >
             </b-form-input>
             <div slot="description">
@@ -115,7 +113,7 @@
             label="Wall Time Limit"
             label-for="walltime-limit"
             :feedback="getValidationFeedback('wallTimeLimit')"
-            :state="getValidationState('wallTimeLimit')"
+            :state="getValidationState('wallTimeLimit', true)"
           >
             <b-input-group right="minutes">
               <b-form-input
@@ -123,10 +121,9 @@
                 type="number"
                 min="1"
                 :max="maxWalltime"
-                v-model="localComputationalResourceScheduling.wallTimeLimit"
+                v-model="data.wallTimeLimit"
                 required
-                @input="emitValueChanged"
-                :state="getValidationState('wallTimeLimit')"
+                :state="getValidationState('wallTimeLimit', true)"
               >
               </b-form-input>
             </b-input-group>
@@ -157,14 +154,14 @@
 
 <script>
 import { models, services } from "django-airavata-api";
-import { utils } from "django-airavata-common-ui";
+import { mixins, utils } from "django-airavata-common-ui";
 
 export default {
   name: "queue-settings-editor",
+  mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: models.ComputationalResourceSchedulingModel,
-      required: true
     },
     appDeploymentId: {
       type: String,
@@ -181,7 +178,6 @@ export default {
   },
   data() {
     return {
-      localComputationalResourceScheduling: this.value.clone(),
       queueDefaults: [],
       showConfiguration: false
     };
@@ -195,6 +191,9 @@ export default {
         };
       });
       return queueOptions;
+    },
+    localComputationalResourceScheduling() {
+      return this.data;
     },
     selectedQueueDefault: function() {
       return this.queueDefaults.find(
@@ -238,6 +237,19 @@ export default {
         );
       }
       return this.selectedQueueDefault.maxRunTime;
+    },
+    validation() {
+      // Don't run validation if we don't have selectedQueueDefault
+      if (!this.selectedQueueDefault) {
+        return {};
+      }
+      return this.localComputationalResourceScheduling.validate(
+        this.selectedQueueDefault,
+        this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)
+      );
+    },
+    valid() {
+      return Object.keys(this.validation).length === 0;
     }
   },
   methods: {
@@ -245,22 +257,25 @@ export default {
       const queueDefault = this.queueDefaults.find(
         queue => queue.queueName === queueName
       );
-      this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(
+      this.data.totalCPUCount = this.getDefaultCPUCount(
         queueDefault
       );
-      this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(
+      this.data.nodeCount = this.getDefaultNodeCount(
         queueDefault
       );
-      this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(
+      this.data.wallTimeLimit = this.getDefaultWalltime(
         queueDefault
       );
-      this.emitValueChanged();
     },
-    emitValueChanged: function() {
-      this.$emit("input", this.localComputationalResourceScheduling);
+    validate() {
+      if (!this.valid) {
+        this.$emit("invalid");
+      } else {
+        this.$emit("valid");
+      }
     },
     loadQueueDefaults: function(updateQueueSettings) {
-      services.ApplicationDeploymentService.getQueues({
+      return services.ApplicationDeploymentService.getQueues({
         lookup: this.appDeploymentId
       }).then(queueDefaults => {
         // Sort queue defaults
@@ -292,7 +307,6 @@ export default {
           this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(
             defaultQueue
           );
-          this.emitValueChanged();
         }
       });
     },
@@ -350,31 +364,27 @@ export default {
       return queueDefault.defaultWalltime;
     },
     getValidationFeedback: function(properties) {
-      return utils.getProperty(
-        this.localComputationalResourceScheduling.validate(
-          this.selectedQueueDefault,
-          this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)
-        ),
-        properties
-      );
+      return utils.getProperty(this.validation, properties);
     },
-    getValidationState: function(properties) {
-      return this.getValidationFeedback(properties) ? "invalid" : null;
+    getValidationState: function(properties, showValidState) {
+      return this.getValidationFeedback(properties)
+        ? "invalid"
+        : showValidState
+        ? "valid"
+        : null;
     }
   },
   watch: {
-    value: function(newValue) {
-      this.localComputationalResourceScheduling = newValue.clone();
-    },
     appDeploymentId: function() {
-      this.loadQueueDefaults();
+      this.loadQueueDefaults(true);
     }
   },
   mounted: function() {
     // For brand new queue settings (no queueName specified) load the default
     // queue and its default values and apply them
     const updateQueueSettings = !this.value.queueName;
-    this.loadQueueDefaults(updateQueueSettings);
+    this.loadQueueDefaults(updateQueueSettings).then(() => this.validate());
+    this.$on('input', () => this.validate());
   }
 };
 </script>

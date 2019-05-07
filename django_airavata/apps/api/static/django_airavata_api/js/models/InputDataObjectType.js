@@ -44,6 +44,9 @@ const FIELDS = [
   }
 ];
 
+const IS_REQUIRED_DEFAULT = "This field is required.";
+const IS_REQUIRED_URI_COLLECTION = "At least one file must be selected.";
+
 export default class InputDataObjectType extends BaseModel {
   constructor(data = {}) {
     super(FIELDS, data);
@@ -206,7 +209,11 @@ export default class InputDataObjectType extends BaseModel {
     }
     let valueErrorMessages = [];
     if (this.isRequired && this.isEmpty(inputValue)) {
-      valueErrorMessages.push("This field is required.");
+      if (this.type === DataType.URI_COLLECTION) {
+        valueErrorMessages.push(IS_REQUIRED_URI_COLLECTION);
+      } else {
+        valueErrorMessages.push(IS_REQUIRED_DEFAULT);
+      }
     }
     // Run through any validations if configured
     if (this.editorValidations.length > 0) {
@@ -245,4 +252,10 @@ export default class InputDataObjectType extends BaseModel {
   }
 }
 
-InputDataObjectType.VALID_DATA_TYPES = [DataType.STRING, DataType.INTEGER, DataType.FLOAT, DataType.URI];
+InputDataObjectType.VALID_DATA_TYPES = [
+  DataType.STRING,
+  DataType.INTEGER,
+  DataType.FLOAT,
+  DataType.URI,
+  DataType.URI_COLLECTION
+];

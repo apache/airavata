@@ -1,36 +1,44 @@
 <template>
   <div>
     <div
-      class="row"
+      class="d-flex"
       v-if="isDataProductURI && dataProduct"
     >
-      <div class="col mr-auto">
-        <data-product-viewer :data-product="dataProduct" :input-file="true"/>
-      </div>
-      <div class="col-auto">
-        <delete-link @delete="deleteDataProduct">
-          Are you sure you want to delete input file {{ dataProduct.filename }}?
-        </delete-link>
-      </div>
+      <data-product-viewer
+        class="mr-auto"
+        :data-product="dataProduct"
+        :input-file="true"
+      />
+      <delete-link
+        class="ml-2"
+        @delete="deleteDataProduct"
+      >
+        Are you sure you want to delete input file {{ dataProduct.filename }}?
+      </delete-link>
+      <b-link
+        @click="unselect"
+        class="ml-2 text-secondary"
+      >
+        Unselect
+        <i
+          class="fa fa-times"
+          aria-hidden="true"
+        ></i>
+      </b-link>
     </div>
-    <div class="row">
-      <div class="col">
-
-        <b-form-file
-          :id="id"
-          v-model="data"
-          v-if="!isDataProductURI"
-          :placeholder="experimentInput.userFriendlyDescription"
-          :state="componentValidState"
-          @input="valueChanged"
-        />
-      </div>
-    </div>
+    <b-form-file
+      :id="id"
+      v-model="file"
+      v-if="!isDataProductURI"
+      :placeholder="experimentInput.userFriendlyDescription"
+      :state="componentValidState"
+      @input="fileChanged"
+    />
   </div>
 </template>
 
 <script>
-import { services } from "django-airavata-api";
+import { models, services, utils } from "django-airavata-api";
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
 import DataProductViewer from "../DataProductViewer.vue";
 import { components } from "django-airavata-common-ui";
@@ -50,7 +58,8 @@ export default {
   },
   data() {
     return {
-      dataProduct: null
+      dataProduct: null,
+      file: null
     };
   },
   created() {
@@ -65,7 +74,31 @@ export default {
       );
     },
     deleteDataProduct() {
-      // Just null out the 'data' field. Backend will delete the file from storage
+      utils.FetchUtils.delete(
+        "/api/delete-file?data-product-uri=" + encodeURIComponent(this.value)
+      ).then(() => {
+        this.data = null;
+        this.valueChanged();
+      });
+    },
+    fileChanged() {
+      if (this.file) {
+        let data = new FormData();
+        data.append("file", this.file);
+        data.append("project-id", this.experiment.projectId);
+        data.append("experiment-name", this.experiment.experimentName);
+        this.$emit("uploadstart");
+        utils.FetchUtils.post("/api/upload", data, "", { showSpinner: false })
+          .then(result => {
+            this.dataProduct = new models.DataProduct(result["data-product"]);
+            this.data = this.dataProduct.productUri;
+            this.valueChanged();
+          })
+          .finally(() => this.$emit("uploadend"));
+      }
+    },
+    unselect() {
+      this.file = null;
       this.data = null;
       this.valueChanged();
     }

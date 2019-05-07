@@ -2,6 +2,7 @@
 
 {% block content %}
 
+<main class="main-content">
 <div class="container">
     {% if options.external %}
     {% include "./partials/externals_login_form.html" %}
@@ -11,5 +12,5 @@
     {% include "./partials/username_password_login_form.html" %}
     {% endif %}
 </div>
-</div>
+</main>
 {% endblock content %}

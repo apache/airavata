@@ -52,7 +52,18 @@
                 <tr>
                   <th scope="row">Outputs</th>
                   <td>
-                    <data-product-viewer v-for="output in localFullExperiment.outputDataProducts" :data-product="output" class="data-product" :key="output.productUri"/>
+                    <ul>
+                      <li v-for="output in experiment.experimentOutputs" :key="output.name">
+                        {{ output.name }}:
+                        <template v-if="output.type.isSimpleValueType">
+                          {{ output.value }}
+                        </template>
+                        <template v-else-if="output.type.isFileValue">
+                          <data-product-viewer v-for="dp in getDataProducts(output, localFullExperiment.outputDataProducts)"
+                            :data-product="dp" class="data-product" :key="dp.productUri"/>
+                        </template>
+                      </li>
+                    </ul>
                   </td>
                 </tr>
                 <!-- Going to leave this out for now -->
@@ -141,8 +152,17 @@
                 <tr>
                   <th scope="row">Inputs</th>
                   <td>
-                    <data-product-viewer v-for="input in localFullExperiment.inputDataProducts"
-                      :data-product="input" :input-file="true" class="data-product" :key="input.productUri"/>
+                    <ul>
+                      <li v-for="input in experiment.experimentInputs" :key="input.name">
+                        {{ input.name }}:
+                        <template v-if="input.type.isSimpleValueType">
+                          {{ input.value }}
+                        </template>
+                        <data-product-viewer v-for="dp in getDataProducts(input, localFullExperiment.inputDataProducts)"
+                          v-else-if="input.type.isFileValueType"
+                          :data-product="dp" :input-file="true" class="data-product" :key="dp.productUri"/>
+                      </li>
+                    </ul>
                   </td>
                 </tr>
                 <tr>
@@ -214,7 +234,7 @@ export default {
     loadExperiment: function() {
       return services.FullExperimentService.retrieve(
         { lookup: this.localFullExperiment.experiment.experimentId },
-        { showSpinner: false }
+        { ignoreErrors: true, showSpinner: false }
       ).then(exp => (this.localFullExperiment = exp));
     },
     initPollingExperiment: function() {
@@ -226,6 +246,9 @@ export default {
         ) {
           this.loadExperiment().then(() => {
             setTimeout(pollExperiment.bind(this), 3000);
+          }).catch(() => {
+            // Wait 30 seconds after an error and then try again
+            setTimeout(pollExperiment.bind(this), 30000);
           });
         }
       }.bind(this);
@@ -237,6 +260,20 @@ export default {
       }).then(clonedExperiment => {
         urls.navigateToEditExperiment(clonedExperiment);
       })
+    },
+    getDataProducts(io, collection) {
+      if (!io.value || !collection) {
+        return [];
+      }
+      let dataProducts = null;
+      if (io.type === models.DataType.URI_COLLECTION) {
+        const dataProductURIs = io.value.split(',');
+        dataProducts = dataProductURIs.map(uri => collection.find(dp => dp.productUri === uri));
+      } else {
+        const dataProductURI = io.value;
+        dataProducts = collection.filter(dp => dp.productUri === dataProductURI);
+      }
+      return dataProducts ? dataProducts.filter(dp => dp ? true : false) : [];
     }
   },
   watch: {},

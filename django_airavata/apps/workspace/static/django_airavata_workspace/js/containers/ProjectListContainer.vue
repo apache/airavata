@@ -64,7 +64,7 @@ export default {
         },
     },
     beforeMount: function () {
-        services.ProjectService.list(this.initialProjectsData)
+        services.ProjectService.list({initialData: this.initialProjectsData})
             .then(result => this.projectsPaginator = result);
     }
 }
