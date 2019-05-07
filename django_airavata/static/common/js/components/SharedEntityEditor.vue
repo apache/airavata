@@ -53,8 +53,9 @@
       >
         <b-form-select
           v-if="!data.item.readonly"
-          v-model="data.item.permissionType"
+          :value="data.item.permissionType"
           :options="permissionOptions"
+          @input="changeUserPermission(data.item.user, $event)"
         />
         <span
           v-else
@@ -293,6 +294,10 @@ export default {
   methods: {
     removeUser: function(user) {
       this.data.removeUser(user);
+    },
+    changeUserPermission(user, permissionType) {
+      const up = this.data.userPermissions.find(up => up.user.airavataInternalUserId === user.airavataInternalUserId);
+      up.permissionType = permissionType;
     },
     removeGroup: function(group) {
       this.data.removeGroup(group);
