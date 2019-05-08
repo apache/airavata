@@ -301,34 +301,10 @@ export default {
     this.initPollingExperiment();
   }
 };
-/**
-*  Generic function that sorts an array
-*  of objects by key
-*  Default sorting order is ascending
-*  @param {Array} array
-*  @param {string} key
-*  @param {string} order (either asc or desc)
-*/
-function sortByKey(array, key, order = "asc") {
-  return array.sort(function(obj1, obj2) {
-    // If key doesn't exist, returns 0
-    if(!obj1.hasOwnProperty(key) || !obj2.hasOwnProperty(key)) {
-      return 0;
-    }
-    let sortOrder = (order == 'desc') ? -1 : 1;
-    var val1 = (typeof obj1[key] === 'string') ? obj1[key].toLowerCase() : obj1[key];
-    var val2 = (typeof obj2[key] === 'string') ? obj2[key].toLowerCase() : obj2[key];
-    return ((val1 < val2) ? -1 * sortOrder : ((val1 > val2) ? 1 * sortOrder : 0));
-    });
-  }
 </script>
 
 <style scoped>
 .data-product + .data-product {
   margin-left: 0.5em;
-}
-.input-list {
-  padding-left: .5em;
-  margin-bottom: 0;
 }
 </style>
