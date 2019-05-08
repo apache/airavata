@@ -94,12 +94,17 @@ def create_experiment(request, app_module_id):
                 data_product_uri = request.airavata_client.registerDataProduct(
                     request.authz_token, data_product)
                 user_input_files[app_input['name']] = data_product_uri
+    context = {
+        'bundle_name': 'create-experiment',
+        'app_module_id': app_module_id,
+        'user_input_files': json.dumps(user_input_files)
+    }
+    if 'experiment-data-dir' in request.GET:
+        context['experiment_data_dir'] = request.GET['experiment-data-dir']
 
     return render(request,
                   'django_airavata_workspace/create_experiment.html',
-                  {'bundle_name': 'create-experiment',
-                   'app_module_id': app_module_id,
-                   'user_input_files': json.dumps(user_input_files)})
+                  context)
 
 
 @login_required

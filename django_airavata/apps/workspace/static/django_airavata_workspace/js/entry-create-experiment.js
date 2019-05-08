@@ -8,7 +8,8 @@ entry(Vue => {
         h(CreateExperimentContainer, {
           props: {
             appModuleId: this.appModuleId,
-            userInputFiles: this.userInputFiles
+            userInputFiles: this.userInputFiles,
+            experimentDataDir: this.experimentDataDir
           }
         })
       ]);
@@ -25,6 +26,9 @@ entry(Vue => {
       }
       if (this.$el.dataset.userInputFiles) {
         this.userInputFiles = JSON.parse(this.$el.dataset.userInputFiles);
+      }
+      if (this.$el.dataset.experimentDataDir) {
+        this.experimentDataDir = this.$el.dataset.experimentDataDir;
       }
     }
   }).$mount("#create-experiment");

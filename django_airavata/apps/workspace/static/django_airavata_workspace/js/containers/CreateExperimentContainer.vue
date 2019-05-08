@@ -20,7 +20,7 @@ import moment from "moment";
 
 export default {
   name: "create-experiment-container",
-  props: ["app-module-id", "user-input-files"],
+  props: ["app-module-id", "user-input-files", "experiment-data-dir"],
   data() {
     return {
       experiment: null,
@@ -66,6 +66,9 @@ export default {
       }
       experiment.executionId = appInterface.applicationInterfaceId;
     });
+    if (this.experimentDataDir) {
+      experiment.userConfigurationData.experimentDataDir = this.experimentDataDir;
+    }
     Promise.all([loadAppModule, loadAppInterface])
       .then(() => (this.experiment = experiment))
       .catch(error => {
