@@ -1632,12 +1632,19 @@ public class AiravataServerHandler implements Airavata.Iface {
             if(ServerSettings.isEnableSharing() && !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME).equals(experimentModel.getUserName())
                     || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())){
                 try {
+                    // Verify WRITE access
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                     if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
                             airavataExperimentId, gatewayId + ":WRITE")){
                         throw new AuthorizationException("User does not have permission to access this resource");
                     }
+                    // Update name, description and parent on Entity
+                    Entity entity = sharingClient.getEntity(gatewayId, airavataExperimentId);
+                    entity.setName(experiment.getExperimentName());
+                    entity.setDescription(experiment.getDescription());
+                    entity.setParentEntityId(experiment.getProjectId());
+                    sharingClient.updateEntity(entity);
                 } catch (Exception e) {
                     throw new AuthorizationException("User does not have permission to access this resource");
                 }
