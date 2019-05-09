@@ -1,13 +1,48 @@
 <template>
   <div class="share-button btn-container">
-    <b-button :variant="'outline-primary'" :title="title" :disabled="!shareButtonEnabled" @click="openSharingSettingsModal">
+    <b-button
+      :variant="'outline-primary'"
+      :title="title"
+      :disabled="!shareButtonEnabled"
+      @click="openSharingSettingsModal"
+    >
       Share
       <b-badge>{{ totalCount }}</b-badge>
     </b-button>
-    <b-modal class="modal-share-settings" title="Sharing Settings" ref="sharingSettingsModal" ok-title="Save" @ok="saveSharedEntity"
-      @cancel="cancelEditSharedEntity" no-close-on-esc no-close-on-backdrop hide-header-close @show="showSharingSettingsModal">
-      <shared-entity-editor v-if="localSharedEntity && users && groups" v-model="localSharedEntity" :users="users"
-        :groups="groups" :disallow-editing-admin-groups="disallowEditingAdminGroups" />
+    <b-modal
+      class="modal-share-settings"
+      title="Sharing Settings"
+      ref="sharingSettingsModal"
+      ok-title="Save"
+      @ok="saveSharedEntity"
+      @cancel="cancelEditSharedEntity"
+      no-close-on-esc
+      no-close-on-backdrop
+      hide-header-close
+      @show="showSharingSettingsModal"
+    >
+      <shared-entity-editor
+        v-if="localSharedEntity && users && groups"
+        v-model="localSharedEntity"
+        :users="users"
+        :groups="groups"
+        :disallow-editing-admin-groups="disallowEditingAdminGroups"
+      />
+      <!-- Only show parent entity permissions for new entities -->
+      <template v-if="hasParentSharedEntityPermissions">
+        <shared-entity-editor
+          v-if="parentSharedEntity && users && groups"
+          v-model="parentSharedEntity"
+          :users="users"
+          :groups="groups"
+          :readonly="true"
+          class="mt-4"
+        >
+          <span slot="permissions-header">Inherited {{ parentEntityLabel }} Permissions
+            <!-- <small class="text-muted" v-if="parentEntityOwner">Owned by {{parentEntityOwner.firstName}} {{parentEntityOwner.lastName}} ({{parentEntityOwner.email}})</small> -->
+          </span>
+        </shared-entity-editor>
+      </template>
     </b-modal>
   </div>
 </template>
@@ -20,6 +55,11 @@ export default {
   name: "share-button",
   props: {
     entityId: String,
+    parentEntityId: String,
+    parentEntityLabel: {
+      type: String,
+      default: "Parent"
+    },
     sharedEntity: models.SharedEntity,
     autoAddDefaultGatewayUsersGroup: {
       type: Boolean,
@@ -36,6 +76,7 @@ export default {
   data: function() {
     return {
       localSharedEntity: null,
+      parentSharedEntity: null,
       sharedEntityCopy: null,
       defaultGatewayUsersGroup: null,
       users: null,
@@ -56,31 +97,55 @@ export default {
       );
     },
     usersCount: function() {
-      return this.localSharedEntity && this.localSharedEntity.userPermissions
-        ? this.localSharedEntity.userPermissions.length
-        : 0;
+      return this.combinedUsers.length;
     },
     userNames: function() {
-      return this.localSharedEntity && this.localSharedEntity.userPermissions
-        ? this.localSharedEntity.userPermissions.map(
-            userPerm => userPerm.user.firstName + " " + userPerm.user.lastName
-          )
-        : null;
+      return this.combinedUsers.map(u => u.firstName + " " + u.lastName);
+    },
+    combinedUsers() {
+      const users = [];
+      if (this.localSharedEntity && this.localSharedEntity.userPermissions) {
+        users.push(
+          ...this.localSharedEntity.userPermissions.map(up => up.user)
+        );
+      }
+      if (this.parentSharedEntity && this.parentSharedEntity.userPermissions) {
+        users.push(
+          ...this.parentSharedEntity.userPermissions.map(up => up.user)
+        );
+        if (this.parentEntityOwner) {
+          users.push(this.parentEntityOwner);
+        }
+      }
+      return users;
     },
     filteredGroupPermissions: function() {
       if (this.localSharedEntity && this.localSharedEntity.groupPermissions) {
-        return this.disallowEditingAdminGroups ? this.localSharedEntity.nonAdminGroupPermissions : this.localSharedEntity.groupPermissions;
+        return this.disallowEditingAdminGroups
+          ? this.localSharedEntity.nonAdminGroupPermissions
+          : this.localSharedEntity.groupPermissions;
       } else {
         return [];
       }
     },
+    combinedGroups() {
+      const groups = [];
+      groups.push(...this.filteredGroupPermissions.map(gp => gp.group));
+      if (
+        this.parentSharedEntity &&
+        this.parentSharedEntity.groupPermissions
+      ) {
+        groups.push(
+          ...this.parentSharedEntity.groupPermissions.map(gp => gp.group)
+        );
+      }
+      return groups;
+    },
     groupNames: function() {
-      return this.filteredGroupPermissions.map(
-        groupPerm => groupPerm.group.name
-      );
+      return this.combinedGroups.map(g => g.name);
     },
     groupsCount: function() {
-      return this.filteredGroupPermissions.length;
+      return this.combinedGroups.length;
     },
     totalCount: function() {
       return this.usersCount + this.groupsCount;
@@ -91,6 +156,21 @@ export default {
         this.localSharedEntity &&
         (!this.localSharedEntity.entityId || this.localSharedEntity.isOwner)
       );
+    },
+    hasParentSharedEntityPermissions() {
+      return (
+        this.parentSharedEntity &&
+        (this.parentSharedEntity.userPermissions.length > 0 ||
+          this.parentSharedEntity.groupPermissions.length > 0)
+      );
+    },
+    parentEntityOwner() {
+      // Only show the parent entity owner when not the same as current user
+      if (this.parentSharedEntity && !this.parentSharedEntity.isOwner) {
+        return this.parentSharedEntity.owner;
+      } else {
+        return null;
+      }
     }
   },
   methods: {
@@ -121,6 +201,13 @@ export default {
               .filter(group => group.isDefaultGatewayUsersGroup)
               .forEach(group => (this.defaultGatewayUsersGroup = group));
           })
+        );
+      }
+      if (this.parentEntityId) {
+        promises.push(
+          this.loadSharedEntity(this.parentEntityId).then(
+            sharedEntity => (this.parentSharedEntity = sharedEntity)
+          )
         );
       }
       Promise.all(promises).then(() => {
@@ -216,6 +303,11 @@ export default {
           sharedEntity => (this.localSharedEntity = sharedEntity)
         );
       }
+    },
+    parentEntityId(newParentEntityId) {
+      this.loadSharedEntity(newParentEntityId).then(sharedEntity => {
+        this.parentSharedEntity = sharedEntity;
+      });
     }
   }
 };

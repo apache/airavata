@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-form-group
+      v-if="!readonly"
       label="Search for users/groups"
       labelFor="user-groups-autocomplete"
     >
@@ -24,7 +25,9 @@
         </template>
       </autocomplete-text-input>
     </b-form-group>
-    <h5 v-if="totalCount > 0">Currently Shared With</h5>
+    <h5 v-if="totalCount > 0">
+      <slot name="permissions-header">Currently Shared With</slot>
+    </h5>
     <b-table
       v-if="usersCount > 0"
       id="modal-user-table"
@@ -36,28 +39,34 @@
         slot="name"
         slot-scope="data"
       >
-        <span :title="data.item.user.userId">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
+        <span :title="data.item.user.userId" :class="userDataClasses">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
       </template>
       <template
         slot="email"
         slot-scope="data"
       >
-        {{data.item.user.email}}
+        <span :class="userDataClasses">{{data.item.user.email}}</span>
       </template>
       <template
         slot="permission"
         slot-scope="data"
       >
         <b-form-select
+          v-if="!readonly"
           v-model="data.item.permissionType"
           :options="permissionOptions"
         />
+        <span
+          v-else
+          class="text-uppercase"
+          :class="userDataClasses"
+        >{{ data.item.permissionType.name }}</span>
       </template>
       <template
         slot="remove"
         slot-scope="data"
       >
-        <b-link @click="removeUser(data.item.user)">
+        <b-link v-if="!readonly" @click="removeUser(data.item.user)">
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -131,6 +140,10 @@ export default {
     disallowEditingAdminGroups: {
       type: Boolean,
       default: true
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -161,10 +174,25 @@ export default {
       const userPermsCopy = this.data.userPermissions
         ? this.data.userPermissions.slice()
         : [];
-      return utils.StringUtils.sortIgnoreCase(
+      const sortedUserPerms = utils.StringUtils.sortIgnoreCase(
         userPermsCopy,
         userPerm => userPerm.user.lastName + ", " + userPerm.user.firstName
       );
+      // When in readonly mode, if the current owner isn't the owner, display
+      // the user with the OWNER permission
+      if (this.readonly && !this.data.isOwner) {
+        sortedUserPerms.push(new models.UserPermission({
+          user: this.data.owner,
+          permissionType: models.ResourcePermissionType.OWNER
+        }));
+      }
+      return sortedUserPerms;
+    },
+    userDataClasses() {
+      return {
+        'text-muted': this.readonly,
+        'font-italic': this.readonly
+      }
     },
     filteredGroupPermissions: function() {
       return this.data && this.data.groupPermissions
@@ -279,7 +307,7 @@ export default {
      * should not be allowed.
      */
     editingAllowed(group) {
-      return !this.disallowEditingAdminGroups || !group.isAdminGroup;
+      return !this.readonly && (!this.disallowEditingAdminGroups || !group.isAdminGroup);
     }
   }
 };
