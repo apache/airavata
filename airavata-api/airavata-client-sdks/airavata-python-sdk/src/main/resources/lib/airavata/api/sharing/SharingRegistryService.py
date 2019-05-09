@@ -454,9 +454,31 @@ class Iface(object):
         """
         pass
 
+    def getListOfDirectlySharedUsers(self, domainId, entityId, permissionTypeId):
+        """
+        <p>API method to get a list of shared users given the entity id where the sharing type is directly applied</p>
+
+        Parameters:
+         - domainId
+         - entityId
+         - permissionTypeId
+        """
+        pass
+
     def getListOfSharedGroups(self, domainId, entityId, permissionTypeId):
         """
         <p>API method to get a list of shared groups given the entity id</p>
+
+        Parameters:
+         - domainId
+         - entityId
+         - permissionTypeId
+        """
+        pass
+
+    def getListOfDirectlySharedGroups(self, domainId, entityId, permissionTypeId):
+        """
+        <p>API method to get a list of directly shared groups given the entity id where the sharing type is directly applied</p>
 
         Parameters:
          - domainId
@@ -2204,6 +2226,45 @@ class Client(Iface):
             raise result.sre
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getListOfSharedUsers failed: unknown result")
 
+    def getListOfDirectlySharedUsers(self, domainId, entityId, permissionTypeId):
+        """
+        <p>API method to get a list of shared users given the entity id where the sharing type is directly applied</p>
+
+        Parameters:
+         - domainId
+         - entityId
+         - permissionTypeId
+        """
+        self.send_getListOfDirectlySharedUsers(domainId, entityId, permissionTypeId)
+        return self.recv_getListOfDirectlySharedUsers()
+
+    def send_getListOfDirectlySharedUsers(self, domainId, entityId, permissionTypeId):
+        self._oprot.writeMessageBegin('getListOfDirectlySharedUsers', TMessageType.CALL, self._seqid)
+        args = getListOfDirectlySharedUsers_args()
+        args.domainId = domainId
+        args.entityId = entityId
+        args.permissionTypeId = permissionTypeId
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getListOfDirectlySharedUsers(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getListOfDirectlySharedUsers_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.sre is not None:
+            raise result.sre
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getListOfDirectlySharedUsers failed: unknown result")
+
     def getListOfSharedGroups(self, domainId, entityId, permissionTypeId):
         """
         <p>API method to get a list of shared groups given the entity id</p>
@@ -2242,6 +2303,45 @@ class Client(Iface):
         if result.sre is not None:
             raise result.sre
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getListOfSharedGroups failed: unknown result")
+
+    def getListOfDirectlySharedGroups(self, domainId, entityId, permissionTypeId):
+        """
+        <p>API method to get a list of directly shared groups given the entity id where the sharing type is directly applied</p>
+
+        Parameters:
+         - domainId
+         - entityId
+         - permissionTypeId
+        """
+        self.send_getListOfDirectlySharedGroups(domainId, entityId, permissionTypeId)
+        return self.recv_getListOfDirectlySharedGroups()
+
+    def send_getListOfDirectlySharedGroups(self, domainId, entityId, permissionTypeId):
+        self._oprot.writeMessageBegin('getListOfDirectlySharedGroups', TMessageType.CALL, self._seqid)
+        args = getListOfDirectlySharedGroups_args()
+        args.domainId = domainId
+        args.entityId = entityId
+        args.permissionTypeId = permissionTypeId
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getListOfDirectlySharedGroups(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getListOfDirectlySharedGroups_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.sre is not None:
+            raise result.sre
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getListOfDirectlySharedGroups failed: unknown result")
 
     def createPermissionType(self, permissionType):
         """
@@ -2722,7 +2822,9 @@ class Processor(Iface, TProcessor):
         self._processMap["getEntity"] = Processor.process_getEntity
         self._processMap["searchEntities"] = Processor.process_searchEntities
         self._processMap["getListOfSharedUsers"] = Processor.process_getListOfSharedUsers
+        self._processMap["getListOfDirectlySharedUsers"] = Processor.process_getListOfDirectlySharedUsers
         self._processMap["getListOfSharedGroups"] = Processor.process_getListOfSharedGroups
+        self._processMap["getListOfDirectlySharedGroups"] = Processor.process_getListOfDirectlySharedGroups
         self._processMap["createPermissionType"] = Processor.process_createPermissionType
         self._processMap["updatePermissionType"] = Processor.process_updatePermissionType
         self._processMap["isPermissionExists"] = Processor.process_isPermissionExists
@@ -3702,6 +3804,28 @@ class Processor(Iface, TProcessor):
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
+    def process_getListOfDirectlySharedUsers(self, seqid, iprot, oprot):
+        args = getListOfDirectlySharedUsers_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getListOfDirectlySharedUsers_result()
+        try:
+            result.success = self._handler.getListOfDirectlySharedUsers(args.domainId, args.entityId, args.permissionTypeId)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.model.sharing.ttypes.SharingRegistryException as sre:
+            msg_type = TMessageType.REPLY
+            result.sre = sre
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getListOfDirectlySharedUsers", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
     def process_getListOfSharedGroups(self, seqid, iprot, oprot):
         args = getListOfSharedGroups_args()
         args.read(iprot)
@@ -3720,6 +3844,28 @@ class Processor(Iface, TProcessor):
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("getListOfSharedGroups", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_getListOfDirectlySharedGroups(self, seqid, iprot, oprot):
+        args = getListOfDirectlySharedGroups_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getListOfDirectlySharedGroups_result()
+        try:
+            result.success = self._handler.getListOfDirectlySharedGroups(args.domainId, args.entityId, args.permissionTypeId)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.model.sharing.ttypes.SharingRegistryException as sre:
+            msg_type = TMessageType.REPLY
+            result.sre = sre
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getListOfDirectlySharedGroups", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -10603,6 +10749,177 @@ class getListOfSharedUsers_result(object):
         return not (self == other)
 
 
+class getListOfDirectlySharedUsers_args(object):
+    """
+    Attributes:
+     - domainId
+     - entityId
+     - permissionTypeId
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'domainId', 'UTF8', None, ),  # 1
+        (2, TType.STRING, 'entityId', 'UTF8', None, ),  # 2
+        (3, TType.STRING, 'permissionTypeId', 'UTF8', None, ),  # 3
+    )
+
+    def __init__(self, domainId=None, entityId=None, permissionTypeId=None,):
+        self.domainId = domainId
+        self.entityId = entityId
+        self.permissionTypeId = permissionTypeId
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.domainId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.entityId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.permissionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getListOfDirectlySharedUsers_args')
+        if self.domainId is not None:
+            oprot.writeFieldBegin('domainId', TType.STRING, 1)
+            oprot.writeString(self.domainId.encode('utf-8') if sys.version_info[0] == 2 else self.domainId)
+            oprot.writeFieldEnd()
+        if self.entityId is not None:
+            oprot.writeFieldBegin('entityId', TType.STRING, 2)
+            oprot.writeString(self.entityId.encode('utf-8') if sys.version_info[0] == 2 else self.entityId)
+            oprot.writeFieldEnd()
+        if self.permissionTypeId is not None:
+            oprot.writeFieldBegin('permissionTypeId', TType.STRING, 3)
+            oprot.writeString(self.permissionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.permissionTypeId)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.domainId is None:
+            raise TProtocolException(message='Required field domainId is unset!')
+        if self.entityId is None:
+            raise TProtocolException(message='Required field entityId is unset!')
+        if self.permissionTypeId is None:
+            raise TProtocolException(message='Required field permissionTypeId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getListOfDirectlySharedUsers_result(object):
+    """
+    Attributes:
+     - success
+     - sre
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.STRUCT, (airavata.model.sharing.ttypes.User, airavata.model.sharing.ttypes.User.thrift_spec), False), None, ),  # 0
+        (1, TType.STRUCT, 'sre', (airavata.model.sharing.ttypes.SharingRegistryException, airavata.model.sharing.ttypes.SharingRegistryException.thrift_spec), None, ),  # 1
+    )
+
+    def __init__(self, success=None, sre=None,):
+        self.success = success
+        self.sre = sre
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype108, _size105) = iprot.readListBegin()
+                    for _i109 in range(_size105):
+                        _elem110 = airavata.model.sharing.ttypes.User()
+                        _elem110.read(iprot)
+                        self.success.append(_elem110)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.sre = airavata.model.sharing.ttypes.SharingRegistryException()
+                    self.sre.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getListOfDirectlySharedUsers_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.STRUCT, len(self.success))
+            for iter111 in self.success:
+                iter111.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.sre is not None:
+            oprot.writeFieldBegin('sre', TType.STRUCT, 1)
+            self.sre.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 class getListOfSharedGroups_args(object):
     """
     Attributes:
@@ -10721,11 +11038,11 @@ class getListOfSharedGroups_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype108, _size105) = iprot.readListBegin()
-                    for _i109 in range(_size105):
-                        _elem110 = airavata.model.sharing.ttypes.UserGroup()
-                        _elem110.read(iprot)
-                        self.success.append(_elem110)
+                    (_etype115, _size112) = iprot.readListBegin()
+                    for _i116 in range(_size112):
+                        _elem117 = airavata.model.sharing.ttypes.UserGroup()
+                        _elem117.read(iprot)
+                        self.success.append(_elem117)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -10748,8 +11065,179 @@ class getListOfSharedGroups_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter111 in self.success:
-                iter111.write(oprot)
+            for iter118 in self.success:
+                iter118.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.sre is not None:
+            oprot.writeFieldBegin('sre', TType.STRUCT, 1)
+            self.sre.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getListOfDirectlySharedGroups_args(object):
+    """
+    Attributes:
+     - domainId
+     - entityId
+     - permissionTypeId
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'domainId', 'UTF8', None, ),  # 1
+        (2, TType.STRING, 'entityId', 'UTF8', None, ),  # 2
+        (3, TType.STRING, 'permissionTypeId', 'UTF8', None, ),  # 3
+    )
+
+    def __init__(self, domainId=None, entityId=None, permissionTypeId=None,):
+        self.domainId = domainId
+        self.entityId = entityId
+        self.permissionTypeId = permissionTypeId
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.domainId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.entityId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.permissionTypeId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getListOfDirectlySharedGroups_args')
+        if self.domainId is not None:
+            oprot.writeFieldBegin('domainId', TType.STRING, 1)
+            oprot.writeString(self.domainId.encode('utf-8') if sys.version_info[0] == 2 else self.domainId)
+            oprot.writeFieldEnd()
+        if self.entityId is not None:
+            oprot.writeFieldBegin('entityId', TType.STRING, 2)
+            oprot.writeString(self.entityId.encode('utf-8') if sys.version_info[0] == 2 else self.entityId)
+            oprot.writeFieldEnd()
+        if self.permissionTypeId is not None:
+            oprot.writeFieldBegin('permissionTypeId', TType.STRING, 3)
+            oprot.writeString(self.permissionTypeId.encode('utf-8') if sys.version_info[0] == 2 else self.permissionTypeId)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.domainId is None:
+            raise TProtocolException(message='Required field domainId is unset!')
+        if self.entityId is None:
+            raise TProtocolException(message='Required field entityId is unset!')
+        if self.permissionTypeId is None:
+            raise TProtocolException(message='Required field permissionTypeId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getListOfDirectlySharedGroups_result(object):
+    """
+    Attributes:
+     - success
+     - sre
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.STRUCT, (airavata.model.sharing.ttypes.UserGroup, airavata.model.sharing.ttypes.UserGroup.thrift_spec), False), None, ),  # 0
+        (1, TType.STRUCT, 'sre', (airavata.model.sharing.ttypes.SharingRegistryException, airavata.model.sharing.ttypes.SharingRegistryException.thrift_spec), None, ),  # 1
+    )
+
+    def __init__(self, success=None, sre=None,):
+        self.success = success
+        self.sre = sre
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype122, _size119) = iprot.readListBegin()
+                    for _i123 in range(_size119):
+                        _elem124 = airavata.model.sharing.ttypes.UserGroup()
+                        _elem124.read(iprot)
+                        self.success.append(_elem124)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.sre = airavata.model.sharing.ttypes.SharingRegistryException()
+                    self.sre.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getListOfDirectlySharedGroups_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.STRUCT, len(self.success))
+            for iter125 in self.success:
+                iter125.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -11620,11 +12108,11 @@ class getPermissionTypes_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype115, _size112) = iprot.readListBegin()
-                    for _i116 in range(_size112):
-                        _elem117 = airavata.model.sharing.ttypes.PermissionType()
-                        _elem117.read(iprot)
-                        self.success.append(_elem117)
+                    (_etype129, _size126) = iprot.readListBegin()
+                    for _i130 in range(_size126):
+                        _elem131 = airavata.model.sharing.ttypes.PermissionType()
+                        _elem131.read(iprot)
+                        self.success.append(_elem131)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -11647,8 +12135,8 @@ class getPermissionTypes_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter118 in self.success:
-                iter118.write(oprot)
+            for iter132 in self.success:
+                iter132.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -11721,10 +12209,10 @@ class shareEntityWithUsers_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.userList = []
-                    (_etype122, _size119) = iprot.readListBegin()
-                    for _i123 in range(_size119):
-                        _elem124 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.userList.append(_elem124)
+                    (_etype136, _size133) = iprot.readListBegin()
+                    for _i137 in range(_size133):
+                        _elem138 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.userList.append(_elem138)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -11759,8 +12247,8 @@ class shareEntityWithUsers_args(object):
         if self.userList is not None:
             oprot.writeFieldBegin('userList', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.userList))
-            for iter125 in self.userList:
-                oprot.writeString(iter125.encode('utf-8') if sys.version_info[0] == 2 else iter125)
+            for iter139 in self.userList:
+                oprot.writeString(iter139.encode('utf-8') if sys.version_info[0] == 2 else iter139)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.permissionTypeId is not None:
@@ -11916,10 +12404,10 @@ class revokeEntitySharingFromUsers_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.userList = []
-                    (_etype129, _size126) = iprot.readListBegin()
-                    for _i130 in range(_size126):
-                        _elem131 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.userList.append(_elem131)
+                    (_etype143, _size140) = iprot.readListBegin()
+                    for _i144 in range(_size140):
+                        _elem145 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.userList.append(_elem145)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -11949,8 +12437,8 @@ class revokeEntitySharingFromUsers_args(object):
         if self.userList is not None:
             oprot.writeFieldBegin('userList', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.userList))
-            for iter132 in self.userList:
-                oprot.writeString(iter132.encode('utf-8') if sys.version_info[0] == 2 else iter132)
+            for iter146 in self.userList:
+                oprot.writeString(iter146.encode('utf-8') if sys.version_info[0] == 2 else iter146)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.permissionTypeId is not None:
@@ -12103,10 +12591,10 @@ class shareEntityWithGroups_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.groupList = []
-                    (_etype136, _size133) = iprot.readListBegin()
-                    for _i137 in range(_size133):
-                        _elem138 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.groupList.append(_elem138)
+                    (_etype150, _size147) = iprot.readListBegin()
+                    for _i151 in range(_size147):
+                        _elem152 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.groupList.append(_elem152)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -12141,8 +12629,8 @@ class shareEntityWithGroups_args(object):
         if self.groupList is not None:
             oprot.writeFieldBegin('groupList', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.groupList))
-            for iter139 in self.groupList:
-                oprot.writeString(iter139.encode('utf-8') if sys.version_info[0] == 2 else iter139)
+            for iter153 in self.groupList:
+                oprot.writeString(iter153.encode('utf-8') if sys.version_info[0] == 2 else iter153)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.permissionTypeId is not None:
@@ -12298,10 +12786,10 @@ class revokeEntitySharingFromGroups_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.groupList = []
-                    (_etype143, _size140) = iprot.readListBegin()
-                    for _i144 in range(_size140):
-                        _elem145 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.groupList.append(_elem145)
+                    (_etype157, _size154) = iprot.readListBegin()
+                    for _i158 in range(_size154):
+                        _elem159 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.groupList.append(_elem159)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -12331,8 +12819,8 @@ class revokeEntitySharingFromGroups_args(object):
         if self.groupList is not None:
             oprot.writeFieldBegin('groupList', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.groupList))
-            for iter146 in self.groupList:
-                oprot.writeString(iter146.encode('utf-8') if sys.version_info[0] == 2 else iter146)
+            for iter160 in self.groupList:
+                oprot.writeString(iter160.encode('utf-8') if sys.version_info[0] == 2 else iter160)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.permissionTypeId is not None:

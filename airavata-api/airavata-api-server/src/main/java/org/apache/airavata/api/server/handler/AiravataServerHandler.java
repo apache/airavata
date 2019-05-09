@@ -94,6 +94,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class AiravataServerHandler implements Airavata.Iface {
@@ -5174,29 +5175,47 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<String> getAllAccessibleUsers(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<String> getAllAccessibleUsers(AuthzToken authzToken, String resourceId,
+            ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException,
+            AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        return getAllAccessibleUsersInternal(authzToken, resourceId, permissionType, (c, t) -> {
+            try {
+                return c.getListOfSharedUsers(gatewayId, resourceId, gatewayId + ":" + t.name());
+            } catch (TException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Override
+    @SecurityCheck
+    public List<String> getAllDirectlyAccessibleUsers(AuthzToken authzToken, String resourceId,
+            ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException,
+            AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        return getAllAccessibleUsersInternal(authzToken, resourceId, permissionType, (c, t) -> {
+            try {
+                return c.getListOfDirectlySharedUsers(gatewayId, resourceId, gatewayId + ":" + t.name());
+            } catch (TException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private List<String> getAllAccessibleUsersInternal(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType,  BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<User>> userListFunction) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             HashSet<String> accessibleUsers = new HashSet<>();
             if (permissionType.equals(ResourcePermissionType.WRITE)) {
-                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":WRITE").stream().forEach(u -> accessibleUsers.add(u.userId));
-                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+                userListFunction.apply(sharingClient, ResourcePermissionType.WRITE).stream().forEach(u -> accessibleUsers.add(u.userId));
+                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.userId));
             } else if (permissionType.equals(ResourcePermissionType.READ)) {
-                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":READ").stream().forEach(u -> accessibleUsers.add(u.userId));
-                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+                userListFunction.apply(sharingClient, ResourcePermissionType.READ).stream().forEach(u -> accessibleUsers.add(u.userId));
+                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.userId));
             } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
-                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.userId));
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
@@ -5215,17 +5234,43 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public List<String> getAllAccessibleGroups(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        return getAllAccessibleGroupsInternal(authzToken, resourceId, permissionType, (c, t) -> {
+            try {
+                return c.getListOfSharedGroups(gatewayId, resourceId, gatewayId + ":" + t.name());
+            } catch (TException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Override
+    @SecurityCheck
+    public List<String> getAllDirectlyAccessibleGroups(AuthzToken authzToken, String resourceId,
+            ResourcePermissionType permissionType) throws InvalidRequestException, AiravataClientException,
+            AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        return getAllAccessibleGroupsInternal(authzToken, resourceId, permissionType, (c, t) -> {
+            try {
+                return c.getListOfDirectlySharedGroups(gatewayId, resourceId, gatewayId + ":" + t.name());
+            } catch (TException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private List<String> getAllAccessibleGroupsInternal(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType, BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<UserGroup>> groupListFunction)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             HashSet<String> accessibleGroups = new HashSet<>();
-            final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             if (permissionType.equals(ResourcePermissionType.WRITE)) {
-                sharingClient.getListOfSharedGroups(domainId, resourceId, domainId + ":WRITE")
+                groupListFunction.apply(sharingClient, ResourcePermissionType.WRITE)
                         .stream()
                         .forEach(g -> accessibleGroups.add(g.groupId));
             } else if (permissionType.equals(ResourcePermissionType.READ)) {
-                sharingClient.getListOfSharedGroups(domainId, resourceId, domainId + ":READ")
+                groupListFunction.apply(sharingClient, ResourcePermissionType.READ)
                         .stream()
                         .forEach(g -> accessibleGroups.add(g.groupId));
             }

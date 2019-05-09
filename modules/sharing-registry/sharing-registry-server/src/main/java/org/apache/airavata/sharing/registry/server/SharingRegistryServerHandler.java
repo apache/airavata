@@ -998,9 +998,31 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
+    public List<User> getListOfDirectlySharedUsers(String domainId, String entityId, String permissionTypeId)
+            throws SharingRegistryException, TException {
+        try{
+            return (new UserRepository()).getDirectlyAccessibleUsers(domainId, entityId, permissionTypeId);
+        }catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
     public List<UserGroup> getListOfSharedGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException, TException {
         try{
             return (new UserGroupRepository()).getAccessibleGroups(domainId, entityId, permissionTypeId);
+        }catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
+    public List<UserGroup> getListOfDirectlySharedGroups(String domainId, String entityId, String permissionTypeId)
+            throws SharingRegistryException, TException {
+        try{
+            return (new UserGroupRepository()).getDirectlyAccessibleGroups(domainId, entityId, permissionTypeId);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
             throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
@@ -1240,4 +1262,5 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         }
         return hashtable;
     }
+
 }

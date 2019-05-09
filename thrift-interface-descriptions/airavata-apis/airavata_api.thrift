@@ -3403,6 +3403,20 @@ service Airavata {
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
 
+ list<string> getAllDirectlyAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                  4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllDirectlyAccessibleGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                  4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
  bool userHasAccess(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourcePermissionType permissionType)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,

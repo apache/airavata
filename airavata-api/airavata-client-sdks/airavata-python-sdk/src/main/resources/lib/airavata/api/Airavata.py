@@ -3371,6 +3371,24 @@ class Iface(object):
         """
         pass
 
+    def getAllDirectlyAccessibleUsers(self, authzToken, resourceId, permissionType):
+        """
+        Parameters:
+         - authzToken
+         - resourceId
+         - permissionType
+        """
+        pass
+
+    def getAllDirectlyAccessibleGroups(self, authzToken, resourceId, permissionType):
+        """
+        Parameters:
+         - authzToken
+         - resourceId
+         - permissionType
+        """
+        pass
+
     def userHasAccess(self, authzToken, resourceId, permissionType):
         """
         Parameters:
@@ -12525,6 +12543,92 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllAccessibleGroups failed: unknown result")
 
+    def getAllDirectlyAccessibleUsers(self, authzToken, resourceId, permissionType):
+        """
+        Parameters:
+         - authzToken
+         - resourceId
+         - permissionType
+        """
+        self.send_getAllDirectlyAccessibleUsers(authzToken, resourceId, permissionType)
+        return self.recv_getAllDirectlyAccessibleUsers()
+
+    def send_getAllDirectlyAccessibleUsers(self, authzToken, resourceId, permissionType):
+        self._oprot.writeMessageBegin('getAllDirectlyAccessibleUsers', TMessageType.CALL, self._seqid)
+        args = getAllDirectlyAccessibleUsers_args()
+        args.authzToken = authzToken
+        args.resourceId = resourceId
+        args.permissionType = permissionType
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getAllDirectlyAccessibleUsers(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getAllDirectlyAccessibleUsers_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.ire is not None:
+            raise result.ire
+        if result.ace is not None:
+            raise result.ace
+        if result.ase is not None:
+            raise result.ase
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllDirectlyAccessibleUsers failed: unknown result")
+
+    def getAllDirectlyAccessibleGroups(self, authzToken, resourceId, permissionType):
+        """
+        Parameters:
+         - authzToken
+         - resourceId
+         - permissionType
+        """
+        self.send_getAllDirectlyAccessibleGroups(authzToken, resourceId, permissionType)
+        return self.recv_getAllDirectlyAccessibleGroups()
+
+    def send_getAllDirectlyAccessibleGroups(self, authzToken, resourceId, permissionType):
+        self._oprot.writeMessageBegin('getAllDirectlyAccessibleGroups', TMessageType.CALL, self._seqid)
+        args = getAllDirectlyAccessibleGroups_args()
+        args.authzToken = authzToken
+        args.resourceId = resourceId
+        args.permissionType = permissionType
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getAllDirectlyAccessibleGroups(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getAllDirectlyAccessibleGroups_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.ire is not None:
+            raise result.ire
+        if result.ace is not None:
+            raise result.ace
+        if result.ase is not None:
+            raise result.ase
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllDirectlyAccessibleGroups failed: unknown result")
+
     def userHasAccess(self, authzToken, resourceId, permissionType):
         """
         Parameters:
@@ -13734,6 +13838,8 @@ class Processor(Iface, TProcessor):
         self._processMap["revokeSharingOfResourceFromGroups"] = Processor.process_revokeSharingOfResourceFromGroups
         self._processMap["getAllAccessibleUsers"] = Processor.process_getAllAccessibleUsers
         self._processMap["getAllAccessibleGroups"] = Processor.process_getAllAccessibleGroups
+        self._processMap["getAllDirectlyAccessibleUsers"] = Processor.process_getAllDirectlyAccessibleUsers
+        self._processMap["getAllDirectlyAccessibleGroups"] = Processor.process_getAllDirectlyAccessibleGroups
         self._processMap["userHasAccess"] = Processor.process_userHasAccess
         self._processMap["createGroupResourceProfile"] = Processor.process_createGroupResourceProfile
         self._processMap["updateGroupResourceProfile"] = Processor.process_updateGroupResourceProfile
@@ -18916,6 +19022,68 @@ class Processor(Iface, TProcessor):
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("getAllAccessibleGroups", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_getAllDirectlyAccessibleUsers(self, seqid, iprot, oprot):
+        args = getAllDirectlyAccessibleUsers_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getAllDirectlyAccessibleUsers_result()
+        try:
+            result.success = self._handler.getAllDirectlyAccessibleUsers(args.authzToken, args.resourceId, args.permissionType)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.api.error.ttypes.InvalidRequestException as ire:
+            msg_type = TMessageType.REPLY
+            result.ire = ire
+        except airavata.api.error.ttypes.AiravataClientException as ace:
+            msg_type = TMessageType.REPLY
+            result.ace = ace
+        except airavata.api.error.ttypes.AiravataSystemException as ase:
+            msg_type = TMessageType.REPLY
+            result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getAllDirectlyAccessibleUsers", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_getAllDirectlyAccessibleGroups(self, seqid, iprot, oprot):
+        args = getAllDirectlyAccessibleGroups_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getAllDirectlyAccessibleGroups_result()
+        try:
+            result.success = self._handler.getAllDirectlyAccessibleGroups(args.authzToken, args.resourceId, args.permissionType)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.api.error.ttypes.InvalidRequestException as ire:
+            msg_type = TMessageType.REPLY
+            result.ire = ire
+        except airavata.api.error.ttypes.AiravataClientException as ace:
+            msg_type = TMessageType.REPLY
+            result.ace = ace
+        except airavata.api.error.ttypes.AiravataSystemException as ase:
+            msg_type = TMessageType.REPLY
+            result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getAllDirectlyAccessibleGroups", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -53049,6 +53217,428 @@ class getAllAccessibleGroups_result(object):
         return not (self == other)
 
 
+class getAllDirectlyAccessibleUsers_args(object):
+    """
+    Attributes:
+     - authzToken
+     - resourceId
+     - permissionType
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
+        None,  # 3
+        (4, TType.I32, 'permissionType', None, None, ),  # 4
+    )
+
+    def __init__(self, authzToken=None, resourceId=None, permissionType=None,):
+        self.authzToken = authzToken
+        self.resourceId = resourceId
+        self.permissionType = permissionType
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.resourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I32:
+                    self.permissionType = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getAllDirectlyAccessibleUsers_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.resourceId is not None:
+            oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+            oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
+            oprot.writeFieldEnd()
+        if self.permissionType is not None:
+            oprot.writeFieldBegin('permissionType', TType.I32, 4)
+            oprot.writeI32(self.permissionType)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.resourceId is None:
+            raise TProtocolException(message='Required field resourceId is unset!')
+        if self.permissionType is None:
+            raise TProtocolException(message='Required field permissionType is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getAllDirectlyAccessibleUsers_result(object):
+    """
+    Attributes:
+     - success
+     - ire
+     - ace
+     - ase
+     - ae
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.STRING, 'UTF8', False), None, ),  # 0
+        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
+        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
+    )
+
+    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+        self.success = success
+        self.ire = ire
+        self.ace = ace
+        self.ase = ase
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype344, _size341) = iprot.readListBegin()
+                    for _i345 in range(_size341):
+                        _elem346 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success.append(_elem346)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
+                    self.ire.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ace = airavata.api.error.ttypes.AiravataClientException()
+                    self.ace.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
+                    self.ase.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getAllDirectlyAccessibleUsers_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.STRING, len(self.success))
+            for iter347 in self.success:
+                oprot.writeString(iter347.encode('utf-8') if sys.version_info[0] == 2 else iter347)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.ire is not None:
+            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+            self.ire.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ace is not None:
+            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+            self.ace.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ase is not None:
+            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+            self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getAllDirectlyAccessibleGroups_args(object):
+    """
+    Attributes:
+     - authzToken
+     - resourceId
+     - permissionType
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
+        None,  # 3
+        (4, TType.I32, 'permissionType', None, None, ),  # 4
+    )
+
+    def __init__(self, authzToken=None, resourceId=None, permissionType=None,):
+        self.authzToken = authzToken
+        self.resourceId = resourceId
+        self.permissionType = permissionType
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.resourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I32:
+                    self.permissionType = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getAllDirectlyAccessibleGroups_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.resourceId is not None:
+            oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+            oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
+            oprot.writeFieldEnd()
+        if self.permissionType is not None:
+            oprot.writeFieldBegin('permissionType', TType.I32, 4)
+            oprot.writeI32(self.permissionType)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.resourceId is None:
+            raise TProtocolException(message='Required field resourceId is unset!')
+        if self.permissionType is None:
+            raise TProtocolException(message='Required field permissionType is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getAllDirectlyAccessibleGroups_result(object):
+    """
+    Attributes:
+     - success
+     - ire
+     - ace
+     - ase
+     - ae
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.STRING, 'UTF8', False), None, ),  # 0
+        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
+        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
+    )
+
+    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+        self.success = success
+        self.ire = ire
+        self.ace = ace
+        self.ase = ase
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype351, _size348) = iprot.readListBegin()
+                    for _i352 in range(_size348):
+                        _elem353 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.success.append(_elem353)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
+                    self.ire.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ace = airavata.api.error.ttypes.AiravataClientException()
+                    self.ace.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
+                    self.ase.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getAllDirectlyAccessibleGroups_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.STRING, len(self.success))
+            for iter354 in self.success:
+                oprot.writeString(iter354.encode('utf-8') if sys.version_info[0] == 2 else iter354)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.ire is not None:
+            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+            self.ire.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ace is not None:
+            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+            self.ace.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ase is not None:
+            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+            self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 class userHasAccess_args(object):
     """
     Attributes:
@@ -54109,11 +54699,11 @@ class getGroupResourceList_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype344, _size341) = iprot.readListBegin()
-                    for _i345 in range(_size341):
-                        _elem346 = airavata.model.appcatalog.groupresourceprofile.ttypes.GroupResourceProfile()
-                        _elem346.read(iprot)
-                        self.success.append(_elem346)
+                    (_etype358, _size355) = iprot.readListBegin()
+                    for _i359 in range(_size355):
+                        _elem360 = airavata.model.appcatalog.groupresourceprofile.ttypes.GroupResourceProfile()
+                        _elem360.read(iprot)
+                        self.success.append(_elem360)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -54154,8 +54744,8 @@ class getGroupResourceList_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter347 in self.success:
-                iter347.write(oprot)
+            for iter361 in self.success:
+                iter361.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -55465,11 +56055,11 @@ class getGroupComputeResourcePrefList_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype351, _size348) = iprot.readListBegin()
-                    for _i352 in range(_size348):
-                        _elem353 = airavata.model.appcatalog.groupresourceprofile.ttypes.GroupComputeResourcePreference()
-                        _elem353.read(iprot)
-                        self.success.append(_elem353)
+                    (_etype365, _size362) = iprot.readListBegin()
+                    for _i366 in range(_size362):
+                        _elem367 = airavata.model.appcatalog.groupresourceprofile.ttypes.GroupComputeResourcePreference()
+                        _elem367.read(iprot)
+                        self.success.append(_elem367)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -55510,8 +56100,8 @@ class getGroupComputeResourcePrefList_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter354 in self.success:
-                iter354.write(oprot)
+            for iter368 in self.success:
+                iter368.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -55662,11 +56252,11 @@ class getGroupBatchQueueResourcePolicyList_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype358, _size355) = iprot.readListBegin()
-                    for _i359 in range(_size355):
-                        _elem360 = airavata.model.appcatalog.groupresourceprofile.ttypes.BatchQueueResourcePolicy()
-                        _elem360.read(iprot)
-                        self.success.append(_elem360)
+                    (_etype372, _size369) = iprot.readListBegin()
+                    for _i373 in range(_size369):
+                        _elem374 = airavata.model.appcatalog.groupresourceprofile.ttypes.BatchQueueResourcePolicy()
+                        _elem374.read(iprot)
+                        self.success.append(_elem374)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -55707,8 +56297,8 @@ class getGroupBatchQueueResourcePolicyList_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter361 in self.success:
-                iter361.write(oprot)
+            for iter375 in self.success:
+                iter375.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -55859,11 +56449,11 @@ class getGroupComputeResourcePolicyList_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype365, _size362) = iprot.readListBegin()
-                    for _i366 in range(_size362):
-                        _elem367 = airavata.model.appcatalog.groupresourceprofile.ttypes.ComputeResourcePolicy()
-                        _elem367.read(iprot)
-                        self.success.append(_elem367)
+                    (_etype379, _size376) = iprot.readListBegin()
+                    for _i380 in range(_size376):
+                        _elem381 = airavata.model.appcatalog.groupresourceprofile.ttypes.ComputeResourcePolicy()
+                        _elem381.read(iprot)
+                        self.success.append(_elem381)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -55904,8 +56494,8 @@ class getGroupComputeResourcePolicyList_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter368 in self.success:
-                iter368.write(oprot)
+            for iter382 in self.success:
+                iter382.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -56623,11 +57213,11 @@ class listAllParsers_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype372, _size369) = iprot.readListBegin()
-                    for _i373 in range(_size369):
-                        _elem374 = airavata.model.appcatalog.parser.ttypes.Parser()
-                        _elem374.read(iprot)
-                        self.success.append(_elem374)
+                    (_etype386, _size383) = iprot.readListBegin()
+                    for _i387 in range(_size383):
+                        _elem388 = airavata.model.appcatalog.parser.ttypes.Parser()
+                        _elem388.read(iprot)
+                        self.success.append(_elem388)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -56668,8 +57258,8 @@ class listAllParsers_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter375 in self.success:
-                iter375.write(oprot)
+            for iter389 in self.success:
+                iter389.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -57239,11 +57829,11 @@ class getParsingTemplatesForExperiment_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype379, _size376) = iprot.readListBegin()
-                    for _i380 in range(_size376):
-                        _elem381 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
-                        _elem381.read(iprot)
-                        self.success.append(_elem381)
+                    (_etype393, _size390) = iprot.readListBegin()
+                    for _i394 in range(_size390):
+                        _elem395 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
+                        _elem395.read(iprot)
+                        self.success.append(_elem395)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -57284,8 +57874,8 @@ class getParsingTemplatesForExperiment_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter382 in self.success:
-                iter382.write(oprot)
+            for iter396 in self.success:
+                iter396.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -57827,11 +58417,11 @@ class listAllParsingTemplates_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype386, _size383) = iprot.readListBegin()
-                    for _i387 in range(_size383):
-                        _elem388 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
-                        _elem388.read(iprot)
-                        self.success.append(_elem388)
+                    (_etype400, _size397) = iprot.readListBegin()
+                    for _i401 in range(_size397):
+                        _elem402 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
+                        _elem402.read(iprot)
+                        self.success.append(_elem402)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -57872,8 +58462,8 @@ class listAllParsingTemplates_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter389 in self.success:
-                iter389.write(oprot)
+            for iter403 in self.success:
+                iter403.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
