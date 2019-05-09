@@ -361,6 +361,15 @@ public class SharingRegistryService {
     public java.util.List<org.apache.airavata.sharing.registry.models.User> getListOfSharedUsers(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
+     * <p>API method to get a list of shared users given the entity id where the sharing type is directly applied</p>
+     * 
+     * @param domainId
+     * @param entityId
+     * @param permissionTypeId
+     */
+    public java.util.List<org.apache.airavata.sharing.registry.models.User> getListOfDirectlySharedUsers(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+
+    /**
      * <p>API method to get a list of shared groups given the entity id</p>
      * 
      * @param domainId
@@ -368,6 +377,15 @@ public class SharingRegistryService {
      * @param permissionTypeId
      */
     public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getListOfSharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+
+    /**
+     * <p>API method to get a list of directly shared groups given the entity id where the sharing type is directly applied</p>
+     * 
+     * @param domainId
+     * @param entityId
+     * @param permissionTypeId
+     */
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getListOfDirectlySharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to create permission type</p>
@@ -558,7 +576,11 @@ public class SharingRegistryService {
 
     public void getListOfSharedUsers(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.User>> resultHandler) throws org.apache.thrift.TException;
 
+    public void getListOfDirectlySharedUsers(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.User>> resultHandler) throws org.apache.thrift.TException;
+
     public void getListOfSharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException;
+
+    public void getListOfDirectlySharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException;
 
     public void createPermissionType(org.apache.airavata.sharing.registry.models.PermissionType permissionType, org.apache.thrift.async.AsyncMethodCallback<java.lang.String> resultHandler) throws org.apache.thrift.TException;
 
@@ -1778,6 +1800,34 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getListOfSharedUsers failed: unknown result");
     }
 
+    public java.util.List<org.apache.airavata.sharing.registry.models.User> getListOfDirectlySharedUsers(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    {
+      send_getListOfDirectlySharedUsers(domainId, entityId, permissionTypeId);
+      return recv_getListOfDirectlySharedUsers();
+    }
+
+    public void send_getListOfDirectlySharedUsers(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.thrift.TException
+    {
+      getListOfDirectlySharedUsers_args args = new getListOfDirectlySharedUsers_args();
+      args.setDomainId(domainId);
+      args.setEntityId(entityId);
+      args.setPermissionTypeId(permissionTypeId);
+      sendBase("getListOfDirectlySharedUsers", args);
+    }
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.User> recv_getListOfDirectlySharedUsers() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    {
+      getListOfDirectlySharedUsers_result result = new getListOfDirectlySharedUsers_result();
+      receiveBase(result, "getListOfDirectlySharedUsers");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.sre != null) {
+        throw result.sre;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getListOfDirectlySharedUsers failed: unknown result");
+    }
+
     public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getListOfSharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
       send_getListOfSharedGroups(domainId, entityId, permissionTypeId);
@@ -1804,6 +1854,34 @@ public class SharingRegistryService {
         throw result.sre;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getListOfSharedGroups failed: unknown result");
+    }
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getListOfDirectlySharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    {
+      send_getListOfDirectlySharedGroups(domainId, entityId, permissionTypeId);
+      return recv_getListOfDirectlySharedGroups();
+    }
+
+    public void send_getListOfDirectlySharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId) throws org.apache.thrift.TException
+    {
+      getListOfDirectlySharedGroups_args args = new getListOfDirectlySharedGroups_args();
+      args.setDomainId(domainId);
+      args.setEntityId(entityId);
+      args.setPermissionTypeId(permissionTypeId);
+      sendBase("getListOfDirectlySharedGroups", args);
+    }
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> recv_getListOfDirectlySharedGroups() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    {
+      getListOfDirectlySharedGroups_result result = new getListOfDirectlySharedGroups_result();
+      receiveBase(result, "getListOfDirectlySharedGroups");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.sre != null) {
+        throw result.sre;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getListOfDirectlySharedGroups failed: unknown result");
     }
 
     public java.lang.String createPermissionType(org.apache.airavata.sharing.registry.models.PermissionType permissionType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.sharing.registry.models.DuplicateEntryException, org.apache.thrift.TException
@@ -3661,6 +3739,44 @@ public class SharingRegistryService {
       }
     }
 
+    public void getListOfDirectlySharedUsers(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.User>> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getListOfDirectlySharedUsers_call method_call = new getListOfDirectlySharedUsers_call(domainId, entityId, permissionTypeId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getListOfDirectlySharedUsers_call extends org.apache.thrift.async.TAsyncMethodCall<java.util.List<org.apache.airavata.sharing.registry.models.User>> {
+      private java.lang.String domainId;
+      private java.lang.String entityId;
+      private java.lang.String permissionTypeId;
+      public getListOfDirectlySharedUsers_call(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.User>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.domainId = domainId;
+        this.entityId = entityId;
+        this.permissionTypeId = permissionTypeId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getListOfDirectlySharedUsers", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getListOfDirectlySharedUsers_args args = new getListOfDirectlySharedUsers_args();
+        args.setDomainId(domainId);
+        args.setEntityId(entityId);
+        args.setPermissionTypeId(permissionTypeId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public java.util.List<org.apache.airavata.sharing.registry.models.User> getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getListOfDirectlySharedUsers();
+      }
+    }
+
     public void getListOfSharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       getListOfSharedGroups_call method_call = new getListOfSharedGroups_call(domainId, entityId, permissionTypeId, resultHandler, this, ___protocolFactory, ___transport);
@@ -3696,6 +3812,44 @@ public class SharingRegistryService {
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
         return (new Client(prot)).recv_getListOfSharedGroups();
+      }
+    }
+
+    public void getListOfDirectlySharedGroups(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getListOfDirectlySharedGroups_call method_call = new getListOfDirectlySharedGroups_call(domainId, entityId, permissionTypeId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getListOfDirectlySharedGroups_call extends org.apache.thrift.async.TAsyncMethodCall<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> {
+      private java.lang.String domainId;
+      private java.lang.String entityId;
+      private java.lang.String permissionTypeId;
+      public getListOfDirectlySharedGroups_call(java.lang.String domainId, java.lang.String entityId, java.lang.String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.domainId = domainId;
+        this.entityId = entityId;
+        this.permissionTypeId = permissionTypeId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getListOfDirectlySharedGroups", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getListOfDirectlySharedGroups_args args = new getListOfDirectlySharedGroups_args();
+        args.setDomainId(domainId);
+        args.setEntityId(entityId);
+        args.setPermissionTypeId(permissionTypeId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getListOfDirectlySharedGroups();
       }
     }
 
@@ -4173,7 +4327,9 @@ public class SharingRegistryService {
       processMap.put("getEntity", new getEntity());
       processMap.put("searchEntities", new searchEntities());
       processMap.put("getListOfSharedUsers", new getListOfSharedUsers());
+      processMap.put("getListOfDirectlySharedUsers", new getListOfDirectlySharedUsers());
       processMap.put("getListOfSharedGroups", new getListOfSharedGroups());
+      processMap.put("getListOfDirectlySharedGroups", new getListOfDirectlySharedGroups());
       processMap.put("createPermissionType", new createPermissionType());
       processMap.put("updatePermissionType", new updatePermissionType());
       processMap.put("isPermissionExists", new isPermissionExists());
@@ -5246,6 +5402,30 @@ public class SharingRegistryService {
       }
     }
 
+    public static class getListOfDirectlySharedUsers<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getListOfDirectlySharedUsers_args> {
+      public getListOfDirectlySharedUsers() {
+        super("getListOfDirectlySharedUsers");
+      }
+
+      public getListOfDirectlySharedUsers_args getEmptyArgsInstance() {
+        return new getListOfDirectlySharedUsers_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getListOfDirectlySharedUsers_result getResult(I iface, getListOfDirectlySharedUsers_args args) throws org.apache.thrift.TException {
+        getListOfDirectlySharedUsers_result result = new getListOfDirectlySharedUsers_result();
+        try {
+          result.success = iface.getListOfDirectlySharedUsers(args.domainId, args.entityId, args.permissionTypeId);
+        } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
+          result.sre = sre;
+        }
+        return result;
+      }
+    }
+
     public static class getListOfSharedGroups<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getListOfSharedGroups_args> {
       public getListOfSharedGroups() {
         super("getListOfSharedGroups");
@@ -5263,6 +5443,30 @@ public class SharingRegistryService {
         getListOfSharedGroups_result result = new getListOfSharedGroups_result();
         try {
           result.success = iface.getListOfSharedGroups(args.domainId, args.entityId, args.permissionTypeId);
+        } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
+          result.sre = sre;
+        }
+        return result;
+      }
+    }
+
+    public static class getListOfDirectlySharedGroups<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getListOfDirectlySharedGroups_args> {
+      public getListOfDirectlySharedGroups() {
+        super("getListOfDirectlySharedGroups");
+      }
+
+      public getListOfDirectlySharedGroups_args getEmptyArgsInstance() {
+        return new getListOfDirectlySharedGroups_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getListOfDirectlySharedGroups_result getResult(I iface, getListOfDirectlySharedGroups_args args) throws org.apache.thrift.TException {
+        getListOfDirectlySharedGroups_result result = new getListOfDirectlySharedGroups_result();
+        try {
+          result.success = iface.getListOfDirectlySharedGroups(args.domainId, args.entityId, args.permissionTypeId);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
         }
@@ -5600,7 +5804,9 @@ public class SharingRegistryService {
       processMap.put("getEntity", new getEntity());
       processMap.put("searchEntities", new searchEntities());
       processMap.put("getListOfSharedUsers", new getListOfSharedUsers());
+      processMap.put("getListOfDirectlySharedUsers", new getListOfDirectlySharedUsers());
       processMap.put("getListOfSharedGroups", new getListOfSharedGroups());
+      processMap.put("getListOfDirectlySharedGroups", new getListOfDirectlySharedGroups());
       processMap.put("createPermissionType", new createPermissionType());
       processMap.put("updatePermissionType", new updatePermissionType());
       processMap.put("isPermissionExists", new isPermissionExists());
@@ -8442,6 +8648,71 @@ public class SharingRegistryService {
       }
     }
 
+    public static class getListOfDirectlySharedUsers<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getListOfDirectlySharedUsers_args, java.util.List<org.apache.airavata.sharing.registry.models.User>> {
+      public getListOfDirectlySharedUsers() {
+        super("getListOfDirectlySharedUsers");
+      }
+
+      public getListOfDirectlySharedUsers_args getEmptyArgsInstance() {
+        return new getListOfDirectlySharedUsers_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.User>> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.User>>() { 
+          public void onComplete(java.util.List<org.apache.airavata.sharing.registry.models.User> o) {
+            getListOfDirectlySharedUsers_result result = new getListOfDirectlySharedUsers_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            getListOfDirectlySharedUsers_result result = new getListOfDirectlySharedUsers_result();
+            if (e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
+              result.sre = (org.apache.airavata.sharing.registry.models.SharingRegistryException) e;
+              result.setSreIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getListOfDirectlySharedUsers_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.User>> resultHandler) throws org.apache.thrift.TException {
+        iface.getListOfDirectlySharedUsers(args.domainId, args.entityId, args.permissionTypeId,resultHandler);
+      }
+    }
+
     public static class getListOfSharedGroups<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getListOfSharedGroups_args, java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> {
       public getListOfSharedGroups() {
         super("getListOfSharedGroups");
@@ -8504,6 +8775,71 @@ public class SharingRegistryService {
 
       public void start(I iface, getListOfSharedGroups_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException {
         iface.getListOfSharedGroups(args.domainId, args.entityId, args.permissionTypeId,resultHandler);
+      }
+    }
+
+    public static class getListOfDirectlySharedGroups<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getListOfDirectlySharedGroups_args, java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> {
+      public getListOfDirectlySharedGroups() {
+        super("getListOfDirectlySharedGroups");
+      }
+
+      public getListOfDirectlySharedGroups_args getEmptyArgsInstance() {
+        return new getListOfDirectlySharedGroups_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>>() { 
+          public void onComplete(java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> o) {
+            getListOfDirectlySharedGroups_result result = new getListOfDirectlySharedGroups_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            getListOfDirectlySharedGroups_result result = new getListOfDirectlySharedGroups_result();
+            if (e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
+              result.sre = (org.apache.airavata.sharing.registry.models.SharingRegistryException) e;
+              result.setSreIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getListOfDirectlySharedGroups_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException {
+        iface.getListOfDirectlySharedGroups(args.domainId, args.entityId, args.permissionTypeId,resultHandler);
       }
     }
 
@@ -50586,6 +50922,1083 @@ public class SharingRegistryService {
     }
   }
 
+  public static class getListOfDirectlySharedUsers_args implements org.apache.thrift.TBase<getListOfDirectlySharedUsers_args, getListOfDirectlySharedUsers_args._Fields>, java.io.Serializable, Cloneable, Comparable<getListOfDirectlySharedUsers_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getListOfDirectlySharedUsers_args");
+
+    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField PERMISSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("permissionTypeId", org.apache.thrift.protocol.TType.STRING, (short)3);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getListOfDirectlySharedUsers_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getListOfDirectlySharedUsers_argsTupleSchemeFactory();
+
+    public java.lang.String domainId; // required
+    public java.lang.String entityId; // required
+    public java.lang.String permissionTypeId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      DOMAIN_ID((short)1, "domainId"),
+      ENTITY_ID((short)2, "entityId"),
+      PERMISSION_TYPE_ID((short)3, "permissionTypeId");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // DOMAIN_ID
+            return DOMAIN_ID;
+          case 2: // ENTITY_ID
+            return ENTITY_ID;
+          case 3: // PERMISSION_TYPE_ID
+            return PERMISSION_TYPE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.ENTITY_ID, new org.apache.thrift.meta_data.FieldMetaData("entityId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.PERMISSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("permissionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getListOfDirectlySharedUsers_args.class, metaDataMap);
+    }
+
+    public getListOfDirectlySharedUsers_args() {
+    }
+
+    public getListOfDirectlySharedUsers_args(
+      java.lang.String domainId,
+      java.lang.String entityId,
+      java.lang.String permissionTypeId)
+    {
+      this();
+      this.domainId = domainId;
+      this.entityId = entityId;
+      this.permissionTypeId = permissionTypeId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getListOfDirectlySharedUsers_args(getListOfDirectlySharedUsers_args other) {
+      if (other.isSetDomainId()) {
+        this.domainId = other.domainId;
+      }
+      if (other.isSetEntityId()) {
+        this.entityId = other.entityId;
+      }
+      if (other.isSetPermissionTypeId()) {
+        this.permissionTypeId = other.permissionTypeId;
+      }
+    }
+
+    public getListOfDirectlySharedUsers_args deepCopy() {
+      return new getListOfDirectlySharedUsers_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.domainId = null;
+      this.entityId = null;
+      this.permissionTypeId = null;
+    }
+
+    public java.lang.String getDomainId() {
+      return this.domainId;
+    }
+
+    public getListOfDirectlySharedUsers_args setDomainId(java.lang.String domainId) {
+      this.domainId = domainId;
+      return this;
+    }
+
+    public void unsetDomainId() {
+      this.domainId = null;
+    }
+
+    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomainId() {
+      return this.domainId != null;
+    }
+
+    public void setDomainIdIsSet(boolean value) {
+      if (!value) {
+        this.domainId = null;
+      }
+    }
+
+    public java.lang.String getEntityId() {
+      return this.entityId;
+    }
+
+    public getListOfDirectlySharedUsers_args setEntityId(java.lang.String entityId) {
+      this.entityId = entityId;
+      return this;
+    }
+
+    public void unsetEntityId() {
+      this.entityId = null;
+    }
+
+    /** Returns true if field entityId is set (has been assigned a value) and false otherwise */
+    public boolean isSetEntityId() {
+      return this.entityId != null;
+    }
+
+    public void setEntityIdIsSet(boolean value) {
+      if (!value) {
+        this.entityId = null;
+      }
+    }
+
+    public java.lang.String getPermissionTypeId() {
+      return this.permissionTypeId;
+    }
+
+    public getListOfDirectlySharedUsers_args setPermissionTypeId(java.lang.String permissionTypeId) {
+      this.permissionTypeId = permissionTypeId;
+      return this;
+    }
+
+    public void unsetPermissionTypeId() {
+      this.permissionTypeId = null;
+    }
+
+    /** Returns true if field permissionTypeId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPermissionTypeId() {
+      return this.permissionTypeId != null;
+    }
+
+    public void setPermissionTypeIdIsSet(boolean value) {
+      if (!value) {
+        this.permissionTypeId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case DOMAIN_ID:
+        if (value == null) {
+          unsetDomainId();
+        } else {
+          setDomainId((java.lang.String)value);
+        }
+        break;
+
+      case ENTITY_ID:
+        if (value == null) {
+          unsetEntityId();
+        } else {
+          setEntityId((java.lang.String)value);
+        }
+        break;
+
+      case PERMISSION_TYPE_ID:
+        if (value == null) {
+          unsetPermissionTypeId();
+        } else {
+          setPermissionTypeId((java.lang.String)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case DOMAIN_ID:
+        return getDomainId();
+
+      case ENTITY_ID:
+        return getEntityId();
+
+      case PERMISSION_TYPE_ID:
+        return getPermissionTypeId();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case DOMAIN_ID:
+        return isSetDomainId();
+      case ENTITY_ID:
+        return isSetEntityId();
+      case PERMISSION_TYPE_ID:
+        return isSetPermissionTypeId();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getListOfDirectlySharedUsers_args)
+        return this.equals((getListOfDirectlySharedUsers_args)that);
+      return false;
+    }
+
+    public boolean equals(getListOfDirectlySharedUsers_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_domainId = true && this.isSetDomainId();
+      boolean that_present_domainId = true && that.isSetDomainId();
+      if (this_present_domainId || that_present_domainId) {
+        if (!(this_present_domainId && that_present_domainId))
+          return false;
+        if (!this.domainId.equals(that.domainId))
+          return false;
+      }
+
+      boolean this_present_entityId = true && this.isSetEntityId();
+      boolean that_present_entityId = true && that.isSetEntityId();
+      if (this_present_entityId || that_present_entityId) {
+        if (!(this_present_entityId && that_present_entityId))
+          return false;
+        if (!this.entityId.equals(that.entityId))
+          return false;
+      }
+
+      boolean this_present_permissionTypeId = true && this.isSetPermissionTypeId();
+      boolean that_present_permissionTypeId = true && that.isSetPermissionTypeId();
+      if (this_present_permissionTypeId || that_present_permissionTypeId) {
+        if (!(this_present_permissionTypeId && that_present_permissionTypeId))
+          return false;
+        if (!this.permissionTypeId.equals(that.permissionTypeId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetDomainId()) ? 131071 : 524287);
+      if (isSetDomainId())
+        hashCode = hashCode * 8191 + domainId.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetEntityId()) ? 131071 : 524287);
+      if (isSetEntityId())
+        hashCode = hashCode * 8191 + entityId.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetPermissionTypeId()) ? 131071 : 524287);
+      if (isSetPermissionTypeId())
+        hashCode = hashCode * 8191 + permissionTypeId.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getListOfDirectlySharedUsers_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDomainId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetEntityId()).compareTo(other.isSetEntityId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetEntityId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.entityId, other.entityId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetPermissionTypeId()).compareTo(other.isSetPermissionTypeId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPermissionTypeId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.permissionTypeId, other.permissionTypeId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getListOfDirectlySharedUsers_args(");
+      boolean first = true;
+
+      sb.append("domainId:");
+      if (this.domainId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.domainId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("entityId:");
+      if (this.entityId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.entityId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("permissionTypeId:");
+      if (this.permissionTypeId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.permissionTypeId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (domainId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      }
+      if (entityId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityId' was not present! Struct: " + toString());
+      }
+      if (permissionTypeId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'permissionTypeId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getListOfDirectlySharedUsers_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getListOfDirectlySharedUsers_argsStandardScheme getScheme() {
+        return new getListOfDirectlySharedUsers_argsStandardScheme();
+      }
+    }
+
+    private static class getListOfDirectlySharedUsers_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getListOfDirectlySharedUsers_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getListOfDirectlySharedUsers_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // DOMAIN_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.domainId = iprot.readString();
+                struct.setDomainIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ENTITY_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.entityId = iprot.readString();
+                struct.setEntityIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // PERMISSION_TYPE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.permissionTypeId = iprot.readString();
+                struct.setPermissionTypeIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getListOfDirectlySharedUsers_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.domainId != null) {
+          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
+          oprot.writeString(struct.domainId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.entityId != null) {
+          oprot.writeFieldBegin(ENTITY_ID_FIELD_DESC);
+          oprot.writeString(struct.entityId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.permissionTypeId != null) {
+          oprot.writeFieldBegin(PERMISSION_TYPE_ID_FIELD_DESC);
+          oprot.writeString(struct.permissionTypeId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getListOfDirectlySharedUsers_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getListOfDirectlySharedUsers_argsTupleScheme getScheme() {
+        return new getListOfDirectlySharedUsers_argsTupleScheme();
+      }
+    }
+
+    private static class getListOfDirectlySharedUsers_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getListOfDirectlySharedUsers_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getListOfDirectlySharedUsers_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        oprot.writeString(struct.domainId);
+        oprot.writeString(struct.entityId);
+        oprot.writeString(struct.permissionTypeId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getListOfDirectlySharedUsers_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.domainId = iprot.readString();
+        struct.setDomainIdIsSet(true);
+        struct.entityId = iprot.readString();
+        struct.setEntityIdIsSet(true);
+        struct.permissionTypeId = iprot.readString();
+        struct.setPermissionTypeIdIsSet(true);
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class getListOfDirectlySharedUsers_result implements org.apache.thrift.TBase<getListOfDirectlySharedUsers_result, getListOfDirectlySharedUsers_result._Fields>, java.io.Serializable, Cloneable, Comparable<getListOfDirectlySharedUsers_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getListOfDirectlySharedUsers_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getListOfDirectlySharedUsers_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getListOfDirectlySharedUsers_resultTupleSchemeFactory();
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.User> success; // required
+    public org.apache.airavata.sharing.registry.models.SharingRegistryException sre; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      SRE((short)1, "sre");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // SRE
+            return SRE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.User.class))));
+      tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.SharingRegistryException.class)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getListOfDirectlySharedUsers_result.class, metaDataMap);
+    }
+
+    public getListOfDirectlySharedUsers_result() {
+    }
+
+    public getListOfDirectlySharedUsers_result(
+      java.util.List<org.apache.airavata.sharing.registry.models.User> success,
+      org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
+    {
+      this();
+      this.success = success;
+      this.sre = sre;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getListOfDirectlySharedUsers_result(getListOfDirectlySharedUsers_result other) {
+      if (other.isSetSuccess()) {
+        java.util.List<org.apache.airavata.sharing.registry.models.User> __this__success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(other.success.size());
+        for (org.apache.airavata.sharing.registry.models.User other_element : other.success) {
+          __this__success.add(new org.apache.airavata.sharing.registry.models.User(other_element));
+        }
+        this.success = __this__success;
+      }
+      if (other.isSetSre()) {
+        this.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException(other.sre);
+      }
+    }
+
+    public getListOfDirectlySharedUsers_result deepCopy() {
+      return new getListOfDirectlySharedUsers_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.sre = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<org.apache.airavata.sharing.registry.models.User> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(org.apache.airavata.sharing.registry.models.User elem) {
+      if (this.success == null) {
+        this.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>();
+      }
+      this.success.add(elem);
+    }
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.User> getSuccess() {
+      return this.success;
+    }
+
+    public getListOfDirectlySharedUsers_result setSuccess(java.util.List<org.apache.airavata.sharing.registry.models.User> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.sharing.registry.models.SharingRegistryException getSre() {
+      return this.sre;
+    }
+
+    public getListOfDirectlySharedUsers_result setSre(org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
+      this.sre = sre;
+      return this;
+    }
+
+    public void unsetSre() {
+      this.sre = null;
+    }
+
+    /** Returns true if field sre is set (has been assigned a value) and false otherwise */
+    public boolean isSetSre() {
+      return this.sre != null;
+    }
+
+    public void setSreIsSet(boolean value) {
+      if (!value) {
+        this.sre = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.util.List<org.apache.airavata.sharing.registry.models.User>)value);
+        }
+        break;
+
+      case SRE:
+        if (value == null) {
+          unsetSre();
+        } else {
+          setSre((org.apache.airavata.sharing.registry.models.SharingRegistryException)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case SRE:
+        return getSre();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case SRE:
+        return isSetSre();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getListOfDirectlySharedUsers_result)
+        return this.equals((getListOfDirectlySharedUsers_result)that);
+      return false;
+    }
+
+    public boolean equals(getListOfDirectlySharedUsers_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_sre = true && this.isSetSre();
+      boolean that_present_sre = true && that.isSetSre();
+      if (this_present_sre || that_present_sre) {
+        if (!(this_present_sre && that_present_sre))
+          return false;
+        if (!this.sre.equals(that.sre))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetSuccess()) ? 131071 : 524287);
+      if (isSetSuccess())
+        hashCode = hashCode * 8191 + success.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetSre()) ? 131071 : 524287);
+      if (isSetSre())
+        hashCode = hashCode * 8191 + sre.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getListOfDirectlySharedUsers_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetSre()).compareTo(other.isSetSre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sre, other.sre);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getListOfDirectlySharedUsers_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("sre:");
+      if (this.sre == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sre);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getListOfDirectlySharedUsers_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getListOfDirectlySharedUsers_resultStandardScheme getScheme() {
+        return new getListOfDirectlySharedUsers_resultStandardScheme();
+      }
+    }
+
+    private static class getListOfDirectlySharedUsers_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getListOfDirectlySharedUsers_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getListOfDirectlySharedUsers_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list120 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list120.size);
+                  org.apache.airavata.sharing.registry.models.User _elem121;
+                  for (int _i122 = 0; _i122 < _list120.size; ++_i122)
+                  {
+                    _elem121 = new org.apache.airavata.sharing.registry.models.User();
+                    _elem121.read(iprot);
+                    struct.success.add(_elem121);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // SRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException();
+                struct.sre.read(iprot);
+                struct.setSreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getListOfDirectlySharedUsers_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (org.apache.airavata.sharing.registry.models.User _iter123 : struct.success)
+            {
+              _iter123.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.sre != null) {
+          oprot.writeFieldBegin(SRE_FIELD_DESC);
+          struct.sre.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getListOfDirectlySharedUsers_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getListOfDirectlySharedUsers_resultTupleScheme getScheme() {
+        return new getListOfDirectlySharedUsers_resultTupleScheme();
+      }
+    }
+
+    private static class getListOfDirectlySharedUsers_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getListOfDirectlySharedUsers_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getListOfDirectlySharedUsers_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetSre()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (org.apache.airavata.sharing.registry.models.User _iter124 : struct.success)
+            {
+              _iter124.write(oprot);
+            }
+          }
+        }
+        if (struct.isSetSre()) {
+          struct.sre.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getListOfDirectlySharedUsers_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list125 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list125.size);
+            org.apache.airavata.sharing.registry.models.User _elem126;
+            for (int _i127 = 0; _i127 < _list125.size; ++_i127)
+            {
+              _elem126 = new org.apache.airavata.sharing.registry.models.User();
+              _elem126.read(iprot);
+              struct.success.add(_elem126);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException();
+          struct.sre.read(iprot);
+          struct.setSreIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
   public static class getListOfSharedGroups_args implements org.apache.thrift.TBase<getListOfSharedGroups_args, getListOfSharedGroups_args._Fields>, java.io.Serializable, Cloneable, Comparable<getListOfSharedGroups_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getListOfSharedGroups_args");
 
@@ -51536,14 +52949,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list120 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list120.size);
-                  org.apache.airavata.sharing.registry.models.UserGroup _elem121;
-                  for (int _i122 = 0; _i122 < _list120.size; ++_i122)
+                  org.apache.thrift.protocol.TList _list128 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list128.size);
+                  org.apache.airavata.sharing.registry.models.UserGroup _elem129;
+                  for (int _i130 = 0; _i130 < _list128.size; ++_i130)
                   {
-                    _elem121 = new org.apache.airavata.sharing.registry.models.UserGroup();
-                    _elem121.read(iprot);
-                    struct.success.add(_elem121);
+                    _elem129 = new org.apache.airavata.sharing.registry.models.UserGroup();
+                    _elem129.read(iprot);
+                    struct.success.add(_elem129);
                   }
                   iprot.readListEnd();
                 }
@@ -51580,9 +52993,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter123 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter131 : struct.success)
             {
-              _iter123.write(oprot);
+              _iter131.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -51621,9 +53034,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter124 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter132 : struct.success)
             {
-              _iter124.write(oprot);
+              _iter132.write(oprot);
             }
           }
         }
@@ -51638,14 +53051,1091 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list125 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list125.size);
-            org.apache.airavata.sharing.registry.models.UserGroup _elem126;
-            for (int _i127 = 0; _i127 < _list125.size; ++_i127)
+            org.apache.thrift.protocol.TList _list133 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list133.size);
+            org.apache.airavata.sharing.registry.models.UserGroup _elem134;
+            for (int _i135 = 0; _i135 < _list133.size; ++_i135)
             {
-              _elem126 = new org.apache.airavata.sharing.registry.models.UserGroup();
-              _elem126.read(iprot);
-              struct.success.add(_elem126);
+              _elem134 = new org.apache.airavata.sharing.registry.models.UserGroup();
+              _elem134.read(iprot);
+              struct.success.add(_elem134);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException();
+          struct.sre.read(iprot);
+          struct.setSreIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class getListOfDirectlySharedGroups_args implements org.apache.thrift.TBase<getListOfDirectlySharedGroups_args, getListOfDirectlySharedGroups_args._Fields>, java.io.Serializable, Cloneable, Comparable<getListOfDirectlySharedGroups_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getListOfDirectlySharedGroups_args");
+
+    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField ENTITY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField PERMISSION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("permissionTypeId", org.apache.thrift.protocol.TType.STRING, (short)3);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getListOfDirectlySharedGroups_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getListOfDirectlySharedGroups_argsTupleSchemeFactory();
+
+    public java.lang.String domainId; // required
+    public java.lang.String entityId; // required
+    public java.lang.String permissionTypeId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      DOMAIN_ID((short)1, "domainId"),
+      ENTITY_ID((short)2, "entityId"),
+      PERMISSION_TYPE_ID((short)3, "permissionTypeId");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // DOMAIN_ID
+            return DOMAIN_ID;
+          case 2: // ENTITY_ID
+            return ENTITY_ID;
+          case 3: // PERMISSION_TYPE_ID
+            return PERMISSION_TYPE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.ENTITY_ID, new org.apache.thrift.meta_data.FieldMetaData("entityId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.PERMISSION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("permissionTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getListOfDirectlySharedGroups_args.class, metaDataMap);
+    }
+
+    public getListOfDirectlySharedGroups_args() {
+    }
+
+    public getListOfDirectlySharedGroups_args(
+      java.lang.String domainId,
+      java.lang.String entityId,
+      java.lang.String permissionTypeId)
+    {
+      this();
+      this.domainId = domainId;
+      this.entityId = entityId;
+      this.permissionTypeId = permissionTypeId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getListOfDirectlySharedGroups_args(getListOfDirectlySharedGroups_args other) {
+      if (other.isSetDomainId()) {
+        this.domainId = other.domainId;
+      }
+      if (other.isSetEntityId()) {
+        this.entityId = other.entityId;
+      }
+      if (other.isSetPermissionTypeId()) {
+        this.permissionTypeId = other.permissionTypeId;
+      }
+    }
+
+    public getListOfDirectlySharedGroups_args deepCopy() {
+      return new getListOfDirectlySharedGroups_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.domainId = null;
+      this.entityId = null;
+      this.permissionTypeId = null;
+    }
+
+    public java.lang.String getDomainId() {
+      return this.domainId;
+    }
+
+    public getListOfDirectlySharedGroups_args setDomainId(java.lang.String domainId) {
+      this.domainId = domainId;
+      return this;
+    }
+
+    public void unsetDomainId() {
+      this.domainId = null;
+    }
+
+    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomainId() {
+      return this.domainId != null;
+    }
+
+    public void setDomainIdIsSet(boolean value) {
+      if (!value) {
+        this.domainId = null;
+      }
+    }
+
+    public java.lang.String getEntityId() {
+      return this.entityId;
+    }
+
+    public getListOfDirectlySharedGroups_args setEntityId(java.lang.String entityId) {
+      this.entityId = entityId;
+      return this;
+    }
+
+    public void unsetEntityId() {
+      this.entityId = null;
+    }
+
+    /** Returns true if field entityId is set (has been assigned a value) and false otherwise */
+    public boolean isSetEntityId() {
+      return this.entityId != null;
+    }
+
+    public void setEntityIdIsSet(boolean value) {
+      if (!value) {
+        this.entityId = null;
+      }
+    }
+
+    public java.lang.String getPermissionTypeId() {
+      return this.permissionTypeId;
+    }
+
+    public getListOfDirectlySharedGroups_args setPermissionTypeId(java.lang.String permissionTypeId) {
+      this.permissionTypeId = permissionTypeId;
+      return this;
+    }
+
+    public void unsetPermissionTypeId() {
+      this.permissionTypeId = null;
+    }
+
+    /** Returns true if field permissionTypeId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPermissionTypeId() {
+      return this.permissionTypeId != null;
+    }
+
+    public void setPermissionTypeIdIsSet(boolean value) {
+      if (!value) {
+        this.permissionTypeId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case DOMAIN_ID:
+        if (value == null) {
+          unsetDomainId();
+        } else {
+          setDomainId((java.lang.String)value);
+        }
+        break;
+
+      case ENTITY_ID:
+        if (value == null) {
+          unsetEntityId();
+        } else {
+          setEntityId((java.lang.String)value);
+        }
+        break;
+
+      case PERMISSION_TYPE_ID:
+        if (value == null) {
+          unsetPermissionTypeId();
+        } else {
+          setPermissionTypeId((java.lang.String)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case DOMAIN_ID:
+        return getDomainId();
+
+      case ENTITY_ID:
+        return getEntityId();
+
+      case PERMISSION_TYPE_ID:
+        return getPermissionTypeId();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case DOMAIN_ID:
+        return isSetDomainId();
+      case ENTITY_ID:
+        return isSetEntityId();
+      case PERMISSION_TYPE_ID:
+        return isSetPermissionTypeId();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getListOfDirectlySharedGroups_args)
+        return this.equals((getListOfDirectlySharedGroups_args)that);
+      return false;
+    }
+
+    public boolean equals(getListOfDirectlySharedGroups_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_domainId = true && this.isSetDomainId();
+      boolean that_present_domainId = true && that.isSetDomainId();
+      if (this_present_domainId || that_present_domainId) {
+        if (!(this_present_domainId && that_present_domainId))
+          return false;
+        if (!this.domainId.equals(that.domainId))
+          return false;
+      }
+
+      boolean this_present_entityId = true && this.isSetEntityId();
+      boolean that_present_entityId = true && that.isSetEntityId();
+      if (this_present_entityId || that_present_entityId) {
+        if (!(this_present_entityId && that_present_entityId))
+          return false;
+        if (!this.entityId.equals(that.entityId))
+          return false;
+      }
+
+      boolean this_present_permissionTypeId = true && this.isSetPermissionTypeId();
+      boolean that_present_permissionTypeId = true && that.isSetPermissionTypeId();
+      if (this_present_permissionTypeId || that_present_permissionTypeId) {
+        if (!(this_present_permissionTypeId && that_present_permissionTypeId))
+          return false;
+        if (!this.permissionTypeId.equals(that.permissionTypeId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetDomainId()) ? 131071 : 524287);
+      if (isSetDomainId())
+        hashCode = hashCode * 8191 + domainId.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetEntityId()) ? 131071 : 524287);
+      if (isSetEntityId())
+        hashCode = hashCode * 8191 + entityId.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetPermissionTypeId()) ? 131071 : 524287);
+      if (isSetPermissionTypeId())
+        hashCode = hashCode * 8191 + permissionTypeId.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getListOfDirectlySharedGroups_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDomainId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetEntityId()).compareTo(other.isSetEntityId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetEntityId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.entityId, other.entityId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetPermissionTypeId()).compareTo(other.isSetPermissionTypeId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPermissionTypeId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.permissionTypeId, other.permissionTypeId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getListOfDirectlySharedGroups_args(");
+      boolean first = true;
+
+      sb.append("domainId:");
+      if (this.domainId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.domainId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("entityId:");
+      if (this.entityId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.entityId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("permissionTypeId:");
+      if (this.permissionTypeId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.permissionTypeId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (domainId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      }
+      if (entityId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityId' was not present! Struct: " + toString());
+      }
+      if (permissionTypeId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'permissionTypeId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getListOfDirectlySharedGroups_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getListOfDirectlySharedGroups_argsStandardScheme getScheme() {
+        return new getListOfDirectlySharedGroups_argsStandardScheme();
+      }
+    }
+
+    private static class getListOfDirectlySharedGroups_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getListOfDirectlySharedGroups_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getListOfDirectlySharedGroups_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // DOMAIN_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.domainId = iprot.readString();
+                struct.setDomainIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ENTITY_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.entityId = iprot.readString();
+                struct.setEntityIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // PERMISSION_TYPE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.permissionTypeId = iprot.readString();
+                struct.setPermissionTypeIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getListOfDirectlySharedGroups_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.domainId != null) {
+          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
+          oprot.writeString(struct.domainId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.entityId != null) {
+          oprot.writeFieldBegin(ENTITY_ID_FIELD_DESC);
+          oprot.writeString(struct.entityId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.permissionTypeId != null) {
+          oprot.writeFieldBegin(PERMISSION_TYPE_ID_FIELD_DESC);
+          oprot.writeString(struct.permissionTypeId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getListOfDirectlySharedGroups_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getListOfDirectlySharedGroups_argsTupleScheme getScheme() {
+        return new getListOfDirectlySharedGroups_argsTupleScheme();
+      }
+    }
+
+    private static class getListOfDirectlySharedGroups_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getListOfDirectlySharedGroups_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getListOfDirectlySharedGroups_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        oprot.writeString(struct.domainId);
+        oprot.writeString(struct.entityId);
+        oprot.writeString(struct.permissionTypeId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getListOfDirectlySharedGroups_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.domainId = iprot.readString();
+        struct.setDomainIdIsSet(true);
+        struct.entityId = iprot.readString();
+        struct.setEntityIdIsSet(true);
+        struct.permissionTypeId = iprot.readString();
+        struct.setPermissionTypeIdIsSet(true);
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class getListOfDirectlySharedGroups_result implements org.apache.thrift.TBase<getListOfDirectlySharedGroups_result, getListOfDirectlySharedGroups_result._Fields>, java.io.Serializable, Cloneable, Comparable<getListOfDirectlySharedGroups_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getListOfDirectlySharedGroups_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getListOfDirectlySharedGroups_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getListOfDirectlySharedGroups_resultTupleSchemeFactory();
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> success; // required
+    public org.apache.airavata.sharing.registry.models.SharingRegistryException sre; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      SRE((short)1, "sre");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // SRE
+            return SRE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.UserGroup.class))));
+      tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.SharingRegistryException.class)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getListOfDirectlySharedGroups_result.class, metaDataMap);
+    }
+
+    public getListOfDirectlySharedGroups_result() {
+    }
+
+    public getListOfDirectlySharedGroups_result(
+      java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> success,
+      org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
+    {
+      this();
+      this.success = success;
+      this.sre = sre;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getListOfDirectlySharedGroups_result(getListOfDirectlySharedGroups_result other) {
+      if (other.isSetSuccess()) {
+        java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> __this__success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(other.success.size());
+        for (org.apache.airavata.sharing.registry.models.UserGroup other_element : other.success) {
+          __this__success.add(new org.apache.airavata.sharing.registry.models.UserGroup(other_element));
+        }
+        this.success = __this__success;
+      }
+      if (other.isSetSre()) {
+        this.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException(other.sre);
+      }
+    }
+
+    public getListOfDirectlySharedGroups_result deepCopy() {
+      return new getListOfDirectlySharedGroups_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.sre = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<org.apache.airavata.sharing.registry.models.UserGroup> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(org.apache.airavata.sharing.registry.models.UserGroup elem) {
+      if (this.success == null) {
+        this.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>();
+      }
+      this.success.add(elem);
+    }
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getSuccess() {
+      return this.success;
+    }
+
+    public getListOfDirectlySharedGroups_result setSuccess(java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.sharing.registry.models.SharingRegistryException getSre() {
+      return this.sre;
+    }
+
+    public getListOfDirectlySharedGroups_result setSre(org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
+      this.sre = sre;
+      return this;
+    }
+
+    public void unsetSre() {
+      this.sre = null;
+    }
+
+    /** Returns true if field sre is set (has been assigned a value) and false otherwise */
+    public boolean isSetSre() {
+      return this.sre != null;
+    }
+
+    public void setSreIsSet(boolean value) {
+      if (!value) {
+        this.sre = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>)value);
+        }
+        break;
+
+      case SRE:
+        if (value == null) {
+          unsetSre();
+        } else {
+          setSre((org.apache.airavata.sharing.registry.models.SharingRegistryException)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case SRE:
+        return getSre();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case SRE:
+        return isSetSre();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getListOfDirectlySharedGroups_result)
+        return this.equals((getListOfDirectlySharedGroups_result)that);
+      return false;
+    }
+
+    public boolean equals(getListOfDirectlySharedGroups_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_sre = true && this.isSetSre();
+      boolean that_present_sre = true && that.isSetSre();
+      if (this_present_sre || that_present_sre) {
+        if (!(this_present_sre && that_present_sre))
+          return false;
+        if (!this.sre.equals(that.sre))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetSuccess()) ? 131071 : 524287);
+      if (isSetSuccess())
+        hashCode = hashCode * 8191 + success.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetSre()) ? 131071 : 524287);
+      if (isSetSre())
+        hashCode = hashCode * 8191 + sre.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getListOfDirectlySharedGroups_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetSre()).compareTo(other.isSetSre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sre, other.sre);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getListOfDirectlySharedGroups_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("sre:");
+      if (this.sre == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sre);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getListOfDirectlySharedGroups_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getListOfDirectlySharedGroups_resultStandardScheme getScheme() {
+        return new getListOfDirectlySharedGroups_resultStandardScheme();
+      }
+    }
+
+    private static class getListOfDirectlySharedGroups_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getListOfDirectlySharedGroups_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getListOfDirectlySharedGroups_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list136 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list136.size);
+                  org.apache.airavata.sharing.registry.models.UserGroup _elem137;
+                  for (int _i138 = 0; _i138 < _list136.size; ++_i138)
+                  {
+                    _elem137 = new org.apache.airavata.sharing.registry.models.UserGroup();
+                    _elem137.read(iprot);
+                    struct.success.add(_elem137);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // SRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException();
+                struct.sre.read(iprot);
+                struct.setSreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getListOfDirectlySharedGroups_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter139 : struct.success)
+            {
+              _iter139.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.sre != null) {
+          oprot.writeFieldBegin(SRE_FIELD_DESC);
+          struct.sre.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getListOfDirectlySharedGroups_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getListOfDirectlySharedGroups_resultTupleScheme getScheme() {
+        return new getListOfDirectlySharedGroups_resultTupleScheme();
+      }
+    }
+
+    private static class getListOfDirectlySharedGroups_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getListOfDirectlySharedGroups_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getListOfDirectlySharedGroups_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetSre()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter140 : struct.success)
+            {
+              _iter140.write(oprot);
+            }
+          }
+        }
+        if (struct.isSetSre()) {
+          struct.sre.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getListOfDirectlySharedGroups_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list141 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list141.size);
+            org.apache.airavata.sharing.registry.models.UserGroup _elem142;
+            for (int _i143 = 0; _i143 < _list141.size; ++_i143)
+            {
+              _elem142 = new org.apache.airavata.sharing.registry.models.UserGroup();
+              _elem142.read(iprot);
+              struct.success.add(_elem142);
             }
           }
           struct.setSuccessIsSet(true);
@@ -57133,14 +59623,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list128 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.PermissionType>(_list128.size);
-                  org.apache.airavata.sharing.registry.models.PermissionType _elem129;
-                  for (int _i130 = 0; _i130 < _list128.size; ++_i130)
+                  org.apache.thrift.protocol.TList _list144 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.PermissionType>(_list144.size);
+                  org.apache.airavata.sharing.registry.models.PermissionType _elem145;
+                  for (int _i146 = 0; _i146 < _list144.size; ++_i146)
                   {
-                    _elem129 = new org.apache.airavata.sharing.registry.models.PermissionType();
-                    _elem129.read(iprot);
-                    struct.success.add(_elem129);
+                    _elem145 = new org.apache.airavata.sharing.registry.models.PermissionType();
+                    _elem145.read(iprot);
+                    struct.success.add(_elem145);
                   }
                   iprot.readListEnd();
                 }
@@ -57177,9 +59667,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.PermissionType _iter131 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.PermissionType _iter147 : struct.success)
             {
-              _iter131.write(oprot);
+              _iter147.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -57218,9 +59708,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.PermissionType _iter132 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.PermissionType _iter148 : struct.success)
             {
-              _iter132.write(oprot);
+              _iter148.write(oprot);
             }
           }
         }
@@ -57235,14 +59725,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list133 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.PermissionType>(_list133.size);
-            org.apache.airavata.sharing.registry.models.PermissionType _elem134;
-            for (int _i135 = 0; _i135 < _list133.size; ++_i135)
+            org.apache.thrift.protocol.TList _list149 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.PermissionType>(_list149.size);
+            org.apache.airavata.sharing.registry.models.PermissionType _elem150;
+            for (int _i151 = 0; _i151 < _list149.size; ++_i151)
             {
-              _elem134 = new org.apache.airavata.sharing.registry.models.PermissionType();
-              _elem134.read(iprot);
-              struct.success.add(_elem134);
+              _elem150 = new org.apache.airavata.sharing.registry.models.PermissionType();
+              _elem150.read(iprot);
+              struct.success.add(_elem150);
             }
           }
           struct.setSuccessIsSet(true);
@@ -57922,13 +60412,13 @@ public class SharingRegistryService {
             case 3: // USER_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list136 = iprot.readListBegin();
-                  struct.userList = new java.util.ArrayList<java.lang.String>(_list136.size);
-                  java.lang.String _elem137;
-                  for (int _i138 = 0; _i138 < _list136.size; ++_i138)
+                  org.apache.thrift.protocol.TList _list152 = iprot.readListBegin();
+                  struct.userList = new java.util.ArrayList<java.lang.String>(_list152.size);
+                  java.lang.String _elem153;
+                  for (int _i154 = 0; _i154 < _list152.size; ++_i154)
                   {
-                    _elem137 = iprot.readString();
-                    struct.userList.add(_elem137);
+                    _elem153 = iprot.readString();
+                    struct.userList.add(_elem153);
                   }
                   iprot.readListEnd();
                 }
@@ -57985,9 +60475,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(USER_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.userList.size()));
-            for (java.lang.String _iter139 : struct.userList)
+            for (java.lang.String _iter155 : struct.userList)
             {
-              oprot.writeString(_iter139);
+              oprot.writeString(_iter155);
             }
             oprot.writeListEnd();
           }
@@ -58022,9 +60512,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.userList.size());
-          for (java.lang.String _iter140 : struct.userList)
+          for (java.lang.String _iter156 : struct.userList)
           {
-            oprot.writeString(_iter140);
+            oprot.writeString(_iter156);
           }
         }
         oprot.writeString(struct.permissionTypeId);
@@ -58039,13 +60529,13 @@ public class SharingRegistryService {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list141 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.userList = new java.util.ArrayList<java.lang.String>(_list141.size);
-          java.lang.String _elem142;
-          for (int _i143 = 0; _i143 < _list141.size; ++_i143)
+          org.apache.thrift.protocol.TList _list157 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.userList = new java.util.ArrayList<java.lang.String>(_list157.size);
+          java.lang.String _elem158;
+          for (int _i159 = 0; _i159 < _list157.size; ++_i159)
           {
-            _elem142 = iprot.readString();
-            struct.userList.add(_elem142);
+            _elem158 = iprot.readString();
+            struct.userList.add(_elem158);
           }
         }
         struct.setUserListIsSet(true);
@@ -59109,13 +61599,13 @@ public class SharingRegistryService {
             case 3: // USER_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list144 = iprot.readListBegin();
-                  struct.userList = new java.util.ArrayList<java.lang.String>(_list144.size);
-                  java.lang.String _elem145;
-                  for (int _i146 = 0; _i146 < _list144.size; ++_i146)
+                  org.apache.thrift.protocol.TList _list160 = iprot.readListBegin();
+                  struct.userList = new java.util.ArrayList<java.lang.String>(_list160.size);
+                  java.lang.String _elem161;
+                  for (int _i162 = 0; _i162 < _list160.size; ++_i162)
                   {
-                    _elem145 = iprot.readString();
-                    struct.userList.add(_elem145);
+                    _elem161 = iprot.readString();
+                    struct.userList.add(_elem161);
                   }
                   iprot.readListEnd();
                 }
@@ -59161,9 +61651,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(USER_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.userList.size()));
-            for (java.lang.String _iter147 : struct.userList)
+            for (java.lang.String _iter163 : struct.userList)
             {
-              oprot.writeString(_iter147);
+              oprot.writeString(_iter163);
             }
             oprot.writeListEnd();
           }
@@ -59195,9 +61685,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.userList.size());
-          for (java.lang.String _iter148 : struct.userList)
+          for (java.lang.String _iter164 : struct.userList)
           {
-            oprot.writeString(_iter148);
+            oprot.writeString(_iter164);
           }
         }
         oprot.writeString(struct.permissionTypeId);
@@ -59211,13 +61701,13 @@ public class SharingRegistryService {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list149 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.userList = new java.util.ArrayList<java.lang.String>(_list149.size);
-          java.lang.String _elem150;
-          for (int _i151 = 0; _i151 < _list149.size; ++_i151)
+          org.apache.thrift.protocol.TList _list165 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.userList = new java.util.ArrayList<java.lang.String>(_list165.size);
+          java.lang.String _elem166;
+          for (int _i167 = 0; _i167 < _list165.size; ++_i167)
           {
-            _elem150 = iprot.readString();
-            struct.userList.add(_elem150);
+            _elem166 = iprot.readString();
+            struct.userList.add(_elem166);
           }
         }
         struct.setUserListIsSet(true);
@@ -60359,13 +62849,13 @@ public class SharingRegistryService {
             case 3: // GROUP_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list152 = iprot.readListBegin();
-                  struct.groupList = new java.util.ArrayList<java.lang.String>(_list152.size);
-                  java.lang.String _elem153;
-                  for (int _i154 = 0; _i154 < _list152.size; ++_i154)
+                  org.apache.thrift.protocol.TList _list168 = iprot.readListBegin();
+                  struct.groupList = new java.util.ArrayList<java.lang.String>(_list168.size);
+                  java.lang.String _elem169;
+                  for (int _i170 = 0; _i170 < _list168.size; ++_i170)
                   {
-                    _elem153 = iprot.readString();
-                    struct.groupList.add(_elem153);
+                    _elem169 = iprot.readString();
+                    struct.groupList.add(_elem169);
                   }
                   iprot.readListEnd();
                 }
@@ -60422,9 +62912,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(GROUP_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.groupList.size()));
-            for (java.lang.String _iter155 : struct.groupList)
+            for (java.lang.String _iter171 : struct.groupList)
             {
-              oprot.writeString(_iter155);
+              oprot.writeString(_iter171);
             }
             oprot.writeListEnd();
           }
@@ -60459,9 +62949,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.groupList.size());
-          for (java.lang.String _iter156 : struct.groupList)
+          for (java.lang.String _iter172 : struct.groupList)
           {
-            oprot.writeString(_iter156);
+            oprot.writeString(_iter172);
           }
         }
         oprot.writeString(struct.permissionTypeId);
@@ -60476,13 +62966,13 @@ public class SharingRegistryService {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list157 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.groupList = new java.util.ArrayList<java.lang.String>(_list157.size);
-          java.lang.String _elem158;
-          for (int _i159 = 0; _i159 < _list157.size; ++_i159)
+          org.apache.thrift.protocol.TList _list173 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.groupList = new java.util.ArrayList<java.lang.String>(_list173.size);
+          java.lang.String _elem174;
+          for (int _i175 = 0; _i175 < _list173.size; ++_i175)
           {
-            _elem158 = iprot.readString();
-            struct.groupList.add(_elem158);
+            _elem174 = iprot.readString();
+            struct.groupList.add(_elem174);
           }
         }
         struct.setGroupListIsSet(true);
@@ -61546,13 +64036,13 @@ public class SharingRegistryService {
             case 3: // GROUP_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list160 = iprot.readListBegin();
-                  struct.groupList = new java.util.ArrayList<java.lang.String>(_list160.size);
-                  java.lang.String _elem161;
-                  for (int _i162 = 0; _i162 < _list160.size; ++_i162)
+                  org.apache.thrift.protocol.TList _list176 = iprot.readListBegin();
+                  struct.groupList = new java.util.ArrayList<java.lang.String>(_list176.size);
+                  java.lang.String _elem177;
+                  for (int _i178 = 0; _i178 < _list176.size; ++_i178)
                   {
-                    _elem161 = iprot.readString();
-                    struct.groupList.add(_elem161);
+                    _elem177 = iprot.readString();
+                    struct.groupList.add(_elem177);
                   }
                   iprot.readListEnd();
                 }
@@ -61598,9 +64088,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(GROUP_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.groupList.size()));
-            for (java.lang.String _iter163 : struct.groupList)
+            for (java.lang.String _iter179 : struct.groupList)
             {
-              oprot.writeString(_iter163);
+              oprot.writeString(_iter179);
             }
             oprot.writeListEnd();
           }
@@ -61632,9 +64122,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.groupList.size());
-          for (java.lang.String _iter164 : struct.groupList)
+          for (java.lang.String _iter180 : struct.groupList)
           {
-            oprot.writeString(_iter164);
+            oprot.writeString(_iter180);
           }
         }
         oprot.writeString(struct.permissionTypeId);
@@ -61648,13 +64138,13 @@ public class SharingRegistryService {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list165 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.groupList = new java.util.ArrayList<java.lang.String>(_list165.size);
-          java.lang.String _elem166;
-          for (int _i167 = 0; _i167 < _list165.size; ++_i167)
+          org.apache.thrift.protocol.TList _list181 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.groupList = new java.util.ArrayList<java.lang.String>(_list181.size);
+          java.lang.String _elem182;
+          for (int _i183 = 0; _i183 < _list181.size; ++_i183)
           {
-            _elem166 = iprot.readString();
-            struct.groupList.add(_elem166);
+            _elem182 = iprot.readString();
+            struct.groupList.add(_elem182);
           }
         }
         struct.setGroupListIsSet(true);

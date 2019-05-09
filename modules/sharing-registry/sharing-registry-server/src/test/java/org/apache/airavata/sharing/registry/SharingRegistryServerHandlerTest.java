@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class SharingRegistryServerHandlerTest {
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandlerTest.class);
@@ -373,5 +374,11 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1));
         // entityId2 should still be shared with userId7 since that was directly shared
         Assert.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
+
+        Assert.assertEquals(Arrays.asList(user3), sharingRegistryServerHandler.getListOfDirectlySharedUsers(domainId, entityId6, permissionTypeId1));
+        Assert.assertEquals(Arrays.asList(user7), sharingRegistryServerHandler.getListOfDirectlySharedUsers(domainId, entityId2, permissionTypeId1));
+        List<User> entityId2SharedUsers = sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId2, permissionTypeId1);
+        Assert.assertEquals(2, entityId2SharedUsers.size());
+        Assert.assertTrue("user3 and user7 in shared users", entityId2SharedUsers.contains(user3) && entityId2SharedUsers.contains(user7));
     }
 }

@@ -189,6 +189,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool revokeSharingOfResourceFromGroups(AuthzToken authzToken, string resourceId,  groupPermissionList)')
     print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
     print('   getAllAccessibleGroups(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('   getAllDirectlyAccessibleUsers(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('   getAllDirectlyAccessibleGroups(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
     print('  bool userHasAccess(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
     print('  string createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
     print('  void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
@@ -1282,6 +1284,18 @@ elif cmd == 'getAllAccessibleGroups':
         print('getAllAccessibleGroups requires 3 args')
         sys.exit(1)
     pp.pprint(client.getAllAccessibleGroups(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'getAllDirectlyAccessibleUsers':
+    if len(args) != 3:
+        print('getAllDirectlyAccessibleUsers requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAllDirectlyAccessibleUsers(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'getAllDirectlyAccessibleGroups':
+    if len(args) != 3:
+        print('getAllDirectlyAccessibleGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAllDirectlyAccessibleGroups(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'userHasAccess':
     if len(args) != 3:

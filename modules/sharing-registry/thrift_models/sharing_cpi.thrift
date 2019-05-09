@@ -206,9 +206,17 @@ service SharingRegistryService {
     */
     list<sharing_models.User> getListOfSharedUsers(1: required string domainId, 2: required string entityId, 3: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
     /**
+     <p>API method to get a list of shared users given the entity id where the sharing type is directly applied</p>
+    */
+    list<sharing_models.User> getListOfDirectlySharedUsers(1: required string domainId, 2: required string entityId, 3: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    /**
      <p>API method to get a list of shared groups given the entity id</p>
     */
     list<sharing_models.UserGroup> getListOfSharedGroups(1: required string domainId, 2: required string entityId, 3: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    /**
+     <p>API method to get a list of directly shared groups given the entity id where the sharing type is directly applied</p>
+    */
+    list<sharing_models.UserGroup> getListOfDirectlySharedGroups(1: required string domainId, 2: required string entityId, 3: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
 
     /**
      <p>API method to create permission type</p>
