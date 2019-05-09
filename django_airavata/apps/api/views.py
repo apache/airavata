@@ -903,17 +903,19 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
 
     def get_instance(self, lookup_value):
         users = {}
+        # Only load *directly* granted permissions since these are the only
+        # ones that can be edited
         # Load accessible users in order of permission precedence: users that
         # have WRITE permission should also have READ
-        users.update(self._load_accessible_users(
+        users.update(self._load_directly_accessible_users(
             lookup_value, ResourcePermissionType.READ))
-        users.update(self._load_accessible_users(
+        users.update(self._load_directly_accessible_users(
             lookup_value, ResourcePermissionType.WRITE))
-        owner_ids = self._load_accessible_users(lookup_value,
-                                                ResourcePermissionType.OWNER)
+        owner_ids = self._load_directly_accessible_users(
+            lookup_value, ResourcePermissionType.OWNER)
         # Assume that there is one and only one DIRECT owner (there may be one
         # or more INDIRECT cascading owners, which would the owners of the
-        # ancestor entities, but getAllAccessibleUsers does not return
+        # ancestor entities, but getAllDirectlyAccessibleUsers does not return
         # indirectly cascading owners)
         owner_id = list(owner_ids.keys())[0]
         # Remove owner from the users list
@@ -923,9 +925,9 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             user_list.append({'user': self._load_user_profile(user_id),
                               'permissionType': users[user_id]})
         groups = {}
-        groups.update(self._load_accessible_groups(
+        groups.update(self._load_directly_accessible_groups(
             lookup_value, ResourcePermissionType.READ))
-        groups.update(self._load_accessible_groups(
+        groups.update(self._load_directly_accessible_groups(
             lookup_value, ResourcePermissionType.WRITE))
         group_list = []
         for group_id in groups:
@@ -941,6 +943,11 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             self.authz_token, entity_id, permission_type)
         return {user_id: permission_type for user_id in users}
 
+    def _load_directly_accessible_users(self, entity_id, permission_type):
+        users = self.request.airavata_client.getAllDirectlyAccessibleUsers(
+            self.authz_token, entity_id, permission_type)
+        return {user_id: permission_type for user_id in users}
+
     def _load_user_profile(self, user_id):
         user_profile_client = self.request.profile_service['user_profile']
         username = user_id[0:user_id.rindex('@')]
@@ -950,6 +957,11 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
 
     def _load_accessible_groups(self, entity_id, permission_type):
         groups = self.request.airavata_client.getAllAccessibleGroups(
+            self.authz_token, entity_id, permission_type)
+        return {group_id: permission_type for group_id in groups}
+
+    def _load_directly_accessible_groups(self, entity_id, permission_type):
+        groups = self.request.airavata_client.getAllDirectlyAccessibleGroups(
             self.authz_token, entity_id, permission_type)
         return {group_id: permission_type for group_id in groups}
 
@@ -1035,6 +1047,46 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
         merged_serializer.is_valid(raise_exception=True)
         self.perform_update(merged_serializer)
         return Response(merged_serializer.data)
+
+    @detail_route(methods=['get'])
+    def all(self, request, entity_id=None):
+        """Load direct plus indirectly (inherited) shared permissions."""
+        users = {}
+        # Load accessible users in order of permission precedence: users that
+        # have WRITE permission should also have READ
+        users.update(self._load_accessible_users(
+            entity_id, ResourcePermissionType.READ))
+        users.update(self._load_accessible_users(
+            entity_id, ResourcePermissionType.WRITE))
+        owner_ids = self._load_accessible_users(
+            entity_id, ResourcePermissionType.OWNER)
+        # Assume that there is one and only one DIRECT owner (there may be one
+        # or more INDIRECT cascading owners, which would the owners of the
+        # ancestor entities, but getAllAccessibleUsers does not return
+        # indirectly cascading owners)
+        owner_id = list(owner_ids.keys())[0]
+        # Remove owner from the users list
+        del users[owner_id]
+        user_list = []
+        for user_id in users:
+            user_list.append({'user': self._load_user_profile(user_id),
+                              'permissionType': users[user_id]})
+        groups = {}
+        groups.update(self._load_accessible_groups(
+            entity_id, ResourcePermissionType.READ))
+        groups.update(self._load_accessible_groups(
+            entity_id, ResourcePermissionType.WRITE))
+        group_list = []
+        for group_id in groups:
+            group_list.append({'group': self._load_group(group_id),
+                               'permissionType': groups[group_id]})
+        shared_entity = {'entityId': entity_id,
+                         'userPermissions': user_list,
+                         'groupPermissions': group_list,
+                         'owner': self._load_user_profile(owner_id)}
+        serializer = self.serializer_class(
+            shared_entity, context={'request': request})
+        return Response(serializer.data)
 
 
 class CredentialSummaryViewSet(APIBackedViewSet):
