@@ -380,5 +380,7 @@ public class SharingRegistryServerHandlerTest {
         List<User> entityId2SharedUsers = sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId2, permissionTypeId1);
         Assert.assertEquals(2, entityId2SharedUsers.size());
         Assert.assertTrue("user3 and user7 in shared users", entityId2SharedUsers.contains(user3) && entityId2SharedUsers.contains(user7));
+        Assert.assertEquals(1, sharingRegistryServerHandler.getListOfDirectlySharedGroups(domainId, entityId3, permissionTypeId1).size());
+        Assert.assertEquals(groupId2, sharingRegistryServerHandler.getListOfDirectlySharedGroups(domainId, entityId3, permissionTypeId1).get(0).getGroupId());
     }
 }
