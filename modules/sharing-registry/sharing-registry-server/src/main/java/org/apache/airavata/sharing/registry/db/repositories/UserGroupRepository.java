@@ -61,7 +61,7 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
         query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = :" + DBConstants.SharingTable.PERMISSION_TYPE_ID + " AND ";
         query += "g." + DBConstants.UserGroupTable.GROUP_CARDINALITY + " = :" + DBConstants.UserGroupTable.GROUP_CARDINALITY;
         if (!Arrays.asList(sharingTypes).isEmpty()) {
-            query += " AND s." + DBConstants.SharingTable.SHARING_TYPE + " = :" + DBConstants.SharingTable.SHARING_TYPE;
+            query += " AND s." + DBConstants.SharingTable.SHARING_TYPE + " IN :" + DBConstants.SharingTable.SHARING_TYPE;
         }
         query += " ORDER BY s.createdTime DESC";
         Map<String,Object> queryParameters = new HashMap<>();
