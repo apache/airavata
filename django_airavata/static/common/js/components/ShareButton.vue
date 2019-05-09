@@ -26,26 +26,22 @@
         v-model="localSharedEntity"
         :users="users"
         :groups="groups"
-        :parent-entity-owner="parentEntityOwner"
-        :parent-entity-label="parentEntityLabel"
         :disallow-editing-admin-groups="disallowEditingAdminGroups"
       />
       <!-- Only show parent entity permissions for new entities -->
-      <template v-if="!entityId && hasParentSharedEntityPermissions">
+      <template v-if="hasParentSharedEntityPermissions">
         <shared-entity-editor
           v-if="parentSharedEntity && users && groups"
           v-model="parentSharedEntity"
           :users="users"
           :groups="groups"
           :readonly="true"
-          class="mt-5"
+          class="mt-4"
         >
-          <span slot="permissions-header">Inherited {{ parentEntityLabel }} Permissions</span>
+          <span slot="permissions-header">Inherited {{ parentEntityLabel }} Permissions
+            <!-- <small class="text-muted" v-if="parentEntityOwner">Owned by {{parentEntityOwner.firstName}} {{parentEntityOwner.lastName}} ({{parentEntityOwner.email}})</small> -->
+          </span>
         </shared-entity-editor>
-        <small class="text-muted">These permissions are inherited when your <span class="text-lowercase">{{ entityLabel
-            }}</span> is initially
-          created but can be updated
-          afterwards.</small>
       </template>
     </b-modal>
   </div>
@@ -63,10 +59,6 @@ export default {
     parentEntityLabel: {
       type: String,
       default: "Parent"
-    },
-    entityLabel: {
-      type: String,
-      default: "Entity"
     },
     sharedEntity: models.SharedEntity,
     autoAddDefaultGatewayUsersGroup: {
@@ -117,18 +109,10 @@ export default {
           ...this.localSharedEntity.userPermissions.map(up => up.user)
         );
       }
-      if (this.parentSharedEntity) {
-        // Only add in inherited permissions if we haven't saved yet because
-        // once saved the inherited permissions are already copied in
-        if (
-          this.localSharedEntity &&
-          !this.localSharedEntity.entityId &&
-          this.parentSharedEntity.userPermissions
-        ) {
-          users.push(
-            ...this.parentSharedEntity.userPermissions.map(up => up.user)
-          );
-        }
+      if (this.parentSharedEntity && this.parentSharedEntity.userPermissions) {
+        users.push(
+          ...this.parentSharedEntity.userPermissions.map(up => up.user)
+        );
         if (this.parentEntityOwner) {
           users.push(this.parentEntityOwner);
         }
@@ -147,11 +131,7 @@ export default {
     combinedGroups() {
       const groups = [];
       groups.push(...this.filteredGroupPermissions.map(gp => gp.group));
-      // Only add in inherited permissions if we haven't saved yet because
-      // once saved the inherited permissions are already copied in
       if (
-        this.localSharedEntity &&
-        !this.localSharedEntity.entityId &&
         this.parentSharedEntity &&
         this.parentSharedEntity.groupPermissions
       ) {

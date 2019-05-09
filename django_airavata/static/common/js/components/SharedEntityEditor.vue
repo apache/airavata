@@ -32,42 +32,41 @@
       v-if="usersCount > 0"
       id="modal-user-table"
       hover
-      :items="sortedUserPermissionsData"
+      :items="sortedUserPermissions"
       :fields="userFields"
     >
       <template
         slot="name"
         slot-scope="data"
       >
-        <span :title="data.item.user.userId" :class="data.item.classes">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
+        <span :title="data.item.user.userId" :class="userDataClasses">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
       </template>
       <template
         slot="email"
         slot-scope="data"
       >
-        <span :class="data.item.classes">{{data.item.user.email}}</span>
+        <span :class="userDataClasses">{{data.item.user.email}}</span>
       </template>
       <template
         slot="permission"
         slot-scope="data"
       >
         <b-form-select
-          v-if="!data.item.readonly"
-          :value="data.item.permissionType"
+          v-if="!readonly"
+          v-model="data.item.permissionType"
           :options="permissionOptions"
-          @input="changeUserPermission(data.item.user, $event)"
         />
         <span
           v-else
           class="text-uppercase"
-          :class="data.item.classes"
-        >{{ data.item.permissionTypeLabel }}</span>
+          :class="userDataClasses"
+        >{{ data.item.permissionType.name }}</span>
       </template>
       <template
         slot="remove"
         slot-scope="data"
       >
-        <b-link v-if="!data.item.readonly" @click="removeUser(data.item.user)">
+        <b-link v-if="!readonly" @click="removeUser(data.item.user)">
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -145,13 +144,6 @@ export default {
     readonly: {
       type: Boolean,
       default: false
-    },
-    parentEntityOwner: {
-      type: models.UserProfile,
-    },
-    parentEntityLabel: {
-      type: String,
-      default: "Parent"
     }
   },
   components: {
@@ -174,35 +166,33 @@ export default {
       ];
     },
     usersCount: function() {
-      return this.sortedUserPermissionsData.length;
+      return this.data && this.data.userPermissions
+        ? this.data.userPermissions.length
+        : 0;
     },
-    sortedUserPermissionsData: function() {
+    sortedUserPermissions: function() {
       const userPermsCopy = this.data.userPermissions
         ? this.data.userPermissions.slice()
         : [];
-      const sorted = utils.StringUtils.sortIgnoreCase(
+      const sortedUserPerms = utils.StringUtils.sortIgnoreCase(
         userPermsCopy,
         userPerm => userPerm.user.lastName + ", " + userPerm.user.firstName
       );
-      const sortedData = sorted.map(up => {
-        return {
-          user: up.user,
-          permissionType: up.permissionType,
-          permissionTypeLabel: up.permissionType.name,
-          readonly: this.readonly,
-          classes: this.readonly ? ['text-muted', 'font-italic'] : null
-        }
-      });
-      if (this.parentEntityOwner) {
-        sortedData.push({
-          user: this.parentEntityOwner,
-          permissionType: models.ResourcePermissionType.OWNER,
-          permissionTypeLabel: this.parentEntityLabel + " OWNER",
-          readonly: true,
-          classes: ['text-muted', 'font-italic']
-        });
+      // When in readonly mode, if the current owner isn't the owner, display
+      // the user with the OWNER permission
+      if (this.readonly && !this.data.isOwner) {
+        sortedUserPerms.push(new models.UserPermission({
+          user: this.data.owner,
+          permissionType: models.ResourcePermissionType.OWNER
+        }));
       }
-      return sortedData;
+      return sortedUserPerms;
+    },
+    userDataClasses() {
+      return {
+        'text-muted': this.readonly,
+        'font-italic': this.readonly
+      }
     },
     filteredGroupPermissions: function() {
       return this.data && this.data.groupPermissions
@@ -294,10 +284,6 @@ export default {
   methods: {
     removeUser: function(user) {
       this.data.removeUser(user);
-    },
-    changeUserPermission(user, permissionType) {
-      const up = this.data.userPermissions.find(up => up.user.airavataInternalUserId === user.airavataInternalUserId);
-      up.permissionType = permissionType;
     },
     removeGroup: function(group) {
       this.data.removeGroup(group);
