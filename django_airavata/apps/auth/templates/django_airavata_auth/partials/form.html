@@ -1,0 +1,13 @@
+
+<form action="{{ url }}" method="post">
+  {% include "./non_field_errors.html" %}
+  {% csrf_token %}
+
+  {% for field in form %}
+  {% include './form_field.html' %}
+  {% endfor %}
+
+  <button type="submit" class="btn btn-primary btn-block">
+    {{ submit_text }}
+  </button>
+</form>
