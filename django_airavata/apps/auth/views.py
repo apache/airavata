@@ -317,6 +317,16 @@ def forgot_password(request):
                 username = form.cleaned_data['username']
                 user_exists = iam_admin_client.is_user_exist(username)
                 if user_exists:
+                    user_enabled = iam_admin_client.is_user_enabled(username)
+                    if not user_enabled:
+                        messages.error(
+                            request,
+                            "Please finish creating your account before "
+                            "resetting your password. Provide your username "
+                            "below and we will send you another email "
+                            "verification link.")
+                        return redirect(
+                            reverse('django_airavata_auth:resend_email_link'))
                     _create_and_send_password_reset_request_link(
                         request, username)
                 # Always display this message even if you doesn't exist. Don't
