@@ -45,3 +45,9 @@ def is_user_exist(username):
 def get_user(username):
     authz_token = utils.get_service_account_authz_token()
     return iamadmin_client_pool.getUser(authz_token, username)
+
+
+def reset_user_password(username, new_password):
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.resetUserPassword(
+        authz_token, username, new_password)

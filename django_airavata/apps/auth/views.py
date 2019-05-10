@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
 from django.conf import settings
@@ -297,8 +298,6 @@ def _create_and_send_email_verification_link(
     logger.debug(
         "verification_uri={}".format(verification_uri))
 
-    verify_email_template = models.EmailTemplate.objects.get(
-        pk=models.VERIFY_EMAIL_TEMPLATE)
     context = Context({
         "username": username,
         "email": email,
@@ -307,11 +306,126 @@ def _create_and_send_email_verification_link(
         "portal_title": settings.PORTAL_TITLE,
         "url": verification_uri,
     })
-    subject = Template(verify_email_template.subject).render(context)
-    body = Template(verify_email_template.body).render(context)
-    msg = EmailMessage(subject=subject, body=body,
-                       from_email="{} <{}>".format(
-                           settings.PORTAL_TITLE, settings.SERVER_EMAIL),
-                       to=["{} {} <{}>".format(first_name, last_name, email)])
+    _send_email_to_user(models.VERIFY_EMAIL_TEMPLATE, context)
+
+
+def forgot_password(request):
+    if request.method == 'POST':
+        form = forms.ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            try:
+                username = form.cleaned_data['username']
+                user_exists = iam_admin_client.is_user_exist(username)
+                if user_exists:
+                    _create_and_send_password_reset_request_link(
+                        request, username)
+                # Always display this message even if you doesn't exist. Don't
+                # reveal whether a user with that username exists.
+                messages.success(
+                    request,
+                    "Reset password request processed successfully. We've "
+                    "sent an email with a password reset link to the email "
+                    "address associated with the username you provided. You "
+                    "can use that link within the next 24 hours to set a new "
+                    "password.")
+                return redirect(
+                    reverse('django_airavata_auth:forgot_password'))
+            except Exception as e:
+                logger.exception(
+                    "Failed to generate password reset request for user",
+                    exc_info=e)
+                form.add_error(None, ValidationError(str(e)))
+    else:
+        form = forms.ForgotPasswordForm()
+    return render(request, 'django_airavata_auth/forgot_password.html', {
+        'form': form
+    })
+
+
+def _create_and_send_password_reset_request_link(request, username):
+    password_reset_request = models.PasswordResetRequest(username=username)
+    password_reset_request.save()
+
+    verification_uri = request.build_absolute_uri(
+        reverse(
+            'django_airavata_auth:reset_password', kwargs={
+                'code': password_reset_request.reset_code}))
+    logger.debug(
+        "password reset verification_uri={}".format(verification_uri))
+
+    user = iam_admin_client.get_user(username)
+    context = Context({
+        "username": username,
+        "email": user.emails[0],
+        "first_name": user.firstName,
+        "last_name": user.lastName,
+        "portal_title": settings.PORTAL_TITLE,
+        "url": verification_uri,
+    })
+    _send_email_to_user(models.PASSWORD_RESET_EMAIL_TEMPLATE, context)
+
+
+def reset_password(request, code):
+    try:
+        password_reset_request = models.PasswordResetRequest.objects.get(
+            reset_code=code)
+    except ObjectDoesNotExist as e:
+        messages.error(
+            request,
+            "Reset password link is invalid. Please try again.")
+        return redirect(reverse('django_airavata_auth:forgot_password'))
+
+    now = datetime.now(timezone.utc)
+    if now - password_reset_request.created_date > timedelta(days=1):
+        password_reset_request.delete()
+        messages.error(
+            request,
+            "Reset password link has expired. Please try again.")
+        return redirect(reverse('django_airavata_auth:forgot_password'))
+
+    if request.method == "POST":
+        form = forms.ResetPasswordForm(request.POST)
+        if form.is_valid():
+            try:
+                password = form.cleaned_data['password']
+                success = iam_admin_client.reset_user_password(
+                    password_reset_request.username, password)
+                if not success:
+                    messages.error(
+                        request, "Failed to reset password. Please try again.")
+                    return redirect(
+                        reverse('django_airavata_auth:forgot_password'))
+                else:
+                    password_reset_request.delete()
+                    messages.success(
+                        request,
+                        "You may now log in with your new password.")
+                    return redirect(
+                        reverse('django_airavata_auth:login_with_password'))
+            except Exception as e:
+                logger.exception(
+                    "Failed to reset password for user", exc_info=e)
+                form.add_error(None, ValidationError(str(e)))
+    else:
+        form = forms.ResetPasswordForm()
+    return render(request, 'django_airavata_auth/reset_password.html', {
+        'form': form,
+        'code': code
+    })
+
+
+def _send_email_to_user(template_id, context):
+    email_template = models.EmailTemplate.objects.get(
+        pk=template_id)
+    subject = Template(email_template.subject).render(context)
+    body = Template(email_template.body).render(context)
+    msg = EmailMessage(
+        subject=subject,
+        body=body,
+        from_email="{} <{}>".format(settings.PORTAL_TITLE,
+                                    settings.SERVER_EMAIL),
+        to=["{} {} <{}>".format(context['first_name'],
+                                context['last_name'],
+                                context['email'])])
     msg.content_subtype = 'html'
     msg.send()

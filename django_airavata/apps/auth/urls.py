@@ -20,4 +20,7 @@ urlpatterns = [
         name="verify_email"),
     url(r'^resend-email-link/', views.resend_email_link,
         name="resend_email_link"),
+    url(r'^forgot-password/$', views.forgot_password, name="forgot_password"),
+    url(r'^reset-password/(?P<code>[\w-]+)/$', views.reset_password,
+        name="reset_password"),
 ]

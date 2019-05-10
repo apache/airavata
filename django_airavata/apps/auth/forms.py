@@ -99,3 +99,46 @@ class ResendEmailVerificationLinkForm(forms.Form):
                                       'placeholder': 'Username'}),
         min_length=6,
         validators=[USERNAME_VALIDATOR])
+
+
+class ForgotPasswordForm(forms.Form):
+    error_css_class = "is-invalid"
+    username = forms.CharField(
+        label='Username',
+        widget=forms.TextInput(attrs={'class': 'form-control',
+                                      'placeholder': 'Username'}),
+        min_length=6,
+        validators=[USERNAME_VALIDATOR],
+        help_text=USERNAME_VALIDATOR.message)
+
+
+class ResetPasswordForm(forms.Form):
+    error_css_class = "is-invalid"
+
+    password = forms.CharField(
+        label='Password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                          'placeholder': 'Password'}),
+        min_length=8,
+        max_length=48,
+        validators=[PASSWORD_VALIDATOR],
+        help_text=PASSWORD_VALIDATOR.message)
+    password_again = forms.CharField(
+        label='Password (again)',
+        widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                          'placeholder': 'Password (again)'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_again = cleaned_data.get('password_again')
+
+        if password and password_again and password != password_again:
+            self.add_error(
+                'password',
+                forms.ValidationError("Passwords do not match"))
+            self.add_error(
+                'password_again',
+                forms.ValidationError("Passwords do not match"))
+
+        return cleaned_data

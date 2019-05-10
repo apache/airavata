@@ -4,6 +4,7 @@ from django.db import models
 
 VERIFY_EMAIL_TEMPLATE = 1
 NEW_USER_EMAIL_TEMPLATE = 2
+PASSWORD_RESET_EMAIL_TEMPLATE = 3
 
 
 class EmailVerification(models.Model):
@@ -18,6 +19,7 @@ class EmailTemplate(models.Model):
     TEMPLATE_TYPE_CHOICES = (
         (VERIFY_EMAIL_TEMPLATE, 'Verify Email Template'),
         (NEW_USER_EMAIL_TEMPLATE, 'New User Email Template'),
+        (PASSWORD_RESET_EMAIL_TEMPLATE, 'Password Reset Email Template'),
     )
     template_type = models.IntegerField(
         primary_key=True, choices=TEMPLATE_TYPE_CHOICES)
@@ -31,3 +33,10 @@ class EmailTemplate(models.Model):
             if self.template_type == choice[0]:
                 return choice[1]
         return "Unknown"
+
+
+class PasswordResetRequest(models.Model):
+    username = models.CharField(max_length=64)
+    reset_code = models.CharField(
+        max_length=36, unique=True, default=uuid.uuid4)
+    created_date = models.DateTimeField(auto_now_add=True)
