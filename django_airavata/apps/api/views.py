@@ -198,6 +198,13 @@ class ExperimentViewSet(APIBackedViewSet):
                                                    project.name,
                                                    experiment.experimentName)
             experiment.userConfigurationData.experimentDataDir = exp_dir
+        else:
+            # get_experiment_dir will also validate that absolute paths are
+            # inside the user's storage directory
+            exp_dir = datastore.get_experiment_dir(
+                self.username,
+                path=experiment.userConfigurationData.experimentDataDir)
+            experiment.userConfigurationData.experimentDataDir = exp_dir
 
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):

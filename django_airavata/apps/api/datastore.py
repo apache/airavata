@@ -113,13 +113,23 @@ def delete(data_product):
         raise ObjectDoesNotExist("Replica file does not exist")
 
 
-def get_experiment_dir(username, project_name, experiment_name):
+def get_experiment_dir(
+        username,
+        project_name=None,
+        experiment_name=None,
+        path=None):
     """Return an experiment directory (full path) for the given experiment."""
-    experiment_dir_name = os.path.join(
-        _user_dir_name(username),
-        experiment_data_storage.get_valid_name(project_name),
-        experiment_data_storage.get_valid_name(experiment_name))
-    experiment_dir = experiment_data_storage.path(experiment_dir_name)
+    if path is None:
+        experiment_dir_name = os.path.join(
+            _user_dir_name(username),
+            experiment_data_storage.get_valid_name(project_name),
+            experiment_data_storage.get_valid_name(experiment_name))
+        experiment_dir = experiment_data_storage.path(experiment_dir_name)
+    else:
+        # path can be relative to the user's storage space or absolute (as long
+        # as it is still inside the user's storage space)
+        user_experiment_data_storage = _user_data_storage(username)
+        experiment_dir = user_experiment_data_storage.path(path)
     if not experiment_data_storage.exists(experiment_dir):
         os.makedirs(experiment_dir,
                     mode=experiment_data_storage.directory_permissions_mode)
@@ -132,8 +142,9 @@ def get_experiment_dir(username, project_name, experiment_name):
 def user_file_exists(username, file_path):
     """Check if file path exists in user's data storage space."""
     try:
-        return experiment_data_storage.exists(
-            os.path.join(_user_dir_name(username), file_path))
+        # file_path can be relative or absolute
+        user_experiment_data_storage = _user_data_storage(username)
+        return user_experiment_data_storage.exists(file_path)
     except SuspiciousFileOperation as e:
         logger.warning(
             "File does not exist for user {} at file path {}".format(
@@ -188,3 +199,9 @@ def _create_data_product(username, full_path):
 
 def _user_dir_name(username):
     return experiment_data_storage.get_valid_name(username)
+
+
+def _user_data_storage(username):
+    return FileSystemStorage(
+        location=os.path.join(settings.GATEWAY_DATA_STORE_DIR,
+                              _user_dir_name(username)))
