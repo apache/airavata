@@ -49,7 +49,7 @@ public class GroupResourceProfileEntity implements Serializable {
     private String groupResourceProfileName;
 
     // TODO: change these timestamp to actual Timestamp
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", updatable = false)
     private Long creationTime;
 
     @Column(name = "UPDATE_TIME")

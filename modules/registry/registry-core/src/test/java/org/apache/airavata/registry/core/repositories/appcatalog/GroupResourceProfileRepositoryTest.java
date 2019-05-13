@@ -24,6 +24,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.groupresourceprofile.*;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,5 +249,24 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         computeResourceRepository.removeComputeResource(resourceId1);
         computeResourceRepository.removeComputeResource(resourceId2);
 
+    }
+
+    @Test
+    public void testUpdatingGroupResourceProfileWithoutCreationTime() throws AppCatalogException {
+        GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
+        groupResourceProfile.setGatewayId(gatewayId);
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setDefaultCredentialStoreToken("test-cred-store-token");
+
+        // Simulate what is like for a client that only gets back the id from
+        // the create operation but not any fields, like creation time, that are
+        // populated by the create operation
+        GroupResourceProfile cloneGroupResourceProfile = groupResourceProfile.deepCopy();
+        String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+        long creationTime = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId).getCreationTime();
+        cloneGroupResourceProfile.setGroupResourceProfileId(groupResourceProfileId);
+        groupResourceProfileRepository.updateGroupResourceProfile(cloneGroupResourceProfile);
+        long creationTimeAfterUpdate = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId).getCreationTime();
+        Assert.assertEquals("creationTime should be the same after update", creationTime, creationTimeAfterUpdate);
     }
 }
