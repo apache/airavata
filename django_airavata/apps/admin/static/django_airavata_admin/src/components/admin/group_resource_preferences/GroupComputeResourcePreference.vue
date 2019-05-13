@@ -88,7 +88,7 @@ export default {
   mounted: function() {
     if (this.id) {
       if (!this.value.groupResourceProfileId) {
-        services.ServiceFactory.service("GroupResourceProfiles")
+        services.GroupResourceProfileService
           .retrieve({ lookup: this.id })
           .then(grp => (this.data = grp));
       }
@@ -98,7 +98,7 @@ export default {
     let data = this.value.clone();
     return {
       data: data,
-      service: services.ServiceFactory.service("GroupResourceProfiles"),
+      service: services.GroupResourceProfileService,
       computePreferencesFields: [
         {
           label: "Name",

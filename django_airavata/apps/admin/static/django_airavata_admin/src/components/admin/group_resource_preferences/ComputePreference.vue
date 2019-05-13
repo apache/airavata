@@ -224,9 +224,7 @@ export default {
       );
       // TODO: success and error handling are the same so we can just combine those
       if (this.id) {
-        DjangoAiravataAPI.services.ServiceFactory.service(
-          "GroupResourceProfiles"
-        )
+        DjangoAiravataAPI.services.GroupResourceProfileService
           .update({ data: groupResourceProfile, lookup: this.id })
           .then(groupResourceProfile => {
             // Navigate back to GroupResourceProfile with success message
@@ -239,9 +237,7 @@ export default {
             });
           });
       } else {
-        DjangoAiravataAPI.services.ServiceFactory.service(
-          "GroupResourceProfiles"
-        )
+        DjangoAiravataAPI.services.GroupResourceProfileService
           .create({ data: groupResourceProfile })
           .then(groupResourceProfile => {
             // Navigate back to GroupResourceProfile with success message
@@ -261,9 +257,7 @@ export default {
         this.host_id
       );
       if (removedChildren) {
-        DjangoAiravataAPI.services.ServiceFactory.service(
-          "GroupResourceProfiles"
-        )
+        DjangoAiravataAPI.services.GroupResourceProfileService
           .update({ data: groupResourceProfile, lookup: this.id })
           .then(groupResourceProfile => {
             // Navigate back to GroupResourceProfile with success message
