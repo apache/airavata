@@ -127,6 +127,14 @@ export default class Experiment extends BaseModel {
     );
   }
 
+  get resourceHostId() {
+    return this.userConfigurationData &&
+      this.userConfigurationData.computationalResourceScheduling
+      ? this.userConfigurationData.computationalResourceScheduling
+          .resourceHostId
+      : null;
+  }
+
   populateInputsOutputsFromApplicationInterface(applicationInterface) {
     // Copy application inputs and outputs to the experiment
     this.experimentInputs = applicationInterface.applicationInputs.map(input =>

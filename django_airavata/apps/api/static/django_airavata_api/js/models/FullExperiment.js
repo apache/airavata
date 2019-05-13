@@ -59,6 +59,10 @@ export default class FullExperiment extends BaseModel {
         return this.computeResource ? this.computeResource.hostName : null;
     }
 
+    get resourceHostId() {
+      return this.experiment.resourceHostId;
+    }
+
     get experimentStatus() {
         return this.experiment.latestStatus;
     }

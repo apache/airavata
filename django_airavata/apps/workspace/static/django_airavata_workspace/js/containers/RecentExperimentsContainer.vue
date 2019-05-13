@@ -31,7 +31,7 @@ export default {
     username: String
   },
   components: {
-    "sidebar": components.Sidebar,
+    sidebar: components.Sidebar,
     "sidebar-header": components.SidebarHeader,
     "sidebar-feed": components.SidebarFeed,
     ExperimentStatusBadge
@@ -41,17 +41,19 @@ export default {
   },
   methods: {
     pollExperiments() {
-      this.loadExperiments().then(() => {
-        setTimeout(
-          function() {
-            this.pollExperiments();
-          }.bind(this),
-          this.refreshDelay
-        );
-      }).catch(() => {
-        // If loading experiments fails, just ignore. This can happen if the
-        // user navigates away from the page while a request is executing.
-      });
+      this.loadExperiments()
+        .then(() => {
+          setTimeout(
+            function() {
+              this.pollExperiments();
+            }.bind(this),
+            this.refreshDelay
+          );
+        })
+        .catch(() => {
+          // If loading experiments fails, just ignore. This can happen if the
+          // user navigates away from the page while a request is executing.
+        });
     },
     loadExperiments() {
       return services.ExperimentSearchService.list(
@@ -74,17 +76,14 @@ export default {
             timestamp: e.statusUpdateTime,
             interfaceId: e.executionId,
             isProgressing: e.convertToExperiment().isProgressing,
-            type:
-              e.executionId in this.applicationInterfaces
-                ? this.applicationInterfaces[e.executionId].applicationName
-                : null
+            type: null
           };
         });
         // Load any application interfaces that haven't been loaded yet, so that
         // we can display the applicationName of each experiment
         const unloadedInterfaceIds = {};
         this.feedItems
-          .filter(i => i.type === null)
+          .filter(i => !(i.interfaceId in this.applicationInterfaces))
           .forEach(i => (unloadedInterfaceIds[i.interfaceId] = true));
         Promise.all(
           Object.keys(unloadedInterfaceIds).map(interfaceId => {
@@ -101,19 +100,30 @@ export default {
           lookup: interfaceId
         },
         {
-          showSpinner: false
+          showSpinner: false,
+          ignoreErrors: true
         }
-      ).then(applicationInterface => {
-        this.applicationInterfaces[interfaceId] = applicationInterface;
-      });
+      )
+        .then(applicationInterface => {
+          this.applicationInterfaces[interfaceId] = applicationInterface;
+        })
+        .catch(() => {
+          // ignore if missing
+          this.applicationInterfaces[interfaceId] = null;
+        });
     },
     populateApplicationNames() {
       this.feedItems
         .filter(i => i.type === null)
         .forEach(feedItem => {
-          feedItem.type = this.applicationInterfaces[
-            feedItem.interfaceId
-          ].applicationName;
+          if (
+            feedItem.interfaceId in this.applicationInterfaces &&
+            this.applicationInterfaces[feedItem.interfaceId]
+          ) {
+            feedItem.type = this.applicationInterfaces[
+              feedItem.interfaceId
+            ].applicationName;
+          }
         });
     }
   },

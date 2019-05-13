@@ -404,19 +404,29 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             for dp in inp.value.split(',')
             if inp.value.startswith('airavata-dp')]
         appInterfaceId = experimentModel.executionId
-        applicationInterface = self.request.airavata_client \
-            .getApplicationInterface(self.authz_token, appInterfaceId)
-        appModuleId = applicationInterface.applicationModules[0]
-        applicationModule = self.request.airavata_client \
-            .getApplicationModule(self.authz_token, appModuleId)
+        try:
+            applicationInterface = self.request.airavata_client \
+                .getApplicationInterface(self.authz_token, appInterfaceId)
+            appModuleId = applicationInterface.applicationModules[0]
+            applicationModule = self.request.airavata_client \
+                .getApplicationModule(self.authz_token, appModuleId)
+        except Exception as e:
+            log.exception("Failed to load app interface/module")
+            applicationModule = None
+
         compute_resource_id = None
         user_conf = experimentModel.userConfigurationData
         if user_conf and user_conf.computationalResourceScheduling:
             comp_res_sched = user_conf.computationalResourceScheduling
             compute_resource_id = comp_res_sched.resourceHostId
-        compute_resource = self.request.airavata_client.getComputeResource(
-            self.authz_token, compute_resource_id) \
-            if compute_resource_id else None
+        try:
+            compute_resource = self.request.airavata_client.getComputeResource(
+                self.authz_token, compute_resource_id) \
+                if compute_resource_id else None
+        except Exception as e:
+            log.exception("Failed to load compute resource for {}".format(
+                compute_resource_id))
+            compute_resource = None
         try:
             project = self.request.airavata_client.getProject(
                 self.authz_token, experimentModel.projectId)

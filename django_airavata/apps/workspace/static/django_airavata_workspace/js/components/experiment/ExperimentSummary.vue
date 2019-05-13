@@ -8,11 +8,11 @@
       </div>
       <div class="col-auto">
           <share-button :entity-id="experiment.experimentId" />
-          <b-link v-if="experiment.isEditable" class="btn btn-primary" :href="editLink">
+          <b-link v-if="isEditable" class="btn btn-primary" :href="editLink">
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </b-link>
-          <b-btn variant="primary" @click="clone">
+          <b-btn v-if="isClonable" variant="primary" @click="clone">
             Clone
             <i class="fa fa-copy" aria-hidden="true"></i>
           </b-btn>
@@ -77,11 +77,13 @@
                 </tr>
                 <tr>
                   <th scope="row">Application</th>
-                  <td>{{ localFullExperiment.applicationName }}</td>
+                  <td v-if="localFullExperiment.applicationName">{{ localFullExperiment.applicationName }}</td>
+                  <td v-else class="font-italic text-muted">Unable to load interface {{ localFullExperiment.experiment.executionId }}</td>
                 </tr>
                 <tr>
                   <th scope="row">Compute Resource</th>
-                  <td>{{ localFullExperiment.computeHostName }}</td>
+                  <td v-if="localFullExperiment.computeHostName">{{ localFullExperiment.computeHostName }}</td>
+                  <td v-else class="font-italic text-muted">Unable to load compute resource {{ localFullExperiment.resourceHostId }}</td>
                 </tr>
                 <tr>
                   <th scope="row">Experiment Status</th>
@@ -248,6 +250,12 @@ export default {
     },
     editLink() {
       return urls.editExperiment(this.experiment);
+    },
+    isEditable() {
+      return this.experiment.isEditable && this.localFullExperiment.applicationName;
+    },
+    isClonable() {
+      return this.localFullExperiment.applicationName;
     }
   },
   methods: {

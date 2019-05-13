@@ -21,9 +21,18 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="experiment in experiments" :key="experiment.experimentId">
-                  <td><b-link :href="viewLink(experiment)">{{experiment.name}}</b-link></td>
-                  <td>{{applicationName(experiment)}}</td>
+                <tr
+                  v-for="experiment in experiments"
+                  :key="experiment.experimentId"
+                >
+                  <td>
+                    <b-link :href="viewLink(experiment)">{{experiment.name}}</b-link>
+                  </td>
+                  <td v-if="applicationName(experiment)">{{applicationName(experiment)}}</td>
+                  <td
+                    v-else
+                    class="font-italic text-muted"
+                  >N/A</td>
                   <td>{{experiment.userName}}</td>
                   <td>
                     <span :title="experiment.creationTime">{{ fromNow(experiment.creationTime) }}</span>
@@ -32,17 +41,40 @@
                     <experiment-status-badge :statusName="experiment.experimentStatus.name" />
                   </td>
                   <td>
-                    <b-link v-if="experiment.isEditable" :href="editLink(experiment)" class="action-link">Edit
-                      <i class="fa fa-edit" aria-hidden="true"></i>
-                    </b-link>
-                    <b-link v-else @click="clone(experiment)" class="action-link">Clone
-                      <i class="fa fa-copy" aria-hidden="true"></i>
-                    </b-link>
+                    <!-- if we can't load the application for the experiment
+                    (for example, if it was deleted), then user can't edit or
+                    clone experiment -->
+                    <span v-if="applicationName(experiment)">
+                      <b-link
+                        v-if="experiment.isEditable && applicationName(experiment)"
+                        :href="editLink(experiment)"
+                        class="action-link"
+                      >Edit
+                        <i
+                          class="fa fa-edit"
+                          aria-hidden="true"
+                        ></i>
+                      </b-link>
+                      <b-link
+                        v-else
+                        @click="clone(experiment)"
+                        class="action-link"
+                      >Clone
+                        <i
+                          class="fa fa-copy"
+                          aria-hidden="true"
+                        ></i>
+                      </b-link>
+                    </span>
                   </td>
                 </tr>
               </tbody>
             </table>
-            <pager v-bind:paginator="experimentsPaginator" v-on:next="nextExperiments" v-on:previous="previousExperiments"></pager>
+            <pager
+              v-bind:paginator="experimentsPaginator"
+              v-on:next="nextExperiments"
+              v-on:previous="previousExperiments"
+            ></pager>
           </div>
         </div>
       </div>
@@ -57,7 +89,7 @@ import { components as comps } from "django-airavata-common-ui";
 import ExperimentStatusBadge from "../components/experiment/ExperimentStatusBadge.vue";
 
 import moment from "moment";
-import urls from '../utils/urls';
+import urls from "../utils/urls";
 
 export default {
   props: ["initialExperimentsData"],
@@ -96,13 +128,31 @@ export default {
         ) {
           return this.applicationInterfaces[experiment.executionId]
             .applicationName;
+        } else if (
+          this.applicationInterfaces[experiment.executionId] === null
+        ) {
+          return null;
         }
       } else {
-        const request = services.ApplicationInterfaceService.retrieve({
-          lookup: experiment.executionId
-        }).then(result =>
-          this.$set(this.applicationInterfaces, experiment.executionId, result)
-        );
+        const request = services.ApplicationInterfaceService.retrieve(
+          {
+            lookup: experiment.executionId
+          },
+          {
+            ignoreErrors: true
+          }
+        )
+          .then(result =>
+            this.$set(
+              this.applicationInterfaces,
+              experiment.executionId,
+              result
+            )
+          )
+          .catch(() => {
+            // Application interface may be deleted
+            this.$set(this.applicationInterfaces, experiment.executionId, null);
+          });
         this.$set(this.applicationInterfaces, experiment.executionId, request);
       }
       return "...";
@@ -123,9 +173,9 @@ export default {
     }
   },
   beforeMount: function() {
-    services.ExperimentSearchService.list({initialData: this.initialExperimentsData}).then(
-      result => (this.experimentsPaginator = result)
-    );
+    services.ExperimentSearchService.list({
+      initialData: this.initialExperimentsData
+    }).then(result => (this.experimentsPaginator = result));
   }
 };
 </script>

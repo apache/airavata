@@ -12,6 +12,7 @@
 
 <script>
 import { services } from "django-airavata-api";
+import { notifications } from "django-airavata-common-ui";
 import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
 import urls from "../utils/urls";
 
@@ -39,7 +40,7 @@ export default {
     },
     handleSavedAndLaunchedExperiment: function(experiment) {
       // Redirect to experiment view
-      urls.navigateToViewExperiment(experiment, {launching: true});
+      urls.navigateToViewExperiment(experiment, { launching: true });
     }
   },
   computed: {},
@@ -48,9 +49,14 @@ export default {
       .then(experiment => {
         this.experiment = experiment;
         const appInterfaceId = experiment.executionId;
-        return services.ApplicationInterfaceService.retrieve({
-          lookup: appInterfaceId
-        });
+        return services.ApplicationInterfaceService.retrieve(
+          {
+            lookup: appInterfaceId
+          },
+          {
+            ignoreErrors: true
+          }
+        );
       })
       .then(appInterface => {
         const appModuleId = appInterface.applicationModules[0];
@@ -60,6 +66,17 @@ export default {
       })
       .then(appModule => {
         this.appModule = appModule;
+      })
+      .catch(() => {
+        notifications.NotificationList.add(
+          new notifications.Notification({
+            type: "ERROR",
+            message:
+              "Unable to load application interface (" +
+              this.experiment.executionId +
+              ") or module. If it has been deleted then you won't be able to edit this experiment."
+          })
+        );
       });
   }
 };
