@@ -37,8 +37,8 @@ auth_options:
   password:
     name: "PfEC-Hydro"
   external:
-#    - name: "Existing Institute Login"
-#      idp_alias: "cilogon"
+    - name: "Existing Institute Login"
+      idp_alias: "cilogon"
 
 gateway_id: "pfec-hydro"
 experiment_data_dir: "{{ user_data_dir }}/django-pfec-hydro"
