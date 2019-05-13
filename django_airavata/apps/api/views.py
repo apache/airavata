@@ -935,6 +935,10 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
         group_resource_profile_id = self.request.airavata_client.createGroupResourceProfile(
             authzToken=self.authz_token, groupResourceProfile=group_resource_profile)
         group_resource_profile.groupResourceProfileId = group_resource_profile_id
+        # Update the creationTime field on the group resource profile
+        new_group_resource_profile = self.request.airavata_client.getGroupResourceProfile(
+            self.authz_token, group_resource_profile_id)
+        group_resource_profile.creationTime = new_group_resource_profile.creationTime
 
     def perform_update(self, serializer):
         grp = serializer.save()
