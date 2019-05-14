@@ -45,9 +45,10 @@ router.register(r'parsers', views.ParserViewSet, base_name='parser')
 app_name = 'django_airavata_api'
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^get-ufiles$', views.get_user_files, name='get_user_files'),
-    url(r'^upload-ufiles$', views.upload_user_file, name='upload_user_file'),
-    url(r'^delete-ufiles$', views.delete_user_file, name='delete_user_file'),
+    # TODO: remove these
+    # url(r'^get-ufiles$', views.get_user_files, name='get_user_files'),
+    # url(r'^upload-ufiles$', views.upload_user_file, name='upload_user_file'),
+    # url(r'^delete-ufiles$', views.delete_user_file, name='delete_user_file'),
     url(r'^upload$', views.upload_input_file, name='upload_input_file'),
     url(r'^download', views.download_file, name='download_file'),
     url(r'^delete-file$', views.delete_file, name='delete_file'),
@@ -77,6 +78,10 @@ urlpatterns = [
     url(r'^workspace-preferences',
         views.WorkspacePreferencesView.as_view(),
         name="workspace-preferences"),
+    # url(r'^user-storage/~/(?P<path>.*)/$',
+    url(r'^user-storage/~/(?P<path>.*)$',
+        views.UserStoragePathView.as_view(),
+        name="user-storage-items")
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

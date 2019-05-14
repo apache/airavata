@@ -37,9 +37,18 @@ from django_airavata.apps.api.view_utils import (
     APIResultPagination,
     GenericAPIBackedViewSet
 )
-from django_airavata.apps.workspace.models import User_Files
 
-from . import datastore, helpers, models, serializers, thrift_utils
+from . import (
+    data_products_helper,
+    datastore,
+    helpers,
+    models,
+    serializers,
+    thrift_utils
+)
+
+# from django_airavata.apps.workspace.models import User_Files
+
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -788,63 +797,63 @@ class DataProductView(APIView):
             data_product, context={'request': request})
         return Response(serializer.data)
 
+# TODO: remove
+# @login_required
+# def get_user_files(request):
 
-@login_required
-def get_user_files(request):
+#         dirs = []      # a list with file_name and file_dpu for each file
+#         for o in User_Files.objects.values_list('file_name', 'file_dpu'):
+#             file_details = {}
+#             file_details['file_name'] = o[0]
+#             file_details['file_dpu'] = o[1]
+#             dirs.append(file_details)
 
-        dirs = []      # a list with file_name and file_dpu for each file
-        for o in User_Files.objects.values_list('file_name', 'file_dpu'):
-            file_details = {}
-            file_details['file_name'] = o[0]
-            file_details['file_dpu'] = o[1]
-            dirs.append(file_details)
-
-        return JsonResponse({'uploaded': True, 'user-files': dirs})
-
-
-@login_required
-def upload_user_file(request):
-        username = request.user.username
-        input_file = request.FILES['file']
-        file_details = {}
-
-        # To avoid duplicate file names
-
-        if User_Files.objects.filter(file_name=input_file.name).exists():
-            resp = JsonResponse({'uploaded': False, 'error': "File already exists"})
-            resp.status_code = 400
-            return resp
-
-        else:
-
-            data_product = datastore.save_user(username, input_file)
-            data_product_uri = request.airavata_client.registerDataProduct(
-                request.authz_token, data_product)
-            d = User_Files(file_name=input_file.name, file_dpu=data_product_uri)
-            d.save()
-            file_details['file_name'] = d.file_name
-            file_details['file_dpu'] = d.file_dpu
-            return JsonResponse({'uploaded': True,
-                                 'upload-file': file_details})
+#         return JsonResponse({'uploaded': True, 'user-files': dirs})
 
 
-@login_required
-def delete_user_file(request):
-        data_product_uri = request.body.decode('utf-8')
-        try:
-            data_product = request.airavata_client.getDataProduct(
-                request.authz_token, data_product_uri)
+# @login_required
+# def upload_user_file(request):
+#         username = request.user.username
+#         input_file = request.FILES['file']
+#         file_details = {}
 
-        except Exception as e:
-            log.warning("Failed to load DataProduct for {}"
-                        .format(data_product_uri), exc_info=True)
-            raise Http404("data product does not exist")(e)
+#         # To avoid duplicate file names
 
-        # remove file_details entry from database and delete from datastore
-        User_Files.objects.filter(file_dpu=data_product_uri).delete()
-        datastore.delete(data_product)
+#         if User_Files.objects.filter(file_name=input_file.name).exists():
+#             resp = JsonResponse({'uploaded': False, 'error': "File already exists"})
+#             resp.status_code = 400
+#             return resp
 
-        return JsonResponse({'deleted': True})
+#         else:
+
+#             data_product = datastore.save_user(username, input_file)
+#             data_product_uri = request.airavata_client.registerDataProduct(
+#                 request.authz_token, data_product)
+#             d = User_Files(file_name=input_file.name, file_dpu=data_product_uri)
+#             d.save()
+#             file_details['file_name'] = d.file_name
+#             file_details['file_dpu'] = d.file_dpu
+#             return JsonResponse({'uploaded': True,
+#                                  'upload-file': file_details})
+
+
+# @login_required
+# def delete_user_file(request):
+#         data_product_uri = request.body.decode('utf-8')
+#         try:
+#             data_product = request.airavata_client.getDataProduct(
+#                 request.authz_token, data_product_uri)
+
+#         except Exception as e:
+#             log.warning("Failed to load DataProduct for {}"
+#                         .format(data_product_uri), exc_info=True)
+#             raise Http404("data product does not exist")(e)
+
+#         # remove file_details entry from database and delete from datastore
+#         User_Files.objects.filter(file_dpu=data_product_uri).delete()
+#         datastore.delete(data_product)
+
+#         return JsonResponse({'deleted': True})
 
 
 @login_required
@@ -894,6 +903,13 @@ def download_file(request):
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
+
+
+@login_required
+def user_storage_download_file(request, path):
+    user_storage_path = path
+    if user_storage_path.startswith("/"):
+        user_storage_path = "." + user_storage_path
 
 
 @login_required
@@ -1337,7 +1353,8 @@ class ParserViewSet(mixins.CreateModelMixin,
     lookup_field = 'parser_id'
 
     def get_list(self):
-        return self.request.airavata_client.listAllParsers(self.authz_token, settings.GATEWAY_ID)
+        return self.request.airavata_client.listAllParsers(
+            self.authz_token, settings.GATEWAY_ID)
 
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getParser(
@@ -1350,6 +1367,45 @@ class ParserViewSet(mixins.CreateModelMixin,
     def perform_update(self, serializer):
         parser = serializer.save()
         self.request.airavata_client.saveParser(self.authz_token, parser)
+
+
+class UserStoragePathView(APIView):
+    serializer_class = serializers.UserStoragePathSerializer
+
+    def get(self, request, path="/", format=None):
+        user_storage_path = path
+        if user_storage_path.startswith("/"):
+            user_storage_path = "." + user_storage_path
+        # TODO: check if path is directory or file
+        directories, files = data_products_helper.listdir(request, path)
+        serializer = self.serializer_class(
+            {'directories': directories, 'files': files},
+            context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, path="/", format=None):
+        # TODO: this needs to be fixed or rethought
+        username = request.user.username
+        user_storage_path = path
+        if user_storage_path.startswith("/"):
+            user_storage_path = "." + user_storage_path
+        serializer = self.serializer_class(
+            data=request.data, context={
+                'request': request})
+        serializer.is_valid(raise_exception=True)
+        if serializer.validated_data['type'] == 'file':
+            upload_file = request.FILES['file']
+            datastore.save_user_file(username, user_storage_path, upload_file)
+        elif serializer.validated_data['type'] == 'dir':
+            datastore.create_user_dir(
+                username, user_storage_path, serializer.validated_data['name'])
+
+        # TODO return representation of created item
+        listing = datastore.list_user_dir(
+            request.user.username, user_storage_path)
+        serializer = self.serializer_class(
+            listing, many=True, context={'request': request})
+        return Response(serializer.data)
 
 
 class WorkspacePreferencesView(APIView):

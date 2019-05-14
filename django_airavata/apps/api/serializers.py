@@ -748,6 +748,32 @@ class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
         lookup_url_kwarg='parser_id')
 
 
+class UserStorageFileSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    downloadURL = serializers.SerializerMethodField()
+
+    def get_downloadURL(self, file):
+        """Getter for downloadURL field."""
+        request = self.context['request']
+        return (request.build_absolute_uri(
+            reverse('django_airavata_api:download_file')) +
+            '?' +
+            urlencode({'data-product-uri': file['data-product-uri']}))
+
+
+class UserStorageDirectorySerializer(serializers.Serializer):
+    name = serializers.CharField()
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:user-storage-items',
+        lookup_field='path',
+        lookup_url_kwarg='path')
+
+
+class UserStoragePathSerializer(serializers.Serializer):
+    directories = UserStorageDirectorySerializer(many=True)
+    files = UserStorageFileSerializer(many=True)
+
+
 # ModelSerializers
 class WorkspacePreferencesSerializer(serializers.ModelSerializer):
     class Meta:

@@ -19,6 +19,7 @@ experiment_data_storage = FileSystemStorage(
 logger = logging.getLogger(__name__)
 
 
+# TODO: exists(username, path)
 def exists(data_product):
     """Check if replica for data product exists in this data store."""
     filepath = _get_replica_filepath(data_product)
@@ -30,6 +31,7 @@ def exists(data_product):
         return False
 
 
+# TODO: open(username, path)
 def open(data_product):
     """Open replica for data product if it exists in this data store."""
     if exists(data_product):
@@ -73,6 +75,7 @@ def save_user(username, file):
     return data_product
 
 
+# TODO: save(username, path, file)
 def save(username, project_name, experiment_name, file):
     """Save file to username/project name/experiment_name in data store."""
     exp_dir = os.path.join(
@@ -91,12 +94,34 @@ def save(username, project_name, experiment_name, file):
     return data_product
 
 
+def save_user_file(username, path, file):
+    experiment_data_storage.save(os.path.join(
+        _user_dir_name(username),
+        experiment_data_storage.get_valid_name(path),
+        experiment_data_storage.get_valid_name(file.name)
+    ), file)
+
+
+def create_user_dir(username, path, dir_name):
+    user_dir = os.path.join(
+        _user_dir_name(username),
+        path,
+        experiment_data_storage.get_valid_name(dir_name))
+    if not experiment_data_storage.exists(user_dir):
+        os.mkdir(experiment_data_storage.path(user_dir))
+    else:
+        raise Exception(
+            "Directory {} already exists at that path".format(dir_name))
+
+
+# TODO: copy(username, source_path, target_path)
 def copy(username, project_name, experiment_name, data_product):
     """Copy a data product into username/project_name/experiment_name dir."""
     f = open(data_product)
     return save(username, project_name, experiment_name, f)
 
 
+# TODO: delete(username, path)
 def delete(data_product):
 
     """Delete replica for data product in this data store."""
@@ -160,6 +185,17 @@ def get_data_product(username, file_path):
         return _create_data_product(username, full_path)
     else:
         raise ObjectDoesNotExist("User file does not exist")
+
+
+def list_user_dir(username, file_path):
+    logger.debug("file_path={}".format(file_path))
+    user_data_storage = _user_data_storage(username)
+    return user_data_storage.listdir(file_path)
+
+
+def path(username, file_path):
+    user_data_storage = _user_data_storage(username)
+    return user_data_storage.path(file_path)
 
 
 def _get_replica_filepath(data_product):
