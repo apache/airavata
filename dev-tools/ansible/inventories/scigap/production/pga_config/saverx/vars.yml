@@ -31,6 +31,9 @@ ssl_certificate_file: "/etc/letsencrypt/live/singlecellgateway.wharton.upenn.edu
 ssl_certificate_chain_file: "/etc/letsencrypt/live/singlecellgateway.wharton.upenn.edu/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/singlecellgateway.wharton.upenn.edu/privkey.pem"
 
+php_upload_max_filesize: "2000M"
+php_post_max_size: "2500M"
+
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
 admin_username: "admin"
