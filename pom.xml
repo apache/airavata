@@ -553,6 +553,11 @@
             </snapshots>
         </repository>
         <repository>
+            <id>wso2</id>
+            <name>Repository</name>
+            <url>http://dist.wso2.org/maven2</url>
+        </repository>
+        <repository>
             <id>oauth</id>
             <name>OAuth Repository</name>
             <url>https://oauth.googlecode.com/svn/code/maven</url>
@@ -587,7 +592,13 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
+		    <plugin>
+		       <groupId>org.apache.maven.plugins</groupId>
+		       <artificatId>maven-jar-plugins</artificatId>
+		       <version>$(openjpa.version)</version>
+		    </plugin>
+		    
+		    <plugin>
                         <groupId>com.lukegb.mojo</groupId>
                         <artifactId>gitdescribe-maven-plugin</artifactId>
                         <version>3.0</version>
