@@ -1342,6 +1342,7 @@ class UserStoragePathView(APIView):
     serializer_class = serializers.UserStoragePathSerializer
 
     def get(self, request, path="/", format=None):
+        # TODO: don't need to relativize path any longer?
         user_storage_path = path
         if user_storage_path.startswith("/"):
             user_storage_path = "." + user_storage_path
@@ -1360,6 +1361,13 @@ class UserStoragePathView(APIView):
             data_product = data_products_helper.save(
                 request, user_storage_path, user_file)
         return self._create_response(request, path, uploaded=data_product)
+
+    def delete(self, request, path="/", format=None):
+        user_storage_path = path
+        if user_storage_path.startswith("/"):
+            user_storage_path = "." + user_storage_path
+        data_products_helper.delete_dir(request, user_storage_path)
+        return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
         directories, files = data_products_helper.listdir(request, path)

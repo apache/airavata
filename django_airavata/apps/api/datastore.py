@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
@@ -63,6 +64,15 @@ def delete(username, path):
         raise ObjectDoesNotExist("File path does not exist: {}".format(path))
 
 
+def delete_dir(username, path):
+    """Delete entire directory in this data store."""
+    if exists(username, path):
+        user_path = path_(username, path)
+        shutil.rmtree(user_path)
+    else:
+        raise ObjectDoesNotExist("File path does not exist: {}".format(path))
+
+
 # TODO: update this to just return an available experiment directory name
 def get_experiment_dir(
         username,
@@ -110,6 +120,10 @@ def list_user_dir(username, file_path):
 
 
 def path(username, file_path):
+    return path_(username, file_path)
+
+
+def path_(username, file_path):
     user_data_storage = _user_data_storage(username)
     return user_data_storage.path(file_path)
 

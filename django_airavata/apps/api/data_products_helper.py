@@ -42,6 +42,10 @@ def dir_exists(request, path):
     return datastore.exists(request.user.username, path)
 
 
+def delete_dir(request, path):
+    return datastore.delete_dir(request.user.username, path)
+
+
 def delete(request, data_product):
     "Delete replica for data product in this data store."
     path = _get_replica_filepath(data_product)

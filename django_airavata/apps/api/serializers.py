@@ -751,6 +751,7 @@ class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
 class UserStorageFileSerializer(serializers.Serializer):
     name = serializers.CharField()
     downloadURL = serializers.SerializerMethodField()
+    dataProductURI = serializers.CharField(source='data-product-uri')
 
     def get_downloadURL(self, file):
         """Getter for downloadURL field."""
