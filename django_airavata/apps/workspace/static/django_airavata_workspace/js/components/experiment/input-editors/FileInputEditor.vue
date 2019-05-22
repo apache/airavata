@@ -88,9 +88,11 @@ export default {
         data.append("project-id", this.experiment.projectId);
         data.append("experiment-name", this.experiment.experimentName);
         this.$emit("uploadstart");
-        utils.FetchUtils.post("/api/upload", data, "", { showSpinner: false })
+        // TODO: use the experimentDataDir off the experiment model as the path
+        // to upload to
+        utils.FetchUtils.post("/api/user-storage/~/tmp/", data, "", { showSpinner: false })
           .then(result => {
-            this.dataProduct = new models.DataProduct(result["data-product"]);
+            this.dataProduct = new models.DataProduct(result["uploaded"]);
             this.data = this.dataProduct.productUri;
             this.valueChanged();
           })

@@ -858,30 +858,6 @@ class DataProductView(APIView):
 
 
 @login_required
-def upload_input_file(request):
-    try:
-        project_id = request.POST['project-id']
-        project = request.airavata_client.getProject(
-            request.authz_token, project_id)
-        exp_name = request.POST['experiment-name']
-        input_file = request.FILES['file']
-        # TODO: experiment_data_dir should be passed in
-        experiment_data_dir = data_products_helper.get_experiment_dir(
-            request, project_name=project.name, experiment_name=exp_name)
-        data_product = data_products_helper.save(request, experiment_data_dir,
-                                                 input_file)
-        serializer = serializers.DataProductSerializer(
-            data_product, context={'request': request})
-        return JsonResponse({'uploaded': True,
-                             'data-product': serializer.data})
-    except Exception as e:
-        log.error("Failed to upload file", exc_info=True)
-        resp = JsonResponse({'uploaded': False, 'error': str(e)})
-        resp.status_code = 500
-        return resp
-
-
-@login_required
 def download_file(request):
     # TODO check that user has access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -903,13 +879,6 @@ def download_file(request):
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
-
-
-@login_required
-def user_storage_download_file(request, path):
-    user_storage_path = path
-    if user_storage_path.startswith("/"):
-        user_storage_path = "." + user_storage_path
 
 
 @login_required
@@ -1377,10 +1346,30 @@ class UserStoragePathView(APIView):
         if user_storage_path.startswith("/"):
             user_storage_path = "." + user_storage_path
         # TODO: check if path is directory or file
+        return self._create_response(request, path)
+
+    def post(self, request, path="/", format=None):
+        user_storage_path = path
+        if user_storage_path.startswith("/"):
+            user_storage_path = "." + user_storage_path
+        if not data_products_helper.dir_exists(request, user_storage_path):
+            data_products_helper.create_user_dir(request, user_storage_path)
+
+        if 'file' in request.FILES:
+            user_file = request.FILES['file']
+            data_product = data_products_helper.save(
+                request, user_storage_path, user_file)
+        return self._create_response(request, path, uploaded=data_product)
+
+    def _create_response(self, request, path, uploaded=None):
         directories, files = data_products_helper.listdir(request, path)
-        serializer = self.serializer_class(
-            {'directories': directories, 'files': files},
-            context={'request': request})
+        data = {
+            'directories': directories,
+            'files': files
+        }
+        if uploaded is not None:
+            data['uploaded'] = uploaded
+        serializer = self.serializer_class(data, context={'request': request})
         return Response(serializer.data)
 
 

@@ -41,9 +41,8 @@ def save(username, path, file):
 
 def create_user_dir(username, path):
     user_data_storage = _user_data_storage(username)
-    user_dir = user_data_storage.get_valid_name(path)
-    if not user_data_storage.exists(user_dir):
-        os.mkdir(user_data_storage.path(user_dir))
+    if not user_data_storage.exists(path):
+        os.makedirs(user_data_storage.path(path))
     else:
         raise Exception(
             "Directory {} already exists".format(path))

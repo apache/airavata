@@ -772,6 +772,8 @@ class UserStorageDirectorySerializer(serializers.Serializer):
 class UserStoragePathSerializer(serializers.Serializer):
     directories = UserStorageDirectorySerializer(many=True)
     files = UserStorageFileSerializer(many=True)
+    # uploaded is populated after a file upload
+    uploaded = DataProductSerializer(read_only=True)
 
 
 # ModelSerializers
