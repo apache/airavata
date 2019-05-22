@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.http import FileResponse, Http404, HttpResponse, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse
 from django.urls import reverse
 from rest_framework import mixins
 from rest_framework.decorators import action, detail_route, list_route
