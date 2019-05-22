@@ -287,6 +287,7 @@ class ExperimentViewSet(APIBackedViewSet):
     def _copy_cloned_experiment_input_uris(self, cloned_experiment):
         # update the experimentInputs of type URI, copying files in data store
         request = self.request
+        # TODO: create experiment data directory and copy inputs into it
         target_project = request.airavata_client.getProject(
             self.authz_token, cloned_experiment.projectId)
         for experiment_input in cloned_experiment.experimentInputs:
@@ -859,17 +860,16 @@ class DataProductView(APIView):
 @login_required
 def upload_input_file(request):
     try:
-        username = request.user.username
         project_id = request.POST['project-id']
         project = request.airavata_client.getProject(
             request.authz_token, project_id)
         exp_name = request.POST['experiment-name']
         input_file = request.FILES['file']
-        data_product = datastore.save(username, project.name, exp_name,
-                                      input_file)
-        data_product_uri = request.airavata_client.registerDataProduct(
-            request.authz_token, data_product)
-        data_product.productUri = data_product_uri
+        # TODO: experiment_data_dir should be passed in
+        experiment_data_dir = data_products_helper.get_experiment_dir(
+            request, project_name=project.name, experiment_name=exp_name)
+        data_product = data_products_helper.save(request, experiment_data_dir,
+                                                 input_file)
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
         return JsonResponse({'uploaded': True,
@@ -894,7 +894,7 @@ def download_file(request):
                     .format(data_product_uri), exc_info=True)
         raise Http404("data product does not exist") from e
     try:
-        data_file = datastore.open(data_product)
+        data_file = data_products_helper.open(request, data_product)
         response = FileResponse(data_file,
                                 content_type="application/octet-stream")
         file_name = os.path.basename(data_file.name)
@@ -928,7 +928,7 @@ def delete_file(request):
         if (data_product.gatewayId != settings.GATEWAY_ID or
                 data_product.ownerName != request.user.username):
             raise PermissionDenied()
-        datastore.delete(data_product)
+        data_products_helper.delete(request, data_product)
         return HttpResponse(status=204)
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
@@ -1381,30 +1381,6 @@ class UserStoragePathView(APIView):
         serializer = self.serializer_class(
             {'directories': directories, 'files': files},
             context={'request': request})
-        return Response(serializer.data)
-
-    def post(self, request, path="/", format=None):
-        # TODO: this needs to be fixed or rethought
-        username = request.user.username
-        user_storage_path = path
-        if user_storage_path.startswith("/"):
-            user_storage_path = "." + user_storage_path
-        serializer = self.serializer_class(
-            data=request.data, context={
-                'request': request})
-        serializer.is_valid(raise_exception=True)
-        if serializer.validated_data['type'] == 'file':
-            upload_file = request.FILES['file']
-            datastore.save_user_file(username, user_storage_path, upload_file)
-        elif serializer.validated_data['type'] == 'dir':
-            datastore.create_user_dir(
-                username, user_storage_path, serializer.validated_data['name'])
-
-        # TODO return representation of created item
-        listing = datastore.list_user_dir(
-            request.user.username, user_storage_path)
-        serializer = self.serializer_class(
-            listing, many=True, context={'request': request})
         return Response(serializer.data)
 
 

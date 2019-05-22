@@ -52,7 +52,7 @@ from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import Project
 
-from . import datastore, models, thrift_utils
+from . import data_products_helper, models, thrift_utils
 
 log = logging.getLogger(__name__)
 
@@ -435,8 +435,8 @@ class DataProductSerializer(
 
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""
-        if datastore.exists(data_product):
-            request = self.context['request']
+        request = self.context['request']
+        if data_products_helper.exists(request, data_product):
             return (request.build_absolute_uri(
                 reverse('django_airavata_api:download_file')) +
                 '?' +

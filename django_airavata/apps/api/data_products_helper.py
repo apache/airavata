@@ -1,4 +1,6 @@
+import logging
 import os
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,28 +15,39 @@ from airavata.model.data.replica.ttypes import (
 
 from . import datastore, models
 
+logger = logging.getLogger(__name__)
+
 
 def save(request, path, file):
-    # return data_product
-    # TODO
-    pass
+    "Save file in path in the user's storage."
+    username = request.user.username
+    full_path = datastore.save(username, path, file)
+    data_product = _save_data_product(request, full_path)
+    return data_product
 
 
 def open(request, data_product):
-    # return file object
-    # TODO
-    pass
+    "Return file object for replica if it exists in user storage."
+    path = _get_replica_filepath(data_product)
+    return datastore.open(request.user.username, path)
 
 
 def exists(request, data_product):
-    # return boolean
-    # TODO
-    pass
+    "Return True if replica for data_product exists in user storage."
+    path = _get_replica_filepath(data_product)
+    return datastore.exists(request.user.username, path)
 
 
 def delete(request, data_product):
-    # TODO
-    pass
+    "Delete replica for data product in this data store."
+    path = _get_replica_filepath(data_product)
+    try:
+        datastore.delete(request.user.username, path)
+        _delete_data_product(request, path)
+    except Exception as e:
+        logger.exception("Unable to delete file {} for data product uri {}"
+                         .format(path, data_product.productUri))
+        raise
 
 
 def listdir(request, path):
@@ -58,6 +71,18 @@ def listdir(request, path):
         raise ObjectDoesNotExist("User storage path does not exist")
 
 
+def get_experiment_dir(request,
+                       project_name=None,
+                       experiment_name=None,
+                       path=None):
+    return datastore.get_experiment_dir(
+        request.user.username, project_name, experiment_name, path)
+
+
+def create_user_dir(request, path):
+    return datastore.create_user_dir(request.user.username, path)
+
+
 def _get_data_product_uri(request, full_path):
 
     user_file = models.User_Files.objects.filter(
@@ -65,15 +90,32 @@ def _get_data_product_uri(request, full_path):
     if user_file.exists():
         product_uri = user_file[0].file_dpu
     else:
-        data_product = _create_data_product(request.user.username, full_path)
-        product_uri = request.airavata_client.registerDataProduct(
-            request.authz_token, data_product)
-        user_file_instance = models.User_Files(
-            username=request.user.username,
-            file_path=full_path,
-            file_dpu=product_uri)
-        user_file_instance.save()
+        data_product = _save_data_product(request, full_path)
+        product_uri = data_product.productUri
     return product_uri
+
+
+def _save_data_product(request, full_path):
+    "Create, register and record in DB a data product for full_path."
+    data_product = _create_data_product(request.user.username, full_path)
+    product_uri = request.airavata_client.registerDataProduct(
+        request.authz_token, data_product)
+    data_product.productUri = product_uri
+    user_file_instance = models.User_Files(
+        username=request.user.username,
+        file_path=full_path,
+        file_dpu=product_uri)
+    user_file_instance.save()
+    return data_product
+
+
+def _delete_data_product(request, full_path):
+    # TODO: call API to delete data product from replica catalog when it is
+    # available (not currently implemented)
+    user_file = models.User_Files.objects.filter(
+        username=request.user.username, file_path=full_path)
+    if user_file.exists():
+        user_file.delete()
 
 
 def _create_data_product(username, full_path):
@@ -97,3 +139,15 @@ def _create_data_product(username, full_path):
                               full_path)
     data_product.replicaLocations = [data_replica_location]
     return data_product
+
+
+def _get_replica_filepath(data_product):
+    replica_filepaths = [rep.filePath
+                         for rep in data_product.replicaLocations
+                         if rep.replicaLocationCategory ==
+                         ReplicaLocationCategory.GATEWAY_DATA_STORE]
+    replica_filepath = (replica_filepaths[0]
+                        if len(replica_filepaths) > 0 else None)
+    if replica_filepath:
+        return urlparse(replica_filepath).path
+    return None
