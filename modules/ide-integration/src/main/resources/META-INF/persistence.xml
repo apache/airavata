@@ -133,4 +133,29 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
+    <persistence-unit name="airavata-sharing-registry">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.airavata.sharing.registry.db.entities.DomainEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.EntityEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.EntityTypeEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.GroupMembershipEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.PermissionTypeEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.SharingEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.UserEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.GroupAdminEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.UserGroupEntity</class>
+    </persistence-unit>
+    <persistence-unit name="profile_service">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity</class>
+        <class>org.apache.airavata.service.profile.commons.user.entities.NSFDemographicsEntity</class>
+        <class>org.apache.airavata.service.profile.commons.user.entities.CustomizedDashboardEntity</class>
+        <class>org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <property name="openjpa.jdbc.MappingDefaults"
+                      value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+        </properties>
+    </persistence-unit>
 </persistence>
