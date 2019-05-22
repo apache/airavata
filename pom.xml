@@ -594,7 +594,7 @@
                     </plugin>
 		    <plugin>
 		       <groupId>org.apache.maven.plugins</groupId>
-		       <artificatId>maven-jar-plugins</artificatId>
+		       <artifactId>maven-jar-plugins</artifactId>
 		       <version>$(openjpa.version)</version>
 		    </plugin>
 		    
