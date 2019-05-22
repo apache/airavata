@@ -62,6 +62,10 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
 ### Starting API Server
 
 * Go to org.apache.airavata.ide.integration.APIServerStarter class and right click on the editor and click Run option. This will start Airavata server
+* Make sure that the IDE's working directory for APIServerStarter points to:
+```
+PATH/TO/airavata/modules/ide-integration/src/main/resources
+```
 
 ### Starting Job Execution Engine
 
@@ -170,3 +174,28 @@ https://support.google.com/accounts/answer/6010255?hl=en
   ```
   docker-compose rm
   ```
+
+## Troubleshooting
+
+### Airavata's keystore format not supported by older JDKs
+
+Older versions of Java do not Airavata's keystore format. Using JDK 1.8.0_40 following error is produced:
+
+```
+[main] ERROR o.a.a.a.s.AiravataAPIServer Error creating the transport []
+org.apache.thrift.transport.TTransportException: Error creating the transport
+	at org.apache.thrift.transport.TSSLTransportFactory.createSSLContext(TSSLTransportFactory.java:214)
+	at org.apache.thrift.transport.TSSLTransportFactory.getServerSocket(TSSLTransportFactory.java:108)
+	at org.apache.airavata.api.server.AiravataAPIServer.startAiravataServer(AiravataAPIServer.java:121)
+	at org.apache.airavata.api.server.AiravataAPIServer.start(AiravataAPIServer.java:189)
+	at org.apache.airavata.ide.integration.APIServerStarter.main(APIServerStarter.java:26)
+Caused by: java.io.IOException: Invalid keystore format
+	at sun.security.provider.JavaKeyStore.engineLoad(JavaKeyStore.java:650)
+	at sun.security.provider.JavaKeyStore$JKS.engineLoad(JavaKeyStore.java:55)
+	at java.security.KeyStore.load(KeyStore.java:1445)
+	at org.apache.thrift.transport.TSSLTransportFactory.createSSLContext(TSSLTransportFactory.java:199)
+	... 4 common frames omitted
+	
+```
+
+We have tested with Java "1.8.0_211" and it solves the above error.
