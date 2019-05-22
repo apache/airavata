@@ -63,9 +63,9 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
 
 * Go to org.apache.airavata.ide.integration.APIServerStarter class and right click on the editor and click Run option. This will start Airavata server
 * Make sure that the IDE's working directory for APIServerStarter points to:
-```
-PATH/TO/airavata/modules/ide-integration/src/main/resources
-```
+  ```
+  PATH/TO/airavata/modules/ide-integration/src/main/resources
+  ```
 
 ### Starting Job Execution Engine
 
@@ -179,7 +179,7 @@ https://support.google.com/accounts/answer/6010255?hl=en
 
 ### Airavata's keystore format not supported by older JDKs
 
-Older versions of Java do not Airavata's keystore format. Using JDK 1.8.0_40 following error is produced:
+Older versions of Java do not support Airavata's keystore format. Using JDK 1.8.0_40 following error is produced:
 
 ```
 [main] ERROR o.a.a.a.s.AiravataAPIServer Error creating the transport []
