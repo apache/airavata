@@ -64,7 +64,7 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
 * Go to org.apache.airavata.ide.integration.APIServerStarter class and right click on the editor and click Run option. This will start Airavata server
 * Make sure that the IDE's working directory for APIServerStarter points to:
   ```
-  PATH/TO/airavata/modules/ide-integration/src/main/resources
+  /modules/ide-integration/src/main/resources
   ```
 
 ### Starting Job Execution Engine
