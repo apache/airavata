@@ -133,6 +133,14 @@ def view_experiment(request, experiment_id):
     })
 
 
+@login_required
+def user_storage(request):
+    request.active_nav_item = 'storage'
+    return render(request, 'django_airavata_workspace/base.html', {
+        'bundle_name': 'user-storage'
+    })
+
+
 experiment_data_storage = FileSystemStorage(
     location=settings.GATEWAY_DATA_STORE_DIR)
 

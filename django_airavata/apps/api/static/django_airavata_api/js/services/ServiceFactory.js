@@ -40,6 +40,10 @@ const parseServiceMapping = function(serviceConfiguration) {
   let modelClass = serviceConfiguration.modelClass;
   let queryParams = serviceConfiguration.queryParams;
   let defaultPagination = serviceConfiguration.pagination ? true : false;
+  let encodePathParams =
+    "encodePathParams" in serviceConfiguration
+      ? serviceConfiguration.encodePathParams
+      : true;
   for (let viewSetFunction of viewSetFunctions) {
     let viewSetFunctionName = viewSetFunction;
     let pagination = defaultPagination;
@@ -56,7 +60,8 @@ const parseServiceMapping = function(serviceConfiguration) {
           requestType: getKey,
           modelClass: modelClass,
           queryParams: queryParams,
-          initialDataParam: viewSetFunction.initialDataParam
+          initialDataParam: viewSetFunction.initialDataParam,
+          encodePathParams: encodePathParams
         };
         break;
       case "create":
@@ -67,7 +72,8 @@ const parseServiceMapping = function(serviceConfiguration) {
             name: "data"
           },
           modelClass: modelClass,
-          queryParams: queryParams
+          queryParams: queryParams,
+          encodePathParams: encodePathParams
         };
         break;
       case "update":
@@ -78,7 +84,8 @@ const parseServiceMapping = function(serviceConfiguration) {
             name: "data"
           },
           modelClass: modelClass,
-          queryParams: queryParams
+          queryParams: queryParams,
+          encodePathParams: encodePathParams
         };
         break;
       case "retrieve":
@@ -87,7 +94,8 @@ const parseServiceMapping = function(serviceConfiguration) {
           requestType: getKey,
           modelClass: modelClass,
           queryParams: queryParams,
-          initialDataParam: viewSetFunction.initialDataParam
+          initialDataParam: viewSetFunction.initialDataParam,
+          encodePathParams: encodePathParams
         };
         break;
       case "delete":
@@ -95,7 +103,8 @@ const parseServiceMapping = function(serviceConfiguration) {
           url: url + "<lookup>/",
           requestType: delKey,
           modelClass: modelClass,
-          queryParams: queryParams
+          queryParams: queryParams,
+          encodePathParams: encodePathParams
         };
         break;
       default:
@@ -115,7 +124,11 @@ const parseServiceMapping = function(serviceConfiguration) {
         pagination:
           "pagination" in methodConfig
             ? methodConfig.pagination
-            : defaultPagination
+            : defaultPagination,
+        encodePathParams:
+          "encodePathParams" in serviceConfiguration
+            ? serviceConfiguration.encodePathParams
+            : true
       };
       if ("modelClass" in methodConfig) {
         mappedFunctions[methodName]["modelClass"] = methodConfig.modelClass;
@@ -198,7 +211,10 @@ class ServiceFactory {
       let queryParamsMapping = parseQueryMapping(config.queryParams);
       serviceObj[functionName] = function(
         params = {},
-        { ignoreErrors, showSpinner } = { ignoreErrors: false, showSpinner: true }
+        { ignoreErrors, showSpinner } = {
+          ignoreErrors: false,
+          showSpinner: true
+        }
       ) {
         let url = config.url;
         let paramKeys = Object.keys(params);
@@ -210,12 +226,16 @@ class ServiceFactory {
             if (pathParamsMapping[paramKey] !== null) {
               url = url.replace(
                 "<" + pathParamsMapping[paramKey] + ":" + paramKey + ">",
-                encodeURIComponent(params[paramKey])
+                config.encodePathParams
+                  ? encodeURIComponent(params[paramKey])
+                  : params[paramKey]
               );
             } else {
               url = url.replace(
                 "<" + paramKey + ">",
-                encodeURIComponent(params[paramKey])
+                config.encodePathParams
+                  ? encodeURIComponent(params[paramKey])
+                  : params[paramKey]
               );
             }
           } else if (paramKey in queryParamsMapping) {
@@ -265,14 +285,16 @@ class ServiceFactory {
             if (initialData) {
               return Promise.resolve(paginationHandler(initialData));
             } else {
-              return FetchUtils.get(url, queryParams, { ignoreErrors, showSpinner }).then(
-                paginationHandler
-              );
+              return FetchUtils.get(url, queryParams, {
+                ignoreErrors,
+                showSpinner
+              }).then(paginationHandler);
             }
           case putKey:
-            return FetchUtils.put(url, bodyParams, { ignoreErrors, showSpinner }).then(
-              resultHandler
-            );
+            return FetchUtils.put(url, bodyParams, {
+              ignoreErrors,
+              showSpinner
+            }).then(resultHandler);
           case delKey:
             return FetchUtils.delete(url, { ignoreErrors, showSpinner });
         }

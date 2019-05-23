@@ -117,6 +117,7 @@ const services = {
   UnicoreDataMovementService,
   UnicoreJobSubmissionService,
   UserProfileService,
+  UserStoragePathService: ServiceFactory.service("UserStoragePaths"),
   WorkspacePreferencesService: ServiceFactory.service("WorkspacePreferences")
 };
 

@@ -764,6 +764,7 @@ class UserStorageFileSerializer(serializers.Serializer):
 
 class UserStorageDirectorySerializer(serializers.Serializer):
     name = serializers.CharField()
+    path = serializers.CharField()
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:user-storage-items',
         lookup_field='path',

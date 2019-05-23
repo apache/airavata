@@ -16,6 +16,7 @@ module.exports = {
       'experiment-list': './static/django_airavata_workspace/js/entry-experiment-list',
       'edit-experiment': './static/django_airavata_workspace/js/entry-edit-experiment',
       'edit-project': './static/django_airavata_workspace/js/entry-edit-project',
+      'user-storage': './static/django_airavata_workspace/js/entry-user-storage',
   },
   css: {
     loaderOptions: {

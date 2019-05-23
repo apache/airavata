@@ -18,6 +18,7 @@ import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
 import UserProfile from "./models/UserProfile";
+import UserStoragePath from "./models/UserStoragePath";
 import WorkspacePreferences from "./models/WorkspacePreferences";
 
 /*
@@ -272,6 +273,17 @@ export default {
     url: "/api/user-profiles",
     viewSet: ["list"],
     modelClass: UserProfile
+  },
+  UserStoragePaths: {
+    url: "/api/user-storage",
+    methods: {
+      get: {
+        url: "/api/user-storage/<path>",
+        requestType: "get",
+        modelClass: UserStoragePath,
+        encodePathParams: false
+      }
+    },
   },
   WorkspacePreferences: {
     url: "/api/workspace-preferences",
