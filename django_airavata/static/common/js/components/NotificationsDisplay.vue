@@ -36,6 +36,8 @@ export default {
         return "success";
       } else if (notification.type === "ERROR") {
         return "danger";
+      } else if (notification.type === "WARNING") {
+        return "warning";
       } else {
         return "secondary";
       }
