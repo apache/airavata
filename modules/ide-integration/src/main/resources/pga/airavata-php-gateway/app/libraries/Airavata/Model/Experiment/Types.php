@@ -34,6 +34,8 @@ final class ExperimentSearchFields {
   const TO_DATE = 4;
   const STATUS = 5;
   const PROJECT_ID = 6;
+  const USER_NAME = 7;
+  const JOB_ID = 8;
   static public $__names = array(
     0 => 'EXPERIMENT_NAME',
     1 => 'EXPERIMENT_DESC',
@@ -42,6 +44,8 @@ final class ExperimentSearchFields {
     4 => 'TO_DATE',
     5 => 'STATUS',
     6 => 'PROJECT_ID',
+    7 => 'USER_NAME',
+    8 => 'JOB_ID',
   );
 }
 
@@ -464,6 +468,10 @@ class ExperimentModel {
    * @var \Airavata\Model\Process\ProcessModel[]
    */
   public $processes = null;
+  /**
+   * @var \Airavata\Model\Workflow\AiravataWorkflow
+   */
+  public $workflow = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -574,6 +582,11 @@ class ExperimentModel {
             'class' => '\Airavata\Model\Process\ProcessModel',
             ),
           ),
+        20 => array(
+          'var' => 'workflow',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Workflow\AiravataWorkflow',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -633,6 +646,9 @@ class ExperimentModel {
       }
       if (isset($vals['processes'])) {
         $this->processes = $vals['processes'];
+      }
+      if (isset($vals['workflow'])) {
+        $this->workflow = $vals['workflow'];
       }
     }
   }
@@ -855,6 +871,14 @@ class ExperimentModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 20:
+          if ($ftype == TType::STRUCT) {
+            $this->workflow = new \Airavata\Model\Workflow\AiravataWorkflow();
+            $xfer += $this->workflow->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1036,6 +1060,14 @@ class ExperimentModel {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->workflow !== null) {
+      if (!is_object($this->workflow)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('workflow', TType::STRUCT, 20);
+      $xfer += $this->workflow->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -128,9 +128,32 @@ class ExperimentController extends BaseController
 
     public function summary()
     {
+        Log::info("Inside the summary function...");
+
+        Log::info(print_r($_GET, TRUE));
+
         $experiment = null;
+        $experiment_id=null;
+        if(isset($_GET['jobId'])){
+            Log::info("Summary is called");
+            $limit = 1;
+            $pageNo = 0;
+            $inputs["search-key"] = "jobId";
+            $inputs["search-value"] = $_GET['jobId'];
+            $expContainer = ExperimentUtilities::get_expsearch_results_with_pagination($inputs, $limit,
+                $pageNo);
+            Log::info("Experiment ID for the jobId is: ");
+            Log::info($expContainer[0]["experiment"]->experimentId);
+
+            $experiment_id=$expContainer[0]['experiment']->experimentId;
+        }
+        else {
+            $experiment_id = $_GET['expId'];
+        }
+
         try {
-            $experiment = ExperimentUtilities::get_experiment($_GET['expId']);
+            $experiment = ExperimentUtilities::get_experiment($experiment_id);
+            //Log::info(print_r($experiment, True));
         } catch (ExperimentNotFoundException $enf) {
 
             Log::error("Experiment wasn't found", array("message" => $enf->getMessage(), "username" => Session::get("username"), "gateway_id" => Session::get("gateway_id")));
@@ -189,7 +212,7 @@ class ExperimentController extends BaseController
         $writeableProjects = ProjectUtilities::get_all_user_writeable_projects(Session::get("gateway_id"), Session::get("username"));
 
         $data = array(
-            "expId" => Input::get("expId"),
+            "expId" => $experiment_id,
             "experiment" => $experiment,
             "project" => $project,
             "jobDetails" => $jobDetails,
@@ -198,7 +221,7 @@ class ExperimentController extends BaseController
             "writeableProjects" => $writeableProjects
         );
         if(Config::get('pga_config.airavata')["data-sharing-enabled"]){
-            $users = SharingUtilities::getProfilesForSharedUsers(Input::get("expId"), ResourceType::EXPERIMENT);
+            $users = SharingUtilities::getProfilesForSharedUsers($experiment_id, ResourceType::EXPERIMENT);
             $sharedExperimentOwner = SharingUtilities::getSharedResourceOwner($experiment->experimentId, ResourceType::EXPERIMENT);
             $sharedProjectOwner = SharingUtilities::getSharedResourceOwner($experiment->projectId, ResourceType::PROJECT);
 
@@ -230,7 +253,7 @@ class ExperimentController extends BaseController
 
         if( Input::has("dashboard"))
         {
-            $detailedExperiment = ExperimentUtilities::get_detailed_experiment( $_GET['expId']);
+            $detailedExperiment = ExperimentUtilities::get_detailed_experiment( $experiment_id);
             $data["detailedExperiment"] = $detailedExperiment;
         }
 
