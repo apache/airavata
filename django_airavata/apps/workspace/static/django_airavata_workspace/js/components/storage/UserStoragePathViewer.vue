@@ -16,11 +16,11 @@
         <router-link
           v-if="data.item.type === 'dir'"
           :to="'/~/' + data.item.path"
-        >{{ data.item.name }}</router-link>
+        > <i class="fa fa-folder-open"></i> {{ data.item.name }}</router-link>
         <b-link
           v-else
           :href="data.item.downloadURL"
-        >{{ data.item.name }}</b-link>
+        > <i class="fa fa-download"></i> {{ data.item.name }}</b-link>
       </template>
       <template
         slot="createdTimestamp"
@@ -100,11 +100,11 @@ export default {
     },
     getFormattedSize(size) {
       if (size > Math.pow(2, 30)) {
-        return Math.round(size / Math.pow(2,30)) + " GB";
+        return Math.round(size / Math.pow(2, 30)) + " GB";
       } else if (size > Math.pow(2, 20)) {
-        return Math.round(size / Math.pow(2,20)) + " MB";
+        return Math.round(size / Math.pow(2, 20)) + " MB";
       } else if (size > Math.pow(2, 10)) {
-        return Math.round(size / Math.pow(2,10)) + " KB";
+        return Math.round(size / Math.pow(2, 10)) + " KB";
       } else {
         return size + " bytes";
       }

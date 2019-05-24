@@ -1,6 +1,7 @@
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
+import { session } from "django-airavata-api";
 
 GlobalErrorHandler.init();
 
@@ -18,6 +19,9 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 export default function entry(entryPointFunction) {
   // Common Vue configuration
   Vue.use(BootstrapVue);
+
+  // Initialize portal session object with data provided by base.html template
+  session.Session.init(window.AiravataPortalSessionData);
 
   entryPointFunction(Vue);
 }

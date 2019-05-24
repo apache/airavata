@@ -1,9 +1,21 @@
 <template>
-  <router-view :user-storage-path="userStoragePath"></router-view>
+  <div class="row">
+    <div class="col">
+      <h1 class="h4">
+        Storage
+      </h1>
+      <p>
+        <small class="text-muted"><i class="fa fa-folder-open"></i> {{ username }}</small>
+      </p>
+      <b-card>
+        <router-view :user-storage-path="userStoragePath"></router-view>
+      </b-card>
+    </div>
+  </div>
 </template>
 
 <script>
-import { services, utils } from "django-airavata-api";
+import { services, session, utils } from "django-airavata-api";
 import { notifications } from "django-airavata-common-ui";
 
 export default {
@@ -15,6 +27,9 @@ export default {
       } else {
         return this.$route.path;
       }
+    },
+    username() {
+      return session.Session.username;
     }
   },
   data() {
