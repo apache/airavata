@@ -4,7 +4,8 @@ const FIELDS = [
   "name",
   "downloadURL",
   "dataProductURI",
-  { name: "createdTime", type: "date" }
+  { name: "createdTime", type: "date" },
+  "size"
 ];
 
 export default class UserStorageFile extends BaseModel {

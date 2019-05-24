@@ -57,6 +57,12 @@ export default {
           label: "Created Time",
           key: "createdTimestamp",
           sortable: true
+        },
+        {
+          label: "Size",
+          key: "size",
+          sortable: true,
+          formatter: value => this.getFormattedSize(value)
         }
       ];
     },
@@ -68,7 +74,8 @@ export default {
             path: d.path,
             type: "dir",
             createdTime: d.createdTime,
-            createdTimestamp: d.createdTime.getTime() // for sorting
+            createdTimestamp: d.createdTime.getTime(), // for sorting
+            size: d.size
           };
         });
         const files = this.userStoragePath.files.map(f => {
@@ -77,7 +84,8 @@ export default {
             type: "file",
             downloadURL: f.downloadURL,
             createdTime: f.createdTime,
-            createdTimestamp: f.createdTime.getTime() // for sorting
+            createdTimestamp: f.createdTime.getTime(), // for sorting
+            size: f.size
           };
         });
         return dirs.concat(files);
@@ -89,6 +97,17 @@ export default {
   methods: {
     fromNow(date) {
       return moment(date).fromNow();
+    },
+    getFormattedSize(size) {
+      if (size > Math.pow(2, 30)) {
+        return Math.round(size / Math.pow(2,30)) + " GB";
+      } else if (size > Math.pow(2, 20)) {
+        return Math.round(size / Math.pow(2,20)) + " MB";
+      } else if (size > Math.pow(2, 10)) {
+        return Math.round(size / Math.pow(2,10)) + " KB";
+      } else {
+        return size + " bytes";
+      }
     }
   }
 };

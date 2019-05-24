@@ -124,6 +124,15 @@ def get_created_time(username, file_path):
     return user_data_storage.get_created_time(file_path)
 
 
+def size(username, file_path):
+    user_data_storage = _user_data_storage(username)
+    full_path = path_(username, file_path)
+    if os.path.isdir(full_path):
+        return _get_dir_size(full_path)
+    else:
+        return user_data_storage.size(file_path)
+
+
 def path(username, file_path):
     return path_(username, file_path)
 
@@ -141,3 +150,13 @@ def _user_data_storage(username):
     return FileSystemStorage(
         location=os.path.join(settings.GATEWAY_DATA_STORE_DIR,
                               _user_dir_name(username)))
+
+
+# from https://stackoverflow.com/a/1392549
+def _get_dir_size(start_path='.'):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
