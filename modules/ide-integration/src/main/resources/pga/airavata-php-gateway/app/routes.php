@@ -322,7 +322,12 @@ Route::get("admin/dashboard/experimentStatistics", "AdminController@experimentSt
 Route::get("admin/dashboard/resources", "AdminController@resourcesView");
 
 Route::get("admin/dashboard/experiment/summary", function () {
-    return Redirect::to("experiment/summary?expId=" . urlencode($_GET["expId"]) . "&dashboard=true");
+    if(isset($_GET['jobId'])) {
+        return Redirect::to("experiment/summary?jobId=" . urlencode($_GET["jobId"]) . "&dashboard=true");
+    }
+    else {
+        return Redirect::to("experiment/summary?expId=" . urlencode($_GET["expId"]) . "&dashboard=true");
+    }
 });
 
 Route::get("admin/dashboard/credential-store", "AdminController@credentialStoreView");
