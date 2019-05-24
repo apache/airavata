@@ -12,6 +12,11 @@ const FIELDS = [
     name: "directories",
     type: UserStorageDirectory,
     list: true
+  },
+  {
+    name: "parts",
+    type: "string",
+    list: true
   }
 ];
 

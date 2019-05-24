@@ -1377,8 +1377,18 @@ class UserStoragePathView(APIView):
         }
         if uploaded is not None:
             data['uploaded'] = uploaded
+        data['parts'] = self._split_path(path)
         serializer = self.serializer_class(data, context={'request': request})
         return Response(serializer.data)
+
+    def _split_path(self, path):
+        head, tail = os.path.split(path)
+        if head != "":
+            return self._split_path(head) + [tail]
+        elif tail != "":
+            return [tail]
+        else:
+            return []
 
 
 class WorkspacePreferencesView(APIView):

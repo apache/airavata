@@ -1,30 +1,41 @@
 <template>
-  <b-table
-    :fields="fields"
-    :items="items"
-  >
-    <template
-      slot="name"
-      slot-scope="data"
+  <div>
+    <user-storage-path-breadcrumb
+      v-if="userStoragePath"
+      :parts="userStoragePath.parts"
+    />
+    <b-table
+      :fields="fields"
+      :items="items"
     >
-      <router-link
-        v-if="data.item.type === 'dir'"
-        :to="'/~/' + data.item.path"
-      >{{ data.item.name }}</router-link>
-      <b-link
-        v-else
-        :href="data.item.downloadURL"
-      >{{ data.item.name }}</b-link>
-    </template>
-  </b-table>
+      <template
+        slot="name"
+        slot-scope="data"
+      >
+        <router-link
+          v-if="data.item.type === 'dir'"
+          :to="'/~/' + data.item.path"
+        >{{ data.item.name }}</router-link>
+        <b-link
+          v-else
+          :href="data.item.downloadURL"
+        >{{ data.item.name }}</b-link>
+      </template>
+    </b-table>
+  </div>
 </template>
 <script>
+import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
+
 export default {
   name: "user-storage-path-viewer",
   props: {
     userStoragePath: {
       required: true
     }
+  },
+  components: {
+    UserStoragePathBreadcrumb
   },
   computed: {
     fields() {

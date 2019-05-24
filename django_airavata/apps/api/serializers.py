@@ -774,6 +774,7 @@ class UserStorageDirectorySerializer(serializers.Serializer):
 class UserStoragePathSerializer(serializers.Serializer):
     directories = UserStorageDirectorySerializer(many=True)
     files = UserStorageFileSerializer(many=True)
+    parts = serializers.ListField(child=serializers.CharField())
     # uploaded is populated after a file upload
     uploaded = DataProductSerializer(read_only=True)
 
