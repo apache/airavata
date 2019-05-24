@@ -24,9 +24,14 @@ import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.registry.core.entities.expcatalog.ExperimentSummaryEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.derby.vti.Restriction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +54,17 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         if (filters == null || !filters.containsKey(DBConstants.Experiment.GATEWAY_ID)) {
             logger.error("GatewayId is required");
             throw new RegistryException("GatewayId is required");
+        }
+
+        if (filters.get(DBConstants.Job.JOB_ID) != null) {
+            logger.debug("Filter Experiments by JobId");
+            queryParameters.put(DBConstants.Job.JOB_ID, filters.get(DBConstants.Job.JOB_ID));
+            String query_jobId = "SELECT P.experimentId FROM "
+                    + JobEntity.class.getSimpleName() + " J "
+                    + " JOIN J.task T"
+                    + " JOIN T.process P"
+                    + " WHERE J.jobId = : " + DBConstants.Job.JOB_ID;
+            query += "ES.experimentId IN  ( "+ query_jobId + " ) AND ";
         }
 
         if (filters.get(DBConstants.Experiment.USER_NAME) != null) {
