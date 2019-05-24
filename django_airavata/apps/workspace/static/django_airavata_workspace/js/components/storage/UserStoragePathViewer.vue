@@ -28,11 +28,20 @@
       >
         <span :title="data.item.createdTime.toString()">{{ fromNow(data.item.createdTime)}}</span>
       </template>
+      <template
+        slot="actions"
+        slot-scope="data"
+      >
+        <delete-button @delete="deleteItem(data.item)">
+          Are you sure you want to delete {{ data.item.name }}?
+        </delete-button>
+      </template>
     </b-table>
   </div>
 </template>
 <script>
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
+import { components } from "django-airavata-common-ui";
 import moment from "moment";
 
 export default {
@@ -43,6 +52,7 @@ export default {
     }
   },
   components: {
+    "delete-button": components.DeleteButton,
     UserStoragePathBreadcrumb
   },
   computed: {
@@ -63,6 +73,10 @@ export default {
           label: "Created Time",
           key: "createdTimestamp",
           sortable: true
+        },
+        {
+          label: "Actions",
+          key: "actions"
         }
       ];
     },
@@ -82,6 +96,7 @@ export default {
           return {
             name: f.name,
             type: "file",
+            dataProductURI: f.dataProductURI,
             downloadURL: f.downloadURL,
             createdTime: f.createdTime,
             createdTimestamp: f.createdTime.getTime(), // for sorting
@@ -107,6 +122,13 @@ export default {
         return Math.round(size / Math.pow(2, 10)) + " KB";
       } else {
         return size + " bytes";
+      }
+    },
+    deleteItem(item) {
+      if (item.type === "dir") {
+        this.$emit("delete-dir", item.path);
+      } else if (item.type === "file") {
+        this.$emit("delete-file", item.dataProductURI);
       }
     }
   }

@@ -39,7 +39,11 @@
     <div class="row">
       <div class="col">
         <b-card>
-          <router-view :user-storage-path="userStoragePath"></router-view>
+          <router-view
+            :user-storage-path="userStoragePath"
+            @delete-dir="deleteDir"
+            @delete-file="deleteFile"
+          ></router-view>
         </b-card>
       </div>
     </div>
@@ -127,6 +131,19 @@ export default {
           }
         );
       }
+    },
+    deleteDir(path) {
+      utils.FetchUtils.delete("/api/user-storage/~/" + path).then(result => {
+        this.loadUserStoragePath(this.storagePath);
+      });
+    },
+    deleteFile(dataProductURI) {
+      utils.FetchUtils.delete(
+        "/api/delete-file?data-product-uri=" +
+          encodeURIComponent(dataProductURI)
+      ).then(() => {
+        this.loadUserStoragePath(this.storagePath);
+      });
     }
   },
   created() {
