@@ -54,8 +54,9 @@ export default {
   created() {
     if (this.$route.path === "/") {
       this.$router.replace("/~/");
+    } else {
+      this.loadUserStoragePath(this.storagePath);
     }
-    this.loadUserStoragePath(this.storagePath);
   },
   watch: {
     $route(to, from) {
