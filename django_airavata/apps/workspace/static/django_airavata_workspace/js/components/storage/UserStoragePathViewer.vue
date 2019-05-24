@@ -54,15 +54,15 @@ export default {
           sortable: true
         },
         {
-          label: "Created Time",
-          key: "createdTimestamp",
-          sortable: true
-        },
-        {
           label: "Size",
           key: "size",
           sortable: true,
           formatter: value => this.getFormattedSize(value)
+        },
+        {
+          label: "Created Time",
+          key: "createdTimestamp",
+          sortable: true
         }
       ];
     },
