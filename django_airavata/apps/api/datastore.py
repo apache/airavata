@@ -119,6 +119,11 @@ def list_user_dir(username, file_path):
     return user_data_storage.listdir(file_path)
 
 
+def get_created_time(username, file_path):
+    user_data_storage = _user_data_storage(username)
+    return user_data_storage.get_created_time(file_path)
+
+
 def path(username, file_path):
     return path_(username, file_path)
 

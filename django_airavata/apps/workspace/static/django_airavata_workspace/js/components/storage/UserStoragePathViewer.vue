@@ -7,6 +7,7 @@
     <b-table
       :fields="fields"
       :items="items"
+      sort-by="name"
     >
       <template
         slot="name"
@@ -21,11 +22,18 @@
           :href="data.item.downloadURL"
         >{{ data.item.name }}</b-link>
       </template>
+      <template
+        slot="createdTimestamp"
+        slot-scope="data"
+      >
+        <span :title="data.item.createdTime.toString()">{{ fromNow(data.item.createdTime)}}</span>
+      </template>
     </b-table>
   </div>
 </template>
 <script>
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
+import moment from "moment";
 
 export default {
   name: "user-storage-path-viewer",
@@ -42,7 +50,13 @@ export default {
       return [
         {
           label: "Name",
-          key: "name"
+          key: "name",
+          sortable: true
+        },
+        {
+          label: "Created Time",
+          key: "createdTimestamp",
+          sortable: true
         }
       ];
     },
@@ -52,20 +66,29 @@ export default {
           return {
             name: d.name,
             path: d.path,
-            type: "dir"
+            type: "dir",
+            createdTime: d.createdTime,
+            createdTimestamp: d.createdTime.getTime() // for sorting
           };
         });
         const files = this.userStoragePath.files.map(f => {
           return {
             name: f.name,
             type: "file",
-            downloadURL: f.downloadURL
+            downloadURL: f.downloadURL,
+            createdTime: f.createdTime,
+            createdTimestamp: f.createdTime.getTime() // for sorting
           };
         });
         return dirs.concat(files);
       } else {
         return [];
       }
+    }
+  },
+  methods: {
+    fromNow(date) {
+      return moment(date).fromNow();
     }
   }
 };

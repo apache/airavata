@@ -1,6 +1,11 @@
 import BaseModel from "./BaseModel";
 
-const FIELDS = ["name", "downloadURL", "dataProductURI"];
+const FIELDS = [
+  "name",
+  "downloadURL",
+  "dataProductURI",
+  { name: "createdTime", type: "date" }
+];
 
 export default class UserStorageFile extends BaseModel {
   constructor(data = {}) {

@@ -752,6 +752,7 @@ class UserStorageFileSerializer(serializers.Serializer):
     name = serializers.CharField()
     downloadURL = serializers.SerializerMethodField()
     dataProductURI = serializers.CharField(source='data-product-uri')
+    createdTime = serializers.DateTimeField(source='created_time')
 
     def get_downloadURL(self, file):
         """Getter for downloadURL field."""
@@ -765,6 +766,7 @@ class UserStorageFileSerializer(serializers.Serializer):
 class UserStorageDirectorySerializer(serializers.Serializer):
     name = serializers.CharField()
     path = serializers.CharField()
+    createdTime = serializers.DateTimeField(source='created_time')
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:user-storage-items',
         lookup_field='path',
