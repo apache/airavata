@@ -142,14 +142,9 @@ def path_(username, file_path):
     return user_data_storage.path(file_path)
 
 
-def _user_dir_name(username):
-    return Storage().get_valid_name(username)
-
-
 def _user_data_storage(username):
     return FileSystemStorage(
-        location=os.path.join(settings.GATEWAY_DATA_STORE_DIR,
-                              _user_dir_name(username)))
+        location=os.path.join(settings.GATEWAY_DATA_STORE_DIR, username))
 
 
 # from https://stackoverflow.com/a/1392549
