@@ -4,7 +4,7 @@ import shutil
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
-from django.core.files.storage import FileSystemStorage, Storage
+from django.core.files.storage import FileSystemStorage
 
 experiment_data_storage = FileSystemStorage(
     location=settings.GATEWAY_DATA_STORE_DIR)
