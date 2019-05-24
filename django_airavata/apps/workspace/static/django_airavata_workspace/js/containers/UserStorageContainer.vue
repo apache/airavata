@@ -1,15 +1,47 @@
 <template>
-  <div class="row">
-    <div class="col">
-      <h1 class="h4">
-        Storage
-      </h1>
-      <p>
-        <small class="text-muted"><i class="fa fa-folder-open"></i> {{ username }}</small>
-      </p>
-      <b-card>
-        <router-view :user-storage-path="userStoragePath"></router-view>
-      </b-card>
+  <div>
+    <div class="row">
+      <div class="col">
+        <h1 class="h4">
+          Storage
+        </h1>
+        <p>
+          <small class="text-muted"><i class="fa fa-folder-open"></i> {{ username }}</small>
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <b-form-file
+          v-model="file"
+          ref="file-input"
+          placeholder="Add file"
+          @input="fileChanged"
+          class="mb-2"
+        ></b-form-file>
+      </div>
+      <div class="col">
+        <b-input-group>
+          <b-form-input
+            v-model="dirName"
+            placeholder="New directory name"
+            @keydown.native.enter="addDirectory"
+          ></b-form-input>
+          <b-input-group-append>
+            <b-button
+              @click="addDirectory"
+              :disabled="!this.dirName"
+            >Add directory</b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <b-card>
+          <router-view :user-storage-path="userStoragePath"></router-view>
+        </b-card>
+      </div>
     </div>
   </div>
 </template>
@@ -34,7 +66,9 @@ export default {
   },
   data() {
     return {
-      userStoragePath: null
+      userStoragePath: null,
+      file: null,
+      dirName: null
     };
   },
   methods: {
@@ -64,6 +98,35 @@ export default {
           duration: 2
         })
       );
+    },
+    fileChanged() {
+      if (this.file) {
+        let data = new FormData();
+        data.append("file", this.file);
+        utils.FetchUtils.post(
+          "/api/user-storage/" + this.storagePath,
+          data
+        ).then(result => {
+          // this.file = null;
+          this.$refs["file-input"].reset();
+          this.loadUserStoragePath(this.storagePath);
+        });
+      }
+    },
+    addDirectory() {
+      if (this.dirName) {
+        let newDirPath = this.storagePath;
+        if (!newDirPath.endsWith("/")) {
+          newDirPath = newDirPath + "/";
+        }
+        newDirPath = newDirPath + this.dirName;
+        utils.FetchUtils.post("/api/user-storage/" + newDirPath).then(
+          result => {
+            this.dirName = null;
+            this.loadUserStoragePath(this.storagePath);
+          }
+        );
+      }
     }
   },
   created() {

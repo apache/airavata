@@ -1356,6 +1356,7 @@ class UserStoragePathView(APIView):
         if not data_products_helper.dir_exists(request, user_storage_path):
             data_products_helper.create_user_dir(request, user_storage_path)
 
+        data_product = None
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = data_products_helper.save(
