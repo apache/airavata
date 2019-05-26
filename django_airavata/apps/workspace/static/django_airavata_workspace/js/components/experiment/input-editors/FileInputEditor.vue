@@ -75,24 +75,33 @@ export default {
     },
     deleteDataProduct() {
       utils.FetchUtils.delete(
-        "/api/delete-file?data-product-uri=" + encodeURIComponent(this.value)
-      ).then(() => {
-        this.data = null;
-        this.valueChanged();
-      });
+        "/api/delete-file?data-product-uri=" + encodeURIComponent(this.value),
+        { ignoreErrors: true }
+      )
+        .then(() => {
+          this.data = null;
+          this.valueChanged();
+        })
+        .catch(err => {
+          // Ignore 404 Not Found errors, file no longer exists so assume was
+          // already deleted
+          if (err.details.status === 404) {
+            this.data = null;
+            this.valueChanged();
+          } else {
+            throw err;
+          }
+        })
+        .catch(err => utils.FetchUtils.reportError);
     },
     fileChanged() {
       if (this.file) {
         let data = new FormData();
         data.append("file", this.file);
-        data.append("project-id", this.experiment.projectId);
-        data.append("experiment-name", this.experiment.experimentName);
         this.$emit("uploadstart");
-        // TODO: use the experimentDataDir off the experiment model as the path
-        // to upload to
-        utils.FetchUtils.post("/api/user-storage/~/tmp/", data, "", { showSpinner: false })
+        utils.FetchUtils.post("/api/upload", data, "", { showSpinner: false })
           .then(result => {
-            this.dataProduct = new models.DataProduct(result["uploaded"]);
+            this.dataProduct = new models.DataProduct(result["data-product"]);
             this.data = this.dataProduct.productUri;
             this.valueChanged();
           })

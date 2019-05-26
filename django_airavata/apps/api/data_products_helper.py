@@ -16,6 +16,7 @@ from airavata.model.data.replica.ttypes import (
 from . import datastore, models
 
 logger = logging.getLogger(__name__)
+TMP_INPUT_FILE_UPLOAD_DIR = "tmp"
 
 
 def save(request, path, file):
@@ -23,6 +24,15 @@ def save(request, path, file):
     username = request.user.username
     full_path = datastore.save(username, path, file)
     data_product = _save_data_product(request, full_path)
+    return data_product
+
+
+def save_input_file_upload(request, file):
+    """Save input file in staging area for input file uploads."""
+    username = request.user.username
+    file_name = os.path.basename(file.name)
+    full_path = datastore.save(username, TMP_INPUT_FILE_UPLOAD_DIR, file)
+    data_product = _save_data_product(request, full_path, name=file_name)
     return data_product
 
 
@@ -124,9 +134,10 @@ def _get_data_product_uri(request, full_path):
     return product_uri
 
 
-def _save_data_product(request, full_path):
+def _save_data_product(request, full_path, name=None):
     "Create, register and record in DB a data product for full_path."
-    data_product = _create_data_product(request.user.username, full_path)
+    data_product = _create_data_product(
+        request.user.username, full_path, name=name)
     product_uri = request.airavata_client.registerDataProduct(
         request.authz_token, data_product)
     data_product.productUri = product_uri
@@ -147,11 +158,14 @@ def _delete_data_product(request, full_path):
         user_file.delete()
 
 
-def _create_data_product(username, full_path):
+def _create_data_product(username, full_path, name=None):
     data_product = DataProductModel()
     data_product.gatewayId = settings.GATEWAY_ID
     data_product.ownerName = username
-    file_name = os.path.basename(full_path)
+    if name is not None:
+        file_name = name
+    else:
+        file_name = os.path.basename(full_path)
     data_product.productName = file_name
     data_product.dataProductType = DataProductType.FILE
     data_replica_location = DataReplicaLocationModel()

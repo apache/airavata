@@ -29,7 +29,7 @@ def open(username, path):
 
 
 def save(username, path, file):
-    """Save file to username/project name/experiment_name in data store."""
+    """Save file to username/path in data store."""
     # file.name may be full path, so get just the name of the file
     file_name = os.path.basename(file.name)
     user_data_storage = _user_data_storage(username)

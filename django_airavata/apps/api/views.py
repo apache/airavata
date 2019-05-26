@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.http import FileResponse, Http404, HttpResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
 from rest_framework.decorators import action, detail_route, list_route
@@ -855,6 +855,23 @@ class DataProductView(APIView):
 #         datastore.delete(data_product)
 
 #         return JsonResponse({'deleted': True})
+
+
+@login_required
+def upload_input_file(request):
+    try:
+        input_file = request.FILES['file']
+        data_product = data_products_helper.save_input_file_upload(
+            request, input_file)
+        serializer = serializers.DataProductSerializer(
+            data_product, context={'request': request})
+        return JsonResponse({'uploaded': True,
+                             'data-product': serializer.data})
+    except Exception as e:
+        log.error("Failed to upload file", exc_info=True)
+        resp = JsonResponse({'uploaded': False, 'error': str(e)})
+        resp.status_code = 500
+        return resp
 
 
 @login_required
