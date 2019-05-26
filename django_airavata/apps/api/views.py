@@ -179,7 +179,6 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment = serializer.save(
             gatewayId=self.gateway_id,
             userName=self.username)
-        self._set_storage_id_and_data_dir(experiment)
         experiment_id = self.request.airavata_client.createExperiment(
             self.authz_token, self.gateway_id, experiment)
         self._update_most_recent_project(experiment.projectId)
@@ -189,8 +188,6 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment = serializer.save(
             gatewayId=self.gateway_id,
             userName=self.username)
-        # The project or exp name may have changed, so update the exp data dir
-        # self._set_storage_id_and_data_dir(experiment)
         self.request.airavata_client.updateExperiment(
             self.authz_token, experiment.experimentId, experiment)
         self._update_most_recent_project(experiment.projectId)
@@ -215,9 +212,49 @@ class ExperimentViewSet(APIBackedViewSet):
                 path=experiment.userConfigurationData.experimentDataDir)
             experiment.userConfigurationData.experimentDataDir = exp_dir
 
+    def _move_tmp_input_file_uploads_to_data_dir(self, experiment):
+        exp_data_dir = experiment.userConfigurationData.experimentDataDir
+        for experiment_input in experiment.experimentInputs:
+            if experiment_input.type == DataType.URI:
+                experiment_input.value = self._move_if_tmp_input_file_upload(
+                    experiment_input.value, exp_data_dir)
+            elif experiment_input.type == DataType.URI_COLLECTION:
+                data_product_uris = experiment_input.value.split(
+                    ",") if experiment_input.value else []
+                moved_data_product_uris = []
+                for data_product_uri in data_product_uris:
+                    moved_data_product_uris.append(
+                        self._move_if_tmp_input_file_upload(data_product_uri,
+                                                            exp_data_dir))
+                experiment_input.value = ",".join(moved_data_product_uris)
+
+    def _move_if_tmp_input_file_upload(
+            self, data_product_uri, experiment_data_dir):
+        """
+        Conditionally moves tmp input file to data dir and returns new dp URI.
+        """
+        data_product = self.request.airavata_client.getDataProduct(
+            self.authz_token, data_product_uri)
+        if data_products_helper.is_input_file_upload(
+                self.request, data_product):
+            moved_data_product = \
+                data_products_helper.move_input_file_upload(
+                    self.request,
+                    data_product,
+                    experiment_data_dir)
+            return moved_data_product.productUri
+        else:
+            return data_product_uri
+
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):
         try:
+            experiment = request.airavata_client.getExperiment(
+                self.authz_token, experiment_id)
+            self._set_storage_id_and_data_dir(experiment)
+            self._move_tmp_input_file_uploads_to_data_dir(experiment)
+            request.airavata_client.updateExperiment(
+                self.authz_token, experiment_id, experiment)
             request.airavata_client.launchExperiment(
                 request.authz_token, experiment_id, self.gateway_id)
             return Response({'success': True})

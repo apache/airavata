@@ -36,6 +36,22 @@ def save_input_file_upload(request, file):
     return data_product
 
 
+def is_input_file_upload(request, data_product):
+    path = _get_replica_filepath(data_product)
+    rel_path = datastore.rel_path(request.user.username, path)
+    return os.path.dirname(rel_path) == TMP_INPUT_FILE_UPLOAD_DIR
+
+
+def move_input_file_upload(request, data_product, path):
+    source_path = _get_replica_filepath(data_product)
+    file_name = data_product.productName
+    target_path = os.path.join(path, file_name)
+    full_path = datastore.move(request.user.username, source_path, target_path)
+    _delete_data_product(request, source_path)
+    data_product = _save_data_product(request, full_path, name=file_name)
+    return data_product
+
+
 def open(request, data_product):
     "Return file object for replica if it exists in user storage."
     path = _get_replica_filepath(data_product)

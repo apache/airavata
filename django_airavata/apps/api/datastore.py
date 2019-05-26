@@ -4,6 +4,7 @@ import shutil
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
+from django.core.files.move import file_move_safe
 from django.core.files.storage import FileSystemStorage
 
 experiment_data_storage = FileSystemStorage(
@@ -40,6 +41,13 @@ def save(username, path, file):
     return input_file_fullpath
 
 
+def move(username, source_path, target_path):
+    source_full_path = path_(username, source_path)
+    target_full_path = path_(username, target_path)
+    file_move_safe(source_full_path, target_full_path)
+    return target_full_path
+
+
 def create_user_dir(username, path):
     user_data_storage = _user_data_storage(username)
     if not user_data_storage.exists(path):
@@ -73,7 +81,6 @@ def delete_dir(username, path):
         raise ObjectDoesNotExist("File path does not exist: {}".format(path))
 
 
-# TODO: update this to just return an available experiment directory name
 def get_experiment_dir(
         username,
         project_name=None,
@@ -85,16 +92,22 @@ def get_experiment_dir(
         experiment_dir_name = os.path.join(
             user_experiment_data_storage.get_valid_name(project_name),
             user_experiment_data_storage.get_valid_name(experiment_name))
+        # Since there may already be another experiment with the same name in
+        # this project, we need to check for available name
+        experiment_dir_name = user_experiment_data_storage.get_available_name(
+            experiment_dir_name)
         experiment_dir = user_experiment_data_storage.path(experiment_dir_name)
     else:
         # path can be relative to the user's storage space or absolute (as long
         # as it is still inside the user's storage space)
+        # if path is passed in, assumption is that it has already been created
         user_experiment_data_storage = _user_data_storage(username)
         experiment_dir = user_experiment_data_storage.path(path)
     if not user_experiment_data_storage.exists(experiment_dir):
-        os.makedirs(experiment_dir,
-                    mode=user_experiment_data_storage.directory_permissions_mode)
-        # os.mkdir mode isn't always respected so need to chmod to be sure
+        os.makedirs(
+            experiment_dir,
+            mode=user_experiment_data_storage.directory_permissions_mode)
+        # os.makedirs mode isn't always respected so need to chmod to be sure
         os.chmod(experiment_dir,
                  mode=user_experiment_data_storage.directory_permissions_mode)
     return experiment_dir
@@ -135,6 +148,11 @@ def size(username, file_path):
 
 def path(username, file_path):
     return path_(username, file_path)
+
+
+def rel_path(username, file_path):
+    full_path = path_(username, file_path)
+    return os.path.relpath(full_path, path_(username, ""))
 
 
 def path_(username, file_path):
