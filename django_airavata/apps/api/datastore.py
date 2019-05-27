@@ -29,10 +29,10 @@ def open(username, path):
         raise ObjectDoesNotExist("File path does not exist: {}".format(path))
 
 
-def save(username, path, file):
+def save(username, path, file, name=None):
     """Save file to username/path in data store."""
     # file.name may be full path, so get just the name of the file
-    file_name = os.path.basename(file.name)
+    file_name = name if name is not None else os.path.basename(file.name)
     user_data_storage = _user_data_storage(username)
     file_path = os.path.join(
         path, user_data_storage.get_valid_name(file_name))
@@ -57,10 +57,10 @@ def create_user_dir(username, path):
             "Directory {} already exists".format(path))
 
 
-def copy(username, source_path, target_path):
+def copy(username, source_path, target_path, name=None):
     """Copy a user file into target_path dir."""
     f = open(username, source_path)
-    return save(username, target_path, f)
+    return save(username, target_path, f, name=name)
 
 
 def delete(username, path):
