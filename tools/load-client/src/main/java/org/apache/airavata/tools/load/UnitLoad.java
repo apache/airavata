@@ -70,8 +70,11 @@ public class UnitLoad {
             List<String> experiments = new ArrayList<>();
             for (int i = 0; i < iterations; i++) {
                 try {
+                    double randomDouble = Math.random();
+                    randomDouble = randomDouble * delay + 1;
+                    long randomLong = (long) randomDouble;
+                    Thread.sleep(randomLong);
                     experiments.add(submitExperiment(config,id + "-" + i));
-                    Thread.sleep(delay);
                 } catch (TException e) {
                     e.printStackTrace();
                 } catch (AgentException e) {
