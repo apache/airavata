@@ -82,16 +82,18 @@ export default {
     },
     items() {
       if (this.userStoragePath) {
-        const dirs = this.userStoragePath.directories.map(d => {
-          return {
-            name: d.name,
-            path: d.path,
-            type: "dir",
-            createdTime: d.createdTime,
-            createdTimestamp: d.createdTime.getTime(), // for sorting
-            size: d.size
-          };
-        });
+        const dirs = this.userStoragePath.directories
+          .filter(d => !d.hidden)
+          .map(d => {
+            return {
+              name: d.name,
+              path: d.path,
+              type: "dir",
+              createdTime: d.createdTime,
+              createdTimestamp: d.createdTime.getTime(), // for sorting
+              size: d.size
+            };
+          });
         const files = this.userStoragePath.files.map(f => {
           return {
             name: f.name,

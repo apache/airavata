@@ -114,10 +114,12 @@ def listdir(request, path):
             created_time = datastore.get_created_time(
                 request.user.username, dpath)
             size = datastore.size(request.user.username, dpath)
-            directories_data.append({'name': d,
-                                     'path': dpath,
-                                     'created_time': created_time,
-                                     'size': size})
+            directories_data.append({
+                'name': d,
+                'path': dpath,
+                'created_time': created_time,
+                'size': size,
+                'hidden': dpath == TMP_INPUT_FILE_UPLOAD_DIR})
         files_data = []
         for f in files:
             user_rel_path = os.path.join(path, f)
@@ -130,7 +132,8 @@ def listdir(request, path):
                                'path': user_rel_path,
                                'data-product-uri': data_product_uri,
                                'created_time': created_time,
-                               'size': size})
+                               'size': size,
+                               'hidden': False})
         return directories_data, files_data
     else:
         raise ObjectDoesNotExist("User storage path does not exist")
