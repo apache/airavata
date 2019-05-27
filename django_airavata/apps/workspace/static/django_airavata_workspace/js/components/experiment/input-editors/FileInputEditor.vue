@@ -10,12 +10,14 @@
         :input-file="true"
       />
       <delete-link
+        v-if="dataProduct.isInputFileUpload"
         class="ml-2"
         @delete="deleteDataProduct"
       >
-        Are you sure you want to delete input file {{ dataProduct.filename }}?
+        Are you sure you want to delete input file {{ dataProduct.productName }}?
       </delete-link>
       <b-link
+        v-else
         @click="unselect"
         class="ml-2 text-secondary"
       >

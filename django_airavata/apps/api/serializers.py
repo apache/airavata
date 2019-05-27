@@ -432,6 +432,7 @@ class DataProductSerializer(
     lastModifiedTime = UTCPosixTimestampDateTimeField()
     replicaLocations = DataReplicaLocationSerializer(many=True)
     downloadURL = serializers.SerializerMethodField()
+    isInputFileUpload = serializers.SerializerMethodField()
 
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""
@@ -442,6 +443,11 @@ class DataProductSerializer(
                 '?' +
                 urlencode({'data-product-uri': data_product.productUri}))
         return None
+
+    def get_isInputFileUpload(self, data_product):
+        """Return True if this is an uploaded input file."""
+        request = self.context['request']
+        return data_products_helper.is_input_file_upload(request, data_product)
 
 
 # TODO move this into airavata_sdk?
