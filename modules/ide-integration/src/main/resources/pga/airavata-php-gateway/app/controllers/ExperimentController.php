@@ -128,32 +128,43 @@ class ExperimentController extends BaseController
 
     public function summary()
     {
-        Log::info("Inside the summary function...");
-
-        Log::info(print_r($_GET, TRUE));
-
         $experiment = null;
-        $experiment_id=null;
+        $experiment_id = null;
+        // set the experiment Id using the jobId
         if(isset($_GET['jobId'])){
-            Log::info("Summary is called");
+            Log::debug("Searching experiment summary using jobId");
             $limit = 1;
             $pageNo = 0;
             $inputs["search-key"] = "jobId";
             $inputs["search-value"] = $_GET['jobId'];
-            $expContainer = ExperimentUtilities::get_expsearch_results_with_pagination($inputs, $limit,
-                $pageNo);
-            Log::info("Experiment ID for the jobId is: ");
-            Log::info($expContainer[0]["experiment"]->experimentId);
+            try {
+                $expContainer = ExperimentUtilities::get_expsearch_results_with_pagination($inputs, $limit,
+                    $pageNo);
+            } catch (AuthorizationException $ae) {
 
-            $experiment_id=$expContainer[0]['experiment']->experimentId;
+                Log::error("Experiment wasn't found", array("message" => $enf->getMessage(), "username" => Session::get("username"), "gateway_id" => Session::get("gateway_id")));
+                return $this->makeInvalidExperimentView();
+            } catch (ExperimentNotFoundException $enf) {
+
+                Log::error("Experiment wasn't found", array("message" => $enf->getMessage(), "username" => Session::get("username"), "gateway_id" => Session::get("gateway_id")));
+                return $this->makeInvalidExperimentView();
+            }
+            Log::debug(print_r($inputs, true));
+            try{
+              $experiment_id=$expContainer[0]['experiment']->experimentId;
+            } catch (Exception $e) {
+              Log::error("No experiment found for the given jobId");
+              return $this->makeInvalidExperimentView();
+            }
         }
+        // set the experiment Id directly using the input from the screen
         else {
             $experiment_id = $_GET['expId'];
         }
 
         try {
             $experiment = ExperimentUtilities::get_experiment($experiment_id);
-            //Log::info(print_r($experiment, True));
+
         } catch (ExperimentNotFoundException $enf) {
 
             Log::error("Experiment wasn't found", array("message" => $enf->getMessage(), "username" => Session::get("username"), "gateway_id" => Session::get("gateway_id")));

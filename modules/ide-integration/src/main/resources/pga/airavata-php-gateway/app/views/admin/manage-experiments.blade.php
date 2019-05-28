@@ -449,12 +449,12 @@ to be uncommented when actually in use.
     });
 
     $(".get-experiment").click(function () {
+        // check whether user wants to search by expId or jobId
         var getExpByJobID = $(".get-experiment-by-jobid").prop("checked");
-        alert(getExpByJobID);
         if(getExpByJobID == false){
             var jobId = $(".experimentId").val();
             var expHTMLId = util.sanitizeHTMLId(jobId);
-            alert("Searching by JobId: " + jobId);
+
             if( $("#" + expHTMLId).length <= 0){
                 $(".loading-img").removeClass("hide");
                 $.ajax({
@@ -482,8 +482,6 @@ to be uncommented when actually in use.
             }
         }
         else{
-            alert("Searching by ExpID");
-
             var expId = $(".experimentId").val();
             var expHTMLId = util.sanitizeHTMLId(expId);
             if( $("#" + expHTMLId).length <= 0){

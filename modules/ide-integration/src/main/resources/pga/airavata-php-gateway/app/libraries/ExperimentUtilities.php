@@ -243,30 +243,6 @@ class ExperimentUtilities
 
     }
 
-        public static function get_experimentId_by_jobId($jobId)
-    {
-        try {
-                return Airavata::getExperimentByJobID(Session::get('authz-token'), $jobId);
-                        
-        } catch (InvalidRequestException $ire) {
-            CommonUtilities::print_error_message('<p>InvalidRequestException: ' . $ire->getMessage() . '</p>');
-        } catch (ExperimentNotFoundException $enf) {
-            throw $enf; // rethrow
-        } catch (AuthorizationException $ae) {
-            throw $ae; // rethrow
-        } catch (AiravataClientException $ace) {
-            CommonUtilities::print_error_message('AiravataClientException: ' . $ace->getMessage() . '</p>');
-        } catch (AiravataSystemException $ase) {
-            CommonUtilities::print_error_message('AiravataSystemException: ' . $ase->getMessage() . '</p>');
-        } catch (TTransportException $tte) {
-            CommonUtilities::print_error_message('TTransportException: ' . $tte->getMessage() . '</p>');
-        } catch (Exception $e) {
-            CommonUtilities::print_error_message('Exception: ' . $e->getMessage() . '</p>');
-        }
-
-    }
-
-
     /**
      * Get the detailed tree of an experiment with the given ID
      * @param $expId
@@ -1230,7 +1206,7 @@ class ExperimentUtilities
      * @return array|null
      */
     public static function get_expsearch_results_with_pagination($inputs, $limit, $offset)
-    {   print_r("Search experiments called");
+    {
         $experiments = array();
 
         try {
@@ -1260,13 +1236,11 @@ class ExperimentUtilities
                         $filters[\Airavata\Model\Experiment\ExperimentSearchFields::TO_DATE] = strtotime( $addOrSubtract . " " . Session::get("user_timezone") . " hours", strtotime($inputs["to-date"]) ) * 1000;
                         break;
                     case 'jobId':
-                        Log::info(print_r($inputs, True));
                         $filters[\Airavata\Model\Experiment\ExperimentSearchFields::JOB_ID] = $inputs["search-value"];
                         break;
                     case '':
                 }
             }
-            Log::info(print_r($filters, True));
             $experiments = Airavata::searchExperiments(Session::get('authz-token'),
                 Session::get('gateway_id'), Session::get('username'), $filters, $limit, $offset);
         } catch (InvalidRequestException $ire) {
