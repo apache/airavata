@@ -31,12 +31,14 @@ from airavata.model.data.movement.ttypes import (
 )
 from airavata.model.experiment.ttypes import ExperimentSearchFields
 from airavata.model.group.ttypes import ResourcePermissionType
+from airavata.model.user.ttypes import Status
 from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
     APIResultPagination,
     GenericAPIBackedViewSet
 )
+from django_airavata.apps.auth import iam_admin_client
 from django_airavata.apps.workspace.models import User_Files
 
 from . import datastore, helpers, models, serializers, thrift_utils
@@ -1361,3 +1363,42 @@ class WorkspacePreferencesView(APIView):
         serializer = self.serializer_class(
             workspace_preferences, context={'request': request})
         return Response(serializer.data)
+
+
+class ManagedUserViewSet(mixins.CreateModelMixin,
+                         mixins.RetrieveModelMixin,
+                         mixins.UpdateModelMixin,
+                         mixins.ListModelMixin,
+                         GenericAPIBackedViewSet):
+    serializer_class = serializers.ManagedUserProfile
+    pagination_class = APIResultPagination
+    lookup_field = 'user_id'
+
+    def get_list(self):
+        search = self.request.GET.get('search', None)
+
+        convert_user_profile = self._convert_user_profile
+
+        class ManagedUsersResultIterator(APIResultIterator):
+            def get_results(self, limit=-1, offset=0):
+                return map(convert_user_profile,
+                           iam_admin_client.get_users(offset, limit, search))
+        return ManagedUsersResultIterator()
+
+    def get_instance(self, lookup_value):
+        return self._convert_user_profile(
+            iam_admin_client.get_user(lookup_value))
+
+    def _convert_user_profile(self, user_profile):
+        return {
+            'airavataInternalUserId': user_profile.airavataInternalUserId,
+            'userId': user_profile.userId,
+            'gatewayId': user_profile.gatewayId,
+            'email': user_profile.emails[0],
+            'firstName': user_profile.firstName,
+            'lastName': user_profile.lastName,
+            # TODO: fix this to distinguish between enabled and emailVerified
+            'enabled': user_profile.State == Status.CONFIRMED,
+            'emailVerified': user_profile.State == Status.CONFIRMED,
+            'groups': []
+        }

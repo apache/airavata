@@ -753,3 +753,19 @@ class WorkspacePreferencesSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WorkspacePreferences
         exclude = ('username',)
+
+
+class ManagedUserProfile(serializers.Serializer):
+    airavataInternalUserId = serializers.CharField()
+    userId = serializers.CharField()
+    gatewayId = serializers.CharField()
+    email = serializers.CharField()
+    firstName = serializers.CharField()
+    lastName = serializers.CharField()
+    enabled = serializers.BooleanField()
+    emailVerified = serializers.BooleanField()
+    groups = GroupSerializer(many=True)
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:managed-user-profile-detail',
+        lookup_field='userId',
+        lookup_url_kwarg='user_id')

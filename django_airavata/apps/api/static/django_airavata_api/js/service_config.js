@@ -12,6 +12,7 @@ import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
+import ManagedUserProfile from "./models/ManagedUserProfile";
 import Parser from "./models/Parser";
 import Project from "./models/Project";
 import SharedEntity from "./models/SharedEntity";
@@ -181,7 +182,9 @@ export default {
     ],
     modelClass: ExperimentSummary,
     pagination: true,
-    queryParams: ["limit", "offset"].concat(ExperimentSearchFields.values.map(f => f.name))
+    queryParams: ["limit", "offset"].concat(
+      ExperimentSearchFields.values.map(f => f.name)
+    )
   },
   FullExperiments: {
     url: "/api/full-experiments",
@@ -216,6 +219,13 @@ export default {
     pagination: true,
     queryParams: ["limit", "offset"],
     modelClass: Group
+  },
+  ManagedUserProfiles: {
+    url: "/api/managed-user-profiles",
+    viewSet: true,
+    pagination: true,
+    queryParams: ["limit", "offset", "search"],
+    modelClass: ManagedUserProfile
   },
   Parsers: {
     url: "/api/parsers",

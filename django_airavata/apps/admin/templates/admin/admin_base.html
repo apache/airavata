@@ -14,6 +14,11 @@
             <i class="fa fa-cogs"></i> <span class=sr-only>Application Catalog</span>
         </a>
         {% endif %}
+        {% if request.is_gateway_admin %}
+        <a href="{% url 'django_airavata_admin:users' %}" class="c-nav__item {% if request.active_nav_item == 'users' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Manage Users">
+            <i class="fa fa-users"></i> <span class=sr-only>Manage Users</span>
+        </a>
+        {% endif %}
         <a href="{% url 'django_airavata_admin:credential_store' %}" class="c-nav__item {% if request.active_nav_item == 'credential_store' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Credential Store">
             <i class="fa fa-lock"></i> <span class=sr-only>Credential Store</span>
         </a>

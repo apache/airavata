@@ -8,7 +8,8 @@ def home(request):
     if request.is_gateway_admin or request.is_read_only_gateway_admin:
         return redirect(reverse('django_airavata_admin:app_catalog'))
     else:
-        return redirect(reverse('django_airavata_admin:group_resource_profile'))
+        return redirect(
+            reverse('django_airavata_admin:group_resource_profile'))
 
 
 @login_required
@@ -37,4 +38,10 @@ def group_resource_profile(request):
 @login_required
 def gateway_resource_profile(request):
     request.active_nav_item = 'gateway_resource_profile'
+    return render(request, 'admin/admin_base.html')
+
+
+@login_required
+def users(request):
+    request.active_nav_item = 'users'
     return render(request, 'admin/admin_base.html')

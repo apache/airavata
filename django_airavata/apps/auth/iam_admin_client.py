@@ -47,6 +47,11 @@ def get_user(username):
     return iamadmin_client_pool.getUser(authz_token, username)
 
 
+def get_users(offset, limit, search=None):
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.getUsers(authz_token, offset, limit, search)
+
+
 def reset_user_password(username, new_password):
     authz_token = utils.get_service_account_authz_token()
     return iamadmin_client_pool.resetUserPassword(

@@ -32,6 +32,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool isUserEnabled(AuthzToken authzToken, string username)')
     print('  bool isUserExist(AuthzToken authzToken, string username)')
     print('  UserProfile getUser(AuthzToken authzToken, string username)')
+    print('   getUsers(AuthzToken authzToken, i32 offset, i32 limit, string search)')
     print('  bool resetUserPassword(AuthzToken authzToken, string username, string newPassword)')
     print('   findUsers(AuthzToken authzToken, string email, string userId)')
     print('  void updateUserProfile(AuthzToken authzToken, UserProfile userDetails)')
@@ -164,6 +165,12 @@ elif cmd == 'getUser':
         print('getUser requires 2 args')
         sys.exit(1)
     pp.pprint(client.getUser(eval(args[0]), args[1],))
+
+elif cmd == 'getUsers':
+    if len(args) != 4:
+        print('getUsers requires 4 args')
+        sys.exit(1)
+    pp.pprint(client.getUsers(eval(args[0]), eval(args[1]), eval(args[2]), args[3],))
 
 elif cmd == 'resetUserPassword':
     if len(args) != 3:

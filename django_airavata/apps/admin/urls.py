@@ -11,4 +11,5 @@ urlpatterns = [
         name='group_resource_profile'),
     url(r'^gateway-resource-profile/', views.gateway_resource_profile,
         name='gateway_resource_profile'),
+    url(r'^users/', views.users, name='users'),
 ]
