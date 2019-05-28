@@ -44,6 +44,8 @@ public class IamAdminServices {
 
     public org.apache.airavata.model.user.UserProfile getUser(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String username) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
+    public java.util.List<org.apache.airavata.model.user.UserProfile> getUsers(org.apache.airavata.model.security.AuthzToken authzToken, int offset, int limit, java.lang.String search) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+
     public boolean resetUserPassword(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String username, java.lang.String newPassword) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
     public java.util.List<org.apache.airavata.model.user.UserProfile> findUsers(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String email, java.lang.String userId) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
@@ -75,6 +77,8 @@ public class IamAdminServices {
     public void isUserExist(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String username, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
     public void getUser(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String username, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.user.UserProfile> resultHandler) throws org.apache.thrift.TException;
+
+    public void getUsers(org.apache.airavata.model.security.AuthzToken authzToken, int offset, int limit, java.lang.String search, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.user.UserProfile>> resultHandler) throws org.apache.thrift.TException;
 
     public void resetUserPassword(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String username, java.lang.String newPassword, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
@@ -347,6 +351,38 @@ public class IamAdminServices {
         throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getUser failed: unknown result");
+    }
+
+    public java.util.List<org.apache.airavata.model.user.UserProfile> getUsers(org.apache.airavata.model.security.AuthzToken authzToken, int offset, int limit, java.lang.String search) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      send_getUsers(authzToken, offset, limit, search);
+      return recv_getUsers();
+    }
+
+    public void send_getUsers(org.apache.airavata.model.security.AuthzToken authzToken, int offset, int limit, java.lang.String search) throws org.apache.thrift.TException
+    {
+      getUsers_args args = new getUsers_args();
+      args.setAuthzToken(authzToken);
+      args.setOffset(offset);
+      args.setLimit(limit);
+      args.setSearch(search);
+      sendBase("getUsers", args);
+    }
+
+    public java.util.List<org.apache.airavata.model.user.UserProfile> recv_getUsers() throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      getUsers_result result = new getUsers_result();
+      receiveBase(result, "getUsers");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.Idse != null) {
+        throw result.Idse;
+      }
+      if (result.ae != null) {
+        throw result.ae;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getUsers failed: unknown result");
     }
 
     public boolean resetUserPassword(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String username, java.lang.String newPassword) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
@@ -834,6 +870,47 @@ public class IamAdminServices {
       }
     }
 
+    public void getUsers(org.apache.airavata.model.security.AuthzToken authzToken, int offset, int limit, java.lang.String search, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.user.UserProfile>> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getUsers_call method_call = new getUsers_call(authzToken, offset, limit, search, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getUsers_call extends org.apache.thrift.async.TAsyncMethodCall<java.util.List<org.apache.airavata.model.user.UserProfile>> {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
+      private int offset;
+      private int limit;
+      private java.lang.String search;
+      public getUsers_call(org.apache.airavata.model.security.AuthzToken authzToken, int offset, int limit, java.lang.String search, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.user.UserProfile>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
+        this.offset = offset;
+        this.limit = limit;
+        this.search = search;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getUsers", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getUsers_args args = new getUsers_args();
+        args.setAuthzToken(authzToken);
+        args.setOffset(offset);
+        args.setLimit(limit);
+        args.setSearch(search);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public java.util.List<org.apache.airavata.model.user.UserProfile> getResult() throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getUsers();
+      }
+    }
+
     public void resetUserPassword(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String username, java.lang.String newPassword, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       resetUserPassword_call method_call = new resetUserPassword_call(authzToken, username, newPassword, resultHandler, this, ___protocolFactory, ___transport);
@@ -1077,6 +1154,7 @@ public class IamAdminServices {
       processMap.put("isUserEnabled", new isUserEnabled());
       processMap.put("isUserExist", new isUserExist());
       processMap.put("getUser", new getUser());
+      processMap.put("getUsers", new getUsers());
       processMap.put("resetUserPassword", new resetUserPassword());
       processMap.put("findUsers", new findUsers());
       processMap.put("updateUserProfile", new updateUserProfile());
@@ -1297,6 +1375,32 @@ public class IamAdminServices {
       }
     }
 
+    public static class getUsers<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getUsers_args> {
+      public getUsers() {
+        super("getUsers");
+      }
+
+      public getUsers_args getEmptyArgsInstance() {
+        return new getUsers_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getUsers_result getResult(I iface, getUsers_args args) throws org.apache.thrift.TException {
+        getUsers_result result = new getUsers_result();
+        try {
+          result.success = iface.getUsers(args.authzToken, args.offset, args.limit, args.search);
+        } catch (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
+          result.Idse = Idse;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
+        }
+        return result;
+      }
+    }
+
     public static class resetUserPassword<I extends Iface> extends org.apache.thrift.ProcessFunction<I, resetUserPassword_args> {
       public resetUserPassword() {
         super("resetUserPassword");
@@ -1477,6 +1581,7 @@ public class IamAdminServices {
       processMap.put("isUserEnabled", new isUserEnabled());
       processMap.put("isUserExist", new isUserExist());
       processMap.put("getUser", new getUser());
+      processMap.put("getUsers", new getUsers());
       processMap.put("resetUserPassword", new resetUserPassword());
       processMap.put("findUsers", new findUsers());
       processMap.put("updateUserProfile", new updateUserProfile());
@@ -2036,6 +2141,75 @@ public class IamAdminServices {
 
       public void start(I iface, getUser_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.user.UserProfile> resultHandler) throws org.apache.thrift.TException {
         iface.getUser(args.authzToken, args.username,resultHandler);
+      }
+    }
+
+    public static class getUsers<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getUsers_args, java.util.List<org.apache.airavata.model.user.UserProfile>> {
+      public getUsers() {
+        super("getUsers");
+      }
+
+      public getUsers_args getEmptyArgsInstance() {
+        return new getUsers_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.user.UserProfile>> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.user.UserProfile>>() { 
+          public void onComplete(java.util.List<org.apache.airavata.model.user.UserProfile> o) {
+            getUsers_result result = new getUsers_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            getUsers_result result = new getUsers_result();
+            if (e instanceof org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException) {
+              result.Idse = (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException) e;
+              result.setIdseIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+              result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+              result.setAeIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getUsers_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.user.UserProfile>> resultHandler) throws org.apache.thrift.TException {
+        iface.getUsers(args.authzToken, args.offset, args.limit, args.search,resultHandler);
       }
     }
 
@@ -10818,6 +10992,1291 @@ public class IamAdminServices {
     }
   }
 
+  public static class getUsers_args implements org.apache.thrift.TBase<getUsers_args, getUsers_args._Fields>, java.io.Serializable, Cloneable, Comparable<getUsers_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getUsers_args");
+
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I32, (short)2);
+    private static final org.apache.thrift.protocol.TField LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("limit", org.apache.thrift.protocol.TType.I32, (short)3);
+    private static final org.apache.thrift.protocol.TField SEARCH_FIELD_DESC = new org.apache.thrift.protocol.TField("search", org.apache.thrift.protocol.TType.STRING, (short)4);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getUsers_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getUsers_argsTupleSchemeFactory();
+
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
+    public int offset; // required
+    public int limit; // required
+    public java.lang.String search; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      OFFSET((short)2, "offset"),
+      LIMIT((short)3, "limit"),
+      SEARCH((short)4, "search");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // OFFSET
+            return OFFSET;
+          case 3: // LIMIT
+            return LIMIT;
+          case 4: // SEARCH
+            return SEARCH;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __OFFSET_ISSET_ID = 0;
+    private static final int __LIMIT_ISSET_ID = 1;
+    private byte __isset_bitfield = 0;
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
+      tmpMap.put(_Fields.OFFSET, new org.apache.thrift.meta_data.FieldMetaData("offset", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.LIMIT, new org.apache.thrift.meta_data.FieldMetaData("limit", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.SEARCH, new org.apache.thrift.meta_data.FieldMetaData("search", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getUsers_args.class, metaDataMap);
+    }
+
+    public getUsers_args() {
+    }
+
+    public getUsers_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
+      int offset,
+      int limit,
+      java.lang.String search)
+    {
+      this();
+      this.authzToken = authzToken;
+      this.offset = offset;
+      setOffsetIsSet(true);
+      this.limit = limit;
+      setLimitIsSet(true);
+      this.search = search;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getUsers_args(getUsers_args other) {
+      __isset_bitfield = other.__isset_bitfield;
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
+      this.offset = other.offset;
+      this.limit = other.limit;
+      if (other.isSetSearch()) {
+        this.search = other.search;
+      }
+    }
+
+    public getUsers_args deepCopy() {
+      return new getUsers_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.authzToken = null;
+      setOffsetIsSet(false);
+      this.offset = 0;
+      setLimitIsSet(false);
+      this.limit = 0;
+      this.search = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public getUsers_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
+    }
+
+    public int getOffset() {
+      return this.offset;
+    }
+
+    public getUsers_args setOffset(int offset) {
+      this.offset = offset;
+      setOffsetIsSet(true);
+      return this;
+    }
+
+    public void unsetOffset() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __OFFSET_ISSET_ID);
+    }
+
+    /** Returns true if field offset is set (has been assigned a value) and false otherwise */
+    public boolean isSetOffset() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __OFFSET_ISSET_ID);
+    }
+
+    public void setOffsetIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __OFFSET_ISSET_ID, value);
+    }
+
+    public int getLimit() {
+      return this.limit;
+    }
+
+    public getUsers_args setLimit(int limit) {
+      this.limit = limit;
+      setLimitIsSet(true);
+      return this;
+    }
+
+    public void unsetLimit() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __LIMIT_ISSET_ID);
+    }
+
+    /** Returns true if field limit is set (has been assigned a value) and false otherwise */
+    public boolean isSetLimit() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __LIMIT_ISSET_ID);
+    }
+
+    public void setLimitIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __LIMIT_ISSET_ID, value);
+    }
+
+    public java.lang.String getSearch() {
+      return this.search;
+    }
+
+    public getUsers_args setSearch(java.lang.String search) {
+      this.search = search;
+      return this;
+    }
+
+    public void unsetSearch() {
+      this.search = null;
+    }
+
+    /** Returns true if field search is set (has been assigned a value) and false otherwise */
+    public boolean isSetSearch() {
+      return this.search != null;
+    }
+
+    public void setSearchIsSet(boolean value) {
+      if (!value) {
+        this.search = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
+      case OFFSET:
+        if (value == null) {
+          unsetOffset();
+        } else {
+          setOffset((java.lang.Integer)value);
+        }
+        break;
+
+      case LIMIT:
+        if (value == null) {
+          unsetLimit();
+        } else {
+          setLimit((java.lang.Integer)value);
+        }
+        break;
+
+      case SEARCH:
+        if (value == null) {
+          unsetSearch();
+        } else {
+          setSearch((java.lang.String)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
+      case OFFSET:
+        return getOffset();
+
+      case LIMIT:
+        return getLimit();
+
+      case SEARCH:
+        return getSearch();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
+      case OFFSET:
+        return isSetOffset();
+      case LIMIT:
+        return isSetLimit();
+      case SEARCH:
+        return isSetSearch();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getUsers_args)
+        return this.equals((getUsers_args)that);
+      return false;
+    }
+
+    public boolean equals(getUsers_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
+
+      boolean this_present_offset = true;
+      boolean that_present_offset = true;
+      if (this_present_offset || that_present_offset) {
+        if (!(this_present_offset && that_present_offset))
+          return false;
+        if (this.offset != that.offset)
+          return false;
+      }
+
+      boolean this_present_limit = true;
+      boolean that_present_limit = true;
+      if (this_present_limit || that_present_limit) {
+        if (!(this_present_limit && that_present_limit))
+          return false;
+        if (this.limit != that.limit)
+          return false;
+      }
+
+      boolean this_present_search = true && this.isSetSearch();
+      boolean that_present_search = true && that.isSetSearch();
+      if (this_present_search || that_present_search) {
+        if (!(this_present_search && that_present_search))
+          return false;
+        if (!this.search.equals(that.search))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetAuthzToken()) ? 131071 : 524287);
+      if (isSetAuthzToken())
+        hashCode = hashCode * 8191 + authzToken.hashCode();
+
+      hashCode = hashCode * 8191 + offset;
+
+      hashCode = hashCode * 8191 + limit;
+
+      hashCode = hashCode * 8191 + ((isSetSearch()) ? 131071 : 524287);
+      if (isSetSearch())
+        hashCode = hashCode * 8191 + search.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getUsers_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetOffset()).compareTo(other.isSetOffset());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetOffset()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.offset, other.offset);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetLimit()).compareTo(other.isSetLimit());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetLimit()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.limit, other.limit);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetSearch()).compareTo(other.isSetSearch());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSearch()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.search, other.search);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getUsers_args(");
+      boolean first = true;
+
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("offset:");
+      sb.append(this.offset);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("limit:");
+      sb.append(this.limit);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("search:");
+      if (this.search == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.search);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
+      // alas, we cannot check 'offset' because it's a primitive and you chose the non-beans generator.
+      // alas, we cannot check 'limit' because it's a primitive and you chose the non-beans generator.
+      // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getUsers_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getUsers_argsStandardScheme getScheme() {
+        return new getUsers_argsStandardScheme();
+      }
+    }
+
+    private static class getUsers_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getUsers_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getUsers_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // OFFSET
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.offset = iprot.readI32();
+                struct.setOffsetIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // LIMIT
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.limit = iprot.readI32();
+                struct.setLimitIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // SEARCH
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.search = iprot.readString();
+                struct.setSearchIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        if (!struct.isSetOffset()) {
+          throw new org.apache.thrift.protocol.TProtocolException("Required field 'offset' was not found in serialized data! Struct: " + toString());
+        }
+        if (!struct.isSetLimit()) {
+          throw new org.apache.thrift.protocol.TProtocolException("Required field 'limit' was not found in serialized data! Struct: " + toString());
+        }
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getUsers_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldBegin(OFFSET_FIELD_DESC);
+        oprot.writeI32(struct.offset);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(LIMIT_FIELD_DESC);
+        oprot.writeI32(struct.limit);
+        oprot.writeFieldEnd();
+        if (struct.search != null) {
+          oprot.writeFieldBegin(SEARCH_FIELD_DESC);
+          oprot.writeString(struct.search);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getUsers_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getUsers_argsTupleScheme getScheme() {
+        return new getUsers_argsTupleScheme();
+      }
+    }
+
+    private static class getUsers_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getUsers_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getUsers_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
+        oprot.writeI32(struct.offset);
+        oprot.writeI32(struct.limit);
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSearch()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSearch()) {
+          oprot.writeString(struct.search);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getUsers_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
+        struct.offset = iprot.readI32();
+        struct.setOffsetIsSet(true);
+        struct.limit = iprot.readI32();
+        struct.setLimitIsSet(true);
+        java.util.BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.search = iprot.readString();
+          struct.setSearchIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class getUsers_result implements org.apache.thrift.TBase<getUsers_result, getUsers_result._Fields>, java.io.Serializable, Cloneable, Comparable<getUsers_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getUsers_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField IDSE_FIELD_DESC = new org.apache.thrift.protocol.TField("Idse", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getUsers_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getUsers_resultTupleSchemeFactory();
+
+    public java.util.List<org.apache.airavata.model.user.UserProfile> success; // required
+    public org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IDSE((short)1, "Idse"),
+      AE((short)2, "ae");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IDSE
+            return IDSE;
+          case 2: // AE
+            return AE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.user.UserProfile.class))));
+      tmpMap.put(_Fields.IDSE, new org.apache.thrift.meta_data.FieldMetaData("Idse", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException.class)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.error.AuthorizationException.class)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getUsers_result.class, metaDataMap);
+    }
+
+    public getUsers_result() {
+    }
+
+    public getUsers_result(
+      java.util.List<org.apache.airavata.model.user.UserProfile> success,
+      org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse,
+      org.apache.airavata.model.error.AuthorizationException ae)
+    {
+      this();
+      this.success = success;
+      this.Idse = Idse;
+      this.ae = ae;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getUsers_result(getUsers_result other) {
+      if (other.isSetSuccess()) {
+        java.util.List<org.apache.airavata.model.user.UserProfile> __this__success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(other.success.size());
+        for (org.apache.airavata.model.user.UserProfile other_element : other.success) {
+          __this__success.add(new org.apache.airavata.model.user.UserProfile(other_element));
+        }
+        this.success = __this__success;
+      }
+      if (other.isSetIdse()) {
+        this.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException(other.Idse);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
+      }
+    }
+
+    public getUsers_result deepCopy() {
+      return new getUsers_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.Idse = null;
+      this.ae = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<org.apache.airavata.model.user.UserProfile> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(org.apache.airavata.model.user.UserProfile elem) {
+      if (this.success == null) {
+        this.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>();
+      }
+      this.success.add(elem);
+    }
+
+    public java.util.List<org.apache.airavata.model.user.UserProfile> getSuccess() {
+      return this.success;
+    }
+
+    public getUsers_result setSuccess(java.util.List<org.apache.airavata.model.user.UserProfile> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException getIdse() {
+      return this.Idse;
+    }
+
+    public getUsers_result setIdse(org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
+      this.Idse = Idse;
+      return this;
+    }
+
+    public void unsetIdse() {
+      this.Idse = null;
+    }
+
+    /** Returns true if field Idse is set (has been assigned a value) and false otherwise */
+    public boolean isSetIdse() {
+      return this.Idse != null;
+    }
+
+    public void setIdseIsSet(boolean value) {
+      if (!value) {
+        this.Idse = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public getUsers_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.util.List<org.apache.airavata.model.user.UserProfile>)value);
+        }
+        break;
+
+      case IDSE:
+        if (value == null) {
+          unsetIdse();
+        } else {
+          setIdse((org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IDSE:
+        return getIdse();
+
+      case AE:
+        return getAe();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IDSE:
+        return isSetIdse();
+      case AE:
+        return isSetAe();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getUsers_result)
+        return this.equals((getUsers_result)that);
+      return false;
+    }
+
+    public boolean equals(getUsers_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_Idse = true && this.isSetIdse();
+      boolean that_present_Idse = true && that.isSetIdse();
+      if (this_present_Idse || that_present_Idse) {
+        if (!(this_present_Idse && that_present_Idse))
+          return false;
+        if (!this.Idse.equals(that.Idse))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetSuccess()) ? 131071 : 524287);
+      if (isSetSuccess())
+        hashCode = hashCode * 8191 + success.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetIdse()) ? 131071 : 524287);
+      if (isSetIdse())
+        hashCode = hashCode * 8191 + Idse.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetAe()) ? 131071 : 524287);
+      if (isSetAe())
+        hashCode = hashCode * 8191 + ae.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getUsers_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetIdse()).compareTo(other.isSetIdse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIdse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.Idse, other.Idse);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getUsers_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("Idse:");
+      if (this.Idse == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.Idse);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getUsers_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getUsers_resultStandardScheme getScheme() {
+        return new getUsers_resultStandardScheme();
+      }
+    }
+
+    private static class getUsers_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getUsers_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getUsers_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list0.size);
+                  org.apache.airavata.model.user.UserProfile _elem1;
+                  for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                  {
+                    _elem1 = new org.apache.airavata.model.user.UserProfile();
+                    _elem1.read(iprot);
+                    struct.success.add(_elem1);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IDSE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException();
+                struct.Idse.read(iprot);
+                struct.setIdseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getUsers_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (org.apache.airavata.model.user.UserProfile _iter3 : struct.success)
+            {
+              _iter3.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.Idse != null) {
+          oprot.writeFieldBegin(IDSE_FIELD_DESC);
+          struct.Idse.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getUsers_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getUsers_resultTupleScheme getScheme() {
+        return new getUsers_resultTupleScheme();
+      }
+    }
+
+    private static class getUsers_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getUsers_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getUsers_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIdse()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (org.apache.airavata.model.user.UserProfile _iter4 : struct.success)
+            {
+              _iter4.write(oprot);
+            }
+          }
+        }
+        if (struct.isSetIdse()) {
+          struct.Idse.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getUsers_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list5.size);
+            org.apache.airavata.model.user.UserProfile _elem6;
+            for (int _i7 = 0; _i7 < _list5.size; ++_i7)
+            {
+              _elem6 = new org.apache.airavata.model.user.UserProfile();
+              _elem6.read(iprot);
+              struct.success.add(_elem6);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException();
+          struct.Idse.read(iprot);
+          struct.setIdseIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
   public static class resetUserPassword_args implements org.apache.thrift.TBase<resetUserPassword_args, resetUserPassword_args._Fields>, java.io.Serializable, Cloneable, Comparable<resetUserPassword_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("resetUserPassword_args");
 
@@ -12986,14 +14445,14 @@ public class IamAdminServices {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list0.size);
-                  org.apache.airavata.model.user.UserProfile _elem1;
-                  for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                  org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list8.size);
+                  org.apache.airavata.model.user.UserProfile _elem9;
+                  for (int _i10 = 0; _i10 < _list8.size; ++_i10)
                   {
-                    _elem1 = new org.apache.airavata.model.user.UserProfile();
-                    _elem1.read(iprot);
-                    struct.success.add(_elem1);
+                    _elem9 = new org.apache.airavata.model.user.UserProfile();
+                    _elem9.read(iprot);
+                    struct.success.add(_elem9);
                   }
                   iprot.readListEnd();
                 }
@@ -13039,9 +14498,9 @@ public class IamAdminServices {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.user.UserProfile _iter3 : struct.success)
+            for (org.apache.airavata.model.user.UserProfile _iter11 : struct.success)
             {
-              _iter3.write(oprot);
+              _iter11.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -13088,9 +14547,9 @@ public class IamAdminServices {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.user.UserProfile _iter4 : struct.success)
+            for (org.apache.airavata.model.user.UserProfile _iter12 : struct.success)
             {
-              _iter4.write(oprot);
+              _iter12.write(oprot);
             }
           }
         }
@@ -13108,14 +14567,14 @@ public class IamAdminServices {
         java.util.BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list5.size);
-            org.apache.airavata.model.user.UserProfile _elem6;
-            for (int _i7 = 0; _i7 < _list5.size; ++_i7)
+            org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list13.size);
+            org.apache.airavata.model.user.UserProfile _elem14;
+            for (int _i15 = 0; _i15 < _list13.size; ++_i15)
             {
-              _elem6 = new org.apache.airavata.model.user.UserProfile();
-              _elem6.read(iprot);
-              struct.success.add(_elem6);
+              _elem14 = new org.apache.airavata.model.user.UserProfile();
+              _elem14.read(iprot);
+              struct.success.add(_elem14);
             }
           }
           struct.setSuccessIsSet(true);
@@ -17273,14 +18732,14 @@ public class IamAdminServices {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list8.size);
-                  org.apache.airavata.model.user.UserProfile _elem9;
-                  for (int _i10 = 0; _i10 < _list8.size; ++_i10)
+                  org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list16.size);
+                  org.apache.airavata.model.user.UserProfile _elem17;
+                  for (int _i18 = 0; _i18 < _list16.size; ++_i18)
                   {
-                    _elem9 = new org.apache.airavata.model.user.UserProfile();
-                    _elem9.read(iprot);
-                    struct.success.add(_elem9);
+                    _elem17 = new org.apache.airavata.model.user.UserProfile();
+                    _elem17.read(iprot);
+                    struct.success.add(_elem17);
                   }
                   iprot.readListEnd();
                 }
@@ -17326,9 +18785,9 @@ public class IamAdminServices {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.user.UserProfile _iter11 : struct.success)
+            for (org.apache.airavata.model.user.UserProfile _iter19 : struct.success)
             {
-              _iter11.write(oprot);
+              _iter19.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -17375,9 +18834,9 @@ public class IamAdminServices {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.user.UserProfile _iter12 : struct.success)
+            for (org.apache.airavata.model.user.UserProfile _iter20 : struct.success)
             {
-              _iter12.write(oprot);
+              _iter20.write(oprot);
             }
           }
         }
@@ -17395,14 +18854,14 @@ public class IamAdminServices {
         java.util.BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list13.size);
-            org.apache.airavata.model.user.UserProfile _elem14;
-            for (int _i15 = 0; _i15 < _list13.size; ++_i15)
+            org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new java.util.ArrayList<org.apache.airavata.model.user.UserProfile>(_list21.size);
+            org.apache.airavata.model.user.UserProfile _elem22;
+            for (int _i23 = 0; _i23 < _list21.size; ++_i23)
             {
-              _elem14 = new org.apache.airavata.model.user.UserProfile();
-              _elem14.read(iprot);
-              struct.success.add(_elem14);
+              _elem22 = new org.apache.airavata.model.user.UserProfile();
+              _elem22.read(iprot);
+              struct.success.add(_elem22);
             }
           }
           struct.setSuccessIsSet(true);

@@ -123,6 +123,19 @@ public interface TenantManagementInterface {
     UserProfile getUser(String accessToken, String tenantId, String username) throws IamAdminServicesException;
 
     /**
+     * Get a paginated list of user profiles from Identity Server
+     * 
+     * @param accessToken
+     * @param tenantId
+     * @param offset
+     * @param limit
+     * @param search String - optional, if specified used to search user profiles
+     * @return
+     * @throws IamAdminServicesException
+     */
+    List<UserProfile> getUsers(String accessToken, String tenantId, int offset, int limit, String search) throws IamAdminServicesException;
+
+    /**
      * Method to reset user password in Identity Server
      *
      * @param accessToken
