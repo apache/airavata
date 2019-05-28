@@ -110,7 +110,7 @@ export default {
         utils.FetchUtils.post(
           "/api/user-storage/" + this.storagePath,
           data
-        ).then(result => {
+        ).then(() => {
           // this.file = null;
           this.$refs["file-input"].reset();
           this.loadUserStoragePath(this.storagePath);
@@ -125,7 +125,7 @@ export default {
         }
         newDirPath = newDirPath + this.dirName;
         utils.FetchUtils.post("/api/user-storage/" + newDirPath).then(
-          result => {
+         () => {
             this.dirName = null;
             this.loadUserStoragePath(this.storagePath);
           }
@@ -133,7 +133,7 @@ export default {
       }
     },
     deleteDir(path) {
-      utils.FetchUtils.delete("/api/user-storage/~/" + path).then(result => {
+      utils.FetchUtils.delete("/api/user-storage/~/" + path).then(() => {
         this.loadUserStoragePath(this.storagePath);
       });
     },
@@ -154,7 +154,7 @@ export default {
     }
   },
   watch: {
-    $route(to, from) {
+    $route() {
       this.loadUserStoragePath(this.storagePath);
     }
   }

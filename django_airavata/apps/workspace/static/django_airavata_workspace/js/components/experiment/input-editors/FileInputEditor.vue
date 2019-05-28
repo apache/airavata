@@ -94,7 +94,7 @@ export default {
             throw err;
           }
         })
-        .catch(err => utils.FetchUtils.reportError);
+        .catch(utils.FetchUtils.reportError);
     },
     fileChanged() {
       if (this.file) {
