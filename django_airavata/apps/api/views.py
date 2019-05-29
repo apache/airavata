@@ -47,8 +47,6 @@ from . import (
     thrift_utils
 )
 
-# from django_airavata.apps.workspace.models import User_Files
-
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -829,64 +827,6 @@ class DataProductView(APIView):
             data_product, context={'request': request})
         return Response(serializer.data)
 
-# TODO: remove
-# @login_required
-# def get_user_files(request):
-
-#         dirs = []      # a list with file_name and file_dpu for each file
-#         for o in User_Files.objects.values_list('file_name', 'file_dpu'):
-#             file_details = {}
-#             file_details['file_name'] = o[0]
-#             file_details['file_dpu'] = o[1]
-#             dirs.append(file_details)
-
-#         return JsonResponse({'uploaded': True, 'user-files': dirs})
-
-
-# @login_required
-# def upload_user_file(request):
-#         username = request.user.username
-#         input_file = request.FILES['file']
-#         file_details = {}
-
-#         # To avoid duplicate file names
-
-#         if User_Files.objects.filter(file_name=input_file.name).exists():
-#             resp = JsonResponse({'uploaded': False, 'error': "File already exists"})
-#             resp.status_code = 400
-#             return resp
-
-#         else:
-
-#             data_product = datastore.save_user(username, input_file)
-#             data_product_uri = request.airavata_client.registerDataProduct(
-#                 request.authz_token, data_product)
-#             d = User_Files(file_name=input_file.name, file_dpu=data_product_uri)
-#             d.save()
-#             file_details['file_name'] = d.file_name
-#             file_details['file_dpu'] = d.file_dpu
-#             return JsonResponse({'uploaded': True,
-#                                  'upload-file': file_details})
-
-
-# @login_required
-# def delete_user_file(request):
-#         data_product_uri = request.body.decode('utf-8')
-#         try:
-#             data_product = request.airavata_client.getDataProduct(
-#                 request.authz_token, data_product_uri)
-
-#         except Exception as e:
-#             log.warning("Failed to load DataProduct for {}"
-#                         .format(data_product_uri), exc_info=True)
-#             raise Http404("data product does not exist")(e)
-
-#         # remove file_details entry from database and delete from datastore
-#         User_Files.objects.filter(file_dpu=data_product_uri).delete()
-#         datastore.delete(data_product)
-
-#         return JsonResponse({'deleted': True})
-
 
 @login_required
 def upload_input_file(request):
@@ -1390,32 +1330,21 @@ class UserStoragePathView(APIView):
     serializer_class = serializers.UserStoragePathSerializer
 
     def get(self, request, path="/", format=None):
-        # TODO: don't need to relativize path any longer?
-        user_storage_path = path
-        if user_storage_path.startswith("/"):
-            user_storage_path = "." + user_storage_path
-        # TODO: check if path is directory or file
         return self._create_response(request, path)
 
     def post(self, request, path="/", format=None):
-        user_storage_path = path
-        if user_storage_path.startswith("/"):
-            user_storage_path = "." + user_storage_path
-        if not data_products_helper.dir_exists(request, user_storage_path):
-            data_products_helper.create_user_dir(request, user_storage_path)
+        if not data_products_helper.dir_exists(request, path):
+            data_products_helper.create_user_dir(request, path)
 
         data_product = None
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = data_products_helper.save(
-                request, user_storage_path, user_file)
+                request, path, user_file)
         return self._create_response(request, path, uploaded=data_product)
 
     def delete(self, request, path="/", format=None):
-        user_storage_path = path
-        if user_storage_path.startswith("/"):
-            user_storage_path = "." + user_storage_path
-        data_products_helper.delete_dir(request, user_storage_path)
+        data_products_helper.delete_dir(request, path)
         return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
