@@ -171,5 +171,8 @@ def _get_dir_size(start_path='.'):
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
+            # Check for broken symlinks (.exists return False for broken
+            # symlinks)
+            if os.path.exists(fp):
+                total_size += os.path.getsize(fp)
     return total_size
