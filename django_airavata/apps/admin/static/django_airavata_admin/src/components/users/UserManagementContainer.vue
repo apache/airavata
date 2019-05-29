@@ -14,6 +14,23 @@
               :fields="fields"
               :items="items"
             >
+              <template
+                slot="action"
+                slot-scope="data"
+              >
+                <b-button
+                  v-if="data.item.airavataUserProfileExists"
+                  @click="data.toggleDetails"
+                >
+                  Edit Groups
+                </b-button>
+              </template>
+              <template
+                slot="row-details"
+                slot-scope="data"
+              >
+                <user-group-membership-editor :groups="data.item.groups" :editableGroups="editableGroups" />
+              </template>
             </b-table>
             <pager
               v-bind:paginator="usersPaginator"
@@ -30,20 +47,26 @@
 <script>
 import { services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
+import UserGroupMembershipEditor from "./UserGroupMembershipEditor.vue";
 
 export default {
   name: "user-management-container",
   data() {
     return {
-      usersPaginator: null
+      usersPaginator: null,
+      allGroups: null
     };
   },
   components: {
-    pager: components.Pager
+    pager: components.Pager,
+    UserGroupMembershipEditor
   },
   created() {
     services.ManagedUserProfileService.list({ limit: 10 }).then(
       users => (this.usersPaginator = users)
+    );
+    services.GroupService.list({ limit: -1 }).then(
+      groups => (this.allGroups = groups)
     );
   },
   computed: {
@@ -81,6 +104,11 @@ export default {
     },
     items() {
       return this.usersPaginator ? this.usersPaginator.results : [];
+    },
+    editableGroups() {
+      return this.allGroups
+        ? this.allGroups.filter(g => g.isAdmin || g.isOwner)
+        : [];
     }
   },
   methods: {

@@ -771,6 +771,7 @@ class ManagedUserProfile(serializers.Serializer):
     lastName = serializers.CharField()
     enabled = serializers.BooleanField()
     emailVerified = serializers.BooleanField()
+    airavataUserProfileExists = serializers.BooleanField()
     groups = GroupSerializer(many=True)
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:managed-user-profile-detail',

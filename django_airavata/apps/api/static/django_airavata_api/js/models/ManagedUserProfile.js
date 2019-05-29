@@ -11,6 +11,7 @@ const FIELDS = [
   "lastName",
   "enabled",
   "emailVerified",
+  "airavataUserProfileExists",
   {
     name: "groups",
     type: Group,

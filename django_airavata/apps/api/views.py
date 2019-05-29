@@ -1390,6 +1390,14 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
             iam_admin_client.get_user(lookup_value))
 
     def _convert_user_profile(self, user_profile):
+        user_profile_client = self.request.profile_service['user_profile']
+        group_manager_client = self.request.profile_service['group_manager']
+        airavata_user_profile_exists = user_profile_client.doesUserExist(
+            self.authz_token, user_profile.userId, self.gateway_id)
+        groups = []
+        if airavata_user_profile_exists:
+            groups = group_manager_client.getAllGroupsUserBelongs(
+                self.authz_token, user_profile.airavataInternalUserId)
         return {
             'airavataInternalUserId': user_profile.airavataInternalUserId,
             'userId': user_profile.userId,
@@ -1400,5 +1408,6 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
             # TODO: fix this to distinguish between enabled and emailVerified
             'enabled': user_profile.State == Status.CONFIRMED,
             'emailVerified': user_profile.State == Status.CONFIRMED,
-            'groups': []
+            'airavataUserProfileExists': airavata_user_profile_exists,
+            'groups': groups
         }
