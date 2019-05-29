@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^applications/(?P<app_module_id>[^/]+)/create_experiment$',
         views.create_experiment, name='create_experiment'),
     url(r'^dashboard$', views.dashboard, name='dashboard'),
+    url(r'^storage', views.user_storage, name='storage'),
 ]

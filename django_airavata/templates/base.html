@@ -230,6 +230,12 @@
     {% endblock %}
   </div>
 
+  <script>
+    // provide data for initializing api's session.Session
+    window.AiravataPortalSessionData = {
+      username: '{{ request.user.username }}'
+    };
+  </script>
   {% render_bundle 'chunk-vendors' 'js' 'COMMON' %}
   {% render_bundle 'app' 'js' 'COMMON' %}
   {% block scripts %}

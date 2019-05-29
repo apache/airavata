@@ -10,12 +10,14 @@
         :input-file="true"
       />
       <delete-link
+        v-if="dataProduct.isInputFileUpload"
         class="ml-2"
         @delete="deleteDataProduct"
       >
-        Are you sure you want to delete input file {{ dataProduct.filename }}?
+        Are you sure you want to delete input file {{ dataProduct.productName }}?
       </delete-link>
       <b-link
+        v-else
         @click="unselect"
         class="ml-2 text-secondary"
       >
@@ -75,18 +77,29 @@ export default {
     },
     deleteDataProduct() {
       utils.FetchUtils.delete(
-        "/api/delete-file?data-product-uri=" + encodeURIComponent(this.value)
-      ).then(() => {
-        this.data = null;
-        this.valueChanged();
-      });
+        "/api/delete-file?data-product-uri=" + encodeURIComponent(this.value),
+        { ignoreErrors: true }
+      )
+        .then(() => {
+          this.data = null;
+          this.valueChanged();
+        })
+        .catch(err => {
+          // Ignore 404 Not Found errors, file no longer exists so assume was
+          // already deleted
+          if (err.details.status === 404) {
+            this.data = null;
+            this.valueChanged();
+          } else {
+            throw err;
+          }
+        })
+        .catch(utils.FetchUtils.reportError);
     },
     fileChanged() {
       if (this.file) {
         let data = new FormData();
         data.append("file", this.file);
-        data.append("project-id", this.experiment.projectId);
-        data.append("experiment-name", this.experiment.experimentName);
         this.$emit("uploadstart");
         utils.FetchUtils.post("/api/upload", data, "", { showSpinner: false })
           .then(result => {

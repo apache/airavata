@@ -19,7 +19,7 @@ from airavata.model.data.replica.ttypes import (
     ReplicaLocationCategory,
     ReplicaPersistentType
 )
-from django_airavata.apps.api import datastore
+from django_airavata.apps.api import data_products_helper
 from django_airavata.apps.api.views import (
     ApplicationModuleViewSet,
     ExperimentSearchViewSet,
@@ -87,12 +87,9 @@ def create_experiment(request, app_module_id):
         if (app_input['type'] ==
                 DataType.URI and app_input['name'] in request.GET):
             user_file_path = request.GET[app_input['name']]
-            if datastore.user_file_exists(
-                    request.user.username, user_file_path):
-                data_product = datastore.get_data_product(
-                    request.user.username, user_file_path)
-                data_product_uri = request.airavata_client.registerDataProduct(
-                    request.authz_token, data_product)
+            data_product_uri = data_products_helper.user_file_exists(
+                request, user_file_path)
+            if data_product_uri is not None:
                 user_input_files[app_input['name']] = data_product_uri
     context = {
         'bundle_name': 'create-experiment',
@@ -130,6 +127,14 @@ def view_experiment(request, experiment_id):
         'bundle_name': 'view-experiment',
         'full_experiment_data': full_experiment_json,
         'launching': json.dumps(launching),
+    })
+
+
+@login_required
+def user_storage(request):
+    request.active_nav_item = 'storage'
+    return render(request, 'django_airavata_workspace/base.html', {
+        'bundle_name': 'user-storage'
     })
 
 

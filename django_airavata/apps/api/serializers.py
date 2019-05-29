@@ -52,7 +52,7 @@ from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import Project
 
-from . import datastore, models, thrift_utils
+from . import data_products_helper, models, thrift_utils
 
 log = logging.getLogger(__name__)
 
@@ -439,16 +439,22 @@ class DataProductSerializer(
     lastModifiedTime = UTCPosixTimestampDateTimeField()
     replicaLocations = DataReplicaLocationSerializer(many=True)
     downloadURL = serializers.SerializerMethodField()
+    isInputFileUpload = serializers.SerializerMethodField()
 
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""
-        if datastore.exists(data_product):
-            request = self.context['request']
+        request = self.context['request']
+        if data_products_helper.exists(request, data_product):
             return (request.build_absolute_uri(
                 reverse('django_airavata_api:download_file')) +
                 '?' +
                 urlencode({'data-product-uri': data_product.productUri}))
         return None
+
+    def get_isInputFileUpload(self, data_product):
+        """Return True if this is an uploaded input file."""
+        request = self.context['request']
+        return data_products_helper.is_input_file_upload(request, data_product)
 
 
 # TODO move this into airavata_sdk?
@@ -753,6 +759,43 @@ class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
         view_name='django_airavata_api:parser-detail',
         lookup_field='id',
         lookup_url_kwarg='parser_id')
+
+
+class UserStorageFileSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    downloadURL = serializers.SerializerMethodField()
+    dataProductURI = serializers.CharField(source='data-product-uri')
+    createdTime = serializers.DateTimeField(source='created_time')
+    size = serializers.IntegerField()
+    hidden = serializers.BooleanField()
+
+    def get_downloadURL(self, file):
+        """Getter for downloadURL field."""
+        request = self.context['request']
+        return (request.build_absolute_uri(
+            reverse('django_airavata_api:download_file')) +
+            '?' +
+            urlencode({'data-product-uri': file['data-product-uri']}))
+
+
+class UserStorageDirectorySerializer(serializers.Serializer):
+    name = serializers.CharField()
+    path = serializers.CharField()
+    createdTime = serializers.DateTimeField(source='created_time')
+    size = serializers.IntegerField()
+    hidden = serializers.BooleanField()
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:user-storage-items',
+        lookup_field='path',
+        lookup_url_kwarg='path')
+
+
+class UserStoragePathSerializer(serializers.Serializer):
+    directories = UserStorageDirectorySerializer(many=True)
+    files = UserStorageFileSerializer(many=True)
+    parts = serializers.ListField(child=serializers.CharField())
+    # uploaded is populated after a file upload
+    uploaded = DataProductSerializer(read_only=True)
 
 
 # ModelSerializers

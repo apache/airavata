@@ -1,5 +1,6 @@
 import logging
 
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
@@ -28,6 +29,12 @@ def custom_exception_handler(exc, context):
         return Response(
             {'detail': str(exc)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if isinstance(exc, ObjectDoesNotExist):
+        log.error("ObjectDoesNotExist", exc_info=exc)
+        return Response(
+            {'detail': str(exc)},
+            status=status.HTTP_404_NOT_FOUND)
 
     # Generic handler
     if response is None:

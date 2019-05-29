@@ -43,6 +43,8 @@ import GridFTPDataMovementService from "./services/GridFTPDataMovementService";
 import UnicoreDataMovementService from "./services/UnicoreDataMovementService";
 import ServiceFactory from "./services/ServiceFactory";
 
+import Session from "./session/Session";
+
 import FetchUtils from "./utils/FetchUtils";
 import PaginationIterator from "./utils/PaginationIterator";
 import StringUtils from "./utils/StringUtils";
@@ -118,7 +120,12 @@ const services = {
   UnicoreDataMovementService,
   UnicoreJobSubmissionService,
   UserProfileService,
+  UserStoragePathService: ServiceFactory.service("UserStoragePaths"),
   WorkspacePreferencesService: ServiceFactory.service("WorkspacePreferences")
+};
+
+const session = {
+  Session
 };
 
 const utils = {
@@ -131,7 +138,8 @@ export default {
   errors,
   models,
   services,
+  session,
   utils
 };
 
-export { errors, models, services, utils };
+export { errors, models, services, session, utils };

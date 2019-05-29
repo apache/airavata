@@ -9,3 +9,15 @@ class WorkspacePreferences(models.Model):
     @classmethod
     def create(self, username):
         return WorkspacePreferences(username=username)
+
+
+class User_Files(models.Model):
+    username = models.CharField(max_length=64)
+    file_path = models.TextField()
+    file_dpu = models.CharField(max_length=500, primary_key=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['username', 'file_path'],
+                         name='username_file_path_idx')
+        ]

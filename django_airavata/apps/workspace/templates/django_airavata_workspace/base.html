@@ -18,7 +18,10 @@
             <i class="fa fa-flask"></i> <span class=sr-only>Experiments</span>
         </a>
         <a href="{% url 'django_airavata_workspace:projects' %}" class="c-nav__item {% if request.active_nav_item == 'projects' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Projects>
-            <i class="fa fa-folder-open"></i> <span class=sr-only>Projects</span>
+            <i class="fa fa-box"></i> <span class=sr-only>Projects</span>
+        </a>
+        <a href="{% url 'django_airavata_workspace:storage' %}" class="c-nav__item {% if request.active_nav_item == 'storage' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Storage>
+            <i class="fa fa-folder-open"></i> <span class=sr-only>Storage</span>
         </a>
 {% endblock %}
 

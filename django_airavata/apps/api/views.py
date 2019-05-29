@@ -39,9 +39,16 @@ from django_airavata.apps.api.view_utils import (
     GenericAPIBackedViewSet
 )
 from django_airavata.apps.auth import iam_admin_client
-from django_airavata.apps.workspace.models import User_Files
 
-from . import datastore, helpers, models, serializers, thrift_utils
+from . import (
+    data_products_helper,
+    datastore,
+    helpers,
+    models,
+    serializers,
+    thrift_utils
+)
+
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -172,7 +179,6 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment = serializer.save(
             gatewayId=self.gateway_id,
             userName=self.username)
-        self._set_storage_id_and_data_dir(experiment)
         experiment_id = self.request.airavata_client.createExperiment(
             self.authz_token, self.gateway_id, experiment)
         self._update_most_recent_project(experiment.projectId)
@@ -182,8 +188,6 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment = serializer.save(
             gatewayId=self.gateway_id,
             userName=self.username)
-        # The project or exp name may have changed, so update the exp data dir
-        # self._set_storage_id_and_data_dir(experiment)
         self.request.airavata_client.updateExperiment(
             self.authz_token, experiment.experimentId, experiment)
         self._update_most_recent_project(experiment.projectId)
@@ -208,9 +212,49 @@ class ExperimentViewSet(APIBackedViewSet):
                 path=experiment.userConfigurationData.experimentDataDir)
             experiment.userConfigurationData.experimentDataDir = exp_dir
 
+    def _move_tmp_input_file_uploads_to_data_dir(self, experiment):
+        exp_data_dir = experiment.userConfigurationData.experimentDataDir
+        for experiment_input in experiment.experimentInputs:
+            if experiment_input.type == DataType.URI:
+                experiment_input.value = self._move_if_tmp_input_file_upload(
+                    experiment_input.value, exp_data_dir)
+            elif experiment_input.type == DataType.URI_COLLECTION:
+                data_product_uris = experiment_input.value.split(
+                    ",") if experiment_input.value else []
+                moved_data_product_uris = []
+                for data_product_uri in data_product_uris:
+                    moved_data_product_uris.append(
+                        self._move_if_tmp_input_file_upload(data_product_uri,
+                                                            exp_data_dir))
+                experiment_input.value = ",".join(moved_data_product_uris)
+
+    def _move_if_tmp_input_file_upload(
+            self, data_product_uri, experiment_data_dir):
+        """
+        Conditionally moves tmp input file to data dir and returns new dp URI.
+        """
+        data_product = self.request.airavata_client.getDataProduct(
+            self.authz_token, data_product_uri)
+        if data_products_helper.is_input_file_upload(
+                self.request, data_product):
+            moved_data_product = \
+                data_products_helper.move_input_file_upload(
+                    self.request,
+                    data_product,
+                    experiment_data_dir)
+            return moved_data_product.productUri
+        else:
+            return data_product_uri
+
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):
         try:
+            experiment = request.airavata_client.getExperiment(
+                self.authz_token, experiment_id)
+            self._set_storage_id_and_data_dir(experiment)
+            self._move_tmp_input_file_uploads_to_data_dir(experiment)
+            request.airavata_client.updateExperiment(
+                self.authz_token, experiment_id, experiment)
             request.airavata_client.launchExperiment(
                 request.authz_token, experiment_id, self.gateway_id)
             return Response({'success': True})
@@ -243,7 +287,9 @@ class ExperimentViewSet(APIBackedViewSet):
         # Create a copy of the experiment input files
         self._copy_cloned_experiment_input_uris(cloned_experiment)
 
-        self._set_storage_id_and_data_dir(cloned_experiment)
+        # Null out experimentDataDir so a new one will get created at launch
+        # time
+        cloned_experiment.userConfigurationData.experimentDataDir = None
         request.airavata_client.updateExperiment(
             self.authz_token, cloned_experiment.experimentId, cloned_experiment
         )
@@ -278,53 +324,46 @@ class ExperimentViewSet(APIBackedViewSet):
             self.authz_token, entity_id, ResourcePermissionType.WRITE)
 
     def _copy_cloned_experiment_input_uris(self, cloned_experiment):
-        # update the experimentInputs of type URI, copying files in data store
-        request = self.request
-        target_project = request.airavata_client.getProject(
-            self.authz_token, cloned_experiment.projectId)
+        # update the experimentInputs of type URI, copying input files into the
+        # tmp input files directory of the data store
         for experiment_input in cloned_experiment.experimentInputs:
+            # skip inputs without values
+            if not experiment_input.value:
+                continue
             if experiment_input.type == DataType.URI:
-                data_product_uri = self._copy_experiment_input_uri(
-                    experiment_input.value, target_project, cloned_experiment)
-                if data_product_uri is None:
+                cloned_data_product = self._copy_experiment_input_uri(
+                    experiment_input.value)
+                if cloned_data_product is None:
                     log.warning("Setting cloned input {} to null".format(
                         experiment_input.name))
-                experiment_input.value = data_product_uri
+                    experiment_input.value = None
+                else:
+                    experiment_input.value = cloned_data_product.productUri
             elif experiment_input.type == DataType.URI_COLLECTION:
                 data_product_uris = experiment_input.value.split(
                     ",") if experiment_input.value else []
                 cloned_data_product_uris = []
                 for data_product_uri in data_product_uris:
-                    cloned_data_product_uri = self._copy_experiment_input_uri(
-                        data_product_uri, target_project, cloned_experiment)
-                    if cloned_data_product_uri is None:
+                    cloned_data_product = self._copy_experiment_input_uri(
+                        data_product_uri)
+                    if cloned_data_product.productUri is None:
                         log.warning(
                             "Omitting a cloned input value for {}".format(
                                 experiment_input.name))
                     else:
                         cloned_data_product_uris.append(
-                            cloned_data_product_uri)
+                            cloned_data_product.productUri)
                 experiment_input.value = ",".join(cloned_data_product_uris)
 
     def _copy_experiment_input_uri(
             self,
-            source_data_product_uri,
-            project,
-            experiment):
-        request = self.request
-        source_data_product = request.airavata_client.getDataProduct(
-            self.authz_token, source_data_product_uri)
-        try:
-            copied_data_product = datastore.copy(
-                self.username,
-                project.name,
-                experiment.experimentName,
-                source_data_product)
-            data_product_uri = \
-                request.airavata_client.registerDataProduct(
-                    self.authz_token, copied_data_product)
-            return data_product_uri
-        except ObjectDoesNotExist as odne:
+            data_product_uri):
+        source_data_product = self.request.airavata_client.getDataProduct(
+            self.authz_token, data_product_uri)
+        if data_products_helper.exists(self.request, source_data_product):
+            return data_products_helper.copy_input_file_upload(
+                self.request, source_data_product)
+        else:
             log.warning("Could not find file for source data "
                         "product {}".format(source_data_product))
             return None
@@ -792,77 +831,11 @@ class DataProductView(APIView):
 
 
 @login_required
-def get_user_files(request):
-
-        dirs = []      # a list with file_name and file_dpu for each file
-        for o in User_Files.objects.values_list('file_name', 'file_dpu'):
-            file_details = {}
-            file_details['file_name'] = o[0]
-            file_details['file_dpu'] = o[1]
-            dirs.append(file_details)
-
-        return JsonResponse({'uploaded': True, 'user-files': dirs})
-
-
-@login_required
-def upload_user_file(request):
-        username = request.user.username
-        input_file = request.FILES['file']
-        file_details = {}
-
-        # To avoid duplicate file names
-
-        if User_Files.objects.filter(file_name=input_file.name).exists():
-            resp = JsonResponse({'uploaded': False, 'error': "File already exists"})
-            resp.status_code = 400
-            return resp
-
-        else:
-
-            data_product = datastore.save_user(username, input_file)
-            data_product_uri = request.airavata_client.registerDataProduct(
-                request.authz_token, data_product)
-            d = User_Files(file_name=input_file.name, file_dpu=data_product_uri)
-            d.save()
-            file_details['file_name'] = d.file_name
-            file_details['file_dpu'] = d.file_dpu
-            return JsonResponse({'uploaded': True,
-                                 'upload-file': file_details})
-
-
-@login_required
-def delete_user_file(request):
-        data_product_uri = request.body.decode('utf-8')
-        try:
-            data_product = request.airavata_client.getDataProduct(
-                request.authz_token, data_product_uri)
-
-        except Exception as e:
-            log.warning("Failed to load DataProduct for {}"
-                        .format(data_product_uri), exc_info=True)
-            raise Http404("data product does not exist")(e)
-
-        # remove file_details entry from database and delete from datastore
-        User_Files.objects.filter(file_dpu=data_product_uri).delete()
-        datastore.delete(data_product)
-
-        return JsonResponse({'deleted': True})
-
-
-@login_required
 def upload_input_file(request):
     try:
-        username = request.user.username
-        project_id = request.POST['project-id']
-        project = request.airavata_client.getProject(
-            request.authz_token, project_id)
-        exp_name = request.POST['experiment-name']
         input_file = request.FILES['file']
-        data_product = datastore.save(username, project.name, exp_name,
-                                      input_file)
-        data_product_uri = request.airavata_client.registerDataProduct(
-            request.authz_token, data_product)
-        data_product.productUri = data_product_uri
+        data_product = data_products_helper.save_input_file_upload(
+            request, input_file)
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
         return JsonResponse({'uploaded': True,
@@ -887,7 +860,7 @@ def download_file(request):
                     .format(data_product_uri), exc_info=True)
         raise Http404("data product does not exist") from e
     try:
-        data_file = datastore.open(data_product)
+        data_file = data_products_helper.open(request, data_product)
         response = FileResponse(data_file,
                                 content_type="application/octet-stream")
         file_name = os.path.basename(data_file.name)
@@ -914,7 +887,7 @@ def delete_file(request):
         if (data_product.gatewayId != settings.GATEWAY_ID or
                 data_product.ownerName != request.user.username):
             raise PermissionDenied()
-        datastore.delete(data_product)
+        data_products_helper.delete(request, data_product)
         return HttpResponse(status=204)
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
@@ -1339,7 +1312,8 @@ class ParserViewSet(mixins.CreateModelMixin,
     lookup_field = 'parser_id'
 
     def get_list(self):
-        return self.request.airavata_client.listAllParsers(self.authz_token, settings.GATEWAY_ID)
+        return self.request.airavata_client.listAllParsers(
+            self.authz_token, settings.GATEWAY_ID)
 
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getParser(
@@ -1352,6 +1326,49 @@ class ParserViewSet(mixins.CreateModelMixin,
     def perform_update(self, serializer):
         parser = serializer.save()
         self.request.airavata_client.saveParser(self.authz_token, parser)
+
+
+class UserStoragePathView(APIView):
+    serializer_class = serializers.UserStoragePathSerializer
+
+    def get(self, request, path="/", format=None):
+        return self._create_response(request, path)
+
+    def post(self, request, path="/", format=None):
+        if not data_products_helper.dir_exists(request, path):
+            data_products_helper.create_user_dir(request, path)
+
+        data_product = None
+        if 'file' in request.FILES:
+            user_file = request.FILES['file']
+            data_product = data_products_helper.save(
+                request, path, user_file)
+        return self._create_response(request, path, uploaded=data_product)
+
+    def delete(self, request, path="/", format=None):
+        data_products_helper.delete_dir(request, path)
+        return Response(status=204)
+
+    def _create_response(self, request, path, uploaded=None):
+        directories, files = data_products_helper.listdir(request, path)
+        data = {
+            'directories': directories,
+            'files': files
+        }
+        if uploaded is not None:
+            data['uploaded'] = uploaded
+        data['parts'] = self._split_path(path)
+        serializer = self.serializer_class(data, context={'request': request})
+        return Response(serializer.data)
+
+    def _split_path(self, path):
+        head, tail = os.path.split(path)
+        if head != "":
+            return self._split_path(head) + [tail]
+        elif tail != "":
+            return [tail]
+        else:
+            return []
 
 
 class WorkspacePreferencesView(APIView):
