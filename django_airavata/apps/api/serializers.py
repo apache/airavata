@@ -247,6 +247,7 @@ class ProjectSerializer(
         lookup_field='projectID',
         lookup_url_kwarg='project_id')
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
+    userHasWriteAccess = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         return Project(**validated_data)
@@ -256,6 +257,12 @@ class ProjectSerializer(
         instance.description = validated_data.get(
             'description', instance.description)
         return instance
+
+    def get_userHasWriteAccess(self, project):
+        request = self.context['request']
+        return request.airavata_client.userHasAccess(
+            request.authz_token, project.projectID,
+            ResourcePermissionType.WRITE)
 
 
 class ApplicationModuleSerializer(

@@ -3,7 +3,7 @@
     <td>{{ project.name }}</td>
     <td>{{ project.owner }}</td>
     <td v-bind:title="project.creationTime">{{ creationTime }}</td>
-    <td><a :href="editLink">Edit <i
+    <td><a :href="editLink" v-if="project.userHasWriteAccess">Edit <i
           class="fa fa-edit"
           aria-hidden="true"
         ></i></a></td>

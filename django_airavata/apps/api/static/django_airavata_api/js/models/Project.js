@@ -10,6 +10,7 @@ const FIELDS = [
         name: 'creationTime',
         type: 'date'
     },
+    'userHasWriteAccess'
 ];
 
 export default class Project extends BaseModel {
