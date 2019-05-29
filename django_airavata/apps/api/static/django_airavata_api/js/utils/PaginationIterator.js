@@ -1,4 +1,6 @@
 
+import FetchUtils from "./FetchUtils";
+
 export default class PaginationIterator {
 
     constructor(pagedResponse, resultType = null) {
@@ -7,10 +9,7 @@ export default class PaginationIterator {
     }
 
     next() {
-        return fetch(this._next, {
-            credentials: 'include'
-        })
-        .then(response => response.json())
+        return FetchUtils.get(this._next)
         .then(json => this.processResponse(json));
     }
 
@@ -19,10 +18,7 @@ export default class PaginationIterator {
     }
 
     previous() {
-        return fetch(this._previous, {
-            credentials: 'include'
-        })
-        .then(response => response.json())
+        return FetchUtils.get(this._previous)
         .then(json => this.processResponse(json));
     }
 
