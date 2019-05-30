@@ -29,7 +29,11 @@
                 slot="row-details"
                 slot-scope="data"
               >
-                <user-group-membership-editor :groups="data.item.groups" :editableGroups="editableGroups" />
+                <user-details-container
+                  :managed-user-profile="data.item"
+                  :editable-groups="editableGroups"
+                  @groups-updated="groupsUpdated"
+                />
               </template>
             </b-table>
             <pager
@@ -47,7 +51,7 @@
 <script>
 import { services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
-import UserGroupMembershipEditor from "./UserGroupMembershipEditor.vue";
+import UserDetailsContainer from "./UserDetailsContainer.vue";
 
 export default {
   name: "user-management-container",
@@ -59,7 +63,7 @@ export default {
   },
   components: {
     pager: components.Pager,
-    UserGroupMembershipEditor
+    UserDetailsContainer
   },
   created() {
     services.ManagedUserProfileService.list({ limit: 10 }).then(
@@ -109,6 +113,9 @@ export default {
       return this.allGroups
         ? this.allGroups.filter(g => g.isAdmin || g.isOwner)
         : [];
+    },
+    currentOffset() {
+      return this.usersPaginator ? this.usersPaginator.offset : 0;
     }
   },
   methods: {
@@ -117,6 +124,20 @@ export default {
     },
     previous() {
       this.usersPaginator.previous();
+    },
+    groupsUpdated(managedUserProfile) {
+      services.ManagedUserProfileService.update({
+        lookup: managedUserProfile.userId,
+        data: managedUserProfile
+      }).finally(() => {
+        this.reloadUserProfiles();
+      });
+    },
+    reloadUserProfiles() {
+      services.ManagedUserProfileService.list({
+        limit: 10,
+        offset: this.currentOffset
+      }).then(users => (this.usersPaginator = users));
     }
   }
 };

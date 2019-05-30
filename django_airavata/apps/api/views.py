@@ -1406,6 +1406,17 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
         return self._convert_user_profile(
             iam_admin_client.get_user(lookup_value))
 
+    def perform_update(self, serializer):
+        managed_user_profile = serializer.save()
+        group_manager_client = self.request.profile_service['group_manager']
+        user_id = managed_user_profile['airavataInternalUserId']
+        for group_id in managed_user_profile['_added_group_ids']:
+            group_manager_client.addUsersToGroup(
+                self.authz_token, [user_id], group_id)
+        for group_id in managed_user_profile['_removed_group_ids']:
+            group_manager_client.removeUsersFromGroup(
+                self.authz_token, [user_id], group_id)
+
     def _convert_user_profile(self, user_profile):
         user_profile_client = self.request.profile_service['user_profile']
         group_manager_client = self.request.profile_service['group_manager']

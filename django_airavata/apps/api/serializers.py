@@ -592,15 +592,6 @@ class GroupResourceProfileSerializer(
             ResourcePermissionType.WRITE)
 
 
-class SharedGroups(serializers.Serializer):
-    groupList = serializers.ListField(child=serializers.CharField())
-    entityId = serializers.CharField()
-
-    def update(self, instance, validated_data):
-        instance["groupList"] = validated_data["groupList"]
-        return instance
-
-
 class UserPermissionSerializer(serializers.Serializer):
     user = UserProfileSerializer()
     permissionType = serializers.IntegerField()
@@ -830,3 +821,12 @@ class ManagedUserProfile(serializers.Serializer):
         view_name='django_airavata_api:managed-user-profile-detail',
         lookup_field='userId',
         lookup_url_kwarg='user_id')
+
+    def update(self, instance, validated_data):
+        existing_group_ids = [group.id for group in instance['groups']]
+        new_group_ids = [group['id'] for group in validated_data['groups']]
+        instance['_added_group_ids'] = list(
+            set(new_group_ids) - set(existing_group_ids))
+        instance['_removed_group_ids'] = list(
+            set(existing_group_ids) - set(new_group_ids))
+        return instance
