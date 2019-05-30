@@ -126,8 +126,8 @@ const parseServiceMapping = function(serviceConfiguration) {
             ? methodConfig.pagination
             : defaultPagination,
         encodePathParams:
-          "encodePathParams" in serviceConfiguration
-            ? serviceConfiguration.encodePathParams
+          "encodePathParams" in methodConfig
+            ? methodConfig.encodePathParams
             : true
       };
       if ("modelClass" in methodConfig) {
