@@ -70,7 +70,8 @@ const FIELDS = [
     name: "userHasWriteAccess",
     type: "boolean",
     default: true
-  }
+  },
+  "relativeExperimentDataDir"
 ];
 
 export default class Experiment extends BaseModel {

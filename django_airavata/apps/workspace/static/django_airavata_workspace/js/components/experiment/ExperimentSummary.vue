@@ -64,6 +64,7 @@
                         </template>
                       </li>
                     </ul>
+                    <b-link v-if="storageDirLink" :href="storageDirLink">Storage Directory</b-link>
                   </td>
                 </tr>
                 <!-- Going to leave this out for now -->
@@ -256,6 +257,13 @@ export default {
     },
     isClonable() {
       return this.localFullExperiment.applicationName;
+    },
+    storageDirLink() {
+      if (this.experiment.relativeExperimentDataDir) {
+        return urls.storageDirectory(this.experiment.relativeExperimentDataDir)
+      } else {
+        return null;
+      }
     }
   },
   methods: {

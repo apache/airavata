@@ -419,12 +419,22 @@ class ExperimentSerializer(
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     experimentStatus = ExperimentStatusSerializer(many=True, allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
+    relativeExperimentDataDir = serializers.SerializerMethodField()
 
     def get_userHasWriteAccess(self, experiment):
         request = self.context['request']
         return request.airavata_client.userHasAccess(
             request.authz_token, experiment.experimentId,
             ResourcePermissionType.WRITE)
+
+    def get_relativeExperimentDataDir(self, experiment):
+        if (experiment.userConfigurationData and
+                experiment.userConfigurationData.experimentDataDir):
+            request = self.context['request']
+            return data_products_helper.get_rel_path(
+                request, experiment.userConfigurationData.experimentDataDir)
+        else:
+            return None
 
 
 class DataReplicaLocationSerializer(

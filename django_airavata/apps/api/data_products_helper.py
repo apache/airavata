@@ -151,6 +151,10 @@ def create_user_dir(request, path):
     return datastore.create_user_dir(request.user.username, path)
 
 
+def get_rel_path(request, path):
+    return datastore.rel_path(request.user.username, path)
+
+
 def _get_data_product_uri(request, full_path):
 
     user_file = models.User_Files.objects.filter(
