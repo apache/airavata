@@ -68,7 +68,7 @@ public class UserResourceProfileRepositoryTest extends TestBase {
                 userId, gatewayId, userStoragePreference.getStorageResourceId());
         assertEquals(userStoragePreference.getFileSystemRootLocation(), retrievedUserStoragePreference.getFileSystemRootLocation());
 
-        assertTrue(userResourceProfileRepository.getAllUserResourceProfiles().size() == 1);
+        assertTrue(userResourceProfileRepository.getAllUserResourceProfiles().size() == 2);
         assertTrue(userResourceProfileRepository.getAllUserComputeResourcePreferences(userId, gatewayId).size() == 1);
         assertTrue(userResourceProfileRepository.getAllUserStoragePreferences(userId, gatewayId).size() == 1);
         assertTrue(userResourceProfileRepository.getGatewayProfileIds(gatewayId).size() == 1);
