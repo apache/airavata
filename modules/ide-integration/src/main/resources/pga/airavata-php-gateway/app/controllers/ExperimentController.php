@@ -142,7 +142,7 @@ class ExperimentController extends BaseController
                     $pageNo);
             } catch (AuthorizationException $ae) {
 
-                Log::error("Experiment wasn't found", array("message" => $enf->getMessage(), "username" => Session::get("username"), "gateway_id" => Session::get("gateway_id")));
+                Log::error("User isn't authorized to see experiment", array("message" => $ae->getMessage(), "username" => Session::get("username"), "gateway_id" => Session::get("gateway_id")));
                 return $this->makeInvalidExperimentView();
             } catch (ExperimentNotFoundException $enf) {
 
