@@ -41,6 +41,10 @@ export default {
       type: Array,
       required: true
     },
+    airavataInternalUserId: {
+      type: String,
+      required: true
+    },
     editableGroups: {
       type: Array,
       required: true
@@ -112,7 +116,9 @@ export default {
       return {
         text: group.name,
         value: group.id,
-        disabled: !group.userHasWriteAccess
+        disabled:
+          !group.userHasWriteAccess ||
+          group.ownerId === this.airavataInternalUserId
       };
     }
   }

@@ -2,6 +2,7 @@
   <user-group-membership-editor
     v-model="localManagedUserProfile.groups"
     :editable-groups="editableGroups"
+    :airavata-internal-user-id="managedUserProfile.airavataInternalUserId"
     @input="groupsUpdated"
   />
 </template>
