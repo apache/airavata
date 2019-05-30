@@ -20,7 +20,7 @@
               >
                 <b-button
                   v-if="data.item.airavataUserProfileExists"
-                  @click="data.toggleDetails"
+                  @click="toggleDetails(data)"
                 >
                   Edit Groups
                 </b-button>
@@ -58,7 +58,8 @@ export default {
   data() {
     return {
       usersPaginator: null,
-      allGroups: null
+      allGroups: null,
+      showingDetails: {}
     };
   },
   components: {
@@ -107,7 +108,13 @@ export default {
       ];
     },
     items() {
-      return this.usersPaginator ? this.usersPaginator.results : [];
+      return this.usersPaginator
+        ? this.usersPaginator.results.map(u => {
+            const user = u.clone();
+            user._showDetails = this.showingDetails[u.airavataInternalUserId] || false;
+            return user;
+          })
+        : [];
     },
     editableGroups() {
       return this.allGroups
@@ -138,6 +145,11 @@ export default {
         limit: 10,
         offset: this.currentOffset
       }).then(users => (this.usersPaginator = users));
+    },
+    toggleDetails(row) {
+      row.toggleDetails();
+      this.showingDetails[row.item.airavataInternalUserId] = !this
+        .showingDetails[row.item.airavataInternalUserId];
     }
   }
 };
