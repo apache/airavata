@@ -57,4 +57,8 @@ export default class Group extends BaseModel {
   get isAdminGroup() {
     return this.isReadOnlyGatewayAdminsGroup || this.isGatewayAdminsGroup;
   }
+
+  get userHasWriteAccess() {
+    return this.isOwner || this.isAdmin;
+  }
 }
