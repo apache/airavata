@@ -20,7 +20,7 @@
 
 ---
 # TODO: uncomment this and rerun playbook once the data is in place
-user_data_dir: "/share/gateway-user-data"
+user_data_dir: "/data/gateway-user-data"
 ## Airavata Client related variables
 airavata_server: "tls://{{ groups['api-orch'][0] }}"
 airavata_port: "9930"
