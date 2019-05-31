@@ -41,9 +41,9 @@ def save(username, path, file, name=None):
     return input_file_fullpath
 
 
-def move(username, source_path, target_path):
-    source_full_path = path_(username, source_path)
-    target_full_path = path_(username, target_path)
+def move(source_username, source_path, target_username, target_path):
+    source_full_path = path_(source_username, source_path)
+    target_full_path = path_(target_username, target_path)
     file_move_safe(source_full_path, target_full_path)
     return target_full_path
 

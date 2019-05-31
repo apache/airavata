@@ -59,8 +59,12 @@ def move_input_file_upload(request, data_product, path):
     source_path = _get_replica_filepath(data_product)
     file_name = data_product.productName
     target_path = os.path.join(path, file_name)
-    full_path = datastore.move(request.user.username, source_path, target_path)
-    _delete_data_product(request, source_path)
+    full_path = datastore.move(
+        data_product.ownerName,
+        source_path,
+        request.user.username,
+        target_path)
+    _delete_data_product(data_product.ownerName, source_path)
     data_product = _save_data_product(request, full_path, name=file_name)
     return data_product
 
@@ -68,13 +72,13 @@ def move_input_file_upload(request, data_product, path):
 def open(request, data_product):
     "Return file object for replica if it exists in user storage."
     path = _get_replica_filepath(data_product)
-    return datastore.open(request.user.username, path)
+    return datastore.open(data_product.ownerName, path)
 
 
 def exists(request, data_product):
     "Return True if replica for data_product exists in user storage."
     path = _get_replica_filepath(data_product)
-    return datastore.exists(request.user.username, path)
+    return datastore.exists(data_product.ownerName, path)
 
 
 def dir_exists(request, path):
@@ -99,8 +103,8 @@ def delete(request, data_product):
     "Delete replica for data product in this data store."
     path = _get_replica_filepath(data_product)
     try:
-        datastore.delete(request.user.username, path)
-        _delete_data_product(request, path)
+        datastore.delete(data_product.ownerName, path)
+        _delete_data_product(data_product.ownerName, path)
     except Exception as e:
         logger.exception("Unable to delete file {} for data product uri {}"
                          .format(path, data_product.productUri))
@@ -185,11 +189,11 @@ def _save_data_product(request, full_path, name=None):
     return data_product
 
 
-def _delete_data_product(request, full_path):
+def _delete_data_product(username, full_path):
     # TODO: call API to delete data product from replica catalog when it is
     # available (not currently implemented)
     user_file = models.User_Files.objects.filter(
-        username=request.user.username, file_path=full_path)
+        username=username, file_path=full_path)
     if user_file.exists():
         user_file.delete()
 
