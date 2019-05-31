@@ -47,9 +47,12 @@ def copy_input_file_upload(request, data_product):
 
 
 def is_input_file_upload(request, data_product):
-    path = _get_replica_filepath(data_product)
-    rel_path = datastore.rel_path(request.user.username, path)
-    return os.path.dirname(rel_path) == TMP_INPUT_FILE_UPLOAD_DIR
+    if exists(request, data_product):
+        path = _get_replica_filepath(data_product)
+        rel_path = datastore.rel_path(request.user.username, path)
+        return os.path.dirname(rel_path) == TMP_INPUT_FILE_UPLOAD_DIR
+    else:
+        return False
 
 
 def move_input_file_upload(request, data_product, path):

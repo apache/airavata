@@ -431,8 +431,11 @@ class ExperimentSerializer(
         if (experiment.userConfigurationData and
                 experiment.userConfigurationData.experimentDataDir):
             request = self.context['request']
-            return data_products_helper.get_rel_path(
-                request, experiment.userConfigurationData.experimentDataDir)
+            data_dir = experiment.userConfigurationData.experimentDataDir
+            if data_products_helper.dir_exists(request, data_dir):
+                return data_products_helper.get_rel_path(request, data_dir)
+            else:
+                return None
         else:
             return None
 
