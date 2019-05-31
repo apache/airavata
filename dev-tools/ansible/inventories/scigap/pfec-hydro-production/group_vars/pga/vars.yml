@@ -19,6 +19,14 @@
 #
 
 ---
+# TODO: uncomment this and rerun playbook once the data is in place
+# user_data_dir: "/share/gateway-user-data"
+## Airavata Client related variables
+airavata_server: "tls://{{ groups['api-orch'][0] }}"
+airavata_port: "9930"
+airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
+oauth_service_url: "https://iam.scigap.org/auth"
+
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "master"
 user: "pga"
