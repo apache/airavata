@@ -304,7 +304,7 @@ class ExperimentViewSet(APIBackedViewSet):
         project_id = experiment.projectId
         if self._can_write(project_id):
             return project_id
-        workspace_preferences = models.WorkspacePreferences.filter(
+        workspace_preferences = models.WorkspacePreferences.objects.filter(
             username=self.username).first()
         if (workspace_preferences and self._can_write(
                 workspace_preferences.most_recent_project_id)):
