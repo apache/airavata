@@ -159,7 +159,7 @@
                       <li v-for="input in experiment.experimentInputs" :key="input.name">
                         {{ input.name }}:
                         <template v-if="input.type.isSimpleValueType">
-                          {{ input.value }}
+                          <span class="text-break">{{ input.value }}</span>
                         </template>
                         <data-product-viewer v-for="dp in inputDataProducts[input.name]"
                           v-else-if="input.type.isFileValueType"
