@@ -49,7 +49,6 @@ from . import (
     thrift_utils
 )
 
-
 READ_PERMISSION_TYPE = '{}:READ'
 
 log = logging.getLogger(__name__)
