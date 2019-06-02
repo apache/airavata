@@ -19,7 +19,7 @@ scigap07.sciencegateways.iu.edu ansible_user=root
 scigap07.sciencegateways.iu.edu ansible_user=root
 
 [pga]
-gf4.ucs.indiana.edu
+gf4.ucs.indiana.edu ansible_user=root
 
 # Using the same keycloak as production
 #[keycloak]
