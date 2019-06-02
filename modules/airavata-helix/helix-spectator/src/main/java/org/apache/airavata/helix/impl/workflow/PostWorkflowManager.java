@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PostWorkflowManager extends WorkflowManager {
 
@@ -94,19 +95,23 @@ public class PostWorkflowManager extends WorkflowManager {
             logger.info("Processing job result of job id " + jobStatusResult.getJobId() + " sent by " + jobStatusResult.getPublisherName());
 
             List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
-            ProcessModel processModel = null;
-            ExperimentModel experimentModel = null;
-            JobModel jobModel = null;
-            ProcessStatus processStatus = null;
+
+            if (jobs.size() > 0) {
+                logger.info("Filtering total " + jobs.size() + " with target job name " + jobStatusResult.getJobName());
+                jobs = jobs.stream().filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName())).collect(Collectors.toList());
+            }
 
             if (jobs.size() != 1) {
-                logger.error("More than one job for job id " + jobStatusResult.getJobId() + " in the registry. Count " + jobs.size());
-            } else  {
-                jobModel = jobs.get(0);
-                processModel =  registryClient.getProcess(jobModel.getProcessId());
-                experimentModel =  registryClient.getExperiment(processModel.getExperimentId());
-                processStatus = registryClient.getProcessStatus(processModel.getProcessId());
+                logger.error("Couldn't find exactly one job with id " + jobStatusResult.getJobId() + " and name " +
+                        jobStatusResult.getJobName() + " in the registry. Count " + jobs.size());
+                getRegistryClientPool().returnResource(registryClient);
+                return false;
             }
+
+            JobModel jobModel = jobs.get(0);
+            ProcessModel processModel = registryClient.getProcess(jobModel.getProcessId());
+            ExperimentModel experimentModel = registryClient.getExperiment(processModel.getExperimentId());
+            ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
 
             getRegistryClientPool().returnResource(registryClient);
 

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AbstractMonitor {
 
@@ -54,8 +55,14 @@ public class AbstractMonitor {
         try {
             List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
 
+            if (jobs.size() > 0) {
+                log.info("Filtering total " + jobs.size() + " with target job name " + jobStatusResult.getJobName());
+                jobs = jobs.stream().filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName())).collect(Collectors.toList());
+            }
+
             if (jobs.size() != 1) {
-                log.error("More than one job for job id " + jobStatusResult.getJobId() + " in the registry. Count " + jobs.size());
+                log.error("Couldn't find exactly one job with id " + jobStatusResult.getJobId() + " and name " +
+                        jobStatusResult.getJobName() + " in the registry. Count " + jobs.size());
                 validated = false;
 
             } else  {
