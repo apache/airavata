@@ -1,7 +1,7 @@
 # inventory file : scigap staging deployment
 
 [zookeeper]
-scigap07.sciencegateways.iu.edu ansible_user=root
+156.56.104.13 ansible_user=root
 
 [rabbitmq]
 scigap06.sciencegateways.iu.edu ansible_user=root
@@ -13,10 +13,10 @@ scigap05.sciencegateways.iu.edu ansible_user=root
 scigap06.sciencegateways.iu.edu ansible_user=root
 
 [helix]
-scigap07.sciencegateways.iu.edu ansible_user=root
+156.56.104.13 ansible_user=root
 
 [kafka]
-scigap07.sciencegateways.iu.edu ansible_user=root
+156.56.104.13 ansible_user=root
 
 [pga]
 gf4.ucs.indiana.edu ansible_user=root
