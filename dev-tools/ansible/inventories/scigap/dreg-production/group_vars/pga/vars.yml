@@ -28,7 +28,7 @@ airavata_port: "9930"
 airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
 oauth_service_url: "https://iam.scigap.org/auth"
 
-pga_repo: "https://github.com/Danko-Lab/airavata-php-gateway.git"
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 pga_git_branch: "dreg-gateway"
 user: "pga"
 group: "pga"
