@@ -23,35 +23,43 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "master"
 user: "pga"
 group: "pga"
-doc_root_dir: "/var/www/portals/brandeis"
-vhost_servername: "sciencegateway.sci.brandeis.edu"
-vhost_ssl: False
+doc_root_dir: "/var/www/portals/oscer"
+vhost_servername: "sciencegateway.oscer.ou.edu"
+vhost_ssl: True
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.oscer.ou.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.oscer.ou.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.oscer.ou.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
-admin_username: "adminuser"
+admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "Brandeis University Science Gateway"
+  - name: "OU Science Gateway"
     oauth_grant_type: "password"
-oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
+  - name: "CILogon"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "brandeis"
+gateway_id: "oscer"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/brandeis"
+experiment_data_dir: "{{ user_data_dir }}/oscer"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnenzHr90GmK9nGzUFVr2Xt0F8dVtqFTU/nSpEK22M0LcBWDJuX2lGw6tz/gU+j5SRAEu2HJnHb67DbvPG+DAEiCYf4sm94GBHljGjySlvDzC8uZGmOzRE3KCzDan5XnHHHQqXL+HJAOzkODVLhxEpN0AOq90Q+Og+vhJlmGJk6WIdjebBfVd0xcHp0nKFzB54F7f0cVubnt5XOE6rMZTb812RSHIIWVk1s5StVbpiDZMzwRJ4tBd1Oe+4DVSTJyn6SdEN18x2KoFeR6BrM8L5QiXhR8GhXj8MyoQLF5+m6q9Drp76n3qw2GMjGgmC8jdwFFOKRiIKM47u9sGrtljX"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZs3ErVmOoQ7GCRwsBJkh3BQVPaoeDw6cja67kXJPCBP7hQ1m9ld0h+PeIt/O8qwPgVN9kGf2fGeekJ9hTjAN8jk0xnU7og7F1RYg6+TqnugyfKZ22ZjfGf/tcc0Wd5BlokvMVJIsLCIv1N0OyxELrGi33y3U98egzn7r0j0uhtNZVN2AC4m1OpRJL7S9FRv9Z7CBXEs7x1j9ctyi3+Q8kBjWm7D78QPqCd2ODrHIDsPZpHm8CUOwHy9p7M+E2bbhkeGxExQhmBIFF75U4Lm3dzUzSmQGvUOppT+Nler8im7ArxS/8OJHEMOi4nW9J+BvtpDztQDAraJAX+VRNjaH5"
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgg@iu.edu', 'pontiggi@brandeis.edu']"
+admin_emails: "['smarru@iu.edu','sgg@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-portal_theme: "base"
-#portal_theme_repo: ""
-portal_title: "Brandeis University Science Gateway"
+portal_theme: "oscer"
+portal_theme_repo: "https://github.com/SciGaP/ou-gateway-theme"
+portal_title: "OU Science Gateway"
 ...
