@@ -99,7 +99,7 @@ cred_store_port: "8960"
 keystores_location: "{{ deployment_dir }}/keystores"
 
 # Monitoring variables
-monitor_email_address: "newstagingjobsairavata@gmail.com"
+monitor_email_address: "scigap03jobs@scigap.org"
 monitor_email_password: "{{ vault_monitor_email_password }}"
 
 # PGA variables
