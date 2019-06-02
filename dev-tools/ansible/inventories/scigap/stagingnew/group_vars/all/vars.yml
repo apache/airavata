@@ -27,8 +27,8 @@ group: airavata
 user_home: "/home/{{ user }}"
 
 # deployment related variables
-deployment_dir: "{{ user_home }}/staging-deployment"
-airavata_source_dir: "{{ user_home }}/staging-source"
+deployment_dir: "{{ user_home }}/master-deployment"
+airavata_source_dir: "{{ user_home }}/master-source"
 airavata_repo: "https://github.com/apache/airavata.git"
 airavata_dist: "apache-airavata-api-server-0.18-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
