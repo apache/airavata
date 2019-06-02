@@ -39,7 +39,7 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/newmexicostate"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nexttdb"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oscer"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/pfec-hydro"
+# - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/pfec-hydro"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/phasta"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/r-hpc"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/rutgersgemr"
