@@ -26,7 +26,7 @@
         slot="createdTimestamp"
         slot-scope="data"
       >
-        <human-date :date="data.value"/>
+        <human-date :date="data.item.createdTime"/>
       </template>
       <template
         slot="actions"
@@ -42,7 +42,6 @@
 <script>
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
-import moment from "moment";
 
 export default {
   name: "user-storage-path-viewer",
@@ -72,7 +71,7 @@ export default {
         },
         {
           label: "Created Time",
-          key: "createdTime",
+          key: "createdTimestamp",
           sortable: true
         },
         {
@@ -113,9 +112,6 @@ export default {
     }
   },
   methods: {
-    fromNow(date) {
-      return moment(date).fromNow();
-    },
     getFormattedSize(size) {
       if (size > Math.pow(2, 30)) {
         return Math.round(size / Math.pow(2, 30)) + " GB";
