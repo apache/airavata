@@ -777,10 +777,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         profile.setFirstName(userRepresentation.getFirstName());
         profile.setLastName(userRepresentation.getLastName());
         profile.setEmails(Arrays.asList(new String[]{userRepresentation.getEmail()}));
+        profile.setCreationTime(userRepresentation.getCreatedTimestamp());
 
         // Just default these. UserProfile isn't a great data model for this data since it isn't actually the Airavata UserProfile
         profile.setLastAccessTime(0);
-        profile.setCreationTime(0);
         profile.setValidUntil(0);
         // Use state field to indicate whether user has been enabled in Keycloak
         if (userRepresentation.isEnabled()) {
