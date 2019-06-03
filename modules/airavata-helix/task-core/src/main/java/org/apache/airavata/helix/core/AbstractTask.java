@@ -69,16 +69,16 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
-        if (participant != null) {
-            participant.registerRunningTask(this);
-        } else {
-            logger.warn("Task with id: " + taskId + " is not registered since the participant is not set");
-        }
         super.init(manager, workflowName, jobName, taskName);
         try {
             TaskUtil.deserializeTaskData(this, this.callbackContext.getTaskConfig().getConfigMap());
         } catch (IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
+        }
+        if (participant != null) {
+            participant.registerRunningTask(this);
+        } else {
+            logger.warn("Task with id: " + taskId + " is not registered since the participant is not set");
         }
     }
 
