@@ -368,6 +368,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     }
                     // set application deployment id to process model
                     ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(registryClient, processModel, applicationId);
+                    if (applicationDeploymentDescription == null) {
+                    	log.error("Could not find an application deployment for " + processModel.getComputeResourceId() + " and application " + applicationId);
+						throw new OrchestratorException("Could not find an application deployment for " + processModel.getComputeResourceId() + " and application " + applicationId);
+                    }
                     processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
                     // set compute resource id to process model, default we set the same in the user preferred compute host id
                     processModel.setComputeResourceId(processModel.getProcessResourceSchedule().getResourceHostId());
