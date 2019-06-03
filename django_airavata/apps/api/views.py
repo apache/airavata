@@ -40,14 +40,7 @@ from django_airavata.apps.api.view_utils import (
 )
 from django_airavata.apps.auth import iam_admin_client
 
-from . import (
-    data_products_helper,
-    datastore,
-    helpers,
-    models,
-    serializers,
-    thrift_utils
-)
+from . import data_products_helper, helpers, models, serializers, thrift_utils
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -196,18 +189,17 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment.userConfigurationData.storageId = \
             settings.GATEWAY_DATA_STORE_RESOURCE_ID
         # Create experiment dir and set it on model
-        project = self.request.airavata_client.getProject(
-            self.authz_token, experiment.projectId)
         if not experiment.userConfigurationData.experimentDataDir:
-            exp_dir = datastore.get_experiment_dir(self.username,
-                                                   project.name,
-                                                   experiment.experimentName)
+            project = self.request.airavata_client.getProject(
+                self.authz_token, experiment.projectId)
+            exp_dir = data_products_helper.get_experiment_dir(
+                self.request, project.name, experiment.experimentName)
             experiment.userConfigurationData.experimentDataDir = exp_dir
         else:
             # get_experiment_dir will also validate that absolute paths are
             # inside the user's storage directory
-            exp_dir = datastore.get_experiment_dir(
-                self.username,
+            exp_dir = data_products_helper.get_experiment_dir(
+                self.request,
                 path=experiment.userConfigurationData.experimentDataDir)
             experiment.userConfigurationData.experimentDataDir = exp_dir
 
