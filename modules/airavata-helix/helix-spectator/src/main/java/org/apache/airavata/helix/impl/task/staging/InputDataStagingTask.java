@@ -26,6 +26,7 @@ import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
@@ -67,65 +68,29 @@ public class InputDataStagingTask extends DataStagingTask {
                 throw new TaskOnFailException(message, true, null);
             }
 
-            // Fetch and validate source and destination URLS
-            URI sourceURI;
-            URI destinationURI;
-            String sourceFileName;
             try {
-                sourceURI = new URI(dataStagingTaskModel.getSource());
-                destinationURI = new URI(dataStagingTaskModel.getDestination());
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Source file " + sourceURI.getPath() + ", destination uri " + destinationURI.getPath() + " for task " + getTaskId());
+                String sourceUrls[];
+
+                if (dataStagingTaskModel.getProcessInput().getType() == DataType.URI_COLLECTION) {
+                    logger.info("Found a URI collection so splitting by comma for path " + dataStagingTaskModel.getSource());
+                    sourceUrls = dataStagingTaskModel.getSource().split(",");
+                } else {
+                    sourceUrls = new String[]{dataStagingTaskModel.getSource()};
                 }
 
-                sourceFileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
-                        sourceURI.getPath().length());
+                for (String url : sourceUrls) {
+                    URI sourceURI = new URI(url);
+                    URI destinationURI = new URI(dataStagingTaskModel.getDestination());
+
+                    logger.info("Source file " + sourceURI.getPath() + ", destination uri " + destinationURI.getPath() + " for task " + getTaskId());
+                    copySingleFile(sourceURI, destinationURI, taskHelper);
+                }
+
             } catch (URISyntaxException e) {
                 throw new TaskOnFailException("Failed to obtain source URI for input data staging task " + getTaskId(), true, e);
             }
 
-            // Fetch and validate storage adaptor
-            StorageResourceAdaptor storageResourceAdaptor = getStorageAdaptor(taskHelper.getAdaptorSupport());
-
-            // Fetch and validate compute resource adaptor
-            AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
-
-            String localSourceFilePath = getLocalDataPath(sourceFileName);
-            // Downloading input file from the storage resource
-
-            try {
-                try {
-                    logger.info("Downloading input file " + sourceURI.getPath() + " to the local path " + localSourceFilePath);
-                    storageResourceAdaptor.downloadFile(sourceURI.getPath(), localSourceFilePath);
-                    logger.info("Input file downloaded to " + localSourceFilePath);
-                } catch (AgentException e) {
-                    throw new TaskOnFailException("Failed downloading input file " + sourceFileName + " to the local path " + localSourceFilePath, false, e);
-                }
-
-                File localFile = new File(localSourceFilePath);
-                if (localFile.exists()) {
-                    if (localFile.length() == 0) {
-                        logger.error("Local file " + localSourceFilePath +" size is 0 so ignoring the upload");
-                        return onFail("Input staging has failed as file " + localSourceFilePath + " size is 0", true, null);
-                    }
-                } else {
-                    throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, false, null);
-                }
-
-                // Uploading input file to the compute resource
-                try {
-                    logger.info("Uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath);
-                    adaptor.copyFileTo(localSourceFilePath, destinationURI.getPath());
-                    logger.info("Input file uploaded to " + destinationURI.getPath());
-                } catch (AgentException e) {
-                    throw new TaskOnFailException("Failed uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath, false, e);
-                }
-
-            } finally {
-                logger.info("Deleting temporary file " + localSourceFilePath);
-                deleteTempFile(localSourceFilePath);
-            }
             return onSuccess("Input data staging task " + getTaskId() + " successfully completed");
 
         } catch (TaskOnFailException e) {
@@ -136,9 +101,57 @@ public class InputDataStagingTask extends DataStagingTask {
             }
             return onFail(e.getReason(), e.isCritical(), e.getError());
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Unknown error while executing input data staging task " + getTaskId(), e);
             return onFail("Unknown error while executing input data staging task " + getTaskId(), false,  e);
+        }
+    }
+
+    private void copySingleFile(URI sourceURI, URI destinationURI, TaskHelper taskHelper) throws TaskOnFailException {
+
+        String sourceFileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
+                    sourceURI.getPath().length());
+
+        // Fetch and validate storage adaptor
+        StorageResourceAdaptor storageResourceAdaptor = getStorageAdaptor(taskHelper.getAdaptorSupport());
+
+        // Fetch and validate compute resource adaptor
+        AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
+
+        String localSourceFilePath = getLocalDataPath(sourceFileName);
+        // Downloading input file from the storage resource
+
+        try {
+            try {
+                logger.info("Downloading input file " + sourceURI.getPath() + " to the local path " + localSourceFilePath);
+                storageResourceAdaptor.downloadFile(sourceURI.getPath(), localSourceFilePath);
+                logger.info("Input file downloaded to " + localSourceFilePath);
+            } catch (AgentException e) {
+                throw new TaskOnFailException("Failed downloading input file " + sourceFileName + " to the local path " + localSourceFilePath, false, e);
+            }
+
+            File localFile = new File(localSourceFilePath);
+            if (localFile.exists()) {
+                if (localFile.length() == 0) {
+                    logger.error("Local file " + localSourceFilePath +" size is 0 so ignoring the upload");
+                    throw new TaskOnFailException("Input staging has failed as file " + localSourceFilePath + " size is 0", true, null);
+                }
+            } else {
+                throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, false, null);
+            }
+
+            // Uploading input file to the compute resource
+            try {
+                logger.info("Uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath);
+                adaptor.copyFileTo(localSourceFilePath, destinationURI.getPath());
+                logger.info("Input file uploaded to " + destinationURI.getPath());
+            } catch (AgentException e) {
+                throw new TaskOnFailException("Failed uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath, false, e);
+            }
+
+        } finally {
+            logger.info("Deleting temporary file " + localSourceFilePath);
+            deleteTempFile(localSourceFilePath);
         }
     }
 
