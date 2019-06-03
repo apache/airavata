@@ -100,10 +100,12 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     }
 
     public void registerRunningTask(AbstractTask task) {
+        logger.info("Registering Task " + task.getTaskId() + ". Currently available " + runningTasks.size());
         runningTasks.add(task);
     }
 
     public void unregisterRunningTask(AbstractTask task) {
+        logger.info("Un registering Task " + task.getTaskId() + ". Currently available " + runningTasks.size());
         runningTasks.remove(task);
     }
 
@@ -205,6 +207,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     }
 
     private void disconnect() {
+        logger.info("Shutting down participant. Currently available tasks " + runningTasks.size());
         if (zkHelixManager != null) {
             if (runningTasks.size() > 0) {
                 for (int i = 0; i <= shutdownGraceRetries; i++) {
