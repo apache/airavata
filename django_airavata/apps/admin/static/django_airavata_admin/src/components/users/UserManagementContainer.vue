@@ -2,7 +2,29 @@
   <div>
     <div class="row">
       <div class="col">
-        <h1 class="h4 mb-4">Users</h1>
+        <h1 class="h4 mb-4">Manage Users</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <b-input-group>
+              <b-form-input
+                v-model="search"
+                placeholder="Search by name, email or username"
+                @keydown.native.enter="searchUsers"
+              />
+              <b-input-group-append>
+                <b-button @click="resetSearch">Reset</b-button>
+                <b-button
+                  variant="primary"
+                  @click="searchUsers"
+                >Search</b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </div>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -59,7 +81,8 @@ export default {
     return {
       usersPaginator: null,
       allGroups: null,
-      showingDetails: {}
+      showingDetails: {},
+      search: null
     };
   },
   components: {
@@ -111,7 +134,8 @@ export default {
       return this.usersPaginator
         ? this.usersPaginator.results.map(u => {
             const user = u.clone();
-            user._showDetails = this.showingDetails[u.airavataInternalUserId] || false;
+            user._showDetails =
+              this.showingDetails[u.airavataInternalUserId] || false;
             return user;
           })
         : [];
@@ -141,15 +165,31 @@ export default {
       });
     },
     reloadUserProfiles() {
-      services.ManagedUserProfileService.list({
+      const params = {
         limit: 10,
         offset: this.currentOffset
-      }).then(users => (this.usersPaginator = users));
+      };
+      if (this.search) {
+        params["search"] = this.search;
+      }
+      services.ManagedUserProfileService.list(params).then(
+        users => (this.usersPaginator = users)
+      );
     },
     toggleDetails(row) {
       row.toggleDetails();
       this.showingDetails[row.item.airavataInternalUserId] = !this
         .showingDetails[row.item.airavataInternalUserId];
+    },
+    searchUsers() {
+      // Reset paginator when starting a search
+      this.usersPaginator = null;
+      this.reloadUserProfiles();
+    },
+    resetSearch() {
+      this.usersPaginator = null;
+      this.search = null;
+      this.reloadUserProfiles();
     }
   }
 };
