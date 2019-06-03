@@ -115,25 +115,24 @@ public class OutputDataStagingTask extends DataStagingTask {
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
 
                 logger.debug("Destination parent path " + destParentPath + ", source parent path " + sourceParentPath);
-                List<String> fileNames;
+                List<String> filePaths;
                 try {
-                    fileNames = adaptor.getFileNameFromExtension(sourceFileName, sourceParentPath);
+                    filePaths = adaptor.getFileNameFromExtension(sourceFileName, sourceParentPath);
 
                     if (logger.isTraceEnabled()) {
-                        fileNames.forEach(fileName -> logger.trace("File found : " + fileName));
+                        filePaths.forEach(fileName -> logger.trace("File found : " + fileName));
                     }
 
                 } catch (AgentException e) {
                     throw new TaskOnFailException("Failed to fetch the file list from extension " + sourceFileName, false, e);
                 }
 
-                for (String temp : fileNames) {
-                    if (!"".equals(temp)) {
-                        sourceFileName = temp;
-                    } else {
+                for (String subFilePath : filePaths) {
+                    if (subFilePath == null || "".equals(subFilePath)) {
                         logger.warn("Ignoring file transfer as filename is empty or null");
                         continue;
                     }
+                    sourceFileName = new File(subFilePath).getName();
                     if (destParentPath.endsWith(File.separator)) {
                         destinationURI = new URI(destParentPath + sourceFileName);
                     } else {
