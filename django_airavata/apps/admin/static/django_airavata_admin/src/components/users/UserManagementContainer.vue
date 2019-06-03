@@ -37,6 +37,11 @@
               :items="items"
             >
               <template
+                slot="creationTime"
+                slot-scope="data">
+                <human-date :date="data.value"/>
+              </template>
+              <template
                 slot="action"
                 slot-scope="data"
               >
@@ -87,6 +92,7 @@ export default {
   },
   components: {
     pager: components.Pager,
+    'human-date': components.HumanDate,
     UserDetailsContainer
   },
   created() {
@@ -123,6 +129,10 @@ export default {
         {
           label: "Email Verified",
           key: "emailVerified"
+        },
+        {
+          label: "Created",
+          key: "creationTime"
         },
         {
           label: "Action",

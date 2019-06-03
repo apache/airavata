@@ -3,6 +3,9 @@
     <template slot="item-list" slot-scope="slotProps">
 
       <b-table striped hover :fields="fields" :items="slotProps.items">
+        <template slot="updatedTime" slot-scope="data">
+          <human-date :date="data.value"/>
+        </template>
         <template slot="action" slot-scope="data">
           <router-link class="action-link" v-if="data.item.userHasWriteAccess" :to="{name: 'group_resource_preference', params: {value: data.item, id: data.item.groupResourceProfileId}}">
             Edit
@@ -19,13 +22,13 @@
 </template>
 
 <script>
-import { layouts } from "django-airavata-common-ui";
+import { components, layouts } from "django-airavata-common-ui";
 import { services } from "django-airavata-api";
-import moment from "moment";
 
 export default {
   name: "compute-resource-preference",
   components: {
+    "human-date": components.HumanDate,
     "list-layout": layouts.ListLayout
   },
   data: function() {
@@ -39,7 +42,6 @@ export default {
         {
           label: "Updated",
           key: "updatedTime",
-          formatter: value => moment(new Date(value)).fromNow()
         },
         {
           label: "Action",

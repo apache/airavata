@@ -13,6 +13,10 @@ const FIELDS = [
   "emailVerified",
   "airavataUserProfileExists",
   {
+    name: "creationTime",
+    type: 'date',
+  },
+  {
     name: "groups",
     type: Group,
     list: true

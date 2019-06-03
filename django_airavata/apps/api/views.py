@@ -1436,5 +1436,6 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
             'enabled': user_profile.State == Status.CONFIRMED,
             'emailVerified': user_profile.State == Status.CONFIRMED,
             'airavataUserProfileExists': airavata_user_profile_exists,
+            'creationTime': user_profile.creationTime,
             'groups': groups
         }

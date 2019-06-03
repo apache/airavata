@@ -26,7 +26,7 @@
         slot="createdTimestamp"
         slot-scope="data"
       >
-        <span :title="data.item.createdTime.toString()">{{ fromNow(data.item.createdTime)}}</span>
+        <human-date :date="data.value"/>
       </template>
       <template
         slot="actions"
@@ -53,6 +53,7 @@ export default {
   },
   components: {
     "delete-button": components.DeleteButton,
+    "human-date": components.HumanDate,
     UserStoragePathBreadcrumb
   },
   computed: {
@@ -71,7 +72,7 @@ export default {
         },
         {
           label: "Created Time",
-          key: "createdTimestamp",
+          key: "createdTime",
           sortable: true
         },
         {

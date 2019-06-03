@@ -7,6 +7,9 @@
           <template slot="sharing" slot-scope="data">
             <share-button :entity-id="data.item.token" :disallow-editing-admin-groups="false" />
           </template>
+          <template slot="persistedTime" slot-scope="data">
+            <human-date :date="data.value"/>
+          </template>
           <template slot="action" slot-scope="data">
             <clipboard-copy-link :text="data.item.publicKey.trim()" class="mr-1" />
             <delete-link v-if="data.item.userHasWriteAccess" @delete="deleteSSHCredential(data.item)">
@@ -42,13 +45,13 @@
 <script>
 import { services } from "django-airavata-api";
 import { components, layouts } from "django-airavata-common-ui";
-import moment from "moment";
 import NewSSHCredentialModal from "../credentials/NewSSHCredentialModal.vue";
 import NewPasswordCredentialModal from "../credentials/NewPasswordCredentialModal.vue";
 
 export default {
   components: {
     "delete-link": components.DeleteLink,
+    "human-date": components.HumanDate,
     "list-layout": layouts.ListLayout,
     "clipboard-copy-link": components.ClipboardCopyLink,
     "new-password-credential-modal": NewPasswordCredentialModal,
@@ -79,7 +82,6 @@ export default {
         {
           label: "Created",
           key: "persistedTime",
-          formatter: value => moment(new Date(value)).fromNow()
         },
         {
           label: "Sharing",
