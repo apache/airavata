@@ -241,9 +241,11 @@ public class PostWorkflowManager extends WorkflowManager {
                         switch (subTaskModel.getType()) {
                             case OUPUT:
                                 airavataTask = new OutputDataStagingTask();
+                                airavataTask.setForceRunTask(true);
                                 break;
                             case ARCHIVE_OUTPUT:
                                 airavataTask = new ArchiveTask();
+                                airavataTask.setForceRunTask(true);
                                 break;
                         }
                     }
@@ -255,7 +257,6 @@ public class PostWorkflowManager extends WorkflowManager {
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
                     airavataTask.setRetryCount(taskModel.getMaxRetry());
-                    airavataTask.setForceRunTask(forceRun);
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }
