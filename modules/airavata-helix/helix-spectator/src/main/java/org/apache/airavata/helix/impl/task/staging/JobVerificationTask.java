@@ -63,7 +63,12 @@ public class JobVerificationTask extends AiravataTask {
 
                         if (jobMonitorOutput.getExitCode() == 0) {
                             JobStatus jobStatus = jobManagerConfiguration.getParser().parseJobStatus(job.getJobId(), jobMonitorOutput.getStdOut());
-                            logger.info("Status of job id " + job.getJobId() + " " + jobStatus.getJobState());
+                            if (jobStatus != null) {
+                                logger.info("Status of job id " + job.getJobId() + " " + jobStatus.getJobState());
+                            } else {
+                                logger.info("Status for job " + job.getJobId() + " is not available. Ignoring");
+                                break;
+                            }
                             if (jobStatus.getJobState() == JobState.ACTIVE ||
                                     jobStatus.getJobState() == JobState.QUEUED ||
                                     jobStatus.getJobState() == JobState.SUBMITTED) {
