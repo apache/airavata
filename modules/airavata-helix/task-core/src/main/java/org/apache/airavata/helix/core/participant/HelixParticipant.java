@@ -62,7 +62,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     private String taskTypeName;
 
     private List<Class<? extends T>> taskClasses;
-    private final List<AbstractTask> runningTasks = Collections.synchronizedList(new ArrayList<AbstractTask>());
+    private final List<String> runningTasks = Collections.synchronizedList(new ArrayList<String>());
 
     public HelixParticipant(List<Class<? extends T>> taskClasses, String taskTypeName) throws ApplicationSettingsException {
 
@@ -100,13 +100,13 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     }
 
     public void registerRunningTask(AbstractTask task) {
-        logger.info("Registering Task " + task.getTaskId() + ". Currently available " + runningTasks.size());
-        runningTasks.add(task);
+        runningTasks.add(task.getTaskId());
+        logger.info("Registered Task " + task.getTaskId() + ". Currently available " + runningTasks.size());
     }
 
     public void unregisterRunningTask(AbstractTask task) {
-        logger.info("Un registering Task " + task.getTaskId() + ". Currently available " + runningTasks.size());
-        runningTasks.remove(task);
+        runningTasks.remove(task.getTaskId());
+        logger.info("Un registered Task " + task.getTaskId() + ". Currently available " + runningTasks.size());
     }
 
     @SuppressWarnings("WeakerAccess")
