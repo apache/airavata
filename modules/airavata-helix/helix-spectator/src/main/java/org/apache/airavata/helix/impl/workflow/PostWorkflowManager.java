@@ -27,6 +27,7 @@ import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
+import org.apache.airavata.helix.impl.task.staging.JobVerificationTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.ProcessState;
@@ -212,6 +213,16 @@ public class PostWorkflowManager extends WorkflowManager {
 
         String[] taskIds = taskDag.split(",");
         final List<AiravataTask> allTasks = new ArrayList<>();
+
+        JobVerificationTask jobVerificationTask = new JobVerificationTask();
+        jobVerificationTask.setGatewayId(experimentModel.getGatewayId());
+        jobVerificationTask.setExperimentId(experimentModel.getExperimentId());
+        jobVerificationTask.setProcessId(processModel.getProcessId());
+        jobVerificationTask.setTaskId("Job-Verification-Task-" + UUID.randomUUID().toString() +"-");
+        jobVerificationTask.setForceRunTask(forceRun);
+        jobVerificationTask.setSkipTaskStatusPublish(true);
+
+        allTasks.add(jobVerificationTask);
 
         boolean jobSubmissionFound = false;
 
