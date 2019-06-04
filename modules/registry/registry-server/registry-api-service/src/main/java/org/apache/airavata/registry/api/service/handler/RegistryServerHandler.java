@@ -3788,6 +3788,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                     regFilters.put(Constants.FieldConstants.ExperimentConstants.PROJECT_ID, entry.getValue());
                 } else if (entry.getKey().equals(ExperimentSearchFields.USER_NAME)){
                     regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.JOB_ID)){
+                    regFilters.put(Constants.FieldConstants.JobConstants.JOB_ID, entry.getValue());
                 }
             }
 

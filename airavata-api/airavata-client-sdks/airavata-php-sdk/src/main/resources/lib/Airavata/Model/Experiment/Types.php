@@ -34,6 +34,8 @@ final class ExperimentSearchFields {
   const TO_DATE = 4;
   const STATUS = 5;
   const PROJECT_ID = 6;
+  const USER_NAME = 7;
+  const JOB_ID = 8;
   static public $__names = array(
     0 => 'EXPERIMENT_NAME',
     1 => 'EXPERIMENT_DESC',
@@ -42,6 +44,8 @@ final class ExperimentSearchFields {
     4 => 'TO_DATE',
     5 => 'STATUS',
     6 => 'PROJECT_ID',
+    7 => 'USER_NAME',
+    8 => 'JOB_ID',
   );
 }
 
