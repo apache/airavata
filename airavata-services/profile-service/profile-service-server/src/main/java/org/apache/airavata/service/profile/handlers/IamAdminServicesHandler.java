@@ -167,6 +167,22 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         }
     }
 
+
+    @Override
+    @SecurityCheck
+    public List<UserProfile> getUsers(AuthzToken authzToken, int offset, int limit, String search)
+            throws IamAdminServicesException, AuthorizationException, TException {
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+            return keycloakclient.getUsers(authzToken.getAccessToken(), gatewayId, offset, limit, search);
+        } catch (Exception ex) {
+            String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
+    }
+
     @Override
     @SecurityCheck
     public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword) throws IamAdminServicesException, AuthorizationException, TException {

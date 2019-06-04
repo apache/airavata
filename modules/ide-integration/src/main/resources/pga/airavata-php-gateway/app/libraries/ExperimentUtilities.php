@@ -1235,6 +1235,9 @@ class ExperimentUtilities
                         $filters[\Airavata\Model\Experiment\ExperimentSearchFields::FROM_DATE] = strtotime( $addOrSubtract . " " . Session::get("user_timezone") . " hours", strtotime($inputs["from-date"]) ) * 1000;
                         $filters[\Airavata\Model\Experiment\ExperimentSearchFields::TO_DATE] = strtotime( $addOrSubtract . " " . Session::get("user_timezone") . " hours", strtotime($inputs["to-date"]) ) * 1000;
                         break;
+                    case 'jobId':
+                        $filters[\Airavata\Model\Experiment\ExperimentSearchFields::JOB_ID] = $inputs["search-value"];
+                        break;
                     case '':
                 }
             }

@@ -555,7 +555,7 @@
         <repository>
             <id>wso2</id>
             <name>Repository</name>
-            <url>http://dist.wso2.org/maven2</url>
+            <url>https://dist.wso2.org/maven2</url>
         </repository>
         <repository>
             <id>oauth</id>
