@@ -44,6 +44,7 @@ enum ExperimentSearchFields {
     STATUS,
     PROJECT_ID,
     USER_NAME,
+    JOB_ID,
 }
 
 enum ProjectSearchFields {

@@ -2,6 +2,7 @@
 
 @section('page-header')
 @parent
+{{ HTML::style('css/bootstrap-toggle.css')}}
 {{ HTML::style('css/admin.css')}}
 {{ HTML::style('css/datetimepicker.css')}}
 @stop
@@ -18,14 +19,18 @@
 <div class="container-fluid">
 
     <div class="well form-group form-horizontal col-md-12">
-        <label class="col-md-3">Enter Experiment Id to View Summary :</label>
-
-        <div class="col-md-6">
-            <input type="text" class="form-control experimentId"/>
+        <div class="col-md-9">
+            <label class="col-md-3">Enter Id to View Summary :</label>
+            <input unchecked class="col-md-3 get-experiment-by-jobid" type="checkbox" data-toggle="toggle" data-on="Experiment ID" data-off="Job ID" data-onstyle="success" data-offstyle="danger">
+            <div class="col-md-6">
+                <input type="text" class="form-control experimentId"/>
+            </div>
         </div>
-        <button class="col-md-3 btn btn-primary get-experiment" disabled="disabled">Get</button>
-        <div class="loading-img hide text-center"><img src="{{URL::to('/')}}/assets/ajax-loader.gif"/></div>
-
+        <div class="col-md-3">
+            <button class="col-md-12 btn btn-primary get-experiment" disabled="disabled">Get</button>
+            <div class="loading-img hide text-center">
+                <img src="{{URL::to('/')}}/assets/ajax-loader.gif"/>
+            </div>
         </div>
     </div>
 
@@ -384,6 +389,7 @@
 
 @section('scripts')
 @parent
+{{ HTML::script('js/bootstrap-toggle.js')}}
 {{ HTML::script('js/gateway.js') }}
 {{ HTML::script('js/moment.js')}}
 {{ HTML::script('js/datetimepicker-3.1.3.js')}}
@@ -409,6 +415,9 @@ to be uncommented when actually in use.
 {{ HTML::script('js/util.js')}}
 <script>
 
+    // instantiate bootstrap jobId toggle button to search by Experiment
+    $(".get-experiment-by-jobid").bootstrapToggle('on');
+
     //make first tab of accordion open by default.
     //temporary fix
     $("#accordion2").children(".panel").children(".collapse").addClass("in");
@@ -431,6 +440,7 @@ to be uncommented when actually in use.
         e.stopPropagation();
     });
 
+    //when key is pressed in experimentId enable get button
     $(".experimentId").keyup( function(){
         if( $.trim( $(this).val()) == "")
             $(".get-experiment").attr("disabled", "disabled");
@@ -439,33 +449,66 @@ to be uncommented when actually in use.
     });
 
     $(".get-experiment").click(function () {
+        // check whether user wants to search by expId or jobId
+        var getExpByJobID = $(".get-experiment-by-jobid").prop("checked");
+        if(getExpByJobID == false){
+            var jobId = $(".experimentId").val();
+            var expHTMLId = util.sanitizeHTMLId(jobId);
 
-        var expId = $(".experimentId").val();
-        var expHTMLId = util.sanitizeHTMLId(expId);
-        if( $("#" + expHTMLId).length <= 0){
-            $(".loading-img").removeClass("hide");
-            $.ajax({
-                url: 'experiment/summary?expId=' + encodeURIComponent(expId),
-                type: 'get',
-                success: function (data) {
-                    $("#myTabs").append('<li role="presentation"><a href="#' + expHTMLId + '" aria-controls="' + expHTMLId + '" role="tab" data-toggle="tab"><span class="expid-label"></span><button type="button" style="margin-left:10px;" class="close pull-right close-tab" aria-label="Close"><span aria-hidden="true">&times;</span></button></a></li>');
-                    // Set expId with .text() so it gets properly escaped
-                    $('#myTabs a[href="#' + expHTMLId + '"] .expid-label').text(expId);
-                    $(".tab-content").append('<div role="tabpanel" class="tab-pane" id="' + expHTMLId + '"></div>');
-                    $(".tab-content #" + expHTMLId).html(data);
-                    $('#myTabs a[href="#' + expHTMLId + '"]').tab('show'); // Select tab by name
+            if( $("#" + expHTMLId).length <= 0){
+                $(".loading-img").removeClass("hide");
+                $.ajax({
+                    url: 'experiment/summary?jobId=' + encodeURIComponent(jobId),
+                    type: 'get',
+                    success: function (data) {
+                        $("#myTabs").append('<li role="presentation"><a href="#' + expHTMLId + '" aria-controls="' + expHTMLId + '" role="tab" data-toggle="tab"><span class="expid-label"></span><button type="button" style="margin-left:10px;" class="close pull-right close-tab" aria-label="Close"><span aria-hidden="true">&times;</span></button></a></li>');
+                        // Set expId with .text() so it gets properly escaped
+                        $('#myTabs a[href="#' + expHTMLId + '"] .expid-label').text(jobId);
+                        $(".tab-content").append('<div role="tabpanel" class="tab-pane" id="' + expHTMLId + '"></div>');
+                        $(".tab-content #" + expHTMLId).html(data);
+                        $('#myTabs a[href="#' + expHTMLId + '"]').tab('show'); // Select tab by name
 
-                    //$('#myTabs a[href="#expsummary"]').tab('show') // Select tab by name
+                        //$('#myTabs a[href="#expsummary"]').tab('show') // Select tab by name
 
-                    //from time-conversion.js
-                    updateTime();
-                }
-            }).complete(function () {
-                $(".loading-img").addClass("hide");
-            });
-        } else {
-            // Experiment data already loaded so just show it
-            $('#myTabs a[href="#' + expHTMLId + '"]').tab('show');
+                        //from time-conversion.js
+                        updateTime();
+                    }
+                }).complete(function () {
+                    $(".loading-img").addClass("hide");
+                });
+            } else {
+                // Experiment data already loaded so just show it
+                $('#myTabs a[href="#' + expHTMLId + '"]').tab('show');
+            }
+        }
+        else{
+            var expId = $(".experimentId").val();
+            var expHTMLId = util.sanitizeHTMLId(expId);
+            if( $("#" + expHTMLId).length <= 0){
+                $(".loading-img").removeClass("hide");
+                $.ajax({
+                    url: 'experiment/summary?expId=' + encodeURIComponent(expId),
+                    type: 'get',
+                    success: function (data) {
+                        $("#myTabs").append('<li role="presentation"><a href="#' + expHTMLId + '" aria-controls="' + expHTMLId + '" role="tab" data-toggle="tab"><span class="expid-label"></span><button type="button" style="margin-left:10px;" class="close pull-right close-tab" aria-label="Close"><span aria-hidden="true">&times;</span></button></a></li>');
+                        // Set expId with .text() so it gets properly escaped
+                        $('#myTabs a[href="#' + expHTMLId + '"] .expid-label').text(expId);
+                        $(".tab-content").append('<div role="tabpanel" class="tab-pane" id="' + expHTMLId + '"></div>');
+                        $(".tab-content #" + expHTMLId).html(data);
+                        $('#myTabs a[href="#' + expHTMLId + '"]').tab('show'); // Select tab by name
+
+                        //$('#myTabs a[href="#expsummary"]').tab('show') // Select tab by name
+
+                        //from time-conversion.js
+                        updateTime();
+                    }
+                }).complete(function () {
+                    $(".loading-img").addClass("hide");
+                });
+            } else {
+                // Experiment data already loaded so just show it
+                $('#myTabs a[href="#' + expHTMLId + '"]').tab('show');
+            }
         }
     });
 
