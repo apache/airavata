@@ -23,6 +23,11 @@ interface UserProfileServiceIf extends \Airavata\Base\API\BaseAPIIf {
    */
   public function getAPIVersion();
   /**
+   * @return string
+   * @throws \Airavata\Service\Profile\User\CPI\Error\UserProfileServiceException
+   */
+  public function getAPIVersion();
+  /**
    * Create an initial UserProfile based on information in the IAM service for this user.
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
@@ -32,6 +37,10 @@ interface UserProfileServiceIf extends \Airavata\Base\API\BaseAPIIf {
    */
   public function initializeUserProfile(\Airavata\Model\Security\AuthzToken $authzToken);
   /**
+   * This method is deprecated and will be removed in future versions of our Django portal. Please use
+   * the initializeUserProfile method which fetches the information about the user profile from
+   * IAM service - @Deprecated
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\User\UserProfile $userProfile
    * @return string
@@ -146,6 +155,59 @@ interface UserProfileServiceIf extends \Airavata\Base\API\BaseAPIIf {
 class UserProfileServiceClient extends \Airavata\Base\API\BaseAPIClient implements \Airavata\Service\Profile\User\CPI\UserProfileServiceIf {
   public function __construct($input, $output=null) {
     parent::__construct($input, $output);
+  }
+
+  public function getAPIVersion()
+  {
+    $this->send_getAPIVersion();
+    return $this->recv_getAPIVersion();
+  }
+
+  public function send_getAPIVersion()
+  {
+    $args = new \Airavata\Service\Profile\User\CPI\UserProfileService_getAPIVersion_args();
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getAPIVersion', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getAPIVersion', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getAPIVersion()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Profile\User\CPI\UserProfileService_getAPIVersion_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Profile\User\CPI\UserProfileService_getAPIVersion_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->upe !== null) {
+      throw $result->upe;
+    }
+    throw new \Exception("getAPIVersion failed: unknown result");
   }
 
   public function getAPIVersion()
