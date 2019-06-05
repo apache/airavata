@@ -101,6 +101,7 @@ const services = {
   DataProductService: ServiceFactory.service("DataProducts"),
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
   ExperimentService: ServiceFactory.service("Experiments"),
+  ExperimentStatisticsService: ServiceFactory.service("ExperimentStatistics"),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
     "GatewayResourceProfiles"

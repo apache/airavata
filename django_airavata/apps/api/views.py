@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -1440,3 +1441,23 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
             'creationTime': user_profile.creationTime,
             'groups': groups
         }
+
+
+class ExperimentStatisticsView(APIView):
+    # TODO: restrict to only Admins or Read Only Admins group members
+    serializer_class = serializers.ExperimentStatisticsSerializer
+
+    def get(self, request, format=None):
+        # TODO: convert from ISO-8601 to posix timestamp
+        from_time = request.GET.get(
+            'fromTime',
+            (datetime.utcnow() - timedelta(days=1)).timestamp() * 1000)
+        to_time = request.GET.get(
+            'toTime',
+            datetime.utcnow().timestamp() * 1000)
+        statistics = request.airavata_client.getExperimentStatistics(
+            request.authz_token, settings.GATEWAY_ID, from_time, to_time,
+            None, None, None)
+        serializer = self.serializer_class(
+            statistics, context={'request': request})
+        return Response(serializer.data)

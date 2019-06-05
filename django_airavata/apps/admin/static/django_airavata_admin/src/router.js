@@ -6,6 +6,7 @@ import ApplicationModuleEditor from "./components/applications/ApplicationModule
 import ApplicationsDashboard from "./components/dashboards/ApplicationsDashboard.vue";
 import ComputePreference from "./components/admin/group_resource_preferences/ComputePreference";
 import ComputeResourcePreferenceDashboard from "./components/dashboards/ComputeResourcePreferenceDashboard";
+import ExperimentStatisticsContainer from "./components/statistics/ExperimentStatisticsContainer";
 import CredentialStoreDashboard from "./components/dashboards/CredentialStoreDashboard";
 import GatewayResourceProfileEditorContainer from "./components/gatewayprofile/GatewayResourceProfileEditorContainer.vue";
 import GroupComputeResourcePreference from "./components/admin/group_resource_preferences/GroupComputeResourcePreference";
@@ -122,6 +123,11 @@ const routes = [
     path: "/users",
     component: UserManagementContainer,
     name: "users"
+  },
+  {
+    path: "/experiment-statistics",
+    component: ExperimentStatisticsContainer,
+    name: "experiment-statistics"
   }
 ];
 export default new VueRouter({

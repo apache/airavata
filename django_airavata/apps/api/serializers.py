@@ -47,6 +47,7 @@ from airavata.model.data.replica.ttypes import (
 )
 from airavata.model.experiment.ttypes import (
     ExperimentModel,
+    ExperimentStatistics,
     ExperimentSummaryModel
 )
 from airavata.model.group.ttypes import GroupModel, ResourcePermissionType
@@ -852,3 +853,13 @@ class ManagedUserProfile(serializers.Serializer):
         instance['_removed_group_ids'] = list(
             set(existing_group_ids) - set(new_group_ids))
         return instance
+
+
+class ExperimentStatisticsSerializer(
+        thrift_utils.create_serializer_class(ExperimentStatistics)):
+    allExperiments = ExperimentSummarySerializer(many=True)
+    completedExperiments = ExperimentSummarySerializer(many=True)
+    failedExperiments = ExperimentSummarySerializer(many=True)
+    cancelledExperiments = ExperimentSummarySerializer(many=True)
+    createdExperiments = ExperimentSummarySerializer(many=True)
+    runningExperiments = ExperimentSummarySerializer(many=True)

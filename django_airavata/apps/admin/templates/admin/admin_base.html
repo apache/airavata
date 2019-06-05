@@ -19,6 +19,11 @@
             <i class="fa fa-users"></i> <span class=sr-only>Manage Users</span>
         </a>
         {% endif %}
+        {% if request.is_gateway_admin or request.is_read_only_gateway_admin %}
+        <a href="{% url 'django_airavata_admin:experiment-statistics' %}" class="c-nav__item {% if request.active_nav_item == 'experiment-statistics' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Experiment Statistics">
+            <i class="fa fa-chart-bar"></i> <span class=sr-only>Experiment Statistics</span>
+        </a>
+        {% endif %}
         <a href="{% url 'django_airavata_admin:credential_store' %}" class="c-nav__item {% if request.active_nav_item == 'credential_store' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Credential Store">
             <i class="fa fa-lock"></i> <span class=sr-only>Credential Store</span>
         </a>
