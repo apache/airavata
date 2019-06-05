@@ -55,8 +55,6 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
     public void postInit() {
 
         GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
-
         try {
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(ServerSettings.getDefaultUserGateway());
@@ -65,15 +63,6 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to create default gateway for app catalog", e);
-        }
-
-        try {
-            UserResourceProfile userResourceProfile = new UserResourceProfile();
-            userResourceProfile.setGatewayID(ServerSettings.getDefaultUserGateway());
-            userResourceProfile.setUserId(ServerSettings.getDefaultUser());
-            userResourceProfileRepository.addUserResourceProfile(userResourceProfile);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create default user resource profile for app catalog", e);
         }
     }
 
