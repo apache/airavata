@@ -40,7 +40,7 @@ public class SharingRegistryServerHandlerTest {
     public void test() throws TException, ApplicationSettingsException {
         SharingRegistryDBInitConfig sharingRegistryDBInitConfig = new SharingRegistryDBInitConfig();
         sharingRegistryDBInitConfig.setDBInitScriptPrefix("sharing-registry");
-        SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
+        SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler(sharingRegistryDBInitConfig);
 
         //Creating domain
         Domain domain = new Domain();
