@@ -57,6 +57,8 @@ public final class Constants {
 
     public static final String IN_MEMORY_CACHE_SIZE = "in.memory.cache.size";
 
+    public static final String LOCAL_DATA_LOCATION = "local.data.location";
+
     //Names of the attributes that could be passed in the AuthzToken's claims map.
     public static final String USER_NAME = "userName";
     public static final String GATEWAY_ID = "gatewayID";
