@@ -57,10 +57,14 @@ def create_user_dir(username, path):
             "Directory {} already exists".format(path))
 
 
-def copy(username, source_path, target_path, name=None):
+def copy(source_username,
+         source_path,
+         target_username,
+         target_path,
+         name=None):
     """Copy a user file into target_path dir."""
-    f = open(username, source_path)
-    return save(username, target_path, f, name=name)
+    f = open(source_username, source_path)
+    return save(target_username, target_path, f, name=name)
 
 
 def delete(username, path):

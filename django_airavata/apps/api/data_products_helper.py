@@ -39,8 +39,9 @@ def save_input_file_upload(request, file):
 def copy_input_file_upload(request, data_product):
     path = _get_replica_filepath(data_product)
     name = data_product.productName
-    full_path = datastore.copy(request.user.username,
+    full_path = datastore.copy(data_product.ownerName,
                                path,
+                               request.user.username,
                                TMP_INPUT_FILE_UPLOAD_DIR,
                                name=name)
     return _save_data_product(request, full_path, name=name)
