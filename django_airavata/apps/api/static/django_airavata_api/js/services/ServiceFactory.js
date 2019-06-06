@@ -211,9 +211,10 @@ class ServiceFactory {
       let queryParamsMapping = parseQueryMapping(config.queryParams);
       serviceObj[functionName] = function(
         params = {},
-        { ignoreErrors, showSpinner } = {
+        { ignoreErrors, showSpinner, cache } = {
           ignoreErrors: false,
-          showSpinner: true
+          showSpinner: true,
+          cache: false
         }
       ) {
         let url = config.url;
@@ -287,7 +288,8 @@ class ServiceFactory {
             } else {
               return FetchUtils.get(url, queryParams, {
                 ignoreErrors,
-                showSpinner
+                showSpinner,
+                cache
               }).then(paginationHandler);
             }
           case putKey:

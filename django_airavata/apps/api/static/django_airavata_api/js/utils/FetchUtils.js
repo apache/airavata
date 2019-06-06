@@ -1,4 +1,5 @@
 import UnhandledErrorDispatcher from "../errors/UnhandledErrorDispatcher";
+import Cache from "./Cache";
 
 var count = 0;
 const parseQueryParams = function(url, queryParams = "") {
@@ -37,6 +38,8 @@ const decrementCount = function() {
   }
 };
 
+const responseCache = new Cache();
+
 export default {
   enableSpinner: function() {},
   disableSpinner: function() {},
@@ -70,7 +73,11 @@ export default {
     url,
     body,
     queryParams = "",
-    { mediaType = "application/json", ignoreErrors = false, showSpinner = true } = {}
+    {
+      mediaType = "application/json",
+      ignoreErrors = false,
+      showSpinner = true
+    } = {}
   ) {
     var headers = this.createHeaders(mediaType);
     // Browsers automatically handle content type for FormData request bodies
@@ -93,7 +100,11 @@ export default {
   put: function(
     url,
     body,
-    { mediaType = "application/json", ignoreErrors = false, showSpinner = true } = {}
+    {
+      mediaType = "application/json",
+      ignoreErrors = false,
+      showSpinner = true
+    } = {}
   ) {
     var headers = this.createHeaders(mediaType);
     return this.processFetch(url, {
@@ -111,7 +122,12 @@ export default {
   get: function(
     url,
     queryParams = "",
-    { mediaType = "application/json", ignoreErrors = false, showSpinner = true } = {}
+    {
+      mediaType = "application/json",
+      ignoreErrors = false,
+      showSpinner = true,
+      cache = false
+    } = {}
   ) {
     if (queryParams && typeof queryParams != "string") {
       queryParams = Object.keys(queryParams)
@@ -124,14 +140,23 @@ export default {
     if (queryParams) {
       url = url + "?" + queryParams;
     }
+    if (cache) {
+      if (responseCache.has(url)) {
+        return responseCache.get(url);
+      }
+    }
     var headers = this.createHeaders(mediaType);
-    return this.processFetch(url, {
+    const fetchRequest = this.processFetch(url, {
       method: "get",
       headers: headers,
       credentials: "same-origin",
       ignoreErrors,
       showSpinner
     });
+    if (cache) {
+      responseCache.put({ key: url, value: fetchRequest });
+    }
+    return fetchRequest;
   },
   delete: function(url, { ignoreErrors = false, showSpinner = true } = {}) {
     var headers = this.createHeaders();
