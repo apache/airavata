@@ -1,7 +1,11 @@
+import logging
+
 from django import forms
 from django.core import validators
 
 from . import iam_admin_client
+
+logger = logging.getLogger(__name__)
 
 USERNAME_VALIDATOR = validators.RegexValidator(
     regex=r"^[a-z0-9_-]+$",
@@ -82,11 +86,19 @@ class CreateAccountForm(forms.Form):
             )
 
         username = cleaned_data.get('username')
-        if username and not iam_admin_client.is_username_available(username):
+        try:
+            if username and not iam_admin_client.is_username_available(
+                    username):
+                self.add_error(
+                    'username',
+                    forms.ValidationError("That username is not available")
+                )
+        except Exception as e:
+            logger.exception("Failed to check if username is available")
             self.add_error(
                 'username',
-                forms.ValidationError("That username is not available")
-            )
+                forms.ValidationError("Error occurred while checking if "
+                                      "username is available: " + str(e)))
 
         return cleaned_data
 
