@@ -20,16 +20,15 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/phasta"
 vhost_servername: "phasta.scigap.org"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/phasta_scigap_org_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/phasta_scigap_org_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/phasta.scigap.key"
+ssl_certificate_file: "/etc/letsencrypt/live/phasta.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/phasta.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/phasta.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
