@@ -1451,7 +1451,7 @@ class ExperimentStatisticsView(APIView):
         # TODO: convert from ISO-8601 to posix timestamp
         from_time = request.GET.get(
             'fromTime',
-            (datetime.utcnow() - timedelta(days=1)).timestamp() * 1000)
+            (datetime.utcnow() - timedelta(days=7)).timestamp() * 1000)
         to_time = request.GET.get(
             'toTime',
             datetime.utcnow().timestamp() * 1000)

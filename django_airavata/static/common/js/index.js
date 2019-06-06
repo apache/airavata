@@ -1,10 +1,13 @@
 import ApplicationCard from "./components/ApplicationCard.vue";
+import ApplicationName from "./components/ApplicationName";
 import AutocompleteTextInput from "./components/AutocompleteTextInput.vue";
 import ClipboardCopyButton from "./components/ClipboardCopyButton.vue";
 import ClipboardCopyLink from "./components/ClipboardCopyLink.vue";
+import ComputeResourceName from "./components/ComputeResourceName";
 import ConfirmationDialog from "./components/ConfirmationDialog.vue";
 import DeleteButton from "./components/DeleteButton.vue";
 import DeleteLink from "./components/DeleteLink.vue";
+import ExperimentStatusBadge from "./components/ExperimentStatusBadge";
 import HumanDate from "./components/HumanDate.vue";
 import MainLayout from "./components/MainLayout.vue";
 import Pager from "./components/Pager.vue";
@@ -31,12 +34,15 @@ import entry from "./entry";
 const components = {
   Pager,
   ApplicationCard,
+  ApplicationName,
   AutocompleteTextInput,
   ClipboardCopyButton,
   ClipboardCopyLink,
+  ComputeResourceName,
   ConfirmationDialog,
   DeleteButton,
   DeleteLink,
+  ExperimentStatusBadge,
   HumanDate,
   MainLayout,
   ShareButton,
@@ -74,12 +80,4 @@ export default {
   utils
 };
 
-export {
-  components,
-  entry,
-  errors,
-  layouts,
-  mixins,
-  notifications,
-  utils
-};
+export { components, entry, errors, layouts, mixins, notifications, utils };
