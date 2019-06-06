@@ -20,16 +20,15 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 vhost_servername: "interactwel.scigap.org"
-#vhost_ssl: true
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/interactwel.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/interactwel.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/interactwel.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -61,5 +60,5 @@ portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 #portal_theme: "gsu-gateway-theme"
 #portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
-portal_title: "InterACTWEL Gateway"
+portal_title: "InterACTWEL Science Gateway"
 ...
