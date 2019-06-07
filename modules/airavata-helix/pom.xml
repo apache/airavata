@@ -28,7 +28,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
-    <version>0.18-SNAPSHOT</version>
+    <version>0.19-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <name>Airavata Helix</name>
     <artifactId>airavata-helix</artifactId>
