@@ -6,6 +6,17 @@
       </div>
     </div>
     <div class="row">
+      <div class="col">
+        <b-card>
+          <flat-pickr
+            v-model="dateRange"
+            :config="dateConfig"
+            @on-change="dateRangeChanged"
+          />
+        </b-card>
+      </div>
+    </div>
+    <div class="row">
       <div class="col-lg-2 col-md-4">
         <experiment-statistics-card
           bg-variant="primary"
@@ -82,35 +93,37 @@
       v-if="items.length"
     >
       <div class="col">
-        <b-table
-          :fields="fields"
-          :items="items"
-        >
-          <template
-            slot="executionId"
-            slot-scope="data"
+        <b-card>
+          <b-table
+            :fields="fields"
+            :items="items"
           >
-            <application-name :application-interface-id="data.value" />
-          </template>
-          <template
-            slot="resourceHostId"
-            slot-scope="data"
-          >
-            <compute-resource-name :compute-resource-id="data.value" />
-          </template>
-          <template
-            slot="creationTime"
-            slot-scope="data"
-          >
-            <human-date :date="data.value" />
-          </template>
-          <template
-            slot="experimentStatus"
-            slot-scope="data"
-          >
-            <experiment-status-badge :status-name="data.value.name" />
-          </template>
-        </b-table>
+            <template
+              slot="executionId"
+              slot-scope="data"
+            >
+              <application-name :application-interface-id="data.value" />
+            </template>
+            <template
+              slot="resourceHostId"
+              slot-scope="data"
+            >
+              <compute-resource-name :compute-resource-id="data.value" />
+            </template>
+            <template
+              slot="creationTime"
+              slot-scope="data"
+            >
+              <human-date :date="data.value" />
+            </template>
+            <template
+              slot="experimentStatus"
+              slot-scope="data"
+            >
+              <experiment-status-badge :status-name="data.value.name" />
+            </template>
+          </b-table>
+        </b-card>
       </div>
     </div>
   </div>
@@ -123,15 +136,22 @@ import ExperimentStatisticsCard from "./ExperimentStatisticsCard";
 export default {
   name: "experiment-statistics-container",
   data() {
+    const fromTime = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+    const toTime = new Date();
     return {
       experimentStatistics: {},
-      selectedExperimentSummaries: null
+      selectedExperimentSummaries: null,
+      fromTime: fromTime,
+      toTime: toTime,
+      dateRange: [fromTime, toTime],
+      dateConfig: {
+        mode: "range",
+        maxDate: new Date()
+      }
     };
   },
   created() {
-    services.ExperimentStatisticsService.get().then(
-      stats => (this.experimentStatistics = stats)
-    );
+    this.loadStatistics();
   },
   components: {
     ExperimentStatisticsCard,
@@ -207,6 +227,18 @@ export default {
   methods: {
     selectExperiments(experiments) {
       this.selectedExperimentSummaries = experiments;
+    },
+    dateRangeChanged(selectedDates) {
+      [this.fromTime, this.toTime] = selectedDates;
+      if (this.fromTime && this.toTime) {
+        this.loadStatistics();
+      }
+    },
+    loadStatistics() {
+      services.ExperimentStatisticsService.get({
+        fromTime: this.fromTime.toJSON(),
+        toTime: this.toTime.toJSON()
+      }).then(stats => (this.experimentStatistics = stats));
     }
   }
 };

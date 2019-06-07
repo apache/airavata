@@ -2,6 +2,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 
+import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
@@ -47,7 +48,8 @@ from . import (
     models,
     output_views,
     serializers,
-    thrift_utils
+    thrift_utils,
+    view_utils
 )
 
 READ_PERMISSION_TYPE = '{}:READ'
@@ -1448,16 +1450,23 @@ class ExperimentStatisticsView(APIView):
     serializer_class = serializers.ExperimentStatisticsSerializer
 
     def get(self, request, format=None):
-        # TODO: convert from ISO-8601 to posix timestamp
-        from_time = request.GET.get(
-            'fromTime',
-            (datetime.utcnow() - timedelta(days=7)).timestamp() * 1000)
-        to_time = request.GET.get(
-            'toTime',
-            datetime.utcnow().timestamp() * 1000)
+        if 'fromTime' in request.GET:
+            from_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['fromTime']).timestamp() * 1000
+        else:
+            from_time = (datetime.utcnow() -
+                         timedelta(days=7)).timestamp() * 1000
+        if 'toTime' in request.GET:
+            to_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['toTime']).timestamp() * 1000
+        else:
+            to_time = datetime.utcnow().timestamp() * 1000
+        username = request.GET.get('userName', None)
+        application_name = request.GET.get('applicationName', None)
+        resource_hostname = request.GET.get('requestHostName', None)
         statistics = request.airavata_client.getExperimentStatistics(
             request.authz_token, settings.GATEWAY_ID, from_time, to_time,
-            None, None, None)
+            username, application_name, resource_hostname)
         serializer = self.serializer_class(
             statistics, context={'request': request})
         return Response(serializer.data)

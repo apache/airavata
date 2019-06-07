@@ -2,7 +2,7 @@
 
   <b-card
     :bg-variant="bgVariant"
-    body-bg-variant="light"
+    body-bg-variant="white"
     :header-text-variant="headerTextVariant"
     class="statistics-card"
   >
