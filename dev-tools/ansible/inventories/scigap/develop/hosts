@@ -32,6 +32,7 @@ csbglsu ansible_host=pgadev.scigap.org
 nexttdb ansible_host=pgadev.scigap.org
 saver-x ansible_host=pgadev.scigap.org
 pfec-hydro ansible_host=pgadev.scigap.org
+cyberwater ansible_host=pgadev.scigap.org
 
 [helix]
 149.165.157.37
