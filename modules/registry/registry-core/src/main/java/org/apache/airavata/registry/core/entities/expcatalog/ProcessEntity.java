@@ -24,6 +24,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -123,6 +124,10 @@ public class ProcessEntity implements Serializable {
     @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false)
     private ExperimentEntity experiment;
+
+    @OneToMany(targetEntity = ProcessWorkflowEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "process", fetch = FetchType.EAGER)
+    private Collection<ProcessWorkflowEntity> processWorkflows;
 
     public ProcessEntity() {
     }
@@ -317,6 +322,14 @@ public class ProcessEntity implements Serializable {
 
     public void setProcessResourceSchedule(ProcessResourceScheduleEntity processResourceSchedule) {
         this.processResourceSchedule = processResourceSchedule;
+    }
+
+    public Collection<ProcessWorkflowEntity> getProcessWorkflows() {
+        return processWorkflows;
+    }
+
+    public void setProcessWorkflows(Collection<ProcessWorkflowEntity> processWorkflows) {
+        this.processWorkflows = processWorkflows;
     }
 
     public List<TaskEntity> getTasks() {

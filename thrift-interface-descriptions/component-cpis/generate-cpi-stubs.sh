@@ -19,7 +19,7 @@
 # under the License.
 #
 
-# This script will generate/regenerate the thrift stubs for Airavata Components: Credential Store, Orchestrator, GFac.
+# This script will generate/regenerate the thrift stubs for Airavata Components: Credential Store, Orchestrator.
 
 show_usage() {
 	echo -e "Usage: $0 [--native-thrift] [Component to generate stubs]"
@@ -27,9 +27,9 @@ show_usage() {
 	echo "options:"
 	echo -e "\tcs Generate/Update Credential Store Stubs"
 	echo -e "\torch Generate/Update Orchestrator Stubs"
-	echo -e "\tgfac Generate/Update GFac Stubs"
 	echo -e "\tregistry Generate/Update Registry Stubs"
-	echo -e "\tall Generate/Update all stubs (Credential Store, Orchestrator, GFac, Registry)."
+	echo -e "\tsharing Generate/Update Sharing Registry Stubs"
+	echo -e "\tall Generate/Update all stubs (Credential Store, Orchestrator, Registry)."
 	echo -e "\t-h[elp] Print the usage options of this script"
 	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
 }
@@ -81,11 +81,13 @@ setup() {
     ORCHESTRATOR_THRIFT_FILE="$BASEDIR/component-cpis/orchestrator-cpi.thrift"
     ORCHESTRATOR_SRC_DIR='../../modules/orchestrator/orchestrator-client/src/main/java'
 
-    GFAC_THRIFT_FILE="$BASEDIR/component-cpis/gfac-cpi.thrift"
-    GFAC_SRC_DIR='../../modules/gfac/gfac-client/src/main/java/'
-
     REGISTRY_THRIFT_FILE="$BASEDIR/component-cpis/registry-api.thrift"
     REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
+
+    SHARING_REGISTRY_THRIFT_FILE="$BASEDIR/component-cpis/sharing_cpi.thrift"
+    SHARING_REGISTRY_SRC_DIR='../../modules/sharing-registry/sharing-registry-stubs/src/main/java/'
+
+    BASE_API_SRC_DIR='../../airavata-api/airavata-base-api/src/main/java'
 
     # Initialize the thrift arguments.
     #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
@@ -144,13 +146,20 @@ copy_changed_files() {
     # Read all the function arguments
     GENERATED_CODE_DIR=$1
     WORKSPACE_SRC_DIR=$2
+    IGNORE_GENERATED_CODE_PATH=$3
 
     echo "Generated sources are in ${GENERATED_CODE_DIR}"
     echo "Destination workspace is in ${WORKSPACE_SRC_DIR}"
 
     # Check if the newly generated files exist in the targetted workspace, if not copy. Only changed files will be synced.
     #  the extra slash to GENERATED_CODE_DIR is needed to ensure the parent directory itself is not copied.
-    rsync -auv ${GENERATED_CODE_DIR}/ ${WORKSPACE_SRC_DIR}
+    if [ -z "$3" ]
+        then
+            rsync -auv ${GENERATED_CODE_DIR}/ ${WORKSPACE_SRC_DIR}
+        else
+            echo "Ignoring generated path ${IGNORE_GENERATED_CODE_PATH}"
+            rsync -auv --exclude ${IGNORE_GENERATED_CODE_PATH} ${GENERATED_CODE_DIR}/ ${WORKSPACE_SRC_DIR}
+    fi
 }
 
 # The function generates the thrify stubs and copies to the specified directory.
@@ -163,6 +172,8 @@ generate_thrift_stubs() {
 
     #Java generation directory
     JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
+
+    BASE_API_DIR=org/apache/airavata/base
 
     # As a precaution remove and previously generated files if exists
     rm -rf ${JAVA_GEN_DIR}
@@ -178,7 +189,11 @@ generate_thrift_stubs() {
     add_license_header $JAVA_GEN_DIR
 
     # Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
-    copy_changed_files ${JAVA_GEN_DIR} ${COMPONENT_SRC_DIR}
+    copy_changed_files ${JAVA_GEN_DIR} ${COMPONENT_SRC_DIR} ${BASE_API_DIR}
+
+    # This will copy the base API java stubs to airavata-base-api module
+    mkdir -p ${BASE_API_SRC_DIR}/org/apache/airavata/base
+    copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/base ${BASE_API_SRC_DIR}/org/apache/airavata/base
 
     echo "Successfully generated new sources, compared against exiting code and replaced the changed files"
 
@@ -187,12 +202,12 @@ generate_thrift_stubs() {
 for arg in "$@"
 do
     case "$arg" in
-    all)    echo "Generate all (credential store, orchestrator, gfac) Stubs"
+    all)    echo "Generate all (credential store, orchestrator) Stubs"
             setup
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
-            generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            generate_thrift_stubs ${SHARING_REGISTRY_THRIFT_FILE} ${SHARING_REGISTRY_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
             setup
@@ -202,13 +217,13 @@ do
             setup
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             ;;
-    gfac)    echo "Generate GFac Stubs"
-            setup
-            generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
-            ;;
     registry)    echo "Generate Registry Stubs"
             setup
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            ;;
+    sharing)    echo "Generate Sharing Registry Stubs"
+            setup
+            generate_thrift_stubs ${SHARING_REGISTRY_THRIFT_FILE} ${SHARING_REGISTRY_SRC_DIR}
             ;;
     --native-thrift)
             THRIFT_NATIVE="true"

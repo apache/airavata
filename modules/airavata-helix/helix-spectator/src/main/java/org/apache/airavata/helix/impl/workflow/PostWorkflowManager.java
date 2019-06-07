@@ -24,13 +24,15 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
+import org.apache.airavata.helix.impl.task.staging.JobVerificationTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
@@ -53,13 +55,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PostWorkflowManager extends WorkflowManager {
 
     private final static Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
 
     public PostWorkflowManager() throws ApplicationSettingsException {
-        super(ServerSettings.getSetting("post.workflow.manager.name"));
+        super(ServerSettings.getSetting("post.workflow.manager.name"),
+                Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
 
     private void init() throws Exception {
@@ -87,31 +91,49 @@ public class PostWorkflowManager extends WorkflowManager {
             return false;
         }
 
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
         try {
             logger.info("Processing job result of job id " + jobStatusResult.getJobId() + " sent by " + jobStatusResult.getPublisherName());
 
-            if (MonitoringUtil.hasMonitoringRegistered(getCuratorClient(), jobStatusResult.getJobId())) {
+            List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
 
-                JobState currentJobStatus = MonitoringUtil.getCurrentStatusOfJob(getCuratorClient(), jobStatusResult.getJobId());
+            if (jobs.size() > 0) {
+                logger.info("Filtering total " + jobs.size() + " with target job name " + jobStatusResult.getJobName());
+                jobs = jobs.stream().filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName())).collect(Collectors.toList());
+            }
+
+            if (jobs.size() != 1) {
+                logger.error("Couldn't find exactly one job with id " + jobStatusResult.getJobId() + " and name " +
+                        jobStatusResult.getJobName() + " in the registry. Count " + jobs.size());
+                getRegistryClientPool().returnResource(registryClient);
+                return false;
+            }
+
+            JobModel jobModel = jobs.get(0);
+            ProcessModel processModel = registryClient.getProcess(jobModel.getProcessId());
+            ExperimentModel experimentModel = registryClient.getExperiment(processModel.getExperimentId());
+            ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
+
+            getRegistryClientPool().returnResource(registryClient);
+
+            if (processModel != null && experimentModel != null) {
+
+                jobModel.getJobStatuses().sort(Comparator.comparingLong(JobStatus::getTimeOfStateChange).reversed());
+                JobState currentJobStatus = jobModel.getJobStatuses().get(0).getJobState();
+
+                logger.info("Last known state of job " + jobModel.getJobId() + " is " + currentJobStatus.name());
+
                 if (!JobStateValidator.isValid(currentJobStatus, jobStatusResult.getState())) {
                     logger.warn("Job state of " + jobStatusResult.getJobId() + " is not valid. Previous state " +
                             currentJobStatus + ", new state " + jobStatusResult.getState());
                     return true;
                 }
 
-                String gateway = Optional.ofNullable(MonitoringUtil.getGatewayByJobId(getCuratorClient(), jobStatusResult.getJobId()))
-                        .orElseThrow(() -> new Exception("Can not find the gateway for job id " + jobStatusResult.getJobId()));
-
-                String processId = Optional.ofNullable(MonitoringUtil.getProcessIdByJobId(getCuratorClient(), jobStatusResult.getJobId()))
-                        .orElseThrow(() -> new Exception("Can not find the process for job id " + jobStatusResult.getJobId()));
-
-                String experimentId = Optional.ofNullable(MonitoringUtil.getExperimentIdByJobId(getCuratorClient(), jobStatusResult.getJobId()))
-                        .orElseThrow(() -> new Exception("Can not find the experiment for job id " + jobStatusResult.getJobId()));
-
-                String task = Optional.ofNullable(MonitoringUtil.getTaskIdByJobId(getCuratorClient(), jobStatusResult.getJobId()))
-                        .orElseThrow(() -> new Exception("Can not find the task for job id " + jobStatusResult.getJobId()));
-
-                String processStatus = MonitoringUtil.getStatusOfProcess(getCuratorClient(), processId);
+                String gateway = experimentModel.getGatewayId();
+                String processId = processModel.getProcessId();
+                String experimentId = experimentModel.getExperimentId();
+                String task = jobModel.getTaskId();
 
                 logger.info("Updating the job status for job id : " + jobStatusResult.getJobId() + " with process id "
                         + processId + ", exp id " + experimentId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
@@ -119,7 +141,7 @@ public class PostWorkflowManager extends WorkflowManager {
                 saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
 
                 // TODO get cluster lock before that
-                if (MonitoringUtil.CANCEL.equals(processStatus)) {
+                if (ProcessState.CANCELLING.equals(processStatus.getState()) || ProcessState.CANCELED.equals(processStatus.getState())) {
                     logger.info("Cancelled post workflow for process " + processId + " in experiment " + experimentId);
                     // This will mark an cancelling Experiment into a cancelled status for a set of valid job statuses
                     // This is a safety check. Cancellation is originally handled in Job Cancellation Workflow
@@ -146,11 +168,10 @@ public class PostWorkflowManager extends WorkflowManager {
 
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
-                        executePostWorkflow(processId, gateway);
+                        executePostWorkflow(processId, gateway, false);
 
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled but process is not marked as cancelled yet");
-                        MonitoringUtil.registerCancelProcess(getCuratorClient(), processId);
                         publishProcessStatus(processId, experimentId,gateway, ProcessState.CANCELED);
                         logger.info("Marked process " + processId + " of experiment " + experimentId + " as cancelled as job is already being cancelled");
 
@@ -166,11 +187,12 @@ public class PostWorkflowManager extends WorkflowManager {
             }
         } catch (Exception e) {
             logger.error("Failed to process job : " + jobStatusResult.getJobId() + ", with status : " + jobStatusResult.getState().name(), e);
+            getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
 
-    private void executePostWorkflow(String processId, String gateway) throws Exception {
+    private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
 
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
@@ -193,6 +215,16 @@ public class PostWorkflowManager extends WorkflowManager {
         String[] taskIds = taskDag.split(",");
         final List<AiravataTask> allTasks = new ArrayList<>();
 
+        JobVerificationTask jobVerificationTask = new JobVerificationTask();
+        jobVerificationTask.setGatewayId(experimentModel.getGatewayId());
+        jobVerificationTask.setExperimentId(experimentModel.getExperimentId());
+        jobVerificationTask.setProcessId(processModel.getProcessId());
+        jobVerificationTask.setTaskId("Job-Verification-Task-" + UUID.randomUUID().toString() +"-");
+        jobVerificationTask.setForceRunTask(forceRun);
+        jobVerificationTask.setSkipTaskStatusPublish(true);
+
+        allTasks.add(jobVerificationTask);
+
         boolean jobSubmissionFound = false;
 
         for (String taskId : taskIds) {
@@ -210,9 +242,11 @@ public class PostWorkflowManager extends WorkflowManager {
                         switch (subTaskModel.getType()) {
                             case OUPUT:
                                 airavataTask = new OutputDataStagingTask();
+                                airavataTask.setForceRunTask(true);
                                 break;
                             case ARCHIVE_OUTPUT:
                                 airavataTask = new ArchiveTask();
+                                airavataTask.setForceRunTask(true);
                                 break;
                         }
                     }
@@ -223,6 +257,7 @@ public class PostWorkflowManager extends WorkflowManager {
                     airavataTask.setExperimentId(experimentModel.getExperimentId());
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
+                    airavataTask.setRetryCount(taskModel.getMaxRetry());
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }
@@ -235,7 +270,8 @@ public class PostWorkflowManager extends WorkflowManager {
         completingTask.setGatewayId(experimentModel.getGatewayId());
         completingTask.setExperimentId(experimentModel.getExperimentId());
         completingTask.setProcessId(processModel.getProcessId());
-        completingTask.setTaskId("Completing-Task");
+        completingTask.setTaskId("Completing-Task-" + UUID.randomUUID().toString() +"-");
+        completingTask.setForceRunTask(forceRun);
         completingTask.setSkipTaskStatusPublish(true);
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
@@ -255,13 +291,8 @@ public class PostWorkflowManager extends WorkflowManager {
 
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
-        try {
-            MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
-        } catch (Exception e) {
-            logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
-                    "This will affect cancellation tasks", e);
-        }
 
+        registerWorkflowForProcess(processId, workflowName, "POST");
     }
 
     public void startServer() throws Exception {
@@ -325,7 +356,6 @@ public class PostWorkflowManager extends WorkflowManager {
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             getStatusPublisher().publish(msgCtx);
 
-            MonitoringUtil.updateStatusOfJob(getCuratorClient(), jobId, jobState);
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }

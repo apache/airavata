@@ -24,7 +24,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('Usage: ' + sys.argv[0] + ' [-h host[:port]] [-u url] [-f[ramed]] [-s[sl]] [-novalidate] [-ca_certs certs] [-keyfile keyfile] [-certfile certfile] function [arg1 [arg2...]]')
     print('')
     print('Functions:')
-    print('  string getAPIVersion()')
     print('  string addGateway(AuthzToken authzToken, Gateway gateway)')
     print('  bool updateGateway(AuthzToken authzToken, Gateway updatedGateway)')
     print('  Gateway getGateway(AuthzToken authzToken, string airavataInternalGatewayId)')
@@ -32,6 +31,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('   getAllGateways(AuthzToken authzToken)')
     print('  bool isGatewayExist(AuthzToken authzToken, string gatewayId)')
     print('   getAllGatewaysForUser(AuthzToken authzToken, string requesterUsername)')
+    print('  string getAPIVersion()')
     print('')
     sys.exit(0)
 
@@ -111,13 +111,7 @@ protocol = TBinaryProtocol(transport)
 client = TenantProfileService.Client(protocol)
 transport.open()
 
-if cmd == 'getAPIVersion':
-    if len(args) != 0:
-        print('getAPIVersion requires 0 args')
-        sys.exit(1)
-    pp.pprint(client.getAPIVersion())
-
-elif cmd == 'addGateway':
+if cmd == 'addGateway':
     if len(args) != 2:
         print('addGateway requires 2 args')
         sys.exit(1)
@@ -158,6 +152,12 @@ elif cmd == 'getAllGatewaysForUser':
         print('getAllGatewaysForUser requires 2 args')
         sys.exit(1)
     pp.pprint(client.getAllGatewaysForUser(eval(args[0]), args[1],))
+
+elif cmd == 'getAPIVersion':
+    if len(args) != 0:
+        print('getAPIVersion requires 0 args')
+        sys.exit(1)
+    pp.pprint(client.getAPIVersion())
 
 else:
     print('Unrecognized method %s' % cmd)

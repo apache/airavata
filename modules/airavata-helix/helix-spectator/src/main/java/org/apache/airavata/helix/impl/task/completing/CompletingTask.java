@@ -40,13 +40,6 @@ public class CompletingTask extends AiravataTask {
         logger.info("Starting completing task for task " + getTaskId() + ", experiment id " + getExperimentId());
         logger.info("Process " + getProcessId() + " successfully completed");
         saveAndPublishProcessStatus(ProcessState.COMPLETED);
-
-        logger.info("Deleting process level monitoring nodes");
-        try {
-            MonitoringUtil.deleteProcessSpecificNodes(getCuratorClient(), getProcessId());
-        } catch (Exception e) {
-            logger.error("Failed to delete process specific nodes but continuing", e);
-        }
         return onSuccess("Process " + getProcessId() + " successfully completed");
     }
 

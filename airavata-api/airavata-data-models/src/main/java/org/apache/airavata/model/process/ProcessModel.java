@@ -62,6 +62,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)23);
   private static final org.apache.thrift.protocol.TField USE_USER_CRPREF_FIELD_DESC = new org.apache.thrift.protocol.TField("useUserCRPref", org.apache.thrift.protocol.TType.BOOL, (short)24);
   private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileId", org.apache.thrift.protocol.TType.STRING, (short)25);
+  private static final org.apache.thrift.protocol.TField PROCESS_WORKFLOWS_FIELD_DESC = new org.apache.thrift.protocol.TField("processWorkflows", org.apache.thrift.protocol.TType.LIST, (short)26);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ProcessModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ProcessModelTupleSchemeFactory();
@@ -91,6 +92,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private java.lang.String userName; // optional
   private boolean useUserCRPref; // optional
   private java.lang.String groupResourceProfileId; // optional
+  private java.util.List<ProcessWorkflow> processWorkflows; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -118,7 +120,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     EXPERIMENT_DATA_DIR((short)22, "experimentDataDir"),
     USER_NAME((short)23, "userName"),
     USE_USER_CRPREF((short)24, "useUserCRPref"),
-    GROUP_RESOURCE_PROFILE_ID((short)25, "groupResourceProfileId");
+    GROUP_RESOURCE_PROFILE_ID((short)25, "groupResourceProfileId"),
+    PROCESS_WORKFLOWS((short)26, "processWorkflows");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -183,6 +186,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           return USE_USER_CRPREF;
         case 25: // GROUP_RESOURCE_PROFILE_ID
           return GROUP_RESOURCE_PROFILE_ID;
+        case 26: // PROCESS_WORKFLOWS
+          return PROCESS_WORKFLOWS;
         default:
           return null;
       }
@@ -229,7 +234,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final int __GENERATECERT_ISSET_ID = 3;
   private static final int __USEUSERCRPREF_ISSET_ID = 4;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUSES,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.PROCESS_RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERRORS,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.EXPERIMENT_DATA_DIR,_Fields.USER_NAME,_Fields.USE_USER_CRPREF,_Fields.GROUP_RESOURCE_PROFILE_ID};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUSES,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.PROCESS_RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERRORS,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.EXPERIMENT_DATA_DIR,_Fields.USER_NAME,_Fields.USE_USER_CRPREF,_Fields.GROUP_RESOURCE_PROFILE_ID,_Fields.PROCESS_WORKFLOWS};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -289,6 +294,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.GROUP_RESOURCE_PROFILE_ID, new org.apache.thrift.meta_data.FieldMetaData("groupResourceProfileId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PROCESS_WORKFLOWS, new org.apache.thrift.meta_data.FieldMetaData("processWorkflows", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "ProcessWorkflow"))));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProcessModel.class, metaDataMap);
   }
@@ -400,6 +408,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     if (other.isSetGroupResourceProfileId()) {
       this.groupResourceProfileId = other.groupResourceProfileId;
     }
+    if (other.isSetProcessWorkflows()) {
+      java.util.List<ProcessWorkflow> __this__processWorkflows = new java.util.ArrayList<ProcessWorkflow>(other.processWorkflows.size());
+      for (ProcessWorkflow other_element : other.processWorkflows) {
+        __this__processWorkflows.add(other_element);
+      }
+      this.processWorkflows = __this__processWorkflows;
+    }
   }
 
   public ProcessModel deepCopy() {
@@ -439,6 +454,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     setUseUserCRPrefIsSet(false);
     this.useUserCRPref = false;
     this.groupResourceProfileId = null;
+    this.processWorkflows = null;
   }
 
   public java.lang.String getProcessId() {
@@ -1101,6 +1117,44 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     }
   }
 
+  public int getProcessWorkflowsSize() {
+    return (this.processWorkflows == null) ? 0 : this.processWorkflows.size();
+  }
+
+  public java.util.Iterator<ProcessWorkflow> getProcessWorkflowsIterator() {
+    return (this.processWorkflows == null) ? null : this.processWorkflows.iterator();
+  }
+
+  public void addToProcessWorkflows(ProcessWorkflow elem) {
+    if (this.processWorkflows == null) {
+      this.processWorkflows = new java.util.ArrayList<ProcessWorkflow>();
+    }
+    this.processWorkflows.add(elem);
+  }
+
+  public java.util.List<ProcessWorkflow> getProcessWorkflows() {
+    return this.processWorkflows;
+  }
+
+  public void setProcessWorkflows(java.util.List<ProcessWorkflow> processWorkflows) {
+    this.processWorkflows = processWorkflows;
+  }
+
+  public void unsetProcessWorkflows() {
+    this.processWorkflows = null;
+  }
+
+  /** Returns true if field processWorkflows is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcessWorkflows() {
+    return this.processWorkflows != null;
+  }
+
+  public void setProcessWorkflowsIsSet(boolean value) {
+    if (!value) {
+      this.processWorkflows = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case PROCESS_ID:
@@ -1303,6 +1357,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
+    case PROCESS_WORKFLOWS:
+      if (value == null) {
+        unsetProcessWorkflows();
+      } else {
+        setProcessWorkflows((java.util.List<ProcessWorkflow>)value);
+      }
+      break;
+
     }
   }
 
@@ -1383,6 +1445,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case GROUP_RESOURCE_PROFILE_ID:
       return getGroupResourceProfileId();
 
+    case PROCESS_WORKFLOWS:
+      return getProcessWorkflows();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1444,6 +1509,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       return isSetUseUserCRPref();
     case GROUP_RESOURCE_PROFILE_ID:
       return isSetGroupResourceProfileId();
+    case PROCESS_WORKFLOWS:
+      return isSetProcessWorkflows();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1688,6 +1755,15 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
+    boolean this_present_processWorkflows = true && this.isSetProcessWorkflows();
+    boolean that_present_processWorkflows = true && that.isSetProcessWorkflows();
+    if (this_present_processWorkflows || that_present_processWorkflows) {
+      if (!(this_present_processWorkflows && that_present_processWorkflows))
+        return false;
+      if (!this.processWorkflows.equals(that.processWorkflows))
+        return false;
+    }
+
     return true;
   }
 
@@ -1794,6 +1870,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     hashCode = hashCode * 8191 + ((isSetGroupResourceProfileId()) ? 131071 : 524287);
     if (isSetGroupResourceProfileId())
       hashCode = hashCode * 8191 + groupResourceProfileId.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetProcessWorkflows()) ? 131071 : 524287);
+    if (isSetProcessWorkflows())
+      hashCode = hashCode * 8191 + processWorkflows.hashCode();
 
     return hashCode;
   }
@@ -2056,6 +2136,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetProcessWorkflows()).compareTo(other.isSetProcessWorkflows());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetProcessWorkflows()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processWorkflows, other.processWorkflows);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -2298,6 +2388,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         sb.append("null");
       } else {
         sb.append(this.groupResourceProfileId);
+      }
+      first = false;
+    }
+    if (isSetProcessWorkflows()) {
+      if (!first) sb.append(", ");
+      sb.append("processWorkflows:");
+      if (this.processWorkflows == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.processWorkflows);
       }
       first = false;
     }
@@ -2623,6 +2723,25 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 26: // PROCESS_WORKFLOWS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list18 = iprot.readListBegin();
+                struct.processWorkflows = new java.util.ArrayList<ProcessWorkflow>(_list18.size);
+                ProcessWorkflow _elem19;
+                for (int _i20 = 0; _i20 < _list18.size; ++_i20)
+                {
+                  _elem19 = new ProcessWorkflow();
+                  _elem19.read(iprot);
+                  struct.processWorkflows.add(_elem19);
+                }
+                iprot.readListEnd();
+              }
+              struct.setProcessWorkflowsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2661,9 +2780,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(PROCESS_STATUSES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processStatuses.size()));
-            for (org.apache.airavata.model.status.ProcessStatus _iter18 : struct.processStatuses)
+            for (org.apache.airavata.model.status.ProcessStatus _iter21 : struct.processStatuses)
             {
-              _iter18.write(oprot);
+              _iter21.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2703,9 +2822,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(PROCESS_INPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processInputs.size()));
-            for (org.apache.airavata.model.application.io.InputDataObjectType _iter19 : struct.processInputs)
+            for (org.apache.airavata.model.application.io.InputDataObjectType _iter22 : struct.processInputs)
             {
-              _iter19.write(oprot);
+              _iter22.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2717,9 +2836,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(PROCESS_OUTPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processOutputs.size()));
-            for (org.apache.airavata.model.application.io.OutputDataObjectType _iter20 : struct.processOutputs)
+            for (org.apache.airavata.model.application.io.OutputDataObjectType _iter23 : struct.processOutputs)
             {
-              _iter20.write(oprot);
+              _iter23.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2738,9 +2857,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(TASKS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.tasks.size()));
-            for (org.apache.airavata.model.task.TaskModel _iter21 : struct.tasks)
+            for (org.apache.airavata.model.task.TaskModel _iter24 : struct.tasks)
             {
-              _iter21.write(oprot);
+              _iter24.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2759,9 +2878,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(PROCESS_ERRORS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processErrors.size()));
-            for (org.apache.airavata.model.commons.ErrorModel _iter22 : struct.processErrors)
+            for (org.apache.airavata.model.commons.ErrorModel _iter25 : struct.processErrors)
             {
-              _iter22.write(oprot);
+              _iter25.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2785,9 +2904,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(EMAIL_ADDRESSES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.emailAddresses.size()));
-            for (java.lang.String _iter23 : struct.emailAddresses)
+            for (java.lang.String _iter26 : struct.emailAddresses)
             {
-              oprot.writeString(_iter23);
+              oprot.writeString(_iter26);
             }
             oprot.writeListEnd();
           }
@@ -2836,6 +2955,20 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         if (struct.isSetGroupResourceProfileId()) {
           oprot.writeFieldBegin(GROUP_RESOURCE_PROFILE_ID_FIELD_DESC);
           oprot.writeString(struct.groupResourceProfileId);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.processWorkflows != null) {
+        if (struct.isSetProcessWorkflows()) {
+          oprot.writeFieldBegin(PROCESS_WORKFLOWS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processWorkflows.size()));
+            for (ProcessWorkflow _iter27 : struct.processWorkflows)
+            {
+              _iter27.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
       }
@@ -2928,7 +3061,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetGroupResourceProfileId()) {
         optionals.set(22);
       }
-      oprot.writeBitSet(optionals, 23);
+      if (struct.isSetProcessWorkflows()) {
+        optionals.set(23);
+      }
+      oprot.writeBitSet(optionals, 24);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -2938,9 +3074,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetProcessStatuses()) {
         {
           oprot.writeI32(struct.processStatuses.size());
-          for (org.apache.airavata.model.status.ProcessStatus _iter24 : struct.processStatuses)
+          for (org.apache.airavata.model.status.ProcessStatus _iter28 : struct.processStatuses)
           {
-            _iter24.write(oprot);
+            _iter28.write(oprot);
           }
         }
       }
@@ -2959,18 +3095,18 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetProcessInputs()) {
         {
           oprot.writeI32(struct.processInputs.size());
-          for (org.apache.airavata.model.application.io.InputDataObjectType _iter25 : struct.processInputs)
+          for (org.apache.airavata.model.application.io.InputDataObjectType _iter29 : struct.processInputs)
           {
-            _iter25.write(oprot);
+            _iter29.write(oprot);
           }
         }
       }
       if (struct.isSetProcessOutputs()) {
         {
           oprot.writeI32(struct.processOutputs.size());
-          for (org.apache.airavata.model.application.io.OutputDataObjectType _iter26 : struct.processOutputs)
+          for (org.apache.airavata.model.application.io.OutputDataObjectType _iter30 : struct.processOutputs)
           {
-            _iter26.write(oprot);
+            _iter30.write(oprot);
           }
         }
       }
@@ -2980,9 +3116,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetTasks()) {
         {
           oprot.writeI32(struct.tasks.size());
-          for (org.apache.airavata.model.task.TaskModel _iter27 : struct.tasks)
+          for (org.apache.airavata.model.task.TaskModel _iter31 : struct.tasks)
           {
-            _iter27.write(oprot);
+            _iter31.write(oprot);
           }
         }
       }
@@ -2992,9 +3128,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetProcessErrors()) {
         {
           oprot.writeI32(struct.processErrors.size());
-          for (org.apache.airavata.model.commons.ErrorModel _iter28 : struct.processErrors)
+          for (org.apache.airavata.model.commons.ErrorModel _iter32 : struct.processErrors)
           {
-            _iter28.write(oprot);
+            _iter32.write(oprot);
           }
         }
       }
@@ -3007,9 +3143,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetEmailAddresses()) {
         {
           oprot.writeI32(struct.emailAddresses.size());
-          for (java.lang.String _iter29 : struct.emailAddresses)
+          for (java.lang.String _iter33 : struct.emailAddresses)
           {
-            oprot.writeString(_iter29);
+            oprot.writeString(_iter33);
           }
         }
       }
@@ -3034,6 +3170,15 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetGroupResourceProfileId()) {
         oprot.writeString(struct.groupResourceProfileId);
       }
+      if (struct.isSetProcessWorkflows()) {
+        {
+          oprot.writeI32(struct.processWorkflows.size());
+          for (ProcessWorkflow _iter34 : struct.processWorkflows)
+          {
+            _iter34.write(oprot);
+          }
+        }
+      }
     }
 
     @Override
@@ -3043,7 +3188,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       struct.setProcessIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(23);
+      java.util.BitSet incoming = iprot.readBitSet(24);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -3054,14 +3199,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list30 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.processStatuses = new java.util.ArrayList<org.apache.airavata.model.status.ProcessStatus>(_list30.size);
-          org.apache.airavata.model.status.ProcessStatus _elem31;
-          for (int _i32 = 0; _i32 < _list30.size; ++_i32)
+          org.apache.thrift.protocol.TList _list35 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processStatuses = new java.util.ArrayList<org.apache.airavata.model.status.ProcessStatus>(_list35.size);
+          org.apache.airavata.model.status.ProcessStatus _elem36;
+          for (int _i37 = 0; _i37 < _list35.size; ++_i37)
           {
-            _elem31 = new org.apache.airavata.model.status.ProcessStatus();
-            _elem31.read(iprot);
-            struct.processStatuses.add(_elem31);
+            _elem36 = new org.apache.airavata.model.status.ProcessStatus();
+            _elem36.read(iprot);
+            struct.processStatuses.add(_elem36);
           }
         }
         struct.setProcessStatusesIsSet(true);
@@ -3084,28 +3229,28 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       if (incoming.get(7)) {
         {
-          org.apache.thrift.protocol.TList _list33 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.processInputs = new java.util.ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list33.size);
-          org.apache.airavata.model.application.io.InputDataObjectType _elem34;
-          for (int _i35 = 0; _i35 < _list33.size; ++_i35)
+          org.apache.thrift.protocol.TList _list38 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processInputs = new java.util.ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list38.size);
+          org.apache.airavata.model.application.io.InputDataObjectType _elem39;
+          for (int _i40 = 0; _i40 < _list38.size; ++_i40)
           {
-            _elem34 = new org.apache.airavata.model.application.io.InputDataObjectType();
-            _elem34.read(iprot);
-            struct.processInputs.add(_elem34);
+            _elem39 = new org.apache.airavata.model.application.io.InputDataObjectType();
+            _elem39.read(iprot);
+            struct.processInputs.add(_elem39);
           }
         }
         struct.setProcessInputsIsSet(true);
       }
       if (incoming.get(8)) {
         {
-          org.apache.thrift.protocol.TList _list36 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.processOutputs = new java.util.ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list36.size);
-          org.apache.airavata.model.application.io.OutputDataObjectType _elem37;
-          for (int _i38 = 0; _i38 < _list36.size; ++_i38)
+          org.apache.thrift.protocol.TList _list41 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processOutputs = new java.util.ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list41.size);
+          org.apache.airavata.model.application.io.OutputDataObjectType _elem42;
+          for (int _i43 = 0; _i43 < _list41.size; ++_i43)
           {
-            _elem37 = new org.apache.airavata.model.application.io.OutputDataObjectType();
-            _elem37.read(iprot);
-            struct.processOutputs.add(_elem37);
+            _elem42 = new org.apache.airavata.model.application.io.OutputDataObjectType();
+            _elem42.read(iprot);
+            struct.processOutputs.add(_elem42);
           }
         }
         struct.setProcessOutputsIsSet(true);
@@ -3117,14 +3262,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       if (incoming.get(10)) {
         {
-          org.apache.thrift.protocol.TList _list39 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.tasks = new java.util.ArrayList<org.apache.airavata.model.task.TaskModel>(_list39.size);
-          org.apache.airavata.model.task.TaskModel _elem40;
-          for (int _i41 = 0; _i41 < _list39.size; ++_i41)
+          org.apache.thrift.protocol.TList _list44 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.tasks = new java.util.ArrayList<org.apache.airavata.model.task.TaskModel>(_list44.size);
+          org.apache.airavata.model.task.TaskModel _elem45;
+          for (int _i46 = 0; _i46 < _list44.size; ++_i46)
           {
-            _elem40 = new org.apache.airavata.model.task.TaskModel();
-            _elem40.read(iprot);
-            struct.tasks.add(_elem40);
+            _elem45 = new org.apache.airavata.model.task.TaskModel();
+            _elem45.read(iprot);
+            struct.tasks.add(_elem45);
           }
         }
         struct.setTasksIsSet(true);
@@ -3135,14 +3280,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       if (incoming.get(12)) {
         {
-          org.apache.thrift.protocol.TList _list42 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.processErrors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list42.size);
-          org.apache.airavata.model.commons.ErrorModel _elem43;
-          for (int _i44 = 0; _i44 < _list42.size; ++_i44)
+          org.apache.thrift.protocol.TList _list47 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processErrors = new java.util.ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list47.size);
+          org.apache.airavata.model.commons.ErrorModel _elem48;
+          for (int _i49 = 0; _i49 < _list47.size; ++_i49)
           {
-            _elem43 = new org.apache.airavata.model.commons.ErrorModel();
-            _elem43.read(iprot);
-            struct.processErrors.add(_elem43);
+            _elem48 = new org.apache.airavata.model.commons.ErrorModel();
+            _elem48.read(iprot);
+            struct.processErrors.add(_elem48);
           }
         }
         struct.setProcessErrorsIsSet(true);
@@ -3157,13 +3302,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       if (incoming.get(15)) {
         {
-          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.emailAddresses = new java.util.ArrayList<java.lang.String>(_list45.size);
-          java.lang.String _elem46;
-          for (int _i47 = 0; _i47 < _list45.size; ++_i47)
+          org.apache.thrift.protocol.TList _list50 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.emailAddresses = new java.util.ArrayList<java.lang.String>(_list50.size);
+          java.lang.String _elem51;
+          for (int _i52 = 0; _i52 < _list50.size; ++_i52)
           {
-            _elem46 = iprot.readString();
-            struct.emailAddresses.add(_elem46);
+            _elem51 = iprot.readString();
+            struct.emailAddresses.add(_elem51);
           }
         }
         struct.setEmailAddressesIsSet(true);
@@ -3195,6 +3340,20 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (incoming.get(22)) {
         struct.groupResourceProfileId = iprot.readString();
         struct.setGroupResourceProfileIdIsSet(true);
+      }
+      if (incoming.get(23)) {
+        {
+          org.apache.thrift.protocol.TList _list53 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processWorkflows = new java.util.ArrayList<ProcessWorkflow>(_list53.size);
+          ProcessWorkflow _elem54;
+          for (int _i55 = 0; _i55 < _list53.size; ++_i55)
+          {
+            _elem54 = new ProcessWorkflow();
+            _elem54.read(iprot);
+            struct.processWorkflows.add(_elem54);
+          }
+        }
+        struct.setProcessWorkflowsIsSet(true);
       }
     }
   }

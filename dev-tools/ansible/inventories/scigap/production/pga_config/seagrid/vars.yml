@@ -20,7 +20,6 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
@@ -29,13 +28,18 @@ vhost_serveralias: "www.seagrid.org"
 #vhost_servername: "beta.seagrid.org"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/seagrid_org_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/portal.seagrid.key"
+ssl_certificate_file: "/etc/letsencrypt/live/seagrid.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/seagrid.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/seagrid.org/privkey.pem"
+#ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
+#ssl_certificate_chain_file: "/etc/pki/tls/certs/seagrid_org_interm.cer"
+#ssl_certificate_key_file: "/etc/pki/tls/private/portal.seagrid.key"
 #ssl_certificate_file: "/etc/letsencrypt/live/beta.seagrid.org/cert.pem"
 #ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.seagrid.org/fullchain.pem"
 #ssl_certificate_key_file: "/etc/letsencrypt/live/beta.seagrid.org/privkey.pem"
 
+php_upload_max_filesize: "5000M"
+php_post_max_size: "5500M"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"

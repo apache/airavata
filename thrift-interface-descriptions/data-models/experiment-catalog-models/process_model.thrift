@@ -65,4 +65,12 @@ struct ProcessModel {
     23: optional string userName,
     24: optional bool useUserCRPref,
     25: optional string groupResourceProfileId;
+    26: optional list<ProcessWorkflow> processWorkflows;
+}
+
+struct ProcessWorkflow {
+    1: required string processId;
+    2: required string workflowId;
+    3: optional i64 creationTime;
+    4: optional string type;
 }

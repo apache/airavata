@@ -27,15 +27,16 @@ include "../../../airavata-apis/airavata_errors.thrift"
 include "../../../airavata-apis/security_model.thrift"
 include "../../../data-models/user-tenant-group-models/group_manager_model.thrift"
 include "group_manager_cpi_errors.thrift"
+include "../../../base-api/base_api.thrift"
 
 namespace java org.apache.airavata.service.profile.groupmanager.cpi
 namespace php Airavata.Service.Profile.Groupmanager.CPI
 namespace py airavata.service.profile.groupmanager.cpi
 
-const string GROUP_MANAGER_CPI_VERSION = "0.17"
+const string GROUP_MANAGER_CPI_VERSION = "0.18.0"
 const string GROUP_MANAGER_CPI_NAME = "GroupManagerService"
 
-service GroupManagerService {
+service GroupManagerService  extends base_api.BaseAPI {
 
     string getAPIVersion ()
                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse)

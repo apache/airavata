@@ -2,6 +2,7 @@ package org.apache.airavata.tools.load;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.security.AuthzToken;
@@ -10,9 +11,12 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.Future;
 
 public class LoadClient {
 
@@ -45,17 +49,34 @@ public class LoadClient {
 
     public void start() throws Exception {
         for (Configuration configuration : configurations.getConfigurations()) {
+
+            AuthzToken mockAuthzToken = new AuthzToken("");
+            Map<String, String> claimsMap = new HashMap<>();
+            claimsMap.put(Constants.USER_NAME, configuration.getUserId());
+            claimsMap.put(Constants.GATEWAY_ID, configuration.getGatewayId());
+            mockAuthzToken.setClaimsMap(claimsMap);
+
             UnitLoad unitLoad = new UnitLoad(configurations.getApiHost(), configurations.getApiPort(),
                     securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(),
-                    storageResourceManagerStore.get(configuration.getStorageResourceId()));
-            CompletionService<Boolean> completion = unitLoad.execute(configuration);
+                    storageResourceManagerStore.get(configuration.getStorageResourceId()), mockAuthzToken);
+
+            StatusMonitor statusMonitor = new StatusMonitor(configurations.getApiHost(), configurations.getApiPort(),
+                    securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(), mockAuthzToken);
+
+            CompletionService<List<String>> completion = unitLoad.execute(configuration);
+
+            List<String> allExperiments = new ArrayList<>();
 
             for (int i = 0; i < configuration.getConcurrentUsers(); i++) {
-                completion.take();
+                Future<List<String>> experimentsPerUser = completion.take();
+                allExperiments.addAll(experimentsPerUser.get());
             }
+            System.out.println("All experiments " );
+            System.out.println(allExperiments);
+            statusMonitor.monitorExperiments(allExperiments);
         }
         destroyStorageResourceManagers();
-        System.out.println("Finished load");
+        System.out.println("Finished load ");
         System.exit(0);
     }
 

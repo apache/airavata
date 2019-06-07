@@ -9,16 +9,14 @@
 from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
 from thrift.protocol.TProtocol import TProtocolException
 import sys
+import airavata.base.api.BaseAPI
 import logging
 from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 
 
-class Iface(object):
-    def getAPIVersion(self):
-        pass
-
+class Iface(airavata.base.api.BaseAPI.Iface):
     def setUpGateway(self, authzToken, gateway):
         """
         Parameters:
@@ -79,6 +77,16 @@ class Iface(object):
         """
         pass
 
+    def getUsers(self, authzToken, offset, limit, search):
+        """
+        Parameters:
+         - authzToken
+         - offset
+         - limit
+         - search
+        """
+        pass
+
     def resetUserPassword(self, authzToken, username, newPassword):
         """
         Parameters:
@@ -132,40 +140,9 @@ class Iface(object):
         pass
 
 
-class Client(Iface):
+class Client(airavata.base.api.BaseAPI.Client, Iface):
     def __init__(self, iprot, oprot=None):
-        self._iprot = self._oprot = iprot
-        if oprot is not None:
-            self._oprot = oprot
-        self._seqid = 0
-
-    def getAPIVersion(self):
-        self.send_getAPIVersion()
-        return self.recv_getAPIVersion()
-
-    def send_getAPIVersion(self):
-        self._oprot.writeMessageBegin('getAPIVersion', TMessageType.CALL, self._seqid)
-        args = getAPIVersion_args()
-        args.write(self._oprot)
-        self._oprot.writeMessageEnd()
-        self._oprot.trans.flush()
-
-    def recv_getAPIVersion(self):
-        iprot = self._iprot
-        (fname, mtype, rseqid) = iprot.readMessageBegin()
-        if mtype == TMessageType.EXCEPTION:
-            x = TApplicationException()
-            x.read(iprot)
-            iprot.readMessageEnd()
-            raise x
-        result = getAPIVersion_result()
-        result.read(iprot)
-        iprot.readMessageEnd()
-        if result.success is not None:
-            return result.success
-        if result.Idse is not None:
-            raise result.Idse
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result")
+        airavata.base.api.BaseAPI.Client.__init__(self, iprot, oprot)
 
     def setUpGateway(self, authzToken, gateway):
         """
@@ -434,6 +411,47 @@ class Client(Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getUser failed: unknown result")
 
+    def getUsers(self, authzToken, offset, limit, search):
+        """
+        Parameters:
+         - authzToken
+         - offset
+         - limit
+         - search
+        """
+        self.send_getUsers(authzToken, offset, limit, search)
+        return self.recv_getUsers()
+
+    def send_getUsers(self, authzToken, offset, limit, search):
+        self._oprot.writeMessageBegin('getUsers', TMessageType.CALL, self._seqid)
+        args = getUsers_args()
+        args.authzToken = authzToken
+        args.offset = offset
+        args.limit = limit
+        args.search = search
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getUsers(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getUsers_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.Idse is not None:
+            raise result.Idse
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getUsers failed: unknown result")
+
     def resetUserPassword(self, authzToken, username, newPassword):
         """
         Parameters:
@@ -663,11 +681,9 @@ class Client(Iface):
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getUsersWithRole failed: unknown result")
 
 
-class Processor(Iface, TProcessor):
+class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
     def __init__(self, handler):
-        self._handler = handler
-        self._processMap = {}
-        self._processMap["getAPIVersion"] = Processor.process_getAPIVersion
+        airavata.base.api.BaseAPI.Processor.__init__(self, handler)
         self._processMap["setUpGateway"] = Processor.process_setUpGateway
         self._processMap["isUsernameAvailable"] = Processor.process_isUsernameAvailable
         self._processMap["registerUser"] = Processor.process_registerUser
@@ -675,6 +691,7 @@ class Processor(Iface, TProcessor):
         self._processMap["isUserEnabled"] = Processor.process_isUserEnabled
         self._processMap["isUserExist"] = Processor.process_isUserExist
         self._processMap["getUser"] = Processor.process_getUser
+        self._processMap["getUsers"] = Processor.process_getUsers
         self._processMap["resetUserPassword"] = Processor.process_resetUserPassword
         self._processMap["findUsers"] = Processor.process_findUsers
         self._processMap["updateUserProfile"] = Processor.process_updateUserProfile
@@ -696,28 +713,6 @@ class Processor(Iface, TProcessor):
         else:
             self._processMap[name](self, seqid, iprot, oprot)
         return True
-
-    def process_getAPIVersion(self, seqid, iprot, oprot):
-        args = getAPIVersion_args()
-        args.read(iprot)
-        iprot.readMessageEnd()
-        result = getAPIVersion_result()
-        try:
-            result.success = self._handler.getAPIVersion()
-            msg_type = TMessageType.REPLY
-        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
-            raise
-        except airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException as Idse:
-            msg_type = TMessageType.REPLY
-            result.Idse = Idse
-        except Exception as ex:
-            msg_type = TMessageType.EXCEPTION
-            logging.exception(ex)
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getAPIVersion", msg_type, seqid)
-        result.write(oprot)
-        oprot.writeMessageEnd()
-        oprot.trans.flush()
 
     def process_setUpGateway(self, seqid, iprot, oprot):
         args = setUpGateway_args()
@@ -894,6 +889,31 @@ class Processor(Iface, TProcessor):
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
+    def process_getUsers(self, seqid, iprot, oprot):
+        args = getUsers_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getUsers_result()
+        try:
+            result.success = self._handler.getUsers(args.authzToken, args.offset, args.limit, args.search)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException as Idse:
+            msg_type = TMessageType.REPLY
+            result.Idse = Idse
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getUsers", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
     def process_resetUserPassword(self, seqid, iprot, oprot):
         args = resetUserPassword_args()
         args.read(iprot)
@@ -1045,120 +1065,6 @@ class Processor(Iface, TProcessor):
         oprot.trans.flush()
 
 # HELPER FUNCTIONS AND STRUCTURES
-
-
-class getAPIVersion_args(object):
-
-    thrift_spec = (
-    )
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAPIVersion_args')
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getAPIVersion_result(object):
-    """
-    Attributes:
-     - success
-     - Idse
-    """
-
-    thrift_spec = (
-        (0, TType.STRING, 'success', 'UTF8', None, ),  # 0
-        (1, TType.STRUCT, 'Idse', (airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException, airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException.thrift_spec), None, ),  # 1
-    )
-
-    def __init__(self, success=None, Idse=None,):
-        self.success = success
-        self.Idse = Idse
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 0:
-                if ftype == TType.STRING:
-                    self.success = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 1:
-                if ftype == TType.STRUCT:
-                    self.Idse = airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException()
-                    self.Idse.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAPIVersion_result')
-        if self.success is not None:
-            oprot.writeFieldBegin('success', TType.STRING, 0)
-            oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
-            oprot.writeFieldEnd()
-        if self.Idse is not None:
-            oprot.writeFieldBegin('Idse', TType.STRUCT, 1)
-            self.Idse.write(oprot)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
 
 
 class setUpGateway_args(object):
@@ -2354,6 +2260,203 @@ class getUser_result(object):
         return not (self == other)
 
 
+class getUsers_args(object):
+    """
+    Attributes:
+     - authzToken
+     - offset
+     - limit
+     - search
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.I32, 'offset', None, None, ),  # 2
+        (3, TType.I32, 'limit', None, None, ),  # 3
+        (4, TType.STRING, 'search', 'UTF8', None, ),  # 4
+    )
+
+    def __init__(self, authzToken=None, offset=None, limit=None, search=None,):
+        self.authzToken = authzToken
+        self.offset = offset
+        self.limit = limit
+        self.search = search
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.I32:
+                    self.offset = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.I32:
+                    self.limit = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.search = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getUsers_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.offset is not None:
+            oprot.writeFieldBegin('offset', TType.I32, 2)
+            oprot.writeI32(self.offset)
+            oprot.writeFieldEnd()
+        if self.limit is not None:
+            oprot.writeFieldBegin('limit', TType.I32, 3)
+            oprot.writeI32(self.limit)
+            oprot.writeFieldEnd()
+        if self.search is not None:
+            oprot.writeFieldBegin('search', TType.STRING, 4)
+            oprot.writeString(self.search.encode('utf-8') if sys.version_info[0] == 2 else self.search)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.offset is None:
+            raise TProtocolException(message='Required field offset is unset!')
+        if self.limit is None:
+            raise TProtocolException(message='Required field limit is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getUsers_result(object):
+    """
+    Attributes:
+     - success
+     - Idse
+     - ae
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.STRUCT, (airavata.model.user.ttypes.UserProfile, airavata.model.user.ttypes.UserProfile.thrift_spec), False), None, ),  # 0
+        (1, TType.STRUCT, 'Idse', (airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException, airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 2
+    )
+
+    def __init__(self, success=None, Idse=None, ae=None,):
+        self.success = success
+        self.Idse = Idse
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype3, _size0) = iprot.readListBegin()
+                    for _i4 in range(_size0):
+                        _elem5 = airavata.model.user.ttypes.UserProfile()
+                        _elem5.read(iprot)
+                        self.success.append(_elem5)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.Idse = airavata.service.profile.iam.admin.services.cpi.error.ttypes.IamAdminServicesException()
+                    self.Idse.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getUsers_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.STRUCT, len(self.success))
+            for iter6 in self.success:
+                iter6.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.Idse is not None:
+            oprot.writeFieldBegin('Idse', TType.STRUCT, 1)
+            self.Idse.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 2)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 class resetUserPassword_args(object):
     """
     Attributes:
@@ -2652,11 +2755,11 @@ class findUsers_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype3, _size0) = iprot.readListBegin()
-                    for _i4 in range(_size0):
-                        _elem5 = airavata.model.user.ttypes.UserProfile()
-                        _elem5.read(iprot)
-                        self.success.append(_elem5)
+                    (_etype10, _size7) = iprot.readListBegin()
+                    for _i11 in range(_size7):
+                        _elem12 = airavata.model.user.ttypes.UserProfile()
+                        _elem12.read(iprot)
+                        self.success.append(_elem12)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -2685,8 +2788,8 @@ class findUsers_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter6 in self.success:
-                iter6.write(oprot)
+            for iter13 in self.success:
+                iter13.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.Idse is not None:
@@ -3327,11 +3430,11 @@ class getUsersWithRole_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype10, _size7) = iprot.readListBegin()
-                    for _i11 in range(_size7):
-                        _elem12 = airavata.model.user.ttypes.UserProfile()
-                        _elem12.read(iprot)
-                        self.success.append(_elem12)
+                    (_etype17, _size14) = iprot.readListBegin()
+                    for _i18 in range(_size14):
+                        _elem19 = airavata.model.user.ttypes.UserProfile()
+                        _elem19.read(iprot)
+                        self.success.append(_elem19)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -3360,8 +3463,8 @@ class getUsersWithRole_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter13 in self.success:
-                iter13.write(oprot)
+            for iter20 in self.success:
+                iter20.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.Idse is not None:

@@ -65,13 +65,6 @@
             group={{ group }}
             mode="u=rw,g=r,o=r"
 
-- name: Copy Gfac configuration file
-  template: src=gfac-config.yaml.j2
-            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/gfac-config.yaml"
-            owner={{ user }}
-            group={{ group }}
-            mode="u=rw,g=r,o=r"
-
 - name: Copy logback configuration file
   template: src=logback.xml.j2
             dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/logback.xml"

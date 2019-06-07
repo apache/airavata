@@ -63,7 +63,7 @@ public class PoolingSSHJClient extends SSHClient {
     private String host;
     private int port;
 
-    private int maxSessionsForConnection = 1;
+    private int maxSessionsForConnection = 10;
     private long maxConnectionIdleTimeMS = 10 * 60 * 1000;
 
     public void addHostKeyVerifier(HostKeyVerifier verifier) {
@@ -202,7 +202,7 @@ public class PoolingSSHJClient extends SSHClient {
     private void removeStaleConnections() {
         List<Map.Entry<SSHClient, SSHClientInfo>> entriesTobeRemoved;
         lock.writeLock().lock();
-        logger.info("Removing stale connections for host {}", host);
+        logger.info("Current active connections for  {} @ {} : {} are {}", username, host, port, clientInfoMap.size());
         try {
             entriesTobeRemoved = clientInfoMap.entrySet().stream().filter(entry ->
                     ((entry.getValue().getSessionCount() == 0) &&

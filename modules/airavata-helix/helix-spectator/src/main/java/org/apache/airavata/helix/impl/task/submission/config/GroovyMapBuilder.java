@@ -78,6 +78,8 @@ public class GroovyMapBuilder {
         mapData.setReservation(taskContext.getReservation());
         mapData.setJobName("A" + String.valueOf(generateJobName()));
         mapData.setWorkingDirectory(taskContext.getWorkingDir());
+        mapData.setTaskId(taskContext.getTaskId());
+        mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
 
         List<String> inputValues = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), true);
         inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), true));

@@ -19,9 +19,9 @@
  */
 package org.apache.airavata.common.utils;
 
+import org.apache.airavata.base.api.BaseAPI;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.thrift.TServiceClient;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -30,11 +30,9 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ThriftClientPool<T extends TServiceClient> implements
-        AutoCloseable {
+public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(ThriftClientPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(ThriftClientPool.class);
 
     private final GenericObjectPool internalPool;
 
@@ -67,7 +65,7 @@ public class ThriftClientPool<T extends TServiceClient> implements
                 TProtocol protocol = protocolFactory.make();
                 return clientFactory.make(protocol);
             } catch (Exception e) {
-                LOGGER.warn(e.getMessage(), e);
+                logger.warn(e.getMessage(), e);
                 throw new ThriftClientException(
                         "Can not make a new object for pool", e);
             }
@@ -109,7 +107,7 @@ public class ThriftClientPool<T extends TServiceClient> implements
             try {
                 transport.open();
             } catch (TTransportException e) {
-                LOGGER.warn(e.getMessage(), e);
+                logger.warn(e.getMessage(), e);
                 throw new ThriftClientException("Can not make protocol", e);
             }
             return new TBinaryProtocol(transport);
@@ -129,7 +127,19 @@ public class ThriftClientPool<T extends TServiceClient> implements
 
     public T getResource() {
         try {
-            return (T) internalPool.borrowObject();
+            for( int i = 0; i < 10 ; i++) {
+                // This tries to fetch a client from the pool and validate it before returning.
+                final T client = (T) internalPool.borrowObject();
+                try {
+                    String apiVersion = client.getAPIVersion();
+                    logger.debug("Validated client and fetched api version " + apiVersion);
+                    return client;
+                } catch (Exception e) {
+                    logger.warn("Failed to validate the client. Retrying " + i, e);
+                    returnBrokenResource(client);
+                }
+            }
+            throw new Exception("Failed to fetch a client form the pool after validation");
         } catch (Exception e) {
             throw new ThriftClientException(
                     "Could not get a resource from the pool", e);

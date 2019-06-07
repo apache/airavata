@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -43,6 +42,7 @@ import org.apache.airavata.service.profile.user.cpi.exception.UserProfileService
 import org.apache.airavata.service.security.AiravataSecurityManager;
 import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.airavata.service.security.UserInfo;
+import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -63,8 +63,8 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     }
 
     @Override
-    public String getAPIVersion() throws UserProfileServiceException, TException {
-        return user_profile_modelConstants.USER_PROFILE_VERSION;
+    public String getAPIVersion() throws TException {
+        return profile_user_cpiConstants.USER_PROFILE_CPI_VERSION;
     }
 
     @Override

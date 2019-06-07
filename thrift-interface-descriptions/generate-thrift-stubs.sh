@@ -79,19 +79,22 @@ setup() {
 
     # Thrift files
     AIRAVATA_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/airavata-apis/airavata_api.thrift"
-    SHARING_API_THRIFT_FILE="${BASEDIR}/modules/sharing-registry/thrift_models/sharing_cpi.thrift"
+    SHARING_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/component-cpis/sharing_cpi.thrift"
     DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/airavata_data_models.thrift"
-    SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}/modules/sharing-registry/thrift_models/sharing_models.thrift"
+    SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/sharing-models/sharing_models.thrift"
     APP_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/app-catalog-models/app_catalog_models.thrift"
     RESOURCE_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/resource-catalog-models/resource_catalog_models.thrift"
     WORKFLOW_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/workflow-models/workflow_data_model.thrift"
     PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/service-cpis/profile-service/profile-service-cpi.thrift"
 
     DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
+    SHARING_DATAMODEL_SRC_DIR='../modules/sharing-registry/sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/models'
     JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
     PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
     CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
     PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/src/main/resources/lib/'
+
+    BASE_API_SRC_DIR='../airavata-api/airavata-base-api/src/main/java'
 
     # Initialize the thrift arguments.
     #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
@@ -192,6 +195,17 @@ generate_java_stubs() {
     # Compare the newly generated beans with existing sources and replace the changed ones.
     copy_changed_files ${JAVA_BEAN_GEN_DIR} ${DATAMODEL_SRC_DIR}
 
+    # Clear Bean generation directory as sharing data models are transferred to a different directory
+    rm -rf ${JAVA_BEAN_GEN_DIR}
+
+    # Generate data models for sharing registry
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${SHARING_DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on sharing registry model
+
+    add_license_header $JAVA_BEAN_GEN_DIR
+
+    mkdir -p ${SHARING_DATAMODEL_SRC_DIR}
+    copy_changed_files ${JAVA_BEAN_GEN_DIR}/org/apache/airavata/sharing/registry/models ${SHARING_DATAMODEL_SRC_DIR}
+
     ###############################################################################
     # Generate/Update source used by Airavata Server Skeletons & Java Client Stubs #
     #  JAVA server and client both use generated api-boilerplate-code             #
@@ -213,6 +227,10 @@ generate_java_stubs() {
     # Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
     #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
     copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/api ${JAVA_API_SDK_DIR}/org/apache/airavata/api
+
+    # This will copy the base API java stubs to airavata-base-api module
+    mkdir -p ${BASE_API_SRC_DIR}/org/apache/airavata/base
+    copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/base ${BASE_API_SRC_DIR}/org/apache/airavata/base
 
     echo "Successfully generated new java sources, compared against exiting code and replaced the changed files"
 }

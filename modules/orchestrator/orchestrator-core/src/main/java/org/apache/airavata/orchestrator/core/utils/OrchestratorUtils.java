@@ -21,8 +21,11 @@ package org.apache.airavata.orchestrator.core.utils;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -397,6 +400,22 @@ public class OrchestratorUtils {
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
         } catch (RegistryServiceException|ApplicationSettingsException e) {
             throw new RuntimeException("Unable to create registry client...", e);
+        }
+    }
+
+    public static CredentialReader getCredentialReader()
+            throws ApplicationSettingsException, IllegalAccessException,
+            InstantiationException {
+        try {
+            String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
+            String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
+            String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
+            String driver = ServerSettings.getCredentialStoreDBDriver();
+            return new CredentialReaderImpl(new DBUtil(jdbcUrl, jdbcUsr, jdbcPass,
+                    driver));
+        } catch (ClassNotFoundException e) {
+            logger.error("Not able to find driver: " + e.getLocalizedMessage());
+            return null;
         }
     }
 }

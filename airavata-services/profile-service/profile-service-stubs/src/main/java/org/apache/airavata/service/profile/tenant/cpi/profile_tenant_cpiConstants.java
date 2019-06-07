@@ -25,7 +25,7 @@ package org.apache.airavata.service.profile.tenant.cpi;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class profile_tenant_cpiConstants {
 
-  public static final java.lang.String TENANT_PROFILE_CPI_VERSION = "0.17";
+  public static final java.lang.String TENANT_PROFILE_CPI_VERSION = "0.18.0";
 
   public static final java.lang.String TENANT_PROFILE_CPI_NAME = "TenantProfileService";
 

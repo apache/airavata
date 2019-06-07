@@ -35,5 +35,6 @@ public enum ExpCatChildDataType {
     TASK_STATUS,
     TASK_ERROR,
     JOB,
-    JOB_STATUS
+    JOB_STATUS,
+    PROCESS_WORKFLOW
 }

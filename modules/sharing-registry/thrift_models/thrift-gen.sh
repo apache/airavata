@@ -19,24 +19,25 @@
 # under the License.
 #
 
+SHARING_CPI="../../../thrift-interface-descriptions/component-cpis/sharing_cpi.thrift "
+SHARING_MODELS="../../../thrift-interface-descriptions/data-models/sharing-models/sharing_models.thrift"
+# thrift --gen java:generated_annotations=undated sharing_models.thrift
+# cd gen-java
+# rm -r ../../sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/models/*
+# cp -r org/apache/airavata/sharing/registry/models/ ../../sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/models/
 
-thrift --gen java:generated_annotations=undated sharing_models.thrift
-cd gen-java
-rm -r ../../sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/models/*
-cp -r org/apache/airavata/sharing/registry/models/ ../../sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/models/
+# cd ..
+# thrift --gen java:generated_annotations=undated sharing_cpi.thrift
+# cd gen-java
+# rm -r ../../sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/service/cpi/*
+# cp -r org/apache/airavata/sharing/registry/service/cpi/ ../../sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/service/cpi/
 
-cd ..
-thrift --gen java:generated_annotations=undated sharing_cpi.thrift
-cd gen-java
-rm -r ../../sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/service/cpi/*
-cp -r org/apache/airavata/sharing/registry/service/cpi/ ../../sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/service/cpi/
+# cd ..
 
-cd ..
+# rm -r gen-java
 
-rm -r gen-java
-
-thrift --gen html sharing_models.thrift
-thrift --gen html sharing_cpi.thrift
+thrift --gen html $SHARING_MODELS
+thrift --gen html $SHARING_CPI
 
 rm -r ../sharing-service-docs/api-docs
 mv gen-html ../sharing-service-docs/api-docs

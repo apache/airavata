@@ -25,15 +25,13 @@
 
 include "../data-models/credential-store-models/credential_store_data_models.thrift"
 include "credential_store_errors.thrift"
+include "../base-api/base_api.thrift"
 
 namespace java org.apache.airavata.credential.store.cpi
 
-const string CS_CPI_VERSION = "0.16.0"
+const string CS_CPI_VERSION = "0.18.0"
 
-service CredentialStoreService {
-
-  /** Query CS server to fetch the CPI version */
-  string getCSServiceVersion(),
+service CredentialStoreService extends base_api.BaseAPI {
 
   credential_store_data_models.CredentialSummary getCredentialSummary (
         1: required string tokenId,

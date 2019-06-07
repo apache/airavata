@@ -1,13 +1,13 @@
 apiHost: 149.165.170.103
 apiPort: 9930
 configurations:
-  - experimentBaseName: "LoadTest"
+  - experimentBaseName: "TestEcho"
     userId: "dimuthu"
     gatewayId: "seagrid"
-    projectId: "DefaultProject_7ac38275-0ca1-433a-ab6a-630c8c1df2ef"
+    projectId: "Dimuthu-Perc18_7651cf55-187c-4dd1-96ed-6c611ef095aa"
     applicationInterfaceId: "Echo_3f480d1f-ea86-4018-94bb-015423d66a1c"
-    computeResourceId: "js-156-93.jetstream-cloud.org_696c097d-a138-4445-b254-cd7e55c84fad"
-    storageResourceId: "testing.seagrid.org_20dbec4c-223e-4568-a267-63d7efc6267e"
+    computeResourceId: "js-156-93.jetstream-cloud.org_dcdf7bfc-fdfa-4b83-ad8b-5f23e32b54ae"
+    storageResourceId: "testing.seagrid.org_8a52ed94-b990-42d2-8714-f3d0abde1022"
 
     inputs:
       - name: "Input-to-Echo"
@@ -20,5 +20,5 @@ configurations:
     physicalMemory: 512
 
     concurrentUsers: 10
-    iterationsPerUser: 2
+    iterationsPerUser: 20
     randomMSDelayWithinSubmissions: 100

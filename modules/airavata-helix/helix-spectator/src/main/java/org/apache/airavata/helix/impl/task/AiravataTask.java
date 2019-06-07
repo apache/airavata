@@ -81,6 +81,9 @@ public abstract class AiravataTask extends AbstractTask {
     @TaskParam(name = "Skip Status Publish")
     private boolean skipTaskStatusPublish = false;
 
+    @TaskParam(name ="Force Run Task")
+    private boolean forceRunTask = false;
+
     protected TaskResult onSuccess(String message) {
         logger.info(message);
         if (!skipTaskStatusPublish) {
@@ -197,37 +200,10 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    @SuppressWarnings("WeakerAccess")
-    protected void saveAndPublishTaskStatus() {
-        try {
-            TaskState state = getTaskContext().getTaskState();
-            // first we save job jobModel to the registry for sa and then save the job status.
-            TaskStatus status = getTaskContext().getTaskStatus();
-            if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
-                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            }else {
-                status.setTimeOfStateChange(status.getTimeOfStateChange());
-            }
-            getRegistryServiceClient().addTaskStatus(status, getTaskId());
-            TaskIdentifier identifier = new TaskIdentifier(getTaskId(), getProcessId(), getExperimentId(), getGatewayId());
-            TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(state,
-                    identifier);
-            MessageContext msgCtx = new MessageContext(taskStatusChangeEvent, MessageType.TASK, AiravataUtils.getId
-                    (MessageType.TASK.name()), getGatewayId());
-            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
-        } catch (Exception e) {
-            logger.error("Failed to publist task status of task " + getTaskId());
-        }
-    }
 
-
-    public void saveAndPublishJobStatus(String jobId, String processId, String experimentId, String gateway,
+    public void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
                                          JobState jobState) throws Exception {
         try {
-
-            String taskId = Optional.ofNullable(MonitoringUtil.getTaskIdByJobId(getCuratorClient(), jobId))
-                    .orElseThrow(() -> new Exception("Can not find the task for job id " + jobId));
 
             JobStatus jobStatus = new JobStatus();
             jobStatus.setReason(jobState.name());
@@ -250,7 +226,6 @@ public abstract class AiravataTask extends AbstractTask {
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             getStatusPublisher().publish(msgCtx);
 
-            MonitoringUtil.updateStatusOfJob(getCuratorClient(), jobId, jobState);
         } catch (Exception e) {
             logger.error("Error persisting job status " + e.getLocalizedMessage(), e);
         }
@@ -343,6 +318,16 @@ public abstract class AiravataTask extends AbstractTask {
             MDC.put("gateway", getGatewayId());
             MDC.put("task", getTaskId());
             loadContext();
+            if (!forceRunTask) {
+                if (this.taskContext != null) {
+                    TaskState taskState = taskContext.getTaskState();
+                    if (taskState != null && taskState != TaskState.CREATED) {
+                        logger.warn("Task " + getTaskId() + " is not in CREATED state. So skipping execution");
+                        skipTaskStatusPublish = false;
+                        return onSuccess("Task " + getTaskId() + " is not in CREATED state. So skipping execution");
+                    }
+                }
+            }
             if (!skipTaskStatusPublish) {
                 publishTaskState(TaskState.EXECUTING);
             }
@@ -409,8 +394,7 @@ public abstract class AiravataTask extends AbstractTask {
 
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId())
                     .setRegistryClient(getRegistryServiceClient())
-                    .setProcessModel(getProcessModel())
-                    .setStatusPublisher(getStatusPublisher());
+                    .setProcessModel(getProcessModel());
 
             this.taskContext = taskContextBuilder.build();
             logger.info("Task " + this.taskName + " initialized");
@@ -484,6 +468,14 @@ public abstract class AiravataTask extends AbstractTask {
 
     public boolean isSkipTaskStatusPublish() {
         return skipTaskStatusPublish;
+    }
+
+    public boolean isForceRunTask() {
+        return forceRunTask;
+    }
+
+    public void setForceRunTask(boolean forceRunTask) {
+        this.forceRunTask = forceRunTask;
     }
 
     // TODO this is inefficient. Try to use a connection pool

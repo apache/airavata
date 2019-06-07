@@ -43,12 +43,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-core</artifactId>
+            <artifactId>airavata-messaging-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-client</artifactId>
+            <artifactId>airavata-credential-store</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

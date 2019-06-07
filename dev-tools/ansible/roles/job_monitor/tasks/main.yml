@@ -24,9 +24,29 @@
 - name: Create helix deployment directory
   file: path="{{ helix_dir }}" state=directory owner={{ user }} group={{ group }}
 
+- name: Stop daemons
+  command: "{{ item.command }} chdir={{ helix_dir }}/{{ item.dir }}/"
+  with_items:
+  - { command: ./bin/email-monitor-daemon.sh stop, dir: "{{ email_monitor_version }}" }
+  - { command: ./bin/realtime-monitor-daemon.sh stop, dir: "{{ realtime_monitor_version }}" }
+  ignore_errors: yes
+
+- name: Delete lib, conf, bin directories of the distributions
+  file:
+    state: absent
+    path: "{{ helix_dir }}/{{ item }}"
+  with_items:
+  - "{{ email_monitor_version }}/lib"
+  - "{{ email_monitor_version }}/bin"
+  - "{{ email_monitor_version }}/conf"
+  - "{{ realtime_monitor_version }}/lib"
+  - "{{ realtime_monitor_version }}/bin"
+  - "{{ realtime_monitor_version }}/conf"
+  ignore_errors: yes
+
 # Copy job monitoring distributions to the deployment directory
 - name: Copy Job monitoring distributions to airavata-helix deployment directory
-  unarchive: "src={{ airavata_source_dir }}/modules/job-monitor/job-monitor-distribution/target/{{ item }}
+  unarchive: "src={{ airavata_source_dir }}/modules/distribution/target/{{ item }}
               dest={{ helix_dir }}/ copy=no"
   with_items:
   - "{{ email_monitor_dist_name }}"
@@ -66,12 +86,6 @@
   with_items:
   - "{{ email_monitor_log_dir }}"
   - "{{ realtime_monitor_log_dir }}"
-
-- name: Stop daemons
-  command: "{{ item.command }} chdir={{ helix_dir }}/{{ item.dir }}/"
-  with_items:
-  - { command: ./bin/email-monitor-daemon.sh stop, dir: "{{ email_monitor_version }}" }
-  - { command: ./bin/realtime-monitor-daemon.sh stop, dir: "{{ realtime_monitor_version }}" }
 
 # Run bash-scripts
 - name: Start daemons

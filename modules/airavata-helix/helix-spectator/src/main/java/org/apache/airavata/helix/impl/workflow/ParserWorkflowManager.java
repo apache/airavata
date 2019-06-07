@@ -40,6 +40,7 @@ import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.thrift.TException;
+import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,13 +58,8 @@ public class ParserWorkflowManager extends WorkflowManager {
     private String parserStorageResourceId = "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e";
 
     public ParserWorkflowManager() throws ApplicationSettingsException {
-        super(ServerSettings.getSetting("parser.workflow.manager.name"));
-    }
-
-    public static void main(String[] args) throws Exception {
-        ParserWorkflowManager manager = new ParserWorkflowManager();
-        manager.init();
-        manager.runConsumer();
+        super(ServerSettings.getSetting("parser.workflow.manager.name"),
+                Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
 
     private void init() throws Exception {
@@ -150,11 +146,15 @@ public class ParserWorkflowManager extends WorkflowManager {
                 createParserDagRecursively(allTasks, parentParser, parentParserTask, parentToChildParsers.get(template.getId()), completionMessage, registryClient);
 
                 String workflow = getWorkflowOperator().launchWorkflow("Parser-" + completionMessage.getProcessId() + UUID.randomUUID().toString(),
-                        allTasks, true, false);
+                    allTasks, true, false);
+                // TODO: figure out processId and register
+                // registerWorkflowForProcess(processId, workflow, "PARSER");
                 logger.info("Launched workflow " + workflow);
             }
 
             getRegistryClientPool().returnResource(registryClient);
+
+
             return true;
 
 

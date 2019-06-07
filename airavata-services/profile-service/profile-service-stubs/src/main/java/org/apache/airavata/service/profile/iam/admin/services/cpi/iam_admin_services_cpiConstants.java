@@ -25,7 +25,7 @@ package org.apache.airavata.service.profile.iam.admin.services.cpi;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class iam_admin_services_cpiConstants {
 
-  public static final java.lang.String IAM_ADMIN_SERVICES_CPI_VERSION = "0.17";
+  public static final java.lang.String IAM_ADMIN_SERVICES_CPI_VERSION = "0.18.0";
 
   public static final java.lang.String IAM_ADMIN_SERVICES_CPI_NAME = "IamAdminServices";
 

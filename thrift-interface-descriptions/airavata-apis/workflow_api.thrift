@@ -32,6 +32,7 @@ include "compute_resource_model.thrift"
 include "application_deployment_model.thrift"
 include "application_interface_model.thrift"
 include "workflow_data_model.thrift"
+include "../base-api/base_api.thrift"
 
 namespace java org.apache.airavata.api.workflow
 namespace php Airavata.API.Workflow
@@ -40,9 +41,9 @@ namespace perl AiravataWorkflowAPI
 namespace py airavata.api.workflow
 namespace js AiravataWorkflowAPI
 
-const string AIRAVATA_API_VERSION = "0.15.0"
+const string WORKFLOW_API_VERSION = "0.18.0"
 
-service Workflow {
+service Workflow extends base_api.BaseAPI {
 
   list<string> getAllWorkflows()
         throws (1: airavata_errors.InvalidRequestException ire,

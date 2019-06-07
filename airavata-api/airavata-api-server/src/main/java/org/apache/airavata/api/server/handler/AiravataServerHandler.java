@@ -203,33 +203,33 @@ public class AiravataServerHandler implements Airavata.Iface {
                 Domain domain = new Domain();
                 domain.setDomainId(ServerSettings.getDefaultUserGateway());
                 domain.setName(ServerSettings.getDefaultUserGateway());
-                domain.setDescription("Domain entry for " + domain.name);
+                domain.setDescription("Domain entry for " + domain.getName());
                 client.createDomain(domain);
 
                 User user = new User();
-                user.setDomainId(domain.domainId);
+                user.setDomainId(domain.getDomainId());
                 user.setUserId(ServerSettings.getDefaultUser() + "@" + ServerSettings.getDefaultUserGateway());
                 user.setUserName(ServerSettings.getDefaultUser());
                 client.createUser(user);
 
                 //Creating Entity Types for each domain
                 EntityType entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId + ":PROJECT");
-                entityType.setDomainId(domain.domainId);
+                entityType.setEntityTypeId(domain.getDomainId() + ":PROJECT");
+                entityType.setDomainId(domain.getDomainId());
                 entityType.setName("PROJECT");
                 entityType.setDescription("Project entity type");
                 client.createEntityType(entityType);
 
                 entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId + ":EXPERIMENT");
-                entityType.setDomainId(domain.domainId);
+                entityType.setEntityTypeId(domain.getDomainId() + ":EXPERIMENT");
+                entityType.setDomainId(domain.getDomainId());
                 entityType.setName("EXPERIMENT");
                 entityType.setDescription("Experiment entity type");
                 client.createEntityType(entityType);
 
                 entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId + ":FILE");
-                entityType.setDomainId(domain.domainId);
+                entityType.setEntityTypeId(domain.getDomainId() + ":FILE");
+                entityType.setDomainId(domain.getDomainId());
                 entityType.setName("FILE");
                 entityType.setDescription("File entity type");
                 client.createEntityType(entityType);
@@ -257,15 +257,15 @@ public class AiravataServerHandler implements Airavata.Iface {
 
                 //Creating Permission Types for each domain
                 PermissionType permissionType = new PermissionType();
-                permissionType.setPermissionTypeId(domain.domainId + ":READ");
-                permissionType.setDomainId(domain.domainId);
+                permissionType.setPermissionTypeId(domain.getDomainId() + ":READ");
+                permissionType.setDomainId(domain.getDomainId());
                 permissionType.setName("READ");
                 permissionType.setDescription("Read permission type");
                 client.createPermissionType(permissionType);
 
                 permissionType = new PermissionType();
-                permissionType.setPermissionTypeId(domain.domainId + ":WRITE");
-                permissionType.setDomainId(domain.domainId);
+                permissionType.setPermissionTypeId(domain.getDomainId() + ":WRITE");
+                permissionType.setDomainId(domain.getDomainId());
                 permissionType.setName("WRITE");
                 permissionType.setDescription("Write permission type");
                 client.createPermissionType(permissionType);
@@ -281,9 +281,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Query Airavata to fetch the API version
      */
     @Override
-    public String getAPIVersion() throws InvalidRequestException, AiravataClientException,
-            AiravataSystemException, TException {
-
+    public String getAPIVersion() throws TException {
         return airavata_apiConstants.AIRAVATA_API_VERSION;
     }
 
@@ -324,27 +322,27 @@ public class AiravataServerHandler implements Airavata.Iface {
             Domain domain = new Domain();
             domain.setDomainId(gateway.getGatewayId());
             domain.setName(gateway.getGatewayName());
-            domain.setDescription("Domain entry for " + domain.name);
+            domain.setDescription("Domain entry for " + domain.getName());
             sharingClient.createDomain(domain);
 
             //Creating Entity Types for each domain
             EntityType entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":PROJECT");
-            entityType.setDomainId(domain.domainId);
+            entityType.setEntityTypeId(domain.getDomainId()+":PROJECT");
+            entityType.setDomainId(domain.getDomainId());
             entityType.setName("PROJECT");
             entityType.setDescription("Project entity type");
             sharingClient.createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
-            entityType.setDomainId(domain.domainId);
+            entityType.setEntityTypeId(domain.getDomainId()+":EXPERIMENT");
+            entityType.setDomainId(domain.getDomainId());
             entityType.setName("EXPERIMENT");
             entityType.setDescription("Experiment entity type");
             sharingClient.createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":FILE");
-            entityType.setDomainId(domain.domainId);
+            entityType.setEntityTypeId(domain.getDomainId()+":FILE");
+            entityType.setDomainId(domain.getDomainId());
             entityType.setName("FILE");
             entityType.setDescription("File entity type");
             sharingClient.createEntityType(entityType);
@@ -365,15 +363,15 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             //Creating Permission Types for each domain
             PermissionType permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(domain.domainId+":READ");
-            permissionType.setDomainId(domain.domainId);
+            permissionType.setPermissionTypeId(domain.getDomainId()+":READ");
+            permissionType.setDomainId(domain.getDomainId());
             permissionType.setName("READ");
             permissionType.setDescription("Read permission type");
             sharingClient.createPermissionType(permissionType);
 
             permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(domain.domainId+":WRITE");
-            permissionType.setDomainId(domain.domainId);
+            permissionType.setPermissionTypeId(domain.getDomainId()+":WRITE");
+            permissionType.setDomainId(domain.getDomainId());
             permissionType.setName("WRITE");
             permissionType.setDescription("Write permission type");
             sharingClient.createPermissionType(permissionType);
@@ -1066,7 +1064,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 filters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleProjectIds
-                        .add(p.entityId));
+                        .add(p.getEntityId()));
                 List<Project> result;
                 if (accessibleProjectIds.isEmpty()) {
                     result = Collections.emptyList();
@@ -1133,7 +1131,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 searchCriteria.setValue(gatewayId + ":PROJECT");
                 sharingFilters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, sharingFilters, 0, -1).stream().forEach(e -> accessibleProjIds.add(e.entityId));
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).stream().forEach(e -> accessibleProjIds.add(e.getEntityId()));
                 if (accessibleProjIds.isEmpty()) {
                     result = Collections.emptyList();
                 } else {
@@ -1189,7 +1187,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 searchCriteria.setValue(gatewayId + ":EXPERIMENT");
                 sharingFilters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.entityId));
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.getEntityId()));
             }
             List<ExperimentSummaryModel> result = regClient.searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
             registryClientPool.returnResource(regClient);
@@ -5209,13 +5207,13 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             HashSet<String> accessibleUsers = new HashSet<>();
             if (permissionType.equals(ResourcePermissionType.WRITE)) {
-                userListFunction.apply(sharingClient, ResourcePermissionType.WRITE).stream().forEach(u -> accessibleUsers.add(u.userId));
-                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.userId));
+                userListFunction.apply(sharingClient, ResourcePermissionType.WRITE).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
+                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
             } else if (permissionType.equals(ResourcePermissionType.READ)) {
-                userListFunction.apply(sharingClient, ResourcePermissionType.READ).stream().forEach(u -> accessibleUsers.add(u.userId));
-                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.userId));
+                userListFunction.apply(sharingClient, ResourcePermissionType.READ).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
+                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
             } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
-                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.userId));
+                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);

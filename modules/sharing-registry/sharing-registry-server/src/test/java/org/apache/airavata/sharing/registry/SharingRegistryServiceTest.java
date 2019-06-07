@@ -186,7 +186,7 @@ public class SharingRegistryServiceTest {
         sharingServiceClient.createGroup(userGroup1);
         userGroup1.setDescription("updated description");
         sharingServiceClient.updateGroup(userGroup1);
-        Assert.assertTrue(sharingServiceClient.getGroup(domainId, userGroup1.groupId).description.equals("updated description"));
+        Assert.assertTrue(sharingServiceClient.getGroup(domainId, userGroup1.getGroupId()).getDescription().equals("updated description"));
         Assert.assertTrue(sharingServiceClient.isGroupExists(domainId, "test-group-1"));
 
         UserGroup userGroup2 = new UserGroup();

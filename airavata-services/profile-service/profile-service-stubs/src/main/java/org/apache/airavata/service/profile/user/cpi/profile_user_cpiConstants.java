@@ -25,7 +25,7 @@ package org.apache.airavata.service.profile.user.cpi;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class profile_user_cpiConstants {
 
-  public static final java.lang.String USER_PROFILE_CPI_VERSION = "0.17";
+  public static final java.lang.String USER_PROFILE_CPI_VERSION = "0.18.0";
 
   public static final java.lang.String USER_PROFILE_CPI_NAME = "UserProfileService";
 

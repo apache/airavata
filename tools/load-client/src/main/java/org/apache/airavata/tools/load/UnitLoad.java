@@ -28,19 +28,22 @@ public class UnitLoad {
     private String trustStorePath;
     private String trustStorePassword;
     private StorageResourceManager storageResourceManager;
+    private AuthzToken authzToken;
 
-    public UnitLoad(String apiHost, int apiPort, String trustStorePath, String trustStorePassword, StorageResourceManager storageResourceManager) {
+    public UnitLoad(String apiHost, int apiPort, String trustStorePath, String trustStorePassword,
+                    StorageResourceManager storageResourceManager, AuthzToken authzToken) {
         this.apiHost = apiHost;
         this.apiPort = apiPort;
         this.trustStorePath = trustStorePath;
         this.trustStorePassword = trustStorePassword;
         this.storageResourceManager = storageResourceManager;
+        this.authzToken = authzToken;
     }
 
-    public CompletionService<Boolean> execute(Configuration config) {
+    public CompletionService<List<String>> execute(Configuration config) {
         String randomUUID = UUID.randomUUID().toString();
         ExecutorService executorService = Executors.newFixedThreadPool(config.getConcurrentUsers());
-        CompletionService<Boolean> completionService = new ExecutorCompletionService<>(executorService);
+        CompletionService<List<String>> completionService = new ExecutorCompletionService<>(executorService);
 
         for (int i = 0; i < config.getConcurrentUsers(); i++) {
             completionService.submit(new Worker(config, randomUUID + "-" + i, config.getIterationsPerUser(), config.getRandomMSDelayWithinSubmissions()));
@@ -48,7 +51,7 @@ public class UnitLoad {
         return completionService;
     }
 
-    public class Worker implements Callable<Boolean> {
+    public class Worker implements Callable<List<String>> {
 
         private final String id;
         private final int iterations;
@@ -63,11 +66,15 @@ public class UnitLoad {
         }
 
         @Override
-        public Boolean call() {
+        public List<String> call() {
+            List<String> experiments = new ArrayList<>();
             for (int i = 0; i < iterations; i++) {
                 try {
-                    submitExperiment(config,id + "-" + i);
-                    Thread.sleep(delay);
+                    double randomDouble = Math.random();
+                    randomDouble = randomDouble * delay + 1;
+                    long randomLong = (long) randomDouble;
+                    Thread.sleep(randomLong);
+                    experiments.add(submitExperiment(config,id + "-" + i));
                 } catch (TException e) {
                     e.printStackTrace();
                 } catch (AgentException e) {
@@ -76,11 +83,11 @@ public class UnitLoad {
                     e.printStackTrace();
                 }
             }
-            return true;
+            return experiments;
         }
     }
 
-    private void submitExperiment(Configuration config, String suffix) throws TException, AgentException {
+    private String submitExperiment(Configuration config, String suffix) throws TException, AgentException {
 
         String experimentName = config.getExperimentBaseName() + suffix;
 
@@ -114,7 +121,7 @@ public class UnitLoad {
 
         Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(apiHost, apiPort, trustStorePath, trustStorePassword, 100000);
 
-        List<InputDataObjectType> applicationInputs = airavataClient.getApplicationInputs(new AuthzToken(""),
+        List<InputDataObjectType> applicationInputs = airavataClient.getApplicationInputs(authzToken,
                 config.getApplicationInterfaceId());
         List<InputDataObjectType> experimentInputs = new ArrayList<>();
 
@@ -138,13 +145,16 @@ public class UnitLoad {
         }
 
         experimentModel.setExperimentInputs(experimentInputs);
-        experimentModel.setExperimentOutputs(airavataClient.getApplicationOutputs(new AuthzToken(""), config.getApplicationInterfaceId()));
+        experimentModel.setExperimentOutputs(airavataClient.getApplicationOutputs(authzToken, config.getApplicationInterfaceId()));
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
 
-        String experimentId = airavataClient.createExperiment(new AuthzToken(""), config.getGatewayId(), experimentModel);
+        String experimentId = airavataClient.createExperiment(authzToken, config.getGatewayId(), experimentModel);
 
-        airavataClient.launchExperiment(new AuthzToken(""), experimentId, config.getGatewayId());
+        airavataClient.launchExperiment(authzToken, experimentId, config.getGatewayId());
         System.out.println(experimentId);
+
+        ExperimentModel experiment = airavataClient.getExperiment(authzToken, experimentId);
+        return experimentId;
 
     }
 }

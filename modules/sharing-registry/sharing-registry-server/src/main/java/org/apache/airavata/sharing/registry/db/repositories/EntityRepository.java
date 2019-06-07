@@ -147,9 +147,9 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             entity.setUpdatedTime((long) (rs[12]));
 
             //Removing duplicates. Another option is to change the query to remove duplicates.
-            if (!keys.containsKey(entity + domainId + "," + entity.entityId)) {
+            if (!keys.containsKey(entity + domainId + "," + entity.getEntityId())) {
                 resultSet.add(entity);
-                keys.put(entity + domainId + "," + entity.entityId, null);
+                keys.put(entity + domainId + "," + entity.getEntityId(), null);
             }
         });
 

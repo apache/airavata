@@ -94,7 +94,7 @@ public class GroupMembershipRepository extends AbstractRepository<GroupMembershi
         while (temp.size() > 0){
             GroupMembership gm = temp.pop();
             filters = new HashMap<>();
-            filters.put(DBConstants.GroupMembershipTable.CHILD_ID, gm.parentId);
+            filters.put(DBConstants.GroupMembershipTable.CHILD_ID, gm.getParentId());
             filters.put(DBConstants.GroupMembershipTable.DOMAIN_ID, domainId);
             select(filters, 0, -1).stream().forEach(m -> temp.addLast(m));
             finalParentGroups.add(gm);

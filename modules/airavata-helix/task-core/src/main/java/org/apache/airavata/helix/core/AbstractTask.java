@@ -69,16 +69,16 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
-        if (participant != null) {
-            participant.registerRunningTask(this);
-        } else {
-            logger.warn("Task with id: " + taskId + " is not registered since the participant is not set");
-        }
         super.init(manager, workflowName, jobName, taskName);
         try {
             TaskUtil.deserializeTaskData(this, this.callbackContext.getTaskConfig().getConfigMap());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (participant != null) {
+            participant.registerRunningTask(this);
+        } else {
+            logger.warn("Task with id: " + taskId + " is not registered since the participant is not set");
         }
     }
 
@@ -189,7 +189,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     }
 
     public void setRetryCount(int retryCount) {
-        this.retryCount = retryCount;
+        // set the default retry count to 1
+        this.retryCount = retryCount <= 0 ? 1 : retryCount;
     }
 
     public OutPort getNextTask() {

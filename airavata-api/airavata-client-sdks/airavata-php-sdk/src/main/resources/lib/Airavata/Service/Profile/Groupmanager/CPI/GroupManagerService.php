@@ -16,7 +16,12 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
-interface GroupManagerServiceIf {
+interface GroupManagerServiceIf extends \Airavata\Base\API\BaseAPIIf {
+  /**
+   * @return string
+   * @throws \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   */
+  public function getAPIVersion();
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\Group\GroupModel $groupModel
@@ -131,15 +136,62 @@ interface GroupManagerServiceIf {
 }
 
 
-class GroupManagerServiceClient implements \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerServiceIf {
-  protected $input_ = null;
-  protected $output_ = null;
-
-  protected $seqid_ = 0;
-
+class GroupManagerServiceClient extends \Airavata\Base\API\BaseAPIClient implements \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerServiceIf {
   public function __construct($input, $output=null) {
-    $this->input_ = $input;
-    $this->output_ = $output ? $output : $input;
+    parent::__construct($input, $output);
+  }
+
+  public function getAPIVersion()
+  {
+    $this->send_getAPIVersion();
+    return $this->recv_getAPIVersion();
+  }
+
+  public function send_getAPIVersion()
+  {
+    $args = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getAPIVersion_args();
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getAPIVersion', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getAPIVersion', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getAPIVersion()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getAPIVersion_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getAPIVersion_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->gse !== null) {
+      throw $result->gse;
+    }
+    throw new \Exception("getAPIVersion failed: unknown result");
   }
 
   public function createGroup(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Group\GroupModel $groupModel)
@@ -907,6 +959,156 @@ class GroupManagerServiceClient implements \Airavata\Service\Profile\Groupmanage
 
 
 // HELPER FUNCTIONS AND STRUCTURES
+
+class GroupManagerService_getAPIVersion_args {
+  static $_TSPEC;
+
+
+  public function __construct() {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        );
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_getAPIVersion_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_getAPIVersion_args');
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GroupManagerService_getAPIVersion_result {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   */
+  public $gse = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        1 => array(
+          'var' => 'gse',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['gse'])) {
+        $this->gse = $vals['gse'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_getAPIVersion_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->gse = new \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException();
+            $xfer += $this->gse->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_getAPIVersion_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gse !== null) {
+      $xfer += $output->writeFieldBegin('gse', TType::STRUCT, 1);
+      $xfer += $this->gse->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
 
 class GroupManagerService_createGroup_args {
   static $_TSPEC;
