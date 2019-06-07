@@ -43,6 +43,8 @@ router.register(r'storage-preferences',
 router.register(r'parsers', views.ParserViewSet, base_name='parser')
 router.register(r'managed-user-profiles', views.ManagedUserViewSet,
                 base_name='managed-user-profile')
+router.register(r'manage-notifications', views.ManageNotificationViewSet,
+                base_name='manage-notifications')
 
 app_name = 'django_airavata_api'
 urlpatterns = [

@@ -1373,6 +1373,18 @@ class WorkspacePreferencesView(APIView):
         return Response(serializer.data)
 
 
+class ManageNotificationViewSet(mixins.ListModelMixin,
+                                GenericAPIBackedViewSet):
+    serializer_class = serializers.NotificationSerializer
+
+    def get_list(self):
+        print(self.request.airavata_client.getAllNotifications(
+            self.authz_token, self.gateway_id))
+        return self.request.airavata_client.getAllNotifications(
+            self.authz_token, self.gateway_id)
+
+
+
 class ManagedUserViewSet(mixins.CreateModelMixin,
                          mixins.RetrieveModelMixin,
                          mixins.UpdateModelMixin,

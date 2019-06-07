@@ -50,7 +50,11 @@ from airavata.model.group.ttypes import GroupModel, ResourcePermissionType
 from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.user.ttypes import UserProfile
-from airavata.model.workspace.ttypes import Project
+from airavata.model.workspace.ttypes import (
+    Project,
+    Notification,
+    NotificationPriority
+)
 
 from . import data_products_helper, models, thrift_utils
 
@@ -834,3 +838,11 @@ class ManagedUserProfile(serializers.Serializer):
         instance['_removed_group_ids'] = list(
             set(existing_group_ids) - set(new_group_ids))
         return instance
+
+
+class NotificationSerializer(
+        thrift_utils.create_serializer_class(Notification)):
+    priority = thrift_utils.ThriftEnumField(NotificationPriority)
+    creationTime = UTCPosixTimestampDateTimeField()
+    publishedTime = UTCPosixTimestampDateTimeField()
+    expirationTime = UTCPosixTimestampDateTimeField()

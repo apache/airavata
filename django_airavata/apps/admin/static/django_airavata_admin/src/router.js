@@ -10,6 +10,7 @@ import CredentialStoreDashboard from "./components/dashboards/CredentialStoreDas
 import GatewayResourceProfileEditorContainer from "./components/gatewayprofile/GatewayResourceProfileEditorContainer.vue";
 import GroupComputeResourcePreference from "./components/admin/group_resource_preferences/GroupComputeResourcePreference";
 import UserManagementContainer from "./components/users/UserManagementContainer.vue";
+import NoticesManagementContainer from "./components/notices/NoticesManagementContainer.vue"
 import VueRouter from "vue-router";
 
 const routes = [
@@ -122,7 +123,13 @@ const routes = [
     path: "/users",
     component: UserManagementContainer,
     name: "users"
+  },
+  {
+    path: "/notices",
+    component: NoticesManagementContainer,
+    name: "notices"
   }
+
 ];
 export default new VueRouter({
   mode: "history",

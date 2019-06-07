@@ -111,6 +111,8 @@ const services = {
   GroupService: ServiceFactory.service("Groups"),
   LocaJobSubmissionService,
   ManagedUserProfileService: ServiceFactory.service("ManagedUserProfiles"),
+  ManageNotificationService: ServiceFactory.service("ManageNotifications"),
+
   ParserService: ServiceFactory.service("Parsers"),
   ProjectService: ServiceFactory.service("Projects"),
   SCPDataMovementService,
