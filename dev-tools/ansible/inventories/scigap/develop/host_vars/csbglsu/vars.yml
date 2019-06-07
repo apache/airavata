@@ -20,7 +20,6 @@
 
 ---
 #airavata_django_git_branch: "simccs"
-doc_root_dir: "/data/portals/django-csbglsu"
 vhost_servername: "beta-sciencegateway.brylinski.org"
 vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org

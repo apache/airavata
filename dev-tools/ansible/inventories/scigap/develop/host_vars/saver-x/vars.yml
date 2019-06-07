@@ -20,7 +20,6 @@
 
 ---
 #airavata_django_git_branch: "simccs"
-doc_root_dir: "/data/portals/django-saver-x"
 vhost_servername: "beta.saver-x.scigap.org"
 vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org

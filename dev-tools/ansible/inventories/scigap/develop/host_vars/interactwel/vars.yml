@@ -20,7 +20,6 @@
 
 ---
 #airavata_django_git_branch: "simccs"
-doc_root_dir: "/data/portals/django-interactwel"
 vhost_servername: "django.interactwel.scigap.org"
 vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org

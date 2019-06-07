@@ -19,7 +19,6 @@
 #
 
 ---
-doc_root_dir: "/data/portals/django-simvascular"
 vhost_servername: "beta.gateway.simvascular.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/beta.gateway.simvascular.org/cert.pem"

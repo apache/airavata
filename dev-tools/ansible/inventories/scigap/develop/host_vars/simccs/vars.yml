@@ -27,7 +27,6 @@ airavata_django_extra_dependencies:
   - cython
   - git+https://github.com/SciGaP/simccs-maptool.git#egg=simccs-maptool
   - pyjnius
-doc_root_dir: "/data/portals/django-simccs"
 vhost_servername: "beta.simccs.org"
 vhost_ssl: True
 # sudo certbot --apache certonly -d django.simccs.scigap.org
