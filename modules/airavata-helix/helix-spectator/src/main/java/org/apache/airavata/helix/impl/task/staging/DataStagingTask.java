@@ -138,6 +138,22 @@ public abstract class DataStagingTask extends AiravataTask {
 
         try {
             boolean fileExists = adaptor.doesFileExist(sourcePath);
+
+            if (!fileExists) {
+                for (int i = 1; i <= 3; i++) {
+                    logger.warn("File " + sourcePath + " was not found in path. Retrying in 10 seconds. Try " + i);
+                    try {
+                        Thread.sleep(10 * 1000);
+                    } catch (InterruptedException e) {
+                        logger.error("Unexpected error in waiting", e);
+                    }
+                    fileExists = adaptor.doesFileExist(sourcePath);
+                    if (fileExists) {
+                        break;
+                    }
+                }
+            }
+
             if (!fileExists) {
                 logger.warn("Ignoring the file " + sourcePath + " transfer as it is not available");
                 return false;

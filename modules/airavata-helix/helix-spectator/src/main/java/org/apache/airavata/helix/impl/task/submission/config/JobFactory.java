@@ -23,10 +23,13 @@ import org.apache.airavata.helix.impl.task.submission.config.app.*;
 import org.apache.airavata.helix.impl.task.submission.config.app.parser.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobFactory {
+
+    private final static Logger logger = LoggerFactory.getLogger(JobFactory.class);
 
     public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
         switch (resourceJobManagerType) {
@@ -49,7 +52,7 @@ public class JobFactory {
 
     public static ResourceJobManager getResourceJobManager(RegistryService.Client registryClient,
                                                            JobSubmissionProtocol submissionProtocol,
-                                                           JobSubmissionInterface jobSubmissionInterface) {
+                                                           JobSubmissionInterface jobSubmissionInterface) throws Exception {
         try {
             if (submissionProtocol == JobSubmissionProtocol.SSH ) {
                 SSHJobSubmission sshJobSubmission = getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
@@ -67,10 +70,13 @@ public class JobFactory {
                     return sshJobSubmission.getResourceJobManager();
                 }
             }
-        } catch (AppCatalogException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Failed to fetch a resource job manager for protocol " + submissionProtocol + " and interface " + jobSubmissionInterface.getJobSubmissionInterfaceId(), e);
+            throw new Exception("Failed to fetch a resource job manager for protocol " + submissionProtocol + " and interface " + jobSubmissionInterface.getJobSubmissionInterfaceId(), e);
         }
-        return null;
+
+        // If not resource job manager is found, throw an exception to fail fast
+        throw new Exception("No resource job manager for protocol " + submissionProtocol + " and interface " + jobSubmissionInterface.getJobSubmissionInterfaceId());
     }
 
     public static LOCALSubmission getLocalJobSubmission(RegistryService.Client registryClient, String submissionId) throws AppCatalogException {
@@ -92,9 +98,9 @@ public class JobFactory {
     }
 
     public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws Exception {
-        if(resourceJobManager == null)
-            return null;
-
+        if(resourceJobManager == null) {
+            throw new Exception("Resource job manager can not be null");
+        }
 
         String templateFileName = getTemplateFileName(resourceJobManager.getResourceJobManagerType());
         switch (resourceJobManager.getResourceJobManagerType()) {
@@ -115,7 +121,8 @@ public class JobFactory {
                         resourceJobManager.getJobManagerCommands(), new ForkOutputParser());
             // We don't have a job configuration manager for CLOUD type
             default:
-                return null;
+                throw new Exception("Could not find a job manager configuration for job manager type "
+                        + resourceJobManager.getResourceJobManagerType());
         }
 
     }

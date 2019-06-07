@@ -81,6 +81,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool shareEntityWithGroups(string domainId, string entityId,  groupList, string permissionTypeId, bool cascadePermission)')
     print('  bool revokeEntitySharingFromGroups(string domainId, string entityId,  groupList, string permissionTypeId)')
     print('  bool userHasAccess(string domainId, string userId, string entityId, string permissionTypeId)')
+    print('  string getAPIVersion()')
     print('')
     sys.exit(0)
 
@@ -501,6 +502,12 @@ elif cmd == 'userHasAccess':
         print('userHasAccess requires 4 args')
         sys.exit(1)
     pp.pprint(client.userHasAccess(args[0], args[1], args[2], args[3],))
+
+elif cmd == 'getAPIVersion':
+    if len(args) != 0:
+        print('getAPIVersion requires 0 args')
+        sys.exit(1)
+    pp.pprint(client.getAPIVersion())
 
 else:
     print('Unrecognized method %s' % cmd)

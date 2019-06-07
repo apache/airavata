@@ -10,5 +10,6 @@ from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplica
 from thrift.protocol.TProtocol import TProtocolException
 import sys
 import airavata.model.sharing.ttypes
+import airavata.base.api.ttypes
 
 from thrift.transport import TTransport

@@ -26,7 +26,7 @@ import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.gfac.core.GFacConstants;
+import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -46,8 +46,11 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.schedule.HostScheduler;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants;
@@ -80,11 +83,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private final Subscriber statusSubscribe;
 	private final Subscriber experimentSubscriber;
 
-    /**
+	private CuratorFramework curatorClient;
+
+	/**
 	 * Query orchestrator server to fetch the CPI version
 	 */
-	public String getOrchestratorCPIVersion() throws TException {
-		return orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
+	@Override
+	public String getAPIVersion() throws TException {
+		return null;
 	}
 
 	public OrchestratorServerHandler() throws OrchestratorException, TException {
@@ -100,6 +106,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
 			statusSubscribe = getStatusSubscriber();
 			experimentSubscriber  = getExperimentSubscriber();
+			startCurator();
 		} catch (OrchestratorException | AiravataException e) {
 			log.error(e.getMessage(), e);
 			throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -132,6 +139,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         ExperimentModel experiment = null;
 		final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
+        	// TODO deprecate this approach as we are replacing gfac
+			String experimentNodePath = getExperimentNodePath (experimentId);
+			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
+			String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
             experiment = registryClient.getExperiment(experimentId);
             if (experiment == null) {
                 log.error("Error retrieving the Experiment by the given experimentID: {} ", experimentId);
@@ -299,7 +311,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ErrorModel details = new ErrorModel();
 			details.setActualErrorMessage(lve.getErrorMessage());
 			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-			registryClient.addErrors(GFacConstants.EXPERIMENT_ERROR, details, experimentId);
+			registryClient.addErrors(OrchestratorConstants.EXPERIMENT_ERROR, details, experimentId);
 			throw lve;
         } catch (OrchestratorException e) {
             log.error(experimentId, "Error while validating process", e);
@@ -354,19 +366,33 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws TException {
 		final RegistryService.Client registryClient = getRegistryServiceClient();
 		try {
-			ProcessModel processModel = registryClient.getProcess(processId);
-            String applicationId = processModel.getApplicationInterfaceId();
-			if (applicationId == null) {
-                log.error(processId, "Application interface id shouldn't be null.");
-				throw new OrchestratorException("Error executing the job, application interface id shouldn't be null.");
-			}
-			// set application deployment id to process model
-            ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(registryClient, processModel, applicationId);
-            processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
-			// set compute resource id to process model, default we set the same in the user preferred compute host id
-			processModel.setComputeResourceId(processModel.getProcessResourceSchedule().getResourceHostId());
-			registryClient.updateProcess(processModel,processModel.getProcessId());
-		    return orchestrator.launchProcess(processModel, airavataCredStoreToken);
+            ProcessStatus processStatus = registryClient.getProcessStatus(processId);
+
+            switch (processStatus.getState()) {
+                case CREATED: case VALIDATED:
+                    ProcessModel processModel = registryClient.getProcess(processId);
+                    String applicationId = processModel.getApplicationInterfaceId();
+                    if (applicationId == null) {
+                        log.error(processId, "Application interface id shouldn't be null.");
+                        throw new OrchestratorException("Error executing the job, application interface id shouldn't be null.");
+                    }
+                    // set application deployment id to process model
+                    ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(registryClient, processModel, applicationId);
+                    if (applicationDeploymentDescription == null) {
+                    	log.error("Could not find an application deployment for " + processModel.getComputeResourceId() + " and application " + applicationId);
+						throw new OrchestratorException("Could not find an application deployment for " + processModel.getComputeResourceId() + " and application " + applicationId);
+                    }
+                    processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
+                    // set compute resource id to process model, default we set the same in the user preferred compute host id
+                    processModel.setComputeResourceId(processModel.getProcessResourceSchedule().getResourceHostId());
+                    registryClient.updateProcess(processModel, processModel.getProcessId());
+                    return orchestrator.launchProcess(processModel, airavataCredStoreToken);
+
+                default:
+                    log.warn("Process " + processId + " is already launched. So it can not be relaunched");
+                    return false;
+            }
+
 		} catch (Exception e) {
             log.error(processId, "Error while launching process ", e);
             throw new TException(e);
@@ -452,12 +478,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 }
 
 				orchestrator.cancelExperiment(experimentModel, token);
-
-				ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
-				status.setReason("Experiment cancel request processed");
-				status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-				OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
-				log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
+				// TODO deprecate this approach as we are replacing gfac
+				String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
+						experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+				Stat stat = curatorClient.checkExists().forPath(expCancelNodePath);
+				if (stat != null) {
+					curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
+							.getBytes());
+					ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
+					status.setReason("Experiment cancel request processed");
+					status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+					OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+					log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
+				}
 				return true;
 		}
     }
@@ -472,7 +505,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 //        }
     }
 
-    private class SingleAppExperimentRunner implements Runnable {
+	private class SingleAppExperimentRunner implements Runnable {
 
         String experimentId;
         String airavataCredStoreToken;
@@ -716,4 +749,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
 	}
 
+	private void startCurator() throws ApplicationSettingsException {
+		String connectionSting = ServerSettings.getZookeeperConnection();
+		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
+		curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
+		curatorClient.start();
+	}
+
+	public String getExperimentNodePath(String experimentId) {
+		return ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
+	}
 }

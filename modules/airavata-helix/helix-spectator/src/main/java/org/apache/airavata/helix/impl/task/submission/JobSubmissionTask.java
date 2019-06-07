@@ -32,6 +32,7 @@ import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -40,7 +41,6 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,6 +157,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         return new File(outputPath + getProcessId());
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                 getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
@@ -165,19 +166,35 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobIc) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
-        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobIc).getRawCommand(), null);
+    public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobId) throws Exception {
 
-        return jobManagerConfiguration.getParser().parseJobStatus(jobIc, commandOutput.getStdOut());
+        ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface());
+
+        if (resourceJobManager == null) {
+            throw new Exception("Resource job manager can not be null for protocol " + getTaskContext().getJobSubmissionProtocol() + " and job id " + jobId);
+        }
+
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+
+        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobId).getRawCommand(), null);
+
+        return jobManagerConfiguration.getParser().parseJobStatus(jobId, commandOutput.getStdOut());
 
     }
 
     @SuppressWarnings("WeakerAccess")
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+
+        ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface());
+
+        if (resourceJobManager == null) {
+            throw new Exception("Resource job manager can not be null for protocol " + getTaskContext().getJobSubmissionProtocol()
+                    + " and job name " + jobName + " and user " + userName);
+        }
+
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
@@ -212,14 +229,14 @@ public abstract class JobSubmissionTask extends AiravataTask {
             }
 
             getRegistryServiceClient().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
-            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
+            /*JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     getProcessId(), getProcessModel().getExperimentId(), getGatewayId());
 
             JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
             MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
                     (MessageType.JOB.name()), getGatewayId());
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
+            getStatusPublisher().publish(msgCtx);*/
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }
@@ -231,19 +248,18 @@ public abstract class JobSubmissionTask extends AiravataTask {
             if (mapData.getPreJobCommands() == null) {
                 mapData.setPreJobCommands(new ArrayList<>());
             }
-
             mapData.getPreJobCommands().add(0, "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
                     "-H \"Accept: application/vnd.kafka.v2+json\" " +
-                    "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\"}}]}' \"" +
+                    "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
                     ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
+
 
             if (mapData.getPostJobCommands() == null) {
                 mapData.setPostJobCommands(new ArrayList<>());
             }
-
             mapData.getPostJobCommands().add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
                     "-H \"Accept: application/vnd.kafka.v2+json\" " +
-                    "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\"}}]}' \"" +
+                    "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
                     ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
         }
     }

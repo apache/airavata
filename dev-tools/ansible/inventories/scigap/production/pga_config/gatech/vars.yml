@@ -20,16 +20,15 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/georgia-tech"
 vhost_servername: "gatech.scigap.org"
-vhost_ssl: False
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/gatech.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gatech.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gatech.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"

@@ -48,6 +48,7 @@ include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../data-models/user-tenant-group-models/group_manager_model.thrift"
 include "../data-models/user-tenant-group-models/user_profile_model.thrift"
+include "../base-api/base_api.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -70,21 +71,13 @@ namespace js ApacheAiravataAPI
  *              in a change to major/minor version numbers.
  *
 */
-const string AIRAVATA_API_VERSION = "0.17.0"
+const string AIRAVATA_API_VERSION = "0.18.0"
 
-service Airavata {
+service Airavata extends base_api.BaseAPI {
 
 /**
  * Apache Airavata API Service Methods. For data structures associated in the signatures, please see included thrift files
 */
-
-   /**
-   * Fetch Apache Airavata API version
-   **/
-  string getAPIVersion()
-        throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase)
 
  /**
  * Verify if User Exists within Airavata.

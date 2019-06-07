@@ -74,7 +74,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     }
 
     @Override
-    public String getCSServiceVersion() throws TException {
+    public String getAPIVersion() throws TException {
         return credential_store_cpiConstants.CS_CPI_VERSION;
     }
 

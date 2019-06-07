@@ -16,14 +16,7 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
-interface IamAdminServicesIf {
-  /**
-   * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @return string
-   * @throws \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException
-   * @throws \Airavata\API\Error\AuthorizationException
-   */
-  public function getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken);
+interface IamAdminServicesIf extends \Airavata\Base\API\BaseAPIIf {
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\Workspace\Gateway $gateway
@@ -142,6 +135,16 @@ interface IamAdminServicesIf {
   public function getUser(\Airavata\Model\Security\AuthzToken $authzToken, $username);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param int $offset
+   * @param int $limit
+   * @param string $search
+   * @return \Airavata\Model\User\UserProfile[]
+   * @throws \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function getUsers(\Airavata\Model\Security\AuthzToken $authzToken, $offset, $limit, $search);
+  /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $username
    * @param string $newPassword
    * @return bool
@@ -194,72 +197,9 @@ interface IamAdminServicesIf {
 }
 
 
-class IamAdminServicesClient implements \Airavata\Service\Iam\Admin\Services\CPI\IamAdminServicesIf {
-  protected $input_ = null;
-  protected $output_ = null;
-
-  protected $seqid_ = 0;
-
+class IamAdminServicesClient extends \Airavata\Base\API\BaseAPIClient implements \Airavata\Service\Iam\Admin\Services\CPI\IamAdminServicesIf {
   public function __construct($input, $output=null) {
-    $this->input_ = $input;
-    $this->output_ = $output ? $output : $input;
-  }
-
-  public function getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken)
-  {
-    $this->send_getAPIVersion($authzToken);
-    return $this->recv_getAPIVersion();
-  }
-
-  public function send_getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken)
-  {
-    $args = new \Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_getAPIVersion_args();
-    $args->authzToken = $authzToken;
-    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
-    if ($bin_accel)
-    {
-      thrift_protocol_write_binary($this->output_, 'getAPIVersion', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
-    }
-    else
-    {
-      $this->output_->writeMessageBegin('getAPIVersion', TMessageType::CALL, $this->seqid_);
-      $args->write($this->output_);
-      $this->output_->writeMessageEnd();
-      $this->output_->getTransport()->flush();
-    }
-  }
-
-  public function recv_getAPIVersion()
-  {
-    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
-    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_getAPIVersion_result', $this->input_->isStrictRead());
-    else
-    {
-      $rseqid = 0;
-      $fname = null;
-      $mtype = 0;
-
-      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
-      if ($mtype == TMessageType::EXCEPTION) {
-        $x = new TApplicationException();
-        $x->read($this->input_);
-        $this->input_->readMessageEnd();
-        throw $x;
-      }
-      $result = new \Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_getAPIVersion_result();
-      $result->read($this->input_);
-      $this->input_->readMessageEnd();
-    }
-    if ($result->success !== null) {
-      return $result->success;
-    }
-    if ($result->Idse !== null) {
-      throw $result->Idse;
-    }
-    if ($result->ae !== null) {
-      throw $result->ae;
-    }
-    throw new \Exception("getAPIVersion failed: unknown result");
+    parent::__construct($input, $output);
   }
 
   public function setUpGateway(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Workspace\Gateway $gateway)
@@ -672,6 +612,66 @@ class IamAdminServicesClient implements \Airavata\Service\Iam\Admin\Services\CPI
     throw new \Exception("getUser failed: unknown result");
   }
 
+  public function getUsers(\Airavata\Model\Security\AuthzToken $authzToken, $offset, $limit, $search)
+  {
+    $this->send_getUsers($authzToken, $offset, $limit, $search);
+    return $this->recv_getUsers();
+  }
+
+  public function send_getUsers(\Airavata\Model\Security\AuthzToken $authzToken, $offset, $limit, $search)
+  {
+    $args = new \Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_getUsers_args();
+    $args->authzToken = $authzToken;
+    $args->offset = $offset;
+    $args->limit = $limit;
+    $args->search = $search;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getUsers', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getUsers', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getUsers()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_getUsers_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_getUsers_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->Idse !== null) {
+      throw $result->Idse;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("getUsers failed: unknown result");
+  }
+
   public function resetUserPassword(\Airavata\Model\Security\AuthzToken $authzToken, $username, $newPassword)
   {
     $this->send_resetUserPassword($authzToken, $username, $newPassword);
@@ -1025,211 +1025,6 @@ class IamAdminServicesClient implements \Airavata\Service\Iam\Admin\Services\CPI
 
 
 // HELPER FUNCTIONS AND STRUCTURES
-
-class IamAdminServices_getAPIVersion_args {
-  static $_TSPEC;
-
-  /**
-   * @var \Airavata\Model\Security\AuthzToken
-   */
-  public $authzToken = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'authzToken',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Security\AuthzToken',
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['authzToken'])) {
-        $this->authzToken = $vals['authzToken'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'IamAdminServices_getAPIVersion_args';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRUCT) {
-            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
-            $xfer += $this->authzToken->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('IamAdminServices_getAPIVersion_args');
-    if ($this->authzToken !== null) {
-      if (!is_object($this->authzToken)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
-      $xfer += $this->authzToken->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-class IamAdminServices_getAPIVersion_result {
-  static $_TSPEC;
-
-  /**
-   * @var string
-   */
-  public $success = null;
-  /**
-   * @var \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException
-   */
-  public $Idse = null;
-  /**
-   * @var \Airavata\API\Error\AuthorizationException
-   */
-  public $ae = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        0 => array(
-          'var' => 'success',
-          'type' => TType::STRING,
-          ),
-        1 => array(
-          'var' => 'Idse',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException',
-          ),
-        2 => array(
-          'var' => 'ae',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\API\Error\AuthorizationException',
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['success'])) {
-        $this->success = $vals['success'];
-      }
-      if (isset($vals['Idse'])) {
-        $this->Idse = $vals['Idse'];
-      }
-      if (isset($vals['ae'])) {
-        $this->ae = $vals['ae'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'IamAdminServices_getAPIVersion_result';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 0:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->success);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 1:
-          if ($ftype == TType::STRUCT) {
-            $this->Idse = new \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException();
-            $xfer += $this->Idse->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::STRUCT) {
-            $this->ae = new \Airavata\API\Error\AuthorizationException();
-            $xfer += $this->ae->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('IamAdminServices_getAPIVersion_result');
-    if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
-      $xfer += $output->writeString($this->success);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->Idse !== null) {
-      $xfer += $output->writeFieldBegin('Idse', TType::STRUCT, 1);
-      $xfer += $this->Idse->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->ae !== null) {
-      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 2);
-      $xfer += $this->ae->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
 
 class IamAdminServices_setUpGateway_args {
   static $_TSPEC;
@@ -2934,6 +2729,308 @@ class IamAdminServices_getUser_result {
 
 }
 
+class IamAdminServices_getUsers_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var int
+   */
+  public $offset = null;
+  /**
+   * @var int
+   */
+  public $limit = null;
+  /**
+   * @var string
+   */
+  public $search = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'offset',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'limit',
+          'type' => TType::I32,
+          ),
+        4 => array(
+          'var' => 'search',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['offset'])) {
+        $this->offset = $vals['offset'];
+      }
+      if (isset($vals['limit'])) {
+        $this->limit = $vals['limit'];
+      }
+      if (isset($vals['search'])) {
+        $this->search = $vals['search'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'IamAdminServices_getUsers_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->offset);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->limit);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->search);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('IamAdminServices_getUsers_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->offset !== null) {
+      $xfer += $output->writeFieldBegin('offset', TType::I32, 2);
+      $xfer += $output->writeI32($this->offset);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->limit !== null) {
+      $xfer += $output->writeFieldBegin('limit', TType::I32, 3);
+      $xfer += $output->writeI32($this->limit);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->search !== null) {
+      $xfer += $output->writeFieldBegin('search', TType::STRING, 4);
+      $xfer += $output->writeString($this->search);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class IamAdminServices_getUsers_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\User\UserProfile[]
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException
+   */
+  public $Idse = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\User\UserProfile',
+            ),
+          ),
+        1 => array(
+          'var' => 'Idse',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException',
+          ),
+        2 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['Idse'])) {
+        $this->Idse = $vals['Idse'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'IamAdminServices_getUsers_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\User\UserProfile();
+              $xfer += $elem5->read($input);
+              $this->success []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->Idse = new \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException();
+            $xfer += $this->Idse->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('IamAdminServices_getUsers_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter6)
+          {
+            $xfer += $iter6->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->Idse !== null) {
+      $xfer += $output->writeFieldBegin('Idse', TType::STRUCT, 1);
+      $xfer += $this->Idse->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 2);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class IamAdminServices_resetUserPassword_args {
   static $_TSPEC;
 
@@ -3386,15 +3483,15 @@ class IamAdminServices_findUsers_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size7 = 0;
+            $_etype10 = 0;
+            $xfer += $input->readListBegin($_etype10, $_size7);
+            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
             {
-              $elem5 = null;
-              $elem5 = new \Airavata\Model\User\UserProfile();
-              $xfer += $elem5->read($input);
-              $this->success []= $elem5;
+              $elem12 = null;
+              $elem12 = new \Airavata\Model\User\UserProfile();
+              $xfer += $elem12->read($input);
+              $this->success []= $elem12;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3438,9 +3535,9 @@ class IamAdminServices_findUsers_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter6)
+          foreach ($this->success as $iter13)
           {
-            $xfer += $iter6->write($output);
+            $xfer += $iter13->write($output);
           }
         }
         $output->writeListEnd();
@@ -4354,15 +4451,15 @@ class IamAdminServices_getUsersWithRole_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size7 = 0;
-            $_etype10 = 0;
-            $xfer += $input->readListBegin($_etype10, $_size7);
-            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            $_size14 = 0;
+            $_etype17 = 0;
+            $xfer += $input->readListBegin($_etype17, $_size14);
+            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
             {
-              $elem12 = null;
-              $elem12 = new \Airavata\Model\User\UserProfile();
-              $xfer += $elem12->read($input);
-              $this->success []= $elem12;
+              $elem19 = null;
+              $elem19 = new \Airavata\Model\User\UserProfile();
+              $xfer += $elem19->read($input);
+              $this->success []= $elem19;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -4406,9 +4503,9 @@ class IamAdminServices_getUsersWithRole_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter13)
+          foreach ($this->success as $iter20)
           {
-            $xfer += $iter13->write($output);
+            $xfer += $iter20->write($output);
           }
         }
         $output->writeListEnd();

@@ -9,20 +9,14 @@
 from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
 from thrift.protocol.TProtocol import TProtocolException
 import sys
+import airavata.base.api.BaseAPI
 import logging
 from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 
 
-class Iface(object):
-    def getAPIVersion(self):
-        """
-        Fetch Apache Airavata API version
-
-        """
-        pass
-
+class Iface(airavata.base.api.BaseAPI.Iface):
     def isUserExists(self, authzToken, gatewayId, userName):
         """
         Verify if User Exists within Airavata.
@@ -3599,48 +3593,9 @@ class Iface(object):
         pass
 
 
-class Client(Iface):
+class Client(airavata.base.api.BaseAPI.Client, Iface):
     def __init__(self, iprot, oprot=None):
-        self._iprot = self._oprot = iprot
-        if oprot is not None:
-            self._oprot = oprot
-        self._seqid = 0
-
-    def getAPIVersion(self):
-        """
-        Fetch Apache Airavata API version
-
-        """
-        self.send_getAPIVersion()
-        return self.recv_getAPIVersion()
-
-    def send_getAPIVersion(self):
-        self._oprot.writeMessageBegin('getAPIVersion', TMessageType.CALL, self._seqid)
-        args = getAPIVersion_args()
-        args.write(self._oprot)
-        self._oprot.writeMessageEnd()
-        self._oprot.trans.flush()
-
-    def recv_getAPIVersion(self):
-        iprot = self._iprot
-        (fname, mtype, rseqid) = iprot.readMessageBegin()
-        if mtype == TMessageType.EXCEPTION:
-            x = TApplicationException()
-            x.read(iprot)
-            iprot.readMessageEnd()
-            raise x
-        result = getAPIVersion_result()
-        result.read(iprot)
-        iprot.readMessageEnd()
-        if result.success is not None:
-            return result.success
-        if result.ire is not None:
-            raise result.ire
-        if result.ace is not None:
-            raise result.ace
-        if result.ase is not None:
-            raise result.ase
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result")
+        airavata.base.api.BaseAPI.Client.__init__(self, iprot, oprot)
 
     def isUserExists(self, authzToken, gatewayId, userName):
         """
@@ -13669,11 +13624,9 @@ class Client(Iface):
         raise TApplicationException(TApplicationException.MISSING_RESULT, "listAllParsingTemplates failed: unknown result")
 
 
-class Processor(Iface, TProcessor):
+class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
     def __init__(self, handler):
-        self._handler = handler
-        self._processMap = {}
-        self._processMap["getAPIVersion"] = Processor.process_getAPIVersion
+        airavata.base.api.BaseAPI.Processor.__init__(self, handler)
         self._processMap["isUserExists"] = Processor.process_isUserExists
         self._processMap["addGateway"] = Processor.process_addGateway
         self._processMap["getAllUsersInGateway"] = Processor.process_getAllUsersInGateway
@@ -13880,34 +13833,6 @@ class Processor(Iface, TProcessor):
         else:
             self._processMap[name](self, seqid, iprot, oprot)
         return True
-
-    def process_getAPIVersion(self, seqid, iprot, oprot):
-        args = getAPIVersion_args()
-        args.read(iprot)
-        iprot.readMessageEnd()
-        result = getAPIVersion_result()
-        try:
-            result.success = self._handler.getAPIVersion()
-            msg_type = TMessageType.REPLY
-        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
-            raise
-        except airavata.api.error.ttypes.InvalidRequestException as ire:
-            msg_type = TMessageType.REPLY
-            result.ire = ire
-        except airavata.api.error.ttypes.AiravataClientException as ace:
-            msg_type = TMessageType.REPLY
-            result.ace = ace
-        except airavata.api.error.ttypes.AiravataSystemException as ase:
-            msg_type = TMessageType.REPLY
-            result.ase = ase
-        except Exception as ex:
-            msg_type = TMessageType.EXCEPTION
-            logging.exception(ex)
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getAPIVersion", msg_type, seqid)
-        result.write(oprot)
-        oprot.writeMessageEnd()
-        oprot.trans.flush()
 
     def process_isUserExists(self, seqid, iprot, oprot):
         args = isUserExists_args()
@@ -19864,146 +19789,6 @@ class Processor(Iface, TProcessor):
         oprot.trans.flush()
 
 # HELPER FUNCTIONS AND STRUCTURES
-
-
-class getAPIVersion_args(object):
-
-    thrift_spec = (
-    )
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAPIVersion_args')
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class getAPIVersion_result(object):
-    """
-    Attributes:
-     - success
-     - ire
-     - ace
-     - ase
-    """
-
-    thrift_spec = (
-        (0, TType.STRING, 'success', 'UTF8', None, ),  # 0
-        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
-        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
-        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
-    )
-
-    def __init__(self, success=None, ire=None, ace=None, ase=None,):
-        self.success = success
-        self.ire = ire
-        self.ace = ace
-        self.ase = ase
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 0:
-                if ftype == TType.STRING:
-                    self.success = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 1:
-                if ftype == TType.STRUCT:
-                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
-                    self.ire.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.STRUCT:
-                    self.ace = airavata.api.error.ttypes.AiravataClientException()
-                    self.ace.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRUCT:
-                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
-                    self.ase.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
-            return
-        oprot.writeStructBegin('getAPIVersion_result')
-        if self.success is not None:
-            oprot.writeFieldBegin('success', TType.STRING, 0)
-            oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
-            oprot.writeFieldEnd()
-        if self.ire is not None:
-            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-            self.ire.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ace is not None:
-            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-            self.ace.write(oprot)
-            oprot.writeFieldEnd()
-        if self.ase is not None:
-            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-            self.ase.write(oprot)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
 
 
 class isUserExists_args(object):

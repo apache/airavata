@@ -69,6 +69,7 @@ import org.apache.airavata.model.error.ProjectNotFoundException;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
@@ -135,6 +136,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
@@ -174,7 +176,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Fetch Apache Registry API version
      */
     @Override
-    public String getAPIVersion() throws RegistryServiceException, TException {
+    public String getAPIVersion() throws TException {
         return registry_apiConstants.REGISTRY_API_VERSION;
     }
 
@@ -1062,6 +1064,22 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+    @Override
+    public List<JobModel> getJobs(String queryType, String id) throws RegistryServiceException, TException {
+
+        // TODO: reimplement
+        // try {
+        //     return fetchJobModels(queryType, id);
+        // } catch (Exception e) {
+        //     logger.error(id, "Error while retrieving jobs for query " + queryType + " and id " + id, e);
+        //     AiravataSystemException exception = new AiravataSystemException();
+        //     exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+        //     exception.setMessage("Error while retrieving jobs for query " + queryType + " and id " + id + ". More info : " + e.getMessage());
+        //     throw exception;
+        // }
+        return Collections.emptyList();
+    }
+
     private JobModel fetchJobModel(String queryType, String id) throws RegistryException {
         if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
             List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
@@ -1086,6 +1104,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
         return null;
     }
 
+    // TODO: reimplement
+    // private List<JobModel> fetchJobModels(String queryType, String id) throws RegistryException {
+    //     experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+    //     List<Object> jobs = new ArrayList<>();
+    //     if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+    //         jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, id);
+    //     } else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
+    //         jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+    //     } else if (queryType.equals(Constants.FieldConstants.JobConstants.JOB_ID)) {
+    //         jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.JOB_ID, id);
+    //     }
+    //     return jobs.stream().map(obj -> (JobModel)obj).collect(Collectors.toList());
+    // }
+
     @Override
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException, TException {
         try {
@@ -1097,6 +1129,38 @@ public class RegistryServerHandler implements RegistryService.Iface {
             exception.setMessage("Error while retrieving process outputs. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    @Override
+    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryServiceException, TException {
+
+        // try {
+        //     experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+        //     return (List<ProcessWorkflow>) experimentCatalog.get(ExperimentCatalogModelType.PROCESS_WORKFLOW, processId);
+        // } catch (Exception e) {
+        //     logger.error(processId, "Error while retrieving process workflows for process " + processId, e);
+        //     AiravataSystemException exception = new AiravataSystemException();
+        //     exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+        //     exception.setMessage("Error while retrieving process workflows for process " + processId
+        //             + ". More info : " + e.getMessage());
+        //     throw exception;
+        // }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryServiceException, TException {
+        // try {
+        //     experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+        //     experimentCatalog.add(ExpCatChildDataType.PROCESS_WORKFLOW, processWorkflow, processWorkflow.getProcessId());
+        // } catch (Exception e) {
+        //     logger.error("Error while adding process workflow for process " + processWorkflow.getProcessId(), e);
+        //     AiravataSystemException exception = new AiravataSystemException();
+        //     exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+        //     exception.setMessage("Error while adding process workflow for process id " + processWorkflow.getProcessId()
+        //             + ". More info : " + e.getMessage());
+        //     throw exception;
+        // }
     }
 
     @Override

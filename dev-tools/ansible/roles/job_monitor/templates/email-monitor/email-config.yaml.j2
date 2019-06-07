@@ -1,3 +1,23 @@
+##################################################################
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+################################################################
+
 config:
  resources:
    - jobManagerType: PBS
@@ -7,24 +27,31 @@ config:
        - adm@trident.bigred2.uits.iu.edu # Bigred2
        - root <adm@trident.bigred2.uits.iu.edu> # Bigred2
        - root <adm@scyld.localdomain> # alamo
+       - root <adm@m2.karst.uits.iu.edu> #karst
        - root <adm@m1.mason.indiana.edu> #mason
        - smic3 <smic@mail.hpc.lsu.edu> # philip.hpc.lsu
        - adm@jetstream-cloud.org
+       - adm <adm@smic3.hpc.lsu.edu> #supermic
        - root <adm@alamo.uthscsa.edu> #alamo
+       - root <adm@s1.carbonate.uits.iu.edu> #carbonate
+       - adm <adm@mike3.hpc.lsu.edu> # Mick cluster at LSU for CSBG-LSU
+       - GW77 Job Emails <gw77jobs@scigap.org> #gw77 email to fix email issues
 
    - jobManagerType: SLURM
      emailParser: org.apache.airavata.monitor.email.parser.SLURMEmailParser
      resourceEmailAddresses:
        - SDSC Admin <slurm@comet-fe3.sdsc.edu> # comet
        - slurm@batch1.stampede.tacc.utexas.edu # stampede
-       - slurm@helix-slurm-headnode.novalocal
+       - SDSC Admin <slurm@comet-fe4.sdsc.edu> # comet new
        - slurm@comet-fe4.sdsc.edu
        - Slurm <slurm@psc.edu> # bridges
+       - Slurm <slurm@br003.pvt.bridges.psc.edu> #Bridges
        - Slurm Daemon <slurm@odin.oscer.ou.edu> # OU Schooner
        - slurm@lnet28.stampede.tacc.utexas.edu # stampede2
        - Slurm service account <slurm@chpc.utah.edu> # Utah Ember
        - SLURM workload manager <slurm@jetstream.chemcompute.org> # JS Mark Cluster
-       - root@master.ls5.tacc.utexas.edu
+       - super user <root@ls5.tacc.utexas.edu> # LS5 new email after Nov 5th 2018
+       - root@master.ls5.tacc.utexas.edu #LS5 old email
        - batch-jsc@fz-juelich.de # Jureca Email
        - Slurm <slurm@br003.pvt.bridges.psc.edu>
        - slurm@jetstream-cloud.org
@@ -36,7 +63,16 @@ config:
        - slurm@head.cluster #USD cluster
        - slurm@js-169-158.jetstream-cloud.org
        - slurm@joker.nmsu.edu
-       - root@ls5.tacc.utexas.edu
+       - SLURM resource manager <slurm@bigdawg.research.siu.edu> #Bigdawg
+       - SLURM resource manager <slurm@interactwel-slurm-headnode.novalocal> #InterACTWEL Jetstream
+       - slurm@zoar #R System cluster
+       - GW77 Job Emails <gw77jobs@scigap.org> #gw77 email to fix email issues
+       - SLURM resource manager <slurm@seagrid-slurm-headnode.novalocal> #seagrid elastic cluster
+       - SLURM resource manager <slurm@epw-slurm-headnode.novalocal> # EPW Jetstream slurm cluster
+       - SLURM resource manager <slurm@dr-slurm-headnode.novalocal> #Distant reader
+       - slurm@thunder.jacks.local #RT at SDSU
+       - Slurm on Mio <slurm@mio.mines.edu> # MIO from Mines
+       - SLURM resource manager <slurm@helix-slurm-headnode.novalocal> # Jetstream Helix cluster
 
    - jobManagerType: UGE
      emailParser: org.apache.airavata.monitor.email.parser.UGEEmailParser
@@ -46,3 +82,9 @@ config:
        - root <littledog@siu.edu> # SIU Little Dog
        - sge@bigdog.research.siu.edu # SIU Big Dog
        - root <root@legacy.usd.edu> # USD HPC Cluster
+
+   - jobManagerType: LSF
+     emailParser: org.apache.airavata.monitor.email.parser.LSFEmailParser
+     resourceEmailAddresses:
+       - iu.xsede.edu # test resource mail address
+       - tcs.tulsahpc.org #Tandy

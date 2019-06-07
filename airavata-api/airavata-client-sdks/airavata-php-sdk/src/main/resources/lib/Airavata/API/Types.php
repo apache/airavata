@@ -35,7 +35,7 @@ final class Constant extends \Thrift\Type\TConstant {
      *              in a change to major/minor version numbers.
      * 
      */
-"0.17.0";
+"0.18.0";
   }
 }
 

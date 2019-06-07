@@ -5,6 +5,7 @@
 if (queueName != null && queueName != "") out.print '#SBATCH -p ' + queueName + '\n'
    if (nodes != null && nodes != "") out.print '#SBATCH -N ' + nodes + '\n'
    if (cpuCount != null && cpuCount != "") out.print '#SBATCH -n ' + cpuCount + '\n'
+   if (usedMem != null && usedMem != "") out.print '#SBATCH --mem=' + usedMem + 'M\n'
    if (mailAddress != null && mailAddress != "") out.print '#SBATCH --mail-user=' + mailAddress + '\n'
    if (accountString != null && accountString != "" ) out.print '#SBATCH -A ' + accountString + '\n'
    if (maxWallTime != null && maxWallTime != "") out.print '#SBATCH -t ' + maxWallTime + '\n'

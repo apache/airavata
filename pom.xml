@@ -24,10 +24,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>18</version>
+        <version>21</version>
     </parent>
 
     <groupId>org.apache.airavata</groupId>
@@ -107,6 +111,7 @@
         <snakeyaml.version>1.15</snakeyaml.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
+        <maven.assembly.plugin>3.1.1</maven.assembly.plugin>
         <kafka-clients.version>1.0.0</kafka-clients.version>
         <logback.version>1.2.3</logback.version>
         <json.version>20160212</json.version>
@@ -755,29 +760,17 @@
                 <module>airavata-api</module>
                 <module>modules/commons</module>
                 <module>modules/messaging</module>
-                <module>modules/gfac</module>
                 <module>modules/registry</module>
                 <module>modules/security</module>
                 <module>modules/credential-store</module>
                 <module>modules/orchestrator</module>
-                <module>modules/monitoring</module>
-                <module>modules/cloud</module>
                 <module>modules/server</module>
-                <module>modules/workflow</module>
                 <module>modules/sharing-registry</module>
                 <module>modules/cluster-monitoring</module>
-                <module>modules/user-profile-migration</module>
                 <module>airavata-services</module>
                 <module>modules/db-event-manager</module>
-                <!-- Deprecated Modules-->
-                <!--<module>modules/integration-tests</module>-->
-                <!--<module>modules/workflow-model</module>-->
-                <!--<module>modules/workflow</module>-->
-                <!--<module>modules/xbaya-gui</module>-->
-                <module>modules/distribution</module>
-                <!--<module>modules/test-suite</module>-->
-                <module>modules/compute-account-provisioning</module>
                 <module>modules/airavata-helix</module>
+                <module>modules/compute-account-provisioning</module>
                 <module>modules/job-monitor</module>
                 <module>tools</module>
                 <module>modules/ide-integration</module>
@@ -842,6 +835,7 @@
                                 <exclude>sandbox/**/*</exclude>
                                 <exclude>**/vault.yml</exclude>
                                 <exclude>**/hosts</exclude>
+                                <exclude>**/*.md</exclude>
                             </excludes>
                         </configuration>
                         <executions>

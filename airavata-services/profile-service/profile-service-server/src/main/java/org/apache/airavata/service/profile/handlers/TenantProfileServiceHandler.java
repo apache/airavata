@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -64,7 +63,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public String getAPIVersion() throws TenantProfileServiceException, TException {
+    public String getAPIVersion() throws TException {
         return profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
     }
 

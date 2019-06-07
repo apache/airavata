@@ -108,6 +108,14 @@ class TaskModel {
    * @var \Airavata\Model\Job\JobModel[]
    */
   public $jobs = null;
+  /**
+   * @var int
+   */
+  public $maxRetry = null;
+  /**
+   * @var int
+   */
+  public $currentRetry = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -167,6 +175,14 @@ class TaskModel {
             'class' => '\Airavata\Model\Job\JobModel',
             ),
           ),
+        11 => array(
+          'var' => 'maxRetry',
+          'type' => TType::I32,
+          ),
+        12 => array(
+          'var' => 'currentRetry',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -199,6 +215,12 @@ class TaskModel {
       }
       if (isset($vals['jobs'])) {
         $this->jobs = $vals['jobs'];
+      }
+      if (isset($vals['maxRetry'])) {
+        $this->maxRetry = $vals['maxRetry'];
+      }
+      if (isset($vals['currentRetry'])) {
+        $this->currentRetry = $vals['currentRetry'];
       }
     }
   }
@@ -325,6 +347,20 @@ class TaskModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 11:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->maxRetry);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->currentRetry);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -422,6 +458,16 @@ class TaskModel {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->maxRetry !== null) {
+      $xfer += $output->writeFieldBegin('maxRetry', TType::I32, 11);
+      $xfer += $output->writeI32($this->maxRetry);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->currentRetry !== null) {
+      $xfer += $output->writeFieldBegin('currentRetry', TType::I32, 12);
+      $xfer += $output->writeI32($this->currentRetry);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -132,6 +132,11 @@ public class GroovyMapData {
     @ScriptTag(name = "chassisName")
     private String chassisName;
 
+    @ScriptTag(name = "taskId")
+    private String taskId;
+
+    @ScriptTag(name = "experimentDataDir")
+    private String experimentDataDir;
 
     public Map<String, Object> getMap() {
 
@@ -439,6 +444,22 @@ public class GroovyMapData {
     public GroovyMapData setChassisName(String chassisName) {
         this.chassisName = chassisName;
         return this;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getExperimentDataDir() {
+        return experimentDataDir;
+    }
+
+    public void setExperimentDataDir(String experimentDataDir) {
+        this.experimentDataDir = experimentDataDir;
     }
 
     public Map toImmutableMap() {

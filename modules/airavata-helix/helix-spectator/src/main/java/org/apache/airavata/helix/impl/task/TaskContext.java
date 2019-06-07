@@ -115,6 +115,16 @@ public class TaskContext {
     private List<TaskModel> taskList;
     private Map<String, TaskModel> taskMap;
 
+    /**
+     * Note: process context property use lazy loading approach. In runtime you will see some properties as null
+     * unless you have access it previously. Once that property access using the api,it will be set to correct value.
+     */
+    private TaskContext(String processId, String gatewayId, String taskId) {
+        this.processId = processId;
+        this.gatewayId = gatewayId;
+        this.taskId = taskId;
+    }
+
     public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
@@ -133,6 +143,10 @@ public class TaskContext {
 
     public String getProcessId() {
         return processId;
+    }
+
+    public String getTaskId() {
+        return taskId;
     }
 
     public Publisher getStatusPublisher() {
@@ -315,7 +329,6 @@ public class TaskContext {
         }
         return jobSubmissionProtocol;
     }
-
     public void setJobSubmissionProtocol(JobSubmissionProtocol jobSubmissionProtocol) {
         this.jobSubmissionProtocol = jobSubmissionProtocol;
     }
@@ -411,10 +424,11 @@ public class TaskContext {
     }
 
     public TaskState getTaskState() {
-        if(getCurrentTaskModel().getTaskStatuses() != null)
+        if(getCurrentTaskModel() != null && getCurrentTaskModel().getTaskStatuses() != null) {
             return getCurrentTaskModel().getTaskStatuses().get(0).getState();
-        else
+        } else {
             return null;
+        }
     }
 
     public TaskStatus getTaskStatus() {
@@ -577,7 +591,9 @@ public class TaskContext {
     }
 
     public String getAllocationProjectNumber() {
-        if (isUseUserCRPref() &&
+        if (isValid(processModel.getProcessResourceSchedule().getOverrideAllocationProjectNumber())) {
+            return processModel.getProcessResourceSchedule().getOverrideAllocationProjectNumber();
+        } else if (isUseUserCRPref() &&
                 userComputeResourcePreference != null &&
                 userComputeResourcePreference.getAllocationProjectNumber() != null) {
             return userComputeResourcePreference.getAllocationProjectNumber();
@@ -701,7 +717,6 @@ public class TaskContext {
         private final String gatewayId;
         private final String taskId;
         private RegistryService.Client registryClient;
-        private Publisher statusPublisher;
         private ProcessModel processModel;
 
         @SuppressWarnings("WeakerAccess")
@@ -724,11 +739,6 @@ public class TaskContext {
             return this;
         }
 
-        public TaskContextBuilder setStatusPublisher(Publisher statusPublisher) {
-            this.statusPublisher = statusPublisher;
-            return this;
-        }
-
         public TaskContext build() throws Exception {
 
             if (notValid(processModel)) {
@@ -737,17 +747,10 @@ public class TaskContext {
             if (notValid(registryClient)) {
                 throwError("Invalid Registry Client");
             }
-            if (notValid(statusPublisher)) {
-                throwError("Invalid Status Publisher");
-            }
 
-            TaskContext ctx = new TaskContext();
+            TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
             ctx.setRegistryClient(registryClient);
-            ctx.setStatusPublisher(statusPublisher);
             ctx.setProcessModel(processModel);
-            ctx.setTaskId(taskId);
-            ctx.setGatewayId(gatewayId);
-            ctx.setProcessId(processId);
 
             ctx.setGroupComputeResourcePreference(registryClient.getGroupComputeResourcePreference(processModel.getComputeResourceId(),
                     processModel.getGroupResourceProfileId()));
@@ -833,5 +836,4 @@ public class TaskContext {
         }
     }
 }
-
 

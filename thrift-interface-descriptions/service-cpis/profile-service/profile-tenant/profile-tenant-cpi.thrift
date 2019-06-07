@@ -27,18 +27,16 @@ include "../../../airavata-apis/airavata_errors.thrift"
 include "../../../airavata-apis/security_model.thrift"
 include "../../../data-models/experiment-catalog-models/workspace_model.thrift"
 include "profile_tenant_cpi_errors.thrift"
+include "../../../base-api/base_api.thrift"
 
 namespace java org.apache.airavata.service.profile.tenant.cpi
 namespace php Airavata.Service.Profile.Tenant.CPI
 namespace py airavata.service.profile.tenant.cpi
 
-const string TENANT_PROFILE_CPI_VERSION = "0.17"
+const string TENANT_PROFILE_CPI_VERSION = "0.18.0"
 const string TENANT_PROFILE_CPI_NAME = "TenantProfileService"
 
-service TenantProfileService {
-
-    string getAPIVersion ()
-                       throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe)
+service TenantProfileService extends base_api.BaseAPI {
 
     /**
      * Return the airavataInternalGatewayId assigned to given gateway.

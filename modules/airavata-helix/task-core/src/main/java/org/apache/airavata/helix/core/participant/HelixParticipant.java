@@ -62,7 +62,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     private String taskTypeName;
 
     private List<Class<? extends T>> taskClasses;
-    private final List<AbstractTask> runningTasks = Collections.synchronizedList(new ArrayList<AbstractTask>());
+    private final List<String> runningTasks = Collections.synchronizedList(new ArrayList<String>());
 
     public HelixParticipant(List<Class<? extends T>> taskClasses, String taskTypeName) throws ApplicationSettingsException {
 
@@ -100,11 +100,13 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     }
 
     public void registerRunningTask(AbstractTask task) {
-        runningTasks.add(task);
+        runningTasks.add(task.getTaskId());
+        logger.info("Registered Task " + task.getTaskId() + ". Currently available " + runningTasks.size());
     }
 
     public void unregisterRunningTask(AbstractTask task) {
-        runningTasks.remove(task);
+        runningTasks.remove(task.getTaskId());
+        logger.info("Un registered Task " + task.getTaskId() + ". Currently available " + runningTasks.size());
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -205,6 +207,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     }
 
     private void disconnect() {
+        logger.info("Shutting down participant. Currently available tasks " + runningTasks.size());
         if (zkHelixManager != null) {
             if (runningTasks.size() > 0) {
                 for (int i = 0; i <= shutdownGraceRetries; i++) {

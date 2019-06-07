@@ -25,13 +25,13 @@
 
 include "../data-models/user-tenant-group-models/user_profile_model.thrift"
 include "user_profile_cpi_errors.thrift"
-
+include "../base-api/base_api.thrift"
 
 namespace java org.apache.airavata.userprofile.cpi
 
-const string USER_PROFILE_CPI_VERSION = "0.17"
+const string USER_PROFILE_CPI_VERSION = "0.18.0"
 
-service UserProfileService {
+service UserProfileService extends base_api.BaseAPI {
 
   string addUserProfile (1: required user_profile_model.UserProfile userProfile)
                         throws (1:user_profile_cpi_errors.UserProfileServiceException userProfileException);

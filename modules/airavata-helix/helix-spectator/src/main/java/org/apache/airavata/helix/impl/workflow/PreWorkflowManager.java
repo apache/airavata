@@ -21,12 +21,10 @@ package org.apache.airavata.helix.impl.workflow;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask;
 import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
@@ -38,6 +36,7 @@ import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
@@ -45,11 +44,11 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PreWorkflowManager extends WorkflowManager {
 
@@ -58,7 +57,8 @@ public class PreWorkflowManager extends WorkflowManager {
     private Subscriber subscriber;
 
     public PreWorkflowManager() throws ApplicationSettingsException {
-        super(ServerSettings.getSetting("pre.workflow.manager.name"));
+        super(ServerSettings.getSetting("pre.workflow.manager.name"),
+                Boolean.parseBoolean(ServerSettings.getSetting("pre.workflow.manager.loadbalance.clusters")));
     }
 
     public void startServer() throws Exception {
@@ -76,7 +76,7 @@ public class PreWorkflowManager extends WorkflowManager {
         this.subscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
     }
 
-    private String createAndLaunchPreWorkflow(String processId) throws Exception {
+    private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
 
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
@@ -109,13 +109,15 @@ public class PreWorkflowManager extends WorkflowManager {
                 AiravataTask airavataTask = null;
                 if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
                     airavataTask = new EnvSetupTask();
+                    airavataTask.setForceRunTask(true);
                 } else if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
                     airavataTask = new DefaultJobSubmissionTask();
-                    airavataTask.setRetryCount(1);
+                    airavataTask.setForceRunTask(forceRun);
                     jobSubmissionFound = true;
                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                     if (!jobSubmissionFound) {
                         airavataTask = new InputDataStagingTask();
+                        airavataTask.setForceRunTask(true);
                     }
                 }
 
@@ -124,6 +126,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     airavataTask.setExperimentId(experimentModel.getExperimentId());
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
+                    airavataTask.setRetryCount(taskModel.getMaxRetry());
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() -1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }
@@ -134,12 +137,9 @@ public class PreWorkflowManager extends WorkflowManager {
 
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
-        try {
-            MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
-        } catch (Exception e) {
-            logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
-                    "This will affect cancellation tasks", e);
-        }
+
+        registerWorkflowForProcess(processId, workflowName, "PRE");
+
         return workflowName;
     }
 
@@ -161,8 +161,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
         String experimentId = processModel.getExperimentId();
 
-        MonitoringUtil.registerCancelProcess(getCuratorClient(), processId);
-        List<String> workflows = MonitoringUtil.getWorkflowsOfProcess(getCuratorClient(), processId);
+        List<String> workflows = processModel.getProcessWorkflows().stream().map(ProcessWorkflow::getWorkflowId).collect(Collectors.toList());
         final List<AbstractTask> allTasks = new ArrayList<>();
         if (workflows != null && workflows.size() > 0) {
             for (String wf : workflows) {
@@ -241,7 +240,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
                 try {
                     logger.info("Launching the pre workflow for process " + processId + " of experiment " + experimentId + " in gateway " + gateway);
-                    String workflowName = createAndLaunchPreWorkflow(processId);
+                    String workflowName = createAndLaunchPreWorkflow(processId, false);
                     logger.info("Completed launching the pre workflow " + workflowName + " for process" + processId + " of experiment " + experimentId + " in gateway " + gateway);
 
                     // updating the process status

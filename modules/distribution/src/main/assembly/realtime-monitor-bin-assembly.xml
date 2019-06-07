@@ -1,0 +1,120 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<!DOCTYPE assembly [
+        <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
+        <!ELEMENT id (#PCDATA)>
+        <!ELEMENT includeBaseDirectory (#PCDATA)>
+        <!ELEMENT baseDirectory (#PCDATA)>
+        <!ELEMENT formats (format)*>
+        <!ELEMENT format (#PCDATA)>
+        <!ELEMENT fileSets (fileSet)*>
+        <!ELEMENT fileSet (directory|outputDirectory|fileMode|includes)*>
+        <!ELEMENT directory (#PCDATA)>
+        <!ELEMENT outputDirectory (#PCDATA)>
+        <!ELEMENT includes (include)*>
+        <!ELEMENT include (#PCDATA)>
+        <!ELEMENT dependencySets (dependencySet)*>
+        <!ELEMENT dependencySet (outputDirectory|outputFileNameMapping|includes)*>
+        ]>
+<assembly>
+    <id>bin</id>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${realtime.monitor.dist.name}</baseDirectory>
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
+
+    <fileSets>
+
+        <fileSet>
+            <directory>src/main/resources/realtime-monitor/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>777</fileMode>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/realtime-monitor/conf</directory>
+            <outputDirectory>conf</outputDirectory>
+            <fileMode>777</fileMode>
+            <includes>
+                <include>airavata-server.properties</include>
+                <include>logback.xml</include>
+            </includes>
+        </fileSet>
+
+        <!-- Create logs directory -->
+        <fileSet>
+            <directory>./</directory>
+            <outputDirectory>logs</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
+
+    </fileSets>
+
+    <dependencySets>
+
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>org.apache.airavata:realtime-monitor:jar</include>
+                <include>org.apache.airavata:job-monitor-api:jar</include>
+                <include>org.apache.airavata:task-core:jar</include>
+                <include>org.apache.airavata:airavata-base-api:jar</include>
+                <include>org.apache.airavata:registry-api-stubs:jar</include>
+
+                <include>org.apache.airavata:airavata-commons:jar</include>
+                <include>org.apache.airavata:airavata-data-models:jar</include>
+                <include>commons-cli:commons-cli</include>
+                <include>commons-pool:commons-pool</include>
+                <include>org.apache.thrift:libthrift:jar</include>
+
+                <!-- kafka specific jars -->
+                <include>org.apache.kafka:kafka-clients:jar</include>
+                <include>org.lz4:lz4-java:jar</include>
+                <include>org.xerial.snappy:snappy-java:jar</include>
+
+                <!-- curator and zookeeper jars -->
+                <include>org.apache.curator:curator-framework:jar</include>
+                <include>org.apache.curator:curator-client:jar</include>
+                <include>com.google.guava:guava:jar</include>
+                <include>org.apache.zookeeper:zookeeper:jar</include>
+                <include>jline:jline:jar</include>
+                <include>org.jboss.netty:netty:jar</include>
+
+                <include>com.google.code.gson:gson:jar</include>
+
+                <!-- logging jars -->
+                <include>org.slf4j:slf4j-api:jar</include>
+                <include>ch.qos.logback:logback-classic:jar</include>
+                <include>ch.qos.logback:logback-core:jar</include>
+                <include>org.slf4j:log4j-over-slf4j:jar</include>
+                <include>com.github.danielwegener:logback-kafka-appender:jar</include>
+                <include>net.logstash.logback:logstash-logback-encoder:jar</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>

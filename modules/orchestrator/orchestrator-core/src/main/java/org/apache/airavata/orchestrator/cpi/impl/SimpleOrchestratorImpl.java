@@ -24,7 +24,6 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.application.io.DataType;
@@ -393,6 +392,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         envSetupSubModel.setLocation(workingDir);
         byte[] envSetupSub = ThriftUtils.serializeThriftObject(envSetupSubModel);
         envSetupTask.setSubTaskModel(envSetupSub);
+        envSetupTask.setMaxRetry(3);
+        envSetupTask.setCurrentRetry(0);
         String envSetupTaskId = (String) registryClient.addTask(envSetupTask, processModel.getProcessId());
         envSetupTask.setTaskId(envSetupTaskId);
         envTaskIds.add(envSetupTaskId);
@@ -423,7 +424,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                     .addTask( inputDataStagingTask, processModel.getProcessId());
                             inputDataStagingTask.setTaskId(taskId);
                             dataStagingTaskIds.add(inputDataStagingTask.getTaskId());
-                        } catch (TException | TaskException e) {
+                        } catch (Exception e) {
                             throw new AiravataException("Error while serializing data staging sub task model", e);
                         } finally {
                             if (registryClient != null) {
@@ -563,6 +564,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         submissionSubTask.setWallTime(wallTime);
         byte[] bytes = ThriftUtils.serializeThriftObject(submissionSubTask);
         taskModel.setSubTaskModel(bytes);
+        taskModel.setMaxRetry(1);
+        taskModel.setCurrentRetry(0);
         String taskId = registryClient.addTask(taskModel, processModel.getProcessId());
         taskModel.setTaskId(taskId);
         submissionTaskIds.add(taskModel.getTaskId());
@@ -598,7 +601,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         });
     }
 
-    private TaskModel getInputDataStagingTask(RegistryService.Client registryClient, ProcessModel processModel, InputDataObjectType processInput, String gatewayId) throws TException, TaskException, AiravataException, OrchestratorException {
+    private TaskModel getInputDataStagingTask(RegistryService.Client registryClient, ProcessModel processModel, InputDataObjectType processInput, String gatewayId) throws TException, AiravataException, OrchestratorException {
         // create new task model for this task
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
@@ -626,13 +629,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
                     workingDir , null, null);
         } catch (URISyntaxException e) {
-            throw new TaskException("Error while constructing destination file URI", e);
+            throw new OrchestratorException("Error while constructing destination file URI", e);
         }
         submodel.setType(DataStageType.INPUT);
         submodel.setSource(processInput.getValue());
         submodel.setProcessInput(processInput);
         submodel.setDestination(destination.toString());
         taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+        taskModel.setMaxRetry(3);
+        taskModel.setCurrentRetry(0);
         return taskModel;
     }
 
@@ -676,7 +681,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             workingDir, null, null);
                 }
             } catch (URISyntaxException e) {
-                throw new TaskException("Error while constructing source file URI", e);
+                throw new OrchestratorException("Error while constructing source file URI", e);
             }
             // We don't know destination location at this time, data staging task will set this.
             // because destination is required field we set dummy destination
@@ -685,8 +690,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             // because destination is required field we set dummy destination
             submodel.setDestination("dummy://temp/file/location");
             taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+            taskModel.setMaxRetry(3);
+            taskModel.setCurrentRetry(0);
             return taskModel;
-        } catch (TaskException e) {
+        } catch (OrchestratorException e) {
            throw new OrchestratorException("Error occurred while retrieving data movement from app catalog", e);
         }
     }

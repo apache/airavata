@@ -40,6 +40,6 @@ public class airavata_apiConstants {
    *              in a change to major/minor version numbers.
    * 
    */
-  public static final java.lang.String AIRAVATA_API_VERSION = "0.17.0";
+  public static final java.lang.String AIRAVATA_API_VERSION = "0.18.0";
 
 }

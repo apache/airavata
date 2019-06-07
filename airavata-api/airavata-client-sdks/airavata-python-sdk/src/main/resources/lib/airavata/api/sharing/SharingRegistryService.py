@@ -9,13 +9,14 @@
 from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
 from thrift.protocol.TProtocol import TProtocolException
 import sys
+import airavata.base.api.BaseAPI
 import logging
 from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 
 
-class Iface(object):
+class Iface(airavata.base.api.BaseAPI.Iface):
     def createDomain(self, domain):
         """
         <p>API method to create a new domain</p>
@@ -609,12 +610,9 @@ class Iface(object):
         pass
 
 
-class Client(Iface):
+class Client(airavata.base.api.BaseAPI.Client, Iface):
     def __init__(self, iprot, oprot=None):
-        self._iprot = self._oprot = iprot
-        if oprot is not None:
-            self._oprot = oprot
-        self._seqid = 0
+        airavata.base.api.BaseAPI.Client.__init__(self, iprot, oprot)
 
     def createDomain(self, domain):
         """
@@ -2775,10 +2773,9 @@ class Client(Iface):
         raise TApplicationException(TApplicationException.MISSING_RESULT, "userHasAccess failed: unknown result")
 
 
-class Processor(Iface, TProcessor):
+class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
     def __init__(self, handler):
-        self._handler = handler
-        self._processMap = {}
+        airavata.base.api.BaseAPI.Processor.__init__(self, handler)
         self._processMap["createDomain"] = Processor.process_createDomain
         self._processMap["updateDomain"] = Processor.process_updateDomain
         self._processMap["isDomainExists"] = Processor.process_isDomainExists

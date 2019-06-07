@@ -63,17 +63,6 @@
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>1.9.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>net.java.dev.jets3t</groupId>
             <artifactId>jets3t</artifactId>
             <version>0.8.0</version>
@@ -153,11 +142,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-orchestrator-core</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -181,38 +165,8 @@
             <artifactId>airavata-credential-store</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!--        <dependency>
-                    <groupId>org.apache.airavata</groupId>
-                    <artifactId>airavata-gfac-bes</artifactId>
-                    <version>${project.version}</version>
-                </dependency>-->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!--        <dependency>
-                    <groupId>org.apache.airavata</groupId>
-                    <artifactId>airavata-workflow-model-core</artifactId>
-                    <version>${project.version}</version>
-                </dependency>-->
 
         <!--Cloud module -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>aurora-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -233,13 +187,6 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api-server</artifactId>
             <version>${project.version}</version>
-            <!-- This httpcore version prevents IamAdminServices Keycloak REST client from working -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents.wso2</groupId>
-                    <artifactId>httpcore</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -476,6 +423,24 @@
             <artifactId>db-event-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>helix-spectator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>email-monitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>realtime-monitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <url>http://airavata.apache.org/</url>
@@ -512,51 +477,127 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.5</version>
+                <version>${maven.assembly.plugin}</version>
                 <executions>
                     <execution>
-                        <id>distribution-package</id>
+                        <id>api-server-distribution-package</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${archieve.name}-${project.version}</finalName>
+                            <finalName>${api.server.dist.name}</finalName>
                             <descriptors>
-                                <descriptor>src/main/assembly/bin-assembly.xml</descriptor>
+                                <descriptor>src/main/assembly/api-server-bin-assembly.xml</descriptor>
                                 <!-- <descriptor>src/main/assembly/src-assembly.xml</descriptor> -->
                             </descriptors>
                             <attach>false</attach>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
                     <execution>
-                        <id>attach-artifacts</id>
+                        <id>controller-distribution-package</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>attach-artifact</goal>
+                            <goal>single</goal>
                         </goals>
                         <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${airavata.bin.zip}</file>
-                                    <type>zip</type>
-                                    <classifier>bin</classifier>
-                                </artifact>
-                                <artifact>
-                                    <file>${airavata.bin.tar.gz}</file>
-                                    <type>tar.gz</type>
-                                    <classifier>bin</classifier>
-                                </artifact>
-                            </artifacts>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${controller.dist.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/controller-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>participant-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${participant.dist.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/participant-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>pre-wm-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${pre.wm.dist.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/pre-wm-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-wm-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${post.wm.dist.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/post-wm-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>platform-monitor-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${platform.monitor.dist.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/platform-monitor-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>email-monitor-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${email.monitor.dist.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/email-monitor-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>realtime-monitor-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${realtime.monitor.dist.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/realtime-monitor-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
                         </configuration>
                     </execution>
                 </executions>
@@ -569,10 +610,13 @@
         <jersey.version>1.13</jersey.version>
         <grizzly.version>2.0.0-M3</grizzly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <archieve.name>apache-airavata-server</archieve.name>
-        <airavata.dist.name>${archieve.name}-${project.version}</airavata.dist.name>
-        <airavata.work.dir>${project.build.directory}/tests/${airavata.dist.name}</airavata.work.dir>
-        <airavata.bin.zip>${project.build.directory}/${airavata.dist.name}-bin.zip</airavata.bin.zip>
-        <airavata.bin.tar.gz>${project.build.directory}/${airavata.dist.name}-bin.tar.gz</airavata.bin.tar.gz>
+        <api.server.dist.name>apache-airavata-api-server-${project.version}</api.server.dist.name>
+        <controller.dist.name>apache-airavata-controller-${project.version}</controller.dist.name>
+        <participant.dist.name>apache-airavata-participant-${project.version}</participant.dist.name>
+        <pre.wm.dist.name>apache-airavata-pre-wm-${project.version}</pre.wm.dist.name>
+        <post.wm.dist.name>apache-airavata-post-wm-${project.version}</post.wm.dist.name>
+        <platform.monitor.dist.name>apache-airavata-platform-monitor-${project.version}</platform.monitor.dist.name>
+        <email.monitor.dist.name>apache-airavata-email-monitor-${project.version}</email.monitor.dist.name>
+        <realtime.monitor.dist.name>apache-airavata-realtime-monitor-${project.version}</realtime.monitor.dist.name>
     </properties>
 </project>

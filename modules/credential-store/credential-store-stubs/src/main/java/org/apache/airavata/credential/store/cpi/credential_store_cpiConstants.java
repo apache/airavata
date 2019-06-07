@@ -25,6 +25,6 @@ package org.apache.airavata.credential.store.cpi;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class credential_store_cpiConstants {
 
-  public static final java.lang.String CS_CPI_VERSION = "0.16.0";
+  public static final java.lang.String CS_CPI_VERSION = "0.18.0";
 
 }

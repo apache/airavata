@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -51,9 +49,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
 
-
     @Override
-    public String getAPIVersion() throws IamAdminServicesException {
+    public String getAPIVersion() throws TException {
         return iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 

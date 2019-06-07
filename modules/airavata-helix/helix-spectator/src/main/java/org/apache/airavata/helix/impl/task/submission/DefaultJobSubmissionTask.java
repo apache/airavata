@@ -181,10 +181,6 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
             } else {
 
-                // creating monitoring nodes
-                MonitoringUtil.createMonitoringNode(getCuratorClient(), jobId, mapData.getJobName(), getTaskId(),
-                        getProcessId(), getExperimentId(), getGatewayId());
-
                 // usage reporting as the last step of job submission task
                 if (getComputeResourceDescription().isGatewayUsageReporting()){
                     String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
@@ -222,8 +218,14 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         }
     }
 
-    private boolean verifyJobSubmissionByJobId(AgentAdaptor agentAdaptor, String jobID) throws Exception {
-        JobStatus status = getJobStatus(agentAdaptor, jobID);
+    private boolean verifyJobSubmissionByJobId(AgentAdaptor agentAdaptor, String jobID) {
+        JobStatus status = null;
+
+        try {
+            status = getJobStatus(agentAdaptor, jobID);
+        } catch (Exception e) {
+            logger.warn("Error while fetching the job status for id " + jobID);
+        }
         return status != null &&  status.getJobState() != JobState.UNKNOWN;
     }
 
@@ -232,7 +234,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         try {
             jobId  = getJobIdByJobName(agentAdaptor, jobName, userName);
         } catch (Exception e) {
-            logger.error("Error while verifying JobId from JobName " + jobName);
+            logger.warn("Error while verifying JobId from JobName " + jobName);
         }
         return jobId;
     }
