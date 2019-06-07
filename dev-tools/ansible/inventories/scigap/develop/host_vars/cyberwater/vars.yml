@@ -37,8 +37,8 @@ auth_options:
   password:
     name: "CyberWater"
   external:
-#    - name: "Existing Institute Login"
-#      idp_alias: "cilogon"
+    - name: "Existing Institute Login"
+      idp_alias: "cilogon"
 
 gateway_id: "cyberwater"
 experiment_data_dir: "{{ user_data_dir }}/django-cyberwater"
