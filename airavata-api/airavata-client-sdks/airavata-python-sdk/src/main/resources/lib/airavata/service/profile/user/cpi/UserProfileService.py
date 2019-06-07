@@ -31,7 +31,7 @@ class Iface(airavata.base.api.BaseAPI.Iface):
 
     def addUserProfile(self, authzToken, userProfile):
         """
-        This method is deprecated and will be removed in future versions of our Django portal. Please use
+        This method is deprecated and will be removed in future versions of Airavata. Please use
         the initializeUserProfile method which fetches the information about the user profile from
         IAM service - @Deprecated
 
@@ -158,7 +158,7 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
 
     def addUserProfile(self, authzToken, userProfile):
         """
-        This method is deprecated and will be removed in future versions of our Django portal. Please use
+        This method is deprecated and will be removed in future versions of Airavata. Please use
         the initializeUserProfile method which fetches the information about the user profile from
         IAM service - @Deprecated
 

@@ -37,7 +37,7 @@ interface UserProfileServiceIf extends \Airavata\Base\API\BaseAPIIf {
    */
   public function initializeUserProfile(\Airavata\Model\Security\AuthzToken $authzToken);
   /**
-   * This method is deprecated and will be removed in future versions of our Django portal. Please use
+   * This method is deprecated and will be removed in future versions of Airavata. Please use
    * the initializeUserProfile method which fetches the information about the user profile from
    * IAM service - @Deprecated
    * 
