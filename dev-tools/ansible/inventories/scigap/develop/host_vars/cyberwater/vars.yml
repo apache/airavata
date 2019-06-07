@@ -21,27 +21,27 @@
 ---
 #airavata_django_git_branch: "simccs"
 doc_root_dir: "/data/portals/django-pfec-hydro"
-vhost_servername: "pfec-hydro.scigap.org"
+vhost_servername: "cyberwater.scigap.org"
 vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/cyberwater.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/cyberwater.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/cyberwater.scigap.org/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "pfec-hydro"
+tenant_domain: "cyberwater"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "PfEC-Hydro"
+    name: "CyberWater"
   external:
-    - name: "Existing Institute Login"
-      idp_alias: "cilogon"
+#    - name: "Existing Institute Login"
+#      idp_alias: "cilogon"
 
-gateway_id: "pfec-hydro"
-experiment_data_dir: "{{ user_data_dir }}/django-pfec-hydro"
+gateway_id: "cyberwater"
+experiment_data_dir: "{{ user_data_dir }}/django-cyberwater"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
@@ -50,5 +50,5 @@ portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 admin_emails: "[('sgrc-iu-group@iu.edu')]"
 portal_server_email: "{{ portal_email_username }}"
-portal_title: "Beta Future Water Gateway"
+portal_title: "Beta Cyberwater Gateway"
 ...
