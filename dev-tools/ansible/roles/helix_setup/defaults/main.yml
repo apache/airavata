@@ -46,4 +46,6 @@ helix_log_total_size_cap: "1GB"
 
 kafka_listener_port: 9092
 kafka_rest_proxy_listener_port: 8082
+
+local_data_location: "/tmp"
 ...
