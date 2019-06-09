@@ -1,5 +1,5 @@
 <template>
-    <b-form-group :label="label" :label-for="labelFor" :state="state">
+    <b-form-group :label="label" :label-for="labelFor" :state="state" :description="description">
         <slot></slot>
         <template slot="invalid-feedback">
             <ul v-if="feedbackMessages && feedbackMessages.length > 1">
@@ -31,6 +31,9 @@ export default {
         feedbackMessages: {
             type: Array,
         },
+        description: {
+          type: String,
+        }
     },
 }
 </script>

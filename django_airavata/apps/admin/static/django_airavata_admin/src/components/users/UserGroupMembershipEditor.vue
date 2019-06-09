@@ -116,9 +116,7 @@ export default {
       return {
         text: group.name,
         value: group.id,
-        disabled:
-          !group.userHasWriteAccess ||
-          group.ownerId === this.airavataInternalUserId
+        disabled: !group.userHasWriteAccess || group.ownerId === this.airavataInternalUserId
       };
     }
   }

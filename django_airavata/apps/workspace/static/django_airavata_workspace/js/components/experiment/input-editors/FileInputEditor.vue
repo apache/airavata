@@ -28,14 +28,22 @@
         ></i>
       </b-link>
     </div>
-    <b-form-file
-      :id="id"
-      v-model="file"
-      v-if="!isDataProductURI"
-      :placeholder="experimentInput.userFriendlyDescription"
-      :state="componentValidState"
-      @input="fileChanged"
-    />
+    <div v-if="isSelectingFile">
+      <!-- TODO: handle @cancel -->
+      <user-storage-file-selection-container @file-selected="fileSelected"/>
+    </div>
+    <div class="d-flex" v-if="!isSelectingFile && !isDataProductURI">
+      <!-- TODO: fix layout -->
+      <b-button @click="isSelectingFile=true">Select user file</b-button>
+      <span class="text-muted">OR</span>
+      <b-form-file
+        :id="id"
+        v-model="file"
+        v-if="!isDataProductURI"
+        :state="componentValidState"
+        @input="fileChanged"
+      />
+    </div>
   </div>
 </template>
 
@@ -44,13 +52,15 @@ import { models, services, utils } from "django-airavata-api";
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
 import DataProductViewer from "../DataProductViewer.vue";
 import { components } from "django-airavata-common-ui";
+import UserStorageFileSelectionContainer from "../../storage/UserStorageFileSelectionContainer";
 
 export default {
   name: "file-input-editor",
   mixins: [InputEditorMixin],
   components: {
     DataProductViewer,
-    "delete-link": components.DeleteLink
+    "delete-link": components.DeleteLink,
+    UserStorageFileSelectionContainer
   },
   computed: {
     isDataProductURI() {
@@ -61,7 +71,8 @@ export default {
   data() {
     return {
       dataProduct: null,
-      file: null
+      file: null,
+      isSelectingFile: false
     };
   },
   created() {
@@ -113,6 +124,12 @@ export default {
     unselect() {
       this.file = null;
       this.data = null;
+      this.valueChanged();
+    },
+    fileSelected(dataProductURI) {
+      this.data = dataProductURI;
+      this.isSelectingFile = false;
+      this.loadDataProduct(dataProductURI);
       this.valueChanged();
     }
   }

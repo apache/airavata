@@ -3,6 +3,7 @@
     <user-storage-path-breadcrumb
       v-if="userStoragePath"
       :parts="userStoragePath.parts"
+      @directory-selected="$emit('directory-selected', $event)"
     />
     <b-table
       :fields="fields"
@@ -13,26 +14,37 @@
         slot="name"
         slot-scope="data"
       >
-        <router-link
+        <b-link
           v-if="data.item.type === 'dir'"
-          :to="'/~/' + data.item.path"
-        > <i class="fa fa-folder-open"></i> {{ data.item.name }}</router-link>
+          @click="directorySelected(data.item)"
+        > <i class="fa fa-folder-open"></i> {{ data.item.name }}</b-link>
         <b-link
           v-else
           :href="data.item.downloadURL"
+          :target="downloadTarget"
         > <i class="fa fa-download"></i> {{ data.item.name }}</b-link>
       </template>
       <template
         slot="createdTimestamp"
         slot-scope="data"
       >
-        <human-date :date="data.item.createdTime"/>
+        <human-date :date="data.item.createdTime" />
       </template>
       <template
         slot="actions"
         slot-scope="data"
       >
-        <delete-button @delete="deleteItem(data.item)">
+        <b-button
+          v-if="includeSelectFileAction && data.item.type === 'file'"
+          @click="$emit('file-selected', data.item)"
+          variant="primary"
+        >
+          Select
+        </b-button>
+        <delete-button
+          v-if="includeDeleteAction"
+          @delete="deleteItem(data.item)"
+        >
           Are you sure you want to delete {{ data.item.name }}?
         </delete-button>
       </template>
@@ -48,6 +60,18 @@ export default {
   props: {
     userStoragePath: {
       required: true
+    },
+    includeDeleteAction: {
+      type: Boolean,
+      default: true
+    },
+    includeSelectFileAction: {
+      type: Boolean,
+      default: false
+    },
+    downloadInNewWindow: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -109,6 +133,9 @@ export default {
       } else {
         return [];
       }
+    },
+    downloadTarget() {
+      return this.downloadInNewWindow ? '_blank' : '_self';
     }
   },
   methods: {
@@ -129,6 +156,9 @@ export default {
       } else if (item.type === "file") {
         this.$emit("delete-file", item.dataProductURI);
       }
+    },
+    directorySelected(item) {
+      this.$emit("directory-selected", item.path);
     }
   }
 };
