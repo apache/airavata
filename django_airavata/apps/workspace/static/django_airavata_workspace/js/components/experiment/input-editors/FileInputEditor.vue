@@ -29,8 +29,7 @@
       </b-link>
     </div>
     <div v-if="isSelectingFile">
-      <!-- TODO: handle @cancel -->
-      <user-storage-file-selection-container @file-selected="fileSelected"/>
+      <user-storage-file-selection-container @file-selected="fileSelected" @cancel="cancelFileSelection"/>
     </div>
     <div class="d-flex" v-if="!isSelectingFile && !isDataProductURI">
       <!-- TODO: fix layout -->
@@ -131,6 +130,10 @@ export default {
       this.isSelectingFile = false;
       this.loadDataProduct(dataProductURI);
       this.valueChanged();
+    },
+    cancelFileSelection() {
+      this.isSelectingFile = false;
+      this.unselect();
     }
   }
 };

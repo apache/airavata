@@ -9,7 +9,7 @@
       :download-in-new-window="true"
     />
     <!-- TODO: push this right? -->
-    <b-link class="card-link">Cancel</b-link>
+    <b-link class="card-link" @click="$emit('cancel')">Cancel</b-link>
   </b-card>
 </template>
 
