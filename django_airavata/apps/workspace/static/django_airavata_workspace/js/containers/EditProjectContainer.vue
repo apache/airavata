@@ -55,7 +55,7 @@ export default {
 </script>
 <style>
 /* style the containing div, in base.html template */
-.main-content {
+.main-content-wrapper {
   background-color: #ffffff;
 }
 </style>
