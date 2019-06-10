@@ -74,6 +74,9 @@ public class ExperimentOutputEntity implements Serializable {
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
 
+    @Column(name = "METADATA", length = 4096)
+    private String metaData;
+
     @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     private ExperimentEntity experiment;
@@ -176,6 +179,14 @@ public class ExperimentOutputEntity implements Serializable {
 
     public void setStorageResourceId(String storageResourceId) {
         this.storageResourceId = storageResourceId;
+    }
+
+    public String getMetaData() {
+        return metaData;
+    }
+
+    public void setMetaData(String metaData) {
+        this.metaData = metaData;
     }
 
     public ExperimentEntity getExperiment() {
