@@ -10,11 +10,14 @@
       :selected-data-product-uris="selectedDataProductUris"
     >
     </user-storage-path-viewer>
-    <!-- TODO: push this right? -->
-    <b-link
-      class="card-link"
-      @click="$emit('cancel')"
-    >Cancel</b-link>
+    <template slot="footer">
+      <div class="d-flex justify-content-end">
+        <b-link
+          class="text-secondary"
+          @click="$emit('cancel')"
+        >Cancel</b-link>
+      </div>
+    </template>
   </b-card>
 </template>
 
