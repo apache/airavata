@@ -36,18 +36,18 @@
       />
     </div>
     <div
-      class="d-flex"
+      class="d-flex align-items-baseline"
       v-if="!isSelectingFile && !isDataProductURI"
     >
-      <!-- TODO: fix layout -->
-      <b-button @click="isSelectingFile=true">Select user file</b-button>
-      <span class="text-muted">OR</span>
+      <b-button @click="isSelectingFile=true" class="input-file-option">Select file from storage</b-button>
+      <span class="text-muted mx-3">OR</span>
       <b-form-file
         :id="id"
         v-model="file"
         v-if="!isDataProductURI"
-        :state="componentValidState"
+        placeholder="Upload file"
         @input="fileChanged"
+        class="input-file-option"
       />
     </div>
   </div>
@@ -158,3 +158,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.input-file-option {
+  flex: 1 1 50%;
+}
+</style>
