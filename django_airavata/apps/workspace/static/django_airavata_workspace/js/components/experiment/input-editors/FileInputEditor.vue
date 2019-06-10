@@ -29,9 +29,16 @@
       </b-link>
     </div>
     <div v-if="isSelectingFile">
-      <user-storage-file-selection-container @file-selected="fileSelected" @cancel="cancelFileSelection"/>
+      <user-storage-file-selection-container
+        @file-selected="fileSelected"
+        @cancel="cancelFileSelection"
+        :selected-data-product-uris="selectedDataProductURIs"
+      />
     </div>
-    <div class="d-flex" v-if="!isSelectingFile && !isDataProductURI">
+    <div
+      class="d-flex"
+      v-if="!isSelectingFile && !isDataProductURI"
+    >
       <!-- TODO: fix layout -->
       <b-button @click="isSelectingFile=true">Select user file</b-button>
       <span class="text-muted">OR</span>
@@ -65,6 +72,19 @@ export default {
     isDataProductURI() {
       // Just assume that if the value is a string then it's a data product URL
       return this.value && typeof this.value === "string";
+    },
+    // When used in the MultiFileInputEditor, don't allow selecting the same
+    // file more than once. This computed property creates an array of already
+    // selected files.
+    selectedDataProductURIs() {
+      if (
+        this.experimentInput.type === models.DataType.URI_COLLECTION &&
+        this.experimentInput.value
+      ) {
+        return this.experimentInput.value.split(",");
+      } else {
+        return [];
+      }
     }
   },
   data() {

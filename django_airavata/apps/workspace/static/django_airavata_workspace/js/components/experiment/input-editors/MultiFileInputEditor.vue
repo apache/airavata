@@ -58,6 +58,7 @@ export default {
         .filter(e => e.value) // exclude null entries
         .map(e => e.value)
         .join(",");
+      this.fileEntries = this.createFileEntries(this.data);
       this.valueChanged();
     },
     removeFile(fileEntry) {

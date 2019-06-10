@@ -7,7 +7,9 @@
       :include-delete-action="false"
       :include-select-file-action="true"
       :download-in-new-window="true"
-    />
+      :selected-data-product-uris="selectedDataProductUris"
+    >
+    </user-storage-path-viewer>
     <!-- TODO: push this right? -->
     <b-link class="card-link" @click="$emit('cancel')">Cancel</b-link>
   </b-card>
@@ -19,6 +21,12 @@ import UserStoragePathViewer from "./UserStoragePathViewer";
 
 export default {
   name: "user-storage-file-selection-container",
+  props: {
+    selectedDataProductUris: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       userStoragePath: null

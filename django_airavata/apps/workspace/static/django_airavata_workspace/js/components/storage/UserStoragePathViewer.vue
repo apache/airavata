@@ -37,6 +37,7 @@
         <b-button
           v-if="includeSelectFileAction && data.item.type === 'file'"
           @click="$emit('file-selected', data.item)"
+          :disabled="isAlreadySelected(data.item)"
           variant="primary"
         >
           Select
@@ -72,6 +73,10 @@ export default {
     downloadInNewWindow: {
       type: Boolean,
       default: false
+    },
+    selectedDataProductUris: {
+      type: Array,
+      default: () => []
     }
   },
   components: {
@@ -135,7 +140,7 @@ export default {
       }
     },
     downloadTarget() {
-      return this.downloadInNewWindow ? '_blank' : '_self';
+      return this.downloadInNewWindow ? "_blank" : "_self";
     }
   },
   methods: {
@@ -159,6 +164,11 @@ export default {
     },
     directorySelected(item) {
       this.$emit("directory-selected", item.path);
+    },
+    isAlreadySelected(item) {
+      return this.selectedDataProductUris.find(
+        uri => item.type === "file" && uri === item.dataProductURI
+      );
     }
   }
 };
