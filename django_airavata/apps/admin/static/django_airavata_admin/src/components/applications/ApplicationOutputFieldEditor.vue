@@ -30,9 +30,6 @@
         </b-form-radio-group>
       </b-form-group>
     </div>
-    <b-form-group v-if="isSimpleValueType" label="Search Query" :label-for="id+'-search-query'">
-      <b-form-input :id="id+'-search-query'" type="text" v-model="data.searchQuery" :disabled="readonly"></b-form-input>
-    </b-form-group>
   </b-card>
 </template>
 
@@ -68,9 +65,6 @@ export default {
     },
     id() {
       return "id-" + this.data.key;
-    },
-    isSimpleValueType() {
-      return this.data.type.isSimpleValueType;
     }
   },
   methods: {
