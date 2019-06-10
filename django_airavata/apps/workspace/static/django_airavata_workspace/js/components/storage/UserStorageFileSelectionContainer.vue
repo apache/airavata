@@ -11,13 +11,20 @@
     >
     </user-storage-path-viewer>
     <!-- TODO: push this right? -->
-    <b-link class="card-link" @click="$emit('cancel')">Cancel</b-link>
+    <b-link
+      class="card-link"
+      @click="$emit('cancel')"
+    >Cancel</b-link>
   </b-card>
 </template>
 
 <script>
 import { services } from "django-airavata-api";
 import UserStoragePathViewer from "./UserStoragePathViewer";
+
+// Keep track of most recent path so that when user needs to select an
+// additional file they are taken back to the last path
+let mostRecentPath = "~";
 
 export default {
   name: "user-storage-file-selection-container",
@@ -36,7 +43,7 @@ export default {
     UserStoragePathViewer
   },
   created() {
-    return this.loadUserStoragePath("~");
+    return this.loadUserStoragePath(mostRecentPath);
   },
   methods: {
     loadUserStoragePath(path) {
@@ -45,10 +52,11 @@ export default {
       }).then(result => (this.userStoragePath = result));
     },
     directorySelected(path) {
-      return this.loadUserStoragePath("~/" + path);
+      mostRecentPath = "~/" + path;
+      return this.loadUserStoragePath(mostRecentPath);
     },
     fileSelected(file) {
-      this.$emit('file-selected', file.dataProductURI);
+      this.$emit("file-selected", file.dataProductURI);
     }
   }
 };
