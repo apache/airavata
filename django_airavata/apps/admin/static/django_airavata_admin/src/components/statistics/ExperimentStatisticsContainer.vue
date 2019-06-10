@@ -2,17 +2,27 @@
   <div>
     <div class="row">
       <div class="col">
-        <h1 class="h4 mb-4">Experiment Statistics</h1>
+        <h1 class="h4 mb-4">Experiment Statistics from {{fromTimeDisplay}} to {{toTimeDisplay}}</h1>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <b-card>
-          <flat-pickr
-            v-model="dateRange"
-            :config="dateConfig"
-            @on-change="dateRangeChanged"
-          />
+        <b-card header="Filter">
+          <b-input-group class="w-100">
+            <b-input-group-prepend is-text>
+              <i class="fa fa-calendar-week" aria-hidden="true"></i>
+            </b-input-group-prepend>
+            <flat-pickr
+              :value="dateRange"
+              :config="dateConfig"
+              @on-change="dateRangeChanged"
+              class="form-control"
+            />
+            <b-input-group-append>
+              <b-button @click="getPast24Hours" variant="outline-secondary">Past 24 Hours</b-button>
+              <b-button @click="getPastWeek" variant="outline-secondary">Past Week</b-button>
+            </b-input-group-append>
+          </b-input-group>
         </b-card>
       </div>
     </div>
@@ -133,6 +143,8 @@ import { models, services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 import ExperimentStatisticsCard from "./ExperimentStatisticsCard";
 
+import moment from "moment";
+
 export default {
   name: "experiment-statistics-container",
   data() {
@@ -146,6 +158,7 @@ export default {
       dateRange: [fromTime, toTime],
       dateConfig: {
         mode: "range",
+        wrap: true,
         maxDate: new Date()
       }
     };
@@ -222,6 +235,12 @@ export default {
       } else {
         return [];
       }
+    },
+    fromTimeDisplay() {
+      return moment(this.fromTime).format("MMM Do YYYY");
+    },
+    toTimeDisplay() {
+      return moment(this.toTime).format("MMM Do YYYY");
     }
   },
   methods: {
@@ -239,6 +258,27 @@ export default {
         fromTime: this.fromTime.toJSON(),
         toTime: this.toTime.toJSON()
       }).then(stats => (this.experimentStatistics = stats));
+    },
+    getPast24Hours() {
+      this.fromTime = this.daysAgo(1);
+      this.toTime = new Date();
+      this.updateDateRange();
+      this.loadStatistics();
+    },
+    getPastWeek() {
+      this.fromTime = this.daysAgo(7);
+      this.toTime = new Date();
+      this.updateDateRange();
+      this.loadStatistics();
+    },
+    updateDateRange() {
+      this.dateRange = [
+        moment(this.fromTime).format("YYYY-MM-DD"),
+        moment(this.toTime).format("YYYY-MM-DD")
+      ];
+    },
+    daysAgo(days) {
+      return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     }
   }
 };
