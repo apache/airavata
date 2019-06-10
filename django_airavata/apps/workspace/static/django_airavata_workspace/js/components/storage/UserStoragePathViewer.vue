@@ -166,8 +166,10 @@ export default {
       this.$emit("directory-selected", item.path);
     },
     isAlreadySelected(item) {
-      return this.selectedDataProductUris.find(
-        uri => item.type === "file" && uri === item.dataProductURI
+      return (
+        this.selectedDataProductUris.find(
+          uri => item.type === "file" && uri === item.dataProductURI
+        ) !== undefined
       );
     }
   }
