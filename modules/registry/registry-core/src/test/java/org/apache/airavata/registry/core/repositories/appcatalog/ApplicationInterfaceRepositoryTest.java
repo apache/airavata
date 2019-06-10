@@ -277,6 +277,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         output.setSearchQuery("Search query");
         output.setRequiredToAddedToCommandLine(true);
         output.setOutputStreaming(true);
+        output.setMetaData("outputMetaData");
         // TODO missing field
         //output.setStorageResourceId("Storage resource id");
 

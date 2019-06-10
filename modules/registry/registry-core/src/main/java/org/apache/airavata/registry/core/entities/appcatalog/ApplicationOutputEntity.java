@@ -72,6 +72,9 @@ public class ApplicationOutputEntity implements Serializable {
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
 
+    @Column(name = "METADATA", length = 4096)
+    private String metaData;
+
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
     @JoinColumn(name = "INTERFACE_ID", nullable = false, updatable = false)
     @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
@@ -166,6 +169,14 @@ public class ApplicationOutputEntity implements Serializable {
 
     public void setSearchQuery(String searchQuery) {
         this.searchQuery = searchQuery;
+    }
+
+    public String getMetaData() {
+        return metaData;
+    }
+
+    public void setMetaData(String metaData) {
+        this.metaData = metaData;
     }
 
     public ApplicationInterfaceEntity getApplicationInterface() {

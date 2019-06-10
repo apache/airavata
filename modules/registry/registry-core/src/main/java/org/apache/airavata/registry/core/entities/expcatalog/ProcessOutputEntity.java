@@ -74,6 +74,9 @@ public class ProcessOutputEntity implements Serializable {
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
 
+    @Column(name = "METADATA", length = 4096)
+    private String metaData;
+
     @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
     private ProcessEntity process;
@@ -175,6 +178,14 @@ public class ProcessOutputEntity implements Serializable {
 
     public void setStorageResourceId(String storageResourceId) {
         this.storageResourceId = storageResourceId;
+    }
+
+    public void setMetaData(String metaData) {
+        this.metaData = metaData;
+    }
+
+    public String getMetaData() {
+        return metaData;
     }
 
     public ProcessEntity getProcess() {
