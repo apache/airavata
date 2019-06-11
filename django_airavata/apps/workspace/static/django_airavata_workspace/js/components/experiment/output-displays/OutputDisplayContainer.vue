@@ -1,6 +1,17 @@
 <template>
   <!-- TODO: Add menu when there are more than one outputViews -->
-  <b-card :title="experimentOutput.name">
+  <b-card>
+    <div slot="header" class="d-flex align-items-baseline">
+      <h6>{{ experimentOutput.name }}</h6>
+      <b-dropdown v-if="showMenu" :text="currentView['provider-id']" class="ml-auto">
+        <!-- TODO: add view label to data so that that can be used instead of id -->
+        <b-dropdown-item
+          v-for="view in outputViews"
+          :key="view['provider-id']"
+          @click="selectView(view)"
+        >{{ view['provider-id']}}</b-dropdown-item>
+      </b-dropdown>
+    </div>
     <component
       :is="outputDisplayComponentName"
       :experiment-output="experimentOutput"
@@ -38,30 +49,33 @@ export default {
     DownloadOutputDisplay,
     LinkDisplay
   },
+  data() {
+    return {
+      currentView: this.outputViews[0]
+    };
+  },
   computed: {
     // TODO: support multiple output views
     outputViewData() {
-      return this.outputView ? this.outputView["data"] : null;
+      return this.currentView;
     },
     outputDisplayComponentName() {
-      if (this.outputView) {
-        if (this.outputView["display-type"] === "download") {
-          return "download-output-display";
-        } else if (this.outputView["display-type"] === "link") {
-          return "link-display";
-        } else {
-          return null;
-        }
+      // TODO: maybe rename download to default?
+      if (this.currentView["display-type"] === "download") {
+        return "download-output-display";
+      } else if (this.currentView["display-type"] === "link") {
+        return "link-display";
       } else {
         return null;
       }
     },
-    outputView() {
-      if (this.outputViews && this.outputViews.length > 0) {
-        return this.outputViews[0];
-      } else {
-        return null;
-      }
+    showMenu() {
+      return this.outputViews.length > 1;
+    }
+  },
+  methods: {
+    selectView(outputView) {
+      this.currentView = outputView;
     }
   }
 };
