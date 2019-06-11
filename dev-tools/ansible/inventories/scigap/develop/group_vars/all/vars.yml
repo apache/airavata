@@ -30,7 +30,7 @@ user_home: "/home/{{ user }}"
 deployment_dir: "{{ user_home }}/develop-deployment"
 airavata_source_dir: "{{ user_home }}/develop-source"
 airavata_repo: "https://github.com/apache/airavata.git"
-airavata_dist: "apache-airavata-server-0.19-SNAPSHOT"
+airavata_dist: "apache-airavata-api-server-0.19-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
 git_branch: develop
 
