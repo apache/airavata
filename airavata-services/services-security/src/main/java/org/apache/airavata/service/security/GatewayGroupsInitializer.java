@@ -98,17 +98,17 @@ public class GatewayGroupsInitializer {
         UserGroup gatewayUsersGroup = createGroup(sharingRegistryClient, gatewayId, ownerId,
                 "Gateway Users",
                 "Default group for users of the gateway.");
-        gatewayGroups.setDefaultGatewayUsersGroupId(gatewayUsersGroup.groupId);
+        gatewayGroups.setDefaultGatewayUsersGroupId(gatewayUsersGroup.getGroupId());
         // Admin Users
         UserGroup adminUsersGroup = createGroup(sharingRegistryClient, gatewayId, ownerId,
                 "Admin Users",
                 "Admin users group.");
-        gatewayGroups.setAdminsGroupId(adminUsersGroup.groupId);
+        gatewayGroups.setAdminsGroupId(adminUsersGroup.getGroupId());
         // Read Only Admin Users
         UserGroup readOnlyAdminsGroup = createGroup(sharingRegistryClient, gatewayId, ownerId,
                 "Read Only Admin Users",
                 "Group of admin users with read-only access.");
-        gatewayGroups.setReadOnlyAdminsGroupId(readOnlyAdminsGroup.groupId);
+        gatewayGroups.setReadOnlyAdminsGroupId(readOnlyAdminsGroup.getGroupId());
 
         registryClient.createGatewayGroups(gatewayGroups);
 

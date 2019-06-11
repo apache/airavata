@@ -876,7 +876,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             return entity.getEntityId();
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            SharingRegistryException sharingRegistryException = new SharingRegistryException();
+            sharingRegistryException.setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            throw sharingRegistryException;
         }
     }
 
@@ -911,14 +913,14 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entity.setCreatedTime(oldEntity.getCreatedTime());
             // check if parent entity changed and re-add inherited permissions
             if (!Objects.equals(oldEntity.getParentEntityId(), entity.getParentEntityId())) {
-                logger.debug("Parent entity changed for {}, updating inherited permissions", entity.entityId);
+                logger.debug("Parent entity changed for {}, updating inherited permissions", entity.getEntityId());
                 if (oldEntity.getParentEntityId() != null && oldEntity.getParentEntityId() != "") {
-                    logger.debug("Removing inherited permissions from {} that were inherited from parent {}", entity.entityId, oldEntity.getParentEntityId());
-                    (new SharingRepository()).removeAllIndirectCascadingPermissionsForEntity(entity.domainId, entity.entityId);
+                    logger.debug("Removing inherited permissions from {} that were inherited from parent {}", entity.getEntityId(), oldEntity.getParentEntityId());
+                    (new SharingRepository()).removeAllIndirectCascadingPermissionsForEntity(entity.getDomainId(), entity.getEntityId());
                 }
                 if (entity.getParentEntityId() != null && entity.getParentEntityId() != "") {
                     // re-add INDIRECT_CASCADING permissions
-                    logger.debug("Adding inherited permissions to {} that are inherited from parent {}", entity.entityId, entity.getParentEntityId());
+                    logger.debug("Adding inherited permissions to {} that are inherited from parent {}", entity.getEntityId(), entity.getParentEntityId());
                     addCascadingPermissionsForEntity(entity);
                 }
             }
@@ -1009,7 +1011,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             return (new UserRepository()).getDirectlyAccessibleUsers(domainId, entityId, permissionTypeId);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            SharingRegistryException sharingRegistryException = new SharingRegistryException();
+            sharingRegistryException.setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            throw sharingRegistryException;
         }
     }
 
@@ -1030,7 +1034,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             return (new UserGroupRepository()).getDirectlyAccessibleGroups(domainId, entityId, permissionTypeId);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            SharingRegistryException sharingRegistryException = new SharingRegistryException();
+            sharingRegistryException.setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            throw sharingRegistryException;
         }
     }
 
