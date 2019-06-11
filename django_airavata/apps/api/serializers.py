@@ -492,7 +492,7 @@ class FullExperiment:
 
     def __init__(self, experimentModel, project=None, outputDataProducts=None,
                  inputDataProducts=None, applicationModule=None,
-                 computeResource=None, jobDetails=None):
+                 computeResource=None, jobDetails=None, outputViews=None):
         self.experiment = experimentModel
         self.experimentId = experimentModel.experimentId
         self.project = project
@@ -501,6 +501,7 @@ class FullExperiment:
         self.applicationModule = applicationModule
         self.computeResource = computeResource
         self.jobDetails = jobDetails
+        self.outputViews = outputViews
 
 
 class JobSerializer(thrift_utils.create_serializer_class(JobModel)):
@@ -519,6 +520,7 @@ class FullExperimentSerializer(serializers.Serializer):
     computeResource = ComputeResourceDescriptionSerializer(read_only=True)
     project = ProjectSerializer(read_only=True)
     jobDetails = JobSerializer(many=True, read_only=True)
+    outputViews = serializers.DictField(read_only=True)
 
     def create(self, validated_data):
         raise Exception("Not implemented")

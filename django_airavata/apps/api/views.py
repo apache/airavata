@@ -40,7 +40,14 @@ from django_airavata.apps.api.view_utils import (
 )
 from django_airavata.apps.auth import iam_admin_client
 
-from . import data_products_helper, helpers, models, serializers, thrift_utils
+from . import (
+    data_products_helper,
+    helpers,
+    models,
+    output_views,
+    serializers,
+    thrift_utils
+)
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -419,6 +426,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 output.type == DataType.URI_COLLECTION)
             for dp in output.value.split(',')
             if output.value.startswith('airavata-dp')]
+        exp_output_views = output_views.get_output_views(experimentModel)
         inputDataProducts = [
             self.request.airavata_client.getDataProduct(self.authz_token,
                                                         inp.value)
@@ -474,7 +482,8 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             inputDataProducts=inputDataProducts,
             applicationModule=applicationModule,
             computeResource=compute_resource,
-            jobDetails=job_details)
+            jobDetails=job_details,
+            outputViews=exp_output_views)
         return full_experiment
 
 
