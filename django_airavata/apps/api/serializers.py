@@ -33,7 +33,10 @@ from airavata.model.appcatalog.parser.ttypes import Parser
 from airavata.model.appcatalog.storageresource.ttypes import (
     StorageResourceDescription
 )
-from airavata.model.application.io.ttypes import InputDataObjectType
+from airavata.model.application.io.ttypes import (
+    InputDataObjectType,
+    OutputDataObjectType
+)
 from airavata.model.credential.store.ttypes import (
     CredentialSummary,
     SummaryType
@@ -298,6 +301,15 @@ class InputDataObjectTypeSerializer(
         required = ('name',)
 
 
+class OutputDataObjectTypeSerializer(
+        thrift_utils.create_serializer_class(OutputDataObjectType)):
+
+    metaData = StoredJSONField(required=False, allow_null=True)
+
+    class Meta:
+        required = ('name',)
+
+
 class ApplicationInterfaceDescriptionSerializer(
         thrift_utils.create_serializer_class(ApplicationInterfaceDescription)):
 
@@ -309,6 +321,7 @@ class ApplicationInterfaceDescriptionSerializer(
         order_by='inputOrder',
         child=InputDataObjectTypeSerializer(),
         allow_null=True)
+    applicationOutputs = OutputDataObjectTypeSerializer(many=True)
     userHasWriteAccess = serializers.SerializerMethodField()
 
     def get_userHasWriteAccess(self, appDeployment):
@@ -415,6 +428,9 @@ class ExperimentSerializer(
         lookup_url_kwarg='entity_id')
     experimentInputs = serializers.ListField(
         child=InputDataObjectTypeSerializer(),
+        allow_null=True)
+    experimentOutputs = serializers.ListField(
+        child=OutputDataObjectTypeSerializer(),
         allow_null=True)
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     experimentStatus = ExperimentStatusSerializer(many=True, allow_null=True)

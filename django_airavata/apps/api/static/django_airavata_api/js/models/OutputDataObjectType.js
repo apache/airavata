@@ -35,6 +35,7 @@ const FIELDS = [
     default: false
   },
   'storageResourceId',
+  'metaData'
 ];
 
 export default class OutputDataObjectType extends BaseModel {
