@@ -83,9 +83,9 @@ public class ProcessRepositoryTest extends TestBase {
         String experimentId = experimentRepository.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
-        ProcessStatus processStatus = new ProcessStatus();
-        processStatus.setState(ProcessState.CREATED);
-        processModel.addToProcessStatuses(processStatus);
+        // ProcessStatus processStatus = new ProcessStatus();
+        // processStatus.setState(ProcessState.CREATED);
+        // processModel.addToProcessStatuses(processStatus);
 
         TaskModel task = new TaskModel();
         task.setTaskId("task-id");
@@ -121,8 +121,8 @@ public class ProcessRepositoryTest extends TestBase {
         assertEquals(experimentId, retrievedProcess.getExperimentId());
         assertEquals("detail", retrievedProcess.getProcessDetail());
         assertTrue(retrievedProcess.isUseUserCRPref());
-        assertEquals(1, retrievedProcess.getProcessStatusesSize());
-        assertEquals(ProcessState.CREATED, retrievedProcess.getProcessStatuses().get(0).getState());
+        assertEquals("Added process should automatically have 1 status", 1, retrievedProcess.getProcessStatusesSize());
+        assertEquals("Added process should automatically have 1 status that is CREATED", ProcessState.CREATED, retrievedProcess.getProcessStatuses().get(0).getState());
         assertEquals(2, retrievedProcess.getTasksSize());
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();

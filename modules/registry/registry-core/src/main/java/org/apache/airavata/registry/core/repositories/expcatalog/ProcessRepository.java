@@ -23,6 +23,8 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
@@ -119,6 +121,9 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
 
     public String addProcess(ProcessModel process, String experimentId) throws RegistryException {
         process.setExperimentId(experimentId);
+
+        ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
+        process.addToProcessStatuses(processStatus);
         String processId = saveProcessModelData(process);
         return processId;
     }
