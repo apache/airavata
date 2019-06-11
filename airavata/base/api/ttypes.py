@@ -9,10 +9,5 @@
 from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
 from thrift.protocol.TProtocol import TProtocolException
 import sys
-import airavata.api.error.ttypes
-import airavata.model.security.ttypes
-import airavata.model.group.ttypes
-import airavata.service.profile.groupmanager.cpi.error.ttypes
-import airavata.base.api.ttypes
 
 from thrift.transport import TTransport

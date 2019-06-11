@@ -18,6 +18,106 @@ import airavata.model.scheduling.ttypes
 from thrift.transport import TTransport
 
 
+class ProcessWorkflow(object):
+    """
+    Attributes:
+     - processId
+     - workflowId
+     - creationTime
+     - type
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'processId', 'UTF8', None, ),  # 1
+        (2, TType.STRING, 'workflowId', 'UTF8', None, ),  # 2
+        (3, TType.I64, 'creationTime', None, None, ),  # 3
+        (4, TType.STRING, 'type', 'UTF8', None, ),  # 4
+    )
+
+    def __init__(self, processId=None, workflowId=None, creationTime=None, type=None,):
+        self.processId = processId
+        self.workflowId = workflowId
+        self.creationTime = creationTime
+        self.type = type
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.processId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.workflowId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.I64:
+                    self.creationTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.type = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('ProcessWorkflow')
+        if self.processId is not None:
+            oprot.writeFieldBegin('processId', TType.STRING, 1)
+            oprot.writeString(self.processId.encode('utf-8') if sys.version_info[0] == 2 else self.processId)
+            oprot.writeFieldEnd()
+        if self.workflowId is not None:
+            oprot.writeFieldBegin('workflowId', TType.STRING, 2)
+            oprot.writeString(self.workflowId.encode('utf-8') if sys.version_info[0] == 2 else self.workflowId)
+            oprot.writeFieldEnd()
+        if self.creationTime is not None:
+            oprot.writeFieldBegin('creationTime', TType.I64, 3)
+            oprot.writeI64(self.creationTime)
+            oprot.writeFieldEnd()
+        if self.type is not None:
+            oprot.writeFieldBegin('type', TType.STRING, 4)
+            oprot.writeString(self.type.encode('utf-8') if sys.version_info[0] == 2 else self.type)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.processId is None:
+            raise TProtocolException(message='Required field processId is unset!')
+        if self.workflowId is None:
+            raise TProtocolException(message='Required field workflowId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 class ProcessModel(object):
     """
     ProcessModel: A structure holding the process details. The infromation is derived based on user provided
@@ -54,6 +154,7 @@ class ProcessModel(object):
      - userName
      - useUserCRPref
      - groupResourceProfileId
+     - processWorkflows
     """
 
     thrift_spec = (
@@ -83,9 +184,10 @@ class ProcessModel(object):
         (23, TType.STRING, 'userName', 'UTF8', None, ),  # 23
         (24, TType.BOOL, 'useUserCRPref', None, None, ),  # 24
         (25, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 25
+        (26, TType.LIST, 'processWorkflows', (TType.STRUCT, (ProcessWorkflow, ProcessWorkflow.thrift_spec), False), None, ),  # 26
     )
 
-    def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatuses=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, processResourceSchedule=None, tasks=None, taskDag=None, processErrors=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, userName=None, useUserCRPref=None, groupResourceProfileId=None,):
+    def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatuses=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, processResourceSchedule=None, tasks=None, taskDag=None, processErrors=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, userName=None, useUserCRPref=None, groupResourceProfileId=None, processWorkflows=None,):
         self.processId = processId
         self.experimentId = experimentId
         self.creationTime = creationTime
@@ -111,6 +213,7 @@ class ProcessModel(object):
         self.userName = userName
         self.useUserCRPref = useUserCRPref
         self.groupResourceProfileId = groupResourceProfileId
+        self.processWorkflows = processWorkflows
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -282,6 +385,17 @@ class ProcessModel(object):
                     self.groupResourceProfileId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 26:
+                if ftype == TType.LIST:
+                    self.processWorkflows = []
+                    (_etype39, _size36) = iprot.readListBegin()
+                    for _i40 in range(_size36):
+                        _elem41 = ProcessWorkflow()
+                        _elem41.read(iprot)
+                        self.processWorkflows.append(_elem41)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -311,8 +425,8 @@ class ProcessModel(object):
         if self.processStatuses is not None:
             oprot.writeFieldBegin('processStatuses', TType.LIST, 5)
             oprot.writeListBegin(TType.STRUCT, len(self.processStatuses))
-            for iter36 in self.processStatuses:
-                iter36.write(oprot)
+            for iter42 in self.processStatuses:
+                iter42.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processDetail is not None:
@@ -334,15 +448,15 @@ class ProcessModel(object):
         if self.processInputs is not None:
             oprot.writeFieldBegin('processInputs', TType.LIST, 10)
             oprot.writeListBegin(TType.STRUCT, len(self.processInputs))
-            for iter37 in self.processInputs:
-                iter37.write(oprot)
+            for iter43 in self.processInputs:
+                iter43.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processOutputs is not None:
             oprot.writeFieldBegin('processOutputs', TType.LIST, 11)
             oprot.writeListBegin(TType.STRUCT, len(self.processOutputs))
-            for iter38 in self.processOutputs:
-                iter38.write(oprot)
+            for iter44 in self.processOutputs:
+                iter44.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processResourceSchedule is not None:
@@ -352,8 +466,8 @@ class ProcessModel(object):
         if self.tasks is not None:
             oprot.writeFieldBegin('tasks', TType.LIST, 13)
             oprot.writeListBegin(TType.STRUCT, len(self.tasks))
-            for iter39 in self.tasks:
-                iter39.write(oprot)
+            for iter45 in self.tasks:
+                iter45.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.taskDag is not None:
@@ -363,8 +477,8 @@ class ProcessModel(object):
         if self.processErrors is not None:
             oprot.writeFieldBegin('processErrors', TType.LIST, 15)
             oprot.writeListBegin(TType.STRUCT, len(self.processErrors))
-            for iter40 in self.processErrors:
-                iter40.write(oprot)
+            for iter46 in self.processErrors:
+                iter46.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.gatewayExecutionId is not None:
@@ -378,8 +492,8 @@ class ProcessModel(object):
         if self.emailAddresses is not None:
             oprot.writeFieldBegin('emailAddresses', TType.LIST, 18)
             oprot.writeListBegin(TType.STRING, len(self.emailAddresses))
-            for iter41 in self.emailAddresses:
-                oprot.writeString(iter41.encode('utf-8') if sys.version_info[0] == 2 else iter41)
+            for iter47 in self.emailAddresses:
+                oprot.writeString(iter47.encode('utf-8') if sys.version_info[0] == 2 else iter47)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.storageResourceId is not None:
@@ -409,6 +523,13 @@ class ProcessModel(object):
         if self.groupResourceProfileId is not None:
             oprot.writeFieldBegin('groupResourceProfileId', TType.STRING, 25)
             oprot.writeString(self.groupResourceProfileId.encode('utf-8') if sys.version_info[0] == 2 else self.groupResourceProfileId)
+            oprot.writeFieldEnd()
+        if self.processWorkflows is not None:
+            oprot.writeFieldBegin('processWorkflows', TType.LIST, 26)
+            oprot.writeListBegin(TType.STRUCT, len(self.processWorkflows))
+            for iter48 in self.processWorkflows:
+                iter48.write(oprot)
+            oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

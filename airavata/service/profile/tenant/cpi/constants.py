@@ -10,5 +10,5 @@ from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplica
 from thrift.protocol.TProtocol import TProtocolException
 import sys
 from .ttypes import *
-TENANT_PROFILE_CPI_VERSION = "0.17"
+TENANT_PROFILE_CPI_VERSION = "0.18.0"
 TENANT_PROFILE_CPI_NAME = "TenantProfileService"
