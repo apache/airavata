@@ -842,6 +842,10 @@ class ManagedUserProfile(serializers.Serializer):
 
 class NotificationSerializer(
         thrift_utils.create_serializer_class(Notification)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:manage-notifications-detail',
+        lookup_field='notificationId',
+        lookup_url_kwarg='notification_id')
     priority = thrift_utils.ThriftEnumField(NotificationPriority)
     creationTime = UTCPosixTimestampDateTimeField()
     publishedTime = UTCPosixTimestampDateTimeField()

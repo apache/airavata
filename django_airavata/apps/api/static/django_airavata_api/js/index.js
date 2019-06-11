@@ -78,6 +78,7 @@ const models = {
   GroupResourceProfile,
   InputDataObjectType,
   ManagedUserProfile,
+  Notification,
   OutputDataObjectType,
   ParallelismType,
   Project,

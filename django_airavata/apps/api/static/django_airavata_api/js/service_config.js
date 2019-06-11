@@ -306,10 +306,9 @@ export default {
     }
   },
   ManageNotifications: {
-    url: "/api/manage-notifications",
+    url: "/api/manage-notifications/",
     viewSet: true,
     pagination: true,
-    queryParams: ["limit", "offset", "search"],
     modelClass: Notification
   },
 };

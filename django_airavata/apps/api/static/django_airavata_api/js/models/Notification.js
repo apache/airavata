@@ -6,9 +6,18 @@ const FIELDS = [
   "gatewayId",
   "title",
   "notificationMessage",
-  "creationTime",
-  "publishedTime",
-  "expirationTime",
+  {
+    name:"creationTime",
+    type: Date
+  },
+  {
+    name:"publishedTime",
+    type: Date
+  },
+  {
+    name:"expirationTime",
+    type: Date
+  },
   {
       name: "priority",
       type: NotificationPriority
