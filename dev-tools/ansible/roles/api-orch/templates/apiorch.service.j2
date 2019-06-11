@@ -32,7 +32,7 @@ Type=forking
 ExecStart={{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh -d api-orch -log "{{ api_orch_log_dir }}/output.log"
 ExecStop={{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-stop.sh
 Restart=always
-TimeoutSec=300
+TimeoutSec=60
 User={{ user }}
 
 [Install]
