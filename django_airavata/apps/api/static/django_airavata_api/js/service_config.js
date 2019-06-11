@@ -194,7 +194,13 @@ export default {
       get: {
         url: "/api/experiment-statistics",
         requestType: "get",
-        queryParams: ["fromTime", "toTime"],
+        queryParams: [
+          "fromTime",
+          "toTime",
+          "userName",
+          "applicationName",
+          "resourceHostName"
+        ],
         modelClass: ExperimentStatistics
       }
     }

@@ -1463,7 +1463,7 @@ class ExperimentStatisticsView(APIView):
             to_time = datetime.utcnow().timestamp() * 1000
         username = request.GET.get('userName', None)
         application_name = request.GET.get('applicationName', None)
-        resource_hostname = request.GET.get('requestHostName', None)
+        resource_hostname = request.GET.get('resourceHostName', None)
         statistics = request.airavata_client.getExperimentStatistics(
             request.authz_token, settings.GATEWAY_ID, from_time, to_time,
             username, application_name, resource_hostname)

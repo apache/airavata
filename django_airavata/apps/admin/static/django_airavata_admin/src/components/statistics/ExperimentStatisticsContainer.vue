@@ -8,9 +8,12 @@
     <div class="row">
       <div class="col">
         <b-card header="Filter">
-          <b-input-group class="w-100">
+          <b-input-group class="w-100 mb-2">
             <b-input-group-prepend is-text>
-              <i class="fa fa-calendar-week" aria-hidden="true"></i>
+              <i
+                class="fa fa-calendar-week"
+                aria-hidden="true"
+              ></i>
             </b-input-group-prepend>
             <flat-pickr
               :value="dateRange"
@@ -19,10 +22,50 @@
               class="form-control"
             />
             <b-input-group-append>
-              <b-button @click="getPast24Hours" variant="outline-secondary">Past 24 Hours</b-button>
-              <b-button @click="getPastWeek" variant="outline-secondary">Past Week</b-button>
+              <b-button
+                @click="getPast24Hours"
+                variant="outline-secondary"
+              >Past 24 Hours</b-button>
+              <b-button
+                @click="getPastWeek"
+                variant="outline-secondary"
+              >Past Week</b-button>
             </b-input-group-append>
           </b-input-group>
+          <b-dropdown
+            text="Add Filters"
+            class="mb-2"
+          >
+            <b-dropdown-item
+              v-if="!usernameFilterEnabled"
+              @click="usernameFilterEnabled=true"
+            >Username</b-dropdown-item>
+            <b-dropdown-item>Application Name</b-dropdown-item>
+            <b-dropdown-item>Hostname</b-dropdown-item>
+          </b-dropdown>
+          <b-input-group
+            v-if="usernameFilterEnabled"
+            class="mb-2"
+          >
+            <b-form-input
+              v-model="usernameFilter"
+              placeholder="Username"
+              @keydown.native.enter="loadStatistics"
+            />
+            <b-input-group-append>
+              <b-button @click="removeUsernameFilter"><i class="fa fa-times"></i><span class="sr-only">Remove username
+                  filter</span></b-button>
+            </b-input-group-append>
+          </b-input-group>
+          <template slot="footer">
+            <div class="d-flex justify-content-end">
+              <b-button
+                @click="loadStatistics"
+                class="ml-auto"
+                variant="primary"
+              >Get Statistics</b-button>
+            </div>
+          </template>
         </b-card>
       </div>
     </div>
@@ -33,7 +76,7 @@
           header-text-variant="white"
           :count="experimentStatistics.allExperimentCount || 0"
           title="Total Experiments"
-          @click="selectExperiments(experimentStatistics.allExperiments)"
+          @click="selectedExperimentSummariesKey = 'allExperiments'"
         >
           <span slot="link-text">All</span>
         </experiment-statistics-card>
@@ -44,7 +87,7 @@
           :count="experimentStatistics.createdExperimentCount || 0"
           :states="createdStates"
           title="Created Experiments"
-          @click="selectExperiments(experimentStatistics.createdExperiments)"
+          @click="selectedExperimentSummariesKey = 'createdExperiments'"
         >
         </experiment-statistics-card>
       </div>
@@ -55,7 +98,7 @@
           :count="experimentStatistics.runningExperimentCount || 0"
           :states="runningStates"
           title="Running Experiments"
-          @click="selectExperiments(experimentStatistics.runningExperiments)"
+          @click="selectedExperimentSummariesKey = 'runningExperiments'"
         >
         </experiment-statistics-card>
 
@@ -68,7 +111,7 @@
           :count="experimentStatistics.completedExperimentCount || 0"
           :states="completedStates"
           title="Completed Experiments"
-          @click="selectExperiments(experimentStatistics.completedExperiments)"
+          @click="selectedExperimentSummariesKey = 'completedExperiments'"
         >
         </experiment-statistics-card>
       </div>
@@ -80,7 +123,7 @@
           :count="experimentStatistics.cancelledExperimentCount || 0"
           :states="canceledStates"
           title="Cancelled Experiments"
-          @click="selectExperiments(experimentStatistics.cancelledExperiments)"
+          @click="selectedExperimentSummariesKey = 'cancelledExperiments'"
         >
         </experiment-statistics-card>
       </div>
@@ -92,7 +135,7 @@
           :count="experimentStatistics.failedExperimentCount || 0"
           :states="failedStates"
           title="Failed Experiments"
-          @click="selectExperiments(experimentStatistics.failedExperiments)"
+          @click="selectedExperimentSummariesKey = 'failedExperiments'"
         >
         </experiment-statistics-card>
 
@@ -152,15 +195,22 @@ export default {
     const toTime = new Date();
     return {
       experimentStatistics: {},
-      selectedExperimentSummaries: null,
+      selectedExperimentSummariesKey: null,
       fromTime: fromTime,
       toTime: toTime,
       dateRange: [fromTime, toTime],
       dateConfig: {
         mode: "range",
         wrap: true,
+        dateFormat: "Y-m-d H:i",
         maxDate: new Date()
-      }
+      },
+      usernameFilterEnabled: false,
+      usernameFilter: null,
+      applicationNameFilterEnabled: false,
+      applicationNameFilter: null,
+      hostnameFilterEnabled: false,
+      hostnameFilter: null
     };
   },
   created() {
@@ -241,12 +291,16 @@ export default {
     },
     toTimeDisplay() {
       return moment(this.toTime).format("MMM Do YYYY");
+    },
+    selectedExperimentSummaries() {
+      if (this.selectedExperimentSummariesKey && this.experimentStatistics && this.selectedExperimentSummariesKey in this.experimentStatistics) {
+        return this.experimentStatistics[this.selectedExperimentSummariesKey];
+      } else {
+        return []
+      }
     }
   },
   methods: {
-    selectExperiments(experiments) {
-      this.selectedExperimentSummaries = experiments;
-    },
     dateRangeChanged(selectedDates) {
       [this.fromTime, this.toTime] = selectedDates;
       if (this.fromTime && this.toTime) {
@@ -254,10 +308,16 @@ export default {
       }
     },
     loadStatistics() {
-      services.ExperimentStatisticsService.get({
+      const requestData = {
         fromTime: this.fromTime.toJSON(),
         toTime: this.toTime.toJSON()
-      }).then(stats => (this.experimentStatistics = stats));
+      };
+      if (this.usernameFilterEnabled && this.usernameFilter) {
+        requestData["userName"] = this.usernameFilter;
+      }
+      services.ExperimentStatisticsService.get(requestData).then(
+        stats => (this.experimentStatistics = stats)
+      );
     },
     getPast24Hours() {
       this.fromTime = this.daysAgo(1);
@@ -273,12 +333,17 @@ export default {
     },
     updateDateRange() {
       this.dateRange = [
-        moment(this.fromTime).format("YYYY-MM-DD"),
-        moment(this.toTime).format("YYYY-MM-DD")
+        moment(this.fromTime).format("YYYY-MM-DD HH:mm"),
+        moment(this.toTime).format("YYYY-MM-DD HH:mm")
       ];
     },
     daysAgo(days) {
       return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    },
+    removeUsernameFilter() {
+      this.usernameFilter = null;
+      this.usernameFilterEnabled = false;
+      this.loadStatistics();
     }
   }
 };
