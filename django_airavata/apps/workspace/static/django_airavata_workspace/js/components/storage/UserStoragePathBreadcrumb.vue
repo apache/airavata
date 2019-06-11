@@ -1,5 +1,13 @@
 <template>
-  <b-breadcrumb :items="items"></b-breadcrumb>
+  <b-breadcrumb>
+    <b-breadcrumb-item
+      v-for="item in items"
+      :key="item.path"
+      :text="item.text"
+      :active="item.active"
+      @click="directorySelected(item.path)"
+    />
+  </b-breadcrumb>
 </template>
 
 <script>
@@ -13,25 +21,23 @@ export default {
   },
   computed: {
     items() {
-      const homeItem = [
-        {
-          text: "Home",
-          to: { path: "/~/" }
-        }
-      ];
-      if (this.parts) {
-        const subparts = [];
-        const partsItems = this.parts.map(part => {
-          subparts.push(part);
-          return {
-            text: part,
-            to: { path: "/~/" + subparts.join("/") + "/" }
-          };
-        });
-        return homeItem.concat(partsItems);
-      } else {
-        return homeItem;
-      }
+      const subparts = [];
+      const partsItems = this.parts.map((part, index) => {
+        subparts.push(part);
+        return {
+          text: part,
+          path: subparts.join("/"),
+          active: index === this.parts.length - 1
+        };
+      });
+      return [
+        { text: "Home", path: "", active: this.parts.length === 0 }
+      ].concat(partsItems);
+    }
+  },
+  methods: {
+    directorySelected(path) {
+      this.$emit("directory-selected", path);
     }
   }
 };

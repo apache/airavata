@@ -1,6 +1,6 @@
 <template>
     <input-editor-form-group :label="experimentInput.name" :label-for="inputEditorComponentId"
-        :state="validationState" :feedback-messages="validationFeedback">
+        :state="validationState" :feedback-messages="validationFeedback" :description="experimentInput.userFriendlyDescription">
         <component :is="inputEditorComponentName"
             :id="inputEditorComponentId"
             :experiment-input="experimentInput"

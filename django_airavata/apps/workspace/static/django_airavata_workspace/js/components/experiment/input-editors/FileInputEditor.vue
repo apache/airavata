@@ -28,14 +28,28 @@
         ></i>
       </b-link>
     </div>
-    <b-form-file
-      :id="id"
-      v-model="file"
-      v-if="!isDataProductURI"
-      :placeholder="experimentInput.userFriendlyDescription"
-      :state="componentValidState"
-      @input="fileChanged"
-    />
+    <div v-if="isSelectingFile">
+      <user-storage-file-selection-container
+        @file-selected="fileSelected"
+        @cancel="cancelFileSelection"
+        :selected-data-product-uris="selectedDataProductURIs"
+      />
+    </div>
+    <div
+      class="d-flex align-items-baseline"
+      v-if="!isSelectingFile && !isDataProductURI"
+    >
+      <b-button @click="isSelectingFile=true" class="input-file-option">Select file from storage</b-button>
+      <span class="text-muted mx-3">OR</span>
+      <b-form-file
+        :id="id"
+        v-model="file"
+        v-if="!isDataProductURI"
+        placeholder="Upload file"
+        @input="fileChanged"
+        class="input-file-option"
+      />
+    </div>
   </div>
 </template>
 
@@ -44,24 +58,40 @@ import { models, services, utils } from "django-airavata-api";
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
 import DataProductViewer from "../DataProductViewer.vue";
 import { components } from "django-airavata-common-ui";
+import UserStorageFileSelectionContainer from "../../storage/UserStorageFileSelectionContainer";
 
 export default {
   name: "file-input-editor",
   mixins: [InputEditorMixin],
   components: {
     DataProductViewer,
-    "delete-link": components.DeleteLink
+    "delete-link": components.DeleteLink,
+    UserStorageFileSelectionContainer
   },
   computed: {
     isDataProductURI() {
       // Just assume that if the value is a string then it's a data product URL
       return this.value && typeof this.value === "string";
+    },
+    // When used in the MultiFileInputEditor, don't allow selecting the same
+    // file more than once. This computed property creates an array of already
+    // selected files.
+    selectedDataProductURIs() {
+      if (
+        this.experimentInput.type === models.DataType.URI_COLLECTION &&
+        this.experimentInput.value
+      ) {
+        return this.experimentInput.value.split(",");
+      } else {
+        return [];
+      }
     }
   },
   data() {
     return {
       dataProduct: null,
-      file: null
+      file: null,
+      isSelectingFile: false
     };
   },
   created() {
@@ -114,7 +144,23 @@ export default {
       this.file = null;
       this.data = null;
       this.valueChanged();
+    },
+    fileSelected(dataProductURI) {
+      this.data = dataProductURI;
+      this.isSelectingFile = false;
+      this.loadDataProduct(dataProductURI);
+      this.valueChanged();
+    },
+    cancelFileSelection() {
+      this.isSelectingFile = false;
+      this.unselect();
     }
   }
 };
 </script>
+
+<style scoped>
+.input-file-option {
+  flex: 1 1 50%;
+}
+</style>

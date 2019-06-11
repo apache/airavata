@@ -1,7 +1,6 @@
 <template>
     <b-form-textarea :id="id" v-model="data"
         :rows="rows"
-        :placeholder="experimentInput.userFriendlyDescription"
         :state="componentValidState"
         @input="valueChanged"/>
 </template>

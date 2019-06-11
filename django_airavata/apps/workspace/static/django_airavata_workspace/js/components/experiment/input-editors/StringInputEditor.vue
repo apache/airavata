@@ -1,6 +1,5 @@
 <template>
     <b-form-input :id="id" type="text" v-model="data"
-        :placeholder="experimentInput.userFriendlyDescription"
         :state="componentValidState"
         @input="valueChanged"/>
 </template>

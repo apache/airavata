@@ -9,13 +9,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.forms import ValidationError
 from django.http import HttpResponseBadRequest
-from django.http.request import split_domain_port
 from django.shortcuts import redirect, render, resolve_url
 from django.template import Context, Template
 from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
-from . import forms, iam_admin_client, models
+from . import forms, iam_admin_client, models, utils
 
 logger = logging.getLogger(__name__)
 
@@ -195,31 +194,14 @@ def verify_email(request, code):
             # enable user and inform admins
             iam_admin_client.enable_user(username)
             user_profile = iam_admin_client.get_user(username)
-            new_user_email_template = models.EmailTemplate.objects.get(
-                pk=models.NEW_USER_EMAIL_TEMPLATE)
             email_address = user_profile.emails[0]
             first_name = user_profile.firstName
             last_name = user_profile.lastName
-            domain, port = split_domain_port(request.get_host())
-            context = Context({
-                "username": username,
-                "email": email_address,
-                "first_name": first_name,
-                "last_name": last_name,
-                "portal_title": settings.PORTAL_TITLE,
-                "gateway_id": settings.GATEWAY_ID,
-                "http_host": domain,
-            })
-            subject = Template(new_user_email_template.subject).render(context)
-            body = Template(new_user_email_template.body).render(context)
-            msg = EmailMessage(subject=subject,
-                               body=body,
-                               from_email="{} <{}>".format(
-                                   settings.PORTAL_TITLE,
-                                   settings.SERVER_EMAIL),
-                               to=[a[1] for a in settings.ADMINS])
-            msg.content_subtype = 'html'
-            msg.send()
+            utils.send_new_user_email(request,
+                                      username,
+                                      email_address,
+                                      first_name,
+                                      last_name)
             messages.success(
                 request,
                 "Your account has been successfully created. "

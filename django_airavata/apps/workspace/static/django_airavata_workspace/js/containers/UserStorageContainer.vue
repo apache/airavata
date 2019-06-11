@@ -42,6 +42,7 @@
           <router-view
             :user-storage-path="userStoragePath"
             @delete-dir="deleteDir"
+            @directory-selected="directorySelected"
             @delete-file="deleteFile"
           ></router-view>
         </b-card>
@@ -144,6 +145,9 @@ export default {
       ).then(() => {
         this.loadUserStoragePath(this.storagePath);
       });
+    },
+    directorySelected(path) {
+      this.$router.push("/~/" + path);
     }
   },
   created() {

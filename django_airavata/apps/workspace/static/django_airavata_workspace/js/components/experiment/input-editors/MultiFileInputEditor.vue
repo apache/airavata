@@ -49,7 +49,7 @@ export default {
       });
     },
     updatedFile(newValue, fileEntry) {
-      if (!newValue) {
+      if (!newValue && fileEntry.value) {
         this.removeFile(fileEntry);
       } else {
         fileEntry.value = newValue;
@@ -81,12 +81,24 @@ export default {
         };
       });
       // Add a null entry to accept an additional upload
-      fileEntries.push({
-        id: this.id + "-" + this.newFileCount++,
-        value: null,
-        uploading: false
-      });
+      fileEntries.push(this.getNullFileEntry());
       return fileEntries;
+    },
+    getNullFileEntry() {
+      // Reuse the old null entry if it exists, otherwise create a new one
+      if (
+        this.fileEntries &&
+        this.fileEntries.length > 0 &&
+        this.fileEntries[this.fileEntries.length - 1].value === null
+      ) {
+        return this.fileEntries[this.fileEntries.length - 1];
+      } else {
+        return {
+          id: this.id + "-" + this.newFileCount++,
+          value: null,
+          uploading: false
+        };
+      }
     },
     uploadStart(fileEntry) {
       fileEntry.uploading = true;

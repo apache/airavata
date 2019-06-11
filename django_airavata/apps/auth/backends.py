@@ -137,4 +137,6 @@ class KeycloakBackend(object):
                         last_name=last_name,
                         email=email)
             user.save()
+            utils.send_new_user_email(
+                request, username, email, first_name, last_name)
             return user
