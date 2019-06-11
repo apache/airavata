@@ -9,43 +9,48 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <b-table
-              hover
-              :fields="fields"
-              :items="items"
-            >
-              <template
-                slot="creationTime"
-                slot-scope="data">
-                <human-date :date="data.value"/>
+
+
+            <list-layout @add-new-item="addNewNotice" :items="decoratedStoragePreferences" title="Notice"
+              new-item-button-text="New Notice">
+              <template slot="new-item-editor">
+                <b-card v-if="showNewItemEditor" title="New Storage Preference">
+                  <storage-preference-editor v-model="newStoragePreference" :default-credential-store-token="defaultCredentialStoreToken" />
+                  <div class="row">
+                    <div class="col">
+                      <b-button variant="primary" @click="saveNewNotice">
+                        Save
+                      </b-button>
+                      <b-button variant="secondary" @click="cancelNewNotice">
+                        Cancel
+                      </b-button>
+                    </div>
+                  </div>
+                </b-card>
               </template>
-              <template
-                slot="action"
-                slot-scope="data"
-              >
-                <b-button
-                  v-if="data.item.airavataUserProfileExists"
-                  @click="toggleDetails(data)"
-                >
-                  Edit Groups
-                </b-button>
+              <template slot="item-list" slot-scope="slotProps">
+
+                <b-table hover :fields="fields" :items="items">
+                  <template slot="publishedTime" slot-scope="data">
+                    <human-date :date="data.value"/>
+                  </template>
+                  <template slot="expirationTime" slot-scope="data">
+                    <human-date :date="data.value"/>
+                  </template>
+                  <template slot="action" slot-scope="data">
+                    <b-link class="action-link" @click="toggleDetails(data)">
+                      Edit
+                      <i class="fa fa-edit" aria-hidden="true"></i>
+                    </b-link>
+                    <delete-link @delete="deleteNotice(data.item.notificationId)">
+                      Are you sure you want to delete the notice?
+                  </delete-link>
+                  </template>
+                  <template slot="row-details" slot-scope="data">
+                  </template>
+                </b-table>
               </template>
-              <template
-                slot="row-details"
-                slot-scope="data"
-              >
-                <user-details-container
-                  :managed-user-profile="data.item"
-                  :editable-groups="editableGroups"
-                  @groups-updated="groupsUpdated"
-                />
-              </template>
-            </b-table>
-            <pager
-              v-bind:paginator="usersPaginator"
-              v-on:next="next"
-              v-on:previous="previous"
-            ></pager>
+            </list-layout >
           </div>
         </div>
       </div>
@@ -54,28 +59,30 @@
 </template>
 
 <script>
-import { services } from "django-airavata-api";
-import { components } from "django-airavata-common-ui";
-import UserDetailsContainer from "./UserDetailsContainer.vue";
+import { models, services } from "django-airavata-api";
+import { components, layouts } from "django-airavata-common-ui";
+import NoticesDetailsContainer from "./NoticesDetailsContainer.vue";
 
 export default {
-  name: "user-management-container",
+  name: "notice-management-container",
   data() {
     return {
-      usersPaginator: null,
+      notices: null,
+      showNewItemEditor: false,
+      newNotice: null,
       allGroups: null,
-      showingDetails: {},
-      search: null
+      showingDetails: {}
     };
   },
   components: {
-    pager: components.Pager,
     'human-date': components.HumanDate,
-    UserDetailsContainer
+    NoticesDetailsContainer,
+    "delete-link": components.DeleteLink,
+    "list-layout": layouts.ListLayout,
   },
   created() {
-    services.ManageNotificationService.list({ limit: 10 }).then(
-      users => (this.usersPaginator = users)
+    services.ManageNotificationService.list().then(
+      notices => (this.notices = notices)
     );
     services.GroupService.list({ limit: -1 }).then(
       groups => (this.allGroups = groups)
@@ -90,55 +97,42 @@ export default {
         },
         {
           label: "Message",
-          key: "notification_message"
+          key: "notificationMessage"
         },
         {
           label: "Publish Date",
-          key: "published_time"
+          key: "publishedTime"
         },
         {
           label: "Expiry Date",
-          key: "email"
+          key: "expirationTime"
         },
         {
           label: "Priority",
-          key: "enabled"
+          key: "priority.name"
         },
         {
-          label: "Edit",
-          key: "emailVerified"
-        },
-        {
-          label: "Delete",
-          key: "creationTime"
+          label: "Action",
+          key: "action"
         }
+
       ];
     },
     items() {
-      return this.usersPaginator
-        ? this.usersPaginator.results.map(u => {
-            const user = u.clone();
-            user._showDetails =
-              this.showingDetails[u.airavataInternalUserId] || false;
-            return user;
-          })
+      return this.notices
+        ? this.notices
         : [];
     },
     editableGroups() {
       return this.allGroups
         ? this.allGroups.filter(g => g.isAdmin || g.isOwner)
         : [];
-    },
-    currentOffset() {
-      return this.usersPaginator ? this.usersPaginator.offset : 0;
     }
   },
   methods: {
-    next() {
-      this.usersPaginator.next();
-    },
-    previous() {
-      this.usersPaginator.previous();
+    addNewNotice() {
+      this.newNotice = new models.Notification();
+      this.showNewItemEditor = true;
     },
     groupsUpdated(managedUserProfile) {
       services.ManagedUserProfileService.update({
@@ -146,6 +140,16 @@ export default {
         data: managedUserProfile
       }).finally(() => {
         this.reloadUserProfiles();
+      });
+    },
+    deleteNotice(notificationId) {
+      services.ManageNotificationService.delete({
+        lookup: notificationId
+      }).then(() => {
+        const index = this.notices.findIndex(
+          sp => sp.notificationId === notificationId
+        );
+        this.notices.splice(index, 1);
       });
     },
     reloadUserProfiles() {
