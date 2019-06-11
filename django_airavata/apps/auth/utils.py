@@ -4,10 +4,15 @@ import time
 
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.core.mail import EmailMessage
+from django.http.request import split_domain_port
+from django.template import Context, Template
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
 from airavata.model.security.ttypes import AuthzToken
+
+from . import models
 
 
 def get_authz_token(request):
@@ -69,3 +74,29 @@ def is_refresh_token_expired(request):
     return 'REFRESH_TOKEN' not in request.session \
         or 'REFRESH_TOKEN_EXPIRES_AT' not in request.session \
         or request.session['REFRESH_TOKEN_EXPIRES_AT'] < now
+
+
+def send_new_user_email(request, username, email, first_name, last_name):
+    """Send new user email notification to portal admins."""
+    new_user_email_template = models.EmailTemplate.objects.get(
+        pk=models.NEW_USER_EMAIL_TEMPLATE)
+    domain, port = split_domain_port(request.get_host())
+    context = Context({
+        "username": username,
+        "email": email,
+        "first_name": first_name,
+        "last_name": last_name,
+        "portal_title": settings.PORTAL_TITLE,
+        "gateway_id": settings.GATEWAY_ID,
+        "http_host": domain,
+    })
+    subject = Template(new_user_email_template.subject).render(context)
+    body = Template(new_user_email_template.body).render(context)
+    msg = EmailMessage(subject=subject,
+                       body=body,
+                       from_email="{} <{}>".format(
+                           settings.PORTAL_TITLE,
+                           settings.SERVER_EMAIL),
+                       to=[a[1] for a in settings.ADMINS])
+    msg.content_subtype = 'html'
+    msg.send()
