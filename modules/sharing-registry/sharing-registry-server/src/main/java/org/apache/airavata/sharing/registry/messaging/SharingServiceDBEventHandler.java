@@ -197,26 +197,26 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                     log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.getDomainId()+":FILE", ex);
                                 }
 
-                                log.info("Creating entity type. Id : " + domain.domainId+":"+ResourceType.APPLICATION_DEPLOYMENT);
+                                log.info("Creating entity type. Id : " + domain.getDomainId()+":"+ResourceType.APPLICATION_DEPLOYMENT);
                                 entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.domainId+":"+ ResourceType.APPLICATION_DEPLOYMENT.name());
-                                entityType.setDomainId(domain.domainId);
+                                entityType.setEntityTypeId(domain.getDomainId()+":"+ ResourceType.APPLICATION_DEPLOYMENT.name());
+                                entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("APPLICATION-DEPLOYMENT");
                                 entityType.setDescription("Application Deployment entity type");
                                 sharingRegistryClient.createEntityType(entityType);
 
-                                log.info("Creating entity type. Id : " + domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE);
+                                log.info("Creating entity type. Id : " + domain.getDomainId()+":"+ResourceType.GROUP_RESOURCE_PROFILE);
                                 entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
-                                entityType.setDomainId(domain.domainId);
+                                entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+                                entityType.setDomainId(domain.getDomainId());
                                 entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
                                 entityType.setDescription("Group Resource Profile entity type");
                                 sharingRegistryClient.createEntityType(entityType);
 
-                                log.info("Creating entity type. Id : " + domain.domainId+":"+ResourceType.CREDENTIAL_TOKEN);
+                                log.info("Creating entity type. Id : " + domain.getDomainId()+":"+ResourceType.CREDENTIAL_TOKEN);
                                 entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.CREDENTIAL_TOKEN.name());
-                                entityType.setDomainId(domain.domainId);
+                                entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.CREDENTIAL_TOKEN.name());
+                                entityType.setDomainId(domain.getDomainId());
                                 entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
                                 entityType.setDescription("Credential Store Token entity type");
                                 sharingRegistryClient.createEntityType(entityType);

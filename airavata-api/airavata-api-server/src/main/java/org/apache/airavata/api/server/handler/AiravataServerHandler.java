@@ -235,22 +235,22 @@ public class AiravataServerHandler implements Airavata.Iface {
                 client.createEntityType(entityType);
 
                 entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.APPLICATION_DEPLOYMENT.name());
-                entityType.setDomainId(domain.domainId);
+                entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.APPLICATION_DEPLOYMENT.name());
+                entityType.setDomainId(domain.getDomainId());
                 entityType.setName("APPLICATION-DEPLOYMENT");
                 entityType.setDescription("Application Deployment entity type");
                 client.createEntityType(entityType);
 
                 entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
-                entityType.setDomainId(domain.domainId);
+                entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDomainId(domain.getDomainId());
                 entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
                 entityType.setDescription("Group Resource Profile entity type");
                 client.createEntityType(entityType);
 
                 entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.CREDENTIAL_TOKEN.name());
-                entityType.setDomainId(domain.domainId);
+                entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.CREDENTIAL_TOKEN.name());
+                entityType.setDomainId(domain.getDomainId());
                 entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
                 entityType.setDescription("Credential Store Token entity type");
                 client.createEntityType(entityType);
@@ -348,15 +348,15 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClient.createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":"+ResourceType.APPLICATION_DEPLOYMENT.name());
-            entityType.setDomainId(domain.domainId);
+            entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.APPLICATION_DEPLOYMENT.name());
+            entityType.setDomainId(domain.getDomainId());
             entityType.setName("APPLICATION-DEPLOYMENT");
             entityType.setDescription("Application Deployment entity type");
             sharingClient.createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
-            entityType.setDomainId(domain.domainId);
+            entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setDomainId(domain.getDomainId());
             entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
             entityType.setDescription("Group Resource Profile entity type");
             sharingClient.createEntityType(entityType);
@@ -768,7 +768,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.add(searchCriteria);
             List<String> accessibleTokenIds = sharingClient.searchEntities(gatewayId, userName + "@" + gatewayId, filters, 0, -1)
                     .stream()
-                    .map(p -> p.entityId)
+                    .map(p -> p.getEntityId())
                     .collect(Collectors.toList());
             List<CredentialSummary> credentialSummaries = csClient.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
             csClientPool.returnResource(csClient);
@@ -2329,7 +2329,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
                 sharingFilters.add(permissionTypeFilter);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
             }
             List<String> accessibleComputeResourceIds = new ArrayList<>();
             List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
@@ -2569,7 +2569,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 permissionTypeFilter.setValue(gatewayId + ":" + permissionType.name());
                 sharingFilters.add(permissionTypeFilter);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
             }
             List<String> accessibleComputeResourceIds = new ArrayList<>();
             List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
@@ -2669,7 +2669,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
             sharingFilters.add(permissionTypeFilter);
             sharingClient.searchEntities(gatewayId, userName + "@" + gatewayId, sharingFilters, 0, -1)
-                    .forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
+                    .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
 
             List<ApplicationDeploymentDescription> result = regClient.getAccessibleApplicationDeploymentsForAppModule(
                     gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
@@ -5266,11 +5266,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (permissionType.equals(ResourcePermissionType.WRITE)) {
                 groupListFunction.apply(sharingClient, ResourcePermissionType.WRITE)
                         .stream()
-                        .forEach(g -> accessibleGroups.add(g.groupId));
+                        .forEach(g -> accessibleGroups.add(g.getGroupId()));
             } else if (permissionType.equals(ResourcePermissionType.READ)) {
                 groupListFunction.apply(sharingClient, ResourcePermissionType.READ)
                         .stream()
-                        .forEach(g -> accessibleGroups.add(g.groupId));
+                        .forEach(g -> accessibleGroups.add(g.getGroupId()));
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
@@ -5490,7 +5490,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 filters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleGroupResProfileIds
-                        .add(p.entityId));
+                        .add(p.getEntityId()));
 
             }
             List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
