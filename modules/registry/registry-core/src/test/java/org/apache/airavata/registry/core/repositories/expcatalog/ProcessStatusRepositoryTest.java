@@ -84,10 +84,10 @@ public class ProcessStatusRepositoryTest extends TestBase {
         String processId = processRepository.addProcess(processModel, experimentId);
         assertTrue(processId != null);
 
-        ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
-        String processStatusId = processStatusRepository.addProcessStatus(processStatus, processId);
-        assertTrue(processStatusId != null);
+        // addProcess automatically adds the CREATED ProcessStatus
         assertTrue(processRepository.getProcess(processId).getProcessStatuses().size() == 1);
+        ProcessStatus processStatus = processRepository.getProcess(processId).getProcessStatuses().get(0);
+        assertEquals(ProcessState.CREATED, processStatus.getState());
 
         processStatus.setState(ProcessState.EXECUTING);
         processStatusRepository.updateProcessStatus(processStatus, processId);
