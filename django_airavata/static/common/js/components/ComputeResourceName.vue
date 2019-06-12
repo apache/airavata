@@ -18,12 +18,17 @@ export default {
     };
   },
   created() {
-    services.ComputeResourceService.retrieve(
-      { lookup: this.computeResourceId },
-      { ignoreErrors: true, cache: true }
-    )
-      .then(computeResource => (this.computeResource = computeResource))
-      .catch(() => (this.notAvailable = true));
+    this.loadComputeResource();
+  },
+  methods: {
+    loadComputeResource() {
+      services.ComputeResourceService.retrieve(
+        { lookup: this.computeResourceId },
+        { ignoreErrors: true, cache: true }
+      )
+        .then(computeResource => (this.computeResource = computeResource))
+        .catch(() => (this.notAvailable = true));
+    }
   },
   computed: {
     name() {
@@ -32,6 +37,11 @@ export default {
       } else {
         return this.computeResource ? this.computeResource.hostName : "";
       }
+    }
+  },
+  watch: {
+    computeResourceId() {
+      this.loadComputeResource();
     }
   }
 };

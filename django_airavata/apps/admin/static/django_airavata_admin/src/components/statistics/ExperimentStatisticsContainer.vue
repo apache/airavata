@@ -7,7 +7,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <b-card header="Filter">
+        <b-card header="Filter Options">
           <b-input-group class="w-100 mb-2">
             <b-input-group-prepend is-text>
               <i
@@ -40,8 +40,14 @@
               v-if="!usernameFilterEnabled"
               @click="usernameFilterEnabled=true"
             >Username</b-dropdown-item>
-            <b-dropdown-item>Application Name</b-dropdown-item>
-            <b-dropdown-item>Hostname</b-dropdown-item>
+            <b-dropdown-item
+              v-if="!applicationNameFilterEnabled"
+              @click="applicationNameFilterEnabled=true"
+            >Application Name</b-dropdown-item>
+            <b-dropdown-item
+              v-if="!hostnameFilterEnabled"
+              @click="hostnameFilterEnabled=true"
+            >Hostname</b-dropdown-item>
           </b-dropdown>
           <b-input-group
             v-if="usernameFilterEnabled"
@@ -53,8 +59,56 @@
               @keydown.native.enter="loadStatistics"
             />
             <b-input-group-append>
-              <b-button @click="removeUsernameFilter"><i class="fa fa-times"></i><span class="sr-only">Remove username
-                  filter</span></b-button>
+              <b-button @click="removeUsernameFilter">
+                <i class="fa fa-times"></i>
+                <span class="sr-only">Remove username filter</span>
+              </b-button>
+            </b-input-group-append>
+          </b-input-group>
+          <b-input-group
+            v-if="applicationNameFilterEnabled"
+            class="mb-2"
+          >
+            <b-form-select
+              v-model="applicationNameFilter"
+              :options="applicationNameOptions"
+              @input="loadStatistics"
+            >
+              <template slot="first">
+                <option
+                  :value="null"
+                  disabled
+                >Select an application to filter on</option>
+              </template>
+            </b-form-select>
+            <b-input-group-append>
+              <b-button @click="removeApplicationNameFilter">
+                <i class="fa fa-times"></i>
+                <span class="sr-only">Remove application name filter</span>
+              </b-button>
+            </b-input-group-append>
+          </b-input-group>
+          <b-input-group
+            v-if="hostnameFilterEnabled"
+            class="mb-2"
+          >
+            <b-form-select
+              v-model="hostnameFilter"
+              :options="hostnameOptions"
+              @input="loadStatistics"
+            >
+              <template slot="first">
+                <option
+                  :value="null"
+                  disabled
+                >Select compute resource to filter on</option>
+              </template>
+            </b-form-select>
+            <b-input-group-append>
+              <b-button @click="removeHostnameFilter">
+                <i class="fa fa-times"></i>
+                <span class="sr-only">Remove hostname filter</span>
+              </b-button>
             </b-input-group-append>
           </b-input-group>
           <template slot="footer">
@@ -182,7 +236,7 @@
   </div>
 </template>
 <script>
-import { models, services } from "django-airavata-api";
+import { models, services, utils } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 import ExperimentStatisticsCard from "./ExperimentStatisticsCard";
 
@@ -210,11 +264,15 @@ export default {
       applicationNameFilterEnabled: false,
       applicationNameFilter: null,
       hostnameFilterEnabled: false,
-      hostnameFilter: null
+      hostnameFilter: null,
+      appInterfaces: null,
+      computeResourceNames: null
     };
   },
   created() {
     this.loadStatistics();
+    this.loadApplicationInterfaces();
+    this.loadComputeResources();
   },
   components: {
     ExperimentStatisticsCard,
@@ -293,10 +351,40 @@ export default {
       return moment(this.toTime).format("MMM Do YYYY");
     },
     selectedExperimentSummaries() {
-      if (this.selectedExperimentSummariesKey && this.experimentStatistics && this.selectedExperimentSummariesKey in this.experimentStatistics) {
+      if (
+        this.selectedExperimentSummariesKey &&
+        this.experimentStatistics &&
+        this.selectedExperimentSummariesKey in this.experimentStatistics
+      ) {
         return this.experimentStatistics[this.selectedExperimentSummariesKey];
       } else {
-        return []
+        return [];
+      }
+    },
+    applicationNameOptions() {
+      if (this.appInterfaces) {
+        const options = this.appInterfaces.map(appInterface => {
+          return {
+            value: appInterface.applicationInterfaceId,
+            text: appInterface.applicationName
+          };
+        });
+        return utils.StringUtils.sortIgnoreCase(options, o => o.text);
+      } else {
+        return [];
+      }
+    },
+    hostnameOptions() {
+      if (this.computeResourceNames) {
+        const options = this.computeResourceNames.map(name => {
+          return {
+            value: name.host_id,
+            text: name.host
+          };
+        });
+        return utils.StringUtils.sortIgnoreCase(options, o => o.text);
+      } else {
+        return [];
       }
     }
   },
@@ -307,6 +395,16 @@ export default {
         this.loadStatistics();
       }
     },
+    loadApplicationInterfaces() {
+      return services.ApplicationInterfaceService.list().then(
+        appInterfaces => (this.appInterfaces = appInterfaces)
+      );
+    },
+    loadComputeResources() {
+      return services.ComputeResourceService.namesList().then(
+        names => (this.computeResourceNames = names)
+      );
+    },
     loadStatistics() {
       const requestData = {
         fromTime: this.fromTime.toJSON(),
@@ -314,6 +412,12 @@ export default {
       };
       if (this.usernameFilterEnabled && this.usernameFilter) {
         requestData["userName"] = this.usernameFilter;
+      }
+      if (this.applicationNameFilterEnabled && this.applicationNameFilter) {
+        requestData["applicationName"] = this.applicationNameFilter;
+      }
+      if (this.hostnameFilterEnabled && this.hostnameFilter) {
+        requestData["resourceHostName"] = this.hostnameFilter;
       }
       services.ExperimentStatisticsService.get(requestData).then(
         stats => (this.experimentStatistics = stats)
@@ -343,6 +447,16 @@ export default {
     removeUsernameFilter() {
       this.usernameFilter = null;
       this.usernameFilterEnabled = false;
+      this.loadStatistics();
+    },
+    removeApplicationNameFilter() {
+      this.applicationNameFilter = null;
+      this.applicationNameFilterEnabled = false;
+      this.loadStatistics();
+    },
+    removeHostnameFilter() {
+      this.hostnameFilter = null;
+      this.hostnameFilterEnabled = false;
       this.loadStatistics();
     }
   }
