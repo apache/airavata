@@ -195,41 +195,42 @@
 
       </div>
     </div>
-    <div
-      class="row"
-      v-if="items.length"
-    >
+    <div class="row">
       <div class="col">
-        <b-card>
-          <b-table
-            :fields="fields"
-            :items="items"
-          >
-            <template
-              slot="executionId"
-              slot-scope="data"
-            >
-              <application-name :application-interface-id="data.value" />
-            </template>
-            <template
-              slot="resourceHostId"
-              slot-scope="data"
-            >
-              <compute-resource-name :compute-resource-id="data.value" />
-            </template>
-            <template
-              slot="creationTime"
-              slot-scope="data"
-            >
-              <human-date :date="data.value" />
-            </template>
-            <template
-              slot="experimentStatus"
-              slot-scope="data"
-            >
-              <experiment-status-badge :status-name="data.value.name" />
-            </template>
-          </b-table>
+        <b-card no-body>
+          <b-tabs card>
+            <b-tab :title="selectedExperimentsTabTitle">
+              <b-table
+                :fields="fields"
+                :items="items"
+              >
+                <template
+                  slot="executionId"
+                  slot-scope="data"
+                >
+                  <application-name :application-interface-id="data.value" />
+                </template>
+                <template
+                  slot="resourceHostId"
+                  slot-scope="data"
+                >
+                  <compute-resource-name :compute-resource-id="data.value" />
+                </template>
+                <template
+                  slot="creationTime"
+                  slot-scope="data"
+                >
+                  <human-date :date="data.value" />
+                </template>
+                <template
+                  slot="experimentStatus"
+                  slot-scope="data"
+                >
+                  <experiment-status-badge :status-name="data.value.name" />
+                </template>
+              </b-table>
+            </b-tab>
+          </b-tabs>
         </b-card>
       </div>
     </div>
@@ -385,6 +386,23 @@ export default {
         return utils.StringUtils.sortIgnoreCase(options, o => o.text);
       } else {
         return [];
+      }
+    },
+    selectedExperimentsTabTitle() {
+      if (this.selectedExperimentSummariesKey === "allExperiments") {
+        return "All Experiments";
+      } else if (this.selectedExperimentSummariesKey === "createdExperiments") {
+        return "Created Experiments";
+      } else if (this.selectedExperimentSummariesKey === "runningExperiments") {
+        return "Running Experiments";
+      } else if (this.selectedExperimentSummariesKey === "completedExperiments") {
+        return "Completed Experiments";
+      } else if (this.selectedExperimentSummariesKey === "cancelledExperiments") {
+        return "Cancelled Experiments";
+      } else if (this.selectedExperimentSummariesKey === "failedExperiments") {
+        return "Failed Experiments";
+      } else {
+        return "Experiments";
       }
     }
   },
