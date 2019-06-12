@@ -256,7 +256,7 @@ export default {
       dateConfig: {
         mode: "range",
         wrap: true,
-        dateFormat: "Y-m-d H:i",
+        dateFormat: "Y-m-d",
         maxDate: new Date()
       },
       usernameFilterEnabled: false,
@@ -437,8 +437,8 @@ export default {
     },
     updateDateRange() {
       this.dateRange = [
-        moment(this.fromTime).format("YYYY-MM-DD HH:mm"),
-        moment(this.toTime).format("YYYY-MM-DD HH:mm")
+        moment(this.fromTime).format("YYYY-MM-DD"),
+        moment(this.toTime).format("YYYY-MM-DD")
       ];
     },
     daysAgo(days) {
