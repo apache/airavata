@@ -83,9 +83,6 @@ public class ProcessRepositoryTest extends TestBase {
         String experimentId = experimentRepository.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
-        // ProcessStatus processStatus = new ProcessStatus();
-        // processStatus.setState(ProcessState.CREATED);
-        // processModel.addToProcessStatuses(processStatus);
 
         TaskModel task = new TaskModel();
         task.setTaskId("task-id");
