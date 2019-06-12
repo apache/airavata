@@ -31,7 +31,7 @@ def get_output_views(experiment):
                 output_view_provider = DEFAULT_VIEW_PROVIDERS[
                     output_view_provider_name]
             elif output_view_provider_name in settings.OUTPUT_VIEW_PROVIDERS:
-                output_view_provider = settings.OUTPUT_VIEWER_PROVIDERS[
+                output_view_provider = settings.OUTPUT_VIEW_PROVIDERS[
                     output_view_provider_name]
             else:
                 logger.error("Unable to find output view provider with "
