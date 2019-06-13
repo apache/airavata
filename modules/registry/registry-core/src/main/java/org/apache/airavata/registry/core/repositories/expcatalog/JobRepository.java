@@ -124,6 +124,13 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
             jobModelList = jobRepository.select(QueryConstants.GET_JOB_FOR_TASK_ID, -1, 0, queryParameters);
         }
 
+        else if (fieldName.equals(DBConstants.Job.JOB_ID)) {
+            logger.debug("Search criteria is JobId");
+            Map<String, Object> queryParameters = new HashMap<>();
+            queryParameters.put(DBConstants.Job.JOB_ID, value);
+            jobModelList = jobRepository.select(QueryConstants.GET_JOB_FOR_JOB_ID, -1, 0, queryParameters);
+        }
+
         else {
             logger.error("Unsupported field name for Job module.");
             throw new IllegalArgumentException("Unsupported field name for Job module.");
