@@ -33,7 +33,8 @@ pga_git_branch: "tus-integration"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "futurewater.scigap.org"
+vhost_servername: "futurewater.indiana.edu"
+#vhost_servername: "futurewater.scigap.org"
 #vhost_serveralias: "www.mines.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
