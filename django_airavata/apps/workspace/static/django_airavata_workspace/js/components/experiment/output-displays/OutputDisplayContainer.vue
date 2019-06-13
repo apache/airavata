@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: Add menu when there are more than one outputViews -->
   <b-card>
     <div slot="header" class="d-flex align-items-baseline">
       <h6>{{ experimentOutput.name }}</h6>
@@ -57,7 +56,7 @@ export default {
   computed: {
     // TODO: support multiple output views
     outputViewData() {
-      return this.currentView;
+      return this.currentView.data ? this.currentView.data : {};
     },
     outputDisplayComponentName() {
       // TODO: maybe rename download to default?

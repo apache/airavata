@@ -102,7 +102,7 @@ for entry_point in iter_entry_points(group='airavata.djangoapp'):
 
 OUTPUT_VIEW_PROVIDERS = {}
 for entry_point in iter_entry_points(group='airavata.output_view_providers'):
-    OUTPUT_VIEW_PROVIDERS[entry_point.name] = entry_point.load()
+    OUTPUT_VIEW_PROVIDERS[entry_point.name] = entry_point.load()()
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
