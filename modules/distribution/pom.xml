@@ -556,6 +556,21 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>parser-wm-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${parser.wm.dist.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/parser-wm-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>platform-monitor-distribution-package</id>
                         <phase>package</phase>
                         <goals>
@@ -615,6 +630,7 @@
         <participant.dist.name>apache-airavata-participant-${project.version}</participant.dist.name>
         <pre.wm.dist.name>apache-airavata-pre-wm-${project.version}</pre.wm.dist.name>
         <post.wm.dist.name>apache-airavata-post-wm-${project.version}</post.wm.dist.name>
+        <parser.wm.dist.name>apache-airavata-parser-wm-${project.version}</parser.wm.dist.name>
         <platform.monitor.dist.name>apache-airavata-platform-monitor-${project.version}</platform.monitor.dist.name>
         <email.monitor.dist.name>apache-airavata-email-monitor-${project.version}</email.monitor.dist.name>
         <realtime.monitor.dist.name>apache-airavata-realtime-monitor-${project.version}</realtime.monitor.dist.name>
