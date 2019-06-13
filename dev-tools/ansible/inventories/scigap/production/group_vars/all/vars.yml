@@ -20,7 +20,7 @@
 
 ---
 ansible_connection: ssh
-ansible_user: root
+ansible_user: centos
 
 user: airavata
 group: airavata
@@ -30,13 +30,12 @@ user_home: "/home/{{ user }}"
 deployment_dir: "{{ user_home }}/master-deployment"
 airavata_source_dir: "{{ user_home }}/master-source"
 airavata_repo: "https://github.com/apache/airavata.git"
-airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+airavata_dist: "apache-airavata-api-server-0.18-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
-old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
 git_branch: master
 
 # Database related variables
-db_server: "{{ groups['database'][0] }}"
+db_server: "{{ hostvars[groups['database'][0]]['ansible_default_ipv4']['address'] }}"
 db_server_port: "3306"
 db_user: "airavata"
 db_password: "{{ vault_db_password }}"
@@ -48,8 +47,6 @@ sharing_catalog: "sharing_catalog"
 workflow_catalog: "workflow_catalog"
 credential_store: "credential_store"
 profile_service: "profile_service"
-
-mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
 
 # Rabbitmq related vareables
 rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
@@ -101,23 +98,16 @@ cred_store_server_host: "{{ groups['api-orch'][0] }}"
 cred_store_port: "8960"
 keystores_location: "{{ deployment_dir }}/keystores"
 
-# Gfac related variables
-gfac_name: "gfac-node0"
-gfac_host: "{{ groups['gfac'][0] }}"
-gfac_port: "8950"
-gfac_dir: "{{ deployment_dir }}/gfac-instance"
-gfac_log_dir: "{{ gfac_dir }}/logs"
-
 # Monitoring variables
 monitor_email_address: "scigap03jobs@scigap.org"
 monitor_email_password: "{{ vault_monitor_email_password }}"
 
 # PGA variables
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+pga_git_branch: "master"
 user_data_dir: "/var/www/portals/gateway-user-data"
 real_user_data_dir: "/data/gateway-user-data"
 ## Airavata Client related variables
-#airavata_server: "tls://gw77.iu.xsede.org"
 airavata_server: "tls://{{ groups['api-orch'][0] }}"
 airavata_port: "9930"
 airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
@@ -140,3 +130,38 @@ keycloak_db_username: "keycloak"
 keycloak_db_password: "{{ vault_keycloak_db_password }}"
 keycloak_master_account_username: "AiravataAdmin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
+
+# Helix
+helix_version: 0.7.1
+helix_url: http://www-us.apache.org/dist//helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
+helix_dir: "{{ deployment_dir }}/airavata-helix"
+helix_cluster_name: "AiravataDemoCluster"
+snapshot_version: "0.18-SNAPSHOT"
+helix_controller_name: "helixcontroller"
+helix_participant_name: "helixparticipant"
+helix_pre_wm_name: "prewm"
+helix_pre_wm_load_balance_clusters: "false"
+helix_post_wm_name: "postwm"
+helix_post_wm_load_balance_clusters: "false"
+local_data_location: "/home/airavata/temp-storage"
+
+# Listening port for kafka installations
+kafka_listener_port: 9092
+kafka_rest_proxy_listener_port: 8082
+
+# Realtime Monitoring related variables
+realtime_monitor_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
+realtime_monitor_broker_publisher: "RealtimeProducer"
+realtime_monitor_broker_consumer_group: "monitor"
+realtime_monitor_broker_topic: "helix-airavata-mq"
+
+# Variables related to the broker in which parsed job statuses are published
+job_monitor_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
+job_monitor_broker_topic: "parsed-data"
+job_monitor_broker_consumer_group: "MonitoringConsumer"
+
+# Variables related to platform monitor
+platform_name: "Staging Environment"
+platform_monitor_email_address: "airavataplatformmonitor@gmail.com"
+platform_monitor_email_password: "{{ vault_platform_monitor_email_password }}"
+platform_monitor_target_email_addresses: "dimuthu.upeksha2@gmail.com,dwannipu@iu.edu"
