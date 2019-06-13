@@ -145,7 +145,7 @@ helix_version: 0.7.1
 helix_url: http://www-us.apache.org/dist//helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
 helix_dir: "{{ deployment_dir }}/airavata-helix"
 helix_cluster_name: "AiravataDevCluster"
-snapshot_version: "0.17-SNAPSHOT"
+snapshot_version: "0.19-SNAPSHOT"
 
 # Listening port for kafka installations
 kafka_listener_port: 9092
