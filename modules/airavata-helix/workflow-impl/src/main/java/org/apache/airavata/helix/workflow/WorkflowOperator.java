@@ -46,6 +46,7 @@ public class WorkflowOperator {
 
     private static final String WORKFLOW_PREFIX = "Workflow_of_process_";
     private static final long WORKFLOW_EXPIRY_TIME = 1 * 1000;
+    private static final long TASK_EXPIRY_TIME = 24 * 60 * 60 * 1000;
     private TaskDriver taskDriver;
     private HelixManager helixManager;
 
@@ -97,6 +98,7 @@ public class WorkflowOperator {
                     .addTaskConfigs(taskBuilds)
                     .setFailureThreshold(0)
                     .setExpiry(WORKFLOW_EXPIRY_TIME)
+                    .setTimeoutPerTask(TASK_EXPIRY_TIME)
                     .setNumConcurrentTasksPerInstance(20)
                     .setMaxAttemptsPerTask(data.getRetryCount());
 

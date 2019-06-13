@@ -20,7 +20,6 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/new-mexico-state"

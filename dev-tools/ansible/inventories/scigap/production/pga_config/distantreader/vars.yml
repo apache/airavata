@@ -20,7 +20,6 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
@@ -48,7 +47,7 @@ auth_options:
     oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
     logo: "/assets/cilogon-logo-24x24-b.png"
 
-    oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "distantreader"
 # relative to document root dir
