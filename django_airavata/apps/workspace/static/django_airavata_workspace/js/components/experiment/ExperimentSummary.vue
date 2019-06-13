@@ -222,7 +222,6 @@
 <script>
 import { models, services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
-import DataProductViewer from "./DataProductViewer.vue";
 import OutputDisplayContainer from "./output-displays/OutputDisplayContainer";
 import urls from "../../utils/urls";
 
@@ -246,7 +245,7 @@ export default {
     };
   },
   components: {
-    DataProductViewer,
+    "data-product-viewer": components.DataProductViewer,
     "clipboard-copy-link": components.ClipboardCopyLink,
     "share-button": components.ShareButton,
     OutputDisplayContainer

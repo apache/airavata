@@ -5,6 +5,7 @@ import ClipboardCopyButton from "./components/ClipboardCopyButton.vue";
 import ClipboardCopyLink from "./components/ClipboardCopyLink.vue";
 import ComputeResourceName from "./components/ComputeResourceName";
 import ConfirmationDialog from "./components/ConfirmationDialog.vue";
+import DataProductViewer from "./components/DataProductViewer";
 import DeleteButton from "./components/DeleteButton.vue";
 import DeleteLink from "./components/DeleteLink.vue";
 import ExperimentStatusBadge from "./components/ExperimentStatusBadge";
@@ -40,6 +41,7 @@ const components = {
   ClipboardCopyLink,
   ComputeResourceName,
   ConfirmationDialog,
+  DataProductViewer,
   DeleteButton,
   DeleteLink,
   ExperimentStatusBadge,

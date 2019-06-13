@@ -228,7 +228,22 @@
                 >
                   <experiment-status-badge :status-name="data.value.name" />
                 </template>
+                <template
+                  slot="actions"
+                  slot-scope="data"
+                >
+                  <b-link @click="showExperimentDetails(data.item.experimentId)">
+                    View Details
+                    <i
+                      class="far fa-chart-bar"
+                      aria-hidden="true"
+                    ></i>
+                  </b-link>
+                </template>
               </b-table>
+            </b-tab>
+            <b-tab v-for="experimentDetail in experimentDetails" :key="experimentDetail.experimentId" :title="experimentDetail.experimentName">
+              <experiment-details-view :experiment="experimentDetail"/>
             </b-tab>
           </b-tabs>
         </b-card>
@@ -240,6 +255,7 @@
 import { models, services, utils } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 import ExperimentStatisticsCard from "./ExperimentStatisticsCard";
+import ExperimentDetailsView from "./ExperimentDetailsView";
 
 import moment from "moment";
 
@@ -267,7 +283,8 @@ export default {
       hostnameFilterEnabled: false,
       hostnameFilter: null,
       appInterfaces: null,
-      computeResourceNames: null
+      computeResourceNames: null,
+      experimentDetails: []
     };
   },
   created() {
@@ -276,6 +293,7 @@ export default {
     this.loadComputeResources();
   },
   components: {
+    ExperimentDetailsView,
     ExperimentStatisticsCard,
     "application-name": components.ApplicationName,
     "compute-resource-name": components.ComputeResourceName,
@@ -395,9 +413,13 @@ export default {
         return "Created Experiments";
       } else if (this.selectedExperimentSummariesKey === "runningExperiments") {
         return "Running Experiments";
-      } else if (this.selectedExperimentSummariesKey === "completedExperiments") {
+      } else if (
+        this.selectedExperimentSummariesKey === "completedExperiments"
+      ) {
         return "Completed Experiments";
-      } else if (this.selectedExperimentSummariesKey === "cancelledExperiments") {
+      } else if (
+        this.selectedExperimentSummariesKey === "cancelledExperiments"
+      ) {
         return "Cancelled Experiments";
       } else if (this.selectedExperimentSummariesKey === "failedExperiments") {
         return "Failed Experiments";
@@ -476,6 +498,13 @@ export default {
       this.hostnameFilter = null;
       this.hostnameFilterEnabled = false;
       this.loadStatistics();
+    },
+    showExperimentDetails(experimentId) {
+      // TODO: if experiment details already loaded, select its tab
+      // TODO: maybe don't need to load the experiment first since ExperimentDetailsView will load FullExperiment?
+      services.ExperimentService.retrieve({
+        lookup: experimentId
+      }).then(exp => this.experimentDetails.push(exp));
     }
   }
 };

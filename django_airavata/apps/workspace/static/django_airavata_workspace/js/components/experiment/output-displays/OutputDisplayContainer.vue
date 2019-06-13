@@ -24,7 +24,6 @@
 import { models } from "django-airavata-api";
 import DownloadOutputDisplay from "./DownloadOutputDisplay";
 import LinkDisplay from "./LinkDisplay";
-import DataProductViewer from "../DataProductViewer";
 
 export default {
   name: "output-viewer-container",
@@ -44,7 +43,7 @@ export default {
     }
   },
   components: {
-    DataProductViewer,
+    "data-product-viewer": components.DataProductViewer,
     DownloadOutputDisplay,
     LinkDisplay
   },

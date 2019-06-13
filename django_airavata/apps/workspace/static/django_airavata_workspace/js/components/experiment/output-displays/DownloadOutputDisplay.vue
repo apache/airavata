@@ -7,7 +7,6 @@
 
 <script>
 import { models } from "django-airavata-api"
-import DataProductViewer from "../DataProductViewer.vue";
 
 export default {
   name: "download-output-viewer",
@@ -25,7 +24,7 @@ export default {
     }
   },
   components: {
-    DataProductViewer
+    "data-product-viewer": components.DataProductViewer
   }
 }
 </script>
