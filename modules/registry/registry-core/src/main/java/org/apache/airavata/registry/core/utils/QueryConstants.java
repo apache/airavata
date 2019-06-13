@@ -140,6 +140,8 @@ public interface QueryConstants {
             "WHERE J.processId LIKE :" + DBConstants.Job.PROCESS_ID;
     String GET_JOB_FOR_TASK_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
             "WHERE J.taskId LIKE :" + DBConstants.Job.TASK_ID;
+    String GET_JOB_FOR_JOB_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
+            "WHERE J.jobId LIKE :" + DBConstants.Job.JOB_ID;
 
     String GET_ALL_QUEUE_STATUS_MODELS = "SELECT QSM FROM " + QueueStatusEntity.class.getSimpleName() + " QSM";
 

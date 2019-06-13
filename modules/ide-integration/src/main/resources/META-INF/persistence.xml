@@ -123,6 +123,7 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessResourceScheduleEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessWorkflowEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProjectUserEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.QueueStatusEntity</class>
