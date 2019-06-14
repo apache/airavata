@@ -1,6 +1,8 @@
+// Use the following to verify that the config file is loaded
+// console.log("loaded babel.config.js");
 const presets = [
   [
-    "@babel/env",
+    "@babel/preset-env",
     {
       useBuiltIns: "usage"
     }
@@ -13,7 +15,7 @@ module.exports = {
   plugins,
   env: {
     test: {
-      presets: ["@babel/env"]
+      presets: ["@babel/preset-env"]
     }
   }
 };
