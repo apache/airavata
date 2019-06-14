@@ -73,6 +73,7 @@
           <th>Status</th>
           <th>Creation Time</th>
           </thead>
+      <tbody>
         <tr
           v-for="(jobDetail, index) in fullExperiment.jobDetails"
           :key="jobDetail.jobId"
@@ -84,6 +85,7 @@
             <span :title="jobDetail.creationTime.toString()">{{ jobCreationTimes[index] }}</span>
           </td>
         </tr>
+      </tbody>
     </table>
     </td>
     </tr>
@@ -102,6 +104,18 @@
         >
           {{ jobDetail.jobName }}: {{ jobDetail.workingDir }}
         </div>
+      </td>
+    </tr>
+    <tr v-if="fullExperiment.jobDetails && fullExperiment.jobDetails.length > 0">
+      <th scope="row">Job Description</th>
+      <td>
+        <b-card
+          v-for="jobDetail in fullExperiment.jobDetails"
+          :key="jobDetail.jobId"
+          :header="jobDetail.jobName"
+        >
+          <pre>{{ jobDetail.jobDescription }}</pre>
+        </b-card>
       </td>
     </tr>
     <tr>
@@ -149,7 +163,6 @@
               v-else-if="input.type.isFileValueType"
               :data-product="dp"
               :input-file="true"
-              class="data-product"
               :key="dp.productUri"
             />
           </li>
@@ -157,12 +170,150 @@
       </td>
     </tr>
     <tr>
-      <!-- TODO -->
-      <th scope="row">Errors</th>
-      <td></td>
+      <th scope="row">Outputs</th>
+      <td>
+        <ul>
+          <li
+            v-for="output in experiment.experimentOutputs"
+            :key="output.name"
+          >
+            {{ output.name }}:
+            <template v-if="output.type.isSimpleValueType">
+              <span class="text-break">{{ output.value }}</span>
+            </template>
+            <data-product-viewer
+              v-for="dp in outputDataProducts[output.name]"
+              v-else-if="output.type.isFileValueType"
+              :data-product="dp"
+              :key="dp.productUri"
+            />
+          </li>
+        </ul>
+      </td>
     </tr>
+    <tr v-if="storageDirLink">
+      <th scope="row">Storage Directory</th>
+      <td>
+        <b-link :href="storageDirLink">Open</b-link>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">Errors</th>
+      <td>
+        <b-card
+          v-for="error in experiment.errors"
+          :key="error.errorId"
+          header="Error"
+        >
+          <p>{{error.userFriendlyMessage}}</p>
+          <pre class="pre-scrollable">{{error.actualErrorMessage}}</pre>
+        </b-card>
+      </td>
+    </tr>
+    <template v-if="failedJobs.length > 0">
+
+      <tr
+        v-for="job in failedJobs"
+        :key="job.jobId"
+      >
+        <th scope="row">Job Submission Response</th>
+        <td>
+          <b-card
+            v-if="job.stdOut"
+            :header="job.jobName + ' STDOUT'"
+          >
+            <pre class="pre-scrollable">{{job.stdOut}}</pre>
+          </b-card>
+          <b-card
+            v-if="job.stdErr"
+            :header="job.jobName + ' STDERR'"
+          >
+            <pre class="pre-scrollable">{{job.stdErr}}</pre>
+          </b-card>
+        </td>
+      </tr>
+    </template>
     </tbody>
     </table>
+    <h2 class="h5 mb-3">Process Details</h2>
+    <b-card
+      v-for="process in experiment.processes"
+      :key="process.processId"
+      :header="process.processId"
+    >
+      <b-card
+        v-for="task in process.sortedTasks"
+        :key="task.taskId"
+        :header="task.taskId"
+      >
+        <table class="table table-sm">
+          <tbody>
+            <tr>
+              <th scope="row">Task Id</th>
+              <td>{{task.taskId}}</td>
+            </tr>
+            <tr>
+              <th scope="row">Task Type</th>
+              <td>{{task.taskType.name}}</td>
+            </tr>
+            <tr>
+              <th scope="row">Task Status</th>
+              <td>{{task.latestStatus.state.name}}</td>
+            </tr>
+            <tr>
+              <th scope="row">Task Status Time</th>
+              <td>
+                <human-date :date="task.latestStatus.timeOfStateChange" />
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Task Status Reason</th>
+              <td>{{ task.latestStatus.reason }}</td>
+            </tr>
+            <template v-if="task.taskErrors && task.taskErrors.length > 0">
+
+              <tr>
+                <th scope="row">Task Errors</th>
+                <td>
+                  <b-card
+                    v-for="error in task.taskErrors"
+                    :key="error.errorId"
+                    :header="error.errorId"
+                  >
+                    <p>{{error.userFriendlyMessage}}</p>
+                    <pre class="pre-scrollable">{{error.actualErrorMessage}}</pre>
+                  </b-card>
+                </td>
+              </tr>
+            </template>
+            <template v-if="task.jobs && task.jobs.length > 0">
+              <tr>
+                <th scope="row">Jobs</th>
+                <td>
+                  <b-card
+                    v-for="job in task.jobs"
+                    :key="job.jobId"
+                    :header="job.jobName"
+                  >
+                    <pre>{{ job.jobDescription }}</pre>
+                  </b-card>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </b-card>
+
+      <b-card
+        v-for="error in process.processErrors"
+        :key="error.errorId"
+        :header="'Process Error ' + error.errorId"
+      >
+        <p>{{error.userFriendlyMessage}}</p>
+        <pre class="pre-scrollable">{{error.actualErrorMessage}}</pre>
+      </b-card>
+    </b-card>
+
   </div>
 </template>
 
@@ -182,7 +333,8 @@ export default {
   },
   components: {
     "clipboard-copy-link": components.ClipboardCopyLink,
-    "data-product-viewer": components.DataProductViewer
+    "data-product-viewer": components.DataProductViewer,
+    "human-date": components.HumanDate
   },
   data() {
     return {
@@ -226,6 +378,25 @@ export default {
       return this.fullExperiment.jobDetails.map(jobDetail =>
         moment(jobDetail.creationTime).fromNow()
       );
+    },
+    storageDirLink() {
+      if (this.experiment.relativeExperimentDataDir) {
+        return this.storageDirectory(this.experiment.relativeExperimentDataDir);
+      } else {
+        return null;
+      }
+    },
+    failedJobs() {
+      if (this.fullExperiment && this.fullExperiment.jobDetails) {
+        return this.fullExperiment.jobDetails.filter(
+          job =>
+            this.experiment.latestStatus.state ===
+              models.ExperimentState.FAILED ||
+            job.latestJobStatus.jobState === models.JobState.FAILED
+        );
+      } else {
+        return [];
+      }
     }
   },
   created() {
@@ -251,8 +422,22 @@ export default {
         );
       }
       return dataProducts ? dataProducts.filter(dp => (dp ? true : false)) : [];
+    },
+    storageDirectory(relativePath) {
+      if (relativePath.startsWith("/")) {
+        relativePath = relativePath.substring(1);
+      }
+      return "/workspace/storage/~/" + relativePath;
     }
   }
 };
 </script>
 
+<style scoped>
+.table {
+  table-layout: fixed;
+}
+.table th[scope="row"] {
+  width: 20%;
+}
+</style>

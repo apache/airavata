@@ -1,7 +1,7 @@
 <template>
   <div>
     <data-product-viewer v-for="dp in dataProducts"
-      :data-product="dp" class="data-product" :key="dp.productUri"/>
+      :data-product="dp" :key="dp.productUri"/>
   </div>
 </template>
 

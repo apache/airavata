@@ -198,7 +198,6 @@
                       v-else-if="input.type.isFileValueType"
                       :data-product="dp"
                       :input-file="true"
-                      class="data-product"
                       :key="dp.productUri"
                     />
                   </li>
@@ -206,9 +205,16 @@
               </td>
             </tr>
             <tr>
-              <!-- TODO -->
               <th scope="row">Errors</th>
-              <td></td>
+              <td>
+                <b-card
+                  v-for="error in experiment.errors"
+                  :key="error.errorId"
+                  header="Error"
+                >
+                  <p>{{error.userFriendlyMessage}}</p>
+                </b-card>
+              </td>
             </tr>
             </tbody>
             </table>
@@ -376,9 +382,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.data-product + .data-product {
-  margin-left: 0.5em;
-}
-</style>

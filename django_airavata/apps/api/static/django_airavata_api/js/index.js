@@ -22,6 +22,7 @@ import GroupComputeResourcePreference from "./models/GroupComputeResourcePrefere
 import GroupPermission from "./models/GroupPermission";
 import GroupResourceProfile from "./models/GroupResourceProfile";
 import InputDataObjectType from "./models/InputDataObjectType";
+import JobState from "./models/JobState";
 import ManagedUserProfile from "./models/ManagedUserProfile";
 import OutputDataObjectType from "./models/OutputDataObjectType";
 import ParallelismType from "./models/ParallelismType";
@@ -77,6 +78,7 @@ const models = {
   GroupPermission,
   GroupResourceProfile,
   InputDataObjectType,
+  JobState,
   ManagedUserProfile,
   OutputDataObjectType,
   ParallelismType,
