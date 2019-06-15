@@ -1,9 +1,6 @@
 import BaseModel from "./BaseModel";
-import Group from "./Group";
 
 const FIELDS = [
-  "userModelVersion",
-  "airavataInternalUserId",
   "userId",
   "gatewayId",
   "email",
@@ -11,19 +8,13 @@ const FIELDS = [
   "lastName",
   "enabled",
   "emailVerified",
-  "airavataUserProfileExists",
   {
     name: "creationTime",
     type: 'date',
   },
-  {
-    name: "groups",
-    type: Group,
-    list: true
-  }
 ];
 
-export default class ManagedUserProfile extends BaseModel {
+export default class UnverifiedEmailUserProfile extends BaseModel {
   constructor(data = {}) {
     super(FIELDS, data);
   }

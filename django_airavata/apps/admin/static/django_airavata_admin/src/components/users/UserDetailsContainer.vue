@@ -1,8 +1,8 @@
 <template>
   <user-group-membership-editor
-    v-model="localManagedUserProfile.groups"
+    v-model="localIAMUserProfile.groups"
     :editable-groups="editableGroups"
-    :airavata-internal-user-id="managedUserProfile.airavataInternalUserId"
+    :airavata-internal-user-id="iamUserProfile.airavataInternalUserId"
     @input="groupsUpdated"
   />
 </template>
@@ -13,8 +13,8 @@ import UserGroupMembershipEditor from "./UserGroupMembershipEditor";
 export default {
   name: "user-details-container",
   props: {
-    managedUserProfile: {
-      type: models.ManagedUserProfile,
+    iamUserProfile: {
+      type: models.IAMUserProfile,
       required: true
     },
     editableGroups: {
@@ -27,17 +27,17 @@ export default {
   },
   data() {
     return {
-      localManagedUserProfile: this.managedUserProfile.clone()
+      localIAMUserProfile: this.iamUserProfile.clone()
     };
   },
   watch: {
-    managedUserProfile(newValue) {
-      this.localManagedUserProfile = newValue.clone();
+    iamUserProfile(newValue) {
+      this.localIAMUserProfile = newValue.clone();
     }
   },
   methods: {
     groupsUpdated() {
-      this.$emit("groups-updated", this.localManagedUserProfile);
+      this.$emit("groups-updated", this.localIAMUserProfile);
     }
   }
 };
