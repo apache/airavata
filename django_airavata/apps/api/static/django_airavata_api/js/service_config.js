@@ -244,6 +244,13 @@ export default {
     url: "/api/iam-user-profiles",
     viewSet: true,
     pagination: true,
+    methods: {
+      enable: {
+        url: "/api/iam-user-profiles/<lookup>/enable/",
+        requestType: "post",
+        modelClass: IAMUserProfile
+      }
+    },
     queryParams: ["limit", "offset", "search"],
     modelClass: IAMUserProfile
   },

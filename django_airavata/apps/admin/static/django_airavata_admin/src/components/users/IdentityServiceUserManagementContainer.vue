@@ -33,18 +33,16 @@
             >
               <template
                 slot="creationTime"
-                slot-scope="data">
-                <human-date :date="data.value"/>
+                slot-scope="data"
+              >
+                <human-date :date="data.value" />
               </template>
               <template
                 slot="action"
                 slot-scope="data"
               >
-                <b-button
-                  v-if="data.item.airavataUserProfileExists"
-                  @click="toggleDetails(data)"
-                >
-                  Edit Groups
+                <b-button @click="toggleDetails(data)">
+                  Edit
                 </b-button>
               </template>
               <template
@@ -55,6 +53,7 @@
                   :iam-user-profile="data.item"
                   :editable-groups="editableGroups"
                   @groups-updated="groupsUpdated"
+                  @enable-user="enableUser"
                 />
               </template>
             </b-table>
@@ -87,7 +86,7 @@ export default {
   },
   components: {
     pager: components.Pager,
-    'human-date': components.HumanDate,
+    "human-date": components.HumanDate,
     UserDetailsContainer
   },
   created() {
@@ -195,6 +194,11 @@ export default {
       this.usersPaginator = null;
       this.search = null;
       this.reloadUserProfiles();
+    },
+    enableUser(username) {
+      services.IAMUserProfileService.enable({ lookup: username }).finally(() =>
+        this.reloadUserProfiles()
+      );
     }
   }
 };

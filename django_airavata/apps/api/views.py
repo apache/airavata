@@ -1422,6 +1422,14 @@ class IAMUserViewSet(mixins.CreateModelMixin,
             group_manager_client.removeUsersFromGroup(
                 self.authz_token, [user_id], group_id)
 
+    @detail_route(methods=['post'])
+    def enable(self, request, user_id=None):
+        iam_admin_client.enable_user(user_id)
+        instance = self.get_instance(user_id)
+        serializer = self.serializer_class(instance=instance,
+                                           context={'request': request})
+        return Response(serializer.data)
+
     def _convert_user_profile(self, user_profile):
         user_profile_client = self.request.profile_service['user_profile']
         group_manager_client = self.request.profile_service['group_manager']
