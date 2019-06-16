@@ -37,7 +37,8 @@ from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
     APIResultPagination,
-    GenericAPIBackedViewSet
+    GenericAPIBackedViewSet,
+    IsInAdminsGroupPermission
 )
 from django_airavata.apps.auth import iam_admin_client
 from django_airavata.apps.auth.models import EmailVerification
@@ -1392,6 +1393,7 @@ class IAMUserViewSet(mixins.CreateModelMixin,
                      GenericAPIBackedViewSet):
     serializer_class = serializers.IAMUserProfile
     pagination_class = APIResultPagination
+    permission_classes = (IsInAdminsGroupPermission,)
     lookup_field = 'user_id'
 
     def get_list(self):
@@ -1477,6 +1479,7 @@ class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
                                  GenericAPIBackedViewSet):
     serializer_class = serializers.UnverifiedEmailUserProfile
     pagination_class = APIResultPagination
+    permission_classes = (IsInAdminsGroupPermission,)
     lookup_field = 'user_id'
 
     def get_list(self):

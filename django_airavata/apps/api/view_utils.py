@@ -5,7 +5,7 @@ from datetime import datetime
 import pytz
 from django.conf import settings
 from django.http import Http404
-from rest_framework import mixins, pagination
+from rest_framework import mixins, pagination, permissions
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.utils.urls import remove_query_param, replace_query_param
@@ -194,3 +194,10 @@ def convert_utc_iso8601_to_date(iso8601_utc_string):
     logger.debug("convert_utc_iso8601_to_date({})={}".format(
         iso8601_utc_string, timestamp))
     return timestamp
+
+
+class IsInAdminsGroupPermission(permissions.BasePermission):
+    message = "User must be member of the Admins group."
+
+    def has_permission(self, request, view):
+        return request.is_gateway_admin
