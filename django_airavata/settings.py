@@ -258,16 +258,41 @@ WEBPACK_LOADER = webpack_loader_util.create_webpack_loader_config()
 
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s %(name)s:%(lineno)d %(levelname)s] %(message)s'
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         },
+        'mail_admins': {
+            'filters': ['require_debug_false'],
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
     },
     'loggers': {
         'django_airavata': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'DEBUG' if DEBUG else 'INFO'
         },
+        'root': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'WARNING'
+        }
     },
 }
 
