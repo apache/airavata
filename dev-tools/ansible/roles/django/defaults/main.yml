@@ -45,6 +45,7 @@ django_extra_settings: {}
 django_wsgi_processes: 2
 
 django_debug: false
+django_error_emails: "{{ admin_emails }}"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
