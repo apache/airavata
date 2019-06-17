@@ -40,6 +40,7 @@ enum ResourcePermissionType {
     WRITE,
     READ,
     OWNER,
+    MANAGE_SHARING
 }
 
 struct GroupModel{
