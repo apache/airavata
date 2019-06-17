@@ -104,6 +104,11 @@ service IamAdminServices extends base_api.BaseAPI {
         throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                 2: airavata_errors.AuthorizationException ae)
 
+    bool deleteUser(1: required security_model.AuthzToken authzToken,
+                                2: required string username)
+                                throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                            2: airavata_errors.AuthorizationException ae)
+
     bool addRoleToUser(1: required security_model.AuthzToken authzToken,
                         2: required string username,
                         3: required string roleName)

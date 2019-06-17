@@ -165,6 +165,16 @@ public interface TenantManagementInterface {
     void updateUserProfile(String accessToken, String tenantId, String username, UserProfile userDetails) throws IamAdminServicesException;
 
     /**
+     * Delete this user from the IAM service.
+     * @param accessToken
+     * @param tenantId
+     * @param username
+     * @return
+     * @throws IamAdminServicesException
+     */
+    boolean deleteUser(String accessToken, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
      * Add the given role to the user.
      *
      * @param realmAdminCreds
