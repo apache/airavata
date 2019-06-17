@@ -26,7 +26,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # EMAIL_HOST_USER = '...'
 # EMAIL_HOST_PASSWORD = '...'
 # EMAIL_USE_TLS = True
+# ADMINS receive error emails
 # ADMINS = [('Admin Name', 'admin@example.com')]
+# PORTAL_ADMINS receive administrative emails, like when a new user is created
+# This can be set to a different value than ADMINS so that the PORTAL_ADMINS
+# don't receive error emails
+PORTAL_ADMINS = ADMINS
 # SERVER_EMAIL = 'portal@example.com'
 
 # Keycloak Configuration
