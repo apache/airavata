@@ -363,13 +363,16 @@ service RegistryService extends base_api.BaseAPI {
              * @param resourceHostName
              *       Hostname id substring with which to further filter statistics.
              *
+             * @param accessibleExpIds
+             *    Experiment IDs which are accessible to the current user.
              **/
             experiment_model.ExperimentStatistics getExperimentStatistics(1: required string gatewayId,
                                     2: required i64 fromTime,
                                     3: required i64 toTime,
                                     4: string userName,
                                     5: string applicationName,
-                                    6: string resourceHostName)
+                                    6: string resourceHostName,
+                                    7: required list<string> accessibleExpIds)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 

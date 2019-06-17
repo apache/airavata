@@ -439,13 +439,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param toTime    Ending data time.
      */
     @Override
-    public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime, String userName, String applicationName, String resourceHostName) throws RegistryServiceException, TException {
+    public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime, String userName, String applicationName, String resourceHostName, List<String> accessibleExpIds) throws RegistryServiceException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
+        if (accessibleExpIds == null) {
+            logger.debug("accessibleExpIds is null, defaulting to an empty list");
+            accessibleExpIds = Collections.emptyList();
+        }
         try {
-            Map<String, String> filters = new HashMap();
+            Map<String, String> filters = new HashMap<>();
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, fromTime+"");
             filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime+"");
@@ -459,7 +463,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 filters.put(Constants.FieldConstants.ExperimentConstants.RESOURCE_HOST_ID, resourceHostName);
             }
 
-            ExperimentStatistics result = experimentSummaryRepository.getExperimentStatistics(filters);
+            ExperimentStatistics result = experimentSummaryRepository.getAccessibleExperimentStatistics(accessibleExpIds, filters);
             logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : " + AiravataUtils.getTime(fromTime) + " and " + AiravataUtils.getTime(toTime));
             return result;
         }catch (Exception e) {
