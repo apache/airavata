@@ -296,7 +296,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PROCESS_WORKFLOWS, new org.apache.thrift.meta_data.FieldMetaData("processWorkflows", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "ProcessWorkflow"))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ProcessWorkflow.class))));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProcessModel.class, metaDataMap);
   }
@@ -411,7 +411,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     if (other.isSetProcessWorkflows()) {
       java.util.List<ProcessWorkflow> __this__processWorkflows = new java.util.ArrayList<ProcessWorkflow>(other.processWorkflows.size());
       for (ProcessWorkflow other_element : other.processWorkflows) {
-        __this__processWorkflows.add(other_element);
+        __this__processWorkflows.add(new ProcessWorkflow(other_element));
       }
       this.processWorkflows = __this__processWorkflows;
     }
