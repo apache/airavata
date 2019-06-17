@@ -1,8 +1,15 @@
 <template>
   <b-card>
-    <div slot="header" class="d-flex align-items-baseline">
+    <div
+      slot="header"
+      class="d-flex align-items-baseline"
+    >
       <h6>{{ experimentOutput.name }}</h6>
-      <b-dropdown v-if="showMenu" :text="currentView['provider-id']" class="ml-auto">
+      <b-dropdown
+        v-if="showMenu"
+        :text="currentView['provider-id']"
+        class="ml-auto"
+      >
         <!-- TODO: add view label to data so that that can be used instead of id -->
         <b-dropdown-item
           v-for="view in outputViews"
@@ -22,6 +29,7 @@
 
 <script>
 import { models } from "django-airavata-api";
+import { components } from "django-airavata-common-ui";
 import DownloadOutputDisplay from "./DownloadOutputDisplay";
 import LinkDisplay from "./LinkDisplay";
 

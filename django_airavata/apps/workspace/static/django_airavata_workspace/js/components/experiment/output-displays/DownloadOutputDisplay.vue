@@ -1,12 +1,16 @@
 <template>
   <div>
-    <data-product-viewer v-for="dp in dataProducts"
-      :data-product="dp" :key="dp.productUri"/>
+    <data-product-viewer
+      v-for="dp in dataProducts"
+      :data-product="dp"
+      :key="dp.productUri"
+    />
   </div>
 </template>
 
 <script>
-import { models } from "django-airavata-api"
+import { models } from "django-airavata-api";
+import { components } from "django-airavata-common-ui";
 
 export default {
   name: "download-output-viewer",
@@ -26,7 +30,7 @@ export default {
   components: {
     "data-product-viewer": components.DataProductViewer
   }
-}
+};
 </script>
 
 
