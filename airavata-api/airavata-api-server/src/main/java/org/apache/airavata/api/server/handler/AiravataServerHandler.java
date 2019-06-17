@@ -269,6 +269,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 permissionType.setName("WRITE");
                 permissionType.setDescription("Write permission type");
                 client.createPermissionType(permissionType);
+
+                permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.getDomainId() + ":MANAGE_SHARING");
+                permissionType.setDomainId(domain.getDomainId());
+                permissionType.setName("MANAGE_SHARING");
+                permissionType.setDescription("Sharing permission type");
+                client.createPermissionType(permissionType);
             }
             sharingClientPool.returnResource(client);
         } catch (Exception ex) {
@@ -374,6 +381,13 @@ public class AiravataServerHandler implements Airavata.Iface {
             permissionType.setDomainId(domain.getDomainId());
             permissionType.setName("WRITE");
             permissionType.setDescription("Write permission type");
+            sharingClient.createPermissionType(permissionType);
+
+            permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.getDomainId()+":MANAGE_SHARING");
+            permissionType.setDomainId(domain.getDomainId());
+            permissionType.setName("MANAGE_SHARING");
+            permissionType.setDescription("Sharing permission type");
             sharingClient.createPermissionType(permissionType);
 
             registryClientPool.returnResource(registryClient);
@@ -5011,8 +5025,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
-                throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
+            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER) && !userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+                throw new AuthorizationException("User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
             }
             for(Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()){
                 String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -5022,6 +5036,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
+                else if(userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
+                    if (userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                        sharingClient.shareEntityWithUsers(gatewayId, resourceId,
+                                Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "MANAGE_SHARING", true);
+                    else
+                        throw new AuthorizationException("User is not allowed to grant sharing permission because the user is not the resource owner.");
+                }
                 else {
                     logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
                     throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
@@ -5049,8 +5070,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
-                throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
+            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER) && !userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+                throw new AuthorizationException("User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
             }
             for(Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()){
                 String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -5060,6 +5081,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(groupPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.shareEntityWithGroups(gatewayId, resourceId,
                             Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
+                else if(groupPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)){
+                    if(userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                        sharingClient.shareEntityWithGroups(gatewayId, resourceId,
+                                Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "MANAGE_SHARING", true);
+                    else
+                        throw new AuthorizationException("User is not allowed to grant sharing permission because the user is not the resource owner.");
+                }
                 else {
                     logger.error("Invalid ResourcePermissionType : " + groupPermission.getValue().toString());
                     throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
@@ -5086,8 +5114,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
-                throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
+            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER) && !userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+                throw new AuthorizationException("User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
             }
             for(Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()){
                 String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -5097,6 +5125,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
+                else if(userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)){
+                    if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                        sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                                Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "MANAGE_SHARING");
+                    else
+                        throw new AuthorizationException("User is not allowed to change sharing permission because the user is not the resource owner.");
+                }
                 else {
                     logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
                     throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
@@ -5125,8 +5160,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         final String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
-                throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner.");
+            if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER) && !userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+                throw new AuthorizationException("User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
             }
             // For certain resource types, restrict them from being unshared with admin groups
             ResourceType resourceType = getResourceType(sharingClient, gatewayId, resourceId);
@@ -5144,6 +5179,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                         && groupPermissionList.get(gatewayGroups.getReadOnlyAdminsGroupId()).equals(ResourcePermissionType.READ)) {
                     throw new Exception("Not allowed to remove Read Only Admins group's READ access.");
                 }
+                if (groupPermissionList.containsKey(gatewayGroups.getReadOnlyAdminsGroupId())
+                        && groupPermissionList.get(gatewayGroups.getReadOnlyAdminsGroupId()).equals(ResourcePermissionType.MANAGE_SHARING)) {
+                    throw new Exception("Not allowed to remove Admins group's SHARING access.");
+                }
             }
             for(Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()){
                 if(groupPermission.getValue().equals(ResourcePermissionType.WRITE))
@@ -5152,6 +5191,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(groupPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "READ");
+                else if(groupPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)){
+                    if(userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                        sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                                Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "MANAGE_SHARING");
+                    else
+                        throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner");
+                }
                 else {
                     logger.error("Invalid ResourcePermissionType : " + groupPermission.getValue().toString());
                     throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
@@ -5214,6 +5260,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                 userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
             } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
                 userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
+            } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
+                userListFunction.apply(sharingClient, ResourcePermissionType.MANAGE_SHARING).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
@@ -5269,6 +5317,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                         .forEach(g -> accessibleGroups.add(g.getGroupId()));
             } else if (permissionType.equals(ResourcePermissionType.READ)) {
                 groupListFunction.apply(sharingClient, ResourcePermissionType.READ)
+                        .stream()
+                        .forEach(g -> accessibleGroups.add(g.getGroupId()));
+            } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
+                groupListFunction.apply(sharingClient, ResourcePermissionType.MANAGE_SHARING)
                         .stream()
                         .forEach(g -> accessibleGroups.add(g.getGroupId()));
             }
@@ -6006,6 +6058,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                 hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, entityId, domainId + ":" + ResourcePermissionType.WRITE);
             } else if (permissionType.equals(ResourcePermissionType.READ)) {
                 hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, entityId, domainId + ":" + ResourcePermissionType.READ);
+            } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
+                hasAccess = hasOwnerAccess || sharingClient.userHasAccess(domainId, userId, entityId, domainId + ":" + ResourcePermissionType.MANAGE_SHARING);
             } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
                 hasAccess = hasOwnerAccess;
             }
