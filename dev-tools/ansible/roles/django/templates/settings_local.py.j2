@@ -49,7 +49,12 @@ EMAIL_PORT = {{ portal_email_port }}
 EMAIL_HOST_USER = '{{ portal_email_username }}'
 EMAIL_HOST_PASSWORD = '{{ portal_email_password }}'
 EMAIL_USE_TLS = {{ portal_email_tls | ternary("True", "False") }}
-ADMINS = {{ admin_emails }}
+# ADMINS receive error emails
+ADMINS = {{ django_error_emails }}
+# PORTAL_ADMINS receive administrative emails, like when a new user is created
+# This can be set to a different value than ADMINS so that the PORTAL_ADMINS
+# don't receive error emails
+PORTAL_ADMINS = {{ admin_emails }}
 SERVER_EMAIL = '{{ portal_server_email }}'
 
 # Keycloak Configuration
