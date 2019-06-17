@@ -847,6 +847,6 @@ class NotificationSerializer(
         lookup_field='notificationId',
         lookup_url_kwarg='notification_id')
     priority = thrift_utils.ThriftEnumField(NotificationPriority)
-    creationTime = UTCPosixTimestampDateTimeField()
+    creationTime = UTCPosixTimestampDateTimeField(allow_null = True)
     publishedTime = UTCPosixTimestampDateTimeField()
     expirationTime = UTCPosixTimestampDateTimeField()

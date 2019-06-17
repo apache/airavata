@@ -23,6 +23,8 @@ import GroupPermission from "./models/GroupPermission";
 import GroupResourceProfile from "./models/GroupResourceProfile";
 import InputDataObjectType from "./models/InputDataObjectType";
 import ManagedUserProfile from "./models/ManagedUserProfile";
+import Notification from "./models/Notification";
+import NotificationPriority from "./models/NotificationPriority";
 import OutputDataObjectType from "./models/OutputDataObjectType";
 import ParallelismType from "./models/ParallelismType";
 import Project from "./models/Project";
@@ -32,6 +34,7 @@ import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
+
 
 import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
@@ -79,6 +82,7 @@ const models = {
   InputDataObjectType,
   ManagedUserProfile,
   Notification,
+  NotificationPriority,
   OutputDataObjectType,
   ParallelismType,
   Project,

@@ -1392,9 +1392,14 @@ class ManageNotificationViewSet(APIBackedViewSet):
         self.request.airavata_client.deleteNotification(
             self.authz_token, settings.GATEWAY_ID, instance.notificationId)
 
-    def perform_create(self, instance):
-        notification = serializer.save()
-        self.request.airavata_client.createNotification(self.authz_token, notification)
+    def perform_create(self, serializer):
+        print("Perform create is called")
+
+        notification = serializer.save(gatewayId=self.gateway_id)
+        print("Perform create is called")
+        print(notification)
+        notificationId = self.request.airavata_client.createNotification(self.authz_token, notification)
+        notification.notificationId = notificationId
 
 class ManagedUserViewSet(mixins.CreateModelMixin,
                          mixins.RetrieveModelMixin,

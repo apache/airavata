@@ -308,7 +308,7 @@ export default {
   ManageNotifications: {
     url: "/api/manage-notifications/",
     viewSet: true,
-    pagination: true,
+    pagination: false,
     modelClass: Notification
   },
 };
