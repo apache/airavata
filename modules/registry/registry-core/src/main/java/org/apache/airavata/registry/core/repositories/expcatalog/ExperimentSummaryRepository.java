@@ -151,7 +151,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         return experimentSummaryModelList;
     }
 
-    public ExperimentStatistics getExperimentStatistics(Map<String,String> filters) throws RegistryException {
+    public ExperimentStatistics getAccessibleExperimentStatistics(List<String> accessibleExperimentIds, Map<String,String> filters) throws RegistryException {
 
         try {
 
@@ -203,40 +203,42 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             }
 
             List<ExperimentSummaryModel> allExperiments = getExperimentStatisticsForState(null, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName);
+                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
             experimentStatistics.setAllExperimentCount(allExperiments.size());
             experimentStatistics.setAllExperiments(allExperiments);
 
             List<ExperimentSummaryModel> createdExperiments = getExperimentStatisticsForState(ExperimentState.CREATED, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName);
+                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
             createdExperiments.addAll(getExperimentStatisticsForState(ExperimentState.VALIDATED, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName));
+                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds));
             experimentStatistics.setCreatedExperimentCount(createdExperiments.size());
             experimentStatistics.setCreatedExperiments(createdExperiments);
 
             List<ExperimentSummaryModel> runningExperiments = getExperimentStatisticsForState(ExperimentState.EXECUTING, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName);
-            runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.SCHEDULED, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName));
-            runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.LAUNCHED, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName));
+                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
+            runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.SCHEDULED, gatewayId, fromDate,
+                    toDate, userName, applicationName, resourceHostName, accessibleExperimentIds));
+            runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.LAUNCHED, gatewayId, fromDate,
+                    toDate, userName, applicationName, resourceHostName, accessibleExperimentIds));
             experimentStatistics.setRunningExperimentCount(runningExperiments.size());
             experimentStatistics.setRunningExperiments(runningExperiments);
 
-            List<ExperimentSummaryModel> completedExperiments = getExperimentStatisticsForState(ExperimentState.COMPLETED, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName);
+            List<ExperimentSummaryModel> completedExperiments = getExperimentStatisticsForState(
+                    ExperimentState.COMPLETED, gatewayId, fromDate, toDate, userName, applicationName, resourceHostName,
+                    accessibleExperimentIds);
             experimentStatistics.setCompletedExperimentCount(completedExperiments.size());
             experimentStatistics.setCompletedExperiments(completedExperiments);
 
-            List<ExperimentSummaryModel> failedExperiments = getExperimentStatisticsForState(ExperimentState.FAILED, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName);
+            List<ExperimentSummaryModel> failedExperiments = getExperimentStatisticsForState(ExperimentState.FAILED,
+                    gatewayId, fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
             experimentStatistics.setFailedExperimentCount(failedExperiments.size());
             experimentStatistics.setFailedExperiments(failedExperiments);
 
-            List<ExperimentSummaryModel> cancelledExperiments = getExperimentStatisticsForState(ExperimentState.CANCELED, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName);
-            cancelledExperiments.addAll(getExperimentStatisticsForState(ExperimentState.CANCELING, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName));
+            List<ExperimentSummaryModel> cancelledExperiments = getExperimentStatisticsForState(
+                    ExperimentState.CANCELED, gatewayId, fromDate, toDate, userName, applicationName, resourceHostName,
+                    accessibleExperimentIds);
+            cancelledExperiments.addAll(getExperimentStatisticsForState(ExperimentState.CANCELING, gatewayId, fromDate,
+                    toDate, userName, applicationName, resourceHostName, accessibleExperimentIds));
             experimentStatistics.setCancelledExperimentCount(cancelledExperiments.size());
             experimentStatistics.setCancelledExperiments(cancelledExperiments);
 
@@ -251,7 +253,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
     }
 
     protected List<ExperimentSummaryModel> getExperimentStatisticsForState(ExperimentState experimentState, String gatewayId, Timestamp fromDate, Timestamp toDate,
-                                                                           String userName, String applicationName, String resourceHostName) throws RegistryException, IllegalArgumentException {
+                                                                           String userName, String applicationName, String resourceHostName, List<String> experimentIds) throws RegistryException, IllegalArgumentException {
 
         String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();
@@ -288,6 +290,12 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             logger.debug("Filter Experiments by ApplicationName");
             queryParameters.put(DBConstants.Experiment.EXECUTION_ID, applicationName);
             query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
+        }
+
+        if (experimentIds != null) {
+            logger.debug("Filter Experiments by experimentIds");
+            queryParameters.put(DBConstants.Experiment.EXPERIMENT_ID, experimentIds);
+            query += "ES.experimentId IN :" + DBConstants.Experiment.EXPERIMENT_ID + " AND ";
         }
 
         if (resourceHostName != null) {

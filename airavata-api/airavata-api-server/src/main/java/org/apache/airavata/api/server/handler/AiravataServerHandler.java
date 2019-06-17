@@ -1225,7 +1225,28 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
+            // Find accessible experiments in date range
+            List<String> accessibleExpIds = new ArrayList<>();
+            List<SearchCriteria> sharingFilters = new ArrayList<>();
+            SearchCriteria entityTypeCriteria = new SearchCriteria();
+            entityTypeCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+            entityTypeCriteria.setSearchCondition(SearchCondition.EQUAL);
+            entityTypeCriteria.setValue(gatewayId + ":EXPERIMENT");
+            sharingFilters.add(entityTypeCriteria);
+            SearchCriteria fromCreatedTimeCriteria = new SearchCriteria();
+            fromCreatedTimeCriteria.setSearchField(EntitySearchField.CREATED_TIME);
+            fromCreatedTimeCriteria.setSearchCondition(SearchCondition.GTE);
+            fromCreatedTimeCriteria.setValue(Long.toString(fromTime));
+            sharingFilters.add(fromCreatedTimeCriteria);
+            SearchCriteria toCreatedTimeCriteria = new SearchCriteria();
+            toCreatedTimeCriteria.setSearchField(EntitySearchField.CREATED_TIME);
+            toCreatedTimeCriteria.setSearchCondition(SearchCondition.LTE);
+            toCreatedTimeCriteria.setValue(Long.toString(toTime));
+            sharingFilters.add(toCreatedTimeCriteria);
+            sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                    userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.getEntityId()));
+
+            ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;

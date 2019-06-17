@@ -98,10 +98,10 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         // Reload experiment to get its status' identifier
         experimentModelOne = experimentRepository.getExperiment(experimentIdOne);
 
-        String expertimentIdTwo = experimentRepository.addExperiment(experimentModelTwo);
-        assertTrue(expertimentIdTwo != null);
+        String experimentIdTwo = experimentRepository.addExperiment(experimentModelTwo);
+        assertTrue(experimentIdTwo != null);
         // Reload experiment to get its status' identifier
-        experimentModelTwo = experimentRepository.getExperiment(expertimentIdTwo);
+        experimentModelTwo = experimentRepository.getExperiment(experimentIdTwo);
 
         Timestamp timeOne = Timestamp.valueOf("2010-01-01 09:00:00");
         experimentModelOne.setCreationTime(timeOne.getTime());
@@ -109,13 +109,13 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
 
         Timestamp timeTwo = Timestamp.valueOf("2018-01-01 09:00:00");
         experimentModelTwo.setCreationTime(timeTwo.getTime());
-        experimentRepository.updateExperiment(experimentModelTwo, expertimentIdTwo);
+        experimentRepository.updateExperiment(experimentModelTwo, experimentIdTwo);
 
         Map<String, String> filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         filters.put(DBConstants.Experiment.PROJECT_ID, projectId);
 
-        List<String> allExperimentIds = Arrays.asList( experimentIdOne, expertimentIdTwo);
+        List<String> allExperimentIds = Arrays.asList( experimentIdOne, experimentIdTwo);
         List<ExperimentSummaryModel> experimentSummaryModelList = experimentSummaryRepository.
                 searchAllAccessibleExperiments(allExperimentIds, filters, -1, 0, null, null);
         assertEquals(2, experimentSummaryModelList.size());
@@ -125,7 +125,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         experimentSummaryModelList = experimentSummaryRepository.
                 searchAllAccessibleExperiments(allExperimentIds, filters, -1, 0, null, null);
         assertTrue(experimentSummaryModelList.size() == 1);
-        assertEquals(expertimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
+        assertEquals(experimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
 
         String fromDate = String.valueOf(Timestamp.valueOf("2010-10-10 09:00:00").getTime());
         String toDate = String.valueOf(System.currentTimeMillis());
@@ -135,7 +135,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         experimentSummaryModelList = experimentSummaryRepository.
                 searchAllAccessibleExperiments(allExperimentIds, filters, -1, 0, null, null);
         assertTrue(experimentSummaryModelList.size() == 1);
-        assertEquals(expertimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
+        assertEquals(experimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
 
         filters.remove(DBConstants.ExperimentSummary.FROM_DATE);
         filters.remove(DBConstants.ExperimentSummary.TO_DATE);
@@ -174,14 +174,14 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         filters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
         filters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
 
-        ExperimentStatistics experimentStatistics = experimentSummaryRepository.getExperimentStatistics(filters);
+        ExperimentStatistics experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters);
         assertTrue(experimentStatistics.getAllExperimentCount() == 0);
 
         filters.remove(DBConstants.Experiment.RESOURCE_HOST_ID);
 
-        experimentStatistics = experimentSummaryRepository.getExperimentStatistics(filters);
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters);
         assertTrue(experimentStatistics.getAllExperimentCount() == 1);
-        assertEquals(experimentStatistics.getAllExperiments().get(0).getExperimentId(), expertimentIdTwo);
+        assertEquals(experimentStatistics.getAllExperiments().get(0).getExperimentId(), experimentIdTwo);
 
         filters.remove(DBConstants.Experiment.USER_NAME);
         filters.remove(DBConstants.Experiment.EXECUTION_ID);
@@ -191,23 +191,30 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         assertTrue(statusIdOne != null);
 
         ExperimentStatus experimentStatusTwo = new ExperimentStatus(ExperimentState.EXECUTING);
-        String statusIdTwo = experimentStatusRepository.addExperimentStatus(experimentStatusTwo, expertimentIdTwo);
+        String statusIdTwo = experimentStatusRepository.addExperimentStatus(experimentStatusTwo, experimentIdTwo);
         assertTrue(statusIdTwo != null);
 
-        experimentStatistics = experimentSummaryRepository.getExperimentStatistics(filters);
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters);
         assertTrue(experimentStatistics.getAllExperimentCount() == 1);
         assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
-        assertEquals(expertimentIdTwo, experimentStatistics.getAllExperiments().get(0).getExperimentId());
+        assertEquals(experimentIdTwo, experimentStatistics.getAllExperiments().get(0).getExperimentId());
 
         filters.remove(DBConstants.ExperimentSummary.FROM_DATE);
         filters.remove(DBConstants.ExperimentSummary.TO_DATE);
 
-        experimentStatistics = experimentSummaryRepository.getExperimentStatistics(filters);
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters);
         assertTrue(experimentStatistics.getAllExperimentCount() == 2);
         assertTrue(experimentStatistics.getCreatedExperimentCount() == 1);
+        assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
+
+        // Experiment 2 is EXECUTING and should be the only one returned
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(Collections.singletonList(experimentIdTwo), filters);
+        assertTrue(experimentStatistics.getAllExperimentCount() == 1);
+        assertTrue(experimentStatistics.getCreatedExperimentCount() == 0);
+        assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
 
         experimentRepository.removeExperiment(experimentIdOne);
-        experimentRepository.removeExperiment(expertimentIdTwo);
+        experimentRepository.removeExperiment(experimentIdTwo);
 
         gatewayRepository.removeGateway(gatewayId);
         projectRepository.removeProject(projectId);
