@@ -622,6 +622,36 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
+    public boolean deleteUser(String accessToken, String tenantId, String username) throws IamAdminServicesException {
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, accessToken);
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            if(userRepresentation != null)
+            {
+                client.realm(tenantId).users().delete(userRepresentation.getId());
+                return true;
+            }else{
+                throw new IamAdminServicesException("User [" + username + "] wasn't found in Keycloak!");
+            }
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } catch (Exception ex){
+            logger.error("Error deleting user in keycloak server, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error deleting user in keycloak server, reason: " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    @Override
     public boolean addRoleToUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName) throws IamAdminServicesException {
 
         Keycloak client = null;

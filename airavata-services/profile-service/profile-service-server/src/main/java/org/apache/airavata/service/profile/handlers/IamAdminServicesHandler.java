@@ -224,6 +224,16 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
+    public boolean deleteUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
+
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+
+        return keycloakclient.deleteUser(authzToken.getAccessToken(), gatewayId, username);
+    }
+
+    @Override
+    @SecurityCheck
     @Deprecated
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
