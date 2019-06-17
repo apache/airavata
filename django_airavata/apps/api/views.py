@@ -2,7 +2,6 @@ import logging
 import os
 from datetime import datetime, timedelta
 
-import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
