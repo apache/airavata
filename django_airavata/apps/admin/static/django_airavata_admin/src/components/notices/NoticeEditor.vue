@@ -99,13 +99,9 @@
           <b-form-select
           id = "priority"
           v-model="data.priority"
+          :options="select.options"
           >
-          <option v-for="(selectOption, indexOpt) in select.options"
-            :key="indexOpt"
-            :value="selectOption"
-          >
-            {{ selectOption }} - {{ selectOption === select.selected }}
-          </option>
+
         </b-form-select>
 
       </b-form-group>
@@ -121,7 +117,7 @@ import moment from "moment";
 import 'vue-datetime/dist/vue-datetime.css'
 
 export default {
-  name: "project-editor",
+  name: "noitce-editor",
   components: {
     datetime: Datetime
   },
@@ -141,7 +137,9 @@ export default {
       this.inputPublishedTime = new moment(this.value.publishedTime.toGMTString()).format()
       this.inputExpirationTime = new moment(this.value.expirationTime.toGMTString()).format()
       console.log(this.data.priority);
-      this.select.selected = this.data.priority.name;
+      //this.select.selected = this.data.priority.name;
+      //Hack to display the selected value
+      this.data.priority = this.data.priority.name;
     }
   },
   mounted() {
@@ -157,9 +155,9 @@ export default {
       select : {
           selected: "LOW",
           options: [
-              { value: "LOW", text: 'LOW' },
-              { value: "NORMAL", text: 'NORMAL' },
-              { value: "HIGH", text: 'HIGH' }
+              { text: "LOW", value: "LOW" },
+              { text: "NORMAL", value: "NORMAL" },
+              { text: "HIGH", value: "HIGH" }
             ]
       }
     };

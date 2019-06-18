@@ -1401,6 +1401,10 @@ class ManageNotificationViewSet(APIBackedViewSet):
         notificationId = self.request.airavata_client.createNotification(self.authz_token, notification)
         notification.notificationId = notificationId
 
+    def perform_update(self, serializer):
+        notification = serializer.save()
+        self.request.airavata_client.updateNotification(self.authz_token, notification)
+
 class ManagedUserViewSet(mixins.CreateModelMixin,
                          mixins.RetrieveModelMixin,
                          mixins.UpdateModelMixin,

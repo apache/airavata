@@ -17,15 +17,15 @@
               new-item-button-text="New Notice">
               <template slot="new-item-editor">
                 <b-card v-if="showNewItemEditor" title="New Notice">
-                  <project-editor
+                  <notice-editor
                     v-model="newNotice"
-                    ref="projectEditor"
+                    ref="noticeEditor"
                     @save="saveNewNotice"
                     @valid="valid = true"
                     @invalid="valid = false"
                   >
                     <div slot="title"></div>
-                  </project-editor>
+                  </notice-editor>
                   <div class="row">
                     <div class="col">
                       <b-button variant="primary" @click="saveNewNotice">
@@ -58,9 +58,9 @@
                   </template>
                   <template slot="row-details" slot-scope="row">
                     <b-card>
-                      <project-editor :value="row.item" />
+                      <notice-editor :value="row.item" v-model="updatedNotice"/>
                       <b-button size="sm" @click="toggleDetails(row)">Close</b-button>
-                      <b-button size="sm" @click="updateNotice">Update</b-button>
+                      <b-button size="sm" @click="updateNotice()">Update</b-button>
                     </b-card>
                   </template>
 
@@ -78,7 +78,7 @@
 import { models, services } from "django-airavata-api";
 import { components, layouts } from "django-airavata-common-ui";
 import NoticesDetailsContainer from "./NoticesDetailsContainer.vue";
-import ProjectEditor from "./ProjectEditor";
+import NoticeEditor from "./NoticeEditor";
 
 
 export default {
@@ -96,14 +96,11 @@ export default {
     NoticesDetailsContainer,
     "delete-link": components.DeleteLink,
     "list-layout": layouts.ListLayout,
-    ProjectEditor,
+    NoticeEditor,
   },
   created() {
     services.ManageNotificationService.list().then(
       notices => (this.notices = notices)
-    );
-    services.GroupService.list({ limit: -1 }).then(
-      groups => (this.allGroups = groups)
     );
   },
   computed: {
@@ -140,11 +137,6 @@ export default {
       return this.notices
         ? this.notices
         : [];
-    },
-    editableGroups() {
-      return this.allGroups
-        ? this.allGroups.filter(g => g.isAdmin || g.isOwner)
-        : [];
     }
   },
   methods: {
@@ -154,14 +146,19 @@ export default {
       services.ManageNotificationService.create({data: this.newNotice}).then(sp => {
         this.notices.push(sp);
       });
+      this.showNewItemEditor = false;
     },
-    updateNotice(updatedNotice) {
-      console.log(updatedNotice);
+    updateNotice() {
+      console.log(this.updatedNotice);
       const index = this.notices.findIndex(
         sp =>
-          sp.notificationId === updatedNotice.notificationId
+          sp.notificationId === this.updatedNotice.notificationId
       );
-
+      console.log("Index of the notice: " + index);
+      services.ManageNotificationService.update({lookup: this.updatedNotice.notificationId,
+                                                  data: this.updatedNotice}).then(sp => {
+      this.notices.splice(index,1, sp);
+    });
     },
     cancelNewNotice() {
       this.showNewItemEditor = false;
@@ -169,14 +166,6 @@ export default {
     addNewNotice() {
       this.newNotice = new models.Notification();
       this.showNewItemEditor = true;
-    },
-    groupsUpdated(managedUserProfile) {
-      services.ManagedUserProfileService.update({
-        lookup: managedUserProfile.userId,
-        data: managedUserProfile
-      }).finally(() => {
-        this.reloadUserProfiles();
-      });
     },
     deleteNotice(notificationId) {
       services.ManageNotificationService.delete({
@@ -188,33 +177,13 @@ export default {
         this.notices.splice(index, 1);
       });
     },
-    reloadUserProfiles() {
-      const params = {
-        limit: 10,
-        offset: this.currentOffset
-      };
-      if (this.search) {
-        params["search"] = this.search;
-      }
-      services.ManagedUserProfileService.list(params).then(
-        users => (this.usersPaginator = users)
-      );
-    },
     toggleDetails(row) {
+      this.updatedNotice = new models.Notification(),
+      this.updatedNotice = row.item;
       row.toggleDetails();
       console.log(row.item);
       this.showingDetails[row.item.notifiticationId] = !this
         .showingDetails[row.item.notificationId];
-    },
-    searchUsers() {
-      // Reset paginator when starting a search
-      this.usersPaginator = null;
-      this.reloadUserProfiles();
-    },
-    resetSearch() {
-      this.usersPaginator = null;
-      this.search = null;
-      this.reloadUserProfiles();
     }
   }
 };
