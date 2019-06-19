@@ -2,57 +2,51 @@
   <div>
     <div class="d-flex">
       <slot name="title">
-        <h1 class="h4 mb-4 mr-auto">
-          New Notice
-
-
-
-        </h1>
-
-      </slot>
-      <slot name="buttons">
       </slot>
     </div>
     <b-form
-      @submit="onSubmit"
       @input="onUserInput"
       novalidate
     >
+      <b-form-group
+        label="Notice title"
+        label-for="notice-title"
+        :feedback="getValidationFeedback('title')"
+        :state="getValidationState('title')"
+      >
+        <b-form-input
+          id="notice-title"
+          type="text"
+          v-model="data.title"
+          required
+          placeholder="notice title"
+          :state="getValidationState('title')"
+        ></b-form-input>
+      </b-form-group>
 
-        <b-form-group
-          label="Notice title"
-          label-for="notice-title"
-          :feedback="nameFeedback"
-          :state="nameState"
-        >
-          <b-form-input
-            id="notice-title"
-            type="text"
-            v-model="data.title"
-            required
-            placeholder="notice title"
-            :state="nameState"
-          ></b-form-input>
-        </b-form-group>
+      <b-form-group
+        label="Notice Message"
+        label-for="notice-message"
+        :feedback="getValidationFeedback('notificationMessage')"
+        :state="getValidationState('notificationMessage')"
+      >
+        <b-form-textarea
+          id="notice-message"
+          type="text"
+          v-model="data.notificationMessage"
+          required
+          placeholder="Notice Message"
+          :state="getValidationState('notificationMessage')"
+          :rows="3"
+        ></b-form-textarea>
+      </b-form-group>
 
-        <b-form-group
-          label="Notice Message"
-          label-for="notice-message"
-        >
-          <b-form-textarea
-            id="notice-message"
-            type="text"
-            v-model="data.notificationMessage"
-            required
-            placeholder="Notice Message"
-            :rows="3"
-          ></b-form-textarea>
-        </b-form-group>
-
-        <b-form-group
-          label="Publish Date"
-          label-for="publish-date"
-        >
+      <b-form-group
+        label="Publish Date"
+        label-for="publish-date"
+        :feedback="getValidationFeedback('notificationMessage')"
+        :state="getValidationState('notificationMessage')"
+      >
         <datetime
           type="datetime"
           v-model="inputPublishedTime"
@@ -67,13 +61,13 @@
           :week-start="7"
           use12-hour
           auto
-          ></datetime>
-        </b-form-group>
+        ></datetime>
+      </b-form-group>
 
-        <b-form-group
-          label="Expiration Date"
-          label-for="expiration-date"
-        >
+      <b-form-group
+        label="Expiration Date"
+        label-for="expiration-date"
+      >
         <datetime
           type="datetime"
           v-model="inputExpirationTime"
@@ -88,30 +82,53 @@
           :week-start="7"
           use12-hour
           auto
-          ></datetime>
-
-        </b-form-group>
-
-        <b-form-group
-          label="Priority"
-          label-for="priority"
-        >
-          <b-form-select
-          id = "priority"
-          v-model="data.priority"
-          :options="select.options"
-          >
-
-        </b-form-select>
-
+        ></datetime>
       </b-form-group>
+
+      <b-form-group
+        label="Priority"
+        label-for="priority"
+        :feedback="getValidationFeedback('priority')"
+        :state="getValidationState('priority')"
+      >
+        <b-form-select
+        id = "priority"
+        v-model="data.priority"
+        :options="select.options"
+        :state="getValidationState('priority')"
+        >
+        </b-form-select>
+      </b-form-group>
+
+      <template v-if=!editNotification name="buttons">
+        <div class="row">
+          <div
+            id="col-exp-buttons"
+            class="col"
+          >
+            <b-button
+              variant="success"
+              @click="saveNewNotice"
+              :disabled="isSaveDisabled"
+            >
+              Save
+            </b-button>
+            <b-button
+              variant="primary"
+              @click="cancelNewNotice"
+            >
+              Cancel
+            </b-button>
+          </div>
+        </div>
+      </template>
     </b-form>
   </div>
 </template>
 
 <script>
 import { models } from "django-airavata-api";
-import { mixins } from "django-airavata-common-ui";
+import { mixins, utils } from "django-airavata-common-ui";
 import { Datetime } from 'vue-datetime';
 import moment from "moment";
 import 'vue-datetime/dist/vue-datetime.css'
@@ -129,25 +146,17 @@ export default {
     }
   },
   created() {
-    console.log("Editor has been created...");
-    console.log(this.hasOwnProperty('value'));
+    //checks whether the component is used for editing or updating the notificaion
     if(this.value.notificationId != null){
-      console.log("Updating the date");
-      console.log(new moment(this.value.publishedTime.toGMTString()).format());
+      this.editNotification = true;
       this.inputPublishedTime = new moment(this.value.publishedTime.toGMTString()).format()
       this.inputExpirationTime = new moment(this.value.expirationTime.toGMTString()).format()
-      console.log(this.data.priority);
-      //this.select.selected = this.data.priority.name;
-      //Hack to display the selected value
       this.data.priority = this.data.priority.name;
     }
   },
-  mounted() {
-    this.$on("input", this.validate);
-    this.validate();
-  },
   data() {
     return {
+      editNotification: false,
       userBeginsInput: false,
       inputPublishedTime: null,
       inputExpirationTime: null,
@@ -163,62 +172,49 @@ export default {
     };
   },
   computed: {
-    nameFeedback() {
-      if (this.userBeginsInput && this.validation.name) {
-        return this.validation.name.join("; ");
-      } else {
-        return null;
-      }
+    valid: function() {
+      const validation = this.data.validate();
+      return (
+        Object.keys(validation).length === 0
+      );
     },
-    nameState() {
-      if (this.validation.name) {
-        if (this.userBeginsInput) {
-          return false;
-        } else {
-          return null;
-        }
-      } else {
-        return true;
-      }
-    },
-    validation() {
-      const v = this.data.validate();
-      return v ? v : {};
+    isSaveDisabled: function() {
+      return !this.valid || this.hasUploadingInputs;
     }
   },
   methods: {
-    validate() {
-      if (Object.keys(this.validation).length > 0) {
-        this.$emit("invalid");
-      } else {
-        this.$emit("valid");
-      }
-    },
     onUserInput() {
       this.userBeginsInput = true;
-    },
-    onSubmit(event) {
-      event.preventDefault();
-      this.$emit("save");
+      return this.$emit("userBeginsInput");
     },
     reset() {
       this.userBeginsInput = false;
+    },
+    getValidationFeedback: function(properties) {
+      return utils.getProperty(this.data.validate(), properties);
+    },
+    getValidationState: function(properties) {
+      if (this.userBeginsInput == false){
+        return null;
+      }
+      return this.getValidationFeedback(properties) ? "invalid" : "valid";
+    },
+    cancelNewNotice() {
+      return this.$emit("cancelNewNotice");
+    },
+    saveNewNotice() {
+      return this.$emit("saveNewNotice");
     }
   },
   watch: {
     inputExpirationTime() {
       this.data.expirationTime = this.inputExpirationTime;
-      console.log("Expiration time: " + this.inputExpirationTime);
 
     },
     inputPublishedTime() {
       this.data.publishedTime = this.inputPublishedTime;
-      console.log("Today date: " + this.today);
-      console.log("Published time: " + this.inputPublishedTime);
-    },
-    value() {
-      this.validate();
     }
+
   }
 };
 </script>

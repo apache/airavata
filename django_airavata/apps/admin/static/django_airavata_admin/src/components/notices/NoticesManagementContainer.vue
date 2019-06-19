@@ -3,10 +3,6 @@
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">Manage Notices</h1>
-
-
-
-
       </div>
     </div>
     <div class="row">
@@ -16,30 +12,22 @@
             <list-layout @add-new-item="addNewNotice" title="Notice"
               new-item-button-text="New Notice">
               <template slot="new-item-editor">
-                <b-card v-if="showNewItemEditor" title="New Notice">
+                <b-card v-if="showNewItemEditor">
                   <notice-editor
                     v-model="newNotice"
                     ref="noticeEditor"
-                    @save="saveNewNotice"
-                    @valid="valid = true"
-                    @invalid="valid = false"
+                    @cancelNewNotice="cancelNewNotice"
+                    @saveNewNotice="saveNewNotice"
                   >
-                    <div slot="title"></div>
+                  <template slot="title">
+                    <h1 class="h4 mb-4 mr-auto">
+                      New Notice
+                    </h1>
+                  </template>
                   </notice-editor>
-                  <div class="row">
-                    <div class="col">
-                      <b-button variant="primary" @click="saveNewNotice">
-                        Save
-                      </b-button>
-                      <b-button variant="secondary" @click="cancelNewNotice">
-                        Cancel
-                      </b-button>
-                    </div>
-                  </div>
                 </b-card>
               </template>
               <template slot="item-list" slot-scope="slotProps">
-
                 <b-table hover :fields="fields" :items="items">
                   <template slot="publishedTime" slot-scope="data">
                     <human-date :date="data.value"/>
@@ -58,15 +46,20 @@
                   </template>
                   <template slot="row-details" slot-scope="row">
                     <b-card>
-                      <notice-editor :value="row.item" v-model="updatedNotice"/>
-                      <b-button size="sm" @click="toggleDetails(row)">Close</b-button>
-                      <b-button size="sm" @click="updateNotice()">Update</b-button>
+                      <notice-editor :value="row.item" v-model="updatedNotice" @userBeginsInput="isUserBeginInput = false">
+                        <template slot="title">
+                          <h1 class="h4 mb-4 mr-auto">
+                            Update Notice
+                          </h1>
+                        </template>
+                      </notice-editor>
+                      <b-button variant="success" size="sm" @click="updateNotice()" :disabled="isUserBeginInput">Update</b-button>
+                      <b-button variant="primary" size="sm" @click="toggleDetails(row)">Close</b-button>
                     </b-card>
                   </template>
-
                 </b-table>
               </template>
-            </list-layout >
+            </list-layout>
           </div>
         </div>
       </div>
@@ -77,7 +70,6 @@
 <script>
 import { models, services } from "django-airavata-api";
 import { components, layouts } from "django-airavata-common-ui";
-import NoticesDetailsContainer from "./NoticesDetailsContainer.vue";
 import NoticeEditor from "./NoticeEditor";
 
 
@@ -86,14 +78,13 @@ export default {
   data() {
     return {
       notices: null,
+      isUserBeginInput: true,
       showNewItemEditor: false,
-      allGroups: null,
       showingDetails: {},
     };
   },
   components: {
     'human-date': components.HumanDate,
-    NoticesDetailsContainer,
     "delete-link": components.DeleteLink,
     "list-layout": layouts.ListLayout,
     NoticeEditor,
@@ -141,24 +132,20 @@ export default {
   },
   methods: {
     saveNewNotice() {
-      // eslint-disable-next-line
-      console.log(this.newNotice);
       services.ManageNotificationService.create({data: this.newNotice}).then(sp => {
         this.notices.push(sp);
       });
-      this.showNewItemEditor = false;
+      this.showNewItemEditor = true;
     },
     updateNotice() {
-      console.log(this.updatedNotice);
       const index = this.notices.findIndex(
         sp =>
           sp.notificationId === this.updatedNotice.notificationId
       );
-      console.log("Index of the notice: " + index);
       services.ManageNotificationService.update({lookup: this.updatedNotice.notificationId,
                                                   data: this.updatedNotice}).then(sp => {
-      this.notices.splice(index,1, sp);
-    });
+                                                    this.notices.splice(index,1, sp);
+                                                });
     },
     cancelNewNotice() {
       this.showNewItemEditor = false;
@@ -181,7 +168,6 @@ export default {
       this.updatedNotice = new models.Notification(),
       this.updatedNotice = row.item;
       row.toggleDetails();
-      console.log(row.item);
       this.showingDetails[row.item.notifiticationId] = !this
         .showingDetails[row.item.notificationId];
     }
