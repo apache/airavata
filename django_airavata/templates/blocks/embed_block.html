@@ -1,5 +1,8 @@
-{% load wagtailimages_tags %}
+{% load wagtailembeds_tags %}
 
 <div class="{% if self.custom_class %}{{self.custom_class}}{% endif %}">
-  {{ self.embed }}
+  {% comment %} {% include_block value.embed %} doesn't work, see also the following links {% endcomment %}
+  {% comment %} https://github.com/wagtail/wagtail/issues/1098 {% endcomment %}
+  {% comment %} https://github.com/wagtail/wagtail/issues/4371 {% endcomment %}
+  {% embed value.embed.url %}
 </div>
