@@ -203,8 +203,8 @@ class CustomThriftClient(connection_pool.ThriftClient):
     def ping(self):
         try:
             self.client.getAPIVersion()
-        except Exception:
-            log.exception("getAPIVersion failed")
+        except Exception as e:
+            log.debug("getAPIVersion failed: {}".format(str(e)))
             raise
 
 
