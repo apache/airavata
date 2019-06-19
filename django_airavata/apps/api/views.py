@@ -1394,8 +1394,6 @@ class ManageNotificationViewSet(APIBackedViewSet):
             self.authz_token, settings.GATEWAY_ID, lookup_value)
 
     def get_list(self):
-        print(self.request.airavata_client.getAllNotifications(
-            self.authz_token, self.gateway_id))
         return self.request.airavata_client.getAllNotifications(
             self.authz_token, self.gateway_id)
 
@@ -1404,11 +1402,7 @@ class ManageNotificationViewSet(APIBackedViewSet):
             self.authz_token, settings.GATEWAY_ID, instance.notificationId)
 
     def perform_create(self, serializer):
-        print("Perform create is called")
-
         notification = serializer.save(gatewayId=self.gateway_id)
-        print("Perform create is called")
-        print(notification)
         notificationId = self.request.airavata_client.createNotification(self.authz_token, notification)
         notification.notificationId = notificationId
 
