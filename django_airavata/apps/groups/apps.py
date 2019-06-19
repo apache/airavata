@@ -11,3 +11,10 @@ class GroupsConfig(AiravataAppConfig):
     app_description = """
         Create and manage user groups.
     """
+    nav = [
+        {
+            'label': 'Groups',
+            'icon': 'fa fa-users',
+            'url': 'django_airavata_groups:manage',
+        },
+    ]

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from importlib import import_module
 
 from pkg_resources import iter_entry_points
 
@@ -93,8 +94,10 @@ CUSTOM_DJANGO_APPS = []
 #    )
 #
 for entry_point in iter_entry_points(group='airavata.djangoapp'):
-    custom_app = enhance_custom_app_config(entry_point.load())
-    CUSTOM_DJANGO_APPS.append(custom_app)
+    custom_app_class = entry_point.load()
+    custom_app_class = enhance_custom_app_config(custom_app_class)
+    custom_app_instance = custom_app_class(entry_point.name, import_module(entry_point.module_name))
+    CUSTOM_DJANGO_APPS.append(custom_app_instance)
     # Create path to AppConfig class (otherwise the ready() method doesn't get
     # called)
     INSTALLED_APPS.append("{}.{}".format(entry_point.module_name,

@@ -12,3 +12,41 @@ class AdminConfig(AiravataAppConfig):
     app_description = """
         Configure and share resources with other users.
     """
+    nav = [
+        {
+            'label': 'Application Catalog',
+            'icon': 'fa fa-cogs',
+            'url': 'django_airavata_admin:app_catalog',
+            'active_prefixes': ['applications']
+        },
+        {
+            'label': 'Manage Users',
+            'icon': 'fa fa-users',
+            'url': 'django_airavata_admin:users',
+            'active_prefixes': ['users']
+        },
+        {
+            'label': 'Experiment Statistics',
+            'icon': 'fa fa-chart-bar',
+            'url': 'django_airavata_admin:experiment-statistics',
+            'active_prefixes': ['experiment-statistics']
+        },
+        {
+            'label': 'Credential Store',
+            'icon': 'fa fa-lock',
+            'url': 'django_airavata_admin:credential_store',
+            'active_prefixes': ['credentials']
+        },
+        {
+            'label': 'Group Resource Profile',
+            'icon': 'fa fa-server',
+            'url': 'django_airavata_admin:group_resource_profile',
+            'active_prefixes': ['group-resource-profiles']
+        },
+        {
+            'label': 'Gateway Resource Profile',
+            'icon': 'fa fa-tasks',
+            'url': 'django_airavata_admin:gateway_resource_profile',
+            'active_prefixes': ['gateway-resource-profile']
+        },
+    ]

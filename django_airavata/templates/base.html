@@ -156,6 +156,9 @@
             {% if current_airavata_app %}
             <i class="fa {{ current_airavata_app.fa_icon_class }} mr-2"></i>
             {{ current_airavata_app.verbose_name }}
+            {% elif current_custom_app %}
+            <i class="fa {{ current_custom_app.fa_icon_class }} mr-2"></i>
+            {{ current_custom_app.verbose_name }}
             {% else %}
             Menu
             {% endif %}
@@ -220,6 +223,16 @@
     </div>
     <nav class=c-nav>
       {% block nav-items %}
+        {% for nav_item in airavata_app_nav %}
+          <a href="{% url nav_item.url %}" class="c-nav__item {% if nav_item.active %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="{{ nav_item.label }}">
+              <i class="{{ nav_item.icon }}"></i> <span class=sr-only>{{ nav_item.label }}</span>
+          </a>
+        {% endfor %}
+        {% for nav_item in custom_app_nav %}
+          <a href="{% url nav_item.url %}" class="c-nav__item {% if nav_item.active %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="{{ nav_item.label }}">
+              <i class="{{ nav_item.icon }}"></i> <span class=sr-only>{{ nav_item.label }}</span>
+          </a>
+        {% endfor %}
       {% endblock %}
     </nav>
     {% comment %}

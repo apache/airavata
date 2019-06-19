@@ -11,15 +11,6 @@
 {% render_bundle bundle_name 'css' 'DATAPARSERS' %}
 {% endblock %}
 
-{% block nav-items %}
-
-        <a href="{% url 'django_airavata_dataparsers:home' %}"
-            class="c-nav__item {% if request.active_nav_item == 'home' %}is-active{% endif %}"
-            data-toggle=tooltip data-placement=right title="Home">
-            <i class="fa fa-home"></i> <span class=sr-only>Home</span>
-        </a>
-{% endblock %}
-
 {% block content %}
 <div id="{{ bundle_name }}"/>
 {% endblock content %}
