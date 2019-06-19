@@ -33,7 +33,10 @@ from airavata.model.appcatalog.parser.ttypes import Parser
 from airavata.model.appcatalog.storageresource.ttypes import (
     StorageResourceDescription
 )
-from airavata.model.application.io.ttypes import InputDataObjectType
+from airavata.model.application.io.ttypes import (
+    InputDataObjectType,
+    OutputDataObjectType
+)
 from airavata.model.credential.store.ttypes import (
     CredentialSummary,
     SummaryType
@@ -44,6 +47,7 @@ from airavata.model.data.replica.ttypes import (
 )
 from airavata.model.experiment.ttypes import (
     ExperimentModel,
+    ExperimentStatistics,
     ExperimentSummaryModel
 )
 from airavata.model.group.ttypes import GroupModel, ResourcePermissionType
@@ -302,6 +306,15 @@ class InputDataObjectTypeSerializer(
         required = ('name',)
 
 
+class OutputDataObjectTypeSerializer(
+        thrift_utils.create_serializer_class(OutputDataObjectType)):
+
+    metaData = StoredJSONField(required=False, allow_null=True)
+
+    class Meta:
+        required = ('name',)
+
+
 class ApplicationInterfaceDescriptionSerializer(
         thrift_utils.create_serializer_class(ApplicationInterfaceDescription)):
 
@@ -313,6 +326,7 @@ class ApplicationInterfaceDescriptionSerializer(
         order_by='inputOrder',
         child=InputDataObjectTypeSerializer(),
         allow_null=True)
+    applicationOutputs = OutputDataObjectTypeSerializer(many=True)
     userHasWriteAccess = serializers.SerializerMethodField()
 
     def get_userHasWriteAccess(self, appDeployment):
@@ -420,6 +434,9 @@ class ExperimentSerializer(
     experimentInputs = serializers.ListField(
         child=InputDataObjectTypeSerializer(),
         allow_null=True)
+    experimentOutputs = serializers.ListField(
+        child=OutputDataObjectTypeSerializer(),
+        allow_null=True)
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     experimentStatus = ExperimentStatusSerializer(many=True, allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
@@ -480,7 +497,7 @@ class FullExperiment:
 
     def __init__(self, experimentModel, project=None, outputDataProducts=None,
                  inputDataProducts=None, applicationModule=None,
-                 computeResource=None, jobDetails=None):
+                 computeResource=None, jobDetails=None, outputViews=None):
         self.experiment = experimentModel
         self.experimentId = experimentModel.experimentId
         self.project = project
@@ -489,6 +506,7 @@ class FullExperiment:
         self.applicationModule = applicationModule
         self.computeResource = computeResource
         self.jobDetails = jobDetails
+        self.outputViews = outputViews
 
 
 class JobSerializer(thrift_utils.create_serializer_class(JobModel)):
@@ -507,6 +525,7 @@ class FullExperimentSerializer(serializers.Serializer):
     computeResource = ComputeResourceDescriptionSerializer(read_only=True)
     project = ProjectSerializer(read_only=True)
     jobDetails = JobSerializer(many=True, read_only=True)
+    outputViews = serializers.DictField(read_only=True)
 
     def create(self, validated_data):
         raise Exception("Not implemented")
@@ -850,3 +869,12 @@ class NotificationSerializer(
     creationTime = UTCPosixTimestampDateTimeField(allow_null = True)
     publishedTime = UTCPosixTimestampDateTimeField()
     expirationTime = UTCPosixTimestampDateTimeField()
+
+class ExperimentStatisticsSerializer(
+        thrift_utils.create_serializer_class(ExperimentStatistics)):
+    allExperiments = ExperimentSummarySerializer(many=True)
+    completedExperiments = ExperimentSummarySerializer(many=True)
+    failedExperiments = ExperimentSummarySerializer(many=True)
+    cancelledExperiments = ExperimentSummarySerializer(many=True)
+    createdExperiments = ExperimentSummarySerializer(many=True)
+    runningExperiments = ExperimentSummarySerializer(many=True)

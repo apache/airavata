@@ -100,6 +100,10 @@ for entry_point in iter_entry_points(group='airavata.djangoapp'):
     INSTALLED_APPS.append("{}.{}".format(entry_point.module_name,
                                          entry_point.attrs[0]))
 
+OUTPUT_VIEW_PROVIDERS = {}
+for entry_point in iter_entry_points(group='airavata.output_view_providers'):
+    OUTPUT_VIEW_PROVIDERS[entry_point.name] = entry_point.load()()
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -247,23 +251,48 @@ AUTHENTICATION_OPTIONS = {
 # Seconds each connection in the pool is able to stay alive. If open connection
 # has lived longer than this period, it will be closed.
 # (https://github.com/Thriftpy/thrift_connector)
-THRIFT_CLIENT_POOL_KEEPALIVE = 10
+THRIFT_CLIENT_POOL_KEEPALIVE = 5
 
 # Webpack loader
 WEBPACK_LOADER = webpack_loader_util.create_webpack_loader_config()
 
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s %(name)s:%(lineno)d %(levelname)s] %(message)s'
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         },
+        'mail_admins': {
+            'filters': ['require_debug_false'],
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
     },
     'loggers': {
         'django_airavata': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'DEBUG' if DEBUG else 'INFO'
         },
+        'root': {
+            'handlers': ['console'],
+            'level': 'WARNING'
+        }
     },
 }
 

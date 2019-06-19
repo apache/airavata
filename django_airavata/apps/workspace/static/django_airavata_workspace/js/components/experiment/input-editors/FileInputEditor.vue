@@ -56,7 +56,6 @@
 <script>
 import { models, services, utils } from "django-airavata-api";
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
-import DataProductViewer from "../DataProductViewer.vue";
 import { components } from "django-airavata-common-ui";
 import UserStorageFileSelectionContainer from "../../storage/UserStorageFileSelectionContainer";
 
@@ -64,7 +63,7 @@ export default {
   name: "file-input-editor",
   mixins: [InputEditorMixin],
   components: {
-    DataProductViewer,
+    "data-product-viewer": components.DataProductViewer,
     "delete-link": components.DeleteLink,
     UserStorageFileSelectionContainer
   },

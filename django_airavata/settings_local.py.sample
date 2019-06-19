@@ -26,7 +26,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # EMAIL_HOST_USER = '...'
 # EMAIL_HOST_PASSWORD = '...'
 # EMAIL_USE_TLS = True
+# ADMINS receive error emails
 # ADMINS = [('Admin Name', 'admin@example.com')]
+# PORTAL_ADMINS receive administrative emails, like when a new user is created
+# This can be set to a different value than ADMINS so that the PORTAL_ADMINS
+# don't receive error emails
+# PORTAL_ADMINS = ADMINS
 # SERVER_EMAIL = 'portal@example.com'
 
 # Keycloak Configuration
@@ -77,45 +82,43 @@ SHARING_API_SECURE = False
 # Portal settings
 PORTAL_TITLE = 'Django Airavata Gateway'
 
-# Logging configuration
+# Logging configuration. Uncomment following to override default log configuration
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
+#     'filters': {
+#         'require_debug_false': {
+#             '()': 'django.utils.log.RequireDebugFalse',
+#         },
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         },
+#     },
 #     'formatters': {
 #         'verbose': {
 #             'format': '[%(asctime)s %(name)s:%(lineno)d %(levelname)s] %(message)s'
 #         },
 #     },
-#     'filters': {
-#         'require_debug_true': {
-#             '()': 'django.utils.log.RequireDebugTrue',
-#         },
-#     },
 #     'handlers': {
 #         'console': {
-#             'filters': ['require_debug_true'],
 #             'class': 'logging.StreamHandler',
-#             'formatter': 'verbose',
-#             'level': 'DEBUG',
+#             'formatter': 'verbose'
 #         },
-#         'file': {
-#             'class': 'logging.FileHandler',
-#             'filename': 'django_airavata.log',
-#             'formatter': 'verbose',
-#         },
+#         'mail_admins': {
+#             'filters': ['require_debug_false'],
+#             'level': 'ERROR',
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'include_html': True,
+#         }
 #     },
 #     'loggers': {
-#         'django': {
-#             'handlers': ['console', 'file'],
-#             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-#         },
-#         'airavata': {
-#             'handlers': ['console', 'file'],
-#             'level': 'DEBUG',
-#         },
 #         'django_airavata': {
-#             'handlers': ['console', 'file'],
-#             'level': 'DEBUG',
+#             'handlers': ['console', 'mail_admins'],
+#             'level': 'DEBUG' if DEBUG else 'INFO'
 #         },
+#         'root': {
+#             'handlers': ['console', 'mail_admins'],
+#             'level': 'WARNING'
+#         }
 #     },
 # }

@@ -86,8 +86,6 @@
 import { models, services } from "django-airavata-api";
 import { components as comps } from "django-airavata-common-ui";
 
-import ExperimentStatusBadge from "../components/experiment/ExperimentStatusBadge.vue";
-
 import moment from "moment";
 import urls from "../utils/urls";
 
@@ -102,7 +100,7 @@ export default {
   },
   components: {
     pager: comps.Pager,
-    "experiment-status-badge": ExperimentStatusBadge
+    "experiment-status-badge": comps.ExperimentStatusBadge
   },
   methods: {
     nextExperiments: function() {

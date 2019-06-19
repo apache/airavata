@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -40,7 +41,15 @@ from django_airavata.apps.api.view_utils import (
 )
 from django_airavata.apps.auth import iam_admin_client
 
-from . import data_products_helper, helpers, models, serializers, thrift_utils
+from . import (
+    data_products_helper,
+    helpers,
+    models,
+    output_views,
+    serializers,
+    thrift_utils,
+    view_utils
+)
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -419,6 +428,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 output.type == DataType.URI_COLLECTION)
             for dp in output.value.split(',')
             if output.value.startswith('airavata-dp')]
+        exp_output_views = output_views.get_output_views(experimentModel)
         inputDataProducts = [
             self.request.airavata_client.getDataProduct(self.authz_token,
                                                         inp.value)
@@ -474,7 +484,8 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             inputDataProducts=inputDataProducts,
             applicationModule=applicationModule,
             computeResource=compute_resource,
-            jobDetails=job_details)
+            jobDetails=job_details,
+            outputViews=exp_output_views)
         return full_experiment
 
 
@@ -1463,3 +1474,30 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
             'creationTime': user_profile.creationTime,
             'groups': groups
         }
+
+
+class ExperimentStatisticsView(APIView):
+    # TODO: restrict to only Admins or Read Only Admins group members
+    serializer_class = serializers.ExperimentStatisticsSerializer
+
+    def get(self, request, format=None):
+        if 'fromTime' in request.GET:
+            from_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['fromTime']).timestamp() * 1000
+        else:
+            from_time = (datetime.utcnow() -
+                         timedelta(days=7)).timestamp() * 1000
+        if 'toTime' in request.GET:
+            to_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['toTime']).timestamp() * 1000
+        else:
+            to_time = datetime.utcnow().timestamp() * 1000
+        username = request.GET.get('userName', None)
+        application_name = request.GET.get('applicationName', None)
+        resource_hostname = request.GET.get('resourceHostName', None)
+        statistics = request.airavata_client.getExperimentStatistics(
+            request.authz_token, settings.GATEWAY_ID, from_time, to_time,
+            username, application_name, resource_hostname)
+        serializer = self.serializer_class(
+            statistics, context={'request': request})
+        return Response(serializer.data)

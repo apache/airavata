@@ -1,5 +1,8 @@
+import logging
 from collections.__init__ import OrderedDict
+from datetime import datetime
 
+import pytz
 from django.conf import settings
 from django.http import Http404
 from rest_framework import mixins, pagination
@@ -7,6 +10,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 from rest_framework.viewsets import GenericViewSet
+
+logger = logging.getLogger(__name__)
 
 
 class GenericAPIBackedViewSet(GenericViewSet):
@@ -178,3 +183,14 @@ class APIResultPagination(pagination.LimitOffsetPagination):
             return self.request.build_absolute_uri(reverse(self.viewname))
         else:
             return self.request.build_absolute_uri()
+
+
+def convert_utc_iso8601_to_date(iso8601_utc_string):
+    # This is meant to convert a JavaScript `new Date().toJSON()` into a
+    # datetime instance
+    timestamp = datetime.strptime(
+        iso8601_utc_string, "%Y-%m-%dT%H:%M:%S.%fZ")
+    timestamp = timestamp.replace(tzinfo=pytz.UTC)
+    logger.debug("convert_utc_iso8601_to_date({})={}".format(
+        iso8601_utc_string, timestamp))
+    return timestamp

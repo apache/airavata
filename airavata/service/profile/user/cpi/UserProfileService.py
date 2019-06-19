@@ -9,13 +9,14 @@
 from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
 from thrift.protocol.TProtocol import TProtocolException
 import sys
+import airavata.base.api.BaseAPI
 import logging
 from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 
 
-class Iface(object):
+class Iface(airavata.base.api.BaseAPI.Iface):
     def getAPIVersion(self):
         pass
 
@@ -82,12 +83,9 @@ class Iface(object):
         pass
 
 
-class Client(Iface):
+class Client(airavata.base.api.BaseAPI.Client, Iface):
     def __init__(self, iprot, oprot=None):
-        self._iprot = self._oprot = iprot
-        if oprot is not None:
-            self._oprot = oprot
-        self._seqid = 0
+        airavata.base.api.BaseAPI.Client.__init__(self, iprot, oprot)
 
     def getAPIVersion(self):
         self.send_getAPIVersion()
@@ -387,10 +385,9 @@ class Client(Iface):
         raise TApplicationException(TApplicationException.MISSING_RESULT, "doesUserExist failed: unknown result")
 
 
-class Processor(Iface, TProcessor):
+class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
     def __init__(self, handler):
-        self._handler = handler
-        self._processMap = {}
+        airavata.base.api.BaseAPI.Processor.__init__(self, handler)
         self._processMap["getAPIVersion"] = Processor.process_getAPIVersion
         self._processMap["initializeUserProfile"] = Processor.process_initializeUserProfile
         self._processMap["addUserProfile"] = Processor.process_addUserProfile

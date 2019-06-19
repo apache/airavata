@@ -22,6 +22,7 @@ import GroupComputeResourcePreference from "./models/GroupComputeResourcePrefere
 import GroupPermission from "./models/GroupPermission";
 import GroupResourceProfile from "./models/GroupResourceProfile";
 import InputDataObjectType from "./models/InputDataObjectType";
+import JobState from "./models/JobState";
 import ManagedUserProfile from "./models/ManagedUserProfile";
 import Notification from "./models/Notification";
 import NotificationPriority from "./models/NotificationPriority";
@@ -80,6 +81,7 @@ const models = {
   GroupPermission,
   GroupResourceProfile,
   InputDataObjectType,
+  JobState,
   ManagedUserProfile,
   Notification,
   NotificationPriority,
@@ -106,6 +108,7 @@ const services = {
   DataProductService: ServiceFactory.service("DataProducts"),
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
   ExperimentService: ServiceFactory.service("Experiments"),
+  ExperimentStatisticsService: ServiceFactory.service("ExperimentStatistics"),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
     "GatewayResourceProfiles"

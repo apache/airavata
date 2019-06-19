@@ -7,6 +7,7 @@ import CredentialSummary from "./models/CredentialSummary";
 import DataProduct from "./models/DataProduct";
 import Experiment from "./models/Experiment";
 import ExperimentSearchFields from "./models/ExperimentSearchFields";
+import ExperimentStatistics from "./models/ExperimentStatistics";
 import ExperimentSummary from "./models/ExperimentSummary";
 import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
@@ -187,6 +188,23 @@ export default {
       ExperimentSearchFields.values.map(f => f.name)
     )
   },
+  ExperimentStatistics: {
+    url: "/api/experiment-statistics",
+    methods: {
+      get: {
+        url: "/api/experiment-statistics",
+        requestType: "get",
+        queryParams: [
+          "fromTime",
+          "toTime",
+          "userName",
+          "applicationName",
+          "resourceHostName"
+        ],
+        modelClass: ExperimentStatistics
+      }
+    }
+  },
   FullExperiments: {
     url: "/api/full-experiments",
     viewSet: [
@@ -293,7 +311,7 @@ export default {
         modelClass: UserStoragePath,
         encodePathParams: false
       }
-    },
+    }
   },
   WorkspacePreferences: {
     url: "/api/workspace-preferences",

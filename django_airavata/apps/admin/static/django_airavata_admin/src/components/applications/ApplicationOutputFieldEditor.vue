@@ -30,12 +30,16 @@
         </b-form-radio-group>
       </b-form-group>
     </div>
+    <b-form-group label="Metadata" :label-for="id+'-metadata'" description="Metadata for this output, in the JSON format">
+      <json-editor :id="id+'-metadata'" v-model="data.metaData" :rows="5" :disabled="readonly" />
+    </b-form-group>
   </b-card>
 </template>
 
 <script>
 import { models } from "django-airavata-api";
-import { mixins } from "django-airavata-common-ui"
+import { mixins } from "django-airavata-common-ui";
+import JSONEditor from "./JSONEditor.vue";
 export default {
   name: "application-output-field-editor",
   mixins: [mixins.VModelMixin],
@@ -50,6 +54,9 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  components: {
+    'json-editor': JSONEditor
   },
   computed: {
     outputTypeOptions() {

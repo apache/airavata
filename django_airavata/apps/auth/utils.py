@@ -97,6 +97,6 @@ def send_new_user_email(request, username, email, first_name, last_name):
                        from_email="{} <{}>".format(
                            settings.PORTAL_TITLE,
                            settings.SERVER_EMAIL),
-                       to=[a[1] for a in settings.ADMINS])
+                       to=[a[1] for a in settings.PORTAL_ADMINS])
     msg.content_subtype = 'html'
     msg.send()

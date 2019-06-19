@@ -10,4 +10,4 @@ from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplica
 from thrift.protocol.TProtocol import TProtocolException
 import sys
 from .ttypes import *
-AIRAVATA_API_VERSION = "0.17.0"
+AIRAVATA_API_VERSION = "0.18.0"

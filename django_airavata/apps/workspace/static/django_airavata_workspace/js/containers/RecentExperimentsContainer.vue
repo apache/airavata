@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import ExperimentStatusBadge from "../components/experiment/ExperimentStatusBadge.vue";
 import urls from "../utils/urls";
 import { models, services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
@@ -34,7 +33,7 @@ export default {
     sidebar: components.Sidebar,
     "sidebar-header": components.SidebarHeader,
     "sidebar-feed": components.SidebarFeed,
-    ExperimentStatusBadge
+    "experiment-status-badge": components.ExperimentStatusBadge
   },
   created() {
     this.pollExperiments();

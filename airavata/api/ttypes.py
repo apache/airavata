@@ -33,5 +33,6 @@ import airavata.model.appcatalog.gatewaygroups.ttypes
 import airavata.model.data.replica.ttypes
 import airavata.model.group.ttypes
 import airavata.model.user.ttypes
+import airavata.base.api.ttypes
 
 from thrift.transport import TTransport

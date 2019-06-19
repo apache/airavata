@@ -78,10 +78,12 @@ urlpatterns = [
     url(r'^workspace-preferences',
         views.WorkspacePreferencesView.as_view(),
         name="workspace-preferences"),
-    # url(r'^user-storage/~/(?P<path>.*)/$',
     url(r'^user-storage/~/(?P<path>.*)$',
         views.UserStoragePathView.as_view(),
-        name="user-storage-items")
+        name="user-storage-items"),
+    url(r'^experiment-statistics',
+        views.ExperimentStatisticsView.as_view(),
+        name="experiment-statistics")
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

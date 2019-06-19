@@ -38,6 +38,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool removeGroupAdmins(AuthzToken authzToken, string groupId,  adminIds)')
     print('  bool hasAdminAccess(AuthzToken authzToken, string groupId, string adminId)')
     print('  bool hasOwnerAccess(AuthzToken authzToken, string groupId, string ownerId)')
+    print('  string getAPIVersion()')
     print('')
     sys.exit(0)
 
@@ -200,6 +201,12 @@ elif cmd == 'hasOwnerAccess':
         print('hasOwnerAccess requires 3 args')
         sys.exit(1)
     pp.pprint(client.hasOwnerAccess(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'getAPIVersion':
+    if len(args) != 0:
+        print('getAPIVersion requires 0 args')
+        sys.exit(1)
+    pp.pprint(client.getAPIVersion())
 
 else:
     print('Unrecognized method %s' % cmd)
