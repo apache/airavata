@@ -1386,10 +1386,10 @@ class WorkspacePreferencesView(APIView):
         return Response(serializer.data)
 
 
-class IAMUserViewSet(mixins.CreateModelMixin,
-                     mixins.RetrieveModelMixin,
+class IAMUserViewSet(mixins.RetrieveModelMixin,
                      mixins.UpdateModelMixin,
                      mixins.ListModelMixin,
+                     mixins.DestroyModelMixin,
                      GenericAPIBackedViewSet):
     serializer_class = serializers.IAMUserProfile
     pagination_class = APIResultPagination
@@ -1421,6 +1421,9 @@ class IAMUserViewSet(mixins.CreateModelMixin,
         for group_id in managed_user_profile['_removed_group_ids']:
             group_manager_client.removeUsersFromGroup(
                 self.authz_token, [user_id], group_id)
+
+    def perform_destroy(self, instance):
+        iam_admin_client.delete_user(instance['userId'])
 
     @detail_route(methods=['post'])
     def enable(self, request, user_id=None):

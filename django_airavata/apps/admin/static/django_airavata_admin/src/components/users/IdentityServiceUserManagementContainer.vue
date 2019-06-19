@@ -54,6 +54,7 @@
                   :editable-groups="editableGroups"
                   @groups-updated="groupsUpdated"
                   @enable-user="enableUser"
+                  @delete-user="deleteUser"
                 />
               </template>
             </b-table>
@@ -197,6 +198,11 @@ export default {
     },
     enableUser(username) {
       services.IAMUserProfileService.enable({ lookup: username }).finally(() =>
+        this.reloadUserProfiles()
+      );
+    },
+    deleteUser(username) {
+      services.IAMUserProfileService.delete({ lookup: username }).finally(() =>
         this.reloadUserProfiles()
       );
     }

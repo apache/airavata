@@ -33,6 +33,11 @@
                   :email="data.item.email"
                   @enable-user="enableUser"
                 />
+                <delete-user-panel
+                  v-if="!data.item.enabled && !data.item.emailVerified"
+                  :username="data.item.userId"
+                  @delete-user="deleteUser"
+                />
               </template>
             </b-table>
             <pager
@@ -118,6 +123,11 @@ export default {
         this.loadUnverifiedEmailUsers()
       );
     },
+    deleteUser(username) {
+      services.IAMUserProfileService.delete({ lookup: username }).finally(() =>
+        this.loadUnverifiedEmailUsers()
+      );
+    },
     loadUnverifiedEmailUsers() {
       return services.UnverifiedEmailUserProfileService.list({
         limit: 10
@@ -125,9 +135,10 @@ export default {
     },
     toggleDetails(row) {
       row.toggleDetails();
-      this.showingDetails[row.item.userId] = !this
-        .showingDetails[row.item.userId];
-    },
+      this.showingDetails[row.item.userId] = !this.showingDetails[
+        row.item.userId
+      ];
+    }
   }
 };
 </script>

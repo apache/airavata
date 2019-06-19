@@ -24,7 +24,6 @@ import GroupResourceProfile from "./models/GroupResourceProfile";
 import IAMUserProfile from "./models/IAMUserProfile";
 import InputDataObjectType from "./models/InputDataObjectType";
 import JobState from "./models/JobState";
-import ManagedUserProfile from "./models/ManagedUserProfile";
 import OutputDataObjectType from "./models/OutputDataObjectType";
 import ParallelismType from "./models/ParallelismType";
 import Project from "./models/Project";
@@ -81,7 +80,6 @@ const models = {
   IAMUserProfile,
   InputDataObjectType,
   JobState,
-  ManagedUserProfile,
   OutputDataObjectType,
   ParallelismType,
   Project,

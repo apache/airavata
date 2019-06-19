@@ -13,12 +13,18 @@
       :email="iamUserProfile.email"
       @enable-user="$emit('enable-user', $event)"
     />
+    <delete-user-panel
+      v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
+      :username="iamUserProfile.userId"
+      @delete-user="$emit('delete-user', $event)"
+    />
   </div>
 </template>
 <script>
 import { models } from "django-airavata-api";
 import UserGroupMembershipEditor from "./UserGroupMembershipEditor";
 import EnableUserPanel from "./EnableUserPanel";
+import DeleteUserPanel from "./DeleteUserPanel";
 
 export default {
   name: "user-details-container",
@@ -34,7 +40,8 @@ export default {
   },
   components: {
     UserGroupMembershipEditor,
-    EnableUserPanel
+    EnableUserPanel,
+    DeleteUserPanel
   },
   data() {
     return {
