@@ -1517,7 +1517,7 @@ class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
         if username is not None:
             unverified_emails = unverified_emails.filter(username=username)
         if limit > 0:
-            unverified_emails = unverified_emails[offset:offset+limit]
+            unverified_emails = unverified_emails[offset:offset + limit]
         results = []
         for unverified_email in unverified_emails:
             username = unverified_email['username']
