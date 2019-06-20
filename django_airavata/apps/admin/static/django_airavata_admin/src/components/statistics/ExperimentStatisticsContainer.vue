@@ -5,6 +5,16 @@
         <h1 class="h4 mb-4">Experiment Statistics</h1>
       </div>
     </div>
+    <b-card header="Load experiment details by experiment id">
+      <b-form-group>
+        <b-input-group>
+          <b-form-input v-model="experimentId" placeholder="Experiment ID" @keydown.native.enter="experimentId && showExperimentDetails(experimentId)"/>
+          <b-input-group-append>
+            <b-button :disabled="!experimentId" @click="showExperimentDetails(experimentId)" variant="primary">Load</b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </b-form-group>
+    </b-card>
     <b-card no-body>
       <b-tabs card>
         <b-tab :title="selectedExperimentsTabTitle">
@@ -299,7 +309,8 @@ export default {
       hostnameFilter: null,
       appInterfaces: null,
       computeResourceNames: null,
-      experimentDetails: []
+      experimentDetails: [],
+      experimentId: null
     };
   },
   created() {
