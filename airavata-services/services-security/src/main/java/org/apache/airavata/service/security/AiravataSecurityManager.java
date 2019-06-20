@@ -39,4 +39,6 @@ public interface AiravataSecurityManager {
      * @throws AiravataSecurityException
      */
     public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData) throws AiravataSecurityException;
+
+    public AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId) throws AiravataSecurityException;
 }
