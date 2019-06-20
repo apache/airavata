@@ -772,6 +772,7 @@ public class TaskContext {
 
         public TaskContextBuilder setProfileClient(UserProfileService.Client profileClient) {
             this.profileClient = profileClient;
+            return this;
         }
 
         public TaskContext build() throws Exception {
