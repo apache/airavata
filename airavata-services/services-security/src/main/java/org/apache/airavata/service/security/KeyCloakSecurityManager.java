@@ -22,18 +22,33 @@ package org.apache.airavata.service.security;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.util.TrustStoreManager;
 import org.apache.airavata.service.security.authzcache.*;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
+import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.http.Consts;
+import org.apache.http.HttpHeaders;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.thrift.TException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,11 +56,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,6 +86,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                     // getGatewayResourceProfile is needed to look up whether ssh account provisioning is
                     // configured for a gateway's compute resource preference
                     "/airavata/getGatewayResourceProfile";
+
+    private RegistryService.Client registryServiceClient = null;
+    private SharingRegistryService.Client sharingRegistryServiceClient = null;
 
     public KeyCloakSecurityManager() throws AiravataSecurityException {
         rolePermissionConfig.put("admin", "/airavata/.*");
@@ -200,6 +219,25 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
     }
 
+    @Override
+    public AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId) throws AiravataSecurityException {
+        try {
+            initServiceClients();
+            Gateway gateway = registryServiceClient.getGateway(gatewayId);
+            String tokenURL = getTokenEndpoint(gatewayId);
+            JSONObject clientCredentials = getClientCredentials(tokenURL, gateway.getOauthClientId(), gateway.getOauthClientSecret());
+            String accessToken = clientCredentials.getString("access_token");
+            AuthzToken authzToken = new AuthzToken(accessToken);
+            authzToken.putToClaimsMap(Constants.GATEWAY_ID, gatewayId);
+            authzToken.putToClaimsMap(Constants.USER_NAME, gateway.getOauthClientId());
+            return authzToken;
+        } catch (Exception e) {
+            throw new AiravataSecurityException("Failed to fetch authorization token for user management service for gateway " + gatewayId, e);
+        } finally {
+            closeServiceClients();
+        }
+    }
+
     private String[] getUserRolesFromOAuthToken(String username, String token, String gatewayId) throws Exception {
         GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
         String identityServerRealm = gwrp.getIdentityServerTenant();
@@ -304,6 +342,69 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
         } catch (CredentialStoreException e) {
             throw new TException("Unable to create credential store client...", e);
+        }
+    }
+
+    private JSONObject getClientCredentials(String tokenURL, String clientId, String clientSecret) throws ApplicationSettingsException, AiravataSecurityException {
+
+        CloseableHttpClient httpClient = HttpClients.createSystem();
+
+        HttpPost httpPost = new HttpPost(tokenURL);
+        String encoded = Base64.getEncoder().encodeToString((clientId+":"+clientSecret).getBytes(StandardCharsets.UTF_8));
+        httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded);
+        List<NameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair("grant_type", "client_credentials"));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
+        httpPost.setEntity(entity);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            try {
+                String responseBody = EntityUtils.toString(response.getEntity());
+                JSONObject tokenInfo = new JSONObject(responseBody);
+                return tokenInfo;
+            } finally {
+                response.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
+    private String getTokenEndpoint(String gatewayId) throws Exception {
+        String openIdConnectUrl = getOpenIDConfigurationUrl(gatewayId);
+        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
+        return openIdConnectConfig.getString("token_endpoint");
+    }
+
+    private void initServiceClients() throws TException, ApplicationSettingsException {
+        registryServiceClient = getRegistryServiceClient();
+        sharingRegistryServiceClient = getSharingRegistryServiceClient();
+    }
+
+    private void closeServiceClients() {
+        if (registryServiceClient != null) {
+            ThriftUtils.close(registryServiceClient);
+        }
+        if (sharingRegistryServiceClient != null) {
+            ThriftUtils.close(sharingRegistryServiceClient);
+        }
+    }
+
+
+    private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
+        final String serverHost = ServerSettings.getSharingRegistryHost();
+        try {
+            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
+        } catch (SharingRegistryException e) {
+            throw new TException("Unable to create sharing registry client...", e);
         }
     }
 }

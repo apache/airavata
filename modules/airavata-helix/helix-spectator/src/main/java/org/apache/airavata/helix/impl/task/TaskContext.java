@@ -38,16 +38,17 @@ import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.service.security.AiravataSecurityManager;
+import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +103,8 @@ public class TaskContext {
     private String taskId;
     private Object subTaskModel = null;
     private RegistryService.Client registryClient;
+    private UserProfileService.Client profileClient;
+    private UserProfile userProfile;
 
 
     /**
@@ -564,6 +567,29 @@ public class TaskContext {
         return registryClient;
     }
 
+    public UserProfileService.Client getProfileClient() {
+        return profileClient;
+    }
+
+    public void setProfileClient(UserProfileService.Client profileClient) {
+        this.profileClient = profileClient;
+    }
+
+    public UserProfile getUserProfile() throws TaskOnFailException {
+
+        if (this.userProfile == null) {
+            try {
+                AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+                AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(getGatewayId());
+                this.userProfile = getProfileClient().getUserProfileById(authzToken, getProcessModel().getUserName(), getGatewayId());
+            } catch (Exception e) {
+                logger.error("Failed to fetch the user profile for user id " + processModel.getUserName(), e);
+                throw new TaskOnFailException("Failed to fetch the user profile for user id " + processModel.getUserName(), true, e);
+            }
+        }
+        return this.userProfile;
+    }
+
     private boolean isValid(String str) {
         return str != null && !str.trim().isEmpty();
     }
@@ -686,6 +712,7 @@ public class TaskContext {
         private final String gatewayId;
         private final String taskId;
         private RegistryService.Client registryClient;
+        private UserProfileService.Client profileClient;
         private GatewayResourceProfile gatewayResourceProfile;
         private ComputeResourcePreference gatewayComputeResourcePreference;
         private StoragePreference gatewayStorageResourcePreference;
@@ -726,6 +753,11 @@ public class TaskContext {
             return this;
         }
 
+        public TaskContextBuilder setProfileClient(UserProfileService.Client profileClient) {
+            this.profileClient = profileClient;
+            return this;
+        }
+
         public TaskContext build() throws Exception {
             if (notValid(gatewayResourceProfile)) {
                 throwError("Invalid GatewayResourceProfile");
@@ -746,6 +778,7 @@ public class TaskContext {
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
             ctx.setRegistryClient(registryClient);
             ctx.setProcessModel(processModel);
+            ctx.setProfileClient(profileClient);
             ctx.setGatewayResourceProfile(gatewayResourceProfile);
             ctx.setGatewayComputeResourcePreference(gatewayComputeResourcePreference);
             ctx.setGatewayStorageResourcePreference(gatewayStorageResourcePreference);

@@ -43,6 +43,9 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
@@ -394,6 +397,7 @@ public abstract class AiravataTask extends AbstractTask {
 
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId())
                     .setRegistryClient(getRegistryServiceClient())
+                    .setProfileClient(getUserProfileClient())
                     .setProcessModel(getProcessModel())
                     .setGatewayResourceProfile(getRegistryServiceClient().getGatewayResourceProfile(gatewayId))
                     .setGatewayComputeResourcePreference(
@@ -493,6 +497,16 @@ public abstract class AiravataTask extends AbstractTask {
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
         } catch (RegistryServiceException|ApplicationSettingsException e) {
             throw new RuntimeException("Unable to create registry client...", e);
+        }
+    }
+
+    public static UserProfileService.Client getUserProfileClient() {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
+            final String serverHost = ServerSettings.getProfileServiceServerHost();
+            return ProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
+        } catch (UserProfileServiceException | ApplicationSettingsException e) {
+            throw new RuntimeException("Unable to create profile service client...", e);
         }
     }
 }

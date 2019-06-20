@@ -36,7 +36,6 @@ import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
-import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +79,11 @@ public class GroovyMapBuilder {
         mapData.setWorkingDirectory(taskContext.getWorkingDir());
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
+
+        List<String> emails = taskContext.getUserProfile().getEmails();
+        if (emails != null && emails.size() > 0) {
+            mapData.setGatewayUserEmail(emails.get(0));
+        }
 
         List<String> inputValues = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), true);
         inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), true));

@@ -60,6 +60,9 @@ public class GroovyMapData {
     @ScriptTag(name = "gatewayUserName")
     private String gatewayUserName;
 
+    @ScriptTag(name = "gatewayUserEmail")
+    private String gatewayUserEmail;
+
     @ScriptTag(name = "applicationName")
     private String applicationName;
 
@@ -229,6 +232,14 @@ public class GroovyMapData {
     public GroovyMapData setGatewayUserName(String gatewayUserName) {
         this.gatewayUserName = gatewayUserName;
         return this;
+    }
+
+    public String getGatewayUserEmail() {
+        return gatewayUserEmail;
+    }
+
+    public void setGatewayUserEmail(String gatewayUserEmail) {
+        this.gatewayUserEmail = gatewayUserEmail;
     }
 
     public String getApplicationName() {
