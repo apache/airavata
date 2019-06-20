@@ -8,15 +8,27 @@
     <b-card header="Load experiment details by experiment id">
       <b-form-group>
         <b-input-group>
-          <b-form-input v-model="experimentId" placeholder="Experiment ID" @keydown.native.enter="experimentId && showExperimentDetails(experimentId)"/>
+          <b-form-input
+            v-model="experimentId"
+            placeholder="Experiment ID"
+            @keydown.native.enter="experimentId && showExperimentDetails(experimentId)"
+          />
           <b-input-group-append>
-            <b-button :disabled="!experimentId" @click="showExperimentDetails(experimentId)" variant="primary">Load</b-button>
+            <b-button
+              :disabled="!experimentId"
+              @click="showExperimentDetails(experimentId)"
+              variant="primary"
+            >Load</b-button>
           </b-input-group-append>
         </b-input-group>
       </b-form-group>
     </b-card>
     <b-card no-body>
-      <b-tabs card>
+      <b-tabs
+        card
+        v-model="activeTabIndex"
+        ref="tabs"
+      >
         <b-tab :title="selectedExperimentsTabTitle">
           <div class="row">
             <div class="col">
@@ -310,7 +322,8 @@ export default {
       appInterfaces: null,
       computeResourceNames: null,
       experimentDetails: [],
-      experimentId: null
+      experimentId: null,
+      activeTabIndex: 0
     };
   },
   created() {
@@ -526,11 +539,32 @@ export default {
       this.loadStatistics();
     },
     showExperimentDetails(experimentId) {
-      // TODO: if experiment details already loaded, select its tab
-      // TODO: maybe don't need to load the experiment first since ExperimentDetailsView will load FullExperiment?
-      services.ExperimentService.retrieve({
-        lookup: experimentId
-      }).then(exp => this.experimentDetails.push(exp));
+      const expDetailsIndex = this.getExperimentDetailsIndex(experimentId);
+      if (expDetailsIndex >= 0) {
+        this.selectExperimentDetailsTab(experimentId);
+      } else {
+        // TODO: maybe don't need to load the experiment first since ExperimentDetailsView will load FullExperiment?
+        services.ExperimentService.retrieve({
+          lookup: experimentId
+        }).then(exp => {
+          this.experimentDetails.push(exp);
+          this.selectExperimentDetailsTab(experimentId);
+        });
+      }
+    },
+    selectExperimentDetailsTab(experimentId) {
+      const expDetailsIndex = this.getExperimentDetailsIndex(experimentId);
+      // Note: running this in $nextTick doesn't work, but setTimeout does
+      // (see also https://github.com/bootstrap-vue/bootstrap-vue/issues/1378#issuecomment-345689470)
+      setTimeout(() => {
+        // Add 1 to the index because the first tab has the overall statistics
+        this.activeTabIndex = expDetailsIndex + 1;
+      }, 1);
+    },
+    getExperimentDetailsIndex(experimentId) {
+      return this.experimentDetails.findIndex(
+        e => e.experimentId === experimentId
+      );
     }
   }
 };
