@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from datetime import datetime, timedelta
@@ -1541,3 +1542,22 @@ class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
                 'creationTime': user_profile.creationTime,
             })
         return results
+
+
+class LogRecordConsumer(APIView):
+    serializer_class = serializers.LogRecordSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        log_record = serializer.validated_data
+        log_level = getattr(logging, log_record['level'], None)
+        if log_level is not None:
+            stacktrace = "".join(
+                map(lambda a: "\n    " + a, log_record['stacktrace']))
+            log.log(log_level,
+                    "Frontend error: {}: {}\nstacktrace: {}".format(
+                        log_record['message'],
+                        json.dumps(log_record['details'], indent=4),
+                        stacktrace))
+        return Response(serializer.data)

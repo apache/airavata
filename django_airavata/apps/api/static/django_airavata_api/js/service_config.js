@@ -14,6 +14,7 @@ import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
 import IAMUserProfile from "./models/IAMUserProfile";
+import LogRecord from "./models/LogRecord";
 import Parser from "./models/Parser";
 import Project from "./models/Project";
 import SharedEntity from "./models/SharedEntity";
@@ -253,6 +254,20 @@ export default {
     },
     queryParams: ["limit", "offset", "search"],
     modelClass: IAMUserProfile
+  },
+  LogRecords: {
+    url: "/api/log",
+    methods: {
+      send: {
+        url: '/api/log',
+        requestType: "post",
+        bodyParams: {
+          name: "data"
+        },
+        modelClass: LogRecord
+      }
+    },
+    modelClass: LogRecord
   },
   Parsers: {
     url: "/api/parsers",

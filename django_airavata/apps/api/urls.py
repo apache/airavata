@@ -83,7 +83,8 @@ urlpatterns = [
         name="user-storage-items"),
     url(r'^experiment-statistics',
         views.ExperimentStatisticsView.as_view(),
-        name="experiment-statistics")
+        name="experiment-statistics"),
+    url(r'^log', views.LogRecordConsumer.as_view(), name='log')
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

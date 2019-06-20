@@ -113,6 +113,7 @@ const services = {
   GroupResourceProfileService: ServiceFactory.service("GroupResourceProfiles"),
   GroupService: ServiceFactory.service("Groups"),
   LocaJobSubmissionService,
+  LoggingService: ServiceFactory.service("LogRecords"),
   IAMUserProfileService: ServiceFactory.service("IAMUserProfiles"),
   ParserService: ServiceFactory.service("Parsers"),
   ProjectService: ServiceFactory.service("Projects"),

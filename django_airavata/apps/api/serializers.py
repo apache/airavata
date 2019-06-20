@@ -878,3 +878,10 @@ class UnverifiedEmailUserProfile(serializers.Serializer):
         view_name='django_airavata_api:unverified-email-user-profile-detail',
         lookup_field='userId',
         lookup_url_kwarg='user_id')
+
+
+class LogRecordSerializer(serializers.Serializer):
+    level = serializers.CharField()
+    message = serializers.CharField()
+    details = StoredJSONField()
+    stacktrace = serializers.ListField(child=serializers.CharField())
