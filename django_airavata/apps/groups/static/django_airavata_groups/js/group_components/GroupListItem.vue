@@ -1,9 +1,7 @@
 <template>
     <tr>
         <td>{{ group.name }}
-            <b-badge v-if="group.isGatewayAdminsGroup">Admins</b-badge>
-            <b-badge v-if="group.isReadOnlyGatewayAdminsGroup">Read Only Admins</b-badge>
-            <b-badge v-if="group.isDefaultGatewayUsersGroup">Default</b-badge>
+          <gateway-groups-badge :group="group" v-if="group.isGatewayAdminsGroup || group.isReadOnlyGatewayAdminsGroup || group.isDefaultGatewayUsersGroup" />
         </td>
         <td>{{ ownerUsername }}</td>
         <td>{{ group.description }}</td>
@@ -30,6 +28,7 @@
 <script>
 
 import { services } from 'django-airavata-api'
+import { components } from "django-airavata-common-ui";
 
 export default {
     name: 'group-list-item',
@@ -46,6 +45,9 @@ export default {
       }
     },
     props: ['group'],
+    components: {
+      "gateway-groups-badge": components.GatewayGroupsBadge
+    },
     computed: {
         deleteable: function() {
             return this.group.isOwner

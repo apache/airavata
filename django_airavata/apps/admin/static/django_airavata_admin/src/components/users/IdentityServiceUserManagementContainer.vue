@@ -38,6 +38,12 @@
                 <human-date :date="data.value" />
               </template>
               <template
+                slot="groups"
+                slot-scope="data"
+              >
+                <group-membership-display :groups="data.item.groups" />
+              </template>
+              <template
                 slot="action"
                 slot-scope="data"
               >
@@ -74,6 +80,7 @@
 import { services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 import UserDetailsContainer from "./UserDetailsContainer.vue";
+import GroupMembershipDisplay from "./GroupMembershipDisplay";
 
 export default {
   name: "user-management-container",
@@ -88,7 +95,8 @@ export default {
   components: {
     pager: components.Pager,
     "human-date": components.HumanDate,
-    UserDetailsContainer
+    UserDetailsContainer,
+    GroupMembershipDisplay
   },
   created() {
     services.IAMUserProfileService.list({ limit: 10 }).then(
@@ -124,6 +132,10 @@ export default {
         {
           label: "Email Verified",
           key: "emailVerified"
+        },
+        {
+          label: "Groups",
+          key: "groups"
         },
         {
           label: "Created",

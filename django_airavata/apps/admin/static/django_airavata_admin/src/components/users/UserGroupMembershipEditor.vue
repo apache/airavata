@@ -11,19 +11,22 @@
           v-if="gatewayUsersGroupOption"
           :value="gatewayUsersGroupOption.value"
           :disabled="gatewayUsersGroupOption.disabled"
-        >{{ gatewayUsersGroupOption.text }} <b-badge>Default</b-badge>
+        >{{ gatewayUsersGroupOption.text }}
+          <gateway-groups-badge :group="gatewayUsersGroup" />
         </b-form-checkbox>
         <b-form-checkbox
           v-if="adminsGroupOption"
           :value="adminsGroupOption.value"
           :disabled="adminsGroupOption.disabled"
-        >{{ adminsGroupOption.text }} <b-badge>Admins</b-badge>
+        >{{ adminsGroupOption.text }}
+          <gateway-groups-badge :group="adminsGroup" />
         </b-form-checkbox>
         <b-form-checkbox
           v-if="readOnlyAdminsGroupOption"
           :value="readOnlyAdminsGroupOption.value"
           :disabled="readOnlyAdminsGroupOption.disabled"
-        >{{ readOnlyAdminsGroupOption.text }} <b-badge>Read Only Admins</b-badge>
+        >{{ readOnlyAdminsGroupOption.text }}
+          <gateway-groups-badge :group="readOnlyAdminsGroup" />
         </b-form-checkbox>
       </template>
     </b-form-checkbox-group>
@@ -32,7 +35,7 @@
 
 <script>
 import { utils } from "django-airavata-api";
-import { mixins } from "django-airavata-common-ui";
+import { components, mixins } from "django-airavata-common-ui";
 export default {
   name: "user-group-membership-editor",
   mixins: [mixins.VModelMixin],
@@ -49,6 +52,9 @@ export default {
       type: Array,
       required: true
     }
+  },
+  components: {
+    "gateway-groups-badge": components.GatewayGroupsBadge
   },
   computed: {
     selected() {
@@ -78,19 +84,27 @@ export default {
       );
       return utils.StringUtils.sortIgnoreCase(options, o => o.text);
     },
+    gatewayUsersGroup() {
+      return this.combinedGroups.find(g => g.isDefaultGatewayUsersGroup);
+    },
     gatewayUsersGroupOption() {
-      const group = this.combinedGroups.find(g => g.isDefaultGatewayUsersGroup);
-      return group ? this.createGroupOption(group) : null;
+      return this.gatewayUsersGroup
+        ? this.createGroupOption(this.gatewayUsersGroup)
+        : null;
+    },
+    adminsGroup() {
+      return this.combinedGroups.find(g => g.isGatewayAdminsGroup);
     },
     adminsGroupOption() {
-      const group = this.combinedGroups.find(g => g.isGatewayAdminsGroup);
-      return group ? this.createGroupOption(group) : null;
+      return this.adminsGroup ? this.createGroupOption(this.adminsGroup) : null;
+    },
+    readOnlyAdminsGroup() {
+      return this.combinedGroups.find(g => g.isReadOnlyGatewayAdminsGroup);
     },
     readOnlyAdminsGroupOption() {
-      const group = this.combinedGroups.find(
-        g => g.isReadOnlyGatewayAdminsGroup
-      );
-      return group ? this.createGroupOption(group) : null;
+      return this.readOnlyAdminsGroup
+        ? this.createGroupOption(this.readOnlyAdminsGroup)
+        : null;
     }
   },
   methods: {
@@ -116,7 +130,9 @@ export default {
       return {
         text: group.name,
         value: group.id,
-        disabled: !group.userHasWriteAccess || group.ownerId === this.airavataInternalUserId
+        disabled:
+          !group.userHasWriteAccess ||
+          group.ownerId === this.airavataInternalUserId
       };
     }
   }
