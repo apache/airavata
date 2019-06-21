@@ -558,6 +558,7 @@ export default {
         }).then(exp => {
           this.experimentDetails.push(exp);
           this.selectExperimentDetailsTab(experimentId);
+          this.scrollTabsIntoView();
         });
       }
     },
@@ -578,6 +579,9 @@ export default {
     removeExperimentDetails(experimentId) {
       const index = this.getExperimentDetailsIndex(experimentId);
       this.experimentDetails.splice(index, 1);
+    },
+    scrollTabsIntoView() {
+      this.$refs.tabs.$el.scrollIntoView();
     }
   }
 };
