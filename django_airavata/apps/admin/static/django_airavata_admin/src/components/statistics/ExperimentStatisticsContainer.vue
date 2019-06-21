@@ -280,8 +280,17 @@
         <b-tab
           v-for="experimentDetail in experimentDetails"
           :key="experimentDetail.experimentId"
-          :title="experimentDetail.experimentName"
         >
+          <template slot="title">
+            {{ experimentDetail.experimentName }}
+            <b-link
+              @click="removeExperimentDetails(experimentDetail.experimentId)"
+              class="text-secondary"
+            >
+              <i class="fas fa-times"></i>
+              <span class="sr-only">Close experiment tab</span>
+            </b-link>
+          </template>
           <experiment-details-view :experiment="experimentDetail" />
         </b-tab>
       </b-tabs>
@@ -565,6 +574,10 @@ export default {
       return this.experimentDetails.findIndex(
         e => e.experimentId === experimentId
       );
+    },
+    removeExperimentDetails(experimentId) {
+      const index = this.getExperimentDetailsIndex(experimentId);
+      this.experimentDetails.splice(index, 1);
     }
   }
 };
