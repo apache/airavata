@@ -22,4 +22,8 @@ export default class ExperimentStatus extends BaseModel {
   get isProgressing() {
     return this.state && this.state.isProgressing;
   }
+
+  get isFinished() {
+    return this.state && this.state.isFinished;
+  }
 }

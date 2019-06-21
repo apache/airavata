@@ -36,7 +36,7 @@
 
       <div
         class="row"
-        v-if="outputDataProducts[output.name].length > 0"
+        v-if="experiment.isFinished && outputDataProducts[output.name].length > 0"
         :key="output.name"
       >
         <div class="col">
@@ -48,13 +48,13 @@
         </div>
       </div>
     </template>
-    <div class="row">
+    <div
+      class="row"
+      v-if="experiment.isFinished && storageDirLink"
+    >
       <div class="col">
         <b-card header="Other Files">
-          <b-link
-            v-if="storageDirLink"
-            :href="storageDirLink"
-          >Storage Directory</b-link>
+          <b-link :href="storageDirLink">Storage Directory</b-link>
         </b-card>
       </div>
     </div>

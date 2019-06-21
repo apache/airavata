@@ -6,9 +6,10 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-class DownloadLinkViewProvider:
-    display_type = 'download'
+class DefaultViewProvider:
+    display_type = 'default'
     immediate = True
+    name = "Default"
 
     def generate_data(self, experiment_output, experiment, output_file=None):
         return {
@@ -16,7 +17,7 @@ class DownloadLinkViewProvider:
 
 
 DEFAULT_VIEW_PROVIDERS = {
-    'download': DownloadLinkViewProvider()
+    'default': DefaultViewProvider()
 }
 
 
@@ -24,18 +25,18 @@ def get_output_views(experiment):
     output_views = {}
     for output in experiment.experimentOutputs:
         output_views[output.name] = []
-        output_view_provider_names = _get_output_view_providers(output)
-        for output_view_provider_name in output_view_provider_names:
+        output_view_provider_ids = _get_output_view_providers(output)
+        for output_view_provider_id in output_view_provider_ids:
             output_view_provider = None
-            if output_view_provider_name in DEFAULT_VIEW_PROVIDERS:
+            if output_view_provider_id in DEFAULT_VIEW_PROVIDERS:
                 output_view_provider = DEFAULT_VIEW_PROVIDERS[
-                    output_view_provider_name]
-            elif output_view_provider_name in settings.OUTPUT_VIEW_PROVIDERS:
+                    output_view_provider_id]
+            elif output_view_provider_id in settings.OUTPUT_VIEW_PROVIDERS:
                 output_view_provider = settings.OUTPUT_VIEW_PROVIDERS[
-                    output_view_provider_name]
+                    output_view_provider_id]
             else:
                 logger.error("Unable to find output view provider with "
-                             "name '{}'".format(output_view_provider_name))
+                             "name '{}'".format(output_view_provider_id))
             if output_view_provider is not None:
                 if getattr(output_view_provider, 'immediate', False):
                     # Immediately call generate_data function
@@ -44,14 +45,16 @@ def get_output_views(experiment):
                     data = output_view_provider.generate_data(
                         output, experiment)
                     output_views[output.name].append({
-                        'provider-id': output_view_provider_name,
+                        'provider-id': output_view_provider_id,
                         'display-type': output_view_provider.display_type,
-                        'data': data
+                        'data': data,
+                        'name': getattr(output_view_provider, 'name', output_view_provider_id)
                     })
                 else:
                     output_views[output.name].append({
-                        'provider-id': output_view_provider_name,
+                        'provider-id': output_view_provider_id,
                         'display-type': output_view_provider.display_type,
+                        'name': getattr(output_view_provider, 'name', output_view_provider_id)
                     })
     return output_views
 
@@ -69,8 +72,8 @@ def _get_output_view_providers(experiment_output):
             logger.exception(
                 "Failed to parse metadata for output {}".format(
                     experiment_output.name))
-    if 'download' not in output_view_providers:
-        output_view_providers.insert(0, 'download')
+    if 'default' not in output_view_providers:
+        output_view_providers.insert(0, 'default')
     # if len(output_view_providers) == 0:
     #     output_view_providers.extend(_get_default_view_providers())
     return output_view_providers

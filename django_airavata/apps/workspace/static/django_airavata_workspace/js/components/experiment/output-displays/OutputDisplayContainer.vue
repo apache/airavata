@@ -7,15 +7,14 @@
       <h6>{{ experimentOutput.name }}</h6>
       <b-dropdown
         v-if="showMenu"
-        :text="currentView['provider-id']"
+        :text="currentView['name']"
         class="ml-auto"
       >
-        <!-- TODO: add view label to data so that that can be used instead of id -->
         <b-dropdown-item
           v-for="view in outputViews"
           :key="view['provider-id']"
           @click="selectView(view)"
-        >{{ view['provider-id']}}</b-dropdown-item>
+        >{{ view['name']}}</b-dropdown-item>
       </b-dropdown>
     </div>
     <component
@@ -30,7 +29,7 @@
 <script>
 import { models } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
-import DownloadOutputDisplay from "./DownloadOutputDisplay";
+import DefaultOutputDisplay from "./DefaultOutputDisplay";
 import LinkDisplay from "./LinkDisplay";
 
 export default {
@@ -52,7 +51,7 @@ export default {
   },
   components: {
     "data-product-viewer": components.DataProductViewer,
-    DownloadOutputDisplay,
+    DefaultOutputDisplay,
     LinkDisplay
   },
   data() {
@@ -61,14 +60,12 @@ export default {
     };
   },
   computed: {
-    // TODO: support multiple output views
     outputViewData() {
       return this.currentView.data ? this.currentView.data : {};
     },
     outputDisplayComponentName() {
-      // TODO: maybe rename download to default?
-      if (this.currentView["display-type"] === "download") {
-        return "download-output-display";
+      if (this.currentView["display-type"] === "default") {
+        return "default-output-display";
       } else if (this.currentView["display-type"] === "link") {
         return "link-display";
       } else {

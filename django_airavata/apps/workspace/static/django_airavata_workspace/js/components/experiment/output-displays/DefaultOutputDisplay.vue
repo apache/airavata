@@ -13,7 +13,7 @@ import { models } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 
 export default {
-  name: "download-output-viewer",
+  name: "default-output-viewer",
   props: {
     experimentOutput: {
       type: models.OutputDataObjectType,
