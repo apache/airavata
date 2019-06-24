@@ -5,6 +5,7 @@ import time
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.views.decorators.debug import sensitive_variables
 from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 class KeycloakBackend(object):
     """Django authentication backend for Keycloak."""
 
+    @sensitive_variables('password')
     def authenticate(self, request=None, username=None, password=None):
         try:
             if username and password:
