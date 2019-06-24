@@ -35,7 +35,7 @@
             <i class="fa fa-tasks"></i> <span class=sr-only>Gateway Resource Profile</span>
         </a>
         {% endif %}
-        {% if request.is_gateway_admin or request.is_read_only_gateway_admin %}
+        {% if request.is_gateway_admin %}
         <a href="{% url 'django_airavata_admin:notices' %}" class="c-nav__item {% if request.active_nav_item == 'notices' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Manage Notices">
             <i class="fa fa-bell"></i> <span class=sr-only>Manage Notices</span>
         </a>

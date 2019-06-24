@@ -9,9 +9,9 @@
       novalidate
     >
       <b-form-group
-        label="Notice title"
+        label="Notice Title"
         label-for="notice-title"
-        :feedback="getValidationFeedback('title')"
+        :invalid-feedback="getValidationFeedback('title')"
         :state="getValidationState('title')"
       >
         <b-form-input
@@ -19,7 +19,7 @@
           type="text"
           v-model="data.title"
           required
-          placeholder="notice title"
+          placeholder="Notice Title"
           :state="getValidationState('title')"
         ></b-form-input>
       </b-form-group>
@@ -27,7 +27,7 @@
       <b-form-group
         label="Notice Message"
         label-for="notice-message"
-        :feedback="getValidationFeedback('notificationMessage')"
+        :invalid-feedback="getValidationFeedback('notificationMessage')"
         :state="getValidationState('notificationMessage')"
       >
         <b-form-textarea
@@ -44,19 +44,16 @@
       <b-form-group
         label="Publish Date"
         label-for="publish-date"
-        :feedback="getValidationFeedback('notificationMessage')"
-        :state="getValidationState('notificationMessage')"
       >
         <datetime
           type="datetime"
           v-model="inputPublishedTime"
           input-class="my-class"
-          value-zone="America/New_York"
-          zone="America/New_York"
+          value-zone="UTC"
           :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
           :phrases="{ok: 'Continue', cancel: 'Exit'}"
           :hour-step="1"
-          :minute-step="15"
+          :minute-step="5"
           :min-datetime="today"
           :week-start="7"
           use12-hour
@@ -72,23 +69,23 @@
           type="datetime"
           v-model="inputExpirationTime"
           input-class="my-class"
-          value-zone="America/New_York"
-          zone="America/New_York"
+          value-zone="UTC"
           :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
           :phrases="{ok: 'Continue', cancel: 'Exit'}"
           :hour-step="1"
-          :minute-step="15"
+          :minute-step="5"
           :min-datetime="inputPublishedTime"
           :week-start="7"
           use12-hour
           auto
+
         ></datetime>
       </b-form-group>
 
       <b-form-group
         label="Priority"
         label-for="priority"
-        :feedback="getValidationFeedback('priority')"
+        :invalid-feedback="getValidationFeedback('priority')"
         :state="getValidationState('priority')"
       >
         <b-form-select
@@ -125,7 +122,11 @@
     </b-form>
   </div>
 </template>
-
+<style>
+.my-class {
+  width: 250px;
+}
+</style>
 <script>
 import { models } from "django-airavata-api";
 import { mixins, utils } from "django-airavata-common-ui";
@@ -149,9 +150,10 @@ export default {
     //checks whether the component is used for editing or updating the notificaion
     if(this.value.notificationId != null){
       this.editNotification = true;
-      this.inputPublishedTime = new moment(this.value.publishedTime.toGMTString()).format()
-      this.inputExpirationTime = new moment(this.value.expirationTime.toGMTString()).format()
-      this.data.priority = this.data.priority.name;
+      this.inputPublishedTime = new moment(this.value.publishedTime.toISOString()).utc().format()
+      this.inputExpirationTime = new moment(this.value.expirationTime.toISOString()).utc().format()
+      this.data.priority = this.value.priority.name;
+      this.today = new moment(this.value.expirationTime.toISOString()).format();
     }
   },
   data() {
@@ -179,7 +181,7 @@ export default {
       );
     },
     isSaveDisabled: function() {
-      return !this.valid || this.hasUploadingInputs;
+      return !this.valid;
     }
   },
   methods: {

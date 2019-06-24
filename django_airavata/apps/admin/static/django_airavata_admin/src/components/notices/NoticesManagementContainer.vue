@@ -138,14 +138,17 @@ export default {
       this.showNewItemEditor = true;
     },
     updateNotice() {
-      const index = this.notices.findIndex(
-        sp =>
-          sp.notificationId === this.updatedNotice.notificationId
-      );
-      services.ManageNotificationService.update({lookup: this.updatedNotice.notificationId,
-                                                  data: this.updatedNotice}).then(sp => {
-                                                    this.notices.splice(index,1, sp);
-                                                });
+      const validation = this.updatedNotice.validate();
+      if(Object.keys(validation).length === 0){
+        const index = this.notices.findIndex(
+          sp =>
+            sp.notificationId === this.updatedNotice.notificationId
+        );
+        services.ManageNotificationService.update({lookup: this.updatedNotice.notificationId,
+                                                    data: this.updatedNotice}).then(sp => {
+                                                      this.notices.splice(index,1, sp);
+                                                  });
+      }
     },
     cancelNewNotice() {
       this.showNewItemEditor = false;

@@ -37,6 +37,7 @@ def create_notification_ui(notification):
 def get_notifications(request):
     #TODO: Check is user is authenticated, check if notifications is already set and don't fetch new notificaions ->> Or fetch them after some time instead of refreshing on each time
     if request.user.is_authenticated:
+        unread_notifications = 0
         notifications = request.airavata_client.getAllNotifications(
                     request.authz_token, settings.GATEWAY_ID)
         current_time = datetime.datetime.utcnow()
@@ -59,16 +60,18 @@ def get_notifications(request):
                                 notification_id=notification.notificationId,
                                 username=request.user.username)
                 except ObjectDoesNotExist:
-                    print("Either the entry or blog doesn't exist.")
                     notification_status = User_Notifications.objects.create(
                                 username=request.user.username,
                                 notification_id=notification.notificationId)
                 notification.is_read = notification_status.is_read
+                if notification.is_read == False:
+                    unread_notifications += 1
                 notification = create_notification_ui(notification)
                 valid_notifications.append(notification)
 
         return {
-            "notifications": valid_notifications
+            "notifications": valid_notifications,
+            "unread_notifications": unread_notifications
         }
     else:
         return {"notifications": ""}
