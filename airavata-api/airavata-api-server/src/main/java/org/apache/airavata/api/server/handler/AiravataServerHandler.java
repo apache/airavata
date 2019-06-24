@@ -5262,6 +5262,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
             } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
                 userListFunction.apply(sharingClient, ResourcePermissionType.MANAGE_SHARING).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
+                userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream().forEach(u -> accessibleUsers.add(u.getUserId()));
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
