@@ -12,3 +12,10 @@ class DataParsersConfig(AiravataAppConfig):
         Define data parsers for post-processing experimental and ad-hoc
         datasets.
     """
+    nav = [
+        {
+            'label': 'Home',
+            'icon': 'fa fa-home',
+            'url': 'django_airavata_dataparsers:home',
+        },
+    ]

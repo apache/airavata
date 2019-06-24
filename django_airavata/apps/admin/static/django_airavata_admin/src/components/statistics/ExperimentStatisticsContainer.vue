@@ -2,253 +2,299 @@
   <div>
     <div class="row">
       <div class="col">
-        <h1 class="h4 mb-4">Experiment Statistics from {{fromTimeDisplay}} to {{toTimeDisplay}}</h1>
+        <h1 class="h4 mb-4">Experiment Statistics</h1>
       </div>
     </div>
-    <div class="row">
-      <div class="col">
-        <b-card header="Filter Options">
-          <b-input-group class="w-100 mb-2">
-            <b-input-group-prepend is-text>
-              <i
-                class="fa fa-calendar-week"
-                aria-hidden="true"
-              ></i>
-            </b-input-group-prepend>
-            <flat-pickr
-              :value="dateRange"
-              :config="dateConfig"
-              @on-change="dateRangeChanged"
-              class="form-control"
-            />
-            <b-input-group-append>
-              <b-button
-                @click="getPast24Hours"
-                variant="outline-secondary"
-              >Past 24 Hours</b-button>
-              <b-button
-                @click="getPastWeek"
-                variant="outline-secondary"
-              >Past Week</b-button>
-            </b-input-group-append>
-          </b-input-group>
-          <b-dropdown
-            text="Add Filters"
-            class="mb-2"
-          >
-            <b-dropdown-item
-              v-if="!usernameFilterEnabled"
-              @click="usernameFilterEnabled=true"
-            >Username</b-dropdown-item>
-            <b-dropdown-item
-              v-if="!applicationNameFilterEnabled"
-              @click="applicationNameFilterEnabled=true"
-            >Application Name</b-dropdown-item>
-            <b-dropdown-item
-              v-if="!hostnameFilterEnabled"
-              @click="hostnameFilterEnabled=true"
-            >Hostname</b-dropdown-item>
-          </b-dropdown>
-          <b-input-group
-            v-if="usernameFilterEnabled"
-            class="mb-2"
-          >
-            <b-form-input
-              v-model="usernameFilter"
-              placeholder="Username"
-              @keydown.native.enter="loadStatistics"
-            />
-            <b-input-group-append>
-              <b-button @click="removeUsernameFilter">
-                <i class="fa fa-times"></i>
-                <span class="sr-only">Remove username filter</span>
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
-          <b-input-group
-            v-if="applicationNameFilterEnabled"
-            class="mb-2"
-          >
-            <b-form-select
-              v-model="applicationNameFilter"
-              :options="applicationNameOptions"
-              @input="loadStatistics"
-            >
-              <template slot="first">
-                <option
-                  :value="null"
-                  disabled
-                >Select an application to filter on</option>
-              </template>
-            </b-form-select>
-            <b-input-group-append>
-              <b-button @click="removeApplicationNameFilter">
-                <i class="fa fa-times"></i>
-                <span class="sr-only">Remove application name filter</span>
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
-          <b-input-group
-            v-if="hostnameFilterEnabled"
-            class="mb-2"
-          >
-            <b-form-select
-              v-model="hostnameFilter"
-              :options="hostnameOptions"
-              @input="loadStatistics"
-            >
-              <template slot="first">
-                <option
-                  :value="null"
-                  disabled
-                >Select compute resource to filter on</option>
-              </template>
-            </b-form-select>
-            <b-input-group-append>
-              <b-button @click="removeHostnameFilter">
-                <i class="fa fa-times"></i>
-                <span class="sr-only">Remove hostname filter</span>
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
-          <template slot="footer">
-            <div class="d-flex justify-content-end">
-              <b-button
-                @click="loadStatistics"
-                class="ml-auto"
-                variant="primary"
-              >Get Statistics</b-button>
-            </div>
-          </template>
-        </b-card>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-2 col-md-4">
-        <experiment-statistics-card
-          bg-variant="primary"
-          header-text-variant="white"
-          :count="experimentStatistics.allExperimentCount || 0"
-          title="Total Experiments"
-          @click="selectedExperimentSummariesKey = 'allExperiments'"
-        >
-          <span slot="link-text">All</span>
-        </experiment-statistics-card>
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <experiment-statistics-card
-          bg-variant="light"
-          :count="experimentStatistics.createdExperimentCount || 0"
-          :states="createdStates"
-          title="Created Experiments"
-          @click="selectedExperimentSummariesKey = 'createdExperiments'"
-        >
-        </experiment-statistics-card>
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <experiment-statistics-card
-          bg-variant="light"
-          header-text-variant="success"
-          :count="experimentStatistics.runningExperimentCount || 0"
-          :states="runningStates"
-          title="Running Experiments"
-          @click="selectedExperimentSummariesKey = 'runningExperiments'"
-        >
-        </experiment-statistics-card>
-
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <experiment-statistics-card
-          bg-variant="success"
-          header-text-variant="white"
-          link-variant="success"
-          :count="experimentStatistics.completedExperimentCount || 0"
-          :states="completedStates"
-          title="Completed Experiments"
-          @click="selectedExperimentSummariesKey = 'completedExperiments'"
-        >
-        </experiment-statistics-card>
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <experiment-statistics-card
-          bg-variant="warning"
-          header-text-variant="white"
-          link-variant="warning"
-          :count="experimentStatistics.cancelledExperimentCount || 0"
-          :states="canceledStates"
-          title="Cancelled Experiments"
-          @click="selectedExperimentSummariesKey = 'cancelledExperiments'"
-        >
-        </experiment-statistics-card>
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <experiment-statistics-card
-          bg-variant="danger"
-          header-text-variant="white"
-          link-variant="danger"
-          :count="experimentStatistics.failedExperimentCount || 0"
-          :states="failedStates"
-          title="Failed Experiments"
-          @click="selectedExperimentSummariesKey = 'failedExperiments'"
-        >
-        </experiment-statistics-card>
-
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <b-card no-body>
-          <b-tabs card>
-            <b-tab :title="selectedExperimentsTabTitle">
-              <b-table
-                :fields="fields"
-                :items="items"
-              >
-                <template
-                  slot="executionId"
-                  slot-scope="data"
-                >
-                  <application-name :application-interface-id="data.value" />
-                </template>
-                <template
-                  slot="resourceHostId"
-                  slot-scope="data"
-                >
-                  <compute-resource-name :compute-resource-id="data.value" />
-                </template>
-                <template
-                  slot="creationTime"
-                  slot-scope="data"
-                >
-                  <human-date :date="data.value" />
-                </template>
-                <template
-                  slot="experimentStatus"
-                  slot-scope="data"
-                >
-                  <experiment-status-badge :status-name="data.value.name" />
-                </template>
-                <template
-                  slot="actions"
-                  slot-scope="data"
-                >
-                  <b-link @click="showExperimentDetails(data.item.experimentId)">
-                    View Details
+    <b-card header="Load experiment details by experiment id">
+      <b-form-group>
+        <b-input-group>
+          <b-form-input
+            v-model="experimentId"
+            placeholder="Experiment ID"
+            @keydown.native.enter="experimentId && showExperimentDetails(experimentId)"
+          />
+          <b-input-group-append>
+            <b-button
+              :disabled="!experimentId"
+              @click="showExperimentDetails(experimentId)"
+              variant="primary"
+            >Load</b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </b-form-group>
+    </b-card>
+    <b-card no-body>
+      <b-tabs
+        card
+        v-model="activeTabIndex"
+        ref="tabs"
+      >
+        <b-tab :title="selectedExperimentsTabTitle">
+          <div class="row">
+            <div class="col">
+              <b-card header="Filter Options">
+                <b-input-group class="w-100 mb-2">
+                  <b-input-group-prepend is-text>
                     <i
-                      class="far fa-chart-bar"
+                      class="fa fa-calendar-week"
                       aria-hidden="true"
                     ></i>
-                  </b-link>
+                  </b-input-group-prepend>
+                  <flat-pickr
+                    :value="dateRange"
+                    :config="dateConfig"
+                    @on-change="dateRangeChanged"
+                    class="form-control"
+                  />
+                  <b-input-group-append>
+                    <b-button
+                      @click="getPast24Hours"
+                      variant="outline-secondary"
+                    >Past 24 Hours</b-button>
+                    <b-button
+                      @click="getPastWeek"
+                      variant="outline-secondary"
+                    >Past Week</b-button>
+                  </b-input-group-append>
+                </b-input-group>
+                <b-dropdown
+                  text="Add Filters"
+                  class="mb-2"
+                >
+                  <b-dropdown-item
+                    v-if="!usernameFilterEnabled"
+                    @click="usernameFilterEnabled=true"
+                  >Username</b-dropdown-item>
+                  <b-dropdown-item
+                    v-if="!applicationNameFilterEnabled"
+                    @click="applicationNameFilterEnabled=true"
+                  >Application Name</b-dropdown-item>
+                  <b-dropdown-item
+                    v-if="!hostnameFilterEnabled"
+                    @click="hostnameFilterEnabled=true"
+                  >Hostname</b-dropdown-item>
+                </b-dropdown>
+                <b-input-group
+                  v-if="usernameFilterEnabled"
+                  class="mb-2"
+                >
+                  <b-form-input
+                    v-model="usernameFilter"
+                    placeholder="Username"
+                    @keydown.native.enter="loadStatistics"
+                  />
+                  <b-input-group-append>
+                    <b-button @click="removeUsernameFilter">
+                      <i class="fa fa-times"></i>
+                      <span class="sr-only">Remove username filter</span>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+                <b-input-group
+                  v-if="applicationNameFilterEnabled"
+                  class="mb-2"
+                >
+                  <b-form-select
+                    v-model="applicationNameFilter"
+                    :options="applicationNameOptions"
+                    @input="loadStatistics"
+                  >
+                    <template slot="first">
+                      <option
+                        :value="null"
+                        disabled
+                      >Select an application to filter on</option>
+                    </template>
+                  </b-form-select>
+                  <b-input-group-append>
+                    <b-button @click="removeApplicationNameFilter">
+                      <i class="fa fa-times"></i>
+                      <span class="sr-only">Remove application name filter</span>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+                <b-input-group
+                  v-if="hostnameFilterEnabled"
+                  class="mb-2"
+                >
+                  <b-form-select
+                    v-model="hostnameFilter"
+                    :options="hostnameOptions"
+                    @input="loadStatistics"
+                  >
+                    <template slot="first">
+                      <option
+                        :value="null"
+                        disabled
+                      >Select compute resource to filter on</option>
+                    </template>
+                  </b-form-select>
+                  <b-input-group-append>
+                    <b-button @click="removeHostnameFilter">
+                      <i class="fa fa-times"></i>
+                      <span class="sr-only">Remove hostname filter</span>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+                <template slot="footer">
+                  <div class="d-flex justify-content-end">
+                    <b-button
+                      @click="loadStatistics"
+                      class="ml-auto"
+                      variant="primary"
+                    >Get Statistics</b-button>
+                  </div>
                 </template>
-              </b-table>
-            </b-tab>
-            <b-tab v-for="experimentDetail in experimentDetails" :key="experimentDetail.experimentId" :title="experimentDetail.experimentName">
-              <experiment-details-view :experiment="experimentDetail"/>
-            </b-tab>
-          </b-tabs>
-        </b-card>
-      </div>
-    </div>
+              </b-card>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+
+              <h2 class="h5 mb-4">Experiment Statistics from {{fromTimeDisplay}} to {{toTimeDisplay}}</h2>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-2 col-md-4">
+              <experiment-statistics-card
+                bg-variant="primary"
+                header-text-variant="white"
+                :count="experimentStatistics.allExperimentCount || 0"
+                title="Total Experiments"
+                @click="selectedExperimentSummariesKey = 'allExperiments'"
+              >
+                <span slot="link-text">All</span>
+              </experiment-statistics-card>
+            </div>
+            <div class="col-lg-2 col-md-4">
+              <experiment-statistics-card
+                bg-variant="light"
+                :count="experimentStatistics.createdExperimentCount || 0"
+                :states="createdStates"
+                title="Created Experiments"
+                @click="selectedExperimentSummariesKey = 'createdExperiments'"
+              >
+              </experiment-statistics-card>
+            </div>
+            <div class="col-lg-2 col-md-4">
+              <experiment-statistics-card
+                bg-variant="light"
+                header-text-variant="success"
+                :count="experimentStatistics.runningExperimentCount || 0"
+                :states="runningStates"
+                title="Running Experiments"
+                @click="selectedExperimentSummariesKey = 'runningExperiments'"
+              >
+              </experiment-statistics-card>
+
+            </div>
+            <div class="col-lg-2 col-md-4">
+              <experiment-statistics-card
+                bg-variant="success"
+                header-text-variant="white"
+                link-variant="success"
+                :count="experimentStatistics.completedExperimentCount || 0"
+                :states="completedStates"
+                title="Completed Experiments"
+                @click="selectedExperimentSummariesKey = 'completedExperiments'"
+              >
+              </experiment-statistics-card>
+            </div>
+            <div class="col-lg-2 col-md-4">
+              <experiment-statistics-card
+                bg-variant="warning"
+                header-text-variant="white"
+                link-variant="warning"
+                :count="experimentStatistics.cancelledExperimentCount || 0"
+                :states="canceledStates"
+                title="Cancelled Experiments"
+                @click="selectedExperimentSummariesKey = 'cancelledExperiments'"
+              >
+              </experiment-statistics-card>
+            </div>
+            <div class="col-lg-2 col-md-4">
+              <experiment-statistics-card
+                bg-variant="danger"
+                header-text-variant="white"
+                link-variant="danger"
+                :count="experimentStatistics.failedExperimentCount || 0"
+                :states="failedStates"
+                title="Failed Experiments"
+                @click="selectedExperimentSummariesKey = 'failedExperiments'"
+              >
+              </experiment-statistics-card>
+
+            </div>
+          </div>
+          <div
+            class="row"
+            v-if="items.length > 0"
+          >
+            <div class="col">
+              <b-card>
+                <b-table
+                  :fields="fields"
+                  :items="items"
+                >
+                  <template
+                    slot="executionId"
+                    slot-scope="data"
+                  >
+                    <application-name :application-interface-id="data.value" />
+                  </template>
+                  <template
+                    slot="resourceHostId"
+                    slot-scope="data"
+                  >
+                    <compute-resource-name :compute-resource-id="data.value" />
+                  </template>
+                  <template
+                    slot="creationTime"
+                    slot-scope="data"
+                  >
+                    <human-date :date="data.value" />
+                  </template>
+                  <template
+                    slot="experimentStatus"
+                    slot-scope="data"
+                  >
+                    <experiment-status-badge :status-name="data.value.name" />
+                  </template>
+                  <template
+                    slot="actions"
+                    slot-scope="data"
+                  >
+                    <b-link @click="showExperimentDetails(data.item.experimentId)">
+                      View Details
+                      <i
+                        class="far fa-chart-bar"
+                        aria-hidden="true"
+                      ></i>
+                    </b-link>
+                  </template>
+                </b-table>
+              </b-card>
+            </div>
+          </div>
+        </b-tab>
+        <b-tab
+          v-for="experimentDetail in experimentDetails"
+          :key="experimentDetail.experimentId"
+        >
+          <template slot="title">
+            {{ experimentDetail.experimentName }}
+            <b-link
+              @click="removeExperimentDetails(experimentDetail.experimentId)"
+              class="text-secondary"
+            >
+              <i class="fas fa-times"></i>
+              <span class="sr-only">Close experiment tab</span>
+            </b-link>
+          </template>
+          <experiment-details-view :experiment="experimentDetail" />
+        </b-tab>
+      </b-tabs>
+    </b-card>
   </div>
 </template>
 <script>
@@ -284,7 +330,9 @@ export default {
       hostnameFilter: null,
       appInterfaces: null,
       computeResourceNames: null,
-      experimentDetails: []
+      experimentDetails: [],
+      experimentId: null,
+      activeTabIndex: 0
     };
   },
   created() {
@@ -500,11 +548,40 @@ export default {
       this.loadStatistics();
     },
     showExperimentDetails(experimentId) {
-      // TODO: if experiment details already loaded, select its tab
-      // TODO: maybe don't need to load the experiment first since ExperimentDetailsView will load FullExperiment?
-      services.ExperimentService.retrieve({
-        lookup: experimentId
-      }).then(exp => this.experimentDetails.push(exp));
+      const expDetailsIndex = this.getExperimentDetailsIndex(experimentId);
+      if (expDetailsIndex >= 0) {
+        this.selectExperimentDetailsTab(experimentId);
+      } else {
+        // TODO: maybe don't need to load the experiment first since ExperimentDetailsView will load FullExperiment?
+        services.ExperimentService.retrieve({
+          lookup: experimentId
+        }).then(exp => {
+          this.experimentDetails.push(exp);
+          this.selectExperimentDetailsTab(experimentId);
+          this.scrollTabsIntoView();
+        });
+      }
+    },
+    selectExperimentDetailsTab(experimentId) {
+      const expDetailsIndex = this.getExperimentDetailsIndex(experimentId);
+      // Note: running this in $nextTick doesn't work, but setTimeout does
+      // (see also https://github.com/bootstrap-vue/bootstrap-vue/issues/1378#issuecomment-345689470)
+      setTimeout(() => {
+        // Add 1 to the index because the first tab has the overall statistics
+        this.activeTabIndex = expDetailsIndex + 1;
+      }, 1);
+    },
+    getExperimentDetailsIndex(experimentId) {
+      return this.experimentDetails.findIndex(
+        e => e.experimentId === experimentId
+      );
+    },
+    removeExperimentDetails(experimentId) {
+      const index = this.getExperimentDetailsIndex(experimentId);
+      this.experimentDetails.splice(index, 1);
+    },
+    scrollTabsIntoView() {
+      this.$refs.tabs.$el.scrollIntoView();
     }
   }
 };

@@ -21,9 +21,9 @@ import Group from "./models/Group";
 import GroupComputeResourcePreference from "./models/GroupComputeResourcePreference";
 import GroupPermission from "./models/GroupPermission";
 import GroupResourceProfile from "./models/GroupResourceProfile";
+import IAMUserProfile from "./models/IAMUserProfile";
 import InputDataObjectType from "./models/InputDataObjectType";
 import JobState from "./models/JobState";
-import ManagedUserProfile from "./models/ManagedUserProfile";
 import Notification from "./models/Notification";
 import NotificationPriority from "./models/NotificationPriority";
 import OutputDataObjectType from "./models/OutputDataObjectType";
@@ -80,9 +80,9 @@ const models = {
   GroupComputeResourcePreference,
   GroupPermission,
   GroupResourceProfile,
+  IAMUserProfile,
   InputDataObjectType,
   JobState,
-  ManagedUserProfile,
   Notification,
   NotificationPriority,
   OutputDataObjectType,
@@ -118,7 +118,8 @@ const services = {
   GroupResourceProfileService: ServiceFactory.service("GroupResourceProfiles"),
   GroupService: ServiceFactory.service("Groups"),
   LocaJobSubmissionService,
-  ManagedUserProfileService: ServiceFactory.service("ManagedUserProfiles"),
+  LoggingService: ServiceFactory.service("LogRecords"),
+  IAMUserProfileService: ServiceFactory.service("IAMUserProfiles"),
   ManageNotificationService: ServiceFactory.service("ManageNotifications"),
 
   ParserService: ServiceFactory.service("Parsers"),
@@ -131,6 +132,9 @@ const services = {
   StorageResourceService: ServiceFactory.service("StorageResources"),
   UnicoreDataMovementService,
   UnicoreJobSubmissionService,
+  UnverifiedEmailUserProfileService: ServiceFactory.service(
+    "UnverifiedEmailUsers"
+  ),
   UserProfileService,
   UserStoragePathService: ServiceFactory.service("UserStoragePaths"),
   WorkspacePreferencesService: ServiceFactory.service("WorkspacePreferences")

@@ -832,7 +832,7 @@ class WorkspacePreferencesSerializer(serializers.ModelSerializer):
         exclude = ('username',)
 
 
-class ManagedUserProfile(serializers.Serializer):
+class IAMUserProfile(serializers.Serializer):
     airavataInternalUserId = serializers.CharField()
     userId = serializers.CharField()
     gatewayId = serializers.CharField()
@@ -845,7 +845,7 @@ class ManagedUserProfile(serializers.Serializer):
     creationTime = UTCPosixTimestampDateTimeField()
     groups = GroupSerializer(many=True)
     url = FullyEncodedHyperlinkedIdentityField(
-        view_name='django_airavata_api:managed-user-profile-detail',
+        view_name='django_airavata_api:iam-user-profile-detail',
         lookup_field='userId',
         lookup_url_kwarg='user_id')
 
@@ -881,3 +881,25 @@ class ExperimentStatisticsSerializer(
     cancelledExperiments = ExperimentSummarySerializer(many=True)
     createdExperiments = ExperimentSummarySerializer(many=True)
     runningExperiments = ExperimentSummarySerializer(many=True)
+
+
+class UnverifiedEmailUserProfile(serializers.Serializer):
+    userId = serializers.CharField()
+    gatewayId = serializers.CharField()
+    email = serializers.CharField()
+    firstName = serializers.CharField()
+    lastName = serializers.CharField()
+    enabled = serializers.BooleanField()
+    emailVerified = serializers.BooleanField()
+    creationTime = UTCPosixTimestampDateTimeField()
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:unverified-email-user-profile-detail',
+        lookup_field='userId',
+        lookup_url_kwarg='user_id')
+
+
+class LogRecordSerializer(serializers.Serializer):
+    level = serializers.CharField()
+    message = serializers.CharField()
+    details = StoredJSONField()
+    stacktrace = serializers.ListField(child=serializers.CharField())

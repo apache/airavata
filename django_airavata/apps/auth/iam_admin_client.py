@@ -37,6 +37,11 @@ def enable_user(username):
     return iamadmin_client_pool.enableUser(authz_token, username)
 
 
+def delete_user(username):
+    authz_token = utils.get_service_account_authz_token()
+    return iamadmin_client_pool.deleteUser(authz_token, username)
+
+
 def is_user_exist(username):
     authz_token = utils.get_service_account_authz_token()
     return iamadmin_client_pool.isUserExist(authz_token, username)

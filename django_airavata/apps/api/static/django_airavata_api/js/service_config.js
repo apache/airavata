@@ -13,12 +13,14 @@ import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
-import ManagedUserProfile from "./models/ManagedUserProfile";
+import IAMUserProfile from "./models/IAMUserProfile";
+import LogRecord from "./models/LogRecord";
 import Parser from "./models/Parser";
 import Project from "./models/Project";
 import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
+import UnverifiedEmailUserProfile from "./models/UnverifiedEmailUserProfile";
 import UserProfile from "./models/UserProfile";
 import UserStoragePath from "./models/UserStoragePath";
 import WorkspacePreferences from "./models/WorkspacePreferences";
@@ -239,12 +241,33 @@ export default {
     queryParams: ["limit", "offset"],
     modelClass: Group
   },
-  ManagedUserProfiles: {
-    url: "/api/managed-user-profiles",
+  IAMUserProfiles: {
+    url: "/api/iam-user-profiles",
     viewSet: true,
     pagination: true,
+    methods: {
+      enable: {
+        url: "/api/iam-user-profiles/<lookup>/enable/",
+        requestType: "post",
+        modelClass: IAMUserProfile
+      }
+    },
     queryParams: ["limit", "offset", "search"],
-    modelClass: ManagedUserProfile
+    modelClass: IAMUserProfile
+  },
+  LogRecords: {
+    url: "/api/log",
+    methods: {
+      send: {
+        url: '/api/log',
+        requestType: "post",
+        bodyParams: {
+          name: "data"
+        },
+        modelClass: LogRecord
+      }
+    },
+    modelClass: LogRecord
   },
   Parsers: {
     url: "/api/parsers",
@@ -296,6 +319,13 @@ export default {
       }
     },
     modelClass: StorageResourceDescription
+  },
+  UnverifiedEmailUsers: {
+    url: "/api/unverified-email-users",
+    viewSet: true,
+    pagination: true,
+    queryParams: ["limit", "offset"],
+    modelClass: UnverifiedEmailUserProfile
   },
   UserProfiles: {
     url: "/api/user-profiles",

@@ -10,6 +10,8 @@ import ExperimentStatisticsContainer from "./components/statistics/ExperimentSta
 import CredentialStoreDashboard from "./components/dashboards/CredentialStoreDashboard";
 import GatewayResourceProfileEditorContainer from "./components/gatewayprofile/GatewayResourceProfileEditorContainer.vue";
 import GroupComputeResourcePreference from "./components/admin/group_resource_preferences/GroupComputeResourcePreference";
+import IdentityServiceUserManagementContainer from "./components/users/IdentityServiceUserManagementContainer.vue";
+import UnverifiedEmailUserManagementContainer from "./components/users/UnverifiedEmailUserManagementContainer.vue";
 import UserManagementContainer from "./components/users/UserManagementContainer.vue";
 import NoticesManagementContainer from "./components/notices/NoticesManagementContainer.vue"
 import VueRouter from "vue-router";
@@ -123,7 +125,15 @@ const routes = [
   {
     path: "/users",
     component: UserManagementContainer,
-    name: "users"
+    name: "users",
+    children: [
+      { path: "", component: IdentityServiceUserManagementContainer, name: "identity-service-users" },
+      {
+        path: "unverified-email",
+        component: UnverifiedEmailUserManagementContainer,
+        name: "unverified-email-users"
+      }
+    ]
   },
   {
     path: "/notices",

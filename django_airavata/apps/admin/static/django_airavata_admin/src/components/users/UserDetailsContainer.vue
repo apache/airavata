@@ -1,20 +1,36 @@
 <template>
-  <user-group-membership-editor
-    v-model="localManagedUserProfile.groups"
-    :editable-groups="editableGroups"
-    :airavata-internal-user-id="managedUserProfile.airavataInternalUserId"
-    @input="groupsUpdated"
-  />
+  <div>
+    <user-group-membership-editor
+      v-if="iamUserProfile.airavataUserProfileExists"
+      v-model="localIAMUserProfile.groups"
+      :editable-groups="editableGroups"
+      :airavata-internal-user-id="iamUserProfile.airavataInternalUserId"
+      @input="groupsUpdated"
+    />
+    <enable-user-panel
+      v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
+      :username="iamUserProfile.userId"
+      :email="iamUserProfile.email"
+      @enable-user="$emit('enable-user', $event)"
+    />
+    <delete-user-panel
+      v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
+      :username="iamUserProfile.userId"
+      @delete-user="$emit('delete-user', $event)"
+    />
+  </div>
 </template>
 <script>
 import { models } from "django-airavata-api";
 import UserGroupMembershipEditor from "./UserGroupMembershipEditor";
+import EnableUserPanel from "./EnableUserPanel";
+import DeleteUserPanel from "./DeleteUserPanel";
 
 export default {
   name: "user-details-container",
   props: {
-    managedUserProfile: {
-      type: models.ManagedUserProfile,
+    iamUserProfile: {
+      type: models.IAMUserProfile,
       required: true
     },
     editableGroups: {
@@ -23,21 +39,23 @@ export default {
     }
   },
   components: {
-    UserGroupMembershipEditor
+    UserGroupMembershipEditor,
+    EnableUserPanel,
+    DeleteUserPanel
   },
   data() {
     return {
-      localManagedUserProfile: this.managedUserProfile.clone()
+      localIAMUserProfile: this.iamUserProfile.clone()
     };
   },
   watch: {
-    managedUserProfile(newValue) {
-      this.localManagedUserProfile = newValue.clone();
+    iamUserProfile(newValue) {
+      this.localIAMUserProfile = newValue.clone();
     }
   },
   methods: {
     groupsUpdated() {
-      this.$emit("groups-updated", this.localManagedUserProfile);
+      this.$emit("groups-updated", this.localIAMUserProfile);
     }
   }
 };

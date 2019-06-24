@@ -41,10 +41,12 @@ router.register(r'storage-preferences',
                 views.StoragePreferenceViewSet,
                 base_name='storage-preference')
 router.register(r'parsers', views.ParserViewSet, base_name='parser')
-router.register(r'managed-user-profiles', views.ManagedUserViewSet,
-                base_name='managed-user-profile')
 router.register(r'manage-notifications', views.ManageNotificationViewSet,
                 base_name='manage-notifications')
+router.register(r'iam-user-profiles', views.IAMUserViewSet,
+                base_name='iam-user-profile')
+router.register(r'unverified-email-users', views.UnverifiedEmailUserViewSet,
+                base_name='unverified-email-user-profile')
 
 app_name = 'django_airavata_api'
 urlpatterns = [
@@ -85,8 +87,8 @@ urlpatterns = [
         views.ExperimentStatisticsView.as_view(),
         name="experiment-statistics"),
     url(r'ack-notifications/<slug:id>/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
-    url(r'ack-notifications/', views.AckNotificationViewSet.as_view(), name="ack-notifications")
-
+    url(r'ack-notifications/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
+    url(r'^log', views.LogRecordConsumer.as_view(), name='log')
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

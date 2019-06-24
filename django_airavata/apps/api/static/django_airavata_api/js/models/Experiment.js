@@ -104,6 +104,10 @@ export default class Experiment extends BaseModel {
     return this.latestStatus && this.latestStatus.isProgressing;
   }
 
+  get isFinished() {
+    return this.latestStatus && this.latestStatus.isFinished;
+  }
+
   get hasLaunched() {
     const hasLaunchedStates = [
       ExperimentState.SCHEDULED,

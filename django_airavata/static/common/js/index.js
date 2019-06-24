@@ -9,6 +9,7 @@ import DataProductViewer from "./components/DataProductViewer";
 import DeleteButton from "./components/DeleteButton.vue";
 import DeleteLink from "./components/DeleteLink.vue";
 import ExperimentStatusBadge from "./components/ExperimentStatusBadge";
+import GatewayGroupsBadge from "./components/GatewayGroupsBadge";
 import HumanDate from "./components/HumanDate.vue";
 import MainLayout from "./components/MainLayout.vue";
 import Pager from "./components/Pager.vue";
@@ -45,6 +46,7 @@ const components = {
   DeleteButton,
   DeleteLink,
   ExperimentStatusBadge,
+  GatewayGroupsBadge,
   HumanDate,
   MainLayout,
   ShareButton,

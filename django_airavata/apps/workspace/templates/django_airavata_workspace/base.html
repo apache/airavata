@@ -9,22 +9,6 @@
 {% render_bundle bundle_name 'css' 'WORKSPACE' %}
 {% endblock %}
 
-{% block nav-items %}
-
-        <a href="{% url 'django_airavata_workspace:dashboard' %}" class="c-nav__item {% if request.active_nav_item == 'dashboard' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Dashboard>
-            <i class="fa fa-tachometer-alt"></i> <span class=sr-only>Dashboard</span>
-        </a>
-        <a href="{% url 'django_airavata_workspace:experiments' %}" class="c-nav__item {% if request.active_nav_item == 'experiments' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Experiments>
-            <i class="fa fa-flask"></i> <span class=sr-only>Experiments</span>
-        </a>
-        <a href="{% url 'django_airavata_workspace:projects' %}" class="c-nav__item {% if request.active_nav_item == 'projects' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Projects>
-            <i class="fa fa-box"></i> <span class=sr-only>Projects</span>
-        </a>
-        <a href="{% url 'django_airavata_workspace:storage' %}" class="c-nav__item {% if request.active_nav_item == 'storage' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Storage>
-            <i class="fa fa-folder-open"></i> <span class=sr-only>Storage</span>
-        </a>
-{% endblock %}
-
 {% block content %}
 <div id="{{ bundle_name }}"/>
 {% endblock content %}

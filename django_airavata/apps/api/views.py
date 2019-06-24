@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from datetime import datetime, timedelta
@@ -37,9 +38,11 @@ from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
     APIResultPagination,
-    GenericAPIBackedViewSet
+    GenericAPIBackedViewSet,
+    IsInAdminsGroupPermission
 )
 from django_airavata.apps.auth import iam_admin_client
+from django_airavata.apps.auth.models import EmailVerification
 
 from . import (
     data_products_helper,
@@ -1410,6 +1413,7 @@ class ManageNotificationViewSet(APIBackedViewSet):
         notification = serializer.save()
         self.request.airavata_client.updateNotification(self.authz_token, notification)
 
+
 class AckNotificationViewSet(APIView):
 
 
@@ -1430,13 +1434,14 @@ class AckNotificationViewSet(APIView):
         return HttpResponse(status=204)
 
 
-class ManagedUserViewSet(mixins.CreateModelMixin,
-                         mixins.RetrieveModelMixin,
-                         mixins.UpdateModelMixin,
-                         mixins.ListModelMixin,
-                         GenericAPIBackedViewSet):
-    serializer_class = serializers.ManagedUserProfile
+class IAMUserViewSet(mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.ListModelMixin,
+                     mixins.DestroyModelMixin,
+                     GenericAPIBackedViewSet):
+    serializer_class = serializers.IAMUserProfile
     pagination_class = APIResultPagination
+    permission_classes = (IsInAdminsGroupPermission,)
     lookup_field = 'user_id'
 
     def get_list(self):
@@ -1444,11 +1449,11 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
 
         convert_user_profile = self._convert_user_profile
 
-        class ManagedUsersResultIterator(APIResultIterator):
+        class IAMUsersResultIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
                 return map(convert_user_profile,
                            iam_admin_client.get_users(offset, limit, search))
-        return ManagedUsersResultIterator()
+        return IAMUsersResultIterator()
 
     def get_instance(self, lookup_value):
         return self._convert_user_profile(
@@ -1464,6 +1469,17 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
         for group_id in managed_user_profile['_removed_group_ids']:
             group_manager_client.removeUsersFromGroup(
                 self.authz_token, [user_id], group_id)
+
+    def perform_destroy(self, instance):
+        iam_admin_client.delete_user(instance['userId'])
+
+    @detail_route(methods=['post'])
+    def enable(self, request, user_id=None):
+        iam_admin_client.enable_user(user_id)
+        instance = self.get_instance(user_id)
+        serializer = self.serializer_class(instance=instance,
+                                           context={'request': request})
+        return Response(serializer.data)
 
     def _convert_user_profile(self, user_profile):
         user_profile_client = self.request.profile_service['user_profile']
@@ -1481,9 +1497,9 @@ class ManagedUserViewSet(mixins.CreateModelMixin,
             'email': user_profile.emails[0],
             'firstName': user_profile.firstName,
             'lastName': user_profile.lastName,
-            # TODO: fix this to distinguish between enabled and emailVerified
-            'enabled': user_profile.State == Status.CONFIRMED,
-            'emailVerified': user_profile.State == Status.CONFIRMED,
+            'enabled': user_profile.State == Status.ACTIVE,
+            'emailVerified': (user_profile.State == Status.CONFIRMED or
+                              user_profile.State == Status.ACTIVE),
             'airavataUserProfileExists': airavata_user_profile_exists,
             'creationTime': user_profile.creationTime,
             'groups': groups
@@ -1514,4 +1530,81 @@ class ExperimentStatisticsView(APIView):
             username, application_name, resource_hostname)
         serializer = self.serializer_class(
             statistics, context={'request': request})
+        return Response(serializer.data)
+
+
+class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
+                                 mixins.RetrieveModelMixin,
+                                 GenericAPIBackedViewSet):
+    serializer_class = serializers.UnverifiedEmailUserProfile
+    pagination_class = APIResultPagination
+    permission_classes = (IsInAdminsGroupPermission,)
+    lookup_field = 'user_id'
+
+    def get_list(self):
+        get_users = self._get_unverified_email_user_profiles
+
+        class UnverifiedEmailUsersResultIterator(APIResultIterator):
+            def get_results(self, limit=-1, offset=0):
+                return get_users(limit, offset)
+        return UnverifiedEmailUsersResultIterator()
+
+    def get_instance(self, lookup_value):
+        users = self._get_unverified_email_user_profiles(
+            limit=1, username=lookup_value)
+        if len(users) == 0:
+            raise Http404("No unverified email record found for user {}"
+                          .format(lookup_value))
+        else:
+            return users[0]
+
+    def _get_unverified_email_user_profiles(
+            self, limit=-1, offset=0, username=None):
+        unverified_emails = EmailVerification.objects.filter(
+            verified=False).order_by('username').values('username').distinct()
+        if username is not None:
+            unverified_emails = unverified_emails.filter(username=username)
+        if limit > 0:
+            unverified_emails = unverified_emails[offset:offset + limit]
+        results = []
+        for unverified_email in unverified_emails:
+            username = unverified_email['username']
+            user_profile = iam_admin_client.get_user(username)
+            if (user_profile.State == Status.CONFIRMED or
+                    user_profile.State == Status.ACTIVE):
+                # TODO: test this
+                EmailVerification.objects.filter(
+                    username=username).update(
+                    verified=True)
+                continue
+            results.append({
+                'userId': user_profile.userId,
+                'gatewayId': user_profile.gatewayId,
+                'email': user_profile.emails[0],
+                'firstName': user_profile.firstName,
+                'lastName': user_profile.lastName,
+                'enabled': user_profile.State == Status.ACTIVE,
+                'emailVerified': (user_profile.State == Status.CONFIRMED or
+                                  user_profile.State == Status.ACTIVE),
+                'creationTime': user_profile.creationTime,
+            })
+        return results
+
+
+class LogRecordConsumer(APIView):
+    serializer_class = serializers.LogRecordSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        log_record = serializer.validated_data
+        log_level = getattr(logging, log_record['level'], None)
+        if log_level is not None:
+            stacktrace = "".join(
+                map(lambda a: "\n    " + a, log_record['stacktrace']))
+            log.log(log_level,
+                    "Frontend error: {}: {}\nstacktrace: {}".format(
+                        log_record['message'],
+                        json.dumps(log_record['details'], indent=4),
+                        stacktrace))
         return Response(serializer.data)
