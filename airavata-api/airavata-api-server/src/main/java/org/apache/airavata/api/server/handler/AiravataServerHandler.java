@@ -5126,7 +5126,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
                 else if(userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)){
-                    if (!userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                    if (userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
                         sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                                 Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "MANAGE_SHARING");
                     else
