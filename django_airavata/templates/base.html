@@ -1,5 +1,6 @@
 {% load navigation_tags static %}
 {% load render_bundle from webpack_loader %}
+{% load humanize %}
 <!DOCTYPE html>
 
 <head>
@@ -91,6 +92,20 @@
     animation-delay: 0.9s;
   }
 
+
+  .widget-notifications .notification{position:relative;padding:7px 12px; text-decoration:none;}
+  .widget-notifications .notification+.notification{border-top:1px solid #e4e4e4}
+  .widget-notifications .notifications-list{position:relative; width: auto; max-height: 300px;}
+  .widget-notifications .notification-title{font-size:12px;font-weight:700;padding-bottom:1px}.widget-notifications .notification-description{font-size:11px;color:#666}.widget-notifications .notification-ago{font-size:11px;font-style:italic;color:#bbb}
+  .widget-notifications .notification-icon{width:26px;height:26px;line-height:26px;text-align:center;border-radius:2px;position:absolute;top:50%;right:0;margin:-13px 12px 0 0;font-size:14px}
+  .widget-notifications .notifications-link{text-align:center;padding:8px 0!important;border-top:1px solid #e4e4e4;display:block;text-decoration:none!important;font-size:10px;font-weight:800;color:#999;line-height:18px!important;height:auto!important}
+  .widget-notifications .notifications-link:hover{background:#f4f4f4;color:#555;  text-decoration:none;}
+  .widget-notifications:hover{text-decoration:none;}
+
+  .fa-dot-circle:hover {
+      color: black;
+  }
+
   @-webkit-keyframes sk-foldCubeAngle {
 
     0%,
@@ -138,6 +153,33 @@
       opacity: 0;
     }
   }
+  .dropdown-menu{
+          height:300px;
+          overflow-y:auto;
+       }
+       /* Let's get this party started */
+  .dropdown-menu::-webkit-scrollbar {
+         width: 12px;
+     }
+
+     /* Track */
+  .dropdown-menu::-webkit-scrollbar-track {
+         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+         -webkit-border-radius: 10px;
+         border-radius: 10px;
+     }
+
+     /* Handle */
+  .dropdown-menu::-webkit-scrollbar-thumb {
+         -webkit-border-radius: 10px;
+         border-radius: 10px;
+         background: rgba(0,0,189,0.8);
+         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+     }
+  .dropdown-menu::-webkit-scrollbar-thumb:window-inactive {
+     	background: rgba(255,0,0,0.4);
+     }
+
 </style>
 
 <body>
@@ -149,7 +191,42 @@
     </div>
     {% if user.is_authenticated %}
     <div class=c-header__controls>
-      <div class="btn-group">
+      <div class="btn-group ml-3">
+        <div class=dropdown>
+          <a href=# class="dropdown-toggle text-dark" id=dropdownNoticeButton
+            data-toggle=dropdown title="Notifications" aria-haspopup=true
+            aria-expanded=false>
+            <i class="fa fa-bell"></i>
+              {{ notifications | length }}
+          </a>
+          <div class="dropdown-menu widget-notifications no-padding" style="width: 300px">
+              <div class="notifications-list" id="ack-notification">
+                <div class="text-center text-primary ">Notifications</div>
+
+                {% for notice in notifications %}
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item">
+
+                      <div class="notification-title {{ notice.textColor }} text-wrap " >
+                        <strong> {{ notice.title }}   </strong>
+                      </div>
+
+                       <a class="fas fa-dot-circle" class="pull-right" data-toggle="tooltip" data-placement="left"
+                       title="Mark as read" id={{ notice.notificationId }}
+                       notification_id={{ notice.notificationId }}
+                       url={{ notice.url }}  {% if notice.is_read %} hidden {% endif %}></a>
+
+                      <div class="notification-description text-wrap"> {{ notice.notificationMessage }}</div>
+                      <div class="notification-ago time" > {{ notice.publishedTime | naturaltime }} </div>
+                      <div class="notification-icon"></div>
+
+                  </div>
+                {% endfor %}
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-group ml-3">
         <div class=dropdown>
           <a href=# class="dropdown-toggle text-dark" id=appDropdownMenuButton data-toggle=dropdown aria-haspopup=true
             aria-expanded=false>

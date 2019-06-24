@@ -7,7 +7,7 @@
   "main": "./js/index.js",
   "module": "./js/index.js",
   "scripts": {
-    "watch": "vue-cli-service build --watch",
+    "watch": "vue-cli-service build --watch --mode production",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint ./js/",
     "lint:visualstudio": "vue-cli-service lint --format visualstudio ./js/"

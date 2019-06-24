@@ -1410,6 +1410,26 @@ class ManageNotificationViewSet(APIBackedViewSet):
         notification = serializer.save()
         self.request.airavata_client.updateNotification(self.authz_token, notification)
 
+class AckNotificationViewSet(APIView):
+
+
+    def get(self, request, format=None):
+        if 'id' in request.GET:
+            notification_id = request.GET['id']
+            print(notification_id)
+            try:
+                notification = models.User_Notifications.objects.get(
+                                notification_id=notification_id,
+                                username=request.user.username)
+                notification.is_read = True
+                notification.save()
+            except ObjectDoesNotExist:
+                notification_status = models.User_Notifications.objects.create(
+                            username=request.user.username,
+                            notification_id=notification.notificationId)
+        return HttpResponse(status=204)
+
+
 class ManagedUserViewSet(mixins.CreateModelMixin,
                          mixins.RetrieveModelMixin,
                          mixins.UpdateModelMixin,

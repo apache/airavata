@@ -858,6 +858,9 @@ class ManagedUserProfile(serializers.Serializer):
             set(existing_group_ids) - set(new_group_ids))
         return instance
 
+class AckNotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User_Notifications
 
 class NotificationSerializer(
         thrift_utils.create_serializer_class(Notification)):

@@ -83,7 +83,10 @@ urlpatterns = [
         name="user-storage-items"),
     url(r'^experiment-statistics',
         views.ExperimentStatisticsView.as_view(),
-        name="experiment-statistics")
+        name="experiment-statistics"),
+    url(r'ack-notifications/<slug:id>/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
+    url(r'ack-notifications/', views.AckNotificationViewSet.as_view(), name="ack-notifications")
+
 ]
 
 if logger.isEnabledFor(logging.DEBUG):
