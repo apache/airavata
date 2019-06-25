@@ -1,10 +1,7 @@
 import copy
 import logging
-<<<<<<< HEAD
 import datetime
-=======
 import re
->>>>>>> 6765f99b986f377bb7068ca19487da57e9819f57
 
 from django.urls import reverse
 from django.apps import apps
@@ -40,8 +37,7 @@ def create_notification_ui(notification):
 
 
 def get_notifications(request):
-    #TODO: Check is user is authenticated, check if notifications is already set and don't fetch new notificaions ->> Or fetch them after some time instead of refreshing on each time
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and hasattr(request, 'airavata_client'):
         unread_notifications = 0
         notifications = request.airavata_client.getAllNotifications(
                     request.authz_token, settings.GATEWAY_ID)
