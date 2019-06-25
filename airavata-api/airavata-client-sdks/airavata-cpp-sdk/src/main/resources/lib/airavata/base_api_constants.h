@@ -21,16 +21,21 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "airavata_api_constants.h"
+#ifndef base_api_CONSTANTS_H
+#define base_api_CONSTANTS_H
 
-namespace apache { namespace airavata { namespace api {
+#include "base_api_types.h"
 
-const airavata_apiConstants g_airavata_api_constants;
+namespace apache { namespace airavata { namespace base { namespace api {
 
-airavata_apiConstants::airavata_apiConstants() {
-  AIRAVATA_API_VERSION = "0.18.0";
+class base_apiConstants {
+ public:
+  base_apiConstants();
 
-}
+};
 
-}}} // namespace
+extern const base_apiConstants g_base_api_constants;
 
+}}}} // namespace
+
+#endif

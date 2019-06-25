@@ -40,15 +40,6 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Fetch Apache Airavata API version
-   * 
-   */
-  void getAPIVersion(std::string& _return) {
-    // Your implementation goes here
-    printf("getAPIVersion\n");
-  }
-
-  /**
    * Verify if User Exists within Airavata.
    * 
    * @param gatewayId

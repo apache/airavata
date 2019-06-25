@@ -17,6 +17,150 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+class ProcessWorkflow {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $processId = null;
+  /**
+   * @var string
+   */
+  public $workflowId = null;
+  /**
+   * @var int
+   */
+  public $creationTime = null;
+  /**
+   * @var string
+   */
+  public $type = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'processId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'workflowId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'creationTime',
+          'type' => TType::I64,
+          ),
+        4 => array(
+          'var' => 'type',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['processId'])) {
+        $this->processId = $vals['processId'];
+      }
+      if (isset($vals['workflowId'])) {
+        $this->workflowId = $vals['workflowId'];
+      }
+      if (isset($vals['creationTime'])) {
+        $this->creationTime = $vals['creationTime'];
+      }
+      if (isset($vals['type'])) {
+        $this->type = $vals['type'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ProcessWorkflow';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->processId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->workflowId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->creationTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->type);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ProcessWorkflow');
+    if ($this->processId !== null) {
+      $xfer += $output->writeFieldBegin('processId', TType::STRING, 1);
+      $xfer += $output->writeString($this->processId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->workflowId !== null) {
+      $xfer += $output->writeFieldBegin('workflowId', TType::STRING, 2);
+      $xfer += $output->writeString($this->workflowId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->creationTime !== null) {
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 3);
+      $xfer += $output->writeI64($this->creationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->type !== null) {
+      $xfer += $output->writeFieldBegin('type', TType::STRING, 4);
+      $xfer += $output->writeString($this->type);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 /**
  * ProcessModel: A structure holding the process details. The infromation is derived based on user provided
  *          configuration data or system inferred information from scheduling and QoS parameters.
@@ -866,150 +1010,6 @@ class ProcessModel {
         }
         $output->writeListEnd();
       }
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-class ProcessWorkflow {
-  static $_TSPEC;
-
-  /**
-   * @var string
-   */
-  public $processId = null;
-  /**
-   * @var string
-   */
-  public $workflowId = null;
-  /**
-   * @var int
-   */
-  public $creationTime = null;
-  /**
-   * @var string
-   */
-  public $type = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'processId',
-          'type' => TType::STRING,
-          ),
-        2 => array(
-          'var' => 'workflowId',
-          'type' => TType::STRING,
-          ),
-        3 => array(
-          'var' => 'creationTime',
-          'type' => TType::I64,
-          ),
-        4 => array(
-          'var' => 'type',
-          'type' => TType::STRING,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['processId'])) {
-        $this->processId = $vals['processId'];
-      }
-      if (isset($vals['workflowId'])) {
-        $this->workflowId = $vals['workflowId'];
-      }
-      if (isset($vals['creationTime'])) {
-        $this->creationTime = $vals['creationTime'];
-      }
-      if (isset($vals['type'])) {
-        $this->type = $vals['type'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'ProcessWorkflow';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->processId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->workflowId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->creationTime);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->type);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('ProcessWorkflow');
-    if ($this->processId !== null) {
-      $xfer += $output->writeFieldBegin('processId', TType::STRING, 1);
-      $xfer += $output->writeString($this->processId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->workflowId !== null) {
-      $xfer += $output->writeFieldBegin('workflowId', TType::STRING, 2);
-      $xfer += $output->writeString($this->workflowId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 3);
-      $xfer += $output->writeI64($this->creationTime);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->type !== null) {
-      $xfer += $output->writeFieldBegin('type', TType::STRING, 4);
-      $xfer += $output->writeString($this->type);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

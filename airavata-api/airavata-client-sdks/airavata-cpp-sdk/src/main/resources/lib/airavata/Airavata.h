@@ -27,6 +27,7 @@
 #include <thrift/TDispatchProcessor.h>
 #include <thrift/async/TConcurrentClientSyncInfo.h>
 #include "airavata_api_types.h"
+#include "BaseAPI.h"
 
 namespace apache { namespace airavata { namespace api {
 
@@ -35,15 +36,9 @@ namespace apache { namespace airavata { namespace api {
   #pragma warning (disable : 4250 ) //inheriting methods via dominance 
 #endif
 
-class AiravataIf {
+class AiravataIf : virtual public  ::apache::airavata::base::api::BaseAPIIf {
  public:
   virtual ~AiravataIf() {}
-
-  /**
-   * Fetch Apache Airavata API version
-   * 
-   */
-  virtual void getAPIVersion(std::string& _return) = 0;
 
   /**
    * Verify if User Exists within Airavata.
@@ -2966,14 +2961,14 @@ class AiravataIf {
   virtual void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 };
 
-class AiravataIfFactory {
+class AiravataIfFactory : virtual public  ::apache::airavata::base::api::BaseAPIIfFactory {
  public:
   typedef AiravataIf Handler;
 
   virtual ~AiravataIfFactory() {}
 
   virtual AiravataIf* getHandler(const ::apache::thrift::TConnectionInfo& connInfo) = 0;
-  virtual void releaseHandler(AiravataIf* /* handler */) = 0;
+  virtual void releaseHandler( ::apache::airavata::base::api::BaseAPIIf* /* handler */) = 0;
 };
 
 class AiravataIfSingletonFactory : virtual public AiravataIfFactory {
@@ -2984,18 +2979,15 @@ class AiravataIfSingletonFactory : virtual public AiravataIfFactory {
   virtual AiravataIf* getHandler(const ::apache::thrift::TConnectionInfo&) {
     return iface_.get();
   }
-  virtual void releaseHandler(AiravataIf* /* handler */) {}
+  virtual void releaseHandler( ::apache::airavata::base::api::BaseAPIIf* /* handler */) {}
 
  protected:
   boost::shared_ptr<AiravataIf> iface_;
 };
 
-class AiravataNull : virtual public AiravataIf {
+class AiravataNull : virtual public AiravataIf , virtual public  ::apache::airavata::base::api::BaseAPINull {
  public:
   virtual ~AiravataNull() {}
-  void getAPIVersion(std::string& /* _return */) {
-    return;
-  }
   bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */) {
     bool _return = false;
     return _return;
@@ -3637,122 +3629,6 @@ class AiravataNull : virtual public AiravataIf {
   void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
   }
-};
-
-
-class Airavata_getAPIVersion_args {
- public:
-
-  Airavata_getAPIVersion_args(const Airavata_getAPIVersion_args&);
-  Airavata_getAPIVersion_args& operator=(const Airavata_getAPIVersion_args&);
-  Airavata_getAPIVersion_args() {
-  }
-
-  virtual ~Airavata_getAPIVersion_args() throw();
-
-  bool operator == (const Airavata_getAPIVersion_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const Airavata_getAPIVersion_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAPIVersion_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_getAPIVersion_pargs {
- public:
-
-
-  virtual ~Airavata_getAPIVersion_pargs() throw();
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_getAPIVersion_result__isset {
-  _Airavata_getAPIVersion_result__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAPIVersion_result__isset;
-
-class Airavata_getAPIVersion_result {
- public:
-
-  Airavata_getAPIVersion_result(const Airavata_getAPIVersion_result&);
-  Airavata_getAPIVersion_result& operator=(const Airavata_getAPIVersion_result&);
-  Airavata_getAPIVersion_result() : success() {
-  }
-
-  virtual ~Airavata_getAPIVersion_result() throw();
-  std::string success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAPIVersion_result__isset __isset;
-
-  void __set_success(const std::string& val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_getAPIVersion_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getAPIVersion_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getAPIVersion_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_getAPIVersion_presult__isset {
-  _Airavata_getAPIVersion_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getAPIVersion_presult__isset;
-
-class Airavata_getAPIVersion_presult {
- public:
-
-
-  virtual ~Airavata_getAPIVersion_presult() throw();
-  std::string* success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getAPIVersion_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
 };
 
 
@@ -30684,34 +30560,17 @@ class Airavata_listAllParsingTemplates_presult {
 
 };
 
-class AiravataClient : virtual public AiravataIf {
+class AiravataClient : virtual public AiravataIf, public  ::apache::airavata::base::api::BaseAPIClient {
  public:
-  AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
-    setProtocol(prot);
-  }
-  AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) {
-    setProtocol(iprot,oprot);
-  }
- private:
-  void setProtocol(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
-  setProtocol(prot,prot);
-  }
-  void setProtocol(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) {
-    piprot_=iprot;
-    poprot_=oprot;
-    iprot_ = iprot.get();
-    oprot_ = oprot.get();
-  }
- public:
+  AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
+     ::apache::airavata::base::api::BaseAPIClient(prot, prot) {}
+  AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) :     ::apache::airavata::base::api::BaseAPIClient(iprot, oprot) {}
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getInputProtocol() {
     return piprot_;
   }
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void getAPIVersion(std::string& _return);
-  void send_getAPIVersion();
-  void recv_getAPIVersion(std::string& _return);
   bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   void send_isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   bool recv_isUserExists();
@@ -31285,14 +31144,9 @@ class AiravataClient : virtual public AiravataIf {
   void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_listAllParsingTemplates(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return);
- protected:
-  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
-  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
-  ::apache::thrift::protocol::TProtocol* iprot_;
-  ::apache::thrift::protocol::TProtocol* oprot_;
 };
 
-class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
+class AiravataProcessor : public  ::apache::airavata::base::api::BaseAPIProcessor {
  protected:
   boost::shared_ptr<AiravataIf> iface_;
   virtual bool dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext);
@@ -31300,7 +31154,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (AiravataProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_getAPIVersion(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_isUserExists(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllUsersInGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -31494,8 +31347,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_listAllParsingTemplates(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
+     ::apache::airavata::base::api::BaseAPIProcessor(iface),
     iface_(iface) {
-    processMap_["getAPIVersion"] = &AiravataProcessor::process_getAPIVersion;
     processMap_["isUserExists"] = &AiravataProcessor::process_isUserExists;
     processMap_["addGateway"] = &AiravataProcessor::process_addGateway;
     processMap_["getAllUsersInGateway"] = &AiravataProcessor::process_getAllUsersInGateway;
@@ -31703,28 +31556,23 @@ class AiravataProcessorFactory : public ::apache::thrift::TProcessorFactory {
   ::boost::shared_ptr< AiravataIfFactory > handlerFactory_;
 };
 
-class AiravataMultiface : virtual public AiravataIf {
+class AiravataMultiface : virtual public AiravataIf, public  ::apache::airavata::base::api::BaseAPIMultiface {
  public:
   AiravataMultiface(std::vector<boost::shared_ptr<AiravataIf> >& ifaces) : ifaces_(ifaces) {
+    std::vector<boost::shared_ptr<AiravataIf> >::iterator iter;
+    for (iter = ifaces.begin(); iter != ifaces.end(); ++iter) {
+       ::apache::airavata::base::api::BaseAPIMultiface::add(*iter);
+    }
   }
   virtual ~AiravataMultiface() {}
  protected:
   std::vector<boost::shared_ptr<AiravataIf> > ifaces_;
   AiravataMultiface() {}
   void add(boost::shared_ptr<AiravataIf> iface) {
+     ::apache::airavata::base::api::BaseAPIMultiface::add(iface);
     ifaces_.push_back(iface);
   }
  public:
-  void getAPIVersion(std::string& _return) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAPIVersion(_return);
-    }
-    ifaces_[i]->getAPIVersion(_return);
-    return;
-  }
-
   bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -33565,34 +33413,17 @@ class AiravataMultiface : virtual public AiravataIf {
 // The 'concurrent' client is a thread safe client that correctly handles
 // out of order responses.  It is slower than the regular client, so should
 // only be used when you need to share a connection among multiple threads
-class AiravataConcurrentClient : virtual public AiravataIf {
+class AiravataConcurrentClient : virtual public AiravataIf, public  ::apache::airavata::base::api::BaseAPIConcurrentClient {
  public:
-  AiravataConcurrentClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
-    setProtocol(prot);
-  }
-  AiravataConcurrentClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) {
-    setProtocol(iprot,oprot);
-  }
- private:
-  void setProtocol(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
-  setProtocol(prot,prot);
-  }
-  void setProtocol(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) {
-    piprot_=iprot;
-    poprot_=oprot;
-    iprot_ = iprot.get();
-    oprot_ = oprot.get();
-  }
- public:
+  AiravataConcurrentClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
+     ::apache::airavata::base::api::BaseAPIConcurrentClient(prot, prot) {}
+  AiravataConcurrentClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) :     ::apache::airavata::base::api::BaseAPIConcurrentClient(iprot, oprot) {}
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getInputProtocol() {
     return piprot_;
   }
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void getAPIVersion(std::string& _return);
-  int32_t send_getAPIVersion();
-  void recv_getAPIVersion(std::string& _return, const int32_t seqid);
   bool isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   int32_t send_isUserExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
   bool recv_isUserExists(const int32_t seqid);
@@ -34166,12 +33997,6 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_listAllParsingTemplates(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const int32_t seqid);
- protected:
-  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
-  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
-  ::apache::thrift::protocol::TProtocol* iprot_;
-  ::apache::thrift::protocol::TProtocol* oprot_;
-  ::apache::thrift::async::TConcurrentClientSyncInfo sync_;
 };
 
 #ifdef _WIN32
