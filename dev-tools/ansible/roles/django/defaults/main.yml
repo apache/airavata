@@ -46,6 +46,7 @@ django_wsgi_processes: 2
 
 django_debug: false
 django_error_emails: "{{ admin_emails }}"
+python_virtualenv_command: "pyvenv-3.6"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
