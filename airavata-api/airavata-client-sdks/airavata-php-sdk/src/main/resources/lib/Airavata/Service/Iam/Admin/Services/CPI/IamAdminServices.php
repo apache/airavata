@@ -171,6 +171,14 @@ interface IamAdminServicesIf extends \Airavata\Base\API\BaseAPIIf {
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $username
+   * @return bool
+   * @throws \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function deleteUser(\Airavata\Model\Security\AuthzToken $authzToken, $username);
+  /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $username
    * @param string $roleName
    * @return bool
    * @throws \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException
@@ -843,6 +851,64 @@ class IamAdminServicesClient extends \Airavata\Base\API\BaseAPIClient implements
       throw $result->ae;
     }
     return;
+  }
+
+  public function deleteUser(\Airavata\Model\Security\AuthzToken $authzToken, $username)
+  {
+    $this->send_deleteUser($authzToken, $username);
+    return $this->recv_deleteUser();
+  }
+
+  public function send_deleteUser(\Airavata\Model\Security\AuthzToken $authzToken, $username)
+  {
+    $args = new \Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_deleteUser_args();
+    $args->authzToken = $authzToken;
+    $args->username = $username;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'deleteUser', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('deleteUser', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_deleteUser()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_deleteUser_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Iam\Admin\Services\CPI\IamAdminServices_deleteUser_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->Idse !== null) {
+      throw $result->Idse;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("deleteUser failed: unknown result");
   }
 
   public function addRoleToUser(\Airavata\Model\Security\AuthzToken $authzToken, $username, $roleName)
@@ -3754,6 +3820,234 @@ class IamAdminServices_updateUserProfile_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('IamAdminServices_updateUserProfile_result');
+    if ($this->Idse !== null) {
+      $xfer += $output->writeFieldBegin('Idse', TType::STRUCT, 1);
+      $xfer += $this->Idse->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 2);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class IamAdminServices_deleteUser_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $username = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'username',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['username'])) {
+        $this->username = $vals['username'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'IamAdminServices_deleteUser_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->username);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('IamAdminServices_deleteUser_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->username !== null) {
+      $xfer += $output->writeFieldBegin('username', TType::STRING, 2);
+      $xfer += $output->writeString($this->username);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class IamAdminServices_deleteUser_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException
+   */
+  public $Idse = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'Idse',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException',
+          ),
+        2 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['Idse'])) {
+        $this->Idse = $vals['Idse'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'IamAdminServices_deleteUser_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->Idse = new \Airavata\Service\Iam\Admin\Services\CPI\Error\IamAdminServicesException();
+            $xfer += $this->Idse->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('IamAdminServices_deleteUser_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->Idse !== null) {
       $xfer += $output->writeFieldBegin('Idse', TType::STRUCT, 1);
       $xfer += $this->Idse->write($output);
