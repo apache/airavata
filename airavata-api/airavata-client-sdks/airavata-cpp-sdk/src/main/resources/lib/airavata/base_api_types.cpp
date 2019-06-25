@@ -21,16 +21,13 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "airavata_api_constants.h"
+#include "base_api_types.h"
 
-namespace apache { namespace airavata { namespace api {
+#include <algorithm>
+#include <ostream>
 
-const airavata_apiConstants g_airavata_api_constants;
+#include <thrift/TToString.h>
 
-airavata_apiConstants::airavata_apiConstants() {
-  AIRAVATA_API_VERSION = "0.18.0";
+namespace apache { namespace airavata { namespace base { namespace api {
 
-}
-
-}}} // namespace
-
+}}}} // namespace

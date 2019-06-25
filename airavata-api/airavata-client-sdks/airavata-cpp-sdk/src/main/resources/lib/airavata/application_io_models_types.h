@@ -198,7 +198,7 @@ inline std::ostream& operator<<(std::ostream& out, const InputDataObjectType& ob
 }
 
 typedef struct _OutputDataObjectType__isset {
-  _OutputDataObjectType__isset() : value(false), type(false), applicationArgument(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), location(false), searchQuery(false), outputStreaming(false), storageResourceId(false) {}
+  _OutputDataObjectType__isset() : value(false), type(false), applicationArgument(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), location(false), searchQuery(false), outputStreaming(false), storageResourceId(false), metaData(false) {}
   bool value :1;
   bool type :1;
   bool applicationArgument :1;
@@ -209,6 +209,7 @@ typedef struct _OutputDataObjectType__isset {
   bool searchQuery :1;
   bool outputStreaming :1;
   bool storageResourceId :1;
+  bool metaData :1;
 } _OutputDataObjectType__isset;
 
 class OutputDataObjectType : public virtual ::apache::thrift::TBase {
@@ -216,7 +217,7 @@ class OutputDataObjectType : public virtual ::apache::thrift::TBase {
 
   OutputDataObjectType(const OutputDataObjectType&);
   OutputDataObjectType& operator=(const OutputDataObjectType&);
-  OutputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), location(), searchQuery(), outputStreaming(0), storageResourceId() {
+  OutputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), location(), searchQuery(), outputStreaming(0), storageResourceId(), metaData() {
   }
 
   virtual ~OutputDataObjectType() throw();
@@ -231,6 +232,7 @@ class OutputDataObjectType : public virtual ::apache::thrift::TBase {
   std::string searchQuery;
   bool outputStreaming;
   std::string storageResourceId;
+  std::string metaData;
 
   _OutputDataObjectType__isset __isset;
 
@@ -255,6 +257,8 @@ class OutputDataObjectType : public virtual ::apache::thrift::TBase {
   void __set_outputStreaming(const bool val);
 
   void __set_storageResourceId(const std::string& val);
+
+  void __set_metaData(const std::string& val);
 
   bool operator == (const OutputDataObjectType & rhs) const
   {
@@ -299,6 +303,10 @@ class OutputDataObjectType : public virtual ::apache::thrift::TBase {
     if (__isset.storageResourceId != rhs.__isset.storageResourceId)
       return false;
     else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
+      return false;
+    if (__isset.metaData != rhs.__isset.metaData)
+      return false;
+    else if (__isset.metaData && !(metaData == rhs.metaData))
       return false;
     return true;
   }

@@ -42,10 +42,78 @@
 
 namespace apache { namespace airavata { namespace model { namespace process {
 
+class ProcessWorkflow;
+
 class ProcessModel;
 
+typedef struct _ProcessWorkflow__isset {
+  _ProcessWorkflow__isset() : creationTime(false), type(false) {}
+  bool creationTime :1;
+  bool type :1;
+} _ProcessWorkflow__isset;
+
+class ProcessWorkflow : public virtual ::apache::thrift::TBase {
+ public:
+
+  ProcessWorkflow(const ProcessWorkflow&);
+  ProcessWorkflow& operator=(const ProcessWorkflow&);
+  ProcessWorkflow() : processId(), workflowId(), creationTime(0), type() {
+  }
+
+  virtual ~ProcessWorkflow() throw();
+  std::string processId;
+  std::string workflowId;
+  int64_t creationTime;
+  std::string type;
+
+  _ProcessWorkflow__isset __isset;
+
+  void __set_processId(const std::string& val);
+
+  void __set_workflowId(const std::string& val);
+
+  void __set_creationTime(const int64_t val);
+
+  void __set_type(const std::string& val);
+
+  bool operator == (const ProcessWorkflow & rhs) const
+  {
+    if (!(processId == rhs.processId))
+      return false;
+    if (!(workflowId == rhs.workflowId))
+      return false;
+    if (__isset.creationTime != rhs.__isset.creationTime)
+      return false;
+    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
+      return false;
+    if (__isset.type != rhs.__isset.type)
+      return false;
+    else if (__isset.type && !(type == rhs.type))
+      return false;
+    return true;
+  }
+  bool operator != (const ProcessWorkflow &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ProcessWorkflow & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(ProcessWorkflow &a, ProcessWorkflow &b);
+
+inline std::ostream& operator<<(std::ostream& out, const ProcessWorkflow& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
 typedef struct _ProcessModel__isset {
-  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatuses(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), processResourceSchedule(false), tasks(false), taskDag(false), processErrors(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true), experimentDataDir(false), userName(false), useUserCRPref(false), groupResourceProfileId(false) {}
+  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatuses(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), processResourceSchedule(false), tasks(false), taskDag(false), processErrors(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true), experimentDataDir(false), userName(false), useUserCRPref(false), groupResourceProfileId(false), processWorkflows(false) {}
   bool creationTime :1;
   bool lastUpdateTime :1;
   bool processStatuses :1;
@@ -69,6 +137,7 @@ typedef struct _ProcessModel__isset {
   bool userName :1;
   bool useUserCRPref :1;
   bool groupResourceProfileId :1;
+  bool processWorkflows :1;
 } _ProcessModel__isset;
 
 class ProcessModel : public virtual ::apache::thrift::TBase {
@@ -105,6 +174,7 @@ class ProcessModel : public virtual ::apache::thrift::TBase {
   std::string userName;
   bool useUserCRPref;
   std::string groupResourceProfileId;
+  std::vector<ProcessWorkflow>  processWorkflows;
 
   _ProcessModel__isset __isset;
 
@@ -157,6 +227,8 @@ class ProcessModel : public virtual ::apache::thrift::TBase {
   void __set_useUserCRPref(const bool val);
 
   void __set_groupResourceProfileId(const std::string& val);
+
+  void __set_processWorkflows(const std::vector<ProcessWorkflow> & val);
 
   bool operator == (const ProcessModel & rhs) const
   {
@@ -255,6 +327,10 @@ class ProcessModel : public virtual ::apache::thrift::TBase {
     if (__isset.groupResourceProfileId != rhs.__isset.groupResourceProfileId)
       return false;
     else if (__isset.groupResourceProfileId && !(groupResourceProfileId == rhs.groupResourceProfileId))
+      return false;
+    if (__isset.processWorkflows != rhs.__isset.processWorkflows)
+      return false;
+    else if (__isset.processWorkflows && !(processWorkflows == rhs.processWorkflows))
       return false;
     return true;
   }

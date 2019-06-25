@@ -77,11 +77,13 @@ class JobSubmissionTaskModel;
 class MonitorTaskModel;
 
 typedef struct _TaskModel__isset {
-  _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskErrors(false), jobs(false) {}
+  _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskErrors(false), jobs(false), maxRetry(false), currentRetry(false) {}
   bool taskDetail :1;
   bool subTaskModel :1;
   bool taskErrors :1;
   bool jobs :1;
+  bool maxRetry :1;
+  bool currentRetry :1;
 } _TaskModel__isset;
 
 class TaskModel : public virtual ::apache::thrift::TBase {
@@ -89,7 +91,7 @@ class TaskModel : public virtual ::apache::thrift::TBase {
 
   TaskModel(const TaskModel&);
   TaskModel& operator=(const TaskModel&);
-  TaskModel() : taskId("DO_NOT_SET_AT_CLIENTS"), taskType((TaskTypes::type)0), parentProcessId(), creationTime(0), lastUpdateTime(0), taskDetail(), subTaskModel() {
+  TaskModel() : taskId("DO_NOT_SET_AT_CLIENTS"), taskType((TaskTypes::type)0), parentProcessId(), creationTime(0), lastUpdateTime(0), taskDetail(), subTaskModel(), maxRetry(0), currentRetry(0) {
   }
 
   virtual ~TaskModel() throw();
@@ -103,6 +105,8 @@ class TaskModel : public virtual ::apache::thrift::TBase {
   std::string subTaskModel;
   std::vector< ::apache::airavata::model::commons::ErrorModel>  taskErrors;
   std::vector< ::apache::airavata::model::job::JobModel>  jobs;
+  int32_t maxRetry;
+  int32_t currentRetry;
 
   _TaskModel__isset __isset;
 
@@ -125,6 +129,10 @@ class TaskModel : public virtual ::apache::thrift::TBase {
   void __set_taskErrors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
 
   void __set_jobs(const std::vector< ::apache::airavata::model::job::JobModel> & val);
+
+  void __set_maxRetry(const int32_t val);
+
+  void __set_currentRetry(const int32_t val);
 
   bool operator == (const TaskModel & rhs) const
   {
@@ -155,6 +163,14 @@ class TaskModel : public virtual ::apache::thrift::TBase {
     if (__isset.jobs != rhs.__isset.jobs)
       return false;
     else if (__isset.jobs && !(jobs == rhs.jobs))
+      return false;
+    if (__isset.maxRetry != rhs.__isset.maxRetry)
+      return false;
+    else if (__isset.maxRetry && !(maxRetry == rhs.maxRetry))
+      return false;
+    if (__isset.currentRetry != rhs.__isset.currentRetry)
+      return false;
+    else if (__isset.currentRetry && !(currentRetry == rhs.currentRetry))
       return false;
     return true;
   }
