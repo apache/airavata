@@ -39,7 +39,7 @@
   pip:
     requirements: "{{ airavata_django_checkout }}/requirements.txt"
     virtualenv: "{{ django_venv_dir }}"
-    virtualenv_command: pyvenv-3.4
+    virtualenv_command: "{{ python_virtualenv_command }}"
     chdir: "{{ airavata_django_checkout }}"
   become: yes
   become_user: "{{user}}"
@@ -126,6 +126,7 @@
     name: httpd_execmem
     state: yes
     persistent: yes
+  become: yes
 
 - name: run restorecon on those directories
   command: restorecon -F -R {{ doc_root_dir }}

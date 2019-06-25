@@ -26,10 +26,9 @@ group: "pga"
 doc_root_dir: "/var/www/portals/dev-scigap"
 vhost_servername: "dev.scigap.org"
 vhost_ssl: True
-# TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/dev_scigap_org_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/dev_scigap_org_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/dev-scigap.key"
+ssl_certificate_file: "/etc/letsencrypt/live/dev.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/dev.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "scigap"
