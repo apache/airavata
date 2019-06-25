@@ -52,6 +52,7 @@ gateway_id: "default"
 experiment_data_dir: "{{ user_data_dir }}/dev-testdrive"
 gateway_data_store_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCEK6v8oMNUKDqQtlHlXRUpRZVqCL6CbQlJTL5QajevPFtvM0hauS/Rjj6M/bjgTfRyef2/E100l1pH3xhFuL65+OTnOZgC5DQ0T3J1OtldTTuP1Rl7mKZR4xKYzx/hxSgB6kn8tZb3IgDCYnHNcTLYGj1rEpNEO6ju8e9qVR02ex+hbC+4Q4bJgX6FxHL4+rQHcqT6I1k3JmwRsPzr3P1hiRgUUkxAlQuXFXsoa4+9BzEU5D0qXq0o/Q12jKOhPwWyOyhV2X++bc50VKkm0G6M6n78OL8CBIKmZyczgEwD2zB9gx3aTHXTEgUqaVHyOMc3aE8Kt1Us33PDyXpn8sk3"
+group_resource_profile_id: "1cee1887-6774-49c4-9f3c-edfc3558cf9b"
 
 ## Portal related variables
 super_admin_portal: "false"
