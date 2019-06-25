@@ -600,7 +600,7 @@
 		    <plugin>
 		       <groupId>org.apache.maven.plugins</groupId>
 		       <artifactId>maven-jar-plugins</artifactId>
-		       <version>$(openjpa.version)</version>
+		       <version>${openjpa.version}</version>
 		    </plugin>
 		    
 		    <plugin>
