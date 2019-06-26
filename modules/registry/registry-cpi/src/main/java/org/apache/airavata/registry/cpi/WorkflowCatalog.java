@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,29 +19,27 @@
  */
 package org.apache.airavata.registry.cpi;
 
-
-import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.workflow.AiravataWorkflow;
 
 import java.util.List;
 
 public interface WorkflowCatalog {
 
-    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException;
+//    public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException;
 
-    public WorkflowModel getWorkflow(String workflowTemplateId) throws WorkflowCatalogException;
+    public AiravataWorkflow getWorkflow(String workflowId) throws WorkflowCatalogException;
 
-    public void deleteWorkflow(String workflowTemplateId) throws WorkflowCatalogException;
+    public void deleteWorkflow(String workflowId) throws WorkflowCatalogException;
 
-    public String registerWorkflow(WorkflowModel workflow, String gatewayId) throws WorkflowCatalogException;
+    public String registerWorkflow(AiravataWorkflow workflow, String experimentId) throws WorkflowCatalogException;
 
-    public void updateWorkflow(String workflowTemplateId, WorkflowModel workflow) throws WorkflowCatalogException;
+    public void updateWorkflow(String workflowId, AiravataWorkflow workflow) throws WorkflowCatalogException;
 
-    public String getWorkflowTemplateId(String workflowName) throws WorkflowCatalogException;
+    public String getWorkflowId(String experimentId) throws WorkflowCatalogException;
 
-    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException;
+//    public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException;
 
-    public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException;
-
+//    public void updateWorkflowOutputs(String workflowId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException;
 
 }

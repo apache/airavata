@@ -42,3 +42,5 @@ profile_service_bind_host: "{{ ansible_default_ipv4.address }}"
 
 default_registry_user : "admin"
 default_registry_password : "admin"
+
+api_orch_systemd_unit_file: "/etc/systemd/system/apiorch.service"

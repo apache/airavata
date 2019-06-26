@@ -50,6 +50,8 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
   private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceDescription", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("enabled", org.apache.thrift.protocol.TType.BOOL, (short)4);
   private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementInterfaces", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)6);
+  private static final org.apache.thrift.protocol.TField UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updateTime", org.apache.thrift.protocol.TType.I64, (short)7);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new StorageResourceDescriptionStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new StorageResourceDescriptionTupleSchemeFactory();
@@ -59,6 +61,8 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
   private java.lang.String storageResourceDescription; // optional
   private boolean enabled; // optional
   private java.util.List<org.apache.airavata.model.data.movement.DataMovementInterface> dataMovementInterfaces; // optional
+  private long creationTime; // optional
+  private long updateTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -66,7 +70,9 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
     HOST_NAME((short)2, "hostName"),
     STORAGE_RESOURCE_DESCRIPTION((short)3, "storageResourceDescription"),
     ENABLED((short)4, "enabled"),
-    DATA_MOVEMENT_INTERFACES((short)5, "dataMovementInterfaces");
+    DATA_MOVEMENT_INTERFACES((short)5, "dataMovementInterfaces"),
+    CREATION_TIME((short)6, "creationTime"),
+    UPDATE_TIME((short)7, "updateTime");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -91,6 +97,10 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
           return ENABLED;
         case 5: // DATA_MOVEMENT_INTERFACES
           return DATA_MOVEMENT_INTERFACES;
+        case 6: // CREATION_TIME
+          return CREATION_TIME;
+        case 7: // UPDATE_TIME
+          return UPDATE_TIME;
         default:
           return null;
       }
@@ -132,8 +142,10 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
 
   // isset id assignments
   private static final int __ENABLED_ISSET_ID = 0;
+  private static final int __CREATIONTIME_ISSET_ID = 1;
+  private static final int __UPDATETIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.STORAGE_RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.DATA_MOVEMENT_INTERFACES};
+  private static final _Fields optionals[] = {_Fields.STORAGE_RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.CREATION_TIME,_Fields.UPDATE_TIME};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -148,6 +160,10 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
     tmpMap.put(_Fields.DATA_MOVEMENT_INTERFACES, new org.apache.thrift.meta_data.FieldMetaData("dataMovementInterfaces", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.data.movement.DataMovementInterface.class))));
+    tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.UPDATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("updateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(StorageResourceDescription.class, metaDataMap);
   }
@@ -188,6 +204,8 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       }
       this.dataMovementInterfaces = __this__dataMovementInterfaces;
     }
+    this.creationTime = other.creationTime;
+    this.updateTime = other.updateTime;
   }
 
   public StorageResourceDescription deepCopy() {
@@ -203,6 +221,10 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
     setEnabledIsSet(false);
     this.enabled = false;
     this.dataMovementInterfaces = null;
+    setCreationTimeIsSet(false);
+    this.creationTime = 0;
+    setUpdateTimeIsSet(false);
+    this.updateTime = 0;
   }
 
   public java.lang.String getStorageResourceId() {
@@ -334,6 +356,50 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
     }
   }
 
+  public long getCreationTime() {
+    return this.creationTime;
+  }
+
+  public void setCreationTime(long creationTime) {
+    this.creationTime = creationTime;
+    setCreationTimeIsSet(true);
+  }
+
+  public void unsetCreationTime() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __CREATIONTIME_ISSET_ID);
+  }
+
+  /** Returns true if field creationTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetCreationTime() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __CREATIONTIME_ISSET_ID);
+  }
+
+  public void setCreationTimeIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __CREATIONTIME_ISSET_ID, value);
+  }
+
+  public long getUpdateTime() {
+    return this.updateTime;
+  }
+
+  public void setUpdateTime(long updateTime) {
+    this.updateTime = updateTime;
+    setUpdateTimeIsSet(true);
+  }
+
+  public void unsetUpdateTime() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __UPDATETIME_ISSET_ID);
+  }
+
+  /** Returns true if field updateTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetUpdateTime() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __UPDATETIME_ISSET_ID);
+  }
+
+  public void setUpdateTimeIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __UPDATETIME_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case STORAGE_RESOURCE_ID:
@@ -376,6 +442,22 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       }
       break;
 
+    case CREATION_TIME:
+      if (value == null) {
+        unsetCreationTime();
+      } else {
+        setCreationTime((java.lang.Long)value);
+      }
+      break;
+
+    case UPDATE_TIME:
+      if (value == null) {
+        unsetUpdateTime();
+      } else {
+        setUpdateTime((java.lang.Long)value);
+      }
+      break;
+
     }
   }
 
@@ -395,6 +477,12 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
 
     case DATA_MOVEMENT_INTERFACES:
       return getDataMovementInterfaces();
+
+    case CREATION_TIME:
+      return getCreationTime();
+
+    case UPDATE_TIME:
+      return getUpdateTime();
 
     }
     throw new java.lang.IllegalStateException();
@@ -417,6 +505,10 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       return isSetEnabled();
     case DATA_MOVEMENT_INTERFACES:
       return isSetDataMovementInterfaces();
+    case CREATION_TIME:
+      return isSetCreationTime();
+    case UPDATE_TIME:
+      return isSetUpdateTime();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -481,6 +573,24 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
         return false;
     }
 
+    boolean this_present_creationTime = true && this.isSetCreationTime();
+    boolean that_present_creationTime = true && that.isSetCreationTime();
+    if (this_present_creationTime || that_present_creationTime) {
+      if (!(this_present_creationTime && that_present_creationTime))
+        return false;
+      if (this.creationTime != that.creationTime)
+        return false;
+    }
+
+    boolean this_present_updateTime = true && this.isSetUpdateTime();
+    boolean that_present_updateTime = true && that.isSetUpdateTime();
+    if (this_present_updateTime || that_present_updateTime) {
+      if (!(this_present_updateTime && that_present_updateTime))
+        return false;
+      if (this.updateTime != that.updateTime)
+        return false;
+    }
+
     return true;
   }
 
@@ -507,6 +617,14 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
     hashCode = hashCode * 8191 + ((isSetDataMovementInterfaces()) ? 131071 : 524287);
     if (isSetDataMovementInterfaces())
       hashCode = hashCode * 8191 + dataMovementInterfaces.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetCreationTime()) ? 131071 : 524287);
+    if (isSetCreationTime())
+      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(creationTime);
+
+    hashCode = hashCode * 8191 + ((isSetUpdateTime()) ? 131071 : 524287);
+    if (isSetUpdateTime())
+      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(updateTime);
 
     return hashCode;
   }
@@ -565,6 +683,26 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
     }
     if (isSetDataMovementInterfaces()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataMovementInterfaces, other.dataMovementInterfaces);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetCreationTime()).compareTo(other.isSetCreationTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCreationTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.creationTime, other.creationTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetUpdateTime()).compareTo(other.isSetUpdateTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUpdateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updateTime, other.updateTime);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -628,6 +766,18 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       } else {
         sb.append(this.dataMovementInterfaces);
       }
+      first = false;
+    }
+    if (isSetCreationTime()) {
+      if (!first) sb.append(", ");
+      sb.append("creationTime:");
+      sb.append(this.creationTime);
+      first = false;
+    }
+    if (isSetUpdateTime()) {
+      if (!first) sb.append(", ");
+      sb.append("updateTime:");
+      sb.append(this.updateTime);
       first = false;
     }
     sb.append(")");
@@ -734,6 +884,22 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // CREATION_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.creationTime = iprot.readI64();
+              struct.setCreationTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // UPDATE_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.updateTime = iprot.readI64();
+              struct.setUpdateTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -783,6 +949,16 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetCreationTime()) {
+        oprot.writeFieldBegin(CREATION_TIME_FIELD_DESC);
+        oprot.writeI64(struct.creationTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetUpdateTime()) {
+        oprot.writeFieldBegin(UPDATE_TIME_FIELD_DESC);
+        oprot.writeI64(struct.updateTime);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -812,7 +988,13 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       if (struct.isSetDataMovementInterfaces()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetCreationTime()) {
+        optionals.set(3);
+      }
+      if (struct.isSetUpdateTime()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetStorageResourceDescription()) {
         oprot.writeString(struct.storageResourceDescription);
       }
@@ -828,6 +1010,12 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
           }
         }
       }
+      if (struct.isSetCreationTime()) {
+        oprot.writeI64(struct.creationTime);
+      }
+      if (struct.isSetUpdateTime()) {
+        oprot.writeI64(struct.updateTime);
+      }
     }
 
     @Override
@@ -837,7 +1025,7 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
       struct.setStorageResourceIdIsSet(true);
       struct.hostName = iprot.readString();
       struct.setHostNameIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(3);
+      java.util.BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.storageResourceDescription = iprot.readString();
         struct.setStorageResourceDescriptionIsSet(true);
@@ -859,6 +1047,14 @@ public class StorageResourceDescription implements org.apache.thrift.TBase<Stora
           }
         }
         struct.setDataMovementInterfacesIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.creationTime = iprot.readI64();
+        struct.setCreationTimeIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.updateTime = iprot.readI64();
+        struct.setUpdateTimeIsSet(true);
       }
     }
   }

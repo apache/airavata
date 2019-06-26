@@ -35,12 +35,14 @@ include "../data-models/experiment-catalog-models/scheduling_model.thrift"
 include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
+include "../data-models/app-catalog-models/parser_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
+include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
+include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
-include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../airavata-apis/airavata_errors.thrift"
 include "../airavata-apis/airavata_commons.thrift"
@@ -361,13 +363,16 @@ service RegistryService extends base_api.BaseAPI {
              * @param resourceHostName
              *       Hostname id substring with which to further filter statistics.
              *
+             * @param accessibleExpIds
+             *    Experiment IDs which are accessible to the current user.
              **/
             experiment_model.ExperimentStatistics getExperimentStatistics(1: required string gatewayId,
                                     2: required i64 fromTime,
                                     3: required i64 toTime,
                                     4: string userName,
                                     5: string applicationName,
-                                    6: string resourceHostName)
+                                    6: string resourceHostName,
+                                    7: required list<string> accessibleExpIds)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 
@@ -386,9 +391,10 @@ service RegistryService extends base_api.BaseAPI {
            *       The starting point of the results to be fetched.
            *
            **/
-          list<experiment_model.ExperimentModel> getExperimentsInProject(1: required string projectId,
-                          2: required i32 limit,
-                          3: required i32 offset)
+          list<experiment_model.ExperimentModel> getExperimentsInProject(1: required string gatewayId,
+                          2: required string projectId,
+                          3: required i32 limit,
+                          4: required i32 offset)
                   throws (1: registry_api_errors.RegistryServiceException rse,
                           2: airavata_errors.ProjectNotFoundException pnfe)
 
@@ -873,6 +879,24 @@ service RegistryService extends base_api.BaseAPI {
 
             /**
              *
+             * Fetch all Application Module Descriptions.
+             *
+             * @param gatewayId
+             *    ID of the gateway which need to list all available application deployment documentation.
+             * @param accessibleAppDeploymentIds
+             *    Application Deployment IDs which are accessible to the current user.
+             *
+             * @return list
+             *    Returns the list of all Application Module Objects.
+             *
+            */
+            list<application_deployment_model.ApplicationModule> getAccessibleAppModules (1: required string gatewayId
+                    2: required list<string> accessibleAppDeploymentIds,
+                    3: required list<string> accessibleComputeResourceIds)
+                  throws (1: registry_api_errors.RegistryServiceException rse)
+
+            /**
+             *
              * Delete an Application Module.
              *
              * @param appModuleId
@@ -969,6 +993,51 @@ service RegistryService extends base_api.BaseAPI {
             */
             list<application_deployment_model.ApplicationDeploymentDescription> getAllApplicationDeployments(1: required string gatewayId)
                 	throws (1: registry_api_errors.RegistryServiceException rse)
+
+            /**
+             *
+             * Fetch all Application Deployment Descriptions.
+             *
+             * @param gatewayId
+             *    ID of the gateway which need to list all available application deployment documentation.
+             *
+             * @param accessibleAppDeploymentIds
+             *    Application Deployment IDs which are accessible to the current user.
+             *
+             * @return list<applicationDeployment>
+             *    Returns the list of all application Deployment Objects.
+             *
+            */
+            list<application_deployment_model.ApplicationDeploymentDescription> getAccessibleApplicationDeployments(1: required string gatewayId,
+                        2: required list<string> accessibleAppDeploymentIds,
+                        3: required list<string> accessibleComputeResourceIds)
+                	throws (1: registry_api_errors.RegistryServiceException rse)
+
+            /**
+             *
+             * Fetch all accessible Application Deployment Descriptions for the given Application Module.
+             *
+             * @param gatewayId
+             *    ID of the gateway which need to list all available application deployment documentation.
+             *
+             * @param appModuleId
+             *    The given Application Module ID.
+             *
+             * @param accessibleAppDeploymentIds
+             *    Application Deployment IDs which are accessible to the current user.
+             *
+             * @param accessibleComputeResourceIds
+             *    Compute Resource IDs which are accessible to the current user.
+             *
+             * @return list<applicationDeployment>
+             *    Returns the list of all application Deployment Objects.
+             *
+             */
+            list<application_deployment_model.ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(1: required string gatewayId,
+                        2: required string appModuleId,
+                        3: required list<string> accessibleAppDeploymentIds,
+                        4: required list<string> accessibleComputeResourceIds)
+                throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
              * Fetch a list of Deployed Compute Hosts.
@@ -2177,6 +2246,21 @@ service RegistryService extends base_api.BaseAPI {
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
                /**
+                * Check if the given User Resource Profile exists.
+                *
+                * @param userId
+                *   The identifier for the requested User Resource Profile.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource Profile.
+                *
+                * @return true if User Resource Profile for these identifiers exists.
+                *
+               */
+               bool isUserResourceProfileExists(1: required string userId, 2: required string gatewayID)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
                 * Fetch the given User Resource Resource Profile.
                 *
                 * @param userId
@@ -2489,38 +2573,6 @@ service RegistryService extends base_api.BaseAPI {
                void registerQueueStatuses(1: required list<status_models.QueueStatusModel> queueStatuses)
                                     throws (1: registry_api_errors.RegistryServiceException rse)
 
-
-
-               list<string> getAllWorkflows(1: required string gatewayId)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-               /**
-                *
-                * API Methods Related for Work-Flow Submission Features.
-                *
-               */
-
-               workflow_data_model.WorkflowModel getWorkflow (1: required string workflowTemplateId)
-                     throws (1: registry_api_errors.RegistryServiceException rse)
-
-               void deleteWorkflow (1: required string workflowTemplateId)
-                     throws (1: registry_api_errors.RegistryServiceException rse)
-
-               string registerWorkflow(1: required string gatewayId,
-                                       2: required workflow_data_model.WorkflowModel workflow)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-               void updateWorkflow (1: required string workflowTemplateId,
-                                    2: required workflow_data_model.WorkflowModel workflow)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-               string getWorkflowTemplateId (1: required string workflowName)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-               bool isWorkflowExistWithName(1: required string workflowName)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
-
-
               /**
               * API Methods related to replica catalog
               **/
@@ -2543,4 +2595,82 @@ service RegistryService extends base_api.BaseAPI {
                2: required string userId, 3: required string productName, 4: required i32 limit, 5: required i32 offset)
                                           throws (1: registry_api_errors.RegistryServiceException rse)
 
+
+              /*
+               * Group Resource Profile API methods
+               *
+               */
+               string createGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+               void updateGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+                                          throws (1: registry_api_errors.RegistryServiceException rse)
+
+               group_resource_profile_model.GroupResourceProfile getGroupResourceProfile(1: required string groupResourceProfileId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+               bool removeGroupResourceProfile(1: required string groupResourceProfileId)
+                                    throws (1: registry_api_errors.RegistryServiceException rse)
+
+               list<group_resource_profile_model.GroupResourceProfile> getGroupResourceList(1: required string gatewayId, 2: required list<string> accessibleGroupResProfileIds)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               bool removeGroupComputePrefs(1: required string computeResourceId, 2: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               bool removeGroupComputeResourcePolicy(1: required string resourcePolicyId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               bool removeGroupBatchQueueResourcePolicy(1: required string resourcePolicyId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               group_resource_profile_model.GroupComputeResourcePreference getGroupComputeResourcePreference(1: required string computeResourceId, 2: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               group_resource_profile_model.ComputeResourcePolicy getGroupComputeResourcePolicy(1: required string resourcePolicyId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               group_resource_profile_model.BatchQueueResourcePolicy getBatchQueueResourcePolicy(1: required string resourcePolicyId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               list<group_resource_profile_model.GroupComputeResourcePreference> getGroupComputeResourcePrefList( 1: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               list<group_resource_profile_model.BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(1: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               list<group_resource_profile_model.ComputeResourcePolicy> getGroupComputeResourcePolicyList(1: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+    /*
+     * Gateway Groups API methods
+     */
+    void createGatewayGroups(1: required gateway_groups_model.GatewayGroups gatewayGroups)
+            throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
+    void updateGatewayGroups(1: required gateway_groups_model.GatewayGroups gatewayGroups)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    bool isGatewayGroupsExists(1: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    gateway_groups_model.GatewayGroups getGatewayGroups(1: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+
+    parser_model.Parser getParser(1: required string parserId, 2: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    string saveParser(1: required parser_model.Parser parser)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    list<parser_model.Parser> listAllParsers(1: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    void removeParser(1: required string parserId, 2: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+
+    parser_model.ParsingTemplate getParsingTemplate(1: required string templateId, 2: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required string experimentId, 2: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    string saveParsingTemplate(1: required parser_model.ParsingTemplate parsingTemplate)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    list<parser_model.ParsingTemplate> listAllParsingTemplates(1: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    void removeParsingTemplate(1: required string templateId, 2: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
 }

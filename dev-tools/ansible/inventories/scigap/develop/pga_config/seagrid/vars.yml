@@ -27,9 +27,9 @@ doc_root_dir: "/var/www/portals/dev-seagrid"
 vhost_servername: "dev.seagrid.org"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/dev_seagrid_org_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/dev_seagrid_org_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/dev-seagrid.key"
+ssl_certificate_file: "/etc/letsencrypt/live/dev.seagrid.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.seagrid.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/dev.seagrid.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "seagrid"
@@ -54,6 +54,7 @@ experiment_data_dir: "{{ user_data_dir }}/dev-seagrid"
 # TODO: Fix the data store resource id
 gateway_data_store_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDWgLve4J9WCohF/4UnbBZsh/nRkP1aM9FmA1FjKwK2gQAnKwhU+NrbsjW38h2Hi+8s9N2oZ9cCJHrvDi2U0cMxz4exIUBcVoRhw37ThlREHADeKR1FbKw0QLhTyfJb0K+1/8GWRluiFx0vHPptJe0KTqu+RJY0NSe+d/BEuGyCZ1hR+SKNuTgcb05Ia6opbSN5D68N9biseEux60d69ARQxLw+VN3Kr/UaBNpGIAfKLlLSUQlTyPA6G6UKCcJZv+/ye10oa0SK0qtrxMpL+4VJcVx+d56U7CUFWKEgPAaQrX1qdGUNDA7HKmD+EBtzw6DJqNJ0Cue/XuPe/RT62tpf"
+group_resource_profile_id: "6a642772-15fd-4d10-a847-8aef89b71830"
 
 ## Portal related variables
 super_admin_portal: "false"

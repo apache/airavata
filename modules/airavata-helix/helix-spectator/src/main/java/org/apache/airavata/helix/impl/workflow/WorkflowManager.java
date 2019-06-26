@@ -158,6 +158,10 @@ public class WorkflowManager {
         getStatusPublisher().publish(msgCtx);
     }
 
+    public String normalizeTaskId(String taskId) {
+        return taskId.replace(":", "-").replace(",", "-");
+    }
+
     protected void registerWorkflowForProcess(String processId, String workflowName, String workflowType) {
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
         try {

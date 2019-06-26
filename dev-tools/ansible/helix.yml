@@ -23,9 +23,6 @@
   tags: kafka, airavata
   roles:
     - env_setup
-    - role: common
-      become: yes
-      become_user: "{{user}}"
     - zookeeper
     - kafka
 

@@ -39,7 +39,9 @@ import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
@@ -271,7 +273,7 @@ public abstract class AiravataTask extends AbstractTask {
                         dataProductModel.setDataProductType(DataProductType.FILE);
 
                         DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
-                        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResource().getStorageResourceId());
+                        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResourceDescription().getStorageResourceId());
                         replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
                         replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
                         replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
@@ -421,14 +423,7 @@ public abstract class AiravataTask extends AbstractTask {
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId())
                     .setRegistryClient(getRegistryServiceClient())
                     .setProfileClient(getUserProfileClient())
-                    .setProcessModel(getProcessModel())
-                    .setGatewayResourceProfile(getRegistryServiceClient().getGatewayResourceProfile(gatewayId))
-                    .setGatewayComputeResourcePreference(
-                            getRegistryServiceClient().getGatewayComputeResourcePreference(gatewayId,
-                                    processModel.getComputeResourceId()))
-                    .setGatewayStorageResourcePreference(
-                            getRegistryServiceClient().getGatewayStoragePreference(gatewayId,
-                                    processModel.getStorageResourceId()));
+                    .setProcessModel(getProcessModel());
 
             this.taskContext = taskContextBuilder.build();
             logger.info("Task " + this.taskName + " initialized");

@@ -26,10 +26,9 @@ group: "pga"
 doc_root_dir: "/var/www/portals/dev-testdrive"
 vhost_servername: "dev.testdrive.airavata.org"
 vhost_ssl: True
-# TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/dev_testdrive_airavata_org_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/dev_testdrive_airavata_org_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/dev.testdrive.key"
+ssl_certificate_file: "/etc/letsencrypt/live/dev.testdrive.airavata.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.testdrive.airavata.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/dev.testdrive.airavata.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -53,6 +52,7 @@ gateway_id: "default"
 experiment_data_dir: "{{ user_data_dir }}/dev-testdrive"
 gateway_data_store_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCEK6v8oMNUKDqQtlHlXRUpRZVqCL6CbQlJTL5QajevPFtvM0hauS/Rjj6M/bjgTfRyef2/E100l1pH3xhFuL65+OTnOZgC5DQ0T3J1OtldTTuP1Rl7mKZR4xKYzx/hxSgB6kn8tZb3IgDCYnHNcTLYGj1rEpNEO6ju8e9qVR02ex+hbC+4Q4bJgX6FxHL4+rQHcqT6I1k3JmwRsPzr3P1hiRgUUkxAlQuXFXsoa4+9BzEU5D0qXq0o/Q12jKOhPwWyOyhV2X++bc50VKkm0G6M6n78OL8CBIKmZyczgEwD2zB9gx3aTHXTEgUqaVHyOMc3aE8Kt1Us33PDyXpn8sk3"
+group_resource_profile_id: "1cee1887-6774-49c4-9f3c-edfc3558cf9b"
 
 ## Portal related variables
 super_admin_portal: "false"

@@ -318,6 +318,7 @@ class OutputDataObjectType(object):
      - searchQuery
      - outputStreaming
      - storageResourceId
+     - metaData
     """
 
     thrift_spec = (
@@ -333,9 +334,10 @@ class OutputDataObjectType(object):
         (9, TType.STRING, 'searchQuery', 'UTF8', None, ),  # 9
         (10, TType.BOOL, 'outputStreaming', None, None, ),  # 10
         (11, TType.STRING, 'storageResourceId', 'UTF8', None, ),  # 11
+        (12, TType.STRING, 'metaData', 'UTF8', None, ),  # 12
     )
 
-    def __init__(self, name=None, value=None, type=None, applicationArgument=None, isRequired=None, requiredToAddedToCommandLine=None, dataMovement=None, location=None, searchQuery=None, outputStreaming=None, storageResourceId=None,):
+    def __init__(self, name=None, value=None, type=None, applicationArgument=None, isRequired=None, requiredToAddedToCommandLine=None, dataMovement=None, location=None, searchQuery=None, outputStreaming=None, storageResourceId=None, metaData=None,):
         self.name = name
         self.value = value
         self.type = type
@@ -347,6 +349,7 @@ class OutputDataObjectType(object):
         self.searchQuery = searchQuery
         self.outputStreaming = outputStreaming
         self.storageResourceId = storageResourceId
+        self.metaData = metaData
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -412,6 +415,11 @@ class OutputDataObjectType(object):
                     self.storageResourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 12:
+                if ftype == TType.STRING:
+                    self.metaData = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -465,6 +473,10 @@ class OutputDataObjectType(object):
         if self.storageResourceId is not None:
             oprot.writeFieldBegin('storageResourceId', TType.STRING, 11)
             oprot.writeString(self.storageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.storageResourceId)
+            oprot.writeFieldEnd()
+        if self.metaData is not None:
+            oprot.writeFieldBegin('metaData', TType.STRING, 12)
+            oprot.writeString(self.metaData.encode('utf-8') if sys.version_info[0] == 2 else self.metaData)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

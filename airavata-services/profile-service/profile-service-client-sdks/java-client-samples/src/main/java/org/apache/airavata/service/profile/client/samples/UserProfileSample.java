@@ -122,9 +122,9 @@ public class UserProfileSample {
         userProfile.setGatewayId(testGatewayId);
         userProfile.addToEmails("test-user-" + userIdValue + "@domain1.com");
         userProfile.addToEmails("test-user-" + userIdValue + "@domain2.com");
-        userProfile.setCreationTime(new Date().getTime());
-        userProfile.setLastAccessTime(new Date().getTime());
-        userProfile.setValidUntil(new Date().getTime());
+        userProfile.setCreationTime(System.currentTimeMillis());
+        userProfile.setLastAccessTime(System.currentTimeMillis());
+        userProfile.setValidUntil(System.currentTimeMillis());
         userProfile.setState(Status.ACTIVE);
         userProfile.setNsfDemographics(getNSFDemographics(userIdValue));
         return userProfile;

@@ -15,5 +15,6 @@ import airavata.model.workspace.ttypes
 import airavata.model.user.ttypes
 import airavata.model.credential.store.ttypes
 import airavata.service.profile.iam.admin.services.cpi.error.ttypes
+import airavata.base.api.ttypes
 
 from thrift.transport import TTransport

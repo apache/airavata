@@ -16,7 +16,7 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
-interface SharingRegistryServiceIf {
+interface SharingRegistryServiceIf extends \Airavata\Base\API\BaseAPIIf {
   /**
    * <p>API method to create a new domain</p>
    * 
@@ -194,6 +194,7 @@ interface SharingRegistryServiceIf {
    *  <li><b>groupCardinality</b> : Group cardinality (SINGLE_USER, MULTI_USER)</li>
    *  <li>createdTime : Will be set by the system</li>
    *  <li>updatedTime : Will be set by the system</li>
+   *  <li>groupAdmins : Admins for the group</li>
    *  
    * 
    * @throws \Airavata\Model\Sharing\SharingRegistryException
@@ -470,6 +471,16 @@ interface SharingRegistryServiceIf {
    */
   public function getListOfSharedUsers($domainId, $entityId, $permissionTypeId);
   /**
+   * <p>API method to get a list of shared users given the entity id where the sharing type is directly applied</p>
+   * 
+   * @param string $domainId
+   * @param string $entityId
+   * @param string $permissionTypeId
+   * @return \Airavata\Model\Sharing\User[]
+   * @throws \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public function getListOfDirectlySharedUsers($domainId, $entityId, $permissionTypeId);
+  /**
    * <p>API method to get a list of shared groups given the entity id</p>
    * 
    * @param string $domainId
@@ -479,6 +490,16 @@ interface SharingRegistryServiceIf {
    * @throws \Airavata\Model\Sharing\SharingRegistryException
    */
   public function getListOfSharedGroups($domainId, $entityId, $permissionTypeId);
+  /**
+   * <p>API method to get a list of directly shared groups given the entity id where the sharing type is directly applied</p>
+   * 
+   * @param string $domainId
+   * @param string $entityId
+   * @param string $permissionTypeId
+   * @return \Airavata\Model\Sharing\UserGroup[]
+   * @throws \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public function getListOfDirectlySharedGroups($domainId, $entityId, $permissionTypeId);
   /**
    * <p>API method to create permission type</p>
    * 
@@ -547,46 +568,46 @@ interface SharingRegistryServiceIf {
    * @param string $domainId
    * @param string $entityId
    * @param string[] $userList
-   * @param string $perssionTypeId
+   * @param string $permissionTypeId
    * @param bool $cascadePermission
    * @return bool
    * @throws \Airavata\Model\Sharing\SharingRegistryException
    */
-  public function shareEntityWithUsers($domainId, $entityId, array $userList, $perssionTypeId, $cascadePermission);
+  public function shareEntityWithUsers($domainId, $entityId, array $userList, $permissionTypeId, $cascadePermission);
   /**
    * <p>API method to revoke sharing from a list of users</p>
    * 
    * @param string $domainId
    * @param string $entityId
    * @param string[] $userList
-   * @param string $perssionTypeId
+   * @param string $permissionTypeId
    * @return bool
    * @throws \Airavata\Model\Sharing\SharingRegistryException
    */
-  public function revokeEntitySharingFromUsers($domainId, $entityId, array $userList, $perssionTypeId);
+  public function revokeEntitySharingFromUsers($domainId, $entityId, array $userList, $permissionTypeId);
   /**
    * <p>API method to share an entity with list of groups</p>
    * 
    * @param string $domainId
    * @param string $entityId
    * @param string[] $groupList
-   * @param string $perssionTypeId
+   * @param string $permissionTypeId
    * @param bool $cascadePermission
    * @return bool
    * @throws \Airavata\Model\Sharing\SharingRegistryException
    */
-  public function shareEntityWithGroups($domainId, $entityId, array $groupList, $perssionTypeId, $cascadePermission);
+  public function shareEntityWithGroups($domainId, $entityId, array $groupList, $permissionTypeId, $cascadePermission);
   /**
    * <p>API method to revoke sharing from list of users</p>
    * 
    * @param string $domainId
    * @param string $entityId
    * @param string[] $groupList
-   * @param string $perssionTypeId
+   * @param string $permissionTypeId
    * @return bool
    * @throws \Airavata\Model\Sharing\SharingRegistryException
    */
-  public function revokeEntitySharingFromGroups($domainId, $entityId, array $groupList, $perssionTypeId);
+  public function revokeEntitySharingFromGroups($domainId, $entityId, array $groupList, $permissionTypeId);
   /**
    * <p>API method to check whether a user has access to a specific entity</p>
    * 
@@ -601,15 +622,9 @@ interface SharingRegistryServiceIf {
 }
 
 
-class SharingRegistryServiceClient implements \Airavata\API\Sharing\SharingRegistryServiceIf {
-  protected $input_ = null;
-  protected $output_ = null;
-
-  protected $seqid_ = 0;
-
+class SharingRegistryServiceClient extends \Airavata\Base\API\BaseAPIClient implements \Airavata\API\Sharing\SharingRegistryServiceIf {
   public function __construct($input, $output=null) {
-    $this->input_ = $input;
-    $this->output_ = $output ? $output : $input;
+    parent::__construct($input, $output);
   }
 
   public function createDomain(\Airavata\Model\Sharing\Domain $domain)
@@ -2990,6 +3005,62 @@ class SharingRegistryServiceClient implements \Airavata\API\Sharing\SharingRegis
     throw new \Exception("getListOfSharedUsers failed: unknown result");
   }
 
+  public function getListOfDirectlySharedUsers($domainId, $entityId, $permissionTypeId)
+  {
+    $this->send_getListOfDirectlySharedUsers($domainId, $entityId, $permissionTypeId);
+    return $this->recv_getListOfDirectlySharedUsers();
+  }
+
+  public function send_getListOfDirectlySharedUsers($domainId, $entityId, $permissionTypeId)
+  {
+    $args = new \Airavata\API\Sharing\SharingRegistryService_getListOfDirectlySharedUsers_args();
+    $args->domainId = $domainId;
+    $args->entityId = $entityId;
+    $args->permissionTypeId = $permissionTypeId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getListOfDirectlySharedUsers', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getListOfDirectlySharedUsers', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getListOfDirectlySharedUsers()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Sharing\SharingRegistryService_getListOfDirectlySharedUsers_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Sharing\SharingRegistryService_getListOfDirectlySharedUsers_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->sre !== null) {
+      throw $result->sre;
+    }
+    throw new \Exception("getListOfDirectlySharedUsers failed: unknown result");
+  }
+
   public function getListOfSharedGroups($domainId, $entityId, $permissionTypeId)
   {
     $this->send_getListOfSharedGroups($domainId, $entityId, $permissionTypeId);
@@ -3044,6 +3115,62 @@ class SharingRegistryServiceClient implements \Airavata\API\Sharing\SharingRegis
       throw $result->sre;
     }
     throw new \Exception("getListOfSharedGroups failed: unknown result");
+  }
+
+  public function getListOfDirectlySharedGroups($domainId, $entityId, $permissionTypeId)
+  {
+    $this->send_getListOfDirectlySharedGroups($domainId, $entityId, $permissionTypeId);
+    return $this->recv_getListOfDirectlySharedGroups();
+  }
+
+  public function send_getListOfDirectlySharedGroups($domainId, $entityId, $permissionTypeId)
+  {
+    $args = new \Airavata\API\Sharing\SharingRegistryService_getListOfDirectlySharedGroups_args();
+    $args->domainId = $domainId;
+    $args->entityId = $entityId;
+    $args->permissionTypeId = $permissionTypeId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getListOfDirectlySharedGroups', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getListOfDirectlySharedGroups', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getListOfDirectlySharedGroups()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Sharing\SharingRegistryService_getListOfDirectlySharedGroups_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Sharing\SharingRegistryService_getListOfDirectlySharedGroups_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->sre !== null) {
+      throw $result->sre;
+    }
+    throw new \Exception("getListOfDirectlySharedGroups failed: unknown result");
   }
 
   public function createPermissionType(\Airavata\Model\Sharing\PermissionType $permissionType)
@@ -3378,19 +3505,19 @@ class SharingRegistryServiceClient implements \Airavata\API\Sharing\SharingRegis
     throw new \Exception("getPermissionTypes failed: unknown result");
   }
 
-  public function shareEntityWithUsers($domainId, $entityId, array $userList, $perssionTypeId, $cascadePermission)
+  public function shareEntityWithUsers($domainId, $entityId, array $userList, $permissionTypeId, $cascadePermission)
   {
-    $this->send_shareEntityWithUsers($domainId, $entityId, $userList, $perssionTypeId, $cascadePermission);
+    $this->send_shareEntityWithUsers($domainId, $entityId, $userList, $permissionTypeId, $cascadePermission);
     return $this->recv_shareEntityWithUsers();
   }
 
-  public function send_shareEntityWithUsers($domainId, $entityId, array $userList, $perssionTypeId, $cascadePermission)
+  public function send_shareEntityWithUsers($domainId, $entityId, array $userList, $permissionTypeId, $cascadePermission)
   {
     $args = new \Airavata\API\Sharing\SharingRegistryService_shareEntityWithUsers_args();
     $args->domainId = $domainId;
     $args->entityId = $entityId;
     $args->userList = $userList;
-    $args->perssionTypeId = $perssionTypeId;
+    $args->permissionTypeId = $permissionTypeId;
     $args->cascadePermission = $cascadePermission;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -3436,19 +3563,19 @@ class SharingRegistryServiceClient implements \Airavata\API\Sharing\SharingRegis
     throw new \Exception("shareEntityWithUsers failed: unknown result");
   }
 
-  public function revokeEntitySharingFromUsers($domainId, $entityId, array $userList, $perssionTypeId)
+  public function revokeEntitySharingFromUsers($domainId, $entityId, array $userList, $permissionTypeId)
   {
-    $this->send_revokeEntitySharingFromUsers($domainId, $entityId, $userList, $perssionTypeId);
+    $this->send_revokeEntitySharingFromUsers($domainId, $entityId, $userList, $permissionTypeId);
     return $this->recv_revokeEntitySharingFromUsers();
   }
 
-  public function send_revokeEntitySharingFromUsers($domainId, $entityId, array $userList, $perssionTypeId)
+  public function send_revokeEntitySharingFromUsers($domainId, $entityId, array $userList, $permissionTypeId)
   {
     $args = new \Airavata\API\Sharing\SharingRegistryService_revokeEntitySharingFromUsers_args();
     $args->domainId = $domainId;
     $args->entityId = $entityId;
     $args->userList = $userList;
-    $args->perssionTypeId = $perssionTypeId;
+    $args->permissionTypeId = $permissionTypeId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -3493,19 +3620,19 @@ class SharingRegistryServiceClient implements \Airavata\API\Sharing\SharingRegis
     throw new \Exception("revokeEntitySharingFromUsers failed: unknown result");
   }
 
-  public function shareEntityWithGroups($domainId, $entityId, array $groupList, $perssionTypeId, $cascadePermission)
+  public function shareEntityWithGroups($domainId, $entityId, array $groupList, $permissionTypeId, $cascadePermission)
   {
-    $this->send_shareEntityWithGroups($domainId, $entityId, $groupList, $perssionTypeId, $cascadePermission);
+    $this->send_shareEntityWithGroups($domainId, $entityId, $groupList, $permissionTypeId, $cascadePermission);
     return $this->recv_shareEntityWithGroups();
   }
 
-  public function send_shareEntityWithGroups($domainId, $entityId, array $groupList, $perssionTypeId, $cascadePermission)
+  public function send_shareEntityWithGroups($domainId, $entityId, array $groupList, $permissionTypeId, $cascadePermission)
   {
     $args = new \Airavata\API\Sharing\SharingRegistryService_shareEntityWithGroups_args();
     $args->domainId = $domainId;
     $args->entityId = $entityId;
     $args->groupList = $groupList;
-    $args->perssionTypeId = $perssionTypeId;
+    $args->permissionTypeId = $permissionTypeId;
     $args->cascadePermission = $cascadePermission;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -3551,19 +3678,19 @@ class SharingRegistryServiceClient implements \Airavata\API\Sharing\SharingRegis
     throw new \Exception("shareEntityWithGroups failed: unknown result");
   }
 
-  public function revokeEntitySharingFromGroups($domainId, $entityId, array $groupList, $perssionTypeId)
+  public function revokeEntitySharingFromGroups($domainId, $entityId, array $groupList, $permissionTypeId)
   {
-    $this->send_revokeEntitySharingFromGroups($domainId, $entityId, $groupList, $perssionTypeId);
+    $this->send_revokeEntitySharingFromGroups($domainId, $entityId, $groupList, $permissionTypeId);
     return $this->recv_revokeEntitySharingFromGroups();
   }
 
-  public function send_revokeEntitySharingFromGroups($domainId, $entityId, array $groupList, $perssionTypeId)
+  public function send_revokeEntitySharingFromGroups($domainId, $entityId, array $groupList, $permissionTypeId)
   {
     $args = new \Airavata\API\Sharing\SharingRegistryService_revokeEntitySharingFromGroups_args();
     $args->domainId = $domainId;
     $args->entityId = $entityId;
     $args->groupList = $groupList;
-    $args->perssionTypeId = $perssionTypeId;
+    $args->permissionTypeId = $permissionTypeId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12880,6 +13007,255 @@ class SharingRegistryService_getListOfSharedUsers_result {
 
 }
 
+class SharingRegistryService_getListOfDirectlySharedUsers_args {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $domainId = null;
+  /**
+   * @var string
+   */
+  public $entityId = null;
+  /**
+   * @var string
+   */
+  public $permissionTypeId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'domainId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'entityId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'permissionTypeId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['domainId'])) {
+        $this->domainId = $vals['domainId'];
+      }
+      if (isset($vals['entityId'])) {
+        $this->entityId = $vals['entityId'];
+      }
+      if (isset($vals['permissionTypeId'])) {
+        $this->permissionTypeId = $vals['permissionTypeId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_getListOfDirectlySharedUsers_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domainId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->entityId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->permissionTypeId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_getListOfDirectlySharedUsers_args');
+    if ($this->domainId !== null) {
+      $xfer += $output->writeFieldBegin('domainId', TType::STRING, 1);
+      $xfer += $output->writeString($this->domainId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->entityId !== null) {
+      $xfer += $output->writeFieldBegin('entityId', TType::STRING, 2);
+      $xfer += $output->writeString($this->entityId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->permissionTypeId !== null) {
+      $xfer += $output->writeFieldBegin('permissionTypeId', TType::STRING, 3);
+      $xfer += $output->writeString($this->permissionTypeId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_getListOfDirectlySharedUsers_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Sharing\User[]
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public $sre = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Sharing\User',
+            ),
+          ),
+        1 => array(
+          'var' => 'sre',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Sharing\SharingRegistryException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['sre'])) {
+        $this->sre = $vals['sre'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_getListOfDirectlySharedUsers_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size105 = 0;
+            $_etype108 = 0;
+            $xfer += $input->readListBegin($_etype108, $_size105);
+            for ($_i109 = 0; $_i109 < $_size105; ++$_i109)
+            {
+              $elem110 = null;
+              $elem110 = new \Airavata\Model\Sharing\User();
+              $xfer += $elem110->read($input);
+              $this->success []= $elem110;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->sre = new \Airavata\Model\Sharing\SharingRegistryException();
+            $xfer += $this->sre->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_getListOfDirectlySharedUsers_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter111)
+          {
+            $xfer += $iter111->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sre !== null) {
+      $xfer += $output->writeFieldBegin('sre', TType::STRUCT, 1);
+      $xfer += $this->sre->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class SharingRegistryService_getListOfSharedGroups_args {
   static $_TSPEC;
 
@@ -13064,15 +13440,15 @@ class SharingRegistryService_getListOfSharedGroups_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size105 = 0;
-            $_etype108 = 0;
-            $xfer += $input->readListBegin($_etype108, $_size105);
-            for ($_i109 = 0; $_i109 < $_size105; ++$_i109)
+            $_size112 = 0;
+            $_etype115 = 0;
+            $xfer += $input->readListBegin($_etype115, $_size112);
+            for ($_i116 = 0; $_i116 < $_size112; ++$_i116)
             {
-              $elem110 = null;
-              $elem110 = new \Airavata\Model\Sharing\UserGroup();
-              $xfer += $elem110->read($input);
-              $this->success []= $elem110;
+              $elem117 = null;
+              $elem117 = new \Airavata\Model\Sharing\UserGroup();
+              $xfer += $elem117->read($input);
+              $this->success []= $elem117;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -13108,9 +13484,258 @@ class SharingRegistryService_getListOfSharedGroups_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter111)
+          foreach ($this->success as $iter118)
           {
-            $xfer += $iter111->write($output);
+            $xfer += $iter118->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sre !== null) {
+      $xfer += $output->writeFieldBegin('sre', TType::STRUCT, 1);
+      $xfer += $this->sre->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_getListOfDirectlySharedGroups_args {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $domainId = null;
+  /**
+   * @var string
+   */
+  public $entityId = null;
+  /**
+   * @var string
+   */
+  public $permissionTypeId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'domainId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'entityId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'permissionTypeId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['domainId'])) {
+        $this->domainId = $vals['domainId'];
+      }
+      if (isset($vals['entityId'])) {
+        $this->entityId = $vals['entityId'];
+      }
+      if (isset($vals['permissionTypeId'])) {
+        $this->permissionTypeId = $vals['permissionTypeId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_getListOfDirectlySharedGroups_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domainId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->entityId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->permissionTypeId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_getListOfDirectlySharedGroups_args');
+    if ($this->domainId !== null) {
+      $xfer += $output->writeFieldBegin('domainId', TType::STRING, 1);
+      $xfer += $output->writeString($this->domainId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->entityId !== null) {
+      $xfer += $output->writeFieldBegin('entityId', TType::STRING, 2);
+      $xfer += $output->writeString($this->entityId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->permissionTypeId !== null) {
+      $xfer += $output->writeFieldBegin('permissionTypeId', TType::STRING, 3);
+      $xfer += $output->writeString($this->permissionTypeId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class SharingRegistryService_getListOfDirectlySharedGroups_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Sharing\UserGroup[]
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Model\Sharing\SharingRegistryException
+   */
+  public $sre = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Sharing\UserGroup',
+            ),
+          ),
+        1 => array(
+          'var' => 'sre',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Sharing\SharingRegistryException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['sre'])) {
+        $this->sre = $vals['sre'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'SharingRegistryService_getListOfDirectlySharedGroups_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size119 = 0;
+            $_etype122 = 0;
+            $xfer += $input->readListBegin($_etype122, $_size119);
+            for ($_i123 = 0; $_i123 < $_size119; ++$_i123)
+            {
+              $elem124 = null;
+              $elem124 = new \Airavata\Model\Sharing\UserGroup();
+              $xfer += $elem124->read($input);
+              $this->success []= $elem124;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->sre = new \Airavata\Model\Sharing\SharingRegistryException();
+            $xfer += $this->sre->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('SharingRegistryService_getListOfDirectlySharedGroups_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter125)
+          {
+            $xfer += $iter125->write($output);
           }
         }
         $output->writeListEnd();
@@ -14297,15 +14922,15 @@ class SharingRegistryService_getPermissionTypes_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size112 = 0;
-            $_etype115 = 0;
-            $xfer += $input->readListBegin($_etype115, $_size112);
-            for ($_i116 = 0; $_i116 < $_size112; ++$_i116)
+            $_size126 = 0;
+            $_etype129 = 0;
+            $xfer += $input->readListBegin($_etype129, $_size126);
+            for ($_i130 = 0; $_i130 < $_size126; ++$_i130)
             {
-              $elem117 = null;
-              $elem117 = new \Airavata\Model\Sharing\PermissionType();
-              $xfer += $elem117->read($input);
-              $this->success []= $elem117;
+              $elem131 = null;
+              $elem131 = new \Airavata\Model\Sharing\PermissionType();
+              $xfer += $elem131->read($input);
+              $this->success []= $elem131;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -14341,9 +14966,9 @@ class SharingRegistryService_getPermissionTypes_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter118)
+          foreach ($this->success as $iter132)
           {
-            $xfer += $iter118->write($output);
+            $xfer += $iter132->write($output);
           }
         }
         $output->writeListEnd();
@@ -14380,7 +15005,7 @@ class SharingRegistryService_shareEntityWithUsers_args {
   /**
    * @var string
    */
-  public $perssionTypeId = null;
+  public $permissionTypeId = null;
   /**
    * @var bool
    */
@@ -14406,7 +15031,7 @@ class SharingRegistryService_shareEntityWithUsers_args {
             ),
           ),
         4 => array(
-          'var' => 'perssionTypeId',
+          'var' => 'permissionTypeId',
           'type' => TType::STRING,
           ),
         5 => array(
@@ -14425,8 +15050,8 @@ class SharingRegistryService_shareEntityWithUsers_args {
       if (isset($vals['userList'])) {
         $this->userList = $vals['userList'];
       }
-      if (isset($vals['perssionTypeId'])) {
-        $this->perssionTypeId = $vals['perssionTypeId'];
+      if (isset($vals['permissionTypeId'])) {
+        $this->permissionTypeId = $vals['permissionTypeId'];
       }
       if (isset($vals['cascadePermission'])) {
         $this->cascadePermission = $vals['cascadePermission'];
@@ -14470,14 +15095,14 @@ class SharingRegistryService_shareEntityWithUsers_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->userList = array();
-            $_size119 = 0;
-            $_etype122 = 0;
-            $xfer += $input->readListBegin($_etype122, $_size119);
-            for ($_i123 = 0; $_i123 < $_size119; ++$_i123)
+            $_size133 = 0;
+            $_etype136 = 0;
+            $xfer += $input->readListBegin($_etype136, $_size133);
+            for ($_i137 = 0; $_i137 < $_size133; ++$_i137)
             {
-              $elem124 = null;
-              $xfer += $input->readString($elem124);
-              $this->userList []= $elem124;
+              $elem138 = null;
+              $xfer += $input->readString($elem138);
+              $this->userList []= $elem138;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -14486,7 +15111,7 @@ class SharingRegistryService_shareEntityWithUsers_args {
           break;
         case 4:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->perssionTypeId);
+            $xfer += $input->readString($this->permissionTypeId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -14529,18 +15154,18 @@ class SharingRegistryService_shareEntityWithUsers_args {
       {
         $output->writeListBegin(TType::STRING, count($this->userList));
         {
-          foreach ($this->userList as $iter125)
+          foreach ($this->userList as $iter139)
           {
-            $xfer += $output->writeString($iter125);
+            $xfer += $output->writeString($iter139);
           }
         }
         $output->writeListEnd();
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->perssionTypeId !== null) {
-      $xfer += $output->writeFieldBegin('perssionTypeId', TType::STRING, 4);
-      $xfer += $output->writeString($this->perssionTypeId);
+    if ($this->permissionTypeId !== null) {
+      $xfer += $output->writeFieldBegin('permissionTypeId', TType::STRING, 4);
+      $xfer += $output->writeString($this->permissionTypeId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->cascadePermission !== null) {
@@ -14673,7 +15298,7 @@ class SharingRegistryService_revokeEntitySharingFromUsers_args {
   /**
    * @var string
    */
-  public $perssionTypeId = null;
+  public $permissionTypeId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -14695,7 +15320,7 @@ class SharingRegistryService_revokeEntitySharingFromUsers_args {
             ),
           ),
         4 => array(
-          'var' => 'perssionTypeId',
+          'var' => 'permissionTypeId',
           'type' => TType::STRING,
           ),
         );
@@ -14710,8 +15335,8 @@ class SharingRegistryService_revokeEntitySharingFromUsers_args {
       if (isset($vals['userList'])) {
         $this->userList = $vals['userList'];
       }
-      if (isset($vals['perssionTypeId'])) {
-        $this->perssionTypeId = $vals['perssionTypeId'];
+      if (isset($vals['permissionTypeId'])) {
+        $this->permissionTypeId = $vals['permissionTypeId'];
       }
     }
   }
@@ -14752,14 +15377,14 @@ class SharingRegistryService_revokeEntitySharingFromUsers_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->userList = array();
-            $_size126 = 0;
-            $_etype129 = 0;
-            $xfer += $input->readListBegin($_etype129, $_size126);
-            for ($_i130 = 0; $_i130 < $_size126; ++$_i130)
+            $_size140 = 0;
+            $_etype143 = 0;
+            $xfer += $input->readListBegin($_etype143, $_size140);
+            for ($_i144 = 0; $_i144 < $_size140; ++$_i144)
             {
-              $elem131 = null;
-              $xfer += $input->readString($elem131);
-              $this->userList []= $elem131;
+              $elem145 = null;
+              $xfer += $input->readString($elem145);
+              $this->userList []= $elem145;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -14768,7 +15393,7 @@ class SharingRegistryService_revokeEntitySharingFromUsers_args {
           break;
         case 4:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->perssionTypeId);
+            $xfer += $input->readString($this->permissionTypeId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -14804,18 +15429,18 @@ class SharingRegistryService_revokeEntitySharingFromUsers_args {
       {
         $output->writeListBegin(TType::STRING, count($this->userList));
         {
-          foreach ($this->userList as $iter132)
+          foreach ($this->userList as $iter146)
           {
-            $xfer += $output->writeString($iter132);
+            $xfer += $output->writeString($iter146);
           }
         }
         $output->writeListEnd();
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->perssionTypeId !== null) {
-      $xfer += $output->writeFieldBegin('perssionTypeId', TType::STRING, 4);
-      $xfer += $output->writeString($this->perssionTypeId);
+    if ($this->permissionTypeId !== null) {
+      $xfer += $output->writeFieldBegin('permissionTypeId', TType::STRING, 4);
+      $xfer += $output->writeString($this->permissionTypeId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -14943,7 +15568,7 @@ class SharingRegistryService_shareEntityWithGroups_args {
   /**
    * @var string
    */
-  public $perssionTypeId = null;
+  public $permissionTypeId = null;
   /**
    * @var bool
    */
@@ -14969,7 +15594,7 @@ class SharingRegistryService_shareEntityWithGroups_args {
             ),
           ),
         4 => array(
-          'var' => 'perssionTypeId',
+          'var' => 'permissionTypeId',
           'type' => TType::STRING,
           ),
         5 => array(
@@ -14988,8 +15613,8 @@ class SharingRegistryService_shareEntityWithGroups_args {
       if (isset($vals['groupList'])) {
         $this->groupList = $vals['groupList'];
       }
-      if (isset($vals['perssionTypeId'])) {
-        $this->perssionTypeId = $vals['perssionTypeId'];
+      if (isset($vals['permissionTypeId'])) {
+        $this->permissionTypeId = $vals['permissionTypeId'];
       }
       if (isset($vals['cascadePermission'])) {
         $this->cascadePermission = $vals['cascadePermission'];
@@ -15033,14 +15658,14 @@ class SharingRegistryService_shareEntityWithGroups_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->groupList = array();
-            $_size133 = 0;
-            $_etype136 = 0;
-            $xfer += $input->readListBegin($_etype136, $_size133);
-            for ($_i137 = 0; $_i137 < $_size133; ++$_i137)
+            $_size147 = 0;
+            $_etype150 = 0;
+            $xfer += $input->readListBegin($_etype150, $_size147);
+            for ($_i151 = 0; $_i151 < $_size147; ++$_i151)
             {
-              $elem138 = null;
-              $xfer += $input->readString($elem138);
-              $this->groupList []= $elem138;
+              $elem152 = null;
+              $xfer += $input->readString($elem152);
+              $this->groupList []= $elem152;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -15049,7 +15674,7 @@ class SharingRegistryService_shareEntityWithGroups_args {
           break;
         case 4:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->perssionTypeId);
+            $xfer += $input->readString($this->permissionTypeId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -15092,18 +15717,18 @@ class SharingRegistryService_shareEntityWithGroups_args {
       {
         $output->writeListBegin(TType::STRING, count($this->groupList));
         {
-          foreach ($this->groupList as $iter139)
+          foreach ($this->groupList as $iter153)
           {
-            $xfer += $output->writeString($iter139);
+            $xfer += $output->writeString($iter153);
           }
         }
         $output->writeListEnd();
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->perssionTypeId !== null) {
-      $xfer += $output->writeFieldBegin('perssionTypeId', TType::STRING, 4);
-      $xfer += $output->writeString($this->perssionTypeId);
+    if ($this->permissionTypeId !== null) {
+      $xfer += $output->writeFieldBegin('permissionTypeId', TType::STRING, 4);
+      $xfer += $output->writeString($this->permissionTypeId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->cascadePermission !== null) {
@@ -15236,7 +15861,7 @@ class SharingRegistryService_revokeEntitySharingFromGroups_args {
   /**
    * @var string
    */
-  public $perssionTypeId = null;
+  public $permissionTypeId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -15258,7 +15883,7 @@ class SharingRegistryService_revokeEntitySharingFromGroups_args {
             ),
           ),
         4 => array(
-          'var' => 'perssionTypeId',
+          'var' => 'permissionTypeId',
           'type' => TType::STRING,
           ),
         );
@@ -15273,8 +15898,8 @@ class SharingRegistryService_revokeEntitySharingFromGroups_args {
       if (isset($vals['groupList'])) {
         $this->groupList = $vals['groupList'];
       }
-      if (isset($vals['perssionTypeId'])) {
-        $this->perssionTypeId = $vals['perssionTypeId'];
+      if (isset($vals['permissionTypeId'])) {
+        $this->permissionTypeId = $vals['permissionTypeId'];
       }
     }
   }
@@ -15315,14 +15940,14 @@ class SharingRegistryService_revokeEntitySharingFromGroups_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->groupList = array();
-            $_size140 = 0;
-            $_etype143 = 0;
-            $xfer += $input->readListBegin($_etype143, $_size140);
-            for ($_i144 = 0; $_i144 < $_size140; ++$_i144)
+            $_size154 = 0;
+            $_etype157 = 0;
+            $xfer += $input->readListBegin($_etype157, $_size154);
+            for ($_i158 = 0; $_i158 < $_size154; ++$_i158)
             {
-              $elem145 = null;
-              $xfer += $input->readString($elem145);
-              $this->groupList []= $elem145;
+              $elem159 = null;
+              $xfer += $input->readString($elem159);
+              $this->groupList []= $elem159;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -15331,7 +15956,7 @@ class SharingRegistryService_revokeEntitySharingFromGroups_args {
           break;
         case 4:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->perssionTypeId);
+            $xfer += $input->readString($this->permissionTypeId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -15367,18 +15992,18 @@ class SharingRegistryService_revokeEntitySharingFromGroups_args {
       {
         $output->writeListBegin(TType::STRING, count($this->groupList));
         {
-          foreach ($this->groupList as $iter146)
+          foreach ($this->groupList as $iter160)
           {
-            $xfer += $output->writeString($iter146);
+            $xfer += $output->writeString($iter160);
           }
         }
         $output->writeListEnd();
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->perssionTypeId !== null) {
-      $xfer += $output->writeFieldBegin('perssionTypeId', TType::STRING, 4);
-      $xfer += $output->writeString($this->perssionTypeId);
+    if ($this->permissionTypeId !== null) {
+      $xfer += $output->writeFieldBegin('permissionTypeId', TType::STRING, 4);
+      $xfer += $output->writeString($this->permissionTypeId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

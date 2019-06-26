@@ -243,22 +243,24 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     private void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
-        if (mapData.getPreJobCommands() == null) {
-            mapData.setPreJobCommands(new ArrayList<>());
+
+        if (Boolean.parseBoolean(ServerSettings.getSetting("enable.realtime.monitor"))) {
+            if (mapData.getPreJobCommands() == null) {
+                mapData.setPreJobCommands(new ArrayList<>());
+            }
+            mapData.getPreJobCommands().add(0, "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
+                    "-H \"Accept: application/vnd.kafka.v2+json\" " +
+                    "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
+                    ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
+
+
+            if (mapData.getPostJobCommands() == null) {
+                mapData.setPostJobCommands(new ArrayList<>());
+            }
+            mapData.getPostJobCommands().add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
+                    "-H \"Accept: application/vnd.kafka.v2+json\" " +
+                    "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
+                    ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
         }
-
-        mapData.getPreJobCommands().add(0, "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
-                "-H \"Accept: application/vnd.kafka.v2+json\" " +
-                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
-                ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
-
-        if (mapData.getPostJobCommands() == null) {
-            mapData.setPostJobCommands(new ArrayList<>());
-        }
-
-        mapData.getPostJobCommands().add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
-                "-H \"Accept: application/vnd.kafka.v2+json\" " +
-                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
-                ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
     }
 }

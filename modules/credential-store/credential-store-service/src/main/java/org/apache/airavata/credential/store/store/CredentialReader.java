@@ -73,6 +73,8 @@ public interface CredentialReader {
 
     public List<Credential> getAllCredentialsPerGateway(String gatewayId) throws CredentialStoreException;
 
+    public List<Credential> getAllAccessibleCredentialsPerGateway(String gatewayId, List<String> accessibleTokenIds) throws CredentialStoreException;
+
     public List<Credential> getAllCredentialsPerUser(String userName) throws CredentialStoreException;
     /**
      * Updates the community user contact email address.

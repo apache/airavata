@@ -28,8 +28,8 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
@@ -78,22 +78,13 @@ public class OrchestratorUtils {
 
     public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessModel model,
                                                                           String gatewayId) throws TException, OrchestratorException {
-        try {
-            String resourceHostId = model.getComputeResourceId();
-            return getComputeResourcePreference(gatewayId, resourceHostId).getPreferredJobSubmissionProtocol();
-        } catch (Exception e) {
-            logger.error("Error occurred while retrieving job submission", e);
-            throw new OrchestratorException("Error occurred while retrieving job submission", e);
-        }
+        return getPreferredJobSubmissionInterface(model, gatewayId).getJobSubmissionProtocol();
     }
 
-    public static ComputeResourcePreference getComputeResourcePreference(String gatewayId,
-                                                                         String resourceHostId)
-            throws TException, ApplicationSettingsException {
+    public static GroupComputeResourcePreference getGroupComputeResourcePreference(ProcessModel model) throws TException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            return registryClient.getGatewayComputeResourcePreference(gatewayId
-                    , resourceHostId);
+            return registryClient.getGroupComputeResourcePreference(model.getComputeResourceId(), model.getGroupResourceProfileId());
         } finally {
             if (registryClient != null) {
                 ThriftUtils.close(registryClient);
@@ -118,23 +109,7 @@ public class OrchestratorUtils {
 
     public static DataMovementProtocol getPreferredDataMovementProtocol(ProcessModel model,
                                                                         String gatewayId) throws TException, OrchestratorException {
-        try {
-            String resourceHostId = model.getComputeResourceId();
-            return getComputeResourcePreference(gatewayId, resourceHostId).getPreferredDataMovementProtocol();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while retrieving DataMovementProtocol", e);
-            throw new OrchestratorException("Error occurred while retrieving DataMovementProtocol", e);
-        }
-    }
-
-    public static ComputeResourcePreference getComputeResourcePreference(ProcessModel processModel,
-                                                                         String gatewayId) throws TException, OrchestratorException {
-        try {
-            return getComputeResourcePreference(gatewayId, processModel.getComputeResourceId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while retrieving ComputeResourcePreference", e);
-            throw new OrchestratorException("Error occurred while retrieving ComputeResourcePreference", e);
-        }
+        return getPreferredDataMovementInterface(model, gatewayId).getDataMovementProtocol();
     }
 
     public static StoragePreference getStoragePreference(ProcessModel processModel,
@@ -157,8 +132,7 @@ public class OrchestratorUtils {
                                           String gatewayId) throws AiravataException, TException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            ComputeResourcePreference computeResourcePreference = getComputeResourcePreference(gatewayId,
-                    processModel.getComputeResourceId());
+            GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
             if (processModel.isUseUserCRPref()) {
                 UserComputeResourcePreference userComputeResourcePreference = registryClient
@@ -172,7 +146,7 @@ public class OrchestratorUtils {
                     return processResourceSchedule.getOverrideLoginUserName();
                 } else if (isValid(computeResourcePreference.getLoginUserName())) {
                     logger.warn("Either User computer resource preference or computer resource scheduling " +
-                            "doesn't have valid user login name, using  gateway computer resource preference login name "
+                            "doesn't have valid user login name, using  group resource profile computer resource preference login name "
                             +  computeResourcePreference.getLoginUserName());
                     return computeResourcePreference.getLoginUserName();
                 }else {
@@ -204,8 +178,7 @@ public class OrchestratorUtils {
                                             String gatewayId) throws  AiravataException, TException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            ComputeResourcePreference computeResourcePreference = getComputeResourcePreference(gatewayId,
-                    processModel.getComputeResourceId());
+            GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
             if (processModel.isUseUserCRPref()) {
                 UserComputeResourcePreference userComputeResourcePreference = registryClient
@@ -252,38 +225,14 @@ public class OrchestratorUtils {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
             String resourceHostId = processModel.getComputeResourceId();
-            ComputeResourcePreference resourcePreference = getComputeResourcePreference(processModel, gatewayId);
-            JobSubmissionProtocol preferredJobSubmissionProtocol = resourcePreference.getPreferredJobSubmissionProtocol();
             ComputeResourceDescription resourceDescription = registryClient.getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
-            Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
-            List<JobSubmissionInterface> interfaces = new ArrayList<>();
             if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
-                for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces){
-
-                    if (preferredJobSubmissionProtocol != null){
-                        if (preferredJobSubmissionProtocol.toString().equals(submissionInterface.getJobSubmissionProtocol().toString())){
-                            if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())){
-                                List<JobSubmissionInterface> interfaceList = orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
-                                interfaceList.add(submissionInterface);
-                            }else {
-                                interfaces.add(submissionInterface);
-                                orderedInterfaces.put(submissionInterface.getJobSubmissionProtocol(), interfaces);
-                            }
-                        }
-                    }else {
-                        Collections.sort(jobSubmissionInterfaces,
-                                (jobSubmissionInterface, jobSubmissionInterface2) ->
-                                        jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder());
-                    }
-                }
-                interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
-                Collections.sort(interfaces, (jobSubmissionInterface, jobSubmissionInterface2) ->
-                        jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder());
+                Collections.sort(jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
             } else {
                 throw new OrchestratorException("Compute resource should have at least one job submission interface defined...");
             }
-            return interfaces.get(0);
+            return jobSubmissionInterfaces.get(0);
         } catch (Exception e) {
             throw new OrchestratorException("Error occurred while retrieving data from app catalog", e);
         } finally {
@@ -293,26 +242,19 @@ public class OrchestratorUtils {
         }
     }
 
-    public static DataMovementInterface getPrefferredDataMovementInterface(ProcessModel processModel,
-                                                                           String gatewayId) throws OrchestratorException {
+    public static DataMovementInterface getPreferredDataMovementInterface(ProcessModel processModel,
+                                                                          String gatewayId) throws OrchestratorException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
             String resourceHostId = processModel.getComputeResourceId();
-            ComputeResourcePreference resourcePreference = getComputeResourcePreference(processModel, gatewayId);
-            DataMovementProtocol preferredDataMovementProtocol = resourcePreference.getPreferredDataMovementProtocol();
             ComputeResourceDescription resourceDescription = registryClient.getComputeResource(resourceHostId);
             List<DataMovementInterface> dataMovementInterfaces = resourceDescription.getDataMovementInterfaces();
             if (dataMovementInterfaces != null && !dataMovementInterfaces.isEmpty()) {
-                for (DataMovementInterface dataMovementInterface : dataMovementInterfaces){
-                    if (preferredDataMovementProtocol != null){
-                        if (preferredDataMovementProtocol.toString().equals(dataMovementInterface.getDataMovementProtocol().toString())){
-                            return dataMovementInterface;
-                        }
-                    }
-                }
+                Collections.sort(dataMovementInterfaces, Comparator.comparingInt(DataMovementInterface::getPriorityOrder));
             } else {
                 throw new OrchestratorException("Compute resource should have at least one data movement interface defined...");
             }
+            return dataMovementInterfaces.get(0);
         } catch (Exception e) {
             throw new OrchestratorException("Error occurred while retrieving data from app catalog", e);
         } finally {
@@ -320,14 +262,13 @@ public class OrchestratorUtils {
                 ThriftUtils.close(registryClient);
             }
         }
-        return null;
     }
 
     public static int getDataMovementPort(ProcessModel processModel,
                                           String gatewayId) throws TException, ApplicationSettingsException, OrchestratorException {
         try {
             DataMovementProtocol protocol = getPreferredDataMovementProtocol(processModel, gatewayId);
-            DataMovementInterface dataMovementInterface = getPrefferredDataMovementInterface(processModel, gatewayId);
+            DataMovementInterface dataMovementInterface = getPreferredDataMovementInterface(processModel, gatewayId);
             if (protocol == DataMovementProtocol.SCP ) {
                 SCPDataMovement scpDataMovement = getSCPDataMovement(dataMovementInterface.getDataMovementInterfaceId());
                 if (scpDataMovement != null) {

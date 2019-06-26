@@ -1,0 +1,89 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+package org.apache.airavata.registry.core.entities.appcatalog;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
+
+@Entity
+@Table(name = "PARSING_TEMPLATE")
+public class ParsingTemplateEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(name = "PARSING_TEMPLATE_ID")
+    private String id;
+
+    @Column(name = "APP_INTERFACE_ID")
+    private String applicationInterface;
+
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    @OneToMany(targetEntity = ParsingTemplateInputEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
+            mappedBy = "parsingTemplate", fetch = FetchType.EAGER)
+    private List<ParsingTemplateInputEntity> initialInputs;
+
+    @OneToMany(targetEntity = ParserConnectorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
+            mappedBy = "parsingTemplate", fetch = FetchType.EAGER)
+    private List<ParserConnectorEntity> parserConnections;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getApplicationInterface() {
+        return applicationInterface;
+    }
+
+    public void setApplicationInterface(String applicationInterface) {
+        this.applicationInterface = applicationInterface;
+    }
+
+    public List<ParsingTemplateInputEntity> getInitialInputs() {
+        return initialInputs;
+    }
+
+    public void setInitialInputs(List<ParsingTemplateInputEntity> initialInputs) {
+        this.initialInputs = initialInputs;
+    }
+
+    public List<ParserConnectorEntity> getParserConnections() {
+        return parserConnections;
+    }
+
+    public void setParserConnections(List<ParserConnectorEntity> parserConnections) {
+        this.parserConnections = parserConnections;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+}

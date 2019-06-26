@@ -32,4 +32,3 @@ public  interface HostScheduler {
      */
     public ComputeResourceDescription schedule(List<ComputeResourceDescription> registeredHosts);
 }
-

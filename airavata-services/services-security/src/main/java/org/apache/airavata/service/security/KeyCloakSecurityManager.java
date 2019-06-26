@@ -26,18 +26,24 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.util.TrustStoreManager;
-import org.apache.airavata.service.security.authzcache.*;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.security.authzcache.AuthzCacheEntry;
+import org.apache.airavata.service.security.authzcache.AuthzCacheIndex;
+import org.apache.airavata.service.security.authzcache.AuthzCacheManager;
+import org.apache.airavata.service.security.authzcache.AuthzCacheManagerFactory;
+import org.apache.airavata.service.security.authzcache.AuthzCachedStatus;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
@@ -61,9 +67,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final static Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
@@ -78,17 +89,58 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             "|/airavata/updateUserComputeResourcePreference|/airavata/updateUserStoragePreference" +
             "|/airavata/deleteUserComputeResourcePreference|/airavata/deleteUserStoragePreference" +
             "|/airavata/generateAndRegisterSSHKeys|/airavata/getAllCredentialSummaryForUsersInGateway" +
-            "|/airavata/deleteSSHPubKey";
-    private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/getAllAccessibleUsers";
+            "|/airavata/deleteSSHPubKey|/airavata/isUserResourceProfileExists";
+    private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers" +
+            "|/airavata/shareResourceWithGroups|/airavata/revokeSharingOfResourceFromGroups|/airavata/getAllAccessibleUsers" +
+            "|/airavata/getAllAccessibleGroups|/airavata/userHasAccess|/airavata/getAllDirectlyAccessibleUsers" +
+            "|/airavata/getAllDirectlyAccessibleGroups";
     private final static String SSH_ACCOUNT_PROVISIONER_METHODS =
             "/airavata/getSSHAccountProvisioners|/airavata/doesUserHaveSSHAccount|/airavata" +
                     "/setupUserComputeResourcePreferencesForSSH|" +
                     // getGatewayResourceProfile is needed to look up whether ssh account provisioning is
                     // configured for a gateway's compute resource preference
                     "/airavata/getGatewayResourceProfile";
+    // These methods are protected by sharing registry authorization
+    private final static String GROUP_RESOURCE_PROFILE_METHODS =
+            "/airavata/createGroupResourceProfile|/airavata/updateGroupResourceProfile|/airavata/getGroupResourceProfile" +
+                    "|/airavata/removeGroupResourceProfile|/airavata/getGroupResourceList|/airavata/removeGroupComputePrefs" +
+                    "|/airavata/removeGroupComputeResourcePolicy|/airavata/removeGroupBatchQueueResourcePolicy" +
+                    "|/airavata/getGroupComputeResourcePreference|/airavata/getGroupComputeResourcePolicy" +
+                    "|/airavata/getBatchQueueResourcePolicy|/airavata/getGroupComputeResourcePrefList" +
+                    "|/airavata/getGroupBatchQueueResourcePolicyList|/airavata/getGroupComputeResourcePolicyList";
+    // These methods are protected by sharing registry authorization
+    private final static String APPLICATION_DEPLOYMENT_METHODS =
+            "/airavata/registerApplicationDeployment|/airavata/getApplicationDeployment|/airavata/updateApplicationDeployment" +
+                    "|/airavata/deleteApplicationDeployment|/airavata/getAllApplicationDeployments|/airavata/getAccessibleApplicationDeployments" +
+                    "|/airavata/getApplicationDeploymentsForAppModuleAndGroupResourceProfile";
+    private final static String APPLICATION_MODULE_METHODS = "/airavata/getAccessibleAppModules";
+    private final static String CREDENTIAL_TOKEN_METHODS = "/airavata/getCredentialSummary|/airavata/getAllCredentialSummaries|/airavata/generateAndRegisterSSHKeys|/airavata/registerPwdCredential|/airavata/deleteSSHPubKey|/airavata/deletePWDCredential";
+    // Misc. other methods needed for group based authorization
+    private final static String GROUP_BASED_AUTH_METHODS = "/airavata/getGatewayGroups";
 
     private RegistryService.Client registryServiceClient = null;
     private SharingRegistryService.Client sharingRegistryServiceClient = null;
+
+    private static class GatewayGroupMembership {
+        private boolean inAdminsGroup = false;
+        private boolean inReadOnlyAdminsGroup = false;
+
+        public boolean isInAdminsGroup() {
+            return inAdminsGroup;
+        }
+
+        public void setInAdminsGroup(boolean inAdminsGroup) {
+            this.inAdminsGroup = inAdminsGroup;
+        }
+
+        public boolean isInReadOnlyAdminsGroup() {
+            return inReadOnlyAdminsGroup;
+        }
+
+        public void setInReadOnlyAdminsGroup(boolean inReadOnlyAdminsGroup) {
+            this.inReadOnlyAdminsGroup = inReadOnlyAdminsGroup;
+        }
+    }
 
     public KeyCloakSecurityManager() throws AiravataSecurityException {
         rolePermissionConfig.put("admin", "/airavata/.*");
@@ -118,7 +170,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "|/airavata/getParentDataProduct|/airavata/getChildDataProducts|/airavata/getAllAccessibleUsers" +
                 "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin|/airavata/getAllCredentialSummaryForGateway" +
                 "|" + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles" +
-                "|" + SHARING_RESOURCE_METHODS + "|/airavata/getGateway|" + SSH_ACCOUNT_PROVISIONER_METHODS);
+                "|" + SHARING_RESOURCE_METHODS + "|/airavata/getGateway|" + SSH_ACCOUNT_PROVISIONER_METHODS + "|" + GROUP_RESOURCE_PROFILE_METHODS +
+                "|" + APPLICATION_DEPLOYMENT_METHODS + "|" + GROUP_BASED_AUTH_METHODS + "|" + APPLICATION_MODULE_METHODS +
+                "|" + CREDENTIAL_TOKEN_METHODS);
         rolePermissionConfig.put("gateway-user", "/airavata/getAPIVersion|/airavata/getNotification|/airavata/getAllNotifications|" +
                 "/airavata/createProject|/airavata/updateProject|/airavata/getProject|/airavata/deleteProject|/airavata/getUserProjects|" +
                 "/airavata/searchProjectsByProjectName|/airavata/searchProjectsByProjectDesc|/airavata/searchExperimentsByName|" +
@@ -133,8 +187,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getAvailableAppInterfaceComputeResources|/airavata/getComputeResource|/airavata/getAllComputeResourceNames|" +
                 "/airavata/getWorkflow|/airavata/getWorkflowTemplateId|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|" +
                 "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts|" +
-                "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
-                SHARING_RESOURCE_METHODS + "|" + SSH_ACCOUNT_PROVISIONER_METHODS);
+                "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|/airavata/getAllAppModules|/airavata/getApplicationModule|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
+                SHARING_RESOURCE_METHODS + "|" + SSH_ACCOUNT_PROVISIONER_METHODS + "|" + GROUP_RESOURCE_PROFILE_METHODS +
+                "|" + APPLICATION_DEPLOYMENT_METHODS + "|" + GROUP_BASED_AUTH_METHODS + "|" + APPLICATION_MODULE_METHODS +
+                "|" + CREDENTIAL_TOKEN_METHODS);
 
         initializeSecurityInfra();
     }
@@ -175,6 +231,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             if (!ServerSettings.isAPISecured()) {
                 return true;
             }
+            initServiceClients();
 
             if (ServerSettings.isAuthzCacheEnabled()) {
                 //obtain an instance of AuthzCacheManager implementation.
@@ -192,9 +249,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                     return false;
                 } else if (AuthzCachedStatus.NOT_CACHED.equals(authzCachedStatus)) {
                     logger.debug("Authz decision for: (" + subject + ", " + accessToken + ", " + action + ") is not in the cache. " +
-                            "Obtaining it from the authorization server.");
-                    String[] roles = getUserRolesFromOAuthToken(subject, accessToken, gatewayId);
-                    boolean authorizationDecision = hasPermission(roles, action);
+                            "Generating decision based on group membership.");
+                    GatewayGroupMembership gatewayGroupMembership = getGatewayGroupMembership(subject, accessToken, gatewayId);
+                    boolean authorizationDecision = hasPermission(gatewayGroupMembership, action);
                     //cache the authorization decision
                     long currentTime = System.currentTimeMillis();
                     //TODO get the actual token expiration time
@@ -206,16 +263,18 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                     throw new AiravataSecurityException("Error in reading from the authorization cache.");
                 }
             } else {
-                String[] roles = getUserRolesFromOAuthToken(subject, accessToken, gatewayId);
-                return hasPermission(roles, action);
+                GatewayGroupMembership gatewayGroupMembership = getGatewayGroupMembership(subject, accessToken, gatewayId);
+                return hasPermission(gatewayGroupMembership, action);
             }
 
         } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
+            logger.error("Missing or invalid application setting.", e);
             throw new AiravataSecurityException(e.getMessage(), e);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error occurred while checking if user: " + subject + " is authorized for action: " + action + " in gateway: " + gatewayId, e);
             throw new AiravataSecurityException(e.getMessage(), e);
+        } finally {
+            closeServiceClients();
         }
     }
 
@@ -232,9 +291,65 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             authzToken.putToClaimsMap(Constants.USER_NAME, gateway.getOauthClientId());
             return authzToken;
         } catch (Exception e) {
-            throw new AiravataSecurityException("Failed to fetch authorization token for user management service for gateway " + gatewayId, e);
+            throw new AiravataSecurityException(e);
         } finally {
             closeServiceClients();
+        }
+    }
+
+    @Override
+    public UserInfo getUserInfoFromAuthzToken(AuthzToken authzToken) throws AiravataSecurityException {
+        try {
+            initServiceClients();
+            final String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            final String token = authzToken.getAccessToken();
+            return getUserInfo(gatewayId, token);
+        } catch (Exception e) {
+            throw new AiravataSecurityException(e);
+        } finally {
+            closeServiceClients();
+        }
+    }
+
+    private UserInfo getUserInfo(String gatewayId, String token) throws Exception {
+        GatewayResourceProfile gwrp = registryServiceClient.getGatewayResourceProfile(gatewayId);
+        String identityServerRealm = gwrp.getIdentityServerTenant();
+        String openIdConnectUrl = getOpenIDConfigurationUrl(identityServerRealm);
+        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
+        String userInfoEndPoint = openIdConnectConfig.getString("userinfo_endpoint");
+        JSONObject userInfo = new JSONObject(getFromUrl(userInfoEndPoint, token));
+        return new UserInfo()
+                .setSub(userInfo.getString("sub"))
+                .setFullName(userInfo.getString("name"))
+                .setFirstName(userInfo.getString("given_name"))
+                .setLastName(userInfo.getString("family_name"))
+                .setEmailAddress(userInfo.getString("email"))
+                .setUsername(userInfo.getString("preferred_username"));
+    }
+
+    private GatewayGroupMembership getGatewayGroupMembership(String username, String token, String gatewayId) throws Exception {
+        validateToken(username, token, gatewayId);
+        GatewayGroups gatewayGroups = getGatewayGroups(gatewayId);
+        List<UserGroup> userGroups = sharingRegistryServiceClient.getAllMemberGroupsForUser(gatewayId, username + "@" + gatewayId);
+        List<String> userGroupIds = userGroups.stream().map(g -> g.getGroupId()).collect(Collectors.toList());
+        GatewayGroupMembership gatewayGroupMembership = new GatewayGroupMembership();
+        gatewayGroupMembership.setInAdminsGroup(userGroupIds.contains(gatewayGroups.getAdminsGroupId()));
+        gatewayGroupMembership.setInReadOnlyAdminsGroup(userGroupIds.contains(gatewayGroups.getReadOnlyAdminsGroupId()));
+        return gatewayGroupMembership;
+    }
+
+    private GatewayGroups getGatewayGroups(String gatewayId) throws Exception {
+        if (registryServiceClient.isGatewayGroupsExists(gatewayId)) {
+            return registryServiceClient.getGatewayGroups(gatewayId);
+        } else {
+            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
+        }
+    }
+
+    private void validateToken(String username, String token, String gatewayId) throws Exception {
+        UserInfo userInfo = getUserInfo(gatewayId, token);
+        if (!username.equals(userInfo.getUsername())) {
+            throw new AiravataSecurityException("Subject name and username for the token doesn't match");
         }
     }
 
@@ -271,6 +386,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         URL url = new URL(urlToRead);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        conn.setDoInput(true);
         if (token != null) {
             String bearerAuth = "Bearer " + token;
             conn.setRequestProperty("Authorization", bearerAuth);
@@ -311,38 +427,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         return tokenInfo.get("access_token").toString();
     }
 
-
-    private boolean hasPermission(String[] roles, String apiMethod) {
-        for (int i = 0; i < roles.length; i++) {
-            String role = roles[i];
-            if (this.rolePermissionConfig.keySet().contains(role)) {
-                Pattern pattern = Pattern.compile(this.rolePermissionConfig.get(role));
-                Matcher matcher = pattern.matcher(apiMethod);
-                if (matcher.matches())
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
-        }
-    }
-
-    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-        try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
-        }
+    private String getTokenEndpoint(String gatewayId) throws Exception {
+        String openIdConnectUrl = getOpenIDConfigurationUrl(gatewayId);
+        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
+        return openIdConnectConfig.getString("token_endpoint");
     }
 
     private JSONObject getClientCredentials(String tokenURL, String clientId, String clientSecret) throws ApplicationSettingsException, AiravataSecurityException {
@@ -376,11 +464,35 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
     }
 
+    private boolean hasPermission(GatewayGroupMembership gatewayGroupMembership, String apiMethod) {
 
-    private String getTokenEndpoint(String gatewayId) throws Exception {
-        String openIdConnectUrl = getOpenIDConfigurationUrl(gatewayId);
-        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
-        return openIdConnectConfig.getString("token_endpoint");
+        // Note: as a stopgap solution, until all resources are secured with group-based authorization, map the Admins
+        // and Read Only Admins groups to the corresponding roles
+        final String role;
+        if (gatewayGroupMembership.isInAdminsGroup()) {
+            return true;
+        } else if (gatewayGroupMembership.isInReadOnlyAdminsGroup()) {
+            role = "admin-read-only";
+        } else {
+            // If not in Admins or Read Only Admins groups, treat as a gateway-user
+            role = "gateway-user";
+        }
+        Pattern pattern = Pattern.compile(this.rolePermissionConfig.get(role));
+        Matcher matcher = pattern.matcher(apiMethod);
+        return matcher.matches();
+    }
+
+    private boolean hasPermission(String[] roles, String apiMethod) {
+        for (int i = 0; i < roles.length; i++) {
+            String role = roles[i];
+            if (this.rolePermissionConfig.keySet().contains(role)) {
+                Pattern pattern = Pattern.compile(this.rolePermissionConfig.get(role));
+                Matcher matcher = pattern.matcher(apiMethod);
+                if (matcher.matches())
+                    return true;
+            }
+        }
+        return false;
     }
 
     private void initServiceClients() throws TException, ApplicationSettingsException {
@@ -397,6 +509,25 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
     }
 
+    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+        final String serverHost = ServerSettings.getRegistryServerHost();
+        try {
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException e) {
+            throw new TException("Unable to create registry client...", e);
+        }
+    }
+
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
+        }
+    }
 
     private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
@@ -406,5 +537,16 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         } catch (SharingRegistryException e) {
             throw new TException("Unable to create sharing registry client...", e);
         }
+    }
+
+    public static void main(String[] args) throws AiravataSecurityException, ApplicationSettingsException {
+        ServerSettings.setSetting("trust.store", "./modules/configuration/server/src/main/resources/client_truststore.jks");
+        ServerSettings.setSetting("trust.store.password", "airavata");
+        KeyCloakSecurityManager keyCloakSecurityManager = new KeyCloakSecurityManager();
+        final String tokenURL = "...";
+        final String clientId = "...";
+        final String clientSecret = "...";
+        JSONObject jsonObject = keyCloakSecurityManager.getClientCredentials(tokenURL, clientId, clientSecret);
+        System.out.println("access_token=" + jsonObject.getString("access_token"));
     }
 }

@@ -25,13 +25,16 @@ import org.apache.airavata.sharing.registry.db.entities.UserGroupPK;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.airavata.sharing.registry.models.SharingType;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroupEntity, UserGroupPK> {
     private final static Logger logger = LoggerFactory.getLogger(UserGroupRepository.class);
@@ -41,6 +44,14 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
     }
 
     public List<UserGroup> getAccessibleGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
+        return getAccessibleGroupsInternal(domainId, entityId, permissionTypeId);
+    }
+
+    public List<UserGroup> getDirectlyAccessibleGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
+        return getAccessibleGroupsInternal(domainId, entityId, permissionTypeId, SharingType.DIRECT_CASCADING, SharingType.DIRECT_NON_CASCADING);
+    }
+
+    private List<UserGroup> getAccessibleGroupsInternal(String domainId, String entityId, String permissionTypeId, SharingType... sharingTypes) throws SharingRegistryException {
         String query = "SELECT DISTINCT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
         query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
@@ -49,15 +60,20 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
         query += "s." + DBConstants.SharingTable.ENTITY_ID + " = :" + DBConstants.SharingTable.ENTITY_ID + " AND ";
         query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = :" + DBConstants.SharingTable.PERMISSION_TYPE_ID + " AND ";
         query += "g." + DBConstants.UserGroupTable.GROUP_CARDINALITY + " = :" + DBConstants.UserGroupTable.GROUP_CARDINALITY;
+        if (!Arrays.asList(sharingTypes).isEmpty()) {
+            query += " AND s." + DBConstants.SharingTable.SHARING_TYPE + " IN :" + DBConstants.SharingTable.SHARING_TYPE;
+        }
         query += " ORDER BY s.createdTime DESC";
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.UserGroupTable.DOMAIN_ID, domainId);
         queryParameters.put(DBConstants.SharingTable.ENTITY_ID, entityId);
         queryParameters.put(DBConstants.SharingTable.PERMISSION_TYPE_ID, permissionTypeId);
         queryParameters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.toString());
+        if (!Arrays.asList(sharingTypes).isEmpty()) {
+            queryParameters.put(DBConstants.SharingTable.SHARING_TYPE, Arrays.asList(sharingTypes).stream().map(s -> s.name()).collect(Collectors.toList()));
+        }
         return select(query, queryParameters, 0, -1);
     }
-
 
     //checks whether is shared with any user or group with any permission
     public boolean isShared(String domainId, String entityId) throws SharingRegistryException {

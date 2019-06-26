@@ -40,17 +40,6 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Fetch Apache Airavata API version
-   * 
-   * 
-   * @param authzToken
-   */
-  void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
-    // Your implementation goes here
-    printf("getAPIVersion\n");
-  }
-
-  /**
    * Verify if User Exists within Airavata.
    * 
    * @param gatewayId
@@ -236,18 +225,8 @@ class AiravataHandler : virtual public AiravataIf {
   /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    * 
-   * @param gatewayId
-   *    The identifier for the requested Gateway.
-   * 
-   * @param userName
-   *    The User for which the credential should be registered. For community accounts, this user is the name of the
-   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
-   * 
    * @param description
    *    The description field for a credential type, all type of credential can have a description.
-   * 
-   * @param credentialOwnerType
-   *    The type of owner of this credential. Two possible values: GATEWAY (default) and USER
    * 
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
@@ -256,12 +235,9 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param gatewayId
-   * @param userName
    * @param description
-   * @param credentialOwnerType
    */
-  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType) {
+  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& description) {
     // Your implementation goes here
     printf("generateAndRegisterSSHKeys\n");
   }
@@ -269,13 +245,6 @@ class AiravataHandler : virtual public AiravataIf {
   /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
    * 
-   * @param gatewayId
-   *    The identifier for the requested Gateway.
-   * 
-   * @param portalUserName
-   *    The User for which the credential should be registered. For community accounts, this user is the name of the
-   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
-   * 
    * @param loginUserName
    * 
    * @param password
@@ -287,144 +256,31 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param gatewayId
-   * @param portalUserName
    * @param loginUserName
    * @param password
    * @param description
    */
-  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description) {
+  void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& loginUserName, const std::string& password, const std::string& description) {
     // Your implementation goes here
     printf("registerPwdCredential\n");
   }
 
-  /**
-   * Get a Public Key by Providing the Token
-   * 
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   * 
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   * 
-   * @return publicKey
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param airavataCredStoreToken
-   * @param gatewayId
-   */
-  void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
+  void getCredentialSummary( ::CredentialSummary& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& tokenId) {
     // Your implementation goes here
-    printf("getSSHPubKey\n");
+    printf("getCredentialSummary\n");
   }
 
-  /**
-   * 
-   * Get all Public Keys of the Gateway
-   * 
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   * 
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   * 
-   * @return publicKey
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   */
-  void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+  void getAllCredentialSummaries(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type) {
     // Your implementation goes here
-    printf("getAllGatewaySSHPubKeys\n");
+    printf("getAllCredentialSummaries\n");
   }
 
-  /**
-   * 
-   * Get all Credential summaries for the Gateway
-   * 
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   * 
-   * @param credential_store_data_models.SummaryType
-   *    Summary type : SSH,PASSWD or CERT
-   * 
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   * 
-   * @return List of Credential Summary Objects
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param type
-   * @param gatewayId
-   */
-  void getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("getAllCredentialSummaryForGateway\n");
-  }
-
-  /**
-   * 
-   * Get all Credential summaries for user in a Gateway
-   * 
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   * 
-   * @param credential_store_data_models.SummaryType
-   *    Summary type : SSH,PASSWD or CERT
-   * 
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   * 
-   * @param userId
-   *    This is the unique identifier of user whose public keys are to be fetched.
-   * 
-   * @return CredentialSummary
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param type
-   * @param gatewayId
-   * @param userId
-   */
-  void getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId) {
-    // Your implementation goes here
-    printf("getAllCredentialSummaryForUsersInGateway\n");
-  }
-
-  void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("getAllGatewayPWDCredentials\n");
-  }
-
-  /**
-   * 
-   * Delete a Gateway
-   * 
-   * @param gatewayId
-   *    The gateway Id of the Gateway to be deleted.
-   * 
-   * @return boolean
-   *    Boolean identifier for the success or failure of the deletion operation.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param airavataCredStoreToken
-   * @param gatewayId
-   */
-  bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
+  bool deleteSSHPubKey(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken) {
     // Your implementation goes here
     printf("deleteSSHPubKey\n");
   }
 
-  bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
+  bool deletePWDCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken) {
     // Your implementation goes here
     printf("deletePWDCredential\n");
   }
@@ -1401,6 +1257,25 @@ class AiravataHandler : virtual public AiravataIf {
 
   /**
    * 
+   * Fetch all accessible Application Module Descriptions.
+   * 
+   * @param gatewayId
+   *    ID of the gateway which need to list all accessible application deployment documentation.
+   * 
+   * @return list
+   *    Returns the list of all Application Module Objects that are accessible to the user.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
+  void getAccessibleAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAccessibleAppModules\n");
+  }
+
+  /**
+   * 
    * Delete an Application Module.
    * 
    * @param appModuleId
@@ -1522,6 +1397,28 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * 
+   * Fetch all accessible Application Deployment Descriptions.
+   * 
+   * @param gatewayId
+   *    ID of the gateway which need to list all accessible application deployment documentation.
+   * @param permissionType
+   *    ResourcePermissionType to check for this user
+   * 
+   * @return list<applicationDeployment.
+   *    Returns the list of all application Deployment Objects that are accessible to the user.
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param permissionType
+   */
+  void getAccessibleApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
+    // Your implementation goes here
+    printf("getAccessibleApplicationDeployments\n");
+  }
+
+  /**
    * Fetch a list of Deployed Compute Hosts.
    * 
    * @param appModuleId
@@ -1537,6 +1434,28 @@ class AiravataHandler : virtual public AiravataIf {
   void getAppModuleDeployedResources(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId) {
     // Your implementation goes here
     printf("getAppModuleDeployedResources\n");
+  }
+
+  /**
+   * Fetch a list of Application Deployments that this user can use for executing the given Application Module using the given Group Resource Profile.
+   * The user must have at least READ access to the Group Resource Profile.
+   * 
+   * @param appModuleId
+   *    The identifier for the Application Module
+   * 
+   * @param groupResourceProfileId
+   *    The identifier for the Group Resource Profile
+   * 
+   * @return list<ApplicationDeploymentDescription>
+   *    Returns a list of Application Deployments
+   * 
+   * @param authzToken
+   * @param appModuleId
+   * @param groupResourceProfileId
+   */
+  void getApplicationDeploymentsForAppModuleAndGroupResourceProfile(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId, const std::string& groupResourceProfileId) {
+    // Your implementation goes here
+    printf("getApplicationDeploymentsForAppModuleAndGroupResourceProfile\n");
   }
 
   /**
@@ -3003,6 +2922,52 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteGatewayStoragePreference\n");
   }
 
+  void getSSHAccountProvisioners(std::vector< ::apache::airavata::model::appcatalog::accountprovisioning::SSHAccountProvisioner> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    // Your implementation goes here
+    printf("getSSHAccountProvisioners\n");
+  }
+
+  /**
+   * Check if user has an SSH account on the given compute resource. This
+   * method will only work if the compute resource has an SSHAccountProvisioner configured for it.
+   * 
+   * @param authzToken
+   * @param computeResourceId
+   * @param userId
+   */
+  bool doesUserHaveSSHAccount(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& userId) {
+    // Your implementation goes here
+    printf("doesUserHaveSSHAccount\n");
+  }
+
+  /**
+   * Check if SSH account setup is complete for this user on the given compute resource.
+   * 
+   * @param authzToken
+   * @param computeResourceId
+   * @param airavataCredStoreToken
+   */
+  bool isSSHSetupCompleteForUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& airavataCredStoreToken) {
+    // Your implementation goes here
+    printf("isSSHSetupCompleteForUserComputeResourcePreference\n");
+  }
+
+  /**
+   * Setup and return a UserComputeResourcePreference object for this user to SSH into the given compute resource with
+   * the given SSH credential. This method will only work if the compute resource has an SSHAccountProvisioner
+   * configured for it. The returned UserComputeResourcePreference object is not saved; it is up to the client to
+   * call addUserComputeResourcePreference to persist it.
+   * 
+   * @param authzToken
+   * @param computeResourceId
+   * @param userId
+   * @param airavataCredStoreToken
+   */
+  void setupUserComputeResourcePreferencesForSSH( ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& userId, const std::string& airavataCredStoreToken) {
+    // Your implementation goes here
+    printf("setupUserComputeResourcePreferencesForSSH\n");
+  }
+
   /**
    * Register User Resource Profile.
    * 
@@ -3021,6 +2986,27 @@ class AiravataHandler : virtual public AiravataIf {
   void registerUserResourceProfile(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& userResourceProfile) {
     // Your implementation goes here
     printf("registerUserResourceProfile\n");
+  }
+
+  /**
+   * Check if User Resource Profile exists.
+   * 
+   * @param userId
+   *   The identifier for the requested user resource profile.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @return bool
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   */
+  bool isUserResourceProfileExists(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("isUserResourceProfileExists\n");
   }
 
   /**
@@ -3382,52 +3368,9 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteUserStoragePreference\n");
   }
 
-  void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("getAllWorkflows\n");
-  }
-
   void getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     // Your implementation goes here
     printf("getLatestQueueStatuses\n");
-  }
-
-  /**
-   * 
-   * API Methods Related for Work-Flow Submission Features.
-   * 
-   * 
-   * @param authzToken
-   * @param workflowTemplateId
-   */
-  void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
-    // Your implementation goes here
-    printf("getWorkflow\n");
-  }
-
-  void deleteWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
-    // Your implementation goes here
-    printf("deleteWorkflow\n");
-  }
-
-  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::WorkflowModel& workflow) {
-    // Your implementation goes here
-    printf("registerWorkflow\n");
-  }
-
-  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::WorkflowModel& workflow) {
-    // Your implementation goes here
-    printf("updateWorkflow\n");
-  }
-
-  void getWorkflowTemplateId(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) {
-    // Your implementation goes here
-    printf("getWorkflowTemplateId\n");
-  }
-
-  bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) {
-    // Your implementation goes here
-    printf("isWorkflowExistWithName\n");
   }
 
   /**
@@ -3468,47 +3411,176 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * @param authzToken
    * @param resourceId
-   * @param resourceType
    * @param userPermissionList
    */
-  bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
+  bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
     // Your implementation goes here
     printf("shareResourceWithUsers\n");
   }
 
-  bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
+  bool shareResourceWithGroups(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & groupPermissionList) {
+    // Your implementation goes here
+    printf("shareResourceWithGroups\n");
+  }
+
+  bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) {
     // Your implementation goes here
     printf("revokeSharingOfResourceFromUsers\n");
   }
 
-  void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
+  bool revokeSharingOfResourceFromGroups(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & groupPermissionList) {
+    // Your implementation goes here
+    printf("revokeSharingOfResourceFromGroups\n");
+  }
+
+  void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
     // Your implementation goes here
     printf("getAllAccessibleUsers\n");
   }
 
-  void createGroup(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
+  void getAllAccessibleGroups(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
     // Your implementation goes here
-    printf("createGroup\n");
+    printf("getAllAccessibleGroups\n");
   }
 
-  bool updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
+  void getAllDirectlyAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
     // Your implementation goes here
-    printf("updateGroup\n");
+    printf("getAllDirectlyAccessibleUsers\n");
   }
 
-  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId) {
+  void getAllDirectlyAccessibleGroups(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
     // Your implementation goes here
-    printf("deleteGroup\n");
+    printf("getAllDirectlyAccessibleGroups\n");
   }
 
-  void getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId) {
+  bool userHasAccess(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) {
     // Your implementation goes here
-    printf("getGroup\n");
+    printf("userHasAccess\n");
   }
 
-  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
+  void createGroupResourceProfile(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::groupresourceprofile::GroupResourceProfile& groupResourceProfile) {
     // Your implementation goes here
-    printf("getAllGroupsUserBelongs\n");
+    printf("createGroupResourceProfile\n");
+  }
+
+  void updateGroupResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::groupresourceprofile::GroupResourceProfile& groupResourceProfile) {
+    // Your implementation goes here
+    printf("updateGroupResourceProfile\n");
+  }
+
+  void getGroupResourceProfile( ::apache::airavata::model::appcatalog::groupresourceprofile::GroupResourceProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupResourceProfileId) {
+    // Your implementation goes here
+    printf("getGroupResourceProfile\n");
+  }
+
+  bool removeGroupResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupResourceProfileId) {
+    // Your implementation goes here
+    printf("removeGroupResourceProfile\n");
+  }
+
+  void getGroupResourceList(std::vector< ::apache::airavata::model::appcatalog::groupresourceprofile::GroupResourceProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getGroupResourceList\n");
+  }
+
+  bool removeGroupComputePrefs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& groupResourceProfileId) {
+    // Your implementation goes here
+    printf("removeGroupComputePrefs\n");
+  }
+
+  bool removeGroupComputeResourcePolicy(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourcePolicyId) {
+    // Your implementation goes here
+    printf("removeGroupComputeResourcePolicy\n");
+  }
+
+  bool removeGroupBatchQueueResourcePolicy(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourcePolicyId) {
+    // Your implementation goes here
+    printf("removeGroupBatchQueueResourcePolicy\n");
+  }
+
+  void getGroupComputeResourcePreference( ::apache::airavata::model::appcatalog::groupresourceprofile::GroupComputeResourcePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& groupResourceProfileId) {
+    // Your implementation goes here
+    printf("getGroupComputeResourcePreference\n");
+  }
+
+  void getGroupComputeResourcePolicy( ::apache::airavata::model::appcatalog::groupresourceprofile::ComputeResourcePolicy& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourcePolicyId) {
+    // Your implementation goes here
+    printf("getGroupComputeResourcePolicy\n");
+  }
+
+  void getBatchQueueResourcePolicy( ::apache::airavata::model::appcatalog::groupresourceprofile::BatchQueueResourcePolicy& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourcePolicyId) {
+    // Your implementation goes here
+    printf("getBatchQueueResourcePolicy\n");
+  }
+
+  void getGroupComputeResourcePrefList(std::vector< ::apache::airavata::model::appcatalog::groupresourceprofile::GroupComputeResourcePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupResourceProfileId) {
+    // Your implementation goes here
+    printf("getGroupComputeResourcePrefList\n");
+  }
+
+  void getGroupBatchQueueResourcePolicyList(std::vector< ::apache::airavata::model::appcatalog::groupresourceprofile::BatchQueueResourcePolicy> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupResourceProfileId) {
+    // Your implementation goes here
+    printf("getGroupBatchQueueResourcePolicyList\n");
+  }
+
+  void getGroupComputeResourcePolicyList(std::vector< ::apache::airavata::model::appcatalog::groupresourceprofile::ComputeResourcePolicy> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupResourceProfileId) {
+    // Your implementation goes here
+    printf("getGroupComputeResourcePolicyList\n");
+  }
+
+  /**
+   * GatewayGroups API methods
+   * 
+   * @param authzToken
+   */
+  void getGatewayGroups( ::apache::airavata::model::appcatalog::gatewaygroups::GatewayGroups& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    // Your implementation goes here
+    printf("getGatewayGroups\n");
+  }
+
+  void getParser( ::apache::airavata::model::appcatalog::parser::Parser& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& parserId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getParser\n");
+  }
+
+  void saveParser(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::parser::Parser& parser) {
+    // Your implementation goes here
+    printf("saveParser\n");
+  }
+
+  void listAllParsers(std::vector< ::apache::airavata::model::appcatalog::parser::Parser> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("listAllParsers\n");
+  }
+
+  bool removeParser(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& parserId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("removeParser\n");
+  }
+
+  void getParsingTemplate( ::apache::airavata::model::appcatalog::parser::ParsingTemplate& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getParsingTemplate\n");
+  }
+
+  void getParsingTemplatesForExperiment(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& experimentId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getParsingTemplatesForExperiment\n");
+  }
+
+  void saveParsingTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::parser::ParsingTemplate& parsingTemplate) {
+    // Your implementation goes here
+    printf("saveParsingTemplate\n");
+  }
+
+  bool removeParsingTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("removeParsingTemplate\n");
+  }
+
+  void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("listAllParsingTemplates\n");
   }
 
 };

@@ -30,9 +30,8 @@ user_home: "/home/{{ user }}"
 deployment_dir: "{{ user_home }}/develop-deployment"
 airavata_source_dir: "{{ user_home }}/develop-source"
 airavata_repo: "https://github.com/apache/airavata.git"
-airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+airavata_dist: "apache-airavata-api-server-0.19-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
-old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
 git_branch: develop
 
 # Database related variables
@@ -140,3 +139,32 @@ keycloak_db_username: "keycloak"
 keycloak_db_password: "{{ vault_keycloak_db_password }}"
 keycloak_master_account_username: "admin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
+
+# Helix
+helix_version: 0.7.1
+helix_url: http://www-us.apache.org/dist//helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
+helix_dir: "{{ deployment_dir }}/airavata-helix"
+helix_cluster_name: "AiravataDevCluster"
+snapshot_version: "0.19-SNAPSHOT"
+
+# Listening port for kafka installations
+kafka_listener_port: 9092
+kafka_rest_proxy_listener_port: 8082
+
+# Realtime Monitoring related variables
+realtime_monitor_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
+realtime_monitor_broker_publisher: "RealtimeProducer"
+realtime_monitor_broker_consumer_group: "monitor"
+realtime_monitor_broker_topic: "helix-airavata-mq"
+
+# Variables related to the broker in which parsed job statuses are published
+job_monitor_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
+job_monitor_broker_topic: "parsed-data"
+job_monitor_broker_consumer_group: "MonitoringConsumer"
+
+# Variables related to parser framework
+parser_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
+parser_broker_topic: "completed-messages"
+parser_broker_consumer_group: "ParsingConsumer"
+parser_storage_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+parser_broker_publisher_id: "ParserProducer"
