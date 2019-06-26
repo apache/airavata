@@ -40,6 +40,7 @@ public class CompletingTask extends AiravataTask {
         logger.info("Starting completing task for task " + getTaskId() + ", experiment id " + getExperimentId());
         logger.info("Process " + getProcessId() + " successfully completed");
         saveAndPublishProcessStatus(ProcessState.COMPLETED);
+        cleanup();
         return onSuccess("Process " + getProcessId() + " successfully completed");
     }
 
