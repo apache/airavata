@@ -85,6 +85,7 @@
                 <include>org.apache.airavata:airavata-registry-core:jar</include>
                 <include>org.apache.airavata:airavata-registry-cpi:jar</include>
                 <include>org.apache.airavata:airavata-server-configuration:jar</include>
+                <include>org.apache.airavata:profile-service-stubs:jar</include>
                 <include>com.rabbitmq:amqp-client:jar</include>
                 <include>asm:asm:jar</include>
                 <include>org.bouncycastle:bcpkix-jdk15on:jar</include>
