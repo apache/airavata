@@ -22,6 +22,7 @@ package org.apache.airavata.credential.store.credential;
 /**
  * Created by marcus on 11/23/16.
  */
+@Deprecated
 public enum CredentialOwnerType {
     GATEWAY(org.apache.airavata.model.credential.store.CredentialOwnerType.GATEWAY),
     USER(org.apache.airavata.model.credential.store.CredentialOwnerType.USER);

@@ -30,13 +30,16 @@ enum ResourceType {
     PROJECT,
     EXPERIMENT,
     DATA,
+    APPLICATION_DEPLOYMENT,
+    GROUP_RESOURCE_PROFILE,
+    CREDENTIAL_TOKEN,
     OTHER
 }
 
 enum ResourcePermissionType {
     WRITE,
     READ,
-    OWNER
+    OWNER,
 }
 
 struct GroupModel{
@@ -44,5 +47,9 @@ struct GroupModel{
     2: optional string name,
     3: optional string ownerId,
     4: optional string description,
-    5: optional list<string> members
+    5: optional list<string> members,
+    /**
+     * Note: each admin must also be a member of the group.
+     */
+    6: optional list<string> admins,
 }

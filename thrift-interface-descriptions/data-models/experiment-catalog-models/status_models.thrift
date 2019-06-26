@@ -88,25 +88,29 @@ enum JobState {
 struct ExperimentStatus {
     1: required ExperimentState state,
     2: optional i64 timeOfStateChange,
-    3: optional string reason
+    3: optional string reason,
+    4: optional string statusId
 }
 
 struct ProcessStatus {
     1: required ProcessState state,
     2: optional i64 timeOfStateChange,
-    3: optional string reason
+    3: optional string reason,
+    4: optional string statusId
 }
 
 struct TaskStatus {
     1: required TaskState state,
     2: optional i64 timeOfStateChange,
-    3: optional string reason
+    3: optional string reason,
+    4: optional string statusId
 }
 
 struct JobStatus {
     1: required JobState jobState,
     2: optional i64 timeOfStateChange,
-    3: optional string reason
+    3: optional string reason,
+    4: optional string statusId
 }
 
 struct QueueStatusModel {

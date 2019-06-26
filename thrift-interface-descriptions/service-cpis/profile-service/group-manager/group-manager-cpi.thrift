@@ -38,6 +38,9 @@ const string GROUP_MANAGER_CPI_NAME = "GroupManagerService"
 
 service GroupManagerService  extends base_api.BaseAPI {
 
+    string getAPIVersion ()
+                       throws (1: group_manager_cpi_errors.GroupManagerServiceException gse)
+
     string createGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                             2: airavata_errors.AuthorizationException ae);
@@ -54,9 +57,21 @@ service GroupManagerService  extends base_api.BaseAPI {
                       throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                               2: airavata_errors.AuthorizationException ae);
 
+    list<group_manager_model.GroupModel> getGroups(1: required security_model.AuthzToken authzToken)
+                      throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
+                              2: airavata_errors.AuthorizationException ae);
+
     list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName)
                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                                2: airavata_errors.AuthorizationException ae);
+
+    bool addUsersToGroup(1: required security_model.AuthzToken authzToken, 2: required list<string> userIds, 3: required string groupId)
+                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
+                                2: airavata_errors.AuthorizationException ae);
+
+    bool removeUsersFromGroup(1: required security_model.AuthzToken authzToken, 2: required list<string> userIds, 3: required string groupId)
+                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
+                                2: airavata_errors.AuthorizationException ae);
 
     bool transferGroupOwnership(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string newOwnerId)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,

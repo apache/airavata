@@ -26,6 +26,14 @@
   register: kafka_package
   become: yes
 
+- name: Create deployment directory {{ deployment_dir }}
+  file: path={{deployment_dir}}
+        state=directory
+        mode=0755
+        owner={{ user }}
+        group={{ group }}
+  become: yes
+
 # Download Kafka
 - name: Download and unarchive Kafka from {{ kafka_tgz_url }}
   unarchive: src="{{ kafka_tgz_url }}"

@@ -37,6 +37,8 @@ public class SetupNewGateway {
 
     public static void main(String[] args) {
         findUser();
+//        final PasswordCredential tenantAdminCreds = createTenantAdminCreds("tenant", "admin", "admin-password");
+//        getUserRoles(tenantAdminCreds, "username");
     }
 
     public static void setUpGateway(){
@@ -84,8 +86,10 @@ public class SetupNewGateway {
 
          TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
          try {
-             client.createUser(tenantAdminCreds, user.getGatewayId(), user.getUserId(), user.getEmails().get(0), user.getFirstName(), user.getLastName(),"test@123");
-             client.enableUserAccount(tenantAdminCreds, user.getGatewayId(), user.getUserId());
+             // FIXME: get an access token from tenant admin creds
+             String accessToken = "";
+             client.createUser(accessToken, user.getGatewayId(), user.getUserId(), user.getEmails().get(0), user.getFirstName(), user.getLastName(),"test@123");
+             client.enableUserAccount(accessToken, user.getGatewayId(), user.getUserId());
          } catch (IamAdminServicesException e) {
              e.printStackTrace();
          }
@@ -127,10 +131,31 @@ public class SetupNewGateway {
              tenantAdminCreds.setLoginUserName("mavenTest");
              tenantAdminCreds.setPassword("Test@1234");
              tenantAdminCreds.setPortalUserName("TenantAdmin");
-             List<UserProfile> list = client.findUser(tenantAdminCreds,"maven.test.gateway","some.man@outlook.com",null);
+             // FIXME: get an access token from tenant admin creds
+             String accessToken = "";
+             List<UserProfile> list = client.findUser(accessToken,"maven.test.gateway","some.man@outlook.com",null);
              System.out.println(list.get(0).getUserId());
          } catch (IamAdminServicesException e) {
              e.printStackTrace();
          }
      }
+
+     public static void getUserRoles(PasswordCredential tenantAdminCreds, String username) {
+         TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
+
+         try {
+             List<String> roleNames = keycloakClient.getUserRoles(tenantAdminCreds, tenantAdminCreds.getGatewayId(), username);
+             System.out.println("Roles=" + roleNames);
+         } catch (IamAdminServicesException e) {
+             e.printStackTrace();
+         }
+     }
+
+    private static PasswordCredential createTenantAdminCreds(String tenantId, String username, String password) {
+        PasswordCredential tenantAdminCreds = new PasswordCredential();
+        tenantAdminCreds.setGatewayId(tenantId);
+        tenantAdminCreds.setLoginUserName(username);
+        tenantAdminCreds.setPassword(password);
+        return tenantAdminCreds;
+    }
 }

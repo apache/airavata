@@ -18,6 +18,11 @@ use Thrift\Exception\TApplicationException;
 
 interface GroupManagerServiceIf extends \Airavata\Base\API\BaseAPIIf {
   /**
+   * @return string
+   * @throws \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   */
+  public function getAPIVersion();
+  /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\Group\GroupModel $groupModel
    * @return string
@@ -52,12 +57,37 @@ interface GroupManagerServiceIf extends \Airavata\Base\API\BaseAPIIf {
   public function getGroup(\Airavata\Model\Security\AuthzToken $authzToken, $groupId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @return \Airavata\Model\Group\GroupModel[]
+   * @throws \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function getGroups(\Airavata\Model\Security\AuthzToken $authzToken);
+  /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userName
    * @return \Airavata\Model\Group\GroupModel[]
    * @throws \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
    * @throws \Airavata\API\Error\AuthorizationException
    */
   public function getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName);
+  /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string[] $userIds
+   * @param string $groupId
+   * @return bool
+   * @throws \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function addUsersToGroup(\Airavata\Model\Security\AuthzToken $authzToken, array $userIds, $groupId);
+  /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string[] $userIds
+   * @param string $groupId
+   * @return bool
+   * @throws \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function removeUsersFromGroup(\Airavata\Model\Security\AuthzToken $authzToken, array $userIds, $groupId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $groupId
@@ -109,6 +139,59 @@ interface GroupManagerServiceIf extends \Airavata\Base\API\BaseAPIIf {
 class GroupManagerServiceClient extends \Airavata\Base\API\BaseAPIClient implements \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerServiceIf {
   public function __construct($input, $output=null) {
     parent::__construct($input, $output);
+  }
+
+  public function getAPIVersion()
+  {
+    $this->send_getAPIVersion();
+    return $this->recv_getAPIVersion();
+  }
+
+  public function send_getAPIVersion()
+  {
+    $args = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getAPIVersion_args();
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getAPIVersion', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getAPIVersion', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getAPIVersion()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getAPIVersion_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getAPIVersion_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->gse !== null) {
+      throw $result->gse;
+    }
+    throw new \Exception("getAPIVersion failed: unknown result");
   }
 
   public function createGroup(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Group\GroupModel $groupModel)
@@ -344,6 +427,63 @@ class GroupManagerServiceClient extends \Airavata\Base\API\BaseAPIClient impleme
     throw new \Exception("getGroup failed: unknown result");
   }
 
+  public function getGroups(\Airavata\Model\Security\AuthzToken $authzToken)
+  {
+    $this->send_getGroups($authzToken);
+    return $this->recv_getGroups();
+  }
+
+  public function send_getGroups(\Airavata\Model\Security\AuthzToken $authzToken)
+  {
+    $args = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getGroups_args();
+    $args->authzToken = $authzToken;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getGroups', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getGroups', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getGroups()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getGroups_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_getGroups_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->gse !== null) {
+      throw $result->gse;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("getGroups failed: unknown result");
+  }
+
   public function getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName)
   {
     $this->send_getAllGroupsUserBelongs($authzToken, $userName);
@@ -400,6 +540,124 @@ class GroupManagerServiceClient extends \Airavata\Base\API\BaseAPIClient impleme
       throw $result->ae;
     }
     throw new \Exception("getAllGroupsUserBelongs failed: unknown result");
+  }
+
+  public function addUsersToGroup(\Airavata\Model\Security\AuthzToken $authzToken, array $userIds, $groupId)
+  {
+    $this->send_addUsersToGroup($authzToken, $userIds, $groupId);
+    return $this->recv_addUsersToGroup();
+  }
+
+  public function send_addUsersToGroup(\Airavata\Model\Security\AuthzToken $authzToken, array $userIds, $groupId)
+  {
+    $args = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_addUsersToGroup_args();
+    $args->authzToken = $authzToken;
+    $args->userIds = $userIds;
+    $args->groupId = $groupId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'addUsersToGroup', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('addUsersToGroup', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_addUsersToGroup()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_addUsersToGroup_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_addUsersToGroup_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->gse !== null) {
+      throw $result->gse;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("addUsersToGroup failed: unknown result");
+  }
+
+  public function removeUsersFromGroup(\Airavata\Model\Security\AuthzToken $authzToken, array $userIds, $groupId)
+  {
+    $this->send_removeUsersFromGroup($authzToken, $userIds, $groupId);
+    return $this->recv_removeUsersFromGroup();
+  }
+
+  public function send_removeUsersFromGroup(\Airavata\Model\Security\AuthzToken $authzToken, array $userIds, $groupId)
+  {
+    $args = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_removeUsersFromGroup_args();
+    $args->authzToken = $authzToken;
+    $args->userIds = $userIds;
+    $args->groupId = $groupId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'removeUsersFromGroup', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('removeUsersFromGroup', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_removeUsersFromGroup()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_removeUsersFromGroup_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Profile\Groupmanager\CPI\GroupManagerService_removeUsersFromGroup_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->gse !== null) {
+      throw $result->gse;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("removeUsersFromGroup failed: unknown result");
   }
 
   public function transferGroupOwnership(\Airavata\Model\Security\AuthzToken $authzToken, $groupId, $newOwnerId)
@@ -701,6 +959,156 @@ class GroupManagerServiceClient extends \Airavata\Base\API\BaseAPIClient impleme
 
 
 // HELPER FUNCTIONS AND STRUCTURES
+
+class GroupManagerService_getAPIVersion_args {
+  static $_TSPEC;
+
+
+  public function __construct() {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        );
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_getAPIVersion_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_getAPIVersion_args');
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GroupManagerService_getAPIVersion_result {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   */
+  public $gse = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        1 => array(
+          'var' => 'gse',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['gse'])) {
+        $this->gse = $vals['gse'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_getAPIVersion_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->gse = new \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException();
+            $xfer += $this->gse->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_getAPIVersion_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gse !== null) {
+      $xfer += $output->writeFieldBegin('gse', TType::STRUCT, 1);
+      $xfer += $this->gse->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
 
 class GroupManagerService_createGroup_args {
   static $_TSPEC;
@@ -1652,6 +2060,239 @@ class GroupManagerService_getGroup_result {
 
 }
 
+class GroupManagerService_getGroups_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_getGroups_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_getGroups_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GroupManagerService_getGroups_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Group\GroupModel[]
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   */
+  public $gse = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Group\GroupModel',
+            ),
+          ),
+        1 => array(
+          'var' => 'gse',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException',
+          ),
+        2 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['gse'])) {
+        $this->gse = $vals['gse'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_getGroups_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\Group\GroupModel();
+              $xfer += $elem5->read($input);
+              $this->success []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->gse = new \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException();
+            $xfer += $this->gse->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_getGroups_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter6)
+          {
+            $xfer += $iter6->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gse !== null) {
+      $xfer += $output->writeFieldBegin('gse', TType::STRUCT, 1);
+      $xfer += $this->gse->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 2);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class GroupManagerService_getAllGroupsUserBelongs_args {
   static $_TSPEC;
 
@@ -1830,15 +2471,15 @@ class GroupManagerService_getAllGroupsUserBelongs_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size7 = 0;
+            $_etype10 = 0;
+            $xfer += $input->readListBegin($_etype10, $_size7);
+            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
             {
-              $elem5 = null;
-              $elem5 = new \Airavata\Model\Group\GroupModel();
-              $xfer += $elem5->read($input);
-              $this->success []= $elem5;
+              $elem12 = null;
+              $elem12 = new \Airavata\Model\Group\GroupModel();
+              $xfer += $elem12->read($input);
+              $this->success []= $elem12;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1882,13 +2523,567 @@ class GroupManagerService_getAllGroupsUserBelongs_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter6)
+          foreach ($this->success as $iter13)
           {
-            $xfer += $iter6->write($output);
+            $xfer += $iter13->write($output);
           }
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gse !== null) {
+      $xfer += $output->writeFieldBegin('gse', TType::STRUCT, 1);
+      $xfer += $this->gse->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 2);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GroupManagerService_addUsersToGroup_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string[]
+   */
+  public $userIds = null;
+  /**
+   * @var string
+   */
+  public $groupId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'userIds',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        3 => array(
+          'var' => 'groupId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['userIds'])) {
+        $this->userIds = $vals['userIds'];
+      }
+      if (isset($vals['groupId'])) {
+        $this->groupId = $vals['groupId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_addUsersToGroup_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::LST) {
+            $this->userIds = array();
+            $_size14 = 0;
+            $_etype17 = 0;
+            $xfer += $input->readListBegin($_etype17, $_size14);
+            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
+            {
+              $elem19 = null;
+              $xfer += $input->readString($elem19);
+              $this->userIds []= $elem19;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_addUsersToGroup_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userIds !== null) {
+      if (!is_array($this->userIds)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('userIds', TType::LST, 2);
+      {
+        $output->writeListBegin(TType::STRING, count($this->userIds));
+        {
+          foreach ($this->userIds as $iter20)
+          {
+            $xfer += $output->writeString($iter20);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupId !== null) {
+      $xfer += $output->writeFieldBegin('groupId', TType::STRING, 3);
+      $xfer += $output->writeString($this->groupId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GroupManagerService_addUsersToGroup_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   */
+  public $gse = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'gse',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException',
+          ),
+        2 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['gse'])) {
+        $this->gse = $vals['gse'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_addUsersToGroup_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->gse = new \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException();
+            $xfer += $this->gse->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_addUsersToGroup_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gse !== null) {
+      $xfer += $output->writeFieldBegin('gse', TType::STRUCT, 1);
+      $xfer += $this->gse->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 2);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GroupManagerService_removeUsersFromGroup_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string[]
+   */
+  public $userIds = null;
+  /**
+   * @var string
+   */
+  public $groupId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'userIds',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        3 => array(
+          'var' => 'groupId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['userIds'])) {
+        $this->userIds = $vals['userIds'];
+      }
+      if (isset($vals['groupId'])) {
+        $this->groupId = $vals['groupId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_removeUsersFromGroup_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::LST) {
+            $this->userIds = array();
+            $_size21 = 0;
+            $_etype24 = 0;
+            $xfer += $input->readListBegin($_etype24, $_size21);
+            for ($_i25 = 0; $_i25 < $_size21; ++$_i25)
+            {
+              $elem26 = null;
+              $xfer += $input->readString($elem26);
+              $this->userIds []= $elem26;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->groupId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_removeUsersFromGroup_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userIds !== null) {
+      if (!is_array($this->userIds)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('userIds', TType::LST, 2);
+      {
+        $output->writeListBegin(TType::STRING, count($this->userIds));
+        {
+          foreach ($this->userIds as $iter27)
+          {
+            $xfer += $output->writeString($iter27);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->groupId !== null) {
+      $xfer += $output->writeFieldBegin('groupId', TType::STRING, 3);
+      $xfer += $output->writeString($this->groupId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GroupManagerService_removeUsersFromGroup_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException
+   */
+  public $gse = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'gse',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException',
+          ),
+        2 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['gse'])) {
+        $this->gse = $vals['gse'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroupManagerService_removeUsersFromGroup_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->gse = new \Airavata\Service\Profile\Groupmanager\CPI\Error\GroupManagerServiceException();
+            $xfer += $this->gse->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroupManagerService_removeUsersFromGroup_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gse !== null) {
@@ -2247,14 +3442,14 @@ class GroupManagerService_addGroupAdmins_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->adminIds = array();
-            $_size7 = 0;
-            $_etype10 = 0;
-            $xfer += $input->readListBegin($_etype10, $_size7);
-            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            $_size28 = 0;
+            $_etype31 = 0;
+            $xfer += $input->readListBegin($_etype31, $_size28);
+            for ($_i32 = 0; $_i32 < $_size28; ++$_i32)
             {
-              $elem12 = null;
-              $xfer += $input->readString($elem12);
-              $this->adminIds []= $elem12;
+              $elem33 = null;
+              $xfer += $input->readString($elem33);
+              $this->adminIds []= $elem33;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2295,9 +3490,9 @@ class GroupManagerService_addGroupAdmins_args {
       {
         $output->writeListBegin(TType::STRING, count($this->adminIds));
         {
-          foreach ($this->adminIds as $iter13)
+          foreach ($this->adminIds as $iter34)
           {
-            $xfer += $output->writeString($iter13);
+            $xfer += $output->writeString($iter34);
           }
         }
         $output->writeListEnd();
@@ -2524,14 +3719,14 @@ class GroupManagerService_removeGroupAdmins_args {
         case 3:
           if ($ftype == TType::LST) {
             $this->adminIds = array();
-            $_size14 = 0;
-            $_etype17 = 0;
-            $xfer += $input->readListBegin($_etype17, $_size14);
-            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
+            $_size35 = 0;
+            $_etype38 = 0;
+            $xfer += $input->readListBegin($_etype38, $_size35);
+            for ($_i39 = 0; $_i39 < $_size35; ++$_i39)
             {
-              $elem19 = null;
-              $xfer += $input->readString($elem19);
-              $this->adminIds []= $elem19;
+              $elem40 = null;
+              $xfer += $input->readString($elem40);
+              $this->adminIds []= $elem40;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2572,9 +3767,9 @@ class GroupManagerService_removeGroupAdmins_args {
       {
         $output->writeListBegin(TType::STRING, count($this->adminIds));
         {
-          foreach ($this->adminIds as $iter20)
+          foreach ($this->adminIds as $iter41)
           {
-            $xfer += $output->writeString($iter20);
+            $xfer += $output->writeString($iter41);
           }
         }
         $output->writeListEnd();

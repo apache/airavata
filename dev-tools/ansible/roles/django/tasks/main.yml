@@ -1,0 +1,148 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Create root directory
+  file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
+  become: yes
+
+- name: Git clone django portal
+  git:
+   repo: "{{ airavata_django_repo }}"
+   dest: "{{ airavata_django_checkout }}"
+   version: "{{ airavata_django_git_branch }}"
+   update: yes
+   force: yes
+  become: yes
+  become_user: "{{user}}"
+  notify:
+    - restart uwsgi
+
+- name: Create virtual environment for Django portal and install dependencies
+  pip:
+    requirements: "{{ airavata_django_checkout }}/requirements.txt"
+    virtualenv: "{{ django_venv_dir }}"
+    virtualenv_command: "{{ python_virtualenv_command }}"
+    chdir: "{{ airavata_django_checkout }}"
+  become: yes
+  become_user: "{{user}}"
+
+- name: Install additional dependencies
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+  with_list: "{{ airavata_django_extra_dependencies }}"
+
+- name: Copy the settings_local.py file
+  template: src={{ django_settings_local_template }} dest="{{ airavata_django_checkout }}/django_airavata/settings_local.py" owner="{{user}}" group="{{group}}"
+  become: yes
+  notify:
+    - restart uwsgi
+
+- name: Run Django's manage.py migrate
+  django_manage:
+    command: migrate
+    app_path: "{{ airavata_django_checkout }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+
+- name: Build JS
+  command: bash {{ airavata_django_checkout }}/build_js.sh
+  environment:
+    STATIC_ROOT: "{{ static_root_dir }}"
+  become: yes
+  become_user: "{{user}}"
+
+- name: Run Django's manage.py collectstatic
+  django_manage:
+    command: "collectstatic -i node_modules --noinput"
+    app_path: "{{ airavata_django_checkout }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+  notify:
+    - restart uwsgi
+
+- name: Create experiment data dir
+  file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=yes follow=yes
+  become: yes
+
+- name: Create file upload tmp dir
+  file: path="{{ file_upload_tmp_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=yes
+  become: yes
+
+- name: set selinux context to allow read on static directory
+  sefcontext:
+    target: "{{ doc_root_dir }}/static(/.*)?"
+    setype: httpd_sys_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: set selinux context to allow exec on virtual env directory
+  sefcontext:
+    target: "{{ django_venv_dir }}(/.*)?"
+    setype: httpd_sys_script_exec_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: set selinux context to allow read/write on django directory
+  sefcontext:
+    target: "{{ airavata_django_checkout }}(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: Allow Django code to execute Java code (Pyjnius, see https://github.com/SciGaP/simccs-maptool)
+  seboolean:
+    name: httpd_execmem
+    state: yes
+    persistent: yes
+  become: yes
+
+- name: run restorecon on those directories
+  command: restorecon -F -R {{ doc_root_dir }}
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: copy virtual host config file
+  template: src={{ django_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  when: not vhost_ssl
+
+- name: copy SSL enabled virtual host config file
+  template: src={{ django_ssl_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  when: vhost_ssl

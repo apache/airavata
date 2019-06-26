@@ -13,6 +13,7 @@ public class GroupAdminEntity {
     private String groupId;
     private String domainId;
     private String adminId;
+    private UserGroupEntity userGroup;
 
     @Id
     @Column(name = "GROUP_ID")
@@ -42,6 +43,19 @@ public class GroupAdminEntity {
 
     public void setAdminId(String adminId) {
         this.adminId = adminId;
+    }
+
+    @ManyToOne(targetEntity = UserGroupEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumns({
+            @JoinColumn(name="GROUP_ID", referencedColumnName="GROUP_ID"),
+            @JoinColumn(name="DOMAIN_ID", referencedColumnName="DOMAIN_ID")
+    })
+    public UserGroupEntity getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(UserGroupEntity userGroup) {
+        this.userGroup = userGroup;
     }
 
     @Override

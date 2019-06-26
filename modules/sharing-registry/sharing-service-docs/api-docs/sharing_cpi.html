@@ -36,6 +36,8 @@
 <li><a href="#Fn_SharingRegistryService_getGroupMembersOfTypeGroup">getGroupMembersOfTypeGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_getGroupMembersOfTypeUser">getGroupMembersOfTypeUser</a></li>
 <li><a href="#Fn_SharingRegistryService_getGroups">getGroups</a></li>
+<li><a href="#Fn_SharingRegistryService_getListOfDirectlySharedGroups">getListOfDirectlySharedGroups</a></li>
+<li><a href="#Fn_SharingRegistryService_getListOfDirectlySharedUsers">getListOfDirectlySharedUsers</a></li>
 <li><a href="#Fn_SharingRegistryService_getListOfSharedGroups">getListOfSharedGroups</a></li>
 <li><a href="#Fn_SharingRegistryService_getListOfSharedUsers">getListOfSharedUsers</a></li>
 <li><a href="#Fn_SharingRegistryService_getPermissionType">getPermissionType</a></li>
@@ -300,12 +302,24 @@
                                                <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get a list of shared users given the entity id</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getListOfDirectlySharedUsers">Function: SharingRegistryService.getListOfDirectlySharedUsers</h4>
+<pre><code>list&lt;<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code>&gt;</code> getListOfDirectlySharedUsers(<code>string</code> domainId,
+                                                       <code>string</code> entityId,
+                                                       <code>string</code> permissionTypeId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to get a list of shared users given the entity id where the sharing type is directly applied</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getListOfSharedGroups">Function: SharingRegistryService.getListOfSharedGroups</h4>
 <pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getListOfSharedGroups(<code>string</code> domainId,
                                                      <code>string</code> entityId,
                                                      <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to get a list of shared groups given the entity id</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getListOfDirectlySharedGroups">Function: SharingRegistryService.getListOfDirectlySharedGroups</h4>
+<pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getListOfDirectlySharedGroups(<code>string</code> domainId,
+                                                             <code>string</code> entityId,
+                                                             <code>string</code> permissionTypeId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to get a list of directly shared groups given the entity id where the sharing type is directly applied</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createPermissionType">Function: SharingRegistryService.createPermissionType</h4>
 <pre><code>string</code> createPermissionType(<code><a href="sharing_models.html#Struct_PermissionType">sharing_models.PermissionType</a></code> permissionType)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="sharing_models.html#Struct_DuplicateEntryException">sharing_models.DuplicateEntryException</a></code>
@@ -339,7 +353,7 @@
 <pre><code>bool</code> shareEntityWithUsers(<code>string</code> domainId,
                           <code>string</code> entityId,
                           <code>list&lt;<code>string</code>&gt;</code> userList,
-                          <code>string</code> perssionTypeId,
+                          <code>string</code> permissionTypeId,
                           <code>bool</code> cascadePermission)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to share an entity with users</p>
@@ -347,14 +361,14 @@
 <pre><code>bool</code> revokeEntitySharingFromUsers(<code>string</code> domainId,
                                   <code>string</code> entityId,
                                   <code>list&lt;<code>string</code>&gt;</code> userList,
-                                  <code>string</code> perssionTypeId)
+                                  <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to revoke sharing from a list of users</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_shareEntityWithGroups">Function: SharingRegistryService.shareEntityWithGroups</h4>
 <pre><code>bool</code> shareEntityWithGroups(<code>string</code> domainId,
                            <code>string</code> entityId,
                            <code>list&lt;<code>string</code>&gt;</code> groupList,
-                           <code>string</code> perssionTypeId,
+                           <code>string</code> permissionTypeId,
                            <code>bool</code> cascadePermission)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to share an entity with list of groups</p>
@@ -362,7 +376,7 @@
 <pre><code>bool</code> revokeEntitySharingFromGroups(<code>string</code> domainId,
                                    <code>string</code> entityId,
                                    <code>list&lt;<code>string</code>&gt;</code> groupList,
-                                   <code>string</code> perssionTypeId)
+                                   <code>string</code> permissionTypeId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to revoke sharing from list of users</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_userHasAccess">Function: SharingRegistryService.userHasAccess</h4>

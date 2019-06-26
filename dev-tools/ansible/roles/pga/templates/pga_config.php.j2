@@ -193,7 +193,14 @@ return array(
          /**
           * Data Sharing enabled
           */
-          'data-sharing-enabled' => {{ data_sharing_enabled }}
+          'data-sharing-enabled' => {{ data_sharing_enabled }},
+
+        {% if group_resource_profile_id is defined %}
+        /**
+         * Group Resource Profile ID to use when submitting experiments
+         */
+        'group-resource-profile-id' => '{{ group_resource_profile_id }}',
+        {% endif %}
     ],
 
     /**

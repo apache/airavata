@@ -39,6 +39,8 @@ class StorageResourceDescription(object):
      - storageResourceDescription
      - enabled
      - dataMovementInterfaces
+     - creationTime
+     - updateTime
     """
 
     thrift_spec = (
@@ -48,14 +50,18 @@ class StorageResourceDescription(object):
         (3, TType.STRING, 'storageResourceDescription', 'UTF8', None, ),  # 3
         (4, TType.BOOL, 'enabled', None, None, ),  # 4
         (5, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT, (airavata.model.data.movement.ttypes.DataMovementInterface, airavata.model.data.movement.ttypes.DataMovementInterface.thrift_spec), False), None, ),  # 5
+        (6, TType.I64, 'creationTime', None, None, ),  # 6
+        (7, TType.I64, 'updateTime', None, None, ),  # 7
     )
 
-    def __init__(self, storageResourceId=thrift_spec[1][4], hostName=None, storageResourceDescription=None, enabled=None, dataMovementInterfaces=None,):
+    def __init__(self, storageResourceId=thrift_spec[1][4], hostName=None, storageResourceDescription=None, enabled=None, dataMovementInterfaces=None, creationTime=None, updateTime=None,):
         self.storageResourceId = storageResourceId
         self.hostName = hostName
         self.storageResourceDescription = storageResourceDescription
         self.enabled = enabled
         self.dataMovementInterfaces = dataMovementInterfaces
+        self.creationTime = creationTime
+        self.updateTime = updateTime
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -97,6 +103,16 @@ class StorageResourceDescription(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.I64:
+                    self.creationTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.I64:
+                    self.updateTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -129,6 +145,14 @@ class StorageResourceDescription(object):
             for iter6 in self.dataMovementInterfaces:
                 iter6.write(oprot)
             oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.creationTime is not None:
+            oprot.writeFieldBegin('creationTime', TType.I64, 6)
+            oprot.writeI64(self.creationTime)
+            oprot.writeFieldEnd()
+        if self.updateTime is not None:
+            oprot.writeFieldBegin('updateTime', TType.I64, 7)
+            oprot.writeI64(self.updateTime)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

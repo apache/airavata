@@ -13,21 +13,6 @@ import sys
 from thrift.transport import TTransport
 
 
-class CredentialOwnerType(object):
-    GATEWAY = 0
-    USER = 1
-
-    _VALUES_TO_NAMES = {
-        0: "GATEWAY",
-        1: "USER",
-    }
-
-    _NAMES_TO_VALUES = {
-        "GATEWAY": 0,
-        "USER": 1,
-    }
-
-
 class SummaryType(object):
     """
     Data Types supported in Airavata. The primitive data types
@@ -61,7 +46,6 @@ class SSHCredential(object):
      - persistedTime
      - token
      - description
-     - credentialOwnerType
     """
 
     thrift_spec = (
@@ -74,10 +58,9 @@ class SSHCredential(object):
         (6, TType.I64, 'persistedTime', None, None, ),  # 6
         (7, TType.STRING, 'token', 'UTF8', None, ),  # 7
         (8, TType.STRING, 'description', 'UTF8', None, ),  # 8
-        (9, TType.I32, 'credentialOwnerType', None, 0, ),  # 9
     )
 
-    def __init__(self, gatewayId=None, username=None, passphrase=None, publicKey=None, privateKey=None, persistedTime=None, token=None, description=None, credentialOwnerType=thrift_spec[9][4],):
+    def __init__(self, gatewayId=None, username=None, passphrase=None, publicKey=None, privateKey=None, persistedTime=None, token=None, description=None,):
         self.gatewayId = gatewayId
         self.username = username
         self.passphrase = passphrase
@@ -86,7 +69,6 @@ class SSHCredential(object):
         self.persistedTime = persistedTime
         self.token = token
         self.description = description
-        self.credentialOwnerType = credentialOwnerType
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -137,11 +119,6 @@ class SSHCredential(object):
                     self.description = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 9:
-                if ftype == TType.I32:
-                    self.credentialOwnerType = iprot.readI32()
-                else:
-                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -184,10 +161,6 @@ class SSHCredential(object):
             oprot.writeFieldBegin('description', TType.STRING, 8)
             oprot.writeString(self.description.encode('utf-8') if sys.version_info[0] == 2 else self.description)
             oprot.writeFieldEnd()
-        if self.credentialOwnerType is not None:
-            oprot.writeFieldBegin('credentialOwnerType', TType.I32, 9)
-            oprot.writeI32(self.credentialOwnerType)
-            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -215,7 +188,8 @@ class CredentialSummary(object):
     Attributes:
      - type
      - gatewayId
-     - username
+     - username: The username corresponds to the Credential's `portalUserName` which is the username of the user that
+    created the credential.
      - publicKey
      - persistedTime
      - token

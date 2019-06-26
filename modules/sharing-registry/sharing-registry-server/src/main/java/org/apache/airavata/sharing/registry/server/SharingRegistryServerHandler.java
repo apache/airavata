@@ -20,10 +20,11 @@
 package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.sharing.registry.db.entities.*;
 import org.apache.airavata.sharing.registry.db.repositories.*;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
-import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
+import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.airavata.sharing.registry.service.cpi.sharing_cpiConstants;
@@ -42,7 +43,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public static String OWNER_PERMISSION_NAME = "OWNER";
 
     public SharingRegistryServerHandler() throws ApplicationSettingsException, TException {
-        JPAUtils.initializeDB();
+        this(new SharingRegistryDBInitConfig());
+    }
+
+    public SharingRegistryServerHandler(SharingRegistryDBInitConfig sharingRegistryDBInitConfig)  throws ApplicationSettingsException, TException {
+        DBInitializer.initializeDB(sharingRegistryDBInitConfig);
     }
 
     @Override
@@ -281,6 +286,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             group.setGroupCardinality(GroupCardinality.MULTI_USER);
             group.setCreatedTime(System.currentTimeMillis());
             group.setUpdatedTime(System.currentTimeMillis());
+            //Add group admins once the group is created
+            group.unsetGroupAdmins();
             (new UserGroupRepository()).create(group);
 
             addUsersToGroup(group.getDomainId(), Arrays.asList(group.getOwnerId()), group.getGroupId());
@@ -299,8 +306,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroupPK.setGroupId(group.getGroupId());
             userGroupPK.setDomainId(group.getDomainId());
             UserGroup oldGroup = (new UserGroupRepository()).get(userGroupPK);
-            //Client created groups are always of type MULTI_USER
-            group.setGroupCardinality(GroupCardinality.MULTI_USER);
+            group.setGroupCardinality(oldGroup.getGroupCardinality());
             group.setCreatedTime(oldGroup.getCreatedTime());
             group = getUpdatedObject(oldGroup, group);
 
@@ -367,7 +373,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public List<UserGroup> getGroups(String domain, int offset, int limit) throws TException {
         try{
             HashMap<String, String> filters = new HashMap<>();
-            filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
+            filters.put(DBConstants.UserGroupTable.DOMAIN_ID, domain);
+            // Only return groups with MULTI_USER cardinality which is the only type of cardinality allowed for client created groups
+            filters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
             return (new UserGroupRepository()).select(filters, offset, limit);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
@@ -398,6 +406,12 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean removeUsersFromGroup(String domainId, List<String> userIds, String groupId) throws SharingRegistryException, TException {
         try{
+            for (String userId: userIds) {
+                if (hasOwnerAccess(domainId, groupId, userId)) {
+                    throw new SharingRegistryException("List of User Ids contains Owner Id. Cannot remove owner from the group");
+                }
+            }
+
             for(int i=0; i < userIds.size(); i++){
                 GroupMembershipPK groupMembershipPK = new GroupMembershipPK();
                 groupMembershipPK.setParentId(groupId);
@@ -415,6 +429,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean transferGroupOwnership(String domainId, String groupId, String newOwnerId) throws SharingRegistryException, TException {
         try {
+            List<User> groupUser = getGroupMembersOfTypeUser(domainId, groupId, 0, -1);
+            if (!isUserBelongsToGroup(groupUser, newOwnerId)) {
+                throw new SharingRegistryException("New group owner is not part of the group");
+            }
+
             if (hasOwnerAccess(domainId, groupId, newOwnerId)) {
                 throw new DuplicateEntryException("User already the current owner of the group");
             }
@@ -444,10 +463,24 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         }
     }
 
+    private boolean isUserBelongsToGroup(List<User> groupUser, String newOwnerId) {
+        for (User user: groupUser) {
+            if (user.getUserId().equals(newOwnerId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean addGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
         try{
+            List<User> groupUser = getGroupMembersOfTypeUser(domainId, groupId, 0, -1);
+
             for (String adminId: adminIds) {
+                if (! isUserBelongsToGroup(groupUser, adminId)) {
+                    throw new SharingRegistryException("Admin not the user of the group. GroupId : "+ groupId + ", AdminId : "+ adminId);
+                }
                 GroupAdminPK groupAdminPK = new GroupAdminPK();
                 groupAdminPK.setGroupId(groupId);
                 groupAdminPK.setAdminId(adminId);
@@ -835,10 +868,25 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             (new SharingRepository()).create(newSharing);
 
-            //creating records for inherited permissions
-            if(entity.getParentEntityId() != null && entity.getParentEntityId() != ""){
-                List<Sharing> sharings = (new SharingRepository()).getCascadingPermissionsForEntity(entity.getDomainId(), entity.getParentEntityId());
-                for(Sharing sharing : sharings){
+            // creating records for inherited permissions
+            if (entity.getParentEntityId() != null && entity.getParentEntityId() != "") {
+                addCascadingPermissionsForEntity(entity);
+            }
+
+            return entity.getEntityId();
+        }catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            SharingRegistryException sharingRegistryException = new SharingRegistryException();
+            sharingRegistryException.setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            throw sharingRegistryException;
+        }
+    }
+
+    private void addCascadingPermissionsForEntity(Entity entity) throws SharingRegistryException {
+        Sharing newSharing;
+        List<Sharing> sharings = (new SharingRepository()).getCascadingPermissionsForEntity(entity.getDomainId(),
+                entity.getParentEntityId());
+        for (Sharing sharing : sharings) {
                     newSharing = new Sharing();
                     newSharing.setPermissionTypeId(sharing.getPermissionTypeId());
                     newSharing.setEntityId(entity.getEntityId());
@@ -853,13 +901,6 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 }
             }
 
-            return entity.getEntityId();
-        }catch (Throwable ex) {
-            logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
-        }
-    }
-
     @Override
     public boolean updateEntity(Entity entity) throws SharingRegistryException, TException {
         try{
@@ -870,6 +911,19 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityPK.setEntityId(entity.getEntityId());
             Entity oldEntity = (new EntityRepository()).get(entityPK);
             entity.setCreatedTime(oldEntity.getCreatedTime());
+            // check if parent entity changed and re-add inherited permissions
+            if (!Objects.equals(oldEntity.getParentEntityId(), entity.getParentEntityId())) {
+                logger.debug("Parent entity changed for {}, updating inherited permissions", entity.getEntityId());
+                if (oldEntity.getParentEntityId() != null && oldEntity.getParentEntityId() != "") {
+                    logger.debug("Removing inherited permissions from {} that were inherited from parent {}", entity.getEntityId(), oldEntity.getParentEntityId());
+                    (new SharingRepository()).removeAllIndirectCascadingPermissionsForEntity(entity.getDomainId(), entity.getEntityId());
+                }
+                if (entity.getParentEntityId() != null && entity.getParentEntityId() != "") {
+                    // re-add INDIRECT_CASCADING permissions
+                    logger.debug("Adding inherited permissions to {} that are inherited from parent {}", entity.getEntityId(), entity.getParentEntityId());
+                    addCascadingPermissionsForEntity(entity);
+                }
+            }
             entity = getUpdatedObject(oldEntity, entity);
             entity.setSharedCount((new SharingRepository()).getSharedCount(entity.getDomainId(), entity.getEntityId()));
             (new EntityRepository()).update(entity);
@@ -951,12 +1005,38 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
+    public List<User> getListOfDirectlySharedUsers(String domainId, String entityId, String permissionTypeId)
+            throws SharingRegistryException, TException {
+        try{
+            return (new UserRepository()).getDirectlyAccessibleUsers(domainId, entityId, permissionTypeId);
+        }catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            SharingRegistryException sharingRegistryException = new SharingRegistryException();
+            sharingRegistryException.setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            throw sharingRegistryException;
+        }
+    }
+
+    @Override
     public List<UserGroup> getListOfSharedGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException, TException {
         try{
             return (new UserGroupRepository()).getAccessibleGroups(domainId, entityId, permissionTypeId);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
             throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
+    public List<UserGroup> getListOfDirectlySharedGroups(String domainId, String entityId, String permissionTypeId)
+            throws SharingRegistryException, TException {
+        try{
+            return (new UserGroupRepository()).getDirectlyAccessibleGroups(domainId, entityId, permissionTypeId);
+        }catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            SharingRegistryException sharingRegistryException = new SharingRegistryException();
+            sharingRegistryException.setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            throw sharingRegistryException;
         }
     }
 
@@ -1193,4 +1273,5 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         }
         return hashtable;
     }
+
 }

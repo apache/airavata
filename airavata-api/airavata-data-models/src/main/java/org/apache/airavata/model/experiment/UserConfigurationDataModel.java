@@ -43,6 +43,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private static final org.apache.thrift.protocol.TField STORAGE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageId", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_DATA_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentDataDir", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField USE_USER_CRPREF_FIELD_DESC = new org.apache.thrift.protocol.TField("useUserCRPref", org.apache.thrift.protocol.TType.BOOL, (short)10);
+  private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileId", org.apache.thrift.protocol.TType.STRING, (short)11);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new UserConfigurationDataModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new UserConfigurationDataModelTupleSchemeFactory();
@@ -57,6 +58,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private java.lang.String storageId; // optional
   private java.lang.String experimentDataDir; // optional
   private boolean useUserCRPref; // optional
+  private java.lang.String groupResourceProfileId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -69,7 +71,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     GENERATE_CERT((short)7, "generateCert"),
     STORAGE_ID((short)8, "storageId"),
     EXPERIMENT_DATA_DIR((short)9, "experimentDataDir"),
-    USE_USER_CRPREF((short)10, "useUserCRPref");
+    USE_USER_CRPREF((short)10, "useUserCRPref"),
+    GROUP_RESOURCE_PROFILE_ID((short)11, "groupResourceProfileId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -104,6 +107,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
           return EXPERIMENT_DATA_DIR;
         case 10: // USE_USER_CRPREF
           return USE_USER_CRPREF;
+        case 11: // GROUP_RESOURCE_PROFILE_ID
+          return GROUP_RESOURCE_PROFILE_ID;
         default:
           return null;
       }
@@ -151,7 +156,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private static final int __GENERATECERT_ISSET_ID = 4;
   private static final int __USEUSERCRPREF_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.STORAGE_ID,_Fields.EXPERIMENT_DATA_DIR,_Fields.USE_USER_CRPREF};
+  private static final _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.STORAGE_ID,_Fields.EXPERIMENT_DATA_DIR,_Fields.USE_USER_CRPREF,_Fields.GROUP_RESOURCE_PROFILE_ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -175,6 +180,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USE_USER_CRPREF, new org.apache.thrift.meta_data.FieldMetaData("useUserCRPref", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.GROUP_RESOURCE_PROFILE_ID, new org.apache.thrift.meta_data.FieldMetaData("groupResourceProfileId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserConfigurationDataModel.class, metaDataMap);
   }
@@ -226,6 +233,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       this.experimentDataDir = other.experimentDataDir;
     }
     this.useUserCRPref = other.useUserCRPref;
+    if (other.isSetGroupResourceProfileId()) {
+      this.groupResourceProfileId = other.groupResourceProfileId;
+    }
   }
 
   public UserConfigurationDataModel deepCopy() {
@@ -250,6 +260,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     this.experimentDataDir = null;
     setUseUserCRPrefIsSet(false);
     this.useUserCRPref = false;
+    this.groupResourceProfileId = null;
   }
 
   public boolean isAiravataAutoSchedule() {
@@ -476,6 +487,29 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __USEUSERCRPREF_ISSET_ID, value);
   }
 
+  public java.lang.String getGroupResourceProfileId() {
+    return this.groupResourceProfileId;
+  }
+
+  public void setGroupResourceProfileId(java.lang.String groupResourceProfileId) {
+    this.groupResourceProfileId = groupResourceProfileId;
+  }
+
+  public void unsetGroupResourceProfileId() {
+    this.groupResourceProfileId = null;
+  }
+
+  /** Returns true if field groupResourceProfileId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGroupResourceProfileId() {
+    return this.groupResourceProfileId != null;
+  }
+
+  public void setGroupResourceProfileIdIsSet(boolean value) {
+    if (!value) {
+      this.groupResourceProfileId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case AIRAVATA_AUTO_SCHEDULE:
@@ -558,6 +592,14 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       }
       break;
 
+    case GROUP_RESOURCE_PROFILE_ID:
+      if (value == null) {
+        unsetGroupResourceProfileId();
+      } else {
+        setGroupResourceProfileId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -593,6 +635,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     case USE_USER_CRPREF:
       return isUseUserCRPref();
 
+    case GROUP_RESOURCE_PROFILE_ID:
+      return getGroupResourceProfileId();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -624,6 +669,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       return isSetExperimentDataDir();
     case USE_USER_CRPREF:
       return isSetUseUserCRPref();
+    case GROUP_RESOURCE_PROFILE_ID:
+      return isSetGroupResourceProfileId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -733,6 +780,15 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         return false;
     }
 
+    boolean this_present_groupResourceProfileId = true && this.isSetGroupResourceProfileId();
+    boolean that_present_groupResourceProfileId = true && that.isSetGroupResourceProfileId();
+    if (this_present_groupResourceProfileId || that_present_groupResourceProfileId) {
+      if (!(this_present_groupResourceProfileId && that_present_groupResourceProfileId))
+        return false;
+      if (!this.groupResourceProfileId.equals(that.groupResourceProfileId))
+        return false;
+    }
+
     return true;
   }
 
@@ -775,6 +831,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     hashCode = hashCode * 8191 + ((isSetUseUserCRPref()) ? 131071 : 524287);
     if (isSetUseUserCRPref())
       hashCode = hashCode * 8191 + ((useUserCRPref) ? 131071 : 524287);
+
+    hashCode = hashCode * 8191 + ((isSetGroupResourceProfileId()) ? 131071 : 524287);
+    if (isSetGroupResourceProfileId())
+      hashCode = hashCode * 8191 + groupResourceProfileId.hashCode();
 
     return hashCode;
   }
@@ -887,6 +947,16 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetGroupResourceProfileId()).compareTo(other.isSetGroupResourceProfileId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGroupResourceProfileId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupResourceProfileId, other.groupResourceProfileId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -976,6 +1046,16 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (!first) sb.append(", ");
       sb.append("useUserCRPref:");
       sb.append(this.useUserCRPref);
+      first = false;
+    }
+    if (isSetGroupResourceProfileId()) {
+      if (!first) sb.append(", ");
+      sb.append("groupResourceProfileId:");
+      if (this.groupResourceProfileId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.groupResourceProfileId);
+      }
       first = false;
     }
     sb.append(")");
@@ -1115,6 +1195,14 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 11: // GROUP_RESOURCE_PROFILE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.groupResourceProfileId = iprot.readString();
+              struct.setGroupResourceProfileIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1182,6 +1270,13 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         oprot.writeBool(struct.useUserCRPref);
         oprot.writeFieldEnd();
       }
+      if (struct.groupResourceProfileId != null) {
+        if (struct.isSetGroupResourceProfileId()) {
+          oprot.writeFieldBegin(GROUP_RESOURCE_PROFILE_ID_FIELD_DESC);
+          oprot.writeString(struct.groupResourceProfileId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1226,7 +1321,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (struct.isSetUseUserCRPref()) {
         optionals.set(7);
       }
-      oprot.writeBitSet(optionals, 8);
+      if (struct.isSetGroupResourceProfileId()) {
+        optionals.set(8);
+      }
+      oprot.writeBitSet(optionals, 9);
       if (struct.isSetShareExperimentPublicly()) {
         oprot.writeBool(struct.shareExperimentPublicly);
       }
@@ -1251,6 +1349,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (struct.isSetUseUserCRPref()) {
         oprot.writeBool(struct.useUserCRPref);
       }
+      if (struct.isSetGroupResourceProfileId()) {
+        oprot.writeString(struct.groupResourceProfileId);
+      }
     }
 
     @Override
@@ -1260,7 +1361,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       struct.setAiravataAutoScheduleIsSet(true);
       struct.overrideManualScheduledParams = iprot.readBool();
       struct.setOverrideManualScheduledParamsIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(8);
+      java.util.BitSet incoming = iprot.readBitSet(9);
       if (incoming.get(0)) {
         struct.shareExperimentPublicly = iprot.readBool();
         struct.setShareExperimentPubliclyIsSet(true);
@@ -1293,6 +1394,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (incoming.get(7)) {
         struct.useUserCRPref = iprot.readBool();
         struct.setUseUserCRPrefIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.groupResourceProfileId = iprot.readString();
+        struct.setGroupResourceProfileIdIsSet(true);
       }
     }
   }
