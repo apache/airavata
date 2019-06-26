@@ -359,8 +359,7 @@ public class AiravataDataMigrator {
             for (User sharingUser : sharingUsers) {
 
                 String userId = sharingUser.getUserId();
-                int index = userId.lastIndexOf("@");
-                if (index <= 0) {
+                if (!userId.endsWith("@" + domainID)) {
                     System.out.println("Skipping credentials for user " + userId + " since sharing user id is improperly formed");
                     continue;
                 }
@@ -431,8 +430,8 @@ public class AiravataDataMigrator {
         // Migrate roles to groups
         List<String> usernames = sharingRegistryServerHandler.getUsers(domain.getDomainId(), 0, -1)
                 .stream()
-                // Filter out bad ids that don't have an "@" in them
-                .filter(user -> user.getUserId().lastIndexOf("@") > 0)
+                // Filter out bad user ids that don't end in "@" + domainId
+                .filter(user -> user.getUserId().endsWith("@" + domain.getDomainId()))
                 .map(user -> user.getUserId().substring(0, user.getUserId().lastIndexOf("@")))
                 .collect(Collectors.toList());
         Map<String, List<String>> roleMap = loadRolesForUsers(domain.getDomainId(), usernames);
