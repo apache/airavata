@@ -46,6 +46,7 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
@@ -54,6 +55,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
@@ -166,12 +169,32 @@ public abstract class AiravataTask extends AbstractTask {
                 logger.error("Failed to delete task specific nodes but continuing", e);
             }
 
+            cleanup();
+
             return onFail(errorMessage, fatal);
         } else {
             return onFail("Handover back to helix engine to retry", fatal);
         }
     }
 
+    protected void cleanup() {
+
+        try {
+            // cleaning up local data directory
+            String localDataPath = ServerSettings.getLocalDataLocation();
+            localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator);
+            localDataPath = localDataPath + getProcessId();
+
+            try {
+                FileUtils.deleteDirectory(new File(localDataPath));
+            } catch (IOException e) {
+                logger.error("Failed to delete local data directory " + localDataPath, e);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to clean up", e);
+        }
+
+    }
     protected void saveAndPublishProcessStatus(ProcessState state) {
         ProcessStatus processStatus = new ProcessStatus(state);
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
