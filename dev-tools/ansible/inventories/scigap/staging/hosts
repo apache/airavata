@@ -1,27 +1,25 @@
 # inventory file : scigap staging deployment
 
 [zookeeper]
-api.staging.scigap.org
-#helix.staging.scigap.org
-#pga.staging.scigap.org
+scigap02.sciencegateways.iu.edu
 
 [rabbitmq]
-api.staging.scigap.org
+scigap02.sciencegateways.iu.edu
 
 [database]
-db.staging.scigap.org
+scigap01.sciencegateways.iu.edu
 
 [api-orch]
-api.staging.scigap.org
+scigap02.sciencegateways.iu.edu
 
 [helix]
-helix.staging.scigap.org ansible_user=root
+scigap03.sciencegateways.iu.edu
 
 [kafka]
-helix.staging.scigap.org ansible_user=root
+scigap03.sciencegateways.iu.edu
 
 [pga]
-pga.staging.scigap.org
+TODO
 
 # Using the same keycloak as production
 #[keycloak]
