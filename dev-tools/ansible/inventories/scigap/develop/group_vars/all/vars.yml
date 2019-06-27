@@ -35,7 +35,7 @@ airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
 git_branch: develop
 
 # Database related variables
-db_server: "{{ groups['database'][0] }}"
+db_server: "{{ hostvars[groups['database'][0]]['ansible_default_ipv4']['address'] }}"
 db_server_port: "3306"
 db_user: "airavata"
 db_password: "{{ vault_db_password }}"
@@ -47,6 +47,9 @@ sharing_catalog: "sharing_catalog"
 workflow_catalog: "workflow_catalog"
 credential_store: "credential_store"
 profile_service: "profile_service"
+
+django_db_username: "django"
+django_db_password: "{{ vault_db_password }}"
 
 mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
 
@@ -168,3 +171,5 @@ parser_broker_topic: "completed-messages"
 parser_broker_consumer_group: "ParsingConsumer"
 parser_storage_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
 parser_broker_publisher_id: "ParserProducer"
+
+

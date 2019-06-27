@@ -28,3 +28,4 @@ django_wsgi_processes: 2
 doc_root_dir: "/var/www/portals/django-{{gateway_id}}"
 admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"
 django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
+django_database_name: "django_{{ gateway_id }}"
