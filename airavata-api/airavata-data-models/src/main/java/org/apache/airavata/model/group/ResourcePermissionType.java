@@ -31,7 +31,8 @@ import org.apache.thrift.TEnum;
 public enum ResourcePermissionType implements org.apache.thrift.TEnum {
   WRITE(0),
   READ(1),
-  OWNER(2);
+  OWNER(2),
+  MANAGE_SHARING(3);
 
   private final int value;
 
@@ -50,7 +51,7 @@ public enum ResourcePermissionType implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static ResourcePermissionType findByValue(int value) { 
+  public static ResourcePermissionType findByValue(int value) {
     switch (value) {
       case 0:
         return WRITE;
@@ -58,6 +59,8 @@ public enum ResourcePermissionType implements org.apache.thrift.TEnum {
         return READ;
       case 2:
         return OWNER;
+      case 3:
+        return MANAGE_SHARING;
       default:
         return null;
     }
