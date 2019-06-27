@@ -40,6 +40,19 @@ DEBUG = {{ django_debug | ternary("True", "False") }}
 STATIC_ROOT = "{{ static_root_dir }}"
 ALLOWED_HOSTS = ['{{ vhost_servername }}']
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': '{{ django_database_name }}',
+        'HOST': '{{ db_server }}',
+        'USER': '{{ django_db_username }}',
+        'PASSWORD': '{{ django_db_password }}'
+    },
+    'OPTIONS': {
+        'init_command': 'SET default_storage_engine=INNODB',
+    }
+}
+
 # Django - Email settings
 # Uncomment and specify the following for sending emails (default email backend
 # just prints to the console)

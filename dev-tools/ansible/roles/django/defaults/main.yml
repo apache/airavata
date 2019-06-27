@@ -41,6 +41,7 @@ django_vhost_template: "django-vhost.conf.j2"
 django_ssl_vhost_template: "django-ssl-vhost.conf.j2"
 django_settings_local_template: "settings_local.py.j2"
 django_extra_settings: {}
+django_database_name: "django_{{ gateway_id }}"
 
 django_wsgi_processes: 2
 
