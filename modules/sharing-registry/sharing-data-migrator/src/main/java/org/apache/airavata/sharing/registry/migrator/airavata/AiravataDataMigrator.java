@@ -344,7 +344,7 @@ public class AiravataDataMigrator {
                 entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                 entity.setOwnerId(domainOwnerMap.get(domainID));
                 entity.setName(credentialSummary.getToken());
-                entity.setDescription(credentialSummary.getDescription());
+                entity.setDescription(maxLengthString(credentialSummary.getDescription(), 255));
                 if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                     sharingRegistryServerHandler.createEntity(entity);
                 if (gatewayGroupsMap.containsKey(entity.getDomainId())) {
@@ -372,7 +372,8 @@ public class AiravataDataMigrator {
                     entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                     entity.setOwnerId(userId);
                     entity.setName(credentialSummary.getToken());
-                    entity.setDescription(credentialSummary.getDescription());
+                    // Cap description length at max 255 characters
+                    entity.setDescription(maxLengthString(credentialSummary.getDescription(), 255));
                     if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                         sharingRegistryServerHandler.createEntity(entity);
                     // Don't need to share USER SSH tokens with any group
@@ -389,7 +390,7 @@ public class AiravataDataMigrator {
                 entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                 entity.setOwnerId(domainOwnerMap.get(domainID));
                 entity.setName(gatewayPasswordEntry.getKey());
-                entity.setDescription(gatewayPasswordEntry.getValue());
+                entity.setDescription(maxLengthString(gatewayPasswordEntry.getValue(), 255));
                 if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                     sharingRegistryServerHandler.createEntity(entity);
                 if (gatewayGroupsMap.containsKey(entity.getDomainId())) {
@@ -625,6 +626,15 @@ public class AiravataDataMigrator {
 
     private static boolean isValid(String s) {
         return s != null && !"".equals(s.trim());
+    }
+
+    private static String maxLengthString(String s, int maxLength) {
+
+        if (s != null) {
+            return s.substring(0, Math.min(maxLength, s.length()));
+        } else {
+            return null;
+        }
     }
 
     private static CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
