@@ -154,6 +154,14 @@ public class AiravataDataMigrator {
                 if (!sharingRegistryServerHandler.isPermissionExists(permissionType.getDomainId(), permissionType.getPermissionTypeId()))
                     sharingRegistryServerHandler.createPermissionType(permissionType);
 
+                permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.getDomainId()+":MANAGE_SHARING");
+                permissionType.setDomainId(domain.getDomainId());
+                permissionType.setName("MANAGE_SHARING");
+                permissionType.setDescription("Sharing permission type");
+                if (!sharingRegistryServerHandler.isPermissionExists(permissionType.getDomainId(), permissionType.getPermissionTypeId()))
+                    sharingRegistryServerHandler.createPermissionType(permissionType);
+
             }catch (Exception ex){
                 ex.printStackTrace();
             }
