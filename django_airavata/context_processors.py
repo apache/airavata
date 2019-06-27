@@ -52,7 +52,10 @@ def _get_current_app(request, apps):
 
 def _get_app_nav(request, current_app):
     if hasattr(current_app, 'nav'):
-        nav = copy.copy(current_app.nav)
+        # Copy and filter current_app's nav items
+        nav = [item
+               for item in copy.copy(current_app.nav)
+               if 'enabled' not in item or item['enabled'](request)]
         # convert "/djangoapp/path/in/app" to "path/in/app"
         app_path = "/".join(request.path.split("/")[2:])
         for nav_item in nav:
