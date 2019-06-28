@@ -1420,7 +1420,6 @@ class AckNotificationViewSet(APIView):
     def get(self, request, format=None):
         if 'id' in request.GET:
             notification_id = request.GET['id']
-            print(notification_id)
             try:
                 notification = models.User_Notifications.objects.get(
                                 notification_id=notification_id,

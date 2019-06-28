@@ -135,7 +135,7 @@ import moment from "moment";
 import 'vue-datetime/dist/vue-datetime.css'
 
 export default {
-  name: "noitce-editor",
+  name: "notice-editor",
   components: {
     datetime: Datetime
   },
