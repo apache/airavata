@@ -439,7 +439,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             log.exception("Failed to load app interface")
             applicationInterface = None
         exp_output_views = output_views.get_output_views(
-            experimentModel, applicationInterface)
+            self.request, experimentModel, applicationInterface)
         inputDataProducts = [
             self.request.airavata_client.getDataProduct(self.authz_token,
                                                         inp.value)

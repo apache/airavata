@@ -3,6 +3,10 @@ import logging
 
 from django.conf import settings
 
+from airavata.model.application.io.ttypes import DataType
+
+from . import data_products_helper
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +25,7 @@ DEFAULT_VIEW_PROVIDERS = {
 }
 
 
-def get_output_views(experiment, application_interface):
+def get_output_views(request, experiment, application_interface):
     output_views = {}
     for output in experiment.experimentOutputs:
         output_views[output.name] = []
@@ -39,24 +43,18 @@ def get_output_views(experiment, application_interface):
                 logger.error("Unable to find output view provider with "
                              "name '{}'".format(output_view_provider_id))
             if output_view_provider is not None:
+                view_config = {
+                    'provider-id': output_view_provider_id,
+                    'display-type': output_view_provider.display_type,
+                    'name': getattr(output_view_provider, 'name',
+                                    output_view_provider_id)
+                }
                 if getattr(output_view_provider, 'immediate', False):
                     # Immediately call generate_data function
-                    # TODO: also pass a file object if URI (and handle
-                    # URI_COLLECTION)
-                    data = output_view_provider.generate_data(
-                        output, experiment)
-                    output_views[output.name].append({
-                        'provider-id': output_view_provider_id,
-                        'display-type': output_view_provider.display_type,
-                        'data': data,
-                        'name': getattr(output_view_provider, 'name', output_view_provider_id)
-                    })
-                else:
-                    output_views[output.name].append({
-                        'provider-id': output_view_provider_id,
-                        'display-type': output_view_provider.display_type,
-                        'name': getattr(output_view_provider, 'name', output_view_provider_id)
-                    })
+                    data = _generate_data(
+                        request, output_view_provider, output, experiment)
+                    view_config['data'] = data
+                output_views[output.name].append(view_config)
     return output_views
 
 
@@ -86,7 +84,9 @@ def _get_output_view_providers(experiment_output, application_interface):
 
 
 def _get_application_output_view_providers(application_interface, output_name):
-    app_output = [o for o in application_interface.applicationOutputs if o.name == output_name]
+    app_output = [o
+                  for o in application_interface.applicationOutputs
+                  if o.name == output_name]
     if len(app_output) == 1:
         app_output = app_output[0]
     if app_output.metaData:
@@ -99,3 +99,24 @@ def _get_application_output_view_providers(application_interface, output_name):
                 "Failed to parse metadata for output {}".format(
                     app_output.name))
     return []
+
+
+def _generate_data(request,
+                   output_view_provider,
+                   experiment_output,
+                   experiment):
+    # TODO: handle URI_COLLECTION also
+    logger.debug("getting data product for {}".format(experiment_output.value))
+    output_file = None
+    if (experiment_output.value and
+        experiment_output.type in (DataType.URI,
+                                   DataType.STDOUT,
+                                   DataType.STDERR) and
+            experiment_output.value.startswith("airavata-dp")):
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, experiment_output.value)
+        if data_products_helper.exists(request, data_product):
+            output_file = data_products_helper.open()
+    data = output_view_provider.generate_data(
+        experiment_output, experiment, output_file=output_file)
+    return data
