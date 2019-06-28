@@ -315,7 +315,7 @@ public class AiravataDataMigrator {
         // Migrating from GatewayResourceProfile to GroupResourceProfile
         for (String domainID : domainOwnerMap.keySet()) {
             GatewayGroups gatewayGroups = gatewayGroupsMap.get(domainID);
-            if (needsGroupResourceProfileMigration(domainID, registryServiceClient)) {
+            if (needsGroupResourceProfileMigration(domainID, domainOwnerMap.get(domainID), registryServiceClient, sharingRegistryServerHandler)) {
 
                 GroupResourceProfile groupResourceProfile = migrateGatewayResourceProfileToGroupResourceProfile(domainID, registryServiceClient);
 
@@ -545,10 +545,19 @@ public class AiravataDataMigrator {
         return userGroup;
     }
 
-    private static boolean needsGroupResourceProfileMigration(String gatewayId, RegistryService.Client registryServiceClient) throws TException {
+    private static boolean needsGroupResourceProfileMigration(String gatewayId, String domainOwnerId, RegistryService.Client registryServiceClient, SharingRegistryServerHandler sharingRegistryServerHandler)
+            throws TException {
         // Return true if GatewayResourceProfile has at least one ComputeResourcePreference and there is no GroupResourceProfile
         List<ComputeResourcePreference> computeResourcePreferences = registryServiceClient.getAllGatewayComputeResourcePreferences(gatewayId);
-        List<GroupResourceProfile> groupResourceProfiles = registryServiceClient.getGroupResourceList(gatewayId, Collections.emptyList());
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+        searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+        searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+        List<String> accessibleGRPIds = sharingRegistryServerHandler.searchEntities(gatewayId, domainOwnerId, Collections.singletonList(searchCriteria), 0, -1)
+                .stream()
+                .map(p -> p.getEntityId())
+                .collect(Collectors.toList());
+        List<GroupResourceProfile> groupResourceProfiles = registryServiceClient.getGroupResourceList(gatewayId, accessibleGRPIds);
         return !computeResourcePreferences.isEmpty() && groupResourceProfiles.isEmpty();
     }
 
