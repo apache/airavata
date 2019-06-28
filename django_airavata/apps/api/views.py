@@ -431,7 +431,15 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 output.type == DataType.URI_COLLECTION)
             for dp in output.value.split(',')
             if output.value.startswith('airavata-dp')]
-        exp_output_views = output_views.get_output_views(experimentModel)
+        appInterfaceId = experimentModel.executionId
+        try:
+            applicationInterface = self.request.airavata_client \
+                .getApplicationInterface(self.authz_token, appInterfaceId)
+        except Exception as e:
+            log.exception("Failed to load app interface")
+            applicationInterface = None
+        exp_output_views = output_views.get_output_views(
+            experimentModel, applicationInterface)
         inputDataProducts = [
             self.request.airavata_client.getDataProduct(self.authz_token,
                                                         inp.value)
@@ -448,13 +456,13 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 inp.type == DataType.URI_COLLECTION)
             for dp in inp.value.split(',')
             if inp.value.startswith('airavata-dp')]
-        appInterfaceId = experimentModel.executionId
         try:
-            applicationInterface = self.request.airavata_client \
-                .getApplicationInterface(self.authz_token, appInterfaceId)
-            appModuleId = applicationInterface.applicationModules[0]
-            applicationModule = self.request.airavata_client \
-                .getApplicationModule(self.authz_token, appModuleId)
+            if applicationInterface is not None:
+                appModuleId = applicationInterface.applicationModules[0]
+                applicationModule = self.request.airavata_client \
+                    .getApplicationModule(self.authz_token, appModuleId)
+            else:
+                log.warning("Cannot log application model since app interface failed to load")
         except Exception as e:
             log.exception("Failed to load app interface/module")
             applicationModule = None

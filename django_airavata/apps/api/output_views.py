@@ -21,11 +21,12 @@ DEFAULT_VIEW_PROVIDERS = {
 }
 
 
-def get_output_views(experiment):
+def get_output_views(experiment, application_interface):
     output_views = {}
     for output in experiment.experimentOutputs:
         output_views[output.name] = []
-        output_view_provider_ids = _get_output_view_providers(output)
+        output_view_provider_ids = _get_output_view_providers(
+            output, application_interface)
         for output_view_provider_id in output_view_provider_ids:
             output_view_provider = None
             if output_view_provider_id in DEFAULT_VIEW_PROVIDERS:
@@ -59,21 +60,42 @@ def get_output_views(experiment):
     return output_views
 
 
-def _get_output_view_providers(experiment_output):
+def _get_output_view_providers(experiment_output, application_interface):
     output_view_providers = []
     logger.debug("experiment_output={}".format(experiment_output))
     if experiment_output.metaData:
         try:
             output_metadata = json.loads(experiment_output.metaData)
-            output_view_providers.extend(
-                output_metadata['output-view-providers'])
             logger.debug("output_metadata={}".format(output_metadata))
+            if 'output-view-providers' in output_metadata:
+                output_view_providers.extend(
+                    output_metadata['output-view-providers'])
         except Exception as e:
             logger.exception(
                 "Failed to parse metadata for output {}".format(
                     experiment_output.name))
     if 'default' not in output_view_providers:
         output_view_providers.insert(0, 'default')
-    # if len(output_view_providers) == 0:
-    #     output_view_providers.extend(_get_default_view_providers())
+    # Add in any output view providers defined on the application interface
+    app_output_view_providers = _get_application_output_view_providers(
+        application_interface, experiment_output.name)
+    for view_provider in app_output_view_providers:
+        if view_provider not in output_view_providers:
+            output_view_providers.append(view_provider)
     return output_view_providers
+
+
+def _get_application_output_view_providers(application_interface, output_name):
+    app_output = [o for o in application_interface.applicationOutputs if o.name == output_name]
+    if len(app_output) == 1:
+        app_output = app_output[0]
+    if app_output.metaData:
+        try:
+            output_metadata = json.loads(app_output.metaData)
+            if 'output-view-providers' in output_metadata:
+                return output_metadata['output-view-providers']
+        except Exception as e:
+            logger.exception(
+                "Failed to parse metadata for output {}".format(
+                    app_output.name))
+    return []
