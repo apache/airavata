@@ -22,6 +22,7 @@
 # sudo yum -y install python34
 # sudo yum -y install httpd-devel
 # sudo yum -y install python34-devel
+# sudo yum -y install mysql-devel
 
 # TODO: fetch and build mod_wsgi
 # mkdir mod_wsgi
