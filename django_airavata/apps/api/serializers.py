@@ -268,7 +268,6 @@ class ProjectSerializer(
             request.authz_token, project.projectID,
             ResourcePermissionType.WRITE)
 
-
 class ApplicationModuleSerializer(
         thrift_utils.create_serializer_class(ApplicationModule)):
     url = FullyEncodedHyperlinkedIdentityField(
@@ -631,12 +630,13 @@ class SharedEntitySerializer(serializers.Serializer):
     groupPermissions = GroupPermissionSerializer(many=True)
     owner = UserProfileSerializer(read_only=True)
     isOwner = serializers.SerializerMethodField()
+    hasSharingPermission = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         raise Exception("Not implemented")
 
     def update(self, instance, validated_data):
-        # Compute lists of ids to grant/revoke READ/WRITE
+        # Compute lists of ids to grant/revoke READ/WRITE/MANAGE_SHARING permission
         existing_user_permissions = {
             user['user'].airavataInternalUserId: user['permissionType']
             for user in instance['userPermissions']}
@@ -645,8 +645,8 @@ class SharedEntitySerializer(serializers.Serializer):
             user['permissionType']
                 for user in validated_data['userPermissions']}
 
-        (user_grant_read_permission, user_grant_write_permission,
-         user_revoke_read_permission, user_revoke_write_permission) = \
+        (user_grant_read_permission, user_grant_write_permission, user_grant_manage_sharing_permission,
+         user_revoke_read_permission, user_revoke_write_permission, user_revoke_manage_sharing_permission) = \
             self._compute_all_revokes_and_grants(existing_user_permissions,
                                                  new_user_permissions)
 
@@ -657,19 +657,23 @@ class SharedEntitySerializer(serializers.Serializer):
             group['group']['id']: group['permissionType']
             for group in validated_data['groupPermissions']}
 
-        (group_grant_read_permission, group_grant_write_permission,
-         group_revoke_read_permission, group_revoke_write_permission) = \
+        (group_grant_read_permission, group_grant_write_permission, group_grant_manage_sharing_permission,
+         group_revoke_read_permission, group_revoke_write_permission, group_revoke_manage_sharing_permission) = \
             self._compute_all_revokes_and_grants(existing_group_permissions,
                                                  new_group_permissions)
 
         instance['_user_grant_read_permission'] = user_grant_read_permission
         instance['_user_grant_write_permission'] = user_grant_write_permission
+        instance['_user_grant_manage_sharing_permission'] = user_grant_manage_sharing_permission
         instance['_user_revoke_read_permission'] = user_revoke_read_permission
         instance['_user_revoke_write_permission'] = user_revoke_write_permission
+        instance['_user_revoke_manage_sharing_permission'] = user_revoke_manage_sharing_permission
         instance['_group_grant_read_permission'] = group_grant_read_permission
         instance['_group_grant_write_permission'] = group_grant_write_permission
+        instance['_group_grant_manage_sharing_permission'] = group_grant_manage_sharing_permission
         instance['_group_revoke_read_permission'] = group_revoke_read_permission
         instance['_group_revoke_write_permission'] = group_revoke_write_permission
+        instance['_group_revoke_manage_sharing_permission'] = group_revoke_manage_sharing_permission
         instance['userPermissions'] = [
             {'user': UserProfile(**data['user']),
              'permissionType': data['permissionType']}
@@ -685,8 +689,10 @@ class SharedEntitySerializer(serializers.Serializer):
                                         new_permissions):
         grant_read_permission = []
         grant_write_permission = []
+        grant_manage_sharing_permission = []
         revoke_read_permission = []
         revoke_write_permission = []
+        revoke_manage_sharing_permission = []
         # Union the two sets of user/group ids
         all_ids = existing_permissions.keys() | new_permissions.keys()
         for id in all_ids:
@@ -698,28 +704,37 @@ class SharedEntitySerializer(serializers.Serializer):
                 revoke_read_permission.append(id)
             if ResourcePermissionType.WRITE in revokes:
                 revoke_write_permission.append(id)
+            if ResourcePermissionType.MANAGE_SHARING in revokes:
+                revoke_manage_sharing_permission.append(id)
             if ResourcePermissionType.READ in grants:
                 grant_read_permission.append(id)
             if ResourcePermissionType.WRITE in grants:
                 grant_write_permission.append(id)
-        return (grant_read_permission, grant_write_permission,
-                revoke_read_permission, revoke_write_permission)
+            if ResourcePermissionType.MANAGE_SHARING in grants:
+                grant_manage_sharing_permission.append(id)
+        return (grant_read_permission, grant_write_permission, grant_manage_sharing_permission,
+                revoke_read_permission, revoke_write_permission, revoke_manage_sharing_permission)
 
     def _compute_revokes_and_grants(self, current_permission=None,
                                     new_permission=None):
         read_permissions = set((ResourcePermissionType.READ,))
         write_permissions = set((ResourcePermissionType.READ,
                                  ResourcePermissionType.WRITE))
+        manage_share_permissions = set((ResourcePermissionType.READ, ResourcePermissionType.WRITE, ResourcePermissionType.MANAGE_SHARING))
         current_permissions_set = set()
         new_permissions_set = set()
         if current_permission == ResourcePermissionType.READ:
             current_permissions_set = read_permissions
         elif current_permission == ResourcePermissionType.WRITE:
             current_permissions_set = write_permissions
+        elif current_permission == ResourcePermissionType.MANAGE_SHARING:
+            current_permissions_set = manage_share_permissions
         if new_permission == ResourcePermissionType.READ:
             new_permissions_set = read_permissions
         elif new_permission == ResourcePermissionType.WRITE:
             new_permissions_set = write_permissions
+        elif new_permission == ResourcePermissionType.MANAGE_SHARING:
+            new_permissions_set = manage_share_permissions
 
         # return tuple: permissions to revoke and permissions to grant
         return (current_permissions_set - new_permissions_set,
@@ -729,6 +744,11 @@ class SharedEntitySerializer(serializers.Serializer):
         request = self.context['request']
         return shared_entity['owner'].userId == request.user.username
 
+    def get_hasSharingPermission(self, shared_entity):
+        request = self.context['request']
+        return request.airavata_client.userHasAccess(
+            request.authz_token, shared_entity['entityId'],
+            ResourcePermissionType.MANAGE_SHARING)
 
 class CredentialSummarySerializer(
         thrift_utils.create_serializer_class(CredentialSummary)):

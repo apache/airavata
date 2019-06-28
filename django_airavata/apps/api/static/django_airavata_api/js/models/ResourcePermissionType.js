@@ -6,4 +6,5 @@ ResourcePermissionType.init([
     'WRITE',
     'READ',
     'OWNER',
+    'MANAGE_SHARING'
 ]);

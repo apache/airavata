@@ -972,6 +972,8 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             lookup_value, ResourcePermissionType.READ))
         users.update(self._load_directly_accessible_users(
             lookup_value, ResourcePermissionType.WRITE))
+        users.update(self._load_directly_accessible_users(
+            lookup_value, ResourcePermissionType.MANAGE_SHARING))
         owner_ids = self._load_directly_accessible_users(
             lookup_value, ResourcePermissionType.OWNER)
         # Assume that there is one and only one DIRECT owner (there may be one
@@ -990,6 +992,8 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             lookup_value, ResourcePermissionType.READ))
         groups.update(self._load_directly_accessible_groups(
             lookup_value, ResourcePermissionType.WRITE))
+        groups.update(self._load_directly_accessible_groups(
+            lookup_value, ResourcePermissionType.MANAGE_SHARING))
         group_list = []
         for group_id in groups:
             group_list.append({'group': self._load_group(group_id),
@@ -1041,6 +1045,10 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             self._share_with_users(
                 entity_id, ResourcePermissionType.WRITE,
                 shared_entity['_user_grant_write_permission'])
+        if len(shared_entity['_user_grant_manage_sharing_permission']) > 0:
+            self._share_with_users(
+                entity_id, ResourcePermissionType.MANAGE_SHARING,
+                shared_entity['_user_grant_manage_sharing_permission'])
         if len(shared_entity['_user_revoke_read_permission']) > 0:
             self._revoke_from_users(
                 entity_id, ResourcePermissionType.READ,
@@ -1049,6 +1057,10 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             self._revoke_from_users(
                 entity_id, ResourcePermissionType.WRITE,
                 shared_entity['_user_revoke_write_permission'])
+        if len(shared_entity['_user_revoke_manage_sharing_permission']) > 0:
+            self._revoke_from_users(
+                entity_id, ResourcePermissionType.MANAGE_SHARING,
+                shared_entity['_user_revoke_manage_sharing_permission'])
         if len(shared_entity['_group_grant_read_permission']) > 0:
             self._share_with_groups(
                 entity_id, ResourcePermissionType.READ,
@@ -1057,6 +1069,10 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             self._share_with_groups(
                 entity_id, ResourcePermissionType.WRITE,
                 shared_entity['_group_grant_write_permission'])
+        if len(shared_entity['_group_grant_manage_sharing_permission']) > 0:
+            self._share_with_groups(
+                entity_id, ResourcePermissionType.MANAGE_SHARING,
+                shared_entity['_group_grant_manage_sharing_permission'])
         if len(shared_entity['_group_revoke_read_permission']) > 0:
             self._revoke_from_groups(
                 entity_id, ResourcePermissionType.READ,
@@ -1065,6 +1081,10 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             self._revoke_from_groups(
                 entity_id, ResourcePermissionType.WRITE,
                 shared_entity['_group_revoke_write_permission'])
+        if len(shared_entity['_group_revoke_manage_sharing_permission']) > 0:
+            self._revoke_from_groups(
+                entity_id, ResourcePermissionType.MANAGE_SHARING,
+                shared_entity['_group_revoke_manage_sharing_permission'])
 
     def _share_with_users(self, entity_id, permission_type, user_ids):
         self.request.airavata_client.shareResourceWithUsers(
@@ -1119,6 +1139,8 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             entity_id, ResourcePermissionType.READ))
         users.update(self._load_accessible_users(
             entity_id, ResourcePermissionType.WRITE))
+        users.update(self._load_accessible_users(
+            entity_id, ResourcePermissionType.MANAGE_SHARING))
         owner_ids = self._load_accessible_users(
             entity_id, ResourcePermissionType.OWNER)
         # Assume that there is one and only one DIRECT owner (there may be one
@@ -1137,6 +1159,8 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             entity_id, ResourcePermissionType.READ))
         groups.update(self._load_accessible_groups(
             entity_id, ResourcePermissionType.WRITE))
+        groups.update(self._load_accessible_groups(
+            entity_id, ResourcePermissionType.MANAGE_SHARING))
         group_list = []
         for group_id in groups:
             group_list.append({'group': self._load_group(group_id),

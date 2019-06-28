@@ -154,7 +154,7 @@ export default {
       // Enable share button if new entity or user is the entity's owner
       return (
         this.localSharedEntity &&
-        (!this.localSharedEntity.entityId || this.localSharedEntity.isOwner)
+        (!this.localSharedEntity.entityId || this.localSharedEntity.isOwner || this.localSharedEntity.hasSharingPermission)
       );
     },
     hasParentSharedEntityPermissions() {
