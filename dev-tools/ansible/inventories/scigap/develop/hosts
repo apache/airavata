@@ -23,16 +23,16 @@
 149.165.156.151
 
 [django]
-seagrid ansible_host=pgadev.scigap.org
-simvascular ansible_host=pgadev.scigap.org
-simccs ansible_host=pgadev.scigap.org
-interactwel ansible_host=pgadev.scigap.org
-usd ansible_host=pgadev.scigap.org
-csbglsu ansible_host=pgadev.scigap.org
-nexttdb ansible_host=pgadev.scigap.org
-saver-x ansible_host=pgadev.scigap.org
-pfec-hydro ansible_host=pgadev.scigap.org
-cyberwater ansible_host=pgadev.scigap.org
+seagrid ansible_host=149.165.156.46
+simvascular ansible_host=149.165.156.46
+simccs ansible_host=149.165.156.46
+interactwel ansible_host=149.165.156.46
+usd ansible_host=149.165.156.46
+csbglsu ansible_host=149.165.156.46
+nexttdb ansible_host=149.165.156.46
+saver-x ansible_host=149.165.156.46
+pfec-hydro ansible_host=149.165.156.46
+cyberwater ansible_host=149.165.156.46
 
 [helix]
 149.165.157.37

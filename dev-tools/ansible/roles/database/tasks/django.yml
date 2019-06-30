@@ -26,8 +26,13 @@
   with_items:
   - "{{ groups['django'] }}"
 
-- name: give access to {{ django_db_username }} from remote
+- name: give access to {{ django_db_username }} from remote (internal ip)
   mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="{{ hostvars[item]['ansible_default_ipv4']['address']  }}"
+  with_items:
+  - "{{ groups['django'] }}"
+
+- name: give access to {{ django_db_username }} from remote (public ip)
+  mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="{{ hostvars[item].ansible_host }}"
   with_items:
   - "{{ groups['django'] }}"
 

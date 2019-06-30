@@ -35,7 +35,9 @@ airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
 git_branch: develop
 
 # Database related variables
-db_server: "{{ hostvars[groups['database'][0]]['ansible_default_ipv4']['address'] }}"
+# FIXME: once we get the entire dev stack on the same network we can use the
+# internal ip address instead of the public one
+db_server: "{{ groups['database'][0] }}"
 db_server_port: "3306"
 db_user: "airavata"
 db_password: "{{ vault_db_password }}"
