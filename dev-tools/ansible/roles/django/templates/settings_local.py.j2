@@ -49,7 +49,7 @@ DATABASES = {
         'PASSWORD': '{{ django_db_password }}'
     },
     'OPTIONS': {
-        'init_command': 'SET default_storage_engine=INNODB',
+        'init_command': 'SET default_storage_engine=INNODB,collation_connection=utf8_bin',
     }
 }
 
