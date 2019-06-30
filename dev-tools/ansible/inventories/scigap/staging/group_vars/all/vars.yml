@@ -47,6 +47,9 @@ workflow_catalog: "workflow_catalog"
 credential_store: "credential_store"
 profile_service: "profile_service"
 
+django_db_username: "django"
+django_db_password: "{{ vault_db_password }}"
+
 # Rabbitmq related vareables
 rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
 rabbitmq_vhost: "master"

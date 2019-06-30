@@ -18,11 +18,12 @@
 # under the License.
 #
 ---
-# TODO: install python34
-# sudo yum -y install python34
+# TODO: install python36
+# sudo yum -y install python36
 # sudo yum -y install httpd-devel
-# sudo yum -y install python34-devel
+# sudo yum -y install python36-devel
 # sudo yum -y install mysql-devel
+# sudo yum -y install gcc
 
 # TODO: fetch and build mod_wsgi
 # mkdir mod_wsgi
