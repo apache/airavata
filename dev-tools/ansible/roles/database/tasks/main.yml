@@ -142,6 +142,9 @@
 - include: keycloak.yml
   when: "'keycloak' in groups"
 
+- include: django.yml
+  when: "'django' in groups"
+
 - name: open firewall port {{ db_server_port }}
   firewalld: port="{{ db_server_port }}/tcp"
              zone=public permanent=true state=enabled immediate=yes

@@ -19,6 +19,9 @@
 #
 
 ---
+- hosts: database
+  gather_facts: True
+
 # Run the following setup once
 - hosts: django[0]
   name: webserver setup
