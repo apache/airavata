@@ -1,0 +1,39 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+user: "pga"
+group: "pga"
+gateway_data_store_hostname: "pga.staging.scigap.org"
+gateway_data_store_resource_id: "pga.staging.scigap.org_aa63ffa0-a99f-4885-8f4b-81e3c4c4d737"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDWgLve4J9WCohF/4UnbBZsh/nRkP1aM9FmA1FjKwK2gQAnKwhU+NrbsjW38h2Hi+8s9N2oZ9cCJHrvDi2U0cMxz4exIUBcVoRhw37ThlREHADeKR1FbKw0QLhTyfJb0K+1/8GWRluiFx0vHPptJe0KTqu+RJY0NSe+d/BEuGyCZ1hR+SKNuTgcb05Ia6opbSN5D68N9biseEux60d69ARQxLw+VN3Kr/UaBNpGIAfKLlLSUQlTyPA6G6UKCcJZv+/ye10oa0SK0qtrxMpL+4VJcVx+d56U7CUFWKEgPAaQrX1qdGUNDA7HKmD+EBtzw6DJqNJ0Cue/XuPe/RT62tpf"
+django_wsgi_processes: 2
+doc_root_dir: "/var/www/portals/django-{{gateway_id}}"
+django_database_name: "django_{{ inventory_hostname }}"
+
+# Default email settings
+portal_email_host: "smtp.gmail.com"
+portal_email_port: 587
+portal_email_tls: true
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+portal_server_email: "{{ portal_email_username }}"
+admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"
+django_error_emails: "[('SciGaP Errors', 'bugs@scigap.org')]"

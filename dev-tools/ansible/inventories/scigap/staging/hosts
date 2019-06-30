@@ -21,6 +21,11 @@ scigap03.sciencegateways.iu.edu
 [pga]
 scigap08.sciencegateways.iu.edu
 
+[django]
+seagrid ansible_host=156.56.104.18
+ultrascan ansible_host=156.56.104.18
+testdrive ansible_host=156.56.104.18
+
 # Using the same keycloak as production
 #[keycloak]
 #gf7.ucs.indiana.edu ansible_user=root
