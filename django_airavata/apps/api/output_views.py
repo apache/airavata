@@ -25,7 +25,7 @@ DEFAULT_VIEW_PROVIDERS = {
 }
 
 
-def get_output_views(request, experiment, application_interface):
+def get_output_views(request, experiment, application_interface=None):
     output_views = {}
     for output in experiment.experimentOutputs:
         output_views[output.name] = []
@@ -75,11 +75,12 @@ def _get_output_view_providers(experiment_output, application_interface):
     if 'default' not in output_view_providers:
         output_view_providers.insert(0, 'default')
     # Add in any output view providers defined on the application interface
-    app_output_view_providers = _get_application_output_view_providers(
-        application_interface, experiment_output.name)
-    for view_provider in app_output_view_providers:
-        if view_provider not in output_view_providers:
-            output_view_providers.append(view_provider)
+    if application_interface is not None:
+        app_output_view_providers = _get_application_output_view_providers(
+            application_interface, experiment_output.name)
+        for view_provider in app_output_view_providers:
+            if view_provider not in output_view_providers:
+                output_view_providers.append(view_provider)
     return output_view_providers
 
 
@@ -89,6 +90,8 @@ def _get_application_output_view_providers(application_interface, output_name):
                   if o.name == output_name]
     if len(app_output) == 1:
         app_output = app_output[0]
+    else:
+        return []
     if app_output.metaData:
         try:
             output_metadata = json.loads(app_output.metaData)
