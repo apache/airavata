@@ -116,7 +116,7 @@ def _generate_data(request,
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, experiment_output.value)
         if data_products_helper.exists(request, data_product):
-            output_file = data_products_helper.open()
+            output_file = data_products_helper.open(request, data_product)
     data = output_view_provider.generate_data(
         experiment_output, experiment, output_file=output_file)
     return data
