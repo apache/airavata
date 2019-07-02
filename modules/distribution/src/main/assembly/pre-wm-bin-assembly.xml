@@ -160,6 +160,7 @@
                 <include>org.apache.airavata:profile-service-stubs:jar</include>
                 <include>org.apache.airavata:services-security:jar</include>
                 <include>org.apache.airavata:airavata-sharing-registry-stubs:jar</include>
+                <include>org.apache.airavata:airavata-security:jar</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
