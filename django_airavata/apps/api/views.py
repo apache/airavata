@@ -1478,11 +1478,13 @@ class ExperimentStatisticsView(APIView):
         else:
             from_time = (datetime.utcnow() -
                          timedelta(days=7)).timestamp() * 1000
+        from_time = int(from_time)
         if 'toTime' in request.GET:
             to_time = view_utils.convert_utc_iso8601_to_date(
                 request.GET['toTime']).timestamp() * 1000
         else:
             to_time = datetime.utcnow().timestamp() * 1000
+        to_time = int(to_time)
         username = request.GET.get('userName', None)
         application_name = request.GET.get('applicationName', None)
         resource_hostname = request.GET.get('resourceHostName', None)
