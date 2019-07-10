@@ -1,27 +1,54 @@
 <template>
   <div>
     <b-form-group>
-      <autocomplete-text-input id="user-autocomplete" :suggestions="suggestions" @selected="suggestionSelected"
-        placeholder="Search for users to add to this group" />
+      <autocomplete-text-input
+        id="user-autocomplete"
+        :suggestions="suggestions"
+        @selected="suggestionSelected"
+        placeholder="Search for users to add to this group"
+      />
     </b-form-group>
-    <b-table v-if="membersCount > 0" hover :items="currentMembers" :fields="fields" sort-by="name">
+    <b-table
+      v-if="membersCount > 0"
+      hover
+      :items="currentMembers"
+      :fields="fields"
+      sort-by="name"
+    >
       <template slot="HEAD_role">
         <div class="d-flex">
           <div>Role</div>
           <div class="ml-auto mr-2">
-            <i class="fa fa-info-circle text-info align-text-top" v-b-tooltip.hover title="Admins can add and remove group members." />
+            <i
+              class="fa fa-info-circle text-info align-text-top"
+              v-b-tooltip.hover
+              title="Admins can add and remove group members."
+            />
           </div>
         </div>
       </template>
-      <template slot="role" slot-scope="data">
+      <template
+        slot="role"
+        slot-scope="data"
+      >
         <!-- Can only change role if the user is the group owner but the role of the owner can't be changed -->
-        <b-form-select v-if="group.isOwner && data.item.role !== 'OWNER'" :value="data.item.role" @input="changeRole(data.item, $event)"
-          :options="groupRoleOptions">
+        <b-form-select
+          v-if="group.isOwner && data.item.role !== 'OWNER'"
+          :value="data.item.role"
+          @input="changeRole(data.item, $event)"
+          :options="groupRoleOptions"
+        >
         </b-form-select>
         <span v-else>{{ data.value }}</span>
       </template>
-      <template slot="remove" slot-scope="data">
-        <b-link v-if="data.item.editable" @click="removeMember(data.item)">
+      <template
+        slot="remove"
+        slot-scope="data"
+      >
+        <b-link
+          v-if="data.item.editable"
+          @click="removeMember(data.item)"
+        >
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -60,19 +87,24 @@ export default {
       if (!this.userProfiles) {
         return [];
       }
-      // TODO: filter out current members
-      return this.userProfiles.map(userProfile => {
-        return {
-          id: userProfile.airavataInternalUserId,
-          name:
-            userProfile.firstName +
-            " " +
-            userProfile.lastName +
-            " (" +
-            userProfile.userId +
-            ")"
-        };
-      });
+      return this.userProfiles
+        // Filter out current members
+        .filter(
+          userProfile =>
+            this.group.members.indexOf(userProfile.airavataInternalUserId) < 0
+        )
+        .map(userProfile => {
+          return {
+            id: userProfile.airavataInternalUserId,
+            name:
+              userProfile.firstName +
+              " " +
+              userProfile.lastName +
+              " (" +
+              userProfile.userId +
+              ")"
+          };
+        });
     },
     fields() {
       return [
