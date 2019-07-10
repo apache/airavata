@@ -258,6 +258,9 @@ body {
 .action-link + .action-link {
   margin-left: .25rem;
 }
+.btn + .btn-block {
+  margin-left: 0px;
+}
 .action-link {
   white-space: nowrap;
 }

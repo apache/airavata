@@ -17,19 +17,24 @@ class AdminConfig(AiravataAppConfig):
             'label': 'Application Catalog',
             'icon': 'fa fa-cogs',
             'url': 'django_airavata_admin:app_catalog',
-            'active_prefixes': ['applications']
+            'active_prefixes': ['applications'],
+            'enabled': lambda req: (req.is_gateway_admin or
+                                    req.is_read_only_gateway_admin),
         },
         {
             'label': 'Manage Users',
             'icon': 'fa fa-users',
             'url': 'django_airavata_admin:users',
-            'active_prefixes': ['users']
+            'active_prefixes': ['users'],
+            'enabled': lambda req: req.is_gateway_admin,
         },
         {
             'label': 'Experiment Statistics',
             'icon': 'fa fa-chart-bar',
             'url': 'django_airavata_admin:experiment-statistics',
-            'active_prefixes': ['experiment-statistics']
+            'active_prefixes': ['experiment-statistics'],
+            'enabled': lambda req: (req.is_gateway_admin or
+                                    req.is_read_only_gateway_admin),
         },
         {
             'label': 'Credential Store',
@@ -47,6 +52,7 @@ class AdminConfig(AiravataAppConfig):
             'label': 'Gateway Resource Profile',
             'icon': 'fa fa-tasks',
             'url': 'django_airavata_admin:gateway_resource_profile',
-            'active_prefixes': ['gateway-resource-profile']
+            'active_prefixes': ['gateway-resource-profile'],
+            'enabled': lambda req: req.is_gateway_admin
         },
     ]

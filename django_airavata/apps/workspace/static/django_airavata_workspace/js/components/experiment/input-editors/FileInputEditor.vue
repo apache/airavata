@@ -70,7 +70,7 @@ export default {
   computed: {
     isDataProductURI() {
       // Just assume that if the value is a string then it's a data product URL
-      return this.value && typeof this.value === "string";
+      return this.value && typeof this.value === "string" && this.value.startsWith("airavata-dp://");
     },
     // When used in the MultiFileInputEditor, don't allow selecting the same
     // file more than once. This computed property creates an array of already

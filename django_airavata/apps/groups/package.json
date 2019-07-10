@@ -12,10 +12,11 @@
   },
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
-    "bootstrap-vue": "^2.0.0-rc.11",
+    "bootstrap-vue": "^2.0.0-rc.26",
     "django-airavata-api": "file:../api",
     "django-airavata-common-ui": "file:../../static/common",
     "moment": "^2.18.1",
+    "terser": "^4.1.2",
     "vue": "^2.5.22"
   },
   "devDependencies": {

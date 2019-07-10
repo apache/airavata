@@ -19,6 +19,7 @@
     "@babel/polyfill": "^7.0.0",
     "@babel/runtime": "^7.1.2",
     "stacktrace-js": "^2.0.0",
+    "terser": "^4.1.2",
     "url-parse": "^1.4.3",
     "uuid": "^3.3.2"
   },

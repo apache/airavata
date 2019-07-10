@@ -431,7 +431,15 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 output.type == DataType.URI_COLLECTION)
             for dp in output.value.split(',')
             if output.value.startswith('airavata-dp')]
-        exp_output_views = output_views.get_output_views(experimentModel)
+        appInterfaceId = experimentModel.executionId
+        try:
+            applicationInterface = self.request.airavata_client \
+                .getApplicationInterface(self.authz_token, appInterfaceId)
+        except Exception as e:
+            log.exception("Failed to load app interface")
+            applicationInterface = None
+        exp_output_views = output_views.get_output_views(
+            self.request, experimentModel, applicationInterface)
         inputDataProducts = [
             self.request.airavata_client.getDataProduct(self.authz_token,
                                                         inp.value)
@@ -448,13 +456,13 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 inp.type == DataType.URI_COLLECTION)
             for dp in inp.value.split(',')
             if inp.value.startswith('airavata-dp')]
-        appInterfaceId = experimentModel.executionId
         try:
-            applicationInterface = self.request.airavata_client \
-                .getApplicationInterface(self.authz_token, appInterfaceId)
-            appModuleId = applicationInterface.applicationModules[0]
-            applicationModule = self.request.airavata_client \
-                .getApplicationModule(self.authz_token, appModuleId)
+            if applicationInterface is not None:
+                appModuleId = applicationInterface.applicationModules[0]
+                applicationModule = self.request.airavata_client \
+                    .getApplicationModule(self.authz_token, appModuleId)
+            else:
+                log.warning("Cannot log application model since app interface failed to load")
         except Exception as e:
             log.exception("Failed to load app interface/module")
             applicationModule = None
@@ -1516,11 +1524,13 @@ class ExperimentStatisticsView(APIView):
         else:
             from_time = (datetime.utcnow() -
                          timedelta(days=7)).timestamp() * 1000
+        from_time = int(from_time)
         if 'toTime' in request.GET:
             to_time = view_utils.convert_utc_iso8601_to_date(
                 request.GET['toTime']).timestamp() * 1000
         else:
             to_time = datetime.utcnow().timestamp() * 1000
+        to_time = int(to_time)
         username = request.GET.get('userName', None)
         application_name = request.GET.get('applicationName', None)
         resource_hostname = request.GET.get('resourceHostName', None)

@@ -56,7 +56,7 @@ export default class SharedEntity extends BaseModel {
     );
   }
 
-  addGroup(group) {
+  addGroup({group, permissionType = ResourcePermissionType.READ}) {
     if (!this.groupPermissions) {
       this.groupPermissions = [];
     }
@@ -64,7 +64,7 @@ export default class SharedEntity extends BaseModel {
       this.groupPermissions.push(
         new GroupPermission({
           group: group,
-          permissionType: ResourcePermissionType.READ
+          permissionType: permissionType
         })
       );
     }

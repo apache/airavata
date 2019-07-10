@@ -65,6 +65,10 @@ export default {
       type: Boolean,
       default: true
     },
+    autoAddAdminGroups: {
+      type: Boolean,
+      default: true
+    },
     disallowEditingAdminGroups: {
       type: Boolean,
       default: true
@@ -79,6 +83,8 @@ export default {
       parentSharedEntity: null,
       sharedEntityCopy: null,
       defaultGatewayUsersGroup: null,
+      adminsGroup: null,
+      readOnlyAdminsGroup: null,
       users: null,
       groups: null
     };
@@ -121,9 +127,7 @@ export default {
     },
     filteredGroupPermissions: function() {
       if (this.localSharedEntity && this.localSharedEntity.groupPermissions) {
-        return this.disallowEditingAdminGroups
-          ? this.localSharedEntity.nonAdminGroupPermissions
-          : this.localSharedEntity.groupPermissions;
+        return this.localSharedEntity.groupPermissions;
       } else {
         return [];
       }
@@ -131,10 +135,7 @@ export default {
     combinedGroups() {
       const groups = [];
       groups.push(...this.filteredGroupPermissions.map(gp => gp.group));
-      if (
-        this.parentSharedEntity &&
-        this.parentSharedEntity.groupPermissions
-      ) {
+      if (this.parentSharedEntity && this.parentSharedEntity.groupPermissions) {
         groups.push(
           ...this.parentSharedEntity.groupPermissions.map(gp => gp.group)
         );
@@ -191,15 +192,14 @@ export default {
       if (
         !this.entityId &&
         (!this.sharedEntity || !this.sharedEntity.entityId) &&
-        !this.defaultGatewayUsersGroup
+        (!this.defaultGatewayUsersGroup || !this.adminsGroup || !this.readOnlyAdminsGroup)
       ) {
         promises.push(
           services.GroupService.list({ limit: -1 }).then(groups => {
             this.groups = groups;
-            // If a new sharedEntity, automatically add the defaultGatewayUsersGroup
-            groups
-              .filter(group => group.isDefaultGatewayUsersGroup)
-              .forEach(group => (this.defaultGatewayUsersGroup = group));
+            this.defaultGatewayUsersGroup = groups.find(g => g.isDefaultGatewayUsersGroup);
+            this.adminsGroup = groups.find(g => g.isGatewayAdminsGroup);
+            this.readOnlyAdminsGroup = groups.find(g => g.isReadOnlyGatewayAdminsGroup);
           })
         );
       }
@@ -222,7 +222,17 @@ export default {
           !this.localSharedEntity.entityId &&
           this.autoAddDefaultGatewayUsersGroup
         ) {
-          this.localSharedEntity.addGroup(this.defaultGatewayUsersGroup);
+          this.localSharedEntity.addGroup({
+            group: this.defaultGatewayUsersGroup
+          });
+          this.emitUnsavedEvent();
+        }
+        if (!this.localSharedEntity.entityId && this.autoAddAdminGroups) {
+          this.localSharedEntity.addGroup({
+            group: this.adminsGroup,
+            permissionType: models.ResourcePermissionType.WRITE
+          });
+          this.localSharedEntity.addGroup({ group: this.readOnlyAdminsGroup });
           this.emitUnsavedEvent();
         }
       });

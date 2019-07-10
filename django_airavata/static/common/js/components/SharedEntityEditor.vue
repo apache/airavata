@@ -291,7 +291,7 @@ export default {
     suggestionSelected: function(suggestion) {
       if (suggestion.type === "group") {
         const group = this.groups.find(group => group.id === suggestion.id);
-        this.data.addGroup(group);
+        this.data.addGroup({ group });
       } else if (suggestion.type === "user") {
         const user = this.users.find(
           user => user.airavataInternalUserId === suggestion.id

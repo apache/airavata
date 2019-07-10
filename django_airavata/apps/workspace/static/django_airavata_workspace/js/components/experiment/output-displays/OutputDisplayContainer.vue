@@ -13,6 +13,7 @@
         <b-dropdown-item
           v-for="view in outputViews"
           :key="view['provider-id']"
+          :active="view['provider-id'] === currentView['provider-id']"
           @click="selectView(view)"
         >{{ view['name']}}</b-dropdown-item>
       </b-dropdown>
