@@ -292,10 +292,13 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
         }
 
-        if (experimentIds != null) {
+        if (!experimentIds.isEmpty()) {
             logger.debug("Filter Experiments by experimentIds");
             queryParameters.put(DBConstants.Experiment.EXPERIMENT_ID, experimentIds);
             query += "ES.experimentId IN :" + DBConstants.Experiment.EXPERIMENT_ID + " AND ";
+        } else {
+            // If no experiments are accessible then immediately return an empty list
+            return new ArrayList<ExperimentSummaryModel>();
         }
 
         if (resourceHostName != null) {
