@@ -8,6 +8,7 @@ nav:
     - Using the integrated CMS: cms.md
   - Developer Guide:
     - Adding a Django App: dev/new_django_app.md
+    - Adding a Custom Django App: dev/custom_django_app.md
     - Developing the Frontend: dev/developing_frontend.md
     - Developing the Backend: dev/developing_backend.md
   - Tutorials:
