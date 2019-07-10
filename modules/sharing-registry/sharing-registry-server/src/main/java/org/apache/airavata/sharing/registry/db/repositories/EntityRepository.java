@@ -99,15 +99,15 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                 }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.CREATED_TIME)){
                 if(searchCriteria.getSearchCondition().equals(SearchCondition.GTE)){
-                    query += "E.CREATED_TIME >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                    query += "E.CREATED_TIME >= " + Long.parseLong(searchCriteria.getValue().trim()) + " AND ";
                 }else{
-                    query += "E.CREATED_TIME <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                    query += "E.CREATED_TIME <= " + Long.parseLong(searchCriteria.getValue().trim()) + " AND ";
                 }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.UPDATED_TIME)){
                 if(searchCriteria.getSearchCondition().equals(SearchCondition.GTE)){
-                    query += "E.UPDATED_TIME >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                    query += "E.UPDATED_TIME >= " + Long.parseLong(searchCriteria.getValue().trim()) + " AND ";
                 }else{
-                    query += "E.UPDATED_TIME <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                    query += "E.UPDATED_TIME <= " + Long.parseLong(searchCriteria.getValue().trim()) + " AND ";
                 }
             } else if (searchCriteria.getSearchField().equals(EntitySearchField.SHARED_COUNT)) {
                 if (searchCriteria.getSearchCondition().equals(SearchCondition.GTE)) {
