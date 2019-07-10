@@ -1257,8 +1257,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             toCreatedTimeCriteria.setSearchCondition(SearchCondition.LTE);
             toCreatedTimeCriteria.setValue(Long.toString(toTime));
             sharingFilters.add(toCreatedTimeCriteria);
+            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
             sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                    userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.getEntityId()));
+                    userId + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.getEntityId()));
 
             ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds);
             registryClientPool.returnResource(regClient);
