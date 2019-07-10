@@ -46,7 +46,7 @@ export default {
         return (
           data.name.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0
         );
-      });
+      }).slice(0,5);
     }
   },
   methods: {
