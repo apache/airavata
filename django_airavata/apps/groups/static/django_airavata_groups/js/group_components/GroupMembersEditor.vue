@@ -14,6 +14,7 @@
       :items="currentMembers"
       :fields="fields"
       sort-by="name"
+      :sort-compare="sortCompare"
     >
       <template slot="HEAD_role">
         <div class="d-flex">
@@ -73,7 +74,8 @@ export default {
   },
   data() {
     return {
-      userProfiles: null
+      userProfiles: null,
+      newMembers: []
     };
   },
   computed: {
@@ -87,24 +89,26 @@ export default {
       if (!this.userProfiles) {
         return [];
       }
-      return this.userProfiles
-        // Filter out current members
-        .filter(
-          userProfile =>
-            this.group.members.indexOf(userProfile.airavataInternalUserId) < 0
-        )
-        .map(userProfile => {
-          return {
-            id: userProfile.airavataInternalUserId,
-            name:
-              userProfile.firstName +
-              " " +
-              userProfile.lastName +
-              " (" +
-              userProfile.userId +
-              ")"
-          };
-        });
+      return (
+        this.userProfiles
+          // Filter out current members
+          .filter(
+            userProfile =>
+              this.group.members.indexOf(userProfile.airavataInternalUserId) < 0
+          )
+          .map(userProfile => {
+            return {
+              id: userProfile.airavataInternalUserId,
+              name:
+                userProfile.firstName +
+                " " +
+                userProfile.lastName +
+                " (" +
+                userProfile.userId +
+                ")"
+            };
+          })
+      );
     },
     fields() {
       return [
@@ -148,7 +152,8 @@ export default {
               username: userProfile.userId,
               email: userProfile.email,
               role: isOwner ? "OWNER" : isAdmin ? "ADMIN" : "MEMBER",
-              editable: editable
+              editable: editable,
+              _rowVariant: this.newMembers.indexOf(m) >= 0 ? "success" : null
             };
           })
       );
@@ -176,6 +181,7 @@ export default {
   },
   methods: {
     suggestionSelected(suggestion) {
+      this.newMembers.push(suggestion.id);
       this.$emit("add-member", suggestion.id);
     },
     removeMember(item) {
@@ -186,6 +192,30 @@ export default {
         this.$emit("change-role-to-admin", item.id);
       } else {
         this.$emit("change-role-to-member", item.id);
+      }
+    },
+    sortCompare(aRow, bRow, key) {
+      // Sort new members before all others
+      const aNewIndex = this.newMembers.indexOf(aRow.id);
+      const bNewIndex = this.newMembers.indexOf(bRow.id);
+      if (aNewIndex >= 0 && bNewIndex >= 0) {
+        return aNewIndex - bNewIndex;
+      } else if (aNewIndex >= 0) {
+        return -1;
+      } else if (bNewIndex >= 0) {
+        return 1;
+      }
+      const a = aRow[key];
+      const b = bRow[key];
+      if (
+        (typeof a === "number" && typeof b === "number") ||
+        (a instanceof Date && b instanceof Date)
+      ) {
+        // If both compared fields are native numbers or both are dates
+        return a < b ? -1 : a > b ? 1 : 0;
+      } else {
+        // Otherwise stringify the field data and use String.prototype.localeCompare
+        return new String(a).localeCompare(new String(b));
       }
     }
   }
