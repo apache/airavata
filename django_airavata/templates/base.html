@@ -151,43 +151,7 @@
     </div>
     {% if user.is_authenticated %}
     <div class=c-header__controls>
-      <div class="btn-group ml-3">
-        <div class=dropdown>
-          <a href=# class="dropdown-toggle text-dark" id=dropdownNoticeButton
-            data-toggle=dropdown title="Notifications" aria-haspopup=true
-            aria-expanded=false>
-            <span class="fa-stack fa-1x has-badge" data-count={{ unread_notifications }} id="unread_notification_count">
-              <i class="fa fa-circle fa-stack-2x fa-inverse"></i>
-              <i class="fa fa-bell fa-stack-1x"></i>
-            </span>
-          </a>
-          <div class="dropdown-menu widget-notifications no-padding" style="width: 300px">
-              <div class="notifications-list" id="ack-notification">
-                <div class="text-center text-primary ">Notifications</div>
-
-                {% for notice in notifications %}
-                  <div class="dropdown-divider"></div>
-                  <div class="dropdown-item">
-                     <div>
-                        <span class="notification-title {{ notice.textColor }} text-wrap">{{ notice.title }}</span>
-                        <a class="fas fa-dot-circle"
-                                data-toggle="tooltip" data-placement="left"
-                                title="Mark as read"
-                                id={{ notice.notificationId }}
-                                notification_id={{ notice.notificationId }}
-                                url={{ notice.url }}
-                                {% if notice.is_read %} hidden {% endif %}
-                                >
-                        </a>
-                      </div>
-                      <div class="notification-description text-wrap" id="notification_description"><strong>{{ notice.notificationMessage }}</strong></div>
-                      <div class="notification-ago time" > {{ notice.publishedTime | naturaltime }} </div>
-                  </div>
-                {% endfor %}
-              </div>
-          </div>
-        </div>
-      </div>
+      <div id="gateway-notices" data-unread-count="{{ unread_notifications }}" data-notices="{{ notifications }}"></div>
       <div class="btn-group ml-3">
         <div class=dropdown>
           <a href=# class="dropdown-toggle text-dark" id=appDropdownMenuButton data-toggle=dropdown aria-haspopup=true
@@ -290,6 +254,9 @@
   </script>
   {% render_bundle 'chunk-vendors' 'js' 'COMMON' %}
   {% render_bundle 'app' 'js' 'COMMON' %}
+  {% if user.is_authenticated %}
+    {% render_bundle 'notices' 'js' 'COMMON' %}
+  {% endif %}
   {% block scripts %}
   {% endblock %}
 </body>

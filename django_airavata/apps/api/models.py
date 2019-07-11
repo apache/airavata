@@ -10,6 +10,7 @@ class WorkspacePreferences(models.Model):
     def create(self, username):
         return WorkspacePreferences(username=username)
 
+
 class User_Notifications(models.Model):
     class Meta:
         unique_together = (('username', 'notification_id'),)
@@ -17,6 +18,7 @@ class User_Notifications(models.Model):
     username = models.CharField(max_length=64)
     notification_id = models.CharField(max_length=255)
     is_read = models.BooleanField(default=False)
+
 
 class User_Files(models.Model):
     username = models.CharField(max_length=64)

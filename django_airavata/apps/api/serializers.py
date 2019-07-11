@@ -55,9 +55,9 @@ from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import (
-    Project,
     Notification,
-    NotificationPriority
+    NotificationPriority,
+    Project
 )
 
 from . import data_products_helper, models, thrift_utils
@@ -858,9 +858,11 @@ class IAMUserProfile(serializers.Serializer):
             set(existing_group_ids) - set(new_group_ids))
         return instance
 
+
 class AckNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User_Notifications
+
 
 class NotificationSerializer(
         thrift_utils.create_serializer_class(Notification)):
@@ -869,9 +871,10 @@ class NotificationSerializer(
         lookup_field='notificationId',
         lookup_url_kwarg='notification_id')
     priority = thrift_utils.ThriftEnumField(NotificationPriority)
-    creationTime = UTCPosixTimestampDateTimeField(allow_null = True)
+    creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     publishedTime = UTCPosixTimestampDateTimeField()
     expirationTime = UTCPosixTimestampDateTimeField()
+
 
 class ExperimentStatisticsSerializer(
         thrift_utils.create_serializer_class(ExperimentStatistics)):
