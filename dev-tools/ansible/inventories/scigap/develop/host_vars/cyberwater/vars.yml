@@ -41,6 +41,7 @@ auth_options:
 
 gateway_id: "cyberwater"
 experiment_data_dir: "{{ user_data_dir }}/django-cyberwater"
+# gateway_data_store_ssh_public_key: "TODO"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
