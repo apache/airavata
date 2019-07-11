@@ -53,6 +53,7 @@ django_extra_settings:
 
 gateway_id: "simccs"
 experiment_data_dir: "{{ user_data_dir }}/django-simccs"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCuylY2GrNiS6ylc4a0qfnNHEUHq9kzCg4yrNmK6O5KTIDN8SdUvVQ9BMx1jPnc9WZEFhvGvUvY1vqM/X0NZ5CS2wXs0LYxucL8Qz1YTJ2p55p0+5ImsaxZa/R4JlAaNeI1IFuR3bgBkjH92KzJha8UFko18md7M72wio1w4Mwq2sCC0g9Iuni04uSSps4BL0hA/lopeRSwzIE0aRT6mVe+vZ73+LfA39e0jJLbcbyhhGUKqUu1YThKo5UIlaz6VMyr0L+NuR5ng21Fyp7C0vdGkOoxIBAX7NcuUnKD6P0rBG7QvzHYTxjGivyjFNE3vjTH40iiSPdQ7nw/+PKpo/C9"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
