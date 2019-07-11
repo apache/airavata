@@ -55,4 +55,12 @@ class AdminConfig(AiravataAppConfig):
             'active_prefixes': ['gateway-resource-profile'],
             'enabled': lambda req: req.is_gateway_admin
         },
+        {
+            'label': 'Manage Notices',
+            'icon': 'fa fa-bell',
+            'url': 'django_airavata_admin:notices',
+            'active_prefixes': ['notices'],
+            'enabled': lambda req: (req.is_gateway_admin or
+                                    req.is_read_only_gateway_admin)
+        },
     ]

@@ -7,40 +7,7 @@
 {% render_bundle 'chunk-vendors' 'css' 'ADMIN' %}
 {% render_bundle 'app' 'css' 'ADMIN' %}
 <link rel=stylesheet type=text/css href={% static 'django_airavata_admin/static/css/admin.css' %}> {% endblock %}
-{% block nav-items %}
 
-        {% if request.is_gateway_admin or request.is_read_only_gateway_admin %}
-        <a href="{% url 'django_airavata_admin:app_catalog' %}" class="c-nav__item {% if request.active_nav_item == 'app_catalog' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Application Catalog">
-            <i class="fa fa-cogs"></i> <span class=sr-only>Application Catalog</span>
-        </a>
-        {% endif %}
-        {% if request.is_gateway_admin %}
-        <a href="{% url 'django_airavata_admin:users' %}" class="c-nav__item {% if request.active_nav_item == 'users' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Manage Users">
-            <i class="fa fa-users"></i> <span class=sr-only>Manage Users</span>
-        </a>
-        {% endif %}
-        {% if request.is_gateway_admin or request.is_read_only_gateway_admin %}
-        <a href="{% url 'django_airavata_admin:experiment-statistics' %}" class="c-nav__item {% if request.active_nav_item == 'experiment-statistics' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Experiment Statistics">
-            <i class="fa fa-chart-bar"></i> <span class=sr-only>Experiment Statistics</span>
-        </a>
-        {% endif %}
-        <a href="{% url 'django_airavata_admin:credential_store' %}" class="c-nav__item {% if request.active_nav_item == 'credential_store' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Credential Store">
-            <i class="fa fa-lock"></i> <span class=sr-only>Credential Store</span>
-        </a>
-        <a href="{% url 'django_airavata_admin:group_resource_profile' %}" class="c-nav__item {% if request.active_nav_item == 'group_resource_profile' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Group Resource Profile">
-            <i class="fa fa-server"></i> <span class=sr-only>Group Resource Profile</span>
-        </a>
-        {% if request.is_gateway_admin %}
-        <a href="{% url 'django_airavata_admin:gateway_resource_profile' %}" class="c-nav__item {% if request.active_nav_item == 'gateway_resource_profile' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Gateway Resource Profile">
-            <i class="fa fa-tasks"></i> <span class=sr-only>Gateway Resource Profile</span>
-        </a>
-        {% endif %}
-        {% if request.is_gateway_admin %}
-        <a href="{% url 'django_airavata_admin:notices' %}" class="c-nav__item {% if request.active_nav_item == 'notices' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Manage Notices">
-            <i class="fa fa-bell"></i> <span class=sr-only>Manage Notices</span>
-        </a>
-        {% endif %}
-{% endblock %}
 {% block scripts %}
     {{ block.super }}
     {% render_bundle 'chunk-vendors' 'js' 'ADMIN' %}
