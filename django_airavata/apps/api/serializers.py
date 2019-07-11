@@ -268,6 +268,7 @@ class ProjectSerializer(
             request.authz_token, project.projectID,
             ResourcePermissionType.WRITE)
 
+
 class ApplicationModuleSerializer(
         thrift_utils.create_serializer_class(ApplicationModule)):
     url = FullyEncodedHyperlinkedIdentityField(
@@ -749,6 +750,7 @@ class SharedEntitySerializer(serializers.Serializer):
         return request.airavata_client.userHasAccess(
             request.authz_token, shared_entity['entityId'],
             ResourcePermissionType.MANAGE_SHARING)
+
 
 class CredentialSummarySerializer(
         thrift_utils.create_serializer_class(CredentialSummary)):
