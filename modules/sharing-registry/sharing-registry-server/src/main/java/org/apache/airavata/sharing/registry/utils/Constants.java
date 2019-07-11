@@ -36,5 +36,6 @@ public class Constants {
         add(DBEventService.USER_PROFILE.toString());
         add(DBEventService.TENANT.toString());
         add(DBEventService.REGISTRY.toString());
+        add(DBEventService.IAM_ADMIN.toString());
     }};
 }
