@@ -13,6 +13,7 @@ import GroupComputeResourcePreference from "./components/admin/group_resource_pr
 import IdentityServiceUserManagementContainer from "./components/users/IdentityServiceUserManagementContainer.vue";
 import UnverifiedEmailUserManagementContainer from "./components/users/UnverifiedEmailUserManagementContainer.vue";
 import UserManagementContainer from "./components/users/UserManagementContainer.vue";
+import NoticesManagementContainer from "./components/notices/NoticesManagementContainer.vue"
 import VueRouter from "vue-router";
 
 const routes = [
@@ -135,10 +136,16 @@ const routes = [
     ]
   },
   {
+    path: "/notices",
+    component: NoticesManagementContainer,
+    name: "notices"
+  },
+  {
     path: "/experiment-statistics",
     component: ExperimentStatisticsContainer,
     name: "experiment-statistics"
   }
+
 ];
 export default new VueRouter({
   mode: "history",

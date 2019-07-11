@@ -24,6 +24,8 @@ import GroupResourceProfile from "./models/GroupResourceProfile";
 import IAMUserProfile from "./models/IAMUserProfile";
 import InputDataObjectType from "./models/InputDataObjectType";
 import JobState from "./models/JobState";
+import Notification from "./models/Notification";
+import NotificationPriority from "./models/NotificationPriority";
 import OutputDataObjectType from "./models/OutputDataObjectType";
 import ParallelismType from "./models/ParallelismType";
 import Project from "./models/Project";
@@ -33,6 +35,7 @@ import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
+
 
 import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
@@ -80,6 +83,8 @@ const models = {
   IAMUserProfile,
   InputDataObjectType,
   JobState,
+  Notification,
+  NotificationPriority,
   OutputDataObjectType,
   ParallelismType,
   Project,
@@ -115,6 +120,8 @@ const services = {
   LocaJobSubmissionService,
   LoggingService: ServiceFactory.service("LogRecords"),
   IAMUserProfileService: ServiceFactory.service("IAMUserProfiles"),
+  ManageNotificationService: ServiceFactory.service("ManageNotifications"),
+
   ParserService: ServiceFactory.service("Parsers"),
   ProjectService: ServiceFactory.service("Projects"),
   SCPDataMovementService,

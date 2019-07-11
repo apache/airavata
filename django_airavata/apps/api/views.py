@@ -1395,6 +1395,52 @@ class WorkspacePreferencesView(APIView):
         return Response(serializer.data)
 
 
+class ManageNotificationViewSet(APIBackedViewSet):
+    serializer_class = serializers.NotificationSerializer
+    lookup_field = 'notification_id'
+
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getNotification(
+            self.authz_token, settings.GATEWAY_ID, lookup_value)
+
+    def get_list(self):
+        return self.request.airavata_client.getAllNotifications(
+            self.authz_token, self.gateway_id)
+
+    def perform_destroy(self, instance):
+        self.request.airavata_client.deleteNotification(
+            self.authz_token, settings.GATEWAY_ID, instance.notificationId)
+
+    def perform_create(self, serializer):
+        notification = serializer.save(gatewayId=self.gateway_id)
+        notificationId = self.request.airavata_client.createNotification(self.authz_token, notification)
+        notification.notificationId = notificationId
+
+    def perform_update(self, serializer):
+        notification = serializer.save()
+        self.request.airavata_client.updateNotification(self.authz_token, notification)
+
+
+class AckNotificationViewSet(APIView):
+
+
+    def get(self, request, format=None):
+        if 'id' in request.GET:
+            notification_id = request.GET['id']
+            try:
+                notification = models.User_Notifications.objects.get(
+                                notification_id=notification_id,
+                                username=request.user.username)
+                notification.is_read = True
+                notification.save()
+            except ObjectDoesNotExist:
+                notification_status = models.User_Notifications.objects.create(
+                            username=request.user.username,
+                            notification_id=notification.notificationId)
+        return HttpResponse(status=204)
+
+
 class IAMUserViewSet(mixins.RetrieveModelMixin,
                      mixins.UpdateModelMixin,
                      mixins.ListModelMixin,

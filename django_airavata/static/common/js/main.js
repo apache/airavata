@@ -7,7 +7,7 @@ window.$ = window.jQuery = $;
 import "bootstrap/dist/css/bootstrap.css";
 import "@fortawesome/fontawesome-free/css/all.css";
 import "../scss/main.scss";
-
+import "./ack-notifications.js";
 $(function() {
   $('[data-toggle="tooltip"]').tooltip();
 });

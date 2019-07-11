@@ -24,7 +24,7 @@ import UnverifiedEmailUserProfile from "./models/UnverifiedEmailUserProfile";
 import UserProfile from "./models/UserProfile";
 import UserStoragePath from "./models/UserStoragePath";
 import WorkspacePreferences from "./models/WorkspacePreferences";
-
+import Notification from "./models/Notification";
 /*
 examples:
 
@@ -352,5 +352,11 @@ export default {
         modelClass: WorkspacePreferences
       }
     }
-  }
+  },
+  ManageNotifications: {
+    url: "/api/manage-notifications/",
+    viewSet: true,
+    pagination: false,
+    modelClass: Notification
+  },
 };

@@ -42,6 +42,12 @@ def gateway_resource_profile(request):
 
 
 @login_required
+def notices(request):
+    request.active_nav_item = 'notices'
+    return render(request, 'admin/admin_base.html')
+
+
+@login_required
 def users(request):
     request.active_nav_item = 'users'
     return render(request, 'admin/admin_base.html')

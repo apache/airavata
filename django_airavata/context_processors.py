@@ -1,14 +1,81 @@
 import copy
 import logging
+import datetime
 import re
 
+from django.urls import reverse
 from django.apps import apps
 from django.conf import settings
-
+from django_airavata.apps.api.models import User_Notifications
 from django_airavata.app_config import AiravataAppConfig
+from django.core.exceptions import ObjectDoesNotExist
+
 
 logger = logging.getLogger(__name__)
 
+
+def create_notification_ui(notification):
+    notification.level = {}
+    notification.textColor = "text-info";
+
+    if notification.priority == 0:
+        notification.textColor = "text-primary";
+        notification.level = "badge-info"
+    elif( notification.priority == 1):
+        notification.textColor = "text-warning";
+        notification.level = "badge-warning"
+    elif( notification.priority == 2):
+        notification.textColor = "text-danger";
+        notification.level = "badge-danger"
+
+    if notification.is_read:
+        notification.is_read_text = "read"
+    else:
+        notification.is_read_text = "unread"
+
+    return notification
+
+
+def get_notifications(request):
+    if request.user.is_authenticated and hasattr(request, 'airavata_client'):
+        unread_notifications = 0
+        notifications = request.airavata_client.getAllNotifications(
+                    request.authz_token, settings.GATEWAY_ID)
+        current_time = datetime.datetime.utcnow()
+        valid_notifications = []
+        for notification in notifications:
+
+            notification.expirationTime = datetime.datetime.fromtimestamp(
+                                            notification.expirationTime/1000)
+            notification.publishedTime = datetime.datetime.fromtimestamp(
+                                            notification.publishedTime/1000)
+
+            if(notification.expirationTime > current_time and
+                                    notification.publishedTime < current_time ):
+                notification.url = request.build_absolute_uri( \
+                            reverse('django_airavata_api:ack-notifications'))\
+                            + "?id=" + str(notification.notificationId)
+
+                try:
+                    notification_status = User_Notifications.objects.get(
+                                notification_id=notification.notificationId,
+                                username=request.user.username)
+                except ObjectDoesNotExist:
+                    notification_status = User_Notifications.objects.create(
+                                username=request.user.username,
+                                notification_id=notification.notificationId)
+                notification.is_read = notification_status.is_read
+                if notification.is_read == False:
+                    unread_notifications += 1
+                notification = create_notification_ui(notification)
+                valid_notifications.append(notification)
+
+        return {
+            "notifications": valid_notifications,
+            "unread_notifications": unread_notifications
+        }
+    else:
+        return {"notifications": ""}
 
 def airavata_app_registry(request):
     """Put airavata django apps into the context."""
