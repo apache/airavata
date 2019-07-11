@@ -40,7 +40,7 @@ auth_options:
 #      idp_alias: "cilogon"
 
 gateway_id: "mines"
-experiment_data_dir: "{{ user_data_dir }}/django-saver-x"
+experiment_data_dir: "{{ user_data_dir }}/django-mines"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
