@@ -47,6 +47,7 @@ portal_email_port: 587
 portal_email_tls: true
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Matthew T Jones','matjones@mymail.mines.edu')]"
 portal_server_email: "{{ portal_email_username }}"
 portal_title: "Mines Gateway"
 ...
