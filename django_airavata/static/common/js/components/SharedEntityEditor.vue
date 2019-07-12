@@ -39,26 +39,34 @@
         slot="name"
         slot-scope="data"
       >
-        <span :title="data.item.user.userId" :class="userDataClasses">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
+        <span :title="data.item.user.userId" :class="userDataClasses" v-if="!isPermissionReadOnly(data.item.permissionType)">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
+        <span
+          v-else
+          class="text-muted font-italic"
+        >{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
       </template>
       <template
         slot="email"
         slot-scope="data"
       >
-        <span :class="userDataClasses">{{data.item.user.email}}</span>
+        <span :class="userDataClasses" v-if="!isPermissionReadOnly(data.item.permissionType)">{{data.item.user.email}}</span>
+        <span
+          v-else
+          class="text-muted font-italic"
+        >{{data.item.user.email}}</span>
       </template>
       <template
         slot="permission"
         slot-scope="data"
       >
         <b-form-select
-          v-if="!readonly"
+          v-if="!isPermissionReadOnly(data.item.permissionType)"
           v-model="data.item.permissionType"
           :options="permissionOptions"
         />
         <span
           v-else
-          class="text-uppercase"
+          class="text-uppercase text-muted font-italic"
           :class="userDataClasses"
         >{{ data.item.permissionType.name }}</span>
       </template>
@@ -66,7 +74,7 @@
         slot="remove"
         slot-scope="data"
       >
-        <b-link v-if="!readonly" @click="removeUser(data.item.user)">
+        <b-link v-if="!isPermissionReadOnly(data.item.permissionType)" @click="removeUser(data.item.user)">
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -82,7 +90,7 @@
         slot="name"
         slot-scope="data"
       >
-        <span v-if="editingAllowed(data.item.group)">{{data.item.group.name}}</span>
+        <span v-if="editingAllowed(data.item.group, data.item.permissionType)">{{data.item.group.name}}</span>
         <span
           v-else
           class="text-muted font-italic"
@@ -93,7 +101,7 @@
         slot-scope="data"
       >
         <b-form-select
-          v-if="editingAllowed(data.item.group)"
+          v-if="editingAllowed(data.item.group, data.item.permissionType)"
           v-model="data.item.permissionType"
           :options="permissionOptions"
         />
@@ -107,7 +115,7 @@
         slot-scope="data"
       >
         <b-link
-          v-if="editingAllowed(data.item.group)"
+          v-if="editingAllowed(data.item.group, data.item.permissionType)"
           @click="removeGroup(data.item.group)"
         >
           <span class="fa fa-trash"></span>
@@ -219,10 +227,12 @@ export default {
       return this.usersCount + this.groupsCount;
     },
     permissionOptions: function() {
-      return [
-        models.ResourcePermissionType.READ,
-        models.ResourcePermissionType.WRITE
-      ].map(perm => {
+      var options = [models.ResourcePermissionType.READ, models.ResourcePermissionType.WRITE]
+      // manage_sharing permission is visible only if the user is the owner or it is a new entity and owner is not defined
+      if(this.data.isOwner || this.data.isOwner === null){
+        options.push(models.ResourcePermissionType.MANAGE_SHARING)
+      }
+      return options.map(perm => {
         return {
           value: perm,
           text: perm.name
@@ -306,8 +316,15 @@ export default {
      * when it is true editing of the "Admins" and "Read Only Admins" groups
      * should not be allowed.
      */
-    editingAllowed(group) {
-      return !this.readonly && (!this.disallowEditingAdminGroups || !group.isAdminGroup);
+    editingAllowed(group, permission) {
+      return !this.readonly && (!this.disallowEditingAdminGroups || !group.isAdminGroup) && !(!this.data.isOwner && permission === models.ResourcePermissionType.MANAGE_SHARING);
+    },
+    isPermissionReadOnly: function(permission) {
+      // if it is a new entity, it will not be readonly
+      if(this.data.isOwner == null) {
+        return false;
+      }
+      return !this.data.isOwner && permission === models.ResourcePermissionType.MANAGE_SHARING;
     }
   }
 };

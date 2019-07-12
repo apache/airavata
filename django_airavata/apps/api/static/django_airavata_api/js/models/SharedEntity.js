@@ -22,7 +22,8 @@ const FIELDS = [
     name: "owner",
     type: UserProfile
   },
-  "isOwner"
+  "isOwner",
+  "hasSharingPermission"
 ];
 
 export default class SharedEntity extends BaseModel {
