@@ -41,8 +41,15 @@ def save(username, path, file, name=None):
     return input_file_fullpath
 
 
-def move(source_username, source_path, target_username, target_path):
+def move(source_username, source_path, target_username, target_dir, file_name):
     source_full_path = path_(source_username, source_path)
+    user_data_storage = _user_data_storage(target_username)
+    # Make file_name a valid filename
+    target_path = os.path.join(target_dir,
+                               user_data_storage.get_valid_name(file_name))
+    # Get available file path: if there is an existing file at target_path
+    # create a uniquely named path
+    target_path = user_data_storage.get_available_name(target_path)
     target_full_path = path_(target_username, target_path)
     file_move_safe(source_full_path, target_full_path)
     return target_full_path

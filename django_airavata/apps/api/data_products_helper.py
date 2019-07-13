@@ -60,12 +60,12 @@ def is_input_file_upload(request, data_product):
 def move_input_file_upload(request, data_product, path):
     source_path = _get_replica_filepath(data_product)
     file_name = data_product.productName
-    target_path = os.path.join(path, file_name)
     full_path = datastore.move(
         data_product.ownerName,
         source_path,
         request.user.username,
-        target_path)
+        path,
+        file_name)
     _delete_data_product(data_product.ownerName, source_path)
     data_product = _save_data_product(request, full_path, name=file_name)
     return data_product
