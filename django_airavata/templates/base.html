@@ -204,7 +204,7 @@
             {{ request.session.USERINFO.family_name }}
           </a>
           <div class=dropdown-menu aria-labelledby=dropdownMenuButton>
-            <a class=dropdown-item href=#>User settings</a>
+            {% comment %} <a class=dropdown-item href=#>User settings</a> {% endcomment %}
             <a class=dropdown-item href="{% url 'django_airavata_auth:logout' %}">
               Logout <i class="fa fa-sign-out-alt"></i>
             </a>
