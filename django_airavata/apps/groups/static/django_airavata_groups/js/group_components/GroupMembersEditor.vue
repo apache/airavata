@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-form-group>
+    <b-form-group label="Add members">
       <autocomplete-text-input
         id="user-autocomplete"
         :suggestions="suggestions"
@@ -8,11 +8,20 @@
         placeholder="Search for users to add to this group"
       />
     </b-form-group>
+    <b-form-group label="Filter members">
+      <b-input-group>
+        <b-input-group-text slot="prepend">
+          <i class="fa fa-filter"></i>
+        </b-input-group-text>
+        <b-form-input v-model="filter" placeholder="Filter list of members" />
+      </b-input-group>
+    </b-form-group>
     <b-table
       v-if="membersCount > 0"
       hover
       :items="currentMembers"
       :fields="fields"
+      :filter="filter"
       sort-by="name"
       :sort-compare="sortCompare"
     >
@@ -75,7 +84,8 @@ export default {
   data() {
     return {
       userProfiles: null,
-      newMembers: []
+      newMembers: [],
+      filter: null
     };
   },
   computed: {
