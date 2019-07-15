@@ -41,7 +41,7 @@
                   class="notification-title text-wrap"
                   :class="textColor(notice)"
                 >{{ notice.title }}</span>
-                <a
+                <a v-if="!notice.is_read"
                   class="fas fa-dot-circle"
                   data-toggle="tooltip"
                   data-placement="left"
@@ -93,9 +93,8 @@ export default {
   },
   computed: {
     unreadNotices() {
-      return this.notices.filter(n => !n.is_read);
+      return this.notices;
     }
   }
 };
 </script>
-
