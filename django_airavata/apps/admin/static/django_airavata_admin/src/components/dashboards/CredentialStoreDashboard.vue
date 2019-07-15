@@ -21,6 +21,7 @@
       </template>
     </list-layout>
     <new-ssh-credential-modal ref="newSSHCredentialModal" @new="createNewSSHCredential" />
+    <!--
     <list-layout class="mt-4" @add-new-item="showNewPasswordCredentialModal" :items="passwordCredentials" title="Password Credentials"
       new-item-button-text="New Password Credential">
       <template slot="item-list" slot-scope="slotProps">
@@ -39,6 +40,7 @@
       </template>
     </list-layout>
     <new-password-credential-modal ref="newPasswordCredentialModal" @new="createNewPasswordCredential" />
+    -->
   </div>
 </template>
 
@@ -46,7 +48,7 @@
 import { services } from "django-airavata-api";
 import { components, layouts } from "django-airavata-common-ui";
 import NewSSHCredentialModal from "../credentials/NewSSHCredentialModal.vue";
-import NewPasswordCredentialModal from "../credentials/NewPasswordCredentialModal.vue";
+// import NewPasswordCredentialModal from "../credentials/NewPasswordCredentialModal.vue";
 
 export default {
   components: {
@@ -54,7 +56,7 @@ export default {
     "human-date": components.HumanDate,
     "list-layout": layouts.ListLayout,
     "clipboard-copy-link": components.ClipboardCopyLink,
-    "new-password-credential-modal": NewPasswordCredentialModal,
+    // "new-password-credential-modal": NewPasswordCredentialModal,
     "new-ssh-credential-modal": NewSSHCredentialModal,
     "share-button": components.ShareButton
   },
