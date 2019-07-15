@@ -42,6 +42,8 @@ auth_options:
 gateway_id: "interactwel"
 experiment_data_dir: "{{ user_data_dir }}/django-interactwel"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCK+P6aQeRRIUcm2oocxfCyHO9Kl9npX+Fc5f7jaEFgN3SfyYjah69yxvhVAWguRgXIG9xuKvzXmoSeNT0Yk1NoBTFHAtSUDy0KqIXkp5XK2Ocv/W2fblCx8v46amiv5VZToq+YK+P+XfmyfjNEv9WXo9vtIfj2RQlVk3g+GIcCQgkiIxl4XEh7+AknahqWEkzlGeqTBHtwyRXbhuvLf6M4vNoUhxn4aY8DOcJPZF1jnWB+ZiTiNBXRA7Hx/L78RWoHTf50KOO3LQ+AD7727kdIYWM4wVgRzY8pac5bIJ7ncyp//2GiUzSoXSbLV2vZDMz9CM0Ovfpg6P6Q2j5inS0J"
+# Show the Data Parsers app option for Interactwel
+django_hidden_airavata_apps: "[]"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
