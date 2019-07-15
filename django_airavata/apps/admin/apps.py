@@ -5,7 +5,7 @@ from django_airavata.app_config import AiravataAppConfig
 class AdminConfig(AiravataAppConfig):
     name = 'django_airavata.apps.admin'
     label = 'django_airavata_admin'
-    verbose_name = 'Admin'
+    verbose_name = 'Settings'
     app_order = 100
     url_home = 'django_airavata_admin:home'
     fa_icon_class = 'fa-cog'
