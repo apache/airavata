@@ -56,6 +56,18 @@ def get_notifications(request):
         return {"notifications": json.dumps([])}
 
 
+def user_session_data(request):
+    data = {
+        "username": request.user.username,
+        "airavataInternalUserId": (request.user.username +
+                                   "@" +
+                                   settings.GATEWAY_ID),
+    }
+    return {
+        "user_session_data": json.dumps(data)
+    }
+
+
 def airavata_app_registry(request):
     """Put airavata django apps into the context."""
     airavata_apps = [app for app in apps.get_app_configs()

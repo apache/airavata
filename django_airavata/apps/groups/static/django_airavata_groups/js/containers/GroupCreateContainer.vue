@@ -6,13 +6,12 @@
 
 import GroupEditor from '../group_components/GroupEditor.vue';
 
-import { models } from 'django-airavata-api'
-
+import { models, session } from 'django-airavata-api'
 export default {
     name: 'group-create-container',
     data () {
         return {
-            newGroup: new models.Group(),
+            newGroup: this.createNewGroup()
         }
     },
     components: {
@@ -21,6 +20,13 @@ export default {
     methods: {
         handleSaved: function() {
             window.location.assign("/groups/");
+        },
+        createNewGroup() {
+          const group = new models.Group();
+          const ownerId = session.Session.airavataInternalUserId;
+          group.members.push(ownerId);
+          group.ownerId = ownerId;
+          return group;
         }
     },
     computed: {

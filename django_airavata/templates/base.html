@@ -248,9 +248,7 @@
 
   <script>
     // provide data for initializing api's session.Session
-    window.AiravataPortalSessionData = {
-      username: '{{ request.user.username }}'
-    };
+    window.AiravataPortalSessionData = {{ user_session_data|safe }};
   </script>
   {% render_bundle 'chunk-vendors' 'js' 'COMMON' %}
   {% render_bundle 'app' 'js' 'COMMON' %}

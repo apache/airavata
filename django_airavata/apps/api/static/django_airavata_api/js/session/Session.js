@@ -1,6 +1,7 @@
 class Session {
-  init({ username }) {
+  init({ username, airavataInternalUserId }) {
     this.username = username;
+    this.airavataInternalUserId = airavataInternalUserId;
   }
 }
 
