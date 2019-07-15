@@ -58,6 +58,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
             String groupId = sharingClient.createGroup(sharingUserGroup);
             sharingClient.addUsersToGroup(gatewayId, groupModel.getMembers(), groupId);
+            addGroupAdmins(authzToken,groupId,groupModel.getAdmins());
             return groupId;
         }
         catch (Exception e) {
