@@ -59,7 +59,8 @@ def get_notifications(request):
 def airavata_app_registry(request):
     """Put airavata django apps into the context."""
     airavata_apps = [app for app in apps.get_app_configs()
-                     if isinstance(app, AiravataAppConfig)]
+                     if isinstance(app, AiravataAppConfig) and
+                     app.label not in settings.HIDDEN_AIRAVATA_APPS]
     # Sort by app_order then by verbose_name (case-insensitive)
     airavata_apps.sort(
         key=lambda app: "{:09}-{}".format(app.app_order,

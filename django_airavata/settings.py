@@ -79,6 +79,10 @@ INSTALLED_APPS = [
     'webpack_loader',
 ]
 
+# List of app labels for Airavata apps that should be hidden from menus
+# For example: HIDDEN_AIRAVATA_APPS = ['django_airavata_dataparsers']
+HIDDEN_AIRAVATA_APPS = []
+
 # AppConfig instances from custom Django apps
 CUSTOM_DJANGO_APPS = []
 
