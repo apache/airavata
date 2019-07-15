@@ -14,10 +14,8 @@
         {% endif %}
 </div>
 {% if user.is_authenticated %}
-    {% for app in airavata_apps %}
-    {% if not forloop.counter|divisibleby:"2" %}
     <div class="row">
-    {% endif %}
+    {% for app in airavata_apps %}
         <div class="col-sm-6 d-flex">
             <div class="card flex-grow-1">
                 <div class="card-body">
@@ -27,15 +25,11 @@
                 </div>
             </div>
         </div>
-    {% if forloop.counter|divisibleby:"2" %}
-    </div>
-    {% endif %}
     {% endfor %}
+    </div>
 
-    {% for app in custom_apps %}
-    {% if not forloop.counter|divisibleby:"2" %}
     <div class="row">
-    {% endif %}
+    {% for app in custom_apps %}
         <div class="col-sm-6 d-flex">
             <div class="card flex-grow-1">
                 <div class="card-body">
@@ -45,10 +39,8 @@
                 </div>
             </div>
         </div>
-    {% if forloop.counter|divisibleby:"2" %}
-    </div>
-    {% endif %}
     {% endfor %}
+    </div>
 {% endif %}
 </div>
 </main>
