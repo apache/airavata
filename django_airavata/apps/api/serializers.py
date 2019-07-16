@@ -848,7 +848,16 @@ class UserStoragePathSerializer(serializers.Serializer):
 
 
 # ModelSerializers
+class ApplicationPreferencesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ApplicationPreferences
+        exclude = ('id', 'username', 'workspace_preferences')
+
+
 class WorkspacePreferencesSerializer(serializers.ModelSerializer):
+    application_preferences = ApplicationPreferencesSerializer(
+        source="applicationpreferences_set", many=True)
+
     class Meta:
         model = models.WorkspacePreferences
         exclude = ('username',)

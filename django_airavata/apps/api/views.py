@@ -563,6 +563,42 @@ class ApplicationModuleViewSet(APIBackedViewSet):
             app_deployments, many=True, context={'request': request})
         return Response(serializer.data)
 
+    @detail_route(methods=['post'])
+    def favorite(self, request, app_module_id):
+        helper = helpers.WorkspacePreferencesHelper()
+        workspace_preferences = helper.get(request)
+        try:
+            application_preferences = (
+                workspace_preferences.applicationpreferences_set.get(
+                    application_id=app_module_id))
+            application_preferences.favorite = True
+            application_preferences.save()
+        except ObjectDoesNotExist:
+            workspace_preferences.applicationpreferences_set.create(
+                username=request.user.username,
+                application_id=app_module_id,
+                favorite=True)
+
+        return HttpResponse(status=204)
+
+    @detail_route(methods=['post'])
+    def unfavorite(self, request, app_module_id):
+        helper = helpers.WorkspacePreferencesHelper()
+        workspace_preferences = helper.get(request)
+        try:
+            application_preferences = (
+                workspace_preferences.applicationpreferences_set.get(
+                    application_id=app_module_id))
+            application_preferences.favorite = False
+            application_preferences.save()
+        except ObjectDoesNotExist:
+            workspace_preferences.applicationpreferences_set.create(
+                username=request.user.username,
+                application_id=app_module_id,
+                favorite=False)
+
+        return HttpResponse(status=204)
+
     @list_route()
     def list_all(self, request, format=None):
         all_modules = self.request.airavata_client.getAllAppModules(
