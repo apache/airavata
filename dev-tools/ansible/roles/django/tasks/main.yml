@@ -19,6 +19,14 @@
 #
 
 ---
+# Need database facts to populate db connection info in settings_local.py
+- name: Gather facts about database servers
+  setup:
+  delegate_to: "{{item}}"
+  delegate_facts: True
+  with_items:
+  - "{{ groups['database'] }}"
+
 - name: Create root directory
   file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
