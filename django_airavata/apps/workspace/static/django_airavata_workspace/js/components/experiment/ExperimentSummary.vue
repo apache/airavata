@@ -30,6 +30,17 @@
             aria-hidden="true"
           ></i>
         </b-btn>
+        <b-btn
+          v-if="isCancelable"
+          variant="primary"
+          @click="cancel"
+        >
+          Cancel
+          <i
+            class="fa fa-window-close"
+            aria-hidden="true"
+          ></i>
+        </b-btn>
       </div>
     </div>
     <template v-for="output in experiment.experimentOutputs">
@@ -316,6 +327,18 @@ export default {
     isClonable() {
       return this.localFullExperiment.applicationName;
     },
+    isCancelable() {
+      switch(this.localFullExperiment.experimentStatusName){
+
+        case "VALIDATED":
+        case 'SCHEDULED':
+        case 'LAUNCHED':
+        case 'EXECUTING':
+              return true;
+        default:
+          return false;
+      }
+    },
     storageDirLink() {
       if (this.experiment.relativeExperimentDataDir) {
         return urls.storageDirectory(this.experiment.relativeExperimentDataDir);
@@ -355,6 +378,11 @@ export default {
         lookup: this.experiment.experimentId
       }).then(clonedExperiment => {
         urls.navigateToEditExperiment(clonedExperiment);
+      });
+    },
+    cancel() {
+      services.ExperimentService.cancel({
+        lookup: this.experiment.experimentId
       });
     },
     getDataProducts(io, collection) {

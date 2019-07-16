@@ -172,6 +172,11 @@ export default {
         url: "/api/experiments/<lookup>/clone/",
         requestType: "post",
         modelClass: Experiment
+      },
+      cancel: {
+        url: "/api/experiments/<lookup>/cancel/",
+        requestType: "post",
+        modelClass: Experiment
       }
     },
     modelClass: Experiment
