@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # Get the directory that this script is in
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
