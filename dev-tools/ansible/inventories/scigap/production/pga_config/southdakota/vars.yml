@@ -26,9 +26,9 @@ doc_root_dir: "/var/www/portals/southdakota"
 vhost_servername: "sciencegateway.usd.edu"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/sciencegateway_usd_edu_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/sciencegateway_usd_edu_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/southdakota-sg.key"
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.usd.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.usd.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.usd.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
