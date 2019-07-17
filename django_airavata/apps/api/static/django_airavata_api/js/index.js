@@ -135,7 +135,7 @@ const services = {
   UnverifiedEmailUserProfileService: ServiceFactory.service(
     "UnverifiedEmailUsers"
   ),
-  UserProfileService,
+  UserProfileService: ServiceFactory.service("UserProfiles"),
   UserStoragePathService: ServiceFactory.service("UserStoragePaths"),
   WorkspacePreferencesService: ServiceFactory.service("WorkspacePreferences")
 };

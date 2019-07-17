@@ -329,7 +329,7 @@ export default {
   },
   UserProfiles: {
     url: "/api/user-profiles",
-    viewSet: ["list"],
+    viewSet: ["list", "retrieve"],
     modelClass: UserProfile
   },
   UserStoragePaths: {
