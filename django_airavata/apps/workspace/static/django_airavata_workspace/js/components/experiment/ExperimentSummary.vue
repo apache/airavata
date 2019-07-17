@@ -238,7 +238,7 @@
 
 <script>
 import { models, services } from "django-airavata-api";
-import { components } from "django-airavata-common-ui";
+import { components, notifications } from "django-airavata-common-ui";
 import OutputDisplayContainer from "./output-displays/OutputDisplayContainer";
 import urls from "../../utils/urls";
 
@@ -328,16 +328,7 @@ export default {
       return this.localFullExperiment.applicationName;
     },
     isCancelable() {
-      switch(this.localFullExperiment.experimentStatusName){
-
-        case "VALIDATED":
-        case 'SCHEDULED':
-        case 'LAUNCHED':
-        case 'EXECUTING':
-              return true;
-        default:
-          return false;
-      }
+      return this.localFullExperiment.experiment.isCancelable;
     },
     storageDirLink() {
       if (this.experiment.relativeExperimentDataDir) {
@@ -383,7 +374,15 @@ export default {
     cancel() {
       services.ExperimentService.cancel({
         lookup: this.experiment.experimentId
-      });
+      }).then(() => {
+          notifications.NotificationList.add(
+            new notifications.Notification({
+              type: "SUCCESS",
+              message: "Trying to cancel the experiment",
+              duration: 5
+            })
+          )
+        });
     },
     getDataProducts(io, collection) {
       if (!io.value || !collection) {

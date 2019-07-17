@@ -132,6 +132,18 @@ export default class Experiment extends BaseModel {
     );
   }
 
+  get isCancelable() {
+    switch(this.latestStatus.state){
+      case ExperimentState.VALIDATED:
+      case ExperimentState.SCHEDULED:
+      case ExperimentState.LAUNCHED:
+      case ExperimentState.EXECUTING:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   get resourceHostId() {
     return this.userConfigurationData &&
       this.userConfigurationData.computationalResourceScheduling
