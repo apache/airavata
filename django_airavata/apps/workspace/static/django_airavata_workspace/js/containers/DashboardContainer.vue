@@ -21,12 +21,14 @@
     </div>
     <div class="row">
       <application-card
-        v-for="item in applicationModules"
-        v-bind:appModule="item"
-        v-bind:key="item.appModuleId"
+        v-for="item in allApplicationData"
+        v-bind:appModule="item.appModule"
+        v-bind:key="item.appModule.appModuleId"
         @app-selected="handleAppSelected"
+        :disabled="item.disabled"
       >
       </application-card>
+    </div>
     </div>
 
   </div>
@@ -41,8 +43,9 @@ export default {
   name: "dashboard-container",
   data() {
     return {
-      applicationModules: null,
-      userProfile: null
+      accessibleAppModules: null,
+      userProfile: null,
+      allApplicationModules: null
     };
   },
   components: {
@@ -65,18 +68,36 @@ export default {
       return (
         this.isNewUser &&
         this.userProfile &&
-        this.applicationModules &&
-        this.applicationModules.length === 0
+        this.accessibleAppModules.length === 0
       );
+    },
+    accessibleModuleIds() {
+      return this.accessibleAppModules
+        ? this.accessibleAppModules.map(a => a.appModuleId)
+        : [];
+    },
+    allApplicationData() {
+      return this.allApplicationModules
+        ? this.allApplicationModules.map(app => {
+            return {
+              appModule: app,
+              disabled: this.accessibleModuleIds.indexOf(app.appModuleId) < 0
+            };
+          })
+        : [];
     }
   },
   beforeMount: function() {
     services.ApplicationModuleService.list().then(
-      result => (this.applicationModules = result)
+      result => (this.accessibleAppModules = result)
     );
     services.UserProfileService.retrieve({
       lookup: session.Session.username
     }).then(userProfile => (this.userProfile = userProfile));
+    // Load all application, including ones that aren't accessible by this user
+    services.ApplicationModuleService.listAll().then(
+      result => (this.allApplicationModules = result)
+    );
   }
 };
 </script>

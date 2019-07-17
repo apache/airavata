@@ -1,14 +1,14 @@
 <template>
     <div class="col-md-6 col-xl-4">
-        <div class="card application-card">
-            <a href="#" class="card-link text-dark" @click.prevent="handleAppClick">
+        <div class="card application-card" :class="cardClasses">
+            <b-link :disabled="disabled" class="card-link text-dark" @click.prevent="handleAppClick">
                 <div class="card-body"  >
                     <h2 class="card-title h5">{{appModule.appModuleName}}</h2>
                     <span class="badge badge-primary mr-1" v-for="tag in appModule.tags" :key="tag">{{tag}}</span>
                     <span class="badge badge-primary mr-1" v-if="appModule.appModuleVersion" >{{appModule.appModuleVersion}}</span>
                     <p class="card-text card-text--small mt-3 text-secondary">{{appModule.appModuleDescription}}</p>
                 </div>
-            </a>
+            </b-link>
         </div>
     </div>
 </template>
@@ -16,7 +16,7 @@
 <script>
 export default {
     name: 'application-card',
-    props: ['appModule'],
+    props: ['appModule', 'disabled'],
     data:function () {
         return {
         };
@@ -25,6 +25,11 @@ export default {
         handleAppClick: function() {
             this.$emit('app-selected', this.appModule);
         }
+    },
+    computed: {
+      cardClasses() {
+        return this.disabled ? ['is-disabled'] : [];
+      },
     }
 }
 </script>
