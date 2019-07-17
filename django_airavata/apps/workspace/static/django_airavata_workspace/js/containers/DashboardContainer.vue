@@ -3,6 +3,7 @@
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">Dashboard</h1>
+        <h2 class="h6 mb-2 text-uppercase text-muted">Applications</h2>
       </div>
     </div>
     <div
