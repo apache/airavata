@@ -41,6 +41,7 @@
                     ></i>
                   </b-input-group-prepend>
                   <flat-pickr
+                    :maxDate="tomorrow"
                     :value="dateRange"
                     :config="dateConfig"
                     @on-change="dateRangeChanged"
@@ -308,9 +309,13 @@ import moment from "moment";
 export default {
   name: "experiment-statistics-container",
   data() {
-    const fromTime = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
-    const toTime = new Date();
+    //fp_incr sets the time of the date to midnight.
+    //Calculating from today midnight to tomorrow midnight.
+    const fromTime = new Date().fp_incr(0);
+    const toTime = new Date().fp_incr(1);
+    const tomorrow = new Date().fp_incr(1);
     return {
+      tomorrow: tomorrow,
       experimentStatistics: {},
       selectedExperimentSummariesKey: null,
       fromTime: fromTime,
@@ -320,7 +325,7 @@ export default {
         mode: "range",
         wrap: true,
         dateFormat: "Y-m-d",
-        maxDate: new Date()
+        maxDate: new Date().fp_incr(1)
       },
       usernameFilterEnabled: false,
       usernameFilter: null,
@@ -512,14 +517,15 @@ export default {
       );
     },
     getPast24Hours() {
-      this.fromTime = this.daysAgo(1);
-      this.toTime = new Date();
+      this.fromTime = new Date().fp_incr(0);
+      //this.fromTime = new Date(this.fromTime.setHours(0,0,0));
+      this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
       this.loadStatistics();
     },
     getPastWeek() {
-      this.fromTime = this.daysAgo(7);
-      this.toTime = new Date();
+      this.fromTime = new Date().fp_incr(-7);
+      this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
       this.loadStatistics();
     },
