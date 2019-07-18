@@ -96,6 +96,14 @@ export default {
         url: "/api/applications/list_all/",
         requestType: "get",
         modelClass: ApplicationModule
+      },
+      favorite: {
+        url: "/api/applications/<lookup>/favorite/",
+        requestType: "post"
+      },
+      unfavorite: {
+        url: "/api/applications/<lookup>/unfavorite/",
+        requestType: "post"
       }
     },
     modelClass: ApplicationModule

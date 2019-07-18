@@ -20,16 +20,52 @@
           contact to grant you the appropriate privileges.</b-alert>
       </div>
     </div>
+    <template v-if="favoriteApplicationsData.length > 0">
+      <div class="row">
+        <div class="col">
+          <h1 class="h5 mb-2">Favorites</h1>
+        </div>
+      </div>
+      <div class="row">
+        <application-card
+          v-for="item in favoriteApplicationsData"
+          v-bind:appModule="item.appModule"
+          v-bind:key="item.appModule.appModuleId"
+          @app-selected="handleAppSelected"
+          :disabled="item.disabled"
+          @favorite="markFavorite(item.appModule)"
+          @unfavorite="markNotFavorite(item.appModule)"
+          ref="favoriteApplicationCards"
+        >
+          <favorite-toggle
+            slot="card-actions"
+            :favorite="true"
+            class="card-link"
+            @favorite="markFavorite(item.appModule)"
+            @unfavorite="markNotFavorite(item.appModule)"
+          />
+        </application-card>
+      </div>
+      <hr />
+    </template>
     <div class="row">
       <application-card
-        v-for="item in allApplicationData"
+        v-for="item in nonFavoriteApplicationsData"
         v-bind:appModule="item.appModule"
         v-bind:key="item.appModule.appModuleId"
         @app-selected="handleAppSelected"
         :disabled="item.disabled"
+        @favorite="markFavorite(item.appModule)"
+        @unfavorite="markNotFavorite(item.appModule)"
       >
+        <favorite-toggle
+          slot="card-actions"
+          :favorite="false"
+          class="card-link"
+          @favorite="markFavorite(item.appModule)"
+          @unfavorite="markNotFavorite(item.appModule)"
+        />
       </application-card>
-    </div>
     </div>
 
   </div>
@@ -46,15 +82,46 @@ export default {
     return {
       accessibleAppModules: null,
       userProfile: null,
-      allApplicationModules: null
+      allApplicationModules: null,
+      workspacePreferences: null
     };
   },
   components: {
-    "application-card": comps.ApplicationCard
+    "application-card": comps.ApplicationCard,
+    "favorite-toggle": comps.FavoriteToggle
   },
   methods: {
     handleAppSelected: function(appModule) {
       urls.navigateToCreateExperiment(appModule);
+    },
+    markFavorite(appModule) {
+      services.ApplicationModuleService.favorite({
+        lookup: appModule.appModuleId
+      })
+        .then(() => {
+          return services.WorkspacePreferencesService.get().then(
+            prefs => (this.workspacePreferences = prefs)
+          );
+        })
+        .then(() => {
+          const index = this.favoriteApplicationsData.findIndex(
+            data => data.appModule.appModuleId === appModule.appModuleId
+          );
+          this.$nextTick(() => {
+            this.$refs.favoriteApplicationCards[index].$el.scrollIntoView({
+              behavior: "smooth", block: "center"
+            });
+          });
+        });
+    },
+    markNotFavorite(appModule) {
+      services.ApplicationModuleService.unfavorite({
+        lookup: appModule.appModuleId
+      }).then(() => {
+        return services.WorkspacePreferencesService.get().then(
+          prefs => (this.workspacePreferences = prefs)
+        );
+      });
     }
   },
   computed: {
@@ -86,6 +153,30 @@ export default {
             };
           })
         : [];
+    },
+    favoriteApplicationsData() {
+      return this.allApplicationData.filter(
+        app =>
+          this.favoriteApplicationIds.indexOf(app.appModule.appModuleId) >= 0
+      );
+    },
+    nonFavoriteApplicationsData() {
+      return this.allApplicationData.filter(
+        app =>
+          this.favoriteApplicationIds.indexOf(app.appModule.appModuleId) < 0
+      );
+    },
+    favoriteApplicationIds() {
+      if (
+        this.workspacePreferences &&
+        this.workspacePreferences.application_preferences
+      ) {
+        return this.workspacePreferences.application_preferences
+          .filter(p => p.favorite)
+          .map(p => p.application_id);
+      } else {
+        return [];
+      }
     }
   },
   beforeMount: function() {
@@ -98,6 +189,9 @@ export default {
     // Load all application, including ones that aren't accessible by this user
     services.ApplicationModuleService.listAll().then(
       result => (this.allApplicationModules = result)
+    );
+    services.WorkspacePreferencesService.get().then(
+      prefs => (this.workspacePreferences = prefs)
     );
   }
 };
