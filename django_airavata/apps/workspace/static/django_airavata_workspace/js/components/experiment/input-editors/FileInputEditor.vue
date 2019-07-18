@@ -9,6 +9,17 @@
         :data-product="dataProduct"
         :input-file="true"
       />
+      <b-link @click="viewFile">
+        View File <i class="fa fa-eye"></i>
+        <span class="sr-only">View file</span>
+      </b-link>
+      <b-modal
+        :title="dataProduct.productName"
+        ref="modal"
+        ok-only
+      >
+        <pre>{{ fileContent }}</pre>
+      </b-modal>
       <delete-link
         v-if="dataProduct.isInputFileUpload"
         class="ml-2"
@@ -145,7 +156,8 @@ export default {
       dataProduct: null,
       file: null,
       isSelectingFile: false,
-      settings: null
+      settings: null,
+      fileContent: null
     };
   },
   created() {
@@ -209,6 +221,17 @@ export default {
     cancelFileSelection() {
       this.isSelectingFile = false;
       this.unselect();
+    },
+    viewFile() {
+      this.fileContent = null;
+      fetch(this.dataProduct.downloadURL, {
+        credentials: "same-origin"
+      })
+        .then(result => result.text())
+        .then(text => {
+          this.fileContent = text;
+          this.$refs.modal.show();
+        });
     }
   }
 };
