@@ -37,7 +37,6 @@ import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
 
-import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
 import LocaJobSubmissionService from "./services/LocaJobSubmissionService";
