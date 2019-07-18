@@ -308,7 +308,7 @@ class ExperimentViewSet(APIBackedViewSet):
             return Response({'success': True})
         except Exception as e:
             log.error("Cancel action has thrown the following error: ", e)
-            raise Http404(str(e)) from e
+            raise e
 
     def _get_writeable_project(self, experiment):
         # figure what project to clone into:
