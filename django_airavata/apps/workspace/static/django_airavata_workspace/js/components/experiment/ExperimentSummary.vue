@@ -378,7 +378,7 @@ export default {
           notifications.NotificationList.add(
             new notifications.Notification({
               type: "SUCCESS",
-              message: "Trying to cancel the experiment",
+              message: "Cancel-experiment requested",
               duration: 5
             })
           )
