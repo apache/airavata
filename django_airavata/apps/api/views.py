@@ -1646,3 +1646,16 @@ class LogRecordConsumer(APIView):
                         json.dumps(log_record['details'], indent=4),
                         stacktrace))
         return Response(serializer.data)
+
+
+class SettingsAPIView(APIView):
+    serializer_class = serializers.SettingsSerializer
+
+    def get(self, request, format=None):
+        data = {
+            'fileUploadMaxFileSize': settings.FILE_UPLOAD_MAX_FILE_SIZE
+        }
+        serializer = self.serializer_class(
+            data, context={'request': request})
+        return Response(serializer.data)
+

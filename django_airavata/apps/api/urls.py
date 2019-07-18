@@ -88,7 +88,8 @@ urlpatterns = [
         name="experiment-statistics"),
     url(r'ack-notifications/<slug:id>/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
     url(r'ack-notifications/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
-    url(r'^log', views.LogRecordConsumer.as_view(), name='log')
+    url(r'^log', views.LogRecordConsumer.as_view(), name='log'),
+    url(r'^settings', views.SettingsAPIView.as_view(), name='settings'),
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

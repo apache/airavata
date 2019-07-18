@@ -126,6 +126,7 @@ const services = {
   ProjectService: ServiceFactory.service("Projects"),
   SCPDataMovementService,
   ServiceFactory,
+  SettingsService: ServiceFactory.service("Settings"),
   SharedEntityService: ServiceFactory.service("SharedEntities"),
   SshJobSubmissionService,
   StoragePreferenceService: ServiceFactory.service("StoragePreferences"),

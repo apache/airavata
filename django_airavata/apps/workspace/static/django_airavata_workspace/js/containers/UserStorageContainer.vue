@@ -12,13 +12,20 @@
     </div>
     <div class="row">
       <div class="col">
-        <b-form-file
-          v-model="file"
-          ref="file-input"
-          placeholder="Add file"
-          @input="fileChanged"
-          class="mb-2"
-        ></b-form-file>
+        <b-form-group
+          :description="maxFileUploadSizeMessage"
+          :state="fileUploadState"
+          :invalid-feedback="fileUploadInvalidFeedback"
+        >
+          <b-form-file
+            v-model="file"
+            ref="file-input"
+            placeholder="Add file"
+            @input="fileChanged"
+            class="mb-2"
+            :state="fileUploadState"
+          ></b-form-file>
+        </b-form-group>
       </div>
       <div class="col">
         <b-input-group>
@@ -67,13 +74,54 @@ export default {
     },
     username() {
       return session.Session.username;
+    },
+    maxFileUploadSizeMB() {
+      return this.settings
+        ? this.settings.fileUploadMaxFileSize / 1024 / 1024
+        : 0;
+    },
+    maxFileUploadSizeMessage() {
+      if (this.maxFileUploadSizeMB) {
+        return (
+          "Max file upload size is " +
+          Math.round(this.maxFileUploadSizeMB) +
+          " MB"
+        );
+      } else {
+        return null;
+      }
+    },
+    fileTooLarge() {
+      return (
+        this.settings &&
+        this.settings.fileUploadMaxFileSize &&
+        this.file &&
+        this.file.size > this.settings.fileUploadMaxFileSize
+      );
+    },
+    fileUploadState() {
+      if (this.fileTooLarge) {
+        return false;
+      } else {
+        return null;
+      }
+    },
+    fileUploadInvalidFeedback() {
+      if (this.fileTooLarge) {
+        return (
+          "File selected is larger than " + this.maxFileUploadSizeMB + " MB"
+        );
+      } else {
+        return null;
+      }
     }
   },
   data() {
     return {
       userStoragePath: null,
       file: null,
-      dirName: null
+      dirName: null,
+      settings: null
     };
   },
   methods: {
@@ -105,7 +153,7 @@ export default {
       );
     },
     fileChanged() {
-      if (this.file) {
+      if (this.file && !this.fileTooLarge) {
         let data = new FormData();
         data.append("file", this.file);
         utils.FetchUtils.post(
@@ -125,12 +173,10 @@ export default {
           newDirPath = newDirPath + "/";
         }
         newDirPath = newDirPath + this.dirName;
-        utils.FetchUtils.post("/api/user-storage/" + newDirPath).then(
-         () => {
-            this.dirName = null;
-            this.loadUserStoragePath(this.storagePath);
-          }
-        );
+        utils.FetchUtils.post("/api/user-storage/" + newDirPath).then(() => {
+          this.dirName = null;
+          this.loadUserStoragePath(this.storagePath);
+        });
       }
     },
     deleteDir(path) {
@@ -156,6 +202,7 @@ export default {
     } else {
       this.loadUserStoragePath(this.storagePath);
     }
+    services.SettingsService.get().then(s => (this.settings = s));
   },
   watch: {
     $route() {

@@ -928,3 +928,7 @@ class LogRecordSerializer(serializers.Serializer):
     message = serializers.CharField()
     details = StoredJSONField()
     stacktrace = serializers.ListField(child=serializers.CharField())
+
+
+class SettingsSerializer(serializers.Serializer):
+    fileUploadMaxFileSize = serializers.IntegerField()
