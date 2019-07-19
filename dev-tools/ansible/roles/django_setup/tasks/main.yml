@@ -48,3 +48,6 @@
 # TODO: install Node.js EPEL repository and then install nodejs
 # sudo curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
 # sudo yum install nodejs
+
+# TODO: disable package-lock.json creation for the pga user
+# npm config set package-lock false
