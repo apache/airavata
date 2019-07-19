@@ -41,6 +41,17 @@
             aria-hidden="true"
           ></i>
         </b-btn>
+        <b-btn
+          v-if="isCancelable"
+          variant="primary"
+          @click="cancel"
+        >
+          Cancel
+          <i
+            class="fa fa-window-close"
+            aria-hidden="true"
+          ></i>
+        </b-btn>
       </div>
     </div>
     <template v-for="output in experiment.experimentOutputs">
@@ -238,7 +249,7 @@
 
 <script>
 import { models, services } from "django-airavata-api";
-import { components } from "django-airavata-common-ui";
+import { components, notifications } from "django-airavata-common-ui";
 import OutputDisplayContainer from "./output-displays/OutputDisplayContainer";
 import urls from "../../utils/urls";
 
@@ -330,6 +341,9 @@ export default {
     isClonable() {
       return this.localFullExperiment.applicationName;
     },
+    isCancelable() {
+      return this.localFullExperiment.experiment.isCancelable;
+    },
     storageDirLink() {
       if (this.experiment.relativeExperimentDataDir) {
         return urls.storageDirectory(this.experiment.relativeExperimentDataDir);
@@ -375,7 +389,20 @@ export default {
       services.ExperimentService.launch({
         lookup: this.experiment.experimentId
       }).then(() => {
-        this.$emit("Launched");
+        this.$emit("Launched")
+      });
+    },
+    cancel() {
+      services.ExperimentService.cancel({
+        lookup: this.experiment.experimentId
+      }).then(() => {
+          notifications.NotificationList.add(
+            new notifications.Notification({
+              type: "SUCCESS",
+              message: "Cancel-experiment requested",
+              duration: 5
+            })
+          )
         });
     },
     getDataProducts(io, collection) {

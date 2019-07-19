@@ -25,7 +25,7 @@ class ErrorReporter {
         });
       })
       .catch(err => {
-        console.log("Failed to product stacktrace", err); // eslint-disable-line no-console
+        console.log("Failed to produce stacktrace", err); // eslint-disable-line no-console
       });
   }
 }

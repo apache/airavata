@@ -15,8 +15,10 @@ import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
 import IAMUserProfile from "./models/IAMUserProfile";
 import LogRecord from "./models/LogRecord";
+import Notification from "./models/Notification";
 import Parser from "./models/Parser";
 import Project from "./models/Project";
+import Settings from "./models/Settings";
 import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
@@ -24,7 +26,6 @@ import UnverifiedEmailUserProfile from "./models/UnverifiedEmailUserProfile";
 import UserProfile from "./models/UserProfile";
 import UserStoragePath from "./models/UserStoragePath";
 import WorkspacePreferences from "./models/WorkspacePreferences";
-import Notification from "./models/Notification";
 /*
 examples:
 
@@ -95,6 +96,14 @@ export default {
         url: "/api/applications/list_all/",
         requestType: "get",
         modelClass: ApplicationModule
+      },
+      favorite: {
+        url: "/api/applications/<lookup>/favorite/",
+        requestType: "post"
+      },
+      unfavorite: {
+        url: "/api/applications/<lookup>/unfavorite/",
+        requestType: "post"
       }
     },
     modelClass: ApplicationModule
@@ -170,6 +179,11 @@ export default {
       },
       clone: {
         url: "/api/experiments/<lookup>/clone/",
+        requestType: "post",
+        modelClass: Experiment
+      },
+      cancel: {
+        url: "/api/experiments/<lookup>/cancel/",
         requestType: "post",
         modelClass: Experiment
       }
@@ -259,7 +273,7 @@ export default {
     url: "/api/log",
     methods: {
       send: {
-        url: '/api/log',
+        url: "/api/log",
         requestType: "post",
         bodyParams: {
           name: "data"
@@ -288,6 +302,16 @@ export default {
     },
     queryParams: ["limit", "offset"],
     modelClass: Project
+  },
+  Settings: {
+    url: "/api/settings/",
+    methods: {
+      get: {
+        url: "/api/settings/",
+        requestType: "get",
+        modelClass: Settings
+      }
+    }
   },
   SharedEntities: {
     url: "/api/shared-entities",
@@ -329,7 +353,7 @@ export default {
   },
   UserProfiles: {
     url: "/api/user-profiles",
-    viewSet: ["list"],
+    viewSet: ["list", "retrieve"],
     modelClass: UserProfile
   },
   UserStoragePaths: {
@@ -358,5 +382,5 @@ export default {
     viewSet: true,
     pagination: false,
     modelClass: Notification
-  },
+  }
 };

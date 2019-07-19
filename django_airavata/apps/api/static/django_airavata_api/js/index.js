@@ -37,7 +37,6 @@ import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
 
-import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
 import LocaJobSubmissionService from "./services/LocaJobSubmissionService";
@@ -126,6 +125,7 @@ const services = {
   ProjectService: ServiceFactory.service("Projects"),
   SCPDataMovementService,
   ServiceFactory,
+  SettingsService: ServiceFactory.service("Settings"),
   SharedEntityService: ServiceFactory.service("SharedEntities"),
   SshJobSubmissionService,
   StoragePreferenceService: ServiceFactory.service("StoragePreferences"),
@@ -135,7 +135,7 @@ const services = {
   UnverifiedEmailUserProfileService: ServiceFactory.service(
     "UnverifiedEmailUsers"
   ),
-  UserProfileService,
+  UserProfileService: ServiceFactory.service("UserProfiles"),
   UserStoragePathService: ServiceFactory.service("UserStoragePaths"),
   WorkspacePreferencesService: ServiceFactory.service("WorkspacePreferences")
 };

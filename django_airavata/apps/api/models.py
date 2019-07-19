@@ -11,6 +11,17 @@ class WorkspacePreferences(models.Model):
         return WorkspacePreferences(username=username)
 
 
+class ApplicationPreferences(models.Model):
+    username = models.CharField(max_length=64)
+    application_id = models.CharField(max_length=64)
+    favorite = models.BooleanField(default=False)
+    workspace_preferences = models.ForeignKey(WorkspacePreferences,
+                                              on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('username', 'application_id'),)
+
+
 class User_Notifications(models.Model):
     class Meta:
         unique_together = (('username', 'notification_id'),)

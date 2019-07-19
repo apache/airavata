@@ -9,6 +9,17 @@
         :data-product="dataProduct"
         :input-file="true"
       />
+      <b-link @click="viewFile">
+        View File <i class="fa fa-eye"></i>
+        <span class="sr-only">View file</span>
+      </b-link>
+      <b-modal
+        :title="dataProduct.productName"
+        ref="modal"
+        ok-only
+      >
+        <pre>{{ fileContent }}</pre>
+      </b-modal>
       <delete-link
         v-if="dataProduct.isInputFileUpload"
         class="ml-2"
@@ -39,16 +50,26 @@
       class="d-flex align-items-baseline"
       v-if="!isSelectingFile && !isDataProductURI"
     >
-      <b-button @click="isSelectingFile=true" class="input-file-option">Select file from storage</b-button>
-      <span class="text-muted mx-3">OR</span>
-      <b-form-file
-        :id="id"
-        v-model="file"
-        v-if="!isDataProductURI"
-        placeholder="Upload file"
-        @input="fileChanged"
+      <b-button
+        @click="isSelectingFile=true"
         class="input-file-option"
-      />
+      >Select file from storage</b-button>
+      <span class="text-muted mx-3">OR</span>
+      <b-form-group
+        :description="maxFileUploadSizeMessage"
+        :state="fileUploadState"
+        :invalid-feedback="fileUploadInvalidFeedback"
+        class="input-file-option"
+      >
+        <b-form-file
+          :id="id"
+          v-model="file"
+          v-if="!isDataProductURI"
+          placeholder="Upload file"
+          @input="fileChanged"
+          :state="fileUploadState"
+        />
+      </b-form-group>
     </div>
   </div>
 </template>
@@ -70,7 +91,11 @@ export default {
   computed: {
     isDataProductURI() {
       // Just assume that if the value is a string then it's a data product URL
-      return this.value && typeof this.value === "string" && this.value.startsWith("airavata-dp://");
+      return (
+        this.value &&
+        typeof this.value === "string" &&
+        this.value.startsWith("airavata-dp://")
+      );
     },
     // When used in the MultiFileInputEditor, don't allow selecting the same
     // file more than once. This computed property creates an array of already
@@ -84,19 +109,62 @@ export default {
       } else {
         return [];
       }
+    },
+    maxFileUploadSizeMB() {
+      return this.settings
+        ? this.settings.fileUploadMaxFileSize / 1024 / 1024
+        : 0;
+    },
+    maxFileUploadSizeMessage() {
+      if (this.maxFileUploadSizeMB) {
+        return (
+          "Max file upload size is " +
+          Math.round(this.maxFileUploadSizeMB) +
+          " MB"
+        );
+      } else {
+        return null;
+      }
+    },
+    fileTooLarge() {
+      return (
+        this.settings &&
+        this.settings.fileUploadMaxFileSize &&
+        this.file &&
+        this.file.size > this.settings.fileUploadMaxFileSize
+      );
+    },
+    fileUploadState() {
+      if (this.fileTooLarge) {
+        return false;
+      } else {
+        return null;
+      }
+    },
+    fileUploadInvalidFeedback() {
+      if (this.fileTooLarge) {
+        return (
+          "File selected is larger than " + this.maxFileUploadSizeMB + " MB"
+        );
+      } else {
+        return null;
+      }
     }
   },
   data() {
     return {
       dataProduct: null,
       file: null,
-      isSelectingFile: false
+      isSelectingFile: false,
+      settings: null,
+      fileContent: null
     };
   },
   created() {
     if (this.isDataProductURI) {
       this.loadDataProduct(this.value);
     }
+    services.SettingsService.get().then(s => (this.settings = s));
   },
   methods: {
     loadDataProduct(dataProductURI) {
@@ -126,7 +194,7 @@ export default {
         .catch(utils.FetchUtils.reportError);
     },
     fileChanged() {
-      if (this.file) {
+      if (this.file && !this.fileTooLarge) {
         let data = new FormData();
         data.append("file", this.file);
         this.$emit("uploadstart");
@@ -153,6 +221,17 @@ export default {
     cancelFileSelection() {
       this.isSelectingFile = false;
       this.unselect();
+    },
+    viewFile() {
+      this.fileContent = null;
+      fetch(this.dataProduct.downloadURL, {
+        credentials: "same-origin"
+      })
+        .then(result => result.text())
+        .then(text => {
+          this.fileContent = text;
+          this.$refs.modal.show();
+        });
     }
   }
 };

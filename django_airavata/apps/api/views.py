@@ -300,6 +300,16 @@ class ExperimentViewSet(APIBackedViewSet):
             cloned_experiment, context={'request': request})
         return Response(serializer.data)
 
+    @detail_route(methods=['post'])
+    def cancel(self, request, experiment_id=None):
+        try:
+            request.airavata_client.terminateExperiment(
+                request.authz_token, experiment_id, self.gateway_id)
+            return Response({'success': True})
+        except Exception as e:
+            log.error("Cancel action has thrown the following error: ", e)
+            raise e
+
     def _get_writeable_project(self, experiment):
         # figure what project to clone into:
         # 1) project of this experiment if writeable
@@ -462,7 +472,8 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 applicationModule = self.request.airavata_client \
                     .getApplicationModule(self.authz_token, appModuleId)
             else:
-                log.warning("Cannot log application model since app interface failed to load")
+                log.warning(
+                    "Cannot log application model since app interface failed to load")
         except Exception as e:
             log.exception("Failed to load app interface/module")
             applicationModule = None
@@ -562,6 +573,42 @@ class ApplicationModuleViewSet(APIBackedViewSet):
         serializer = serializers.ApplicationDeploymentDescriptionSerializer(
             app_deployments, many=True, context={'request': request})
         return Response(serializer.data)
+
+    @detail_route(methods=['post'])
+    def favorite(self, request, app_module_id):
+        helper = helpers.WorkspacePreferencesHelper()
+        workspace_preferences = helper.get(request)
+        try:
+            application_preferences = (
+                workspace_preferences.applicationpreferences_set.get(
+                    application_id=app_module_id))
+            application_preferences.favorite = True
+            application_preferences.save()
+        except ObjectDoesNotExist:
+            workspace_preferences.applicationpreferences_set.create(
+                username=request.user.username,
+                application_id=app_module_id,
+                favorite=True)
+
+        return HttpResponse(status=204)
+
+    @detail_route(methods=['post'])
+    def unfavorite(self, request, app_module_id):
+        helper = helpers.WorkspacePreferencesHelper()
+        workspace_preferences = helper.get(request)
+        try:
+            application_preferences = (
+                workspace_preferences.applicationpreferences_set.get(
+                    application_id=app_module_id))
+            application_preferences.favorite = False
+            application_preferences.save()
+        except ObjectDoesNotExist:
+            workspace_preferences.applicationpreferences_set.create(
+                username=request.user.username,
+                application_id=app_module_id,
+                favorite=False)
+
+        return HttpResponse(status=204)
 
     @list_route()
     def list_all(self, request, format=None):
@@ -906,13 +953,20 @@ def delete_file(request):
         raise Http404(str(e)) from e
 
 
-class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
+class UserProfileViewSet(mixins.RetrieveModelMixin,
+                         mixins.ListModelMixin,
+                         GenericAPIBackedViewSet):
     serializer_class = serializers.UserProfileSerializer
 
     def get_list(self):
         user_profile_client = self.request.profile_service['user_profile']
         return user_profile_client.getAllUserProfilesInGateway(
             self.authz_token, self.gateway_id, 0, -1)
+
+    def get_instance(self, lookup_value):
+        user_profile_client = self.request.profile_service['user_profile']
+        return user_profile_client.getUserProfileById(
+            self.authz_token, self.request.user.username, self.gateway_id)
 
 
 class GroupResourceProfileViewSet(APIBackedViewSet):
@@ -1437,12 +1491,14 @@ class ManageNotificationViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         notification = serializer.save(gatewayId=self.gateway_id)
-        notificationId = self.request.airavata_client.createNotification(self.authz_token, notification)
+        notificationId = self.request.airavata_client.createNotification(
+            self.authz_token, notification)
         notification.notificationId = notificationId
 
     def perform_update(self, serializer):
         notification = serializer.save()
-        self.request.airavata_client.updateNotification(self.authz_token, notification)
+        self.request.airavata_client.updateNotification(
+            self.authz_token, notification)
 
 
 class AckNotificationViewSet(APIView):
@@ -1638,4 +1694,16 @@ class LogRecordConsumer(APIView):
                         log_record['message'],
                         json.dumps(log_record['details'], indent=4),
                         stacktrace))
+        return Response(serializer.data)
+
+
+class SettingsAPIView(APIView):
+    serializer_class = serializers.SettingsSerializer
+
+    def get(self, request, format=None):
+        data = {
+            'fileUploadMaxFileSize': settings.FILE_UPLOAD_MAX_FILE_SIZE
+        }
+        serializer = self.serializer_class(
+            data, context={'request': request})
         return Response(serializer.data)
