@@ -54,7 +54,7 @@
           :disabled="readonly">
         </b-form-radio-group>
       </b-form-group>
-      <b-form-group label="Metadata" :label-for="id+'-metadata'" description="Metadata for this input, in the JSON format">
+      <b-form-group label="Advanced Input Field Modification Metadata" :label-for="id+'-metadata'" description="Metadata for this input, in the JSON format">
         <json-editor :id="id+'-metadata'" v-model="data.metaData" :rows="5" :disabled="readonly" />
       </b-form-group>
     </b-collapse>
