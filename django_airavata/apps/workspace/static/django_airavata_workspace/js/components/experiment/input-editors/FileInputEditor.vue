@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="file-input-editor">
     <div
       class="d-flex"
       v-if="isDataProductURI && dataProduct"
@@ -15,6 +15,7 @@
       </b-link>
       <b-modal
         :title="dataProduct.productName"
+        class="view-file-modal"
         ref="modal"
         ok-only
       >
@@ -240,5 +241,9 @@ export default {
 <style scoped>
 .input-file-option {
   flex: 1 1 50%;
+}
+.view-file-modal >>> .modal-body {
+  max-height: 50vh;
+  overflow: auto;
 }
 </style>
