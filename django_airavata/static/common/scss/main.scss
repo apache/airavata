@@ -317,3 +317,20 @@ text-align:center;
 min-width:2em;
 font-weight:bold;
 }
+
+.fixed-footer {
+  position: fixed;
+  bottom: 0px;
+  left: 70px;
+  right: 0px;
+  padding-left: calc(1rem + 15px);
+  padding-right: calc(1rem + 15px);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: #f7f7f7;
+  border-top: 1px solid #ddd;
+}
+/* Add to elements that contain a .fixed-footer */
+.has-fixed-footer {
+  padding-bottom: 100px;
+}

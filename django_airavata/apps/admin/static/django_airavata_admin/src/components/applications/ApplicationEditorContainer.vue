@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="has-fixed-footer">
     <unsaved-changes-guard :dirty="isDirty" />
     <confirmation-dialog ref="unsavedChangesDialog" title="You have unsaved changes">
       You have unsaved changes. Are you sure you want to leave this page?
@@ -28,8 +28,7 @@
           @sharing-changed="deploymentSharingChanged" @input="currentDeploymentChanged" />
       </div>
     </div>
-    <div class="row">
-      <div class="col">
+    <div class="fixed-footer">
         <b-button class="editor-button" variant="primary" @click="saveAll" :disabled="readonly || !isDirty">
           Save
         </b-button>
@@ -39,7 +38,6 @@
         <b-button class="editor-button" variant="secondary" @click="cancel">
           Cancel
         </b-button>
-      </div>
     </div>
   </div>
 </template>
