@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import HttpResponse
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
@@ -34,7 +35,17 @@ urlpatterns = [
     url(r'^home$', views.home, name='home'),
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
+    # For testing, developing error pages
+    url(r'^400/', views.error400),
+    url(r'^403/', views.error403),
+    url(r'^404/', views.error404),
+    url(r'^500/', views.error500),
 ]
+
+handler400 = views.error400
+handler403 = views.error403
+handler404 = views.error404
+handler500 = views.error500
 
 # Add custom Django app urls patterns
 for custom_django_app in settings.CUSTOM_DJANGO_APPS:
