@@ -41,7 +41,6 @@
                     ></i>
                   </b-input-group-prepend>
                   <flat-pickr
-                    :maxDate="tomorrow"
                     :value="dateRange"
                     :config="dateConfig"
                     @on-change="dateRangeChanged"
@@ -313,9 +312,7 @@ export default {
     //Calculating from today midnight to tomorrow midnight.
     const fromTime = new Date().fp_incr(0);
     const toTime = new Date().fp_incr(1);
-    const tomorrow = new Date().fp_incr(1);
     return {
-      tomorrow: tomorrow,
       experimentStatistics: {},
       selectedExperimentSummariesKey: null,
       fromTime: fromTime,
