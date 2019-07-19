@@ -136,6 +136,7 @@ export default {
       return (
         this.isNewUser &&
         this.userProfile &&
+        this.accessibleAppModules &&
         this.accessibleAppModules.length === 0
       );
     },
