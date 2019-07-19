@@ -472,7 +472,8 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 applicationModule = self.request.airavata_client \
                     .getApplicationModule(self.authz_token, appModuleId)
             else:
-                log.warning("Cannot log application model since app interface failed to load")
+                log.warning(
+                    "Cannot log application model since app interface failed to load")
         except Exception as e:
             log.exception("Failed to load app interface/module")
             applicationModule = None
@@ -1490,12 +1491,14 @@ class ManageNotificationViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         notification = serializer.save(gatewayId=self.gateway_id)
-        notificationId = self.request.airavata_client.createNotification(self.authz_token, notification)
+        notificationId = self.request.airavata_client.createNotification(
+            self.authz_token, notification)
         notification.notificationId = notificationId
 
     def perform_update(self, serializer):
         notification = serializer.save()
-        self.request.airavata_client.updateNotification(self.authz_token, notification)
+        self.request.airavata_client.updateNotification(
+            self.authz_token, notification)
 
 
 class AckNotificationViewSet(APIView):
@@ -1704,4 +1707,3 @@ class SettingsAPIView(APIView):
         serializer = self.serializer_class(
             data, context={'request': request})
         return Response(serializer.data)
-
