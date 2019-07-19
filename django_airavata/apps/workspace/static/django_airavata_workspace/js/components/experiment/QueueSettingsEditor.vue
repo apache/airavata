@@ -3,39 +3,32 @@
   <div>
     <div class="row">
       <div class="col">
-        <div class="card border-default" :class="{ 'border-danger': !valid }">
-          <div class="card-body">
-            <h5 class="card-title mb-4">Settings for queue {{ localComputationalResourceScheduling.queueName }}</h5>
-            <div class="row">
-              <div class="col">
-                <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.nodeCount }}</h3>
-                <span class="text-muted text-uppercase">NODE COUNT</span>
-              </div>
-              <div class="col">
-                <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.totalCPUCount }}</h3>
-                <span class="text-muted text-uppercase">CORE COUNT</span>
-              </div>
-              <div class="col">
-                <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.wallTimeLimit }}</h3>
-                <span class="text-muted text-uppercase">TIME LIMIT</span>
+        <div
+          class="card border-default"
+          :class="{ 'border-danger': !valid }"
+        >
+          <b-link
+            @click="showConfiguration = !showConfiguration"
+            class="card-link text-dark"
+          >
+            <div class="card-body">
+              <h5 class="card-title mb-4">Settings for queue {{ localComputationalResourceScheduling.queueName }}</h5>
+              <div class="row">
+                <div class="col">
+                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.nodeCount }}</h3>
+                  <span class="text-muted text-uppercase">NODE COUNT</span>
+                </div>
+                <div class="col">
+                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.totalCPUCount }}</h3>
+                  <span class="text-muted text-uppercase">CORE COUNT</span>
+                </div>
+                <div class="col">
+                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.wallTimeLimit }}</h3>
+                  <span class="text-muted text-uppercase">TIME LIMIT</span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <div v-if="!showConfiguration">
-          <i
-            class="fa fa-cog text-secondary"
-            aria-hidden="true"
-          ></i>
-          <a
-            class="text-secondary"
-            href="#"
-            @click.prevent="showConfiguration = true"
-          >Configure Resource</a>
+          </b-link>
         </div>
       </div>
     </div>
@@ -136,15 +129,16 @@
             </div>
           </b-form-group>
           <div>
-            <i
-              class="fa fa-times text-secondary"
-              aria-hidden="true"
-            ></i>
             <a
-              class="text-secondary"
+              class="text-secondary action-link"
               href="#"
               @click.prevent="showConfiguration = false"
-            >Hide Settings</a>
+            >
+              <i
+                class="fa fa-times text-secondary"
+                aria-hidden="true"
+              ></i>
+              Hide Settings</a>
           </div>
         </div>
       </div>
@@ -161,7 +155,7 @@ export default {
   mixins: [mixins.VModelMixin],
   props: {
     value: {
-      type: models.ComputationalResourceSchedulingModel,
+      type: models.ComputationalResourceSchedulingModel
     },
     appDeploymentId: {
       type: String,
@@ -257,15 +251,9 @@ export default {
       const queueDefault = this.queueDefaults.find(
         queue => queue.queueName === queueName
       );
-      this.data.totalCPUCount = this.getDefaultCPUCount(
-        queueDefault
-      );
-      this.data.nodeCount = this.getDefaultNodeCount(
-        queueDefault
-      );
-      this.data.wallTimeLimit = this.getDefaultWalltime(
-        queueDefault
-      );
+      this.data.totalCPUCount = this.getDefaultCPUCount(queueDefault);
+      this.data.nodeCount = this.getDefaultNodeCount(queueDefault);
+      this.data.wallTimeLimit = this.getDefaultWalltime(queueDefault);
     },
     validate() {
       if (!this.valid) {
@@ -384,7 +372,7 @@ export default {
     // queue and its default values and apply them
     const updateQueueSettings = !this.value.queueName;
     this.loadQueueDefaults(updateQueueSettings).then(() => this.validate());
-    this.$on('input', () => this.validate());
+    this.$on("input", () => this.validate());
   }
 };
 </script>
