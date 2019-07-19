@@ -300,6 +300,16 @@ class ExperimentViewSet(APIBackedViewSet):
             cloned_experiment, context={'request': request})
         return Response(serializer.data)
 
+    @detail_route(methods=['post'])
+    def cancel(self, request, experiment_id=None):
+        try:
+            request.airavata_client.terminateExperiment(
+                request.authz_token, experiment_id, self.gateway_id)
+            return Response({'success': True})
+        except Exception as e:
+            log.error("Cancel action has thrown the following error: ", e)
+            raise e
+
     def _get_writeable_project(self, experiment):
         # figure what project to clone into:
         # 1) project of this experiment if writeable
