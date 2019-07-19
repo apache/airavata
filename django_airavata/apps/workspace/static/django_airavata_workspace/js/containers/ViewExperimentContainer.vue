@@ -1,5 +1,7 @@
 <template>
-    <experiment-summary v-if="fullExperiment" :fullExperiment="fullExperiment" :launching="launching">
+    <experiment-summary v-if="fullExperiment" :fullExperiment="fullExperiment"
+    :launching="launch" @Launched="handleLaunchedExperiment"
+    :key="componentKey">
     </experiment-summary>
 </template>
 
@@ -22,12 +24,21 @@ export default {
     data () {
         return {
             fullExperiment: null,
+            componentKey: 0,
+            launch: this.launching,
         }
     },
     components: {
         ExperimentSummary,
     },
     methods: {
+      handleLaunchedExperiment: function() {
+        // Redirect to experiment view
+        this.launch = true;
+        services.FullExperimentService.retrieve({lookup: this.initialFullExperimentData.experimentId, initialFullExperimentData: this.initialFullExperimentData})
+            .then(exp => this.fullExperiment = exp);
+        this.componentKey = 1;
+      }
     },
     computed: {
     },

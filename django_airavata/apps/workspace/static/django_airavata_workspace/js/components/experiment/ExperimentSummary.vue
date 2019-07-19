@@ -19,6 +19,17 @@
             aria-hidden="true"
           ></i>
         </b-link>
+        <b-link
+          v-if="isLaunchable"
+          class="btn btn-primary"
+          @click="launch"
+        >
+          Launch
+          <i
+            class="fa fa-running"
+            aria-hidden="true"
+          ></i>
+        </b-link>
         <b-btn
           v-if="isClonable"
           variant="primary"
@@ -313,6 +324,9 @@ export default {
         this.experiment.isEditable && this.localFullExperiment.applicationName
       );
     },
+    isLaunchable(){
+      return this.isEditable;
+    },
     isClonable() {
       return this.localFullExperiment.applicationName;
     },
@@ -356,6 +370,13 @@ export default {
       }).then(clonedExperiment => {
         urls.navigateToEditExperiment(clonedExperiment);
       });
+    },
+    launch() {
+      services.ExperimentService.launch({
+        lookup: this.experiment.experimentId
+      }).then(() => {
+        this.$emit("Launched");
+        });
     },
     getDataProducts(io, collection) {
       if (!io.value || !collection) {
