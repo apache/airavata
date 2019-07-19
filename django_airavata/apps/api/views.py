@@ -1693,7 +1693,7 @@ class LogRecordConsumer(APIView):
                     "Frontend error: {}: {}\nstacktrace: {}".format(
                         log_record['message'],
                         json.dumps(log_record['details'], indent=4),
-                        stacktrace))
+                        stacktrace), extra={'request': request})
         return Response(serializer.data)
 
 
