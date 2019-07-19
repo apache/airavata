@@ -23,7 +23,7 @@
                   <span class="text-muted text-uppercase">CORE COUNT</span>
                 </div>
                 <div class="col">
-                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.wallTimeLimit }}</h3>
+                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.wallTimeLimit }} minutes</h3>
                   <span class="text-muted text-uppercase">TIME LIMIT</span>
                 </div>
               </div>
@@ -103,7 +103,7 @@
             </div>
           </b-form-group>
           <b-form-group
-            label="Wall Time Limit"
+            label="Wall Time Limit (in minutes)"
             label-for="walltime-limit"
             :feedback="getValidationFeedback('wallTimeLimit')"
             :state="getValidationState('wallTimeLimit', true)"
@@ -125,7 +125,7 @@
                 class="fa fa-info-circle"
                 aria-hidden="true"
               ></i>
-              Max Allowed Wall Time = {{ maxWalltime }}
+              Max Allowed Wall Time = {{ maxWalltime }} minutes
             </div>
           </b-form-group>
           <div>
