@@ -57,7 +57,6 @@
             <b-form-select
               id="project"
               v-model="localExperiment.projectId"
-              :options="projectOptions"
               required
               :state="getValidationState('projectId')"
             >
@@ -67,6 +66,12 @@
                   disabled
                 >Select a Project</option>
               </template>
+              <optgroup label="My Projects">
+                <option v-for="project in myProjectOptions" :value="project.value" :key="project.value">{{ project.text }}</option>
+              </optgroup>
+              <optgroup label="Projects Shared With Me">
+                <option v-for="project in sharedProjectOptions" :value="project.value" :key="project.value">{{ project.text }}</option>
+              </optgroup>
             </b-form-select>
           </b-form-group>
         </div>
@@ -203,14 +208,18 @@ export default {
     });
   },
   computed: {
-    projectOptions: function() {
-      return this.projects.map(project => ({
+    sharedProjectOptions: function() {
+      return this.projects.filter(p => !p.isOwner).map(project => ({
+        value: project.projectID,
+        text: project.name + (!project.isOwner ? ' (owned by ' + project.owner + ')' : '')
+      }));
+    },
+    myProjectOptions() {
+      return this.projects.filter(p => p.isOwner).map(project => ({
         value: project.projectID,
         text: project.name
       }));
-
     },
-
     valid: function() {
       const validation = this.localExperiment.validate();
       return (

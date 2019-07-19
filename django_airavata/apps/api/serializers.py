@@ -256,6 +256,7 @@ class ProjectSerializer(
         lookup_url_kwarg='project_id')
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
+    isOwner = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         return Project(**validated_data)
@@ -271,6 +272,10 @@ class ProjectSerializer(
         return request.airavata_client.userHasAccess(
             request.authz_token, project.projectID,
             ResourcePermissionType.WRITE)
+
+    def get_isOwner(self, project):
+        request = self.context['request']
+        return project.owner == request.user.username
 
 
 class ApplicationModuleSerializer(
