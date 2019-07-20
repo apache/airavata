@@ -41,8 +41,10 @@ const decrementCount = function() {
 const responseCache = new Cache();
 
 export default {
-  enableSpinner: function() {},
-  disableSpinner: function() {},
+  showSpinner: function(promise) {
+    incrementCount();
+    return promise.then(decrementCount, decrementCount);
+  },
   getCSRFToken: function() {
     var csrfToken = document.cookie
       .split(";")
