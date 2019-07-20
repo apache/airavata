@@ -2205,11 +2205,12 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             ExperimentModel existingExperiment = regClient.getExperiment(airavataExperimentId);
+            ExperimentStatus experimentLastStatus = regClient.getExperimentStatus(airavataExperimentId);
             if (existingExperiment == null){
                 logger.error(airavataExperimentId, "Error while cancelling experiment {}, experiment doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            switch (existingExperiment.getExperimentStatus().get(0).getState()) {
+            switch (experimentLastStatus.getState()) {
                 case COMPLETED: case CANCELED: case FAILED: case CANCELING:
                     logger.warn("Can't terminate already {} experiment", existingExperiment.getExperimentStatus().get(0).getState().name());
                     break;
