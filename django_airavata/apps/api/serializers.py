@@ -27,6 +27,7 @@ from airavata.model.appcatalog.gatewayprofile.ttypes import (
     StoragePreference
 )
 from airavata.model.appcatalog.groupresourceprofile.ttypes import (
+    GroupComputeResourcePreference,
     GroupResourceProfile
 )
 from airavata.model.appcatalog.parser.ttypes import Parser
@@ -566,6 +567,13 @@ class UserProfileSerializer(
     lastAccessTime = UTCPosixTimestampDateTimeField()
 
 
+class GroupComputeResourcePreferenceSerializer(
+        thrift_utils.create_serializer_class(GroupComputeResourcePreference)):
+
+    class Meta:
+        required = ('scratchLocation',)
+
+
 class GroupResourceProfileSerializer(
         thrift_utils.create_serializer_class(GroupResourceProfile)):
     url = FullyEncodedHyperlinkedIdentityField(
@@ -575,6 +583,7 @@ class GroupResourceProfileSerializer(
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     updatedTime = UTCPosixTimestampDateTimeField(allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
+    computePreferences = GroupComputeResourcePreferenceSerializer(many=True)
 
     class Meta:
         required = ('groupResourceProfileName',)

@@ -19,6 +19,7 @@
             </b-form-group>
             <b-form-group label="SSH Credential" label-for="credential-store-token">
               <ssh-credential-selector v-model="data.resourceSpecificCredentialStoreToken"
+                v-if="localGroupResourceProfile"
                 :null-option-default-credential-token="localGroupResourceProfile.defaultCredentialStoreToken"
                 :null-option-disabled="!localGroupResourceProfile.defaultCredentialStoreToken">
                 <template slot="null-option-label" slot-scope="nullOptionLabelScope">
@@ -36,8 +37,8 @@
               <b-form-input id="allocation-number" type="text" v-model="data.allocationProjectNumber">
               </b-form-input>
             </b-form-group>
-            <b-form-group label="Scratch Location" label-for="scratch-location">
-              <b-form-input id="scratch-location" type="text" v-model="data.scratchLocation">
+            <b-form-group label="Scratch Location" label-for="scratch-location" :invalid-feedback="validationFeedback.scratchLocation.invalidFeedback" :state="validationFeedback.scratchLocation.state">
+              <b-form-input id="scratch-location" type="text" required v-model="data.scratchLocation" :state="validationFeedback.scratchLocation.state">
               </b-form-input>
             </b-form-group>
           </div>
@@ -49,8 +50,8 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Policy</h5>
-            <b-form-group label="Allowed Queues">
-              <div v-for="batchQueue in computeResource.batchQueues" :key="batchQueue.queueName" v-if="localComputeResourcePolicy">
+            <b-form-group label="Allowed Queues" v-if="localComputeResourcePolicy">
+              <div v-for="batchQueue in computeResource.batchQueues" :key="batchQueue.queueName">
                 <b-form-checkbox :checked="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
                   @input="batchQueueChecked(batchQueue, $event)">
                   {{ batchQueue.queueName }}
@@ -79,8 +80,8 @@ import DjangoAiravataAPI from "django-airavata-api";
 import BatchQueueResourcePolicy from "./BatchQueueResourcePolicy.vue";
 import SSHCredentialSelector from "../../credentials/SSHCredentialSelector.vue";
 
-import { models, services } from "django-airavata-api";
-import { mixins } from "django-airavata-common-ui";
+import { models, services, errors } from "django-airavata-api";
+import { mixins, notifications, errors as uiErrors } from "django-airavata-common-ui";
 
 export default {
   name: "compute-preference",
@@ -154,10 +155,19 @@ export default {
       computeResource: {
         batchQueues: [],
         jobSubmissionInterfaces: []
-      }
+      },
+      validationErrors: null
     };
   },
-  computed: {},
+  computed: {
+
+    validationFeedback() {
+      return uiErrors.ValidationErrors.createValidationFeedback(
+        this.data,
+        this.validationErrors
+      );
+    }
+  },
   mixins: [mixins.VModelMixin],
   methods: {
     batchQueueChecked: function(batchQueue, checked) {
@@ -222,24 +232,8 @@ export default {
         this.localComputeResourcePolicy,
         this.localBatchQueueResourcePolicies
       );
-      // TODO: success and error handling are the same so we can just combine those
-      if (this.id) {
-        DjangoAiravataAPI.services.GroupResourceProfileService
-          .update({ data: groupResourceProfile, lookup: this.id })
-          .then(groupResourceProfile => {
-            // Navigate back to GroupResourceProfile with success message
-            this.$router.push({
-              name: "group_resource_preference",
-              params: {
-                value: groupResourceProfile,
-                id: this.id
-              }
-            });
-          });
-      } else {
-        DjangoAiravataAPI.services.GroupResourceProfileService
-          .create({ data: groupResourceProfile })
-          .then(groupResourceProfile => {
+      return this.saveOrUpdate(groupResourceProfile)
+        .then(groupResourceProfile => {
             // Navigate back to GroupResourceProfile with success message
             this.$router.push({
               name: "group_resource_preference",
@@ -248,7 +242,24 @@ export default {
                 id: groupResourceProfile.groupResourceProfileId
               }
             });
-          });
+        })
+        .catch(error => {
+
+          if (errors.ErrorUtils.isValidationError(error) && 'computePreferences' in error.details.response) {
+            this.validationErrors = error.details.response.computePreferences[0];
+          } else {
+            this.validationErrors = null;
+            notifications.NotificationList.addError(error);
+          }
+        })
+    },
+    saveOrUpdate(groupResourceProfile) {
+      if (this.id) {
+        return DjangoAiravataAPI.services.GroupResourceProfileService
+          .update({ data: groupResourceProfile, lookup: this.id }, { ignoreErrors: true })
+      } else {
+        return DjangoAiravataAPI.services.GroupResourceProfileService
+          .create({ data: groupResourceProfile }, { ignoreErrors: true })
       }
     },
     remove: function() {
