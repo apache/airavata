@@ -382,5 +382,14 @@ export default {
     viewSet: true,
     pagination: false,
     modelClass: Notification
-  }
+  },
+  APIServerStatusCheck: {
+    url: "/api/api-status-check",
+    methods: {
+      get: {
+        url: "/api/api-status-check/",
+        requestType: "get",
+      }
+    }
+  },
 };

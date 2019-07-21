@@ -90,6 +90,9 @@ urlpatterns = [
     url(r'ack-notifications/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
     url(r'^log', views.LogRecordConsumer.as_view(), name='log'),
     url(r'^settings', views.SettingsAPIView.as_view(), name='settings'),
+    url(r'^api-status-check/',
+        views.APIServerStatusCheckView.as_view(),
+        name='api-status-check'),
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

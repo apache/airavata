@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 from thrift.Thrift import TException
+from thrift.transport import TTransport
 
 from airavata.api.error.ttypes import AuthorizationException
 
@@ -21,6 +22,12 @@ def custom_exception_handler(exc, context):
         return Response(
             {'detail': str(exc)},
             status=status.HTTP_403_FORBIDDEN)
+
+    if isinstance(exc, TTransport.TTransportException):
+        log.warning("TTransportException", exc_info=exc)
+        return Response(
+            {'detail': str(exc), 'apiServerDown': True},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Default TException handler, should come after more specific subclasses of
     # TException

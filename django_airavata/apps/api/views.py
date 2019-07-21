@@ -1707,3 +1707,20 @@ class SettingsAPIView(APIView):
         serializer = self.serializer_class(
             data, context={'request': request})
         return Response(serializer.data)
+
+
+class APIServerStatusCheckView(APIView):
+
+    def get(self, request, format=None):
+        try:
+            request.airavata_client.getUserProjects(
+                    request.authz_token, settings.GATEWAY_ID, request.user.username, 1, 0)
+            data = {
+                "apiServerUp": True
+            }
+        except Exception as e:
+            log.debug("API server status check failed: {}".format(str(e)))
+            data = {
+                "apiServerUp": False
+            }
+        return Response(data)

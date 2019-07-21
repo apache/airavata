@@ -36,7 +36,6 @@ import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
-
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
 import LocaJobSubmissionService from "./services/LocaJobSubmissionService";
@@ -96,6 +95,7 @@ const models = {
 };
 
 const services = {
+  APIServerStatusCheckService: ServiceFactory.service("APIServerStatusCheck"),
   ApplicationDeploymentService: ServiceFactory.service(
     "ApplicationDeployments"
   ),
