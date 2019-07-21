@@ -18,8 +18,12 @@ logger = logging.getLogger(__name__)
 def get_notifications(request):
     if request.user.is_authenticated and hasattr(request, 'airavata_client'):
         unread_notifications = 0
-        notifications = request.airavata_client.getAllNotifications(
-            request.authz_token, settings.GATEWAY_ID)
+        try:
+            notifications = request.airavata_client.getAllNotifications(
+                request.authz_token, settings.GATEWAY_ID)
+        except Exception as e:
+            logger.warning("Failed to load notifications")
+            notifications = []
         current_time = datetime.datetime.utcnow()
         valid_notifications = []
         for notification in notifications:
