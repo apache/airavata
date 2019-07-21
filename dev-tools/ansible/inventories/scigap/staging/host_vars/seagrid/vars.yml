@@ -40,7 +40,7 @@ auth_options:
 gateway_id: "seagrid"
 experiment_data_dir: "{{ user_data_dir }}/seagrid"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eroma.abeysinghe@gmail.com')]"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "SEAGrid Portal"
 
 ...
