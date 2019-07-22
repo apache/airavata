@@ -75,6 +75,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private static final org.apache.thrift.protocol.TField DEFAULT_NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultNodeCount", org.apache.thrift.protocol.TType.I32, (short)16);
   private static final org.apache.thrift.protocol.TField DEFAULT_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultCPUCount", org.apache.thrift.protocol.TType.I32, (short)17);
   private static final org.apache.thrift.protocol.TField DEFAULT_WALLTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultWalltime", org.apache.thrift.protocol.TType.I32, (short)18);
+  private static final org.apache.thrift.protocol.TField DELETED_FIELD_DESC = new org.apache.thrift.protocol.TField("deleted", org.apache.thrift.protocol.TType.BOOL, (short)19);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ComputeResourceDescriptionStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ComputeResourceDescriptionTupleSchemeFactory();
@@ -97,6 +98,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private int defaultNodeCount; // optional
   private int defaultCPUCount; // optional
   private int defaultWalltime; // optional
+  private boolean deleted; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -117,7 +119,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     CPUS_PER_NODE((short)15, "cpusPerNode"),
     DEFAULT_NODE_COUNT((short)16, "defaultNodeCount"),
     DEFAULT_CPUCOUNT((short)17, "defaultCPUCount"),
-    DEFAULT_WALLTIME((short)18, "defaultWalltime");
+    DEFAULT_WALLTIME((short)18, "defaultWalltime"),
+    DELETED((short)19, "deleted");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -168,6 +171,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
           return DEFAULT_CPUCOUNT;
         case 18: // DEFAULT_WALLTIME
           return DEFAULT_WALLTIME;
+        case 19: // DELETED
+          return DELETED;
         default:
           return null;
       }
@@ -215,8 +220,9 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private static final int __DEFAULTNODECOUNT_ISSET_ID = 4;
   private static final int __DEFAULTCPUCOUNT_ISSET_ID = 5;
   private static final int __DEFAULTWALLTIME_ISSET_ID = 6;
+  private static final int __DELETED_ISSET_ID = 7;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE,_Fields.GATEWAY_USAGE_REPORTING,_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND,_Fields.GATEWAY_USAGE_EXECUTABLE,_Fields.CPUS_PER_NODE,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.DEFAULT_WALLTIME};
+  private static final _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE,_Fields.GATEWAY_USAGE_REPORTING,_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND,_Fields.GATEWAY_USAGE_EXECUTABLE,_Fields.CPUS_PER_NODE,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.DEFAULT_WALLTIME,_Fields.DELETED};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -263,6 +269,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.DEFAULT_WALLTIME, new org.apache.thrift.meta_data.FieldMetaData("defaultWalltime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DELETED, new org.apache.thrift.meta_data.FieldMetaData("deleted", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputeResourceDescription.class, metaDataMap);
   }
@@ -352,6 +360,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     this.defaultNodeCount = other.defaultNodeCount;
     this.defaultCPUCount = other.defaultCPUCount;
     this.defaultWalltime = other.defaultWalltime;
+    this.deleted = other.deleted;
   }
 
   public ComputeResourceDescription deepCopy() {
@@ -386,6 +395,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     this.defaultCPUCount = 0;
     setDefaultWalltimeIsSet(false);
     this.defaultWalltime = 0;
+    setDeletedIsSet(false);
+    this.deleted = false;
   }
 
   public java.lang.String getComputeResourceId() {
@@ -881,6 +892,28 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __DEFAULTWALLTIME_ISSET_ID, value);
   }
 
+  public boolean isDeleted() {
+    return this.deleted;
+  }
+
+  public void setDeleted(boolean deleted) {
+    this.deleted = deleted;
+    setDeletedIsSet(true);
+  }
+
+  public void unsetDeleted() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __DELETED_ISSET_ID);
+  }
+
+  /** Returns true if field deleted is set (has been assigned a value) and false otherwise */
+  public boolean isSetDeleted() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __DELETED_ISSET_ID);
+  }
+
+  public void setDeletedIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __DELETED_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case COMPUTE_RESOURCE_ID:
@@ -1027,6 +1060,14 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       }
       break;
 
+    case DELETED:
+      if (value == null) {
+        unsetDeleted();
+      } else {
+        setDeleted((java.lang.Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -1086,6 +1127,9 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     case DEFAULT_WALLTIME:
       return getDefaultWalltime();
 
+    case DELETED:
+      return isDeleted();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1133,6 +1177,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       return isSetDefaultCPUCount();
     case DEFAULT_WALLTIME:
       return isSetDefaultWalltime();
+    case DELETED:
+      return isSetDeleted();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1314,6 +1360,15 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         return false;
     }
 
+    boolean this_present_deleted = true && this.isSetDeleted();
+    boolean that_present_deleted = true && that.isSetDeleted();
+    if (this_present_deleted || that_present_deleted) {
+      if (!(this_present_deleted && that_present_deleted))
+        return false;
+      if (this.deleted != that.deleted)
+        return false;
+    }
+
     return true;
   }
 
@@ -1392,6 +1447,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     hashCode = hashCode * 8191 + ((isSetDefaultWalltime()) ? 131071 : 524287);
     if (isSetDefaultWalltime())
       hashCode = hashCode * 8191 + defaultWalltime;
+
+    hashCode = hashCode * 8191 + ((isSetDeleted()) ? 131071 : 524287);
+    if (isSetDeleted())
+      hashCode = hashCode * 8191 + ((deleted) ? 131071 : 524287);
 
     return hashCode;
   }
@@ -1584,6 +1643,16 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetDeleted()).compareTo(other.isSetDeleted());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDeleted()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.deleted, other.deleted);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1749,6 +1818,12 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (!first) sb.append(", ");
       sb.append("defaultWalltime:");
       sb.append(this.defaultWalltime);
+      first = false;
+    }
+    if (isSetDeleted()) {
+      if (!first) sb.append(", ");
+      sb.append("deleted:");
+      sb.append(this.deleted);
       first = false;
     }
     sb.append(")");
@@ -2013,6 +2088,14 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 19: // DELETED
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.deleted = iprot.readBool();
+              struct.setDeletedIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2177,6 +2260,11 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         oprot.writeI32(struct.defaultWalltime);
         oprot.writeFieldEnd();
       }
+      if (struct.isSetDeleted()) {
+        oprot.writeFieldBegin(DELETED_FIELD_DESC);
+        oprot.writeBool(struct.deleted);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2245,7 +2333,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (struct.isSetDefaultWalltime()) {
         optionals.set(15);
       }
-      oprot.writeBitSet(optionals, 16);
+      if (struct.isSetDeleted()) {
+        optionals.set(16);
+      }
+      oprot.writeBitSet(optionals, 17);
       if (struct.isSetHostAliases()) {
         {
           oprot.writeI32(struct.hostAliases.size());
@@ -2331,6 +2422,9 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (struct.isSetDefaultWalltime()) {
         oprot.writeI32(struct.defaultWalltime);
       }
+      if (struct.isSetDeleted()) {
+        oprot.writeBool(struct.deleted);
+      }
     }
 
     @Override
@@ -2340,7 +2434,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       struct.setComputeResourceIdIsSet(true);
       struct.hostName = iprot.readString();
       struct.setHostNameIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(16);
+      java.util.BitSet incoming = iprot.readBitSet(17);
       if (incoming.get(0)) {
         {
           org.apache.thrift.protocol.TList _list67 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -2463,6 +2557,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (incoming.get(15)) {
         struct.defaultWalltime = iprot.readI32();
         struct.setDefaultWalltimeIsSet(true);
+      }
+      if (incoming.get(16)) {
+        struct.deleted = iprot.readBool();
+        struct.setDeletedIsSet(true);
       }
     }
   }

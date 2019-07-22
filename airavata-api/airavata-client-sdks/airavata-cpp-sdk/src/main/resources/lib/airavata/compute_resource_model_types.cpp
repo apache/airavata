@@ -1856,6 +1856,11 @@ void ComputeResourceDescription::__set_defaultWalltime(const int32_t val) {
 __isset.defaultWalltime = true;
 }
 
+void ComputeResourceDescription::__set_deleted(const bool val) {
+  this->deleted = val;
+__isset.deleted = true;
+}
+
 uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -2100,6 +2105,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 19:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->deleted);
+          this->__isset.deleted = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2258,6 +2271,11 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeI32(this->defaultWalltime);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.deleted) {
+    xfer += oprot->writeFieldBegin("deleted", ::apache::thrift::protocol::T_BOOL, 19);
+    xfer += oprot->writeBool(this->deleted);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2283,6 +2301,7 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.defaultNodeCount, b.defaultNodeCount);
   swap(a.defaultCPUCount, b.defaultCPUCount);
   swap(a.defaultWalltime, b.defaultWalltime);
+  swap(a.deleted, b.deleted);
   swap(a.__isset, b.__isset);
 }
 
@@ -2305,6 +2324,7 @@ ComputeResourceDescription::ComputeResourceDescription(const ComputeResourceDesc
   defaultNodeCount = other94.defaultNodeCount;
   defaultCPUCount = other94.defaultCPUCount;
   defaultWalltime = other94.defaultWalltime;
+  deleted = other94.deleted;
   __isset = other94.__isset;
 }
 ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeResourceDescription& other95) {
@@ -2326,6 +2346,7 @@ ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeR
   defaultNodeCount = other95.defaultNodeCount;
   defaultCPUCount = other95.defaultCPUCount;
   defaultWalltime = other95.defaultWalltime;
+  deleted = other95.deleted;
   __isset = other95.__isset;
   return *this;
 }
@@ -2350,6 +2371,7 @@ void ComputeResourceDescription::printTo(std::ostream& out) const {
   out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
   out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
   out << ", " << "defaultWalltime="; (__isset.defaultWalltime ? (out << to_string(defaultWalltime)) : (out << "<null>"));
+  out << ", " << "deleted="; (__isset.deleted ? (out << to_string(deleted)) : (out << "<null>"));
   out << ")";
 }
 

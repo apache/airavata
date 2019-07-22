@@ -728,7 +728,7 @@ inline std::ostream& operator<<(std::ostream& out, const JobSubmissionInterface&
 }
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), gatewayUsageReporting(false), gatewayUsageModuleLoadCommand(false), gatewayUsageExecutable(false), cpusPerNode(false), defaultNodeCount(false), defaultCPUCount(false), defaultWalltime(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), gatewayUsageReporting(false), gatewayUsageModuleLoadCommand(false), gatewayUsageExecutable(false), cpusPerNode(false), defaultNodeCount(false), defaultCPUCount(false), defaultWalltime(false), deleted(false) {}
   bool hostAliases :1;
   bool ipAddresses :1;
   bool resourceDescription :1;
@@ -745,6 +745,7 @@ typedef struct _ComputeResourceDescription__isset {
   bool defaultNodeCount :1;
   bool defaultCPUCount :1;
   bool defaultWalltime :1;
+  bool deleted :1;
 } _ComputeResourceDescription__isset;
 
 class ComputeResourceDescription : public virtual ::apache::thrift::TBase {
@@ -752,7 +753,7 @@ class ComputeResourceDescription : public virtual ::apache::thrift::TBase {
 
   ComputeResourceDescription(const ComputeResourceDescription&);
   ComputeResourceDescription& operator=(const ComputeResourceDescription&);
-  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0), gatewayUsageReporting(0), gatewayUsageModuleLoadCommand(), gatewayUsageExecutable(), cpusPerNode(0), defaultNodeCount(0), defaultCPUCount(0), defaultWalltime(0) {
+  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0), gatewayUsageReporting(0), gatewayUsageModuleLoadCommand(), gatewayUsageExecutable(), cpusPerNode(0), defaultNodeCount(0), defaultCPUCount(0), defaultWalltime(0), deleted(0) {
   }
 
   virtual ~ComputeResourceDescription() throw();
@@ -774,6 +775,7 @@ class ComputeResourceDescription : public virtual ::apache::thrift::TBase {
   int32_t defaultNodeCount;
   int32_t defaultCPUCount;
   int32_t defaultWalltime;
+  bool deleted;
 
   _ComputeResourceDescription__isset __isset;
 
@@ -812,6 +814,8 @@ class ComputeResourceDescription : public virtual ::apache::thrift::TBase {
   void __set_defaultCPUCount(const int32_t val);
 
   void __set_defaultWalltime(const int32_t val);
+
+  void __set_deleted(const bool val);
 
   bool operator == (const ComputeResourceDescription & rhs) const
   {
@@ -882,6 +886,10 @@ class ComputeResourceDescription : public virtual ::apache::thrift::TBase {
     if (__isset.defaultWalltime != rhs.__isset.defaultWalltime)
       return false;
     else if (__isset.defaultWalltime && !(defaultWalltime == rhs.defaultWalltime))
+      return false;
+    if (__isset.deleted != rhs.__isset.deleted)
+      return false;
+    else if (__isset.deleted && !(deleted == rhs.deleted))
       return false;
     return true;
   }

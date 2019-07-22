@@ -364,4 +364,5 @@ struct ComputeResourceDescription {
     16: optional i32 defaultNodeCount,
     17: optional i32 defaultCPUCount,
     18: optional i32 defaultWalltime,
+    19: optional bool deleted,
 }

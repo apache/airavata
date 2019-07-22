@@ -56,7 +56,8 @@ struct ResourcePermissionType {
   enum type {
     WRITE = 0,
     READ = 1,
-    OWNER = 2
+    OWNER = 2,
+    MANAGE_SHARING = 3
   };
 };
 
