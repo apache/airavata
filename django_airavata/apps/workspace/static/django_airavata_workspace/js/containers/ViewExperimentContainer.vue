@@ -33,10 +33,7 @@ export default {
     },
     methods: {
       handleLaunchedExperiment: function() {
-        // Redirect to experiment view
         this.launch = true;
-        services.FullExperimentService.retrieve({lookup: this.initialFullExperimentData.experimentId, initialFullExperimentData: this.initialFullExperimentData})
-            .then(exp => this.fullExperiment = exp);
         this.componentKey = 1;
       }
     },

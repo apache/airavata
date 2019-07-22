@@ -424,7 +424,13 @@ export default {
       return dataProducts ? dataProducts.filter(dp => (dp ? true : false)) : [];
     }
   },
-  watch: {},
+  watch: {
+    launching: function(val){
+      if(val==true){
+        this.initPollingExperiment();
+      }
+    }
+  },
   mounted: function() {
     this.initPollingExperiment();
   }
