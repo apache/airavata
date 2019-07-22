@@ -232,6 +232,12 @@ public interface ComputeResource {
     void removeComputeResource (String resourceId) throws AppCatalogException;
 
     /**
+     * This method will remove given resource from the system
+     * @param resourceId unique resource id
+     */
+    void undeleteComputeResource (String resourceId) throws AppCatalogException;
+
+    /**
      * This method will remove job submission interface
      * @param jobSubmissionInterfaceId unique job submission interface id
      * @throws AppCatalogException

@@ -77,6 +77,9 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "DEFAULT_WALLTIME")
     private Integer defaultWalltime;
 
+    @Column(name = "DELETED")
+    private short deleted;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="HOST_ALIAS", joinColumns = @JoinColumn(name="RESOURCE_ID"))
     @Column(name = "ALIAS")
@@ -117,6 +120,15 @@ public class ComputeResourceEntity implements Serializable {
     public void setEnabled(short enabled) {
         this.enabled = enabled;
     }
+
+    public short getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(short deleted) {
+        this.deleted = deleted;
+    }
+
 
     public String getGatewayUsageExecutable() {
         return gatewayUsageExecutable;
