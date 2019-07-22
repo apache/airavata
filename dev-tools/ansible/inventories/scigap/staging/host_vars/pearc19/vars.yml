@@ -22,7 +22,7 @@
 vhost_servername: "pearc19.scigap.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/pearc19.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/pearc19.seagrid.org/fullchain.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/pearc19.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/pearc19.scigap.org/privkey.pem"
 
 ## Keycloak related variables
