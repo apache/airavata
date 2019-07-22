@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import { models, utils } from "django-airavata-api";
+import { models, utils, session } from "django-airavata-api";
 import AutocompleteTextInput from "./AutocompleteTextInput.vue";
 import VModelMixin from "../mixins/VModelMixin";
 
@@ -271,6 +271,7 @@ export default {
         : [];
       return this.users
         .filter(user => currentUserIds.indexOf(user.airavataInternalUserId) < 0)
+        .filter(user => user.airavataInternalUserId !== session.Session.airavataInternalUserId)
         .map(user => {
           return {
             id: user.airavataInternalUserId,
