@@ -37,7 +37,7 @@ def experiments_list(request):
     response = ExperimentSearchViewSet.as_view({'get': 'list'})(request)
     if response.status_code != 200:
         raise Exception("Failed to load experiments list: {}".format(
-                response.data['detail']))
+            response.data['detail']))
     experiments_json = JSONRenderer().render(response.data)
     return render(request, 'django_airavata_workspace/experiments_list.html', {
         'bundle_name': 'experiment-list',
@@ -61,7 +61,7 @@ def projects_list(request):
     response = ProjectViewSet.as_view({'get': 'list'})(request)
     if response.status_code != 200:
         raise Exception("Failed to load projects list: {}".format(
-                response.data['detail']))
+            response.data['detail']))
     projects_json = JSONRenderer().render(response.data)
 
     return render(request, 'django_airavata_workspace/projects_list.html', {
@@ -90,7 +90,7 @@ def create_experiment(request, app_module_id):
         {'get': 'application_interface'})(request, app_module_id=app_module_id)
     if app_interface.status_code != 200:
         raise Exception("Failed to load application module data: {}".format(
-                app_interface.data['detail']))
+            app_interface.data['detail']))
     user_input_files = {}
     for app_input in app_interface.data['applicationInputs']:
         if (app_input['type'] ==
@@ -132,7 +132,7 @@ def view_experiment(request, experiment_id):
         {'get': 'retrieve'})(request, experiment_id=experiment_id)
     if response.status_code != 200:
         raise Exception("Failed to load experiment data: {}".format(
-                response.data['detail']))
+            response.data['detail']))
     full_experiment_json = JSONRenderer().render(response.data)
 
     return render(request, 'django_airavata_workspace/view_experiment.html', {

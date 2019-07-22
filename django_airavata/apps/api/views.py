@@ -1713,8 +1713,11 @@ class APIServerStatusCheckView(APIView):
 
     def get(self, request, format=None):
         try:
-            request.airavata_client.getUserProjects(
-                    request.authz_token, settings.GATEWAY_ID, request.user.username, 1, 0)
+            request.airavata_client.getUserProjects(request.authz_token,
+                                                    settings.GATEWAY_ID,
+                                                    request.user.username,
+                                                    1,  # limit
+                                                    0)  # offset
             data = {
                 "apiServerUp": True
             }
