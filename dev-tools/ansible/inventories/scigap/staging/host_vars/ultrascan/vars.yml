@@ -39,6 +39,7 @@ auth_options:
 
 gateway_id: "ultrascan"
 experiment_data_dir: "{{ user_data_dir }}/ultrascan"
+# gateway_data_store_ssh_public_key: "TODO"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "Staging Ultrascan SciGaP Dashboard"
