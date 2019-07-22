@@ -34,11 +34,12 @@ auth_options:
   password:
     name: "PEARC19"
   external:
-    - name: "CILogon"
-      idp_alias: "cilogon"
+#    - name: "CILogon"
+#     idp_alias: "cilogon"
 
 gateway_id: "pearc19"
 experiment_data_dir: "{{ user_data_dir }}/seagrid"
+# gateway_data_store_ssh_public_key: "TODO"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "PEARC19 Portal"
