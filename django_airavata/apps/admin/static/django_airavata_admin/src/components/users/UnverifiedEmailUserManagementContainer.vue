@@ -55,6 +55,7 @@
 import { components } from "django-airavata-common-ui";
 import { services } from "django-airavata-api";
 import EnableUserPanel from "./EnableUserPanel";
+import DeleteUserPanel from "./DeleteUserPanel";
 
 export default {
   name: "unverified-email-user-management-container",
@@ -67,7 +68,8 @@ export default {
   components: {
     pager: components.Pager,
     "human-date": components.HumanDate,
-    EnableUserPanel
+    EnableUserPanel,
+    DeleteUserPanel
   },
   created() {
     services.UnverifiedEmailUserProfileService.list({ limit: 10 }).then(

@@ -1655,26 +1655,32 @@ class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
             unverified_emails = unverified_emails[offset:offset + limit]
         results = []
         for unverified_email in unverified_emails:
-            username = unverified_email['username']
-            user_profile = iam_admin_client.get_user(username)
-            if (user_profile.State == Status.CONFIRMED or
-                    user_profile.State == Status.ACTIVE):
-                # TODO: test this
+            unverified_username = unverified_email['username']
+            if iam_admin_client.is_user_exist(unverified_username):
+                user_profile = iam_admin_client.get_user(unverified_username)
+                if (user_profile.State == Status.CONFIRMED or
+                        user_profile.State == Status.ACTIVE):
+                    # TODO: test this
+                    EmailVerification.objects.filter(
+                        username=unverified_username).update(
+                        verified=True)
+                    continue
+                results.append({
+                    'userId': user_profile.userId,
+                    'gatewayId': user_profile.gatewayId,
+                    'email': user_profile.emails[0],
+                    'firstName': user_profile.firstName,
+                    'lastName': user_profile.lastName,
+                    'enabled': user_profile.State == Status.ACTIVE,
+                    'emailVerified': (user_profile.State == Status.CONFIRMED or
+                                      user_profile.State == Status.ACTIVE),
+                    'creationTime': user_profile.creationTime,
+                })
+            else:
+                # Delete the EmailVerification records since that user no
+                # longer exists in the IAM service
                 EmailVerification.objects.filter(
-                    username=username).update(
-                    verified=True)
-                continue
-            results.append({
-                'userId': user_profile.userId,
-                'gatewayId': user_profile.gatewayId,
-                'email': user_profile.emails[0],
-                'firstName': user_profile.firstName,
-                'lastName': user_profile.lastName,
-                'enabled': user_profile.State == Status.ACTIVE,
-                'emailVerified': (user_profile.State == Status.CONFIRMED or
-                                  user_profile.State == Status.ACTIVE),
-                'creationTime': user_profile.creationTime,
-            })
+                    username=unverified_username).delete()
         return results
 
 
