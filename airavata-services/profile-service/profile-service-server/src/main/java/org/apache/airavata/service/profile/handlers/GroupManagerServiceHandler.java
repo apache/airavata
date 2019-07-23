@@ -6,15 +6,17 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
-import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
+import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.GroupType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
 public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
+
+    private UserProfileRepository userProfileRepository = new UserProfileRepository();
 
     public GroupManagerServiceHandler() {
 
@@ -57,7 +61,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             sharingUserGroup.setOwnerId(getUserId(authzToken));
 
             String groupId = sharingClient.createGroup(sharingUserGroup);
-            sharingClient.addUsersToGroup(gatewayId, groupModel.getMembers(), groupId);
+            internalAddUsersToGroup(sharingClient, gatewayId, groupModel.getMembers(), groupId);
             addGroupAdmins(authzToken,groupId,groupModel.getAdmins());
             return groupId;
         }
@@ -198,7 +202,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
                     || sharingClient.hasAdminAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have access to add users to the group");
             }
-            return sharingClient.addUsersToGroup(domainId, userIds, groupId);
+            return internalAddUsersToGroup(sharingClient, domainId, userIds, groupId);
 
         } catch (Exception e) {
             String msg = "Error adding users to group. Group ID: " + groupId ;
@@ -384,4 +388,24 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         }
     }
 
+    private boolean internalAddUsersToGroup(SharingRegistryService.Client sharingClient, String domainId, List<String> userIds, String groupId) throws SharingRegistryException, TException {
+
+        // FIXME: workaround for UserProfiles that failed to sync to the sharing
+        // registry: create any missing users in the sharing registry
+        for (String userId : userIds) {
+            if (!sharingClient.isUserExists(domainId, userId)) {
+                User user = new User();
+                user.setDomainId(domainId);
+                user.setUserId(userId);
+                UserProfile userProfile = userProfileRepository.get(userId);
+                user.setUserName(userProfile.getUserId());
+                user.setCreatedTime(userProfile.getCreationTime());
+                user.setEmail(userProfile.getEmailsSize() > 0 ? userProfile.getEmails().get(0) : null);
+                user.setFirstName(userProfile.getFirstName());
+                user.setLastName(userProfile.getLastName());
+                sharingClient.createUser(user);
+            }
+        }
+        return sharingClient.addUsersToGroup(domainId, userIds, groupId);
+    }
 }
