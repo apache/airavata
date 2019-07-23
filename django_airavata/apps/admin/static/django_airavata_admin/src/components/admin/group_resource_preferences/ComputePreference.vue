@@ -246,7 +246,8 @@ export default {
         .catch(error => {
 
           if (errors.ErrorUtils.isValidationError(error) && 'computePreferences' in error.details.response) {
-            this.validationErrors = error.details.response.computePreferences[0];
+            const computePreferencesIndex = groupResourceProfile.computePreferences.findIndex(cp => cp.computeResourceId === this.host_id);
+            this.validationErrors = error.details.response.computePreferences[computePreferencesIndex];
           } else {
             this.validationErrors = null;
             notifications.NotificationList.addError(error);
