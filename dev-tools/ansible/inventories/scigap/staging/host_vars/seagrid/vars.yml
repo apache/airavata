@@ -40,6 +40,7 @@ auth_options:
 gateway_id: "seagrid"
 experiment_data_dir: "{{ user_data_dir }}/seagrid"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClKWZUFlV3DJ+bHW0xb7VEplKhbHEZ/t0AE/HPmIk6MXOQnDa38gykd7ru9zoU7vuIqjouFyQKvVoQFZyMSnHX/dfcZRWRBRQn5+1+8n6dD6VMwuVtv9IfN1tuadZYsHOIVVDgd0jhWblLkGlwyi2jh2IHqWBxHNlKYMA60j2T1uNPz5tyQVxFQF0A0kbg0a9Bd19ac1b6Qryu07Ni+Y5BfJohrnwcYLDFlWfvmAUZRSMnHz9H1jyTJrSu1bsrekYzJhbz9yI0ZyJFOI/XvazUEERH5HltiFFnlQsyRZpqTLk6sWsWzIcHxsHdMwN7y5y3KnkdjGgkVDxUJCwSjKXt"
+django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "SEAGrid Portal"
