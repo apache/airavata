@@ -41,6 +41,8 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResource
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.parser.Parser;
+import org.apache.airavata.model.appcatalog.parser.ParserInput;
+import org.apache.airavata.model.appcatalog.parser.ParserOutput;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
@@ -86,16 +88,7 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GatewayGroupsRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ParserRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ParsingTemplateRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.StorageResourceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.*;
 import org.apache.airavata.registry.core.repositories.expcatalog.*;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
@@ -150,6 +143,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private WorkflowRepository workflowRepository = new WorkflowRepository();
     private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
     private ParserRepository parserRepository = new ParserRepository();
+    private ParserInputRepository parserInputRepository = new ParserInputRepository();
+    private ParserOutputRepository parserOutputRepository = new ParserOutputRepository();
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
     private UserRepository userRepository = new UserRepository();
     private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
@@ -4934,6 +4929,34 @@ public class RegistryServerHandler implements RegistryService.Iface {
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + " More info: " + e.getMessage());
             throw rse;
+        }
+    }
+
+    @Override
+    public ParserInput getParserInput(String parserInputId, String gatewayId) throws RegistryServiceException, TException {
+        try {
+            ParserInput parserInput = parserInputRepository.getParserInput(parserInputId);
+            // TODO check the gateway
+
+            return parserInput;
+        } catch (Exception e) {
+            logger.error("Failed to fetch parser input " + parserInputId + " for gateway " + gatewayId, e);
+            throw new RegistryServiceException("Failed to fetch parser input " + parserInputId + " for gateway " +
+                    gatewayId + " More info: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public ParserOutput getParserOutput(String parserOutputId, String gatewayId) throws RegistryServiceException, TException {
+        try {
+            ParserOutput parserOutput = parserOutputRepository.getParserOutput(parserOutputId);
+            // TODO check the gateway
+
+            return parserOutput;
+        } catch (Exception e) {
+            logger.error("Failed to fetch parser output " + parserOutputId + " for gateway " + gatewayId, e);
+            throw new RegistryServiceException("Failed to fetch parser output " + parserOutputId + " for gateway " +
+                    gatewayId + " More info: " + e.getMessage());
         }
     }
 

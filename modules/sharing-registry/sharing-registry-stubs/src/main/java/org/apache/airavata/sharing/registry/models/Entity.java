@@ -62,19 +62,19 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new EntityStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new EntityTupleSchemeFactory();
 
-  private java.lang.String entityId; // optional
-  private java.lang.String domainId; // optional
-  private java.lang.String entityTypeId; // optional
-  private java.lang.String ownerId; // optional
-  private java.lang.String parentEntityId; // optional
-  private java.lang.String name; // optional
-  private java.lang.String description; // optional
-  private java.nio.ByteBuffer binaryData; // optional
-  private java.lang.String fullText; // optional
-  private long sharedCount; // optional
-  private long originalEntityCreationTime; // optional
-  private long createdTime; // optional
-  private long updatedTime; // optional
+  public java.lang.String entityId; // optional
+  public java.lang.String domainId; // optional
+  public java.lang.String entityTypeId; // optional
+  public java.lang.String ownerId; // optional
+  public java.lang.String parentEntityId; // optional
+  public java.lang.String name; // optional
+  public java.lang.String description; // optional
+  public java.nio.ByteBuffer binaryData; // optional
+  public java.lang.String fullText; // optional
+  public long sharedCount; // optional
+  public long originalEntityCreationTime; // optional
+  public long createdTime; // optional
+  public long updatedTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -282,8 +282,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.entityId;
   }
 
-  public void setEntityId(java.lang.String entityId) {
+  public Entity setEntityId(java.lang.String entityId) {
     this.entityId = entityId;
+    return this;
   }
 
   public void unsetEntityId() {
@@ -305,8 +306,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.domainId;
   }
 
-  public void setDomainId(java.lang.String domainId) {
+  public Entity setDomainId(java.lang.String domainId) {
     this.domainId = domainId;
+    return this;
   }
 
   public void unsetDomainId() {
@@ -328,8 +330,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.entityTypeId;
   }
 
-  public void setEntityTypeId(java.lang.String entityTypeId) {
+  public Entity setEntityTypeId(java.lang.String entityTypeId) {
     this.entityTypeId = entityTypeId;
+    return this;
   }
 
   public void unsetEntityTypeId() {
@@ -351,8 +354,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.ownerId;
   }
 
-  public void setOwnerId(java.lang.String ownerId) {
+  public Entity setOwnerId(java.lang.String ownerId) {
     this.ownerId = ownerId;
+    return this;
   }
 
   public void unsetOwnerId() {
@@ -374,8 +378,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.parentEntityId;
   }
 
-  public void setParentEntityId(java.lang.String parentEntityId) {
+  public Entity setParentEntityId(java.lang.String parentEntityId) {
     this.parentEntityId = parentEntityId;
+    return this;
   }
 
   public void unsetParentEntityId() {
@@ -397,8 +402,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.name;
   }
 
-  public void setName(java.lang.String name) {
+  public Entity setName(java.lang.String name) {
     this.name = name;
+    return this;
   }
 
   public void unsetName() {
@@ -420,8 +426,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.description;
   }
 
-  public void setDescription(java.lang.String description) {
+  public Entity setDescription(java.lang.String description) {
     this.description = description;
+    return this;
   }
 
   public void unsetDescription() {
@@ -448,12 +455,14 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return org.apache.thrift.TBaseHelper.copyBinary(binaryData);
   }
 
-  public void setBinaryData(byte[] binaryData) {
+  public Entity setBinaryData(byte[] binaryData) {
     this.binaryData = binaryData == null ? (java.nio.ByteBuffer)null : java.nio.ByteBuffer.wrap(binaryData.clone());
+    return this;
   }
 
-  public void setBinaryData(java.nio.ByteBuffer binaryData) {
+  public Entity setBinaryData(java.nio.ByteBuffer binaryData) {
     this.binaryData = org.apache.thrift.TBaseHelper.copyBinary(binaryData);
+    return this;
   }
 
   public void unsetBinaryData() {
@@ -475,8 +484,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.fullText;
   }
 
-  public void setFullText(java.lang.String fullText) {
+  public Entity setFullText(java.lang.String fullText) {
     this.fullText = fullText;
+    return this;
   }
 
   public void unsetFullText() {
@@ -498,9 +508,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.sharedCount;
   }
 
-  public void setSharedCount(long sharedCount) {
+  public Entity setSharedCount(long sharedCount) {
     this.sharedCount = sharedCount;
     setSharedCountIsSet(true);
+    return this;
   }
 
   public void unsetSharedCount() {
@@ -520,9 +531,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.originalEntityCreationTime;
   }
 
-  public void setOriginalEntityCreationTime(long originalEntityCreationTime) {
+  public Entity setOriginalEntityCreationTime(long originalEntityCreationTime) {
     this.originalEntityCreationTime = originalEntityCreationTime;
     setOriginalEntityCreationTimeIsSet(true);
+    return this;
   }
 
   public void unsetOriginalEntityCreationTime() {
@@ -542,9 +554,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.createdTime;
   }
 
-  public void setCreatedTime(long createdTime) {
+  public Entity setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
     setCreatedTimeIsSet(true);
+    return this;
   }
 
   public void unsetCreatedTime() {
@@ -564,9 +577,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     return this.updatedTime;
   }
 
-  public void setUpdatedTime(long updatedTime) {
+  public Entity setUpdatedTime(long updatedTime) {
     this.updatedTime = updatedTime;
     setUpdatedTimeIsSet(true);
+    return this;
   }
 
   public void unsetUpdatedTime() {
@@ -1397,6 +1411,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

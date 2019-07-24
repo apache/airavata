@@ -37,7 +37,7 @@ public class SharingRegistryException extends org.apache.thrift.TException imple
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new SharingRegistryExceptionStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new SharingRegistryExceptionTupleSchemeFactory();
 
-  private java.lang.String message; // required
+  public java.lang.String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -139,8 +139,9 @@ public class SharingRegistryException extends org.apache.thrift.TException imple
     return this.message;
   }
 
-  public void setMessage(java.lang.String message) {
+  public SharingRegistryException setMessage(java.lang.String message) {
     this.message = message;
+    return this;
   }
 
   public void unsetMessage() {
@@ -282,10 +283,9 @@ public class SharingRegistryException extends org.apache.thrift.TException imple
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetMessage()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'message' is unset! Struct:" + toString());
+    if (message == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'message' was not present! Struct: " + toString());
     }
-
     // check for sub-struct validity
   }
 
@@ -337,6 +337,8 @@ public class SharingRegistryException extends org.apache.thrift.TException imple
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 
