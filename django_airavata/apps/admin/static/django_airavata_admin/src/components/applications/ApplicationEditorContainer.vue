@@ -22,7 +22,7 @@
           :validation-errors="appModuleValidationErrors" />
         <router-view name="interface" v-if="appInterface" v-model="appInterface" @input="appInterfaceIsDirty = true" :readonly="!appInterface.userHasWriteAccess"
         />
-        <router-view name="deployments" v-if="appDeployments" :deployments="appDeployments" @new="createNewDeployment" @delete="deleteApplicationDeployment"
+        <router-view name="deployments" v-if="appModule && appDeployments" :deployments="appDeployments" @new="createNewDeployment" @delete="deleteApplicationDeployment" :readonly="!appModule.userHasWriteAccess"
         />
         <router-view name="deployment" v-if="currentDeployment && currentDeploymentSharedEntity" v-model="currentDeployment" :shared-entity="currentDeploymentSharedEntity"
           @sharing-changed="deploymentSharingChanged" @input="currentDeploymentChanged" />

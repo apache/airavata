@@ -1,6 +1,6 @@
 <template>
   <div>
-    <list-layout @add-new-item="newApplicationDeployment" :items="deployments" title="Application Deployments" new-item-button-text="New Deployment">
+    <list-layout @add-new-item="newApplicationDeployment" :items="deployments" title="Application Deployments" new-item-button-text="New Deployment" :new-button-disabled="readonly">
       <template slot="item-list" slot-scope="slotProps">
 
         <b-table striped hover :fields="fields" :items="slotProps.items" sort-by="computeHostId">
@@ -50,7 +50,11 @@ export default {
       // app module id
       type: String,
       required: true
-    }
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
   },
   data() {
     return {

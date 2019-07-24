@@ -8,7 +8,7 @@
       </div>
       <div class="col-auto">
         <slot name="new-item-button">
-          <b-btn variant="primary" @click="addNewItem">
+          <b-btn variant="primary" @click="addNewItem" :disabled="newButtonDisabled">
             {{ newItemButtonText }}
             <i class="fa fa-plus" aria-hidden="true"></i>
           </b-btn>
@@ -52,6 +52,10 @@ export default {
     newItemButtonText: {
       type: String,
       default: "New Item"
+    },
+    newButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   name: "list-layout",
