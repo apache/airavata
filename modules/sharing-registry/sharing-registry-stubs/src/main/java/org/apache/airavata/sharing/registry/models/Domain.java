@@ -48,11 +48,11 @@ public class Domain implements org.apache.thrift.TBase<Domain, Domain._Fields>, 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new DomainStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new DomainTupleSchemeFactory();
 
-  private java.lang.String domainId; // optional
-  private java.lang.String name; // optional
-  private java.lang.String description; // optional
-  private long createdTime; // optional
-  private long updatedTime; // optional
+  public java.lang.String domainId; // optional
+  public java.lang.String name; // optional
+  public java.lang.String description; // optional
+  public long createdTime; // optional
+  public long updatedTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -189,8 +189,9 @@ public class Domain implements org.apache.thrift.TBase<Domain, Domain._Fields>, 
     return this.domainId;
   }
 
-  public void setDomainId(java.lang.String domainId) {
+  public Domain setDomainId(java.lang.String domainId) {
     this.domainId = domainId;
+    return this;
   }
 
   public void unsetDomainId() {
@@ -212,8 +213,9 @@ public class Domain implements org.apache.thrift.TBase<Domain, Domain._Fields>, 
     return this.name;
   }
 
-  public void setName(java.lang.String name) {
+  public Domain setName(java.lang.String name) {
     this.name = name;
+    return this;
   }
 
   public void unsetName() {
@@ -235,8 +237,9 @@ public class Domain implements org.apache.thrift.TBase<Domain, Domain._Fields>, 
     return this.description;
   }
 
-  public void setDescription(java.lang.String description) {
+  public Domain setDescription(java.lang.String description) {
     this.description = description;
+    return this;
   }
 
   public void unsetDescription() {
@@ -258,9 +261,10 @@ public class Domain implements org.apache.thrift.TBase<Domain, Domain._Fields>, 
     return this.createdTime;
   }
 
-  public void setCreatedTime(long createdTime) {
+  public Domain setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
     setCreatedTimeIsSet(true);
+    return this;
   }
 
   public void unsetCreatedTime() {
@@ -280,9 +284,10 @@ public class Domain implements org.apache.thrift.TBase<Domain, Domain._Fields>, 
     return this.updatedTime;
   }
 
-  public void setUpdatedTime(long updatedTime) {
+  public Domain setUpdatedTime(long updatedTime) {
     this.updatedTime = updatedTime;
     setUpdatedTimeIsSet(true);
+    return this;
   }
 
   public void unsetUpdatedTime() {
@@ -685,6 +690,8 @@ public class Domain implements org.apache.thrift.TBase<Domain, Domain._Fields>, 
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

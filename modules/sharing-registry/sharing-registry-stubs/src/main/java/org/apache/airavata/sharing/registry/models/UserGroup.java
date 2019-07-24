@@ -56,16 +56,24 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new UserGroupStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new UserGroupTupleSchemeFactory();
 
-  private java.lang.String groupId; // optional
-  private java.lang.String domainId; // optional
-  private java.lang.String name; // optional
-  private java.lang.String description; // optional
-  private java.lang.String ownerId; // optional
-  private GroupType groupType; // optional
-  private GroupCardinality groupCardinality; // optional
-  private long createdTime; // optional
-  private long updatedTime; // optional
-  private java.util.List<GroupAdmin> groupAdmins; // optional
+  public java.lang.String groupId; // optional
+  public java.lang.String domainId; // optional
+  public java.lang.String name; // optional
+  public java.lang.String description; // optional
+  public java.lang.String ownerId; // optional
+  /**
+   * 
+   * @see GroupType
+   */
+  public GroupType groupType; // optional
+  /**
+   * 
+   * @see GroupCardinality
+   */
+  public GroupCardinality groupCardinality; // optional
+  public long createdTime; // optional
+  public long updatedTime; // optional
+  public java.util.List<GroupAdmin> groupAdmins; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -257,8 +265,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     return this.groupId;
   }
 
-  public void setGroupId(java.lang.String groupId) {
+  public UserGroup setGroupId(java.lang.String groupId) {
     this.groupId = groupId;
+    return this;
   }
 
   public void unsetGroupId() {
@@ -280,8 +289,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     return this.domainId;
   }
 
-  public void setDomainId(java.lang.String domainId) {
+  public UserGroup setDomainId(java.lang.String domainId) {
     this.domainId = domainId;
+    return this;
   }
 
   public void unsetDomainId() {
@@ -303,8 +313,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     return this.name;
   }
 
-  public void setName(java.lang.String name) {
+  public UserGroup setName(java.lang.String name) {
     this.name = name;
+    return this;
   }
 
   public void unsetName() {
@@ -326,8 +337,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     return this.description;
   }
 
-  public void setDescription(java.lang.String description) {
+  public UserGroup setDescription(java.lang.String description) {
     this.description = description;
+    return this;
   }
 
   public void unsetDescription() {
@@ -349,8 +361,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     return this.ownerId;
   }
 
-  public void setOwnerId(java.lang.String ownerId) {
+  public UserGroup setOwnerId(java.lang.String ownerId) {
     this.ownerId = ownerId;
+    return this;
   }
 
   public void unsetOwnerId() {
@@ -380,8 +393,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
    * 
    * @see GroupType
    */
-  public void setGroupType(GroupType groupType) {
+  public UserGroup setGroupType(GroupType groupType) {
     this.groupType = groupType;
+    return this;
   }
 
   public void unsetGroupType() {
@@ -411,8 +425,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
    * 
    * @see GroupCardinality
    */
-  public void setGroupCardinality(GroupCardinality groupCardinality) {
+  public UserGroup setGroupCardinality(GroupCardinality groupCardinality) {
     this.groupCardinality = groupCardinality;
+    return this;
   }
 
   public void unsetGroupCardinality() {
@@ -434,9 +449,10 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     return this.createdTime;
   }
 
-  public void setCreatedTime(long createdTime) {
+  public UserGroup setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
     setCreatedTimeIsSet(true);
+    return this;
   }
 
   public void unsetCreatedTime() {
@@ -456,9 +472,10 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     return this.updatedTime;
   }
 
-  public void setUpdatedTime(long updatedTime) {
+  public UserGroup setUpdatedTime(long updatedTime) {
     this.updatedTime = updatedTime;
     setUpdatedTimeIsSet(true);
+    return this;
   }
 
   public void unsetUpdatedTime() {
@@ -493,8 +510,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     return this.groupAdmins;
   }
 
-  public void setGroupAdmins(java.util.List<GroupAdmin> groupAdmins) {
+  public UserGroup setGroupAdmins(java.util.List<GroupAdmin> groupAdmins) {
     this.groupAdmins = groupAdmins;
+    return this;
   }
 
   public void unsetGroupAdmins() {
@@ -1180,6 +1198,8 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

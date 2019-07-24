@@ -55,7 +55,7 @@ public class WorkflowManager {
         initRegistryClientPool();
         initHelixAdmin();
         initWorkflowOperators();
-        initStatusPublisher();
+        //initStatusPublisher();
         initCuratorClient();
 
     }
