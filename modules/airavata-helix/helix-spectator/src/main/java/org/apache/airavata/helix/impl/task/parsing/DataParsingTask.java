@@ -229,7 +229,7 @@ public class DataParsingTask extends AbstractTask {
 
     }
 
-    private void runContainer(Parser parser, String containerId, String localInputDir, String localOutputDir, Map<String, String> properties) {
+    private void runContainer(Parser parser, String containerId, String localInputDir, String localOutputDir, Map<String, String> properties) throws ApplicationSettingsException {
         DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
         DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
@@ -288,8 +288,12 @@ public class DataParsingTask extends AbstractTask {
             logger.info("Container logs " + dockerLogs.toString());
         }
 
-        dockerClient.removeContainerCmd(containerResponse.getId()).exec();
-        logger.info("Successfully removed container with id " + containerResponse.getId());
+        if (ServerSettings.isSettingDefined("data.parser.delete.container") &&
+                Boolean.parseBoolean(ServerSettings.getSetting("data.parser.delete.container"))) {
+            dockerClient.removeContainerCmd(containerResponse.getId()).exec();
+            logger.info("Successfully removed container with id " + containerResponse.getId());
+        }
+
     }
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport) throws TaskOnFailException, TException, AgentException {
