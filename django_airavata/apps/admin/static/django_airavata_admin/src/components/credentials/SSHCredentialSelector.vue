@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-input-group>
-      <b-form-select v-model="data" :options="credentialStoreTokenOptions">
+      <b-form-select v-model="data" :options="credentialStoreTokenOptions" :disabled="readonly">
         <option v-if="nullOption" slot="first" :value="null" :disabled="nullOptionDisabled">
           <slot name="null-option-label" :defaultCredentialSummary="defaultCredentialSummary">
             <span v-if="defaultCredentialSummary">
@@ -16,7 +16,7 @@
       <b-input-group-append>
         <clipboard-copy-button variant="secondary" :text="copySSHPublicKeyText">
         </clipboard-copy-button>
-        <b-button variant="secondary" @click="showNewSSHCredentialModal">
+        <b-button v-if="!readonly" variant="secondary" @click="showNewSSHCredentialModal">
           <i class="fa fa-plus"></i>
         </b-button>
       </b-input-group-append>
@@ -45,6 +45,10 @@ export default {
       type: String
     },
     nullOptionDisabled: {
+      type: Boolean,
+      default: false
+    },
+    readonly: {
       type: Boolean,
       default: false
     }

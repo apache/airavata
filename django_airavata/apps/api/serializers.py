@@ -805,6 +805,11 @@ class GatewayResourceProfileSerializer(
         lookup_field='gatewayID',
         lookup_url_kwarg='gateway_id')
     storagePreferences = StoragePreferenceSerializer(many=True)
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, gatewayResourceProfile):
+        request = self.context['request']
+        return request.is_gateway_admin
 
 
 class StorageResourceSerializer(

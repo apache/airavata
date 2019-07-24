@@ -11,7 +11,8 @@ const FIELDS = [
     list: true
   },
   "identityServerTenant",
-  "identityServerPwdCredToken"
+  "identityServerPwdCredToken",
+  "userHasWriteAccess"
 ];
 
 export default class GatewayResourceProfile extends BaseModel {

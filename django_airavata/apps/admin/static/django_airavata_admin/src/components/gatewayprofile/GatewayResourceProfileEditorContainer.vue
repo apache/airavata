@@ -15,12 +15,12 @@
           <div class="card-body">
             <storage-preference-list v-if="gatewayResourceProfile" :storagePreferences="gatewayResourceProfile.storagePreferences"
               :default-credential-store-token="gatewayResourceProfile.credentialStoreToken" @updated="updatedStoragePreference"
-              @added="addedStoragePreference" @delete="deleteStoragePreference" />
+              @added="addedStoragePreference" @delete="deleteStoragePreference" :readonly="!gatewayResourceProfile.userHasWriteAccess"/>
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="gatewayResourceProfile && gatewayResourceProfile.userHasWriteAccess">
       <div class="col">
         <b-button variant="primary" @click="save">
           Save
@@ -36,14 +36,12 @@
 <script>
 import { services } from "django-airavata-api";
 import GatewayResourceProfileEditor from "./GatewayResourceProfileEditor.vue";
-import StoragePreferenceEditor from "./StoragePreferenceEditor.vue";
 import StoragePreferenceList from "./StoragePreferenceList.vue";
 
 export default {
   name: "gateway-resource-profile-editor-container",
   components: {
     GatewayResourceProfileEditor,
-    StoragePreferenceEditor,
     StoragePreferenceList
   },
   data() {

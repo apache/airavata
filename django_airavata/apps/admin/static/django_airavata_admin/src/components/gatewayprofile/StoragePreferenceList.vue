@@ -1,6 +1,6 @@
 <template>
   <list-layout @add-new-item="addNewStoragePreference" :items="decoratedStoragePreferences" title="Storage Preferences"
-    new-item-button-text="New Storage Preference">
+    new-item-button-text="New Storage Preference" :new-button-disabled="readonly">
     <template slot="new-item-editor">
       <b-card v-if="showNewItemEditor" title="New Storage Preference">
         <b-form-group label="Storage Resource" label-for="storage-resource">
@@ -29,11 +29,11 @@
           </b-badge>
         </template>
         <template slot="action" slot-scope="data">
-          <b-link class="action-link" @click="toggleDetails(data)">
+          <b-link v-if="!readonly" class="action-link" @click="toggleDetails(data)">
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </b-link>
-          <delete-link @delete="deleteStoragePreference(data.item.storageResourceId)">
+          <delete-link v-if="!readonly" @delete="deleteStoragePreference(data.item.storageResourceId)">
             Are you sure you want to delete the storage preference for {{ getStorageResourceName(data.item.storageResourceId) }}?
           </delete-link>
         </template>
@@ -68,6 +68,10 @@ export default {
     },
     defaultCredentialStoreToken: {
       type: String
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

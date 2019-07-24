@@ -6,7 +6,7 @@
           Gateway Resource Profile - {{ data.gatewayID }}
         </h1>
         <b-form-group label="Default SSH Credential" label-for="default-credential-store-token" description="This is the default SSH credential that will be used for storage preferences that don't specify their own SSH credential.">
-          <ssh-credential-selector id="default-credential-store-token" v-model="data.credentialStoreToken"/>
+          <ssh-credential-selector id="default-credential-store-token" v-model="data.credentialStoreToken" :readonly="!data.userHasWriteAccess"/>
         </b-form-group>
       </div>
     </div>
