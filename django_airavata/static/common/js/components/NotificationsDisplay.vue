@@ -64,6 +64,17 @@ export default {
     dismissUnhandledError: function(unhandledError) {
       errors.UnhandledErrorDisplayList.remove(unhandledError);
     },
+    variant: function(notification) {
+      if (notification.type === "SUCCESS") {
+        return "success";
+      } else if (notification.type === "ERROR") {
+        return "danger";
+      } else if (notification.type === "WARNING") {
+        return "warning";
+      } else {
+        return "secondary";
+      }
+    },
     loadAPIServerStatus() {
       return services.APIServerStatusCheckService.get(
         {},
