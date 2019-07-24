@@ -257,7 +257,7 @@ public class DataParsingTask extends AbstractTask {
 
         final StringBuilder dockerLogs = new StringBuilder();
 
-        if (containerResponse.getWarnings() != null) {
+        if (containerResponse.getWarnings() != null && containerResponse.getWarnings().length > 0) {
             StringBuilder warningStr = new StringBuilder();
             for (String w : containerResponse.getWarnings()) {
                 warningStr.append(w).append(",");
