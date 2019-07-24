@@ -34,8 +34,8 @@ auth_options:
   password:
     name: "PEARC19"
   external:
-#    - name: "CILogon"
-#     idp_alias: "cilogon"
+    - name: "CILogon"
+     idp_alias: "cilogon"
 
 gateway_id: "pearc19"
 experiment_data_dir: "{{ user_data_dir }}/seagrid"
