@@ -47,7 +47,7 @@
                 slot="action"
                 slot-scope="data"
               >
-                <b-button @click="toggleDetails(data)">
+                <b-button v-if="data.item.userHasWriteAccess" @click="toggleDetails(data)">
                   Edit
                 </b-button>
               </template>

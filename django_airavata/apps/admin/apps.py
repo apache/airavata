@@ -26,7 +26,8 @@ class AdminConfig(AiravataAppConfig):
             'icon': 'fa fa-users',
             'url': 'django_airavata_admin:users',
             'active_prefixes': ['users'],
-            'enabled': lambda req: req.is_gateway_admin,
+            'enabled': lambda req: (req.is_gateway_admin or
+                                    req.is_read_only_gateway_admin),
         },
         {
             'label': 'Experiment Statistics',

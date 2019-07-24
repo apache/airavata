@@ -893,6 +893,7 @@ class IAMUserProfile(serializers.Serializer):
         view_name='django_airavata_api:iam-user-profile-detail',
         lookup_field='userId',
         lookup_url_kwarg='user_id')
+    userHasWriteAccess = serializers.SerializerMethodField()
 
     def update(self, instance, validated_data):
         existing_group_ids = [group.id for group in instance['groups']]
@@ -902,6 +903,10 @@ class IAMUserProfile(serializers.Serializer):
         instance['_removed_group_ids'] = list(
             set(existing_group_ids) - set(new_group_ids))
         return instance
+
+    def get_userHasWriteAccess(self, userProfile):
+        request = self.context['request']
+        return request.is_gateway_admin
 
 
 class AckNotificationSerializer(serializers.ModelSerializer):
@@ -944,6 +949,11 @@ class UnverifiedEmailUserProfile(serializers.Serializer):
         view_name='django_airavata_api:unverified-email-user-profile-detail',
         lookup_field='userId',
         lookup_url_kwarg='user_id')
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, userProfile):
+        request = self.context['request']
+        return request.is_gateway_admin
 
 
 class LogRecordSerializer(serializers.Serializer):

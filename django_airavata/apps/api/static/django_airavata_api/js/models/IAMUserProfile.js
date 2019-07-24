@@ -14,13 +14,14 @@ const FIELDS = [
   "airavataUserProfileExists",
   {
     name: "creationTime",
-    type: 'date',
+    type: "date"
   },
   {
     name: "groups",
     type: Group,
     list: true
-  }
+  },
+  "userHasWriteAccess"
 ];
 
 export default class IAMUserProfile extends BaseModel {

@@ -12,6 +12,7 @@ const FIELDS = [
     name: "creationTime",
     type: 'date',
   },
+  "userHasWriteAccess"
 ];
 
 export default class UnverifiedEmailUserProfile extends BaseModel {

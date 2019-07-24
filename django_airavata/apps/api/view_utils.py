@@ -197,7 +197,12 @@ def convert_utc_iso8601_to_date(iso8601_utc_string):
 
 
 class IsInAdminsGroupPermission(permissions.BasePermission):
-    message = "User must be member of the Admins group."
+    message = "User must be member of the Admins or Read Only Admins groups."
 
     def has_permission(self, request, view):
-        return request.is_gateway_admin
+        # Read Only Admins can make GET requests only
+        if request.method in permissions.SAFE_METHODS:
+            return (request.is_gateway_admin or
+                    request.is_read_only_gateway_admin)
+        else:
+            return request.is_gateway_admin
