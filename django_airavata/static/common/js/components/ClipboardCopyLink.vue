@@ -1,13 +1,13 @@
 <template>
   <div style="display: inline-block">
-    <b-link ref="copyLink" :data-clipboard-text="text" class="action-link" :class="linkClasses">
+    <a href="#" ref="copyLink" :data-clipboard-text="text" class="action-link" :class="linkClasses">
       <slot>
         Copy Key
       </slot>
       <slot name="icon">
         <i class="far fa-clipboard"></i>
       </slot>
-    </b-link>
+    </a>
     <b-tooltip :show="show" :disabled="!show" :target="() => $refs.copyLink">
       <slot name="tooltip">Copied!</slot>
     </b-tooltip>
