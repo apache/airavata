@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
-    "bootstrap-vue": "^2.0.0-rc.20",
+    "bootstrap-vue": "2.0.0-rc.26",
     "django-airavata-api": "file:../api",
     "django-airavata-common-ui": "file:../../static/common",
     "django-airavata-workspace-plugin-api": "file:django-airavata-workspace-plugin-api",

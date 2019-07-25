@@ -234,7 +234,7 @@ django_airavata/apps/myapp):
   },
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
-    "bootstrap-vue": "^1.4.1",
+    "bootstrap-vue": "2.0.0-rc.26",
     "django-airavata-api": "file:../api",
     "django-airavata-common-ui": "file:../../static/common",
     "vue": "^2.5.21"
