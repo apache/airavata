@@ -40,6 +40,7 @@ auth_options:
 gateway_id: "pearc19"
 experiment_data_dir: "{{ user_data_dir }}/seagrid"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCKSwBdz4ZKPTfcBci2wb3N49ybgcSL9JfpEBrs/REoF4UGiPe6MchmZumBMzAJl1fpgp4INYrlZqIcHjTdVm/Ok5YxixvaYUJyYqSnvVYfDzyHG0LB323PSaMc79Kyp1IReViSHg7bdd/AYSBs8hD5qc+VuYWDr9+bSL1OMzb5tVTJScoes4Ro1bJhsHn6WVA1QJKWnZj8B2mKKWBlPNl/ZU8F6fYzpPkKbCEI0DiNQUoETfqOVbvKVaG633ade3lewiYB3977aXS6iLYk3b1U89gNLDuduZkZij04NolD1fD4GoiCL/ougYFyTabfQUZwNjg3kjdFEWPiPFktikk5"
+django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "PEARC19 Portal"
