@@ -77,6 +77,9 @@ def airavata_app_registry(request):
     """Put airavata django apps into the context."""
     airavata_apps = [app for app in apps.get_app_configs()
                      if isinstance(app, AiravataAppConfig) and
+                     (getattr(app, 'enabled', None) is None or
+                      app.enabled(request)
+                      ) and
                      app.label not in settings.HIDDEN_AIRAVATA_APPS]
     # Sort by app_order then by verbose_name (case-insensitive)
     airavata_apps.sort(
@@ -95,6 +98,10 @@ def airavata_app_registry(request):
 def custom_app_registry(request):
     """Put custom Django apps into the context."""
     custom_apps = settings.CUSTOM_DJANGO_APPS.copy()
+    custom_apps = [app for app in custom_apps
+                   if (getattr(app, 'enabled', None) is None or
+                       app.enabled(request)
+                       )]
     custom_apps.sort(key=lambda app: app.verbose_name.lower())
     current_custom_app = _get_current_app(request, custom_apps)
     return {

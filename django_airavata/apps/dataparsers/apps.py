@@ -19,3 +19,6 @@ class DataParsersConfig(AiravataAppConfig):
             'url': 'django_airavata_dataparsers:home',
         },
     ]
+
+    def enabled(self, request):
+        return getattr(request, 'is_gateway_admin', False)
