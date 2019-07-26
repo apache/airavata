@@ -6,21 +6,7 @@
 <main class="main-content">
 <div class="container">
   {% if options.external %}
-  <div class="row">
-    <div class="col">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Log in with your existing organizational login</h5>
-          {% for external in options.external %}
-          <a {% if next %} href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}?next={{ next | urlencode }}"
-            {% else %} href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}" {% endif %} class="btn btn-primary btn-block mt-3">
-            Sign in with {{ external.name }}
-          </a>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
+  {% include "./partials/externals_login_form.html" %}
   {% endif %}
 
   {% if options.password %}
