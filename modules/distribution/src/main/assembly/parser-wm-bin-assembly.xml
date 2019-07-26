@@ -157,6 +157,7 @@
                 <include>org.ogce:xpp5:jar</include>
                 <include>com.101tec:zkclient:jar</include>
                 <include>org.apache.zookeeper:zookeeper:jar</include>
+                <include>com.github.docker-java:docker-java:jar</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
