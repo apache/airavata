@@ -62,6 +62,12 @@ public class ParserWorkflowManager extends WorkflowManager {
                 Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
 
+    public static void main(String[] args) throws Exception {
+        ParserWorkflowManager manager = new ParserWorkflowManager();
+        manager.init();
+        manager.runConsumer();
+    }
+
     private void init() throws Exception {
         super.initComponents();
     }
