@@ -253,12 +253,16 @@ AUTHENTICATION_OPTIONS = {
     # Control whether username/password authentication is allowed
     'password': {
         'name': 'your account',
+        # Static path to image
+        # 'logo': '/static/path/to/image'
     },
     # Can have multiple external logins
     # 'external': [
     #     {
     #         'idp_alias': 'cilogon',
     #         'name': 'CILogon',
+    #         # Static path to image
+    #         'logo': 'path/to/image'
     #     }
     # ]
 }

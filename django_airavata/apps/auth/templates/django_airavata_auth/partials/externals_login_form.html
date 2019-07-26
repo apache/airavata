@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="row">
     <div class="col">
         <div class="card">
@@ -11,6 +13,9 @@
                     href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}"
                 {% endif %}
                     class="btn btn-primary btn-block mt-3">
+                  {% if external.logo %}
+                  <img src="{% static external.logo %}"/>
+                  {% endif %}
                         Sign in with {{ external.name }}
                 </a>
                 {% endfor %}
