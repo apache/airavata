@@ -929,6 +929,11 @@ class NotificationSerializer(
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     publishedTime = UTCPosixTimestampDateTimeField()
     expirationTime = UTCPosixTimestampDateTimeField()
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, userProfile):
+        request = self.context['request']
+        return request.is_gateway_admin
 
 
 class ExperimentStatisticsSerializer(

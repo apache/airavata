@@ -10,7 +10,7 @@
         <div class="card">
           <div class="card-body">
             <list-layout @add-new-item="addNewNotice" title="Notice"
-              new-item-button-text="New Notice">
+              new-item-button-text="New Notice" :new-button-disabled="!isGatewayAdmin">
               <template slot="new-item-editor">
                 <b-card v-if="showNewItemEditor">
                   <notice-editor
@@ -36,13 +36,15 @@
                     <human-date :date="data.value"/>
                   </template>
                   <template slot="action" slot-scope="data">
-                    <b-link class="action-link" @click="toggleDetails(data)">
-                      Edit
-                      <i class="fa fa-edit" aria-hidden="true"></i>
-                    </b-link>
-                    <delete-link @delete="deleteNotice(data.item.notificationId)">
-                      Are you sure you want to delete the notice?
-                  </delete-link>
+                    <template v-if="data.item.userHasWriteAccess">
+                      <b-link class="action-link" @click="toggleDetails(data)">
+                        Edit
+                        <i class="fa fa-edit" aria-hidden="true"></i>
+                      </b-link>
+                      <delete-link @delete="deleteNotice(data.item.notificationId)">
+                        Are you sure you want to delete the notice?
+                      </delete-link>
+                    </template>
                   </template>
                   <template slot="row-details" slot-scope="row">
                     <b-card>
@@ -68,7 +70,7 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { models, services, session } from "django-airavata-api";
 import { components, layouts } from "django-airavata-common-ui";
 import NoticeEditor from "./NoticeEditor";
 
@@ -128,6 +130,9 @@ export default {
       return this.notices
         ? this.notices
         : [];
+    },
+    isGatewayAdmin() {
+      return session.Session.isGatewayAdmin;
     }
   },
   methods: {
