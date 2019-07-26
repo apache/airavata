@@ -180,5 +180,5 @@ parser_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
 parser_broker_topic: "completed-messages"
 parser_broker_consumer_group: "ParsingConsumer"
 # TODO: update storage resource id
-parser_storage_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+parser_storage_resource_id: "pga.staging.scigap.org_aa63ffa0-a99f-4885-8f4b-81e3c4c4d737"
 parser_broker_publisher_id: "ParserProducer"
