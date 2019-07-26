@@ -1,6 +1,6 @@
 <template>
   <list-layout @add-new-item="newApplicationHandler" :items="sortedModules" title="Application Catalog" subtitle="Applications"
-    new-item-button-text="New Application">
+    new-item-button-text="New Application" :new-button-disabled="!isGatewayAdmin">
     <template slot="item-list" slot-scope="slotProps">
       <div class="row">
         <application-card v-for="item in slotProps.items" v-bind:app-module="item" v-bind:key="item.appModuleId" v-on:app-selected="clickHandler(item)">
@@ -13,7 +13,7 @@
 
 import { layouts, components as comps } from "django-airavata-common-ui";
 
-import { services, utils } from "django-airavata-api";
+import { services, session, utils } from "django-airavata-api";
 
 export default {
   components: {
@@ -38,6 +38,9 @@ export default {
       } else {
         return [];
       }
+    },
+    isGatewayAdmin() {
+      return session.Session.isGatewayAdmin;
     }
   },
   methods: {

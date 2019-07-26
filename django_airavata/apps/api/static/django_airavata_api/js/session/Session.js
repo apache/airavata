@@ -1,7 +1,8 @@
 class Session {
-  init({ username, airavataInternalUserId }) {
+  init({ username, airavataInternalUserId, isGatewayAdmin = false }) {
     this.username = username;
     this.airavataInternalUserId = airavataInternalUserId;
+    this.isGatewayAdmin = isGatewayAdmin;
   }
 }
 

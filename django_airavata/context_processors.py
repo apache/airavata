@@ -61,12 +61,13 @@ def get_notifications(request):
 
 
 def user_session_data(request):
-    data = {
-        "username": request.user.username,
-        "airavataInternalUserId": (request.user.username +
-                                   "@" +
-                                   settings.GATEWAY_ID),
-    }
+    data = {}
+    if request.user.is_authenticated:
+        data["username"] = request.user.username
+        data["airavataInternalUserId"] = (request.user.username +
+                                          "@" +
+                                          settings.GATEWAY_ID)
+        data["isGatewayAdmin"] = request.is_gateway_admin
     return {
         "user_session_data": json.dumps(data)
     }
