@@ -34,7 +34,7 @@ auth_options:
   password:
     name: "PEARC19"
   external:
-    - name: "CILogon"
+    - name: "existing institution credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
