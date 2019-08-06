@@ -74,7 +74,8 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
     }
 
     public void updateProject(Project project, String projectId) throws RegistryException {
-        saveProjectData(project, projectId);
+        project.setProjectID(projectId);
+        saveProjectData(project, project.getGatewayId());
     }
 
     public Project getProject(String projectId) throws RegistryException {
