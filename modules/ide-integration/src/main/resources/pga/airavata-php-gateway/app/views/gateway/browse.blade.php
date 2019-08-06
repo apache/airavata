@@ -135,7 +135,9 @@
                 <select name="computeResourceId" class="cr-select form-control" required>
                     <option value="">Select a compute Resource and set its preferences</option>
                     @foreach( (array)$computeResources as $index => $cr)
+                    @if($cr->enabled)
                     <option value="{{ $cr->computeResourceId}}">{{ $cr->hostName }}</option>
+                    @endif
                     @endforeach
                 </select>
                 <span class="input-group-addon remove-cr" style="cursor:pointer;">x</span>

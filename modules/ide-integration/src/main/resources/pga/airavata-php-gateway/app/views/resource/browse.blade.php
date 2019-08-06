@@ -63,8 +63,10 @@
                         $crId = $resource->computeResourceId;
                         $crName = $resource->hostName;
                         $enabled = $resource->enabled;
+                        $deleted = $resource->deleted;
                     ?>
-                    <tr id="crDetails">
+                    <tr id="crDetails"  @if($deleted)style="background-color:lightgray"@endif>
+                        @if(!$deleted)
                         <td><a href="{{URL::to('/')}}/cr/edit?crId={{ $crId }}" title="Edit">{{ $crName }}</a></td>
                         <td>{{ $crId }}</td>
                         <td>
@@ -81,7 +83,7 @@
                             </a>
                         </td>
                         @if(Session::has("super-admin"))
-                            <td>
+                        <td>
                             <a href="#" title="Delete">
                                 <span class="glyphicon glyphicon-trash del-cr" data-toggle="modal"
                                       data-target="#delete-cr-block" data-delete-cr-name="{{$crName}}"
@@ -89,6 +91,22 @@
                                       data-crid="{{$crId}}"></span>
                             </a>
                         </td>
+                        @endif
+                        @else
+                        <td><a href="{{URL::to('/')}}/cr/view?crId={{ $crId }}" title="Edit">{{ $crName }}</a></td>
+                        <td>{{ $crId }}</td>
+                        <td>
+                          Deleted
+                        </td>
+                        <td><a href="{{URL::to('/')}}/cr/view?crId={{ $crId }}" title="Edit">
+                                <span class="glyphicon glyphicon-list"></span>
+                            </a>
+                        </td>
+                        @if(Session::has("super-admin"))
+                        <td>
+                          Deleted
+                        </td>
+                        @endif
                         @endif
                     </tr>
                     @endforeach

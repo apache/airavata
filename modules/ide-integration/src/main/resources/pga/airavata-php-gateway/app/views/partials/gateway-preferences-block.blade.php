@@ -83,6 +83,7 @@
                         <div class="panel-group" id="cr-{{$accName}}-{{$indexGP}}">
                             @foreach( (array)$gp->profile->computeResourcePreferences as $indexCRP
                             => $crp )
+                            @if($crp->crDetails->enabled)
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4 class="panel-title">
@@ -126,6 +127,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                             @endforeach
                         </div>
                     </div>
