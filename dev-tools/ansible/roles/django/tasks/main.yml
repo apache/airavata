@@ -31,17 +31,51 @@
   file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
 
-- name: Git clone django portal
-  git:
-   repo: "{{ airavata_django_repo }}"
-   dest: "{{ airavata_django_checkout }}"
-   version: "{{ airavata_django_git_branch }}"
-   update: yes
-   force: yes
-  become: yes
-  become_user: "{{user}}"
-  notify:
-    - restart uwsgi
+- name: git clone django repo
+  local_action:
+    module: git
+    repo: "{{ airavata_django_repo }}"
+    # TODO: create new temp directory
+    dest: "/tmp/airavata-django-portal"
+    # TODO: change to {{ airavata_django_git_branch }}
+    version: "local-builds"
+    update: yes
+    force: yes
+  run_once: true
+
+# TODO: check if Docker is running (docker_host_info can_talk_to_docker? https://docs.ansible.com/ansible/latest/modules/docker_host_info_module.html#return-values)
+- name: build Docker image for building the JS
+  local_action:
+    module: docker_image
+    # TODO: use temp directory
+    path: "/tmp/airavata-django-portal/scripts/docker-build/"
+    name: av-django-build
+    force: true
+    # source: build
+  run_once: true
+
+- name: build Django JS code in Docker container
+  local_action:
+    module: docker_container
+    name: ansible-av-django-build
+    image: av-django-build
+    cleanup: true
+    detach: false
+    # TODO: use temp directory
+    volumes:
+    - /tmp/airavata-django-portal:/code
+  run_once: true
+
+- name: rsync build Django code to {{ airavata_django_checkout }}
+  synchronize:
+    src: /tmp/airavata-django-portal/
+    dest: "{{ airavata_django_checkout }}"
+    rsync_opts:
+      - "--exclude=node_modules"
+    # Bug: become_user doesn't work with synchronize: https://github.com/ansible/ansible/issues/29698
+    rsync_path: "sudo -u {{ user }} rsync"
+  # become: yes
+  # become_user: "{{user}}"
 
 - name: Create virtual environment for Django portal and install dependencies
   pip:
@@ -74,13 +108,6 @@
     command: migrate
     app_path: "{{ airavata_django_checkout }}"
     virtualenv: "{{ django_venv_dir }}"
-  become: yes
-  become_user: "{{user}}"
-
-- name: Build JS
-  command: bash {{ airavata_django_checkout }}/build_js.sh
-  environment:
-    STATIC_ROOT: "{{ static_root_dir }}"
   become: yes
   become_user: "{{user}}"
 
@@ -138,6 +165,7 @@
     state: yes
     persistent: yes
   become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: run restorecon on those directories
   command: restorecon -F -R {{ doc_root_dir }}
