@@ -38,7 +38,7 @@ public class ResourceJobManagerEntity implements Serializable {
     @Column(name = "RESOURCE_JOB_MANAGER_ID")
     private String resourceJobManagerId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false, updatable = false)
     private Timestamp creationTime;
 
     @Column(name = "JOB_MANAGER_BIN_PATH")
