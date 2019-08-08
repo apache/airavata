@@ -33,14 +33,14 @@ pga_git_branch: "tus-integration"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "futurewater.indiana.edu"
+vhost_servername: "gateway.futurewater.indiana.edu"
 #vhost_servername: "futurewater.scigap.org"
 #vhost_serveralias: "www.mines.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/futurewater.indiana.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/futurewater.indiana.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/futurewater.indiana.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/privkey.pem"
 
 php_upload_max_filesize: "6000M"
 php_post_max_size: "15000M"
