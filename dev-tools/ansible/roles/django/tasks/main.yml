@@ -58,8 +58,7 @@
   local_action:
     module: docker_image
     path: "{{ airavata_django_portal_tempdir.path }}/scripts/docker-build/"
-    # TODO: rename to airavata-django-build
-    name: av-django-build
+    name: airavata-django-build
     force: true
     # source: build
   run_once: true
@@ -67,8 +66,8 @@
 - name: build Django JS code in Docker container
   local_action:
     module: docker_container
-    name: ansible-av-django-build
-    image: av-django-build
+    name: ansible-airavata-django-build
+    image: airavata-django-build
     cleanup: true
     detach: false
     volumes:
