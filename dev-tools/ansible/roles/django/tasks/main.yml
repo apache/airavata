@@ -53,7 +53,21 @@
     force: yes
   run_once: true
 
-# TODO: check if Docker is running (docker_host_info can_talk_to_docker? https://docs.ansible.com/ansible/latest/modules/docker_host_info_module.html#return-values)
+# TODO: check if Docker is running (docker_host_info can_talk_to_docker https://docs.ansible.com/ansible/latest/modules/docker_host_info_module.html#return-values)
+# NOTE: docker_host_info only available from Ansible 2.8
+# - name: check if Docker is running
+#   local_action:
+#     module: docker_host_info
+#   register: docker_result
+#   run_once: true
+#
+# - name: Fail if Docker isn't running
+#   local_action:
+#     module: fail
+#     msg: Docker daemon isn't running or isn't accessible. Start Docker daemon and then rerun this playbook.
+#   when: not docker_result.can_talk_to_docker
+#   run_once: true
+
 - name: build Docker image for building the JS
   local_action:
     module: docker_image
