@@ -37,7 +37,7 @@ auth_options:
 
 gateway_id: "cornelldna"
 experiment_data_dir: "{{ user_data_dir }}/cornelldna"
-gateway_data_store_ssh_public_key: "TODO"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTs6k2lSt5nn+UF3N1rAko9WjdtHZ1xLcKxCG4+4AVMdTIeng12g+1qB5hIFiDgesT/D/nzoA27EFj5nWiYanxBySNgl1Re8kR0nEqQbR0zj1dSibmfjW+vmOZzEiNSrNoLlc4KbFgqFCRGIlZ1bWZ7yHtJ3I7xxfKhvvxCTzJ4K71v1aovnDTUYophy2lUsdOcOq84Qhv3ITZafgblz3mJSwVpnnI72IepzonzDUdcf/w0lKCl70L9MgQAZ2V4e9sQZWJLI5s1VtJsqKggtgI4goPyxXROoH9PTUZFqvvYjLGW8JVS9eZKblSKil09yckPfZCSk1i/UD/uY6O7bjf"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "BETA dREG Portal"
