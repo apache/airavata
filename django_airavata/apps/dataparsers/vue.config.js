@@ -1,13 +1,12 @@
 const BundleTracker = require("webpack-bundle-tracker");
 const path = require("path");
-const staticDir = process.env.STATIC_ROOT ? process.env.STATIC_ROOT : "./static/";
 
 module.exports = {
   publicPath:
     process.env.NODE_ENV === "development"
       ? "http://localhost:9000/static/django_airavata_dataparsers/dist/"
       : "/static/django_airavata_dataparsers/dist/",
-  outputDir: staticDir + "django_airavata_dataparsers/dist",
+  outputDir: "./static/django_airavata_dataparsers/dist",
   pages: {
       'parser-details': './static/django_airavata_dataparsers/js/entry-parser-details',
       'parser-list': './static/django_airavata_dataparsers/js/parser-listing-entry-point.js',
@@ -26,7 +25,7 @@ module.exports = {
     plugins: [
       new BundleTracker({
         filename: "webpack-stats.json",
-        path: staticDir + "django_airavata_dataparsers/dist/"
+        path: "./static/django_airavata_dataparsers/dist/"
       })
     ],
     optimization: {

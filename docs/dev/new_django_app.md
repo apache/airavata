@@ -285,16 +285,13 @@ Now add a `vue.config.js` file too:
 ```javascript
 const BundleTracker = require("webpack-bundle-tracker");
 const path = require("path");
-const staticDir = process.env.STATIC_ROOT
-  ? process.env.STATIC_ROOT
-  : "./static/";
 
 module.exports = {
   publicPath:
     process.env.NODE_ENV === "development"
       ? "http://localhost:9000/static/django_airavata_myapp/dist/"
       : "/static/django_airavata_myapp/dist/",
-  outputDir: staticDir + "django_airavata_myapp/dist",
+  outputDir: "./static/django_airavata_myapp/dist",
   pages: {
     home: "./static/django_airavata_myapp/js/entry-home"
     // additional entry points go here ...
@@ -312,7 +309,7 @@ module.exports = {
     plugins: [
       new BundleTracker({
         filename: "webpack-stats.json",
-        path: staticDir + "django_airavata_myapp/dist/"
+        path: "./static/django_airavata_myapp/dist/"
       })
     ],
     optimization: {
