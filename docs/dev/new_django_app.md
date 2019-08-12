@@ -92,21 +92,18 @@ INSTALLED_APPS = [
 ### Add Webpack bundle loader config to settings.py
 
 If the new app has Webpack built frontend, then add the following configuration
-to webpack_loader_util.py:
+to WEBPACK_LOADER in settings.py:
 
 ```python
 ...
 'MYAPP': {
   'BUNDLE_DIR_NAME': 'django_airavata_myapp/dist/',
   'STATS_FILE': os.path.join(
-      static_root if static_root else
-      os.path.join(
-          BASE_DIR,
-          'django_airavata',
-          'apps',
-          'myapp',
-          'static',
-      ),
+      BASE_DIR,
+      'django_airavata',
+      'apps',
+      'myapp',
+      'static',
       'django_airavata_myapp',
       'dist',
       'webpack-stats.json'),
