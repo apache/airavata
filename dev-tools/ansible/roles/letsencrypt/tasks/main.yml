@@ -19,22 +19,27 @@
 #
 
 ---
-# Run the following setup once
-- hosts: django[0]
-  name: webserver setup
-  roles:
-    - env_setup
-    # Oracle JDK is needed by Django apps that call Java code (e.g., SimCCS Maptool)
-    - java
-    - httpd
-    - letsencrypt
 
-# Create a django virtual host
-- hosts: django
-  # Limit to deploying to only 1 host at once. This is to lighten the load during the JavaScript build step.
-  serial: 2
-  name: Create/update Django portal for gateway
-  roles:
-    - django
+- name: install certbot and dependencies
+  yum: name={{ item }} state=installed update_cache=yes
+  with_items:
+    - certbot-0.34.2-3.el7
+    - python2-acme-0.34.2-1.el7
+    - python2-certbot-apache-0.34.2-1.el7
+  become_user: root
 
-...
+- name: enable certbot (letsencrypt) renewal
+  systemd:
+    state: started
+    enabled: true
+    name: certbot-renew
+  become: true
+  become_user: root
+
+- name: enable certbot (letsencrypt) renewal timer
+  systemd:
+    state: started
+    enabled: true
+    name: certbot-renew.timer
+  become: true
+  become_user: root
