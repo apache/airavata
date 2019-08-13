@@ -2,5 +2,6 @@
 flake8==3.5.0
 flake8-isort==2.5
 mkdocs==1.0.4
+mdx-truly-sane-lists==1.2
 
 -e ".[dev]"

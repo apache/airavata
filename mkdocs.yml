@@ -10,5 +10,10 @@ nav:
     - Adding a Django App: dev/new_django_app.md
     - Developing the Frontend: dev/developing_frontend.md
     - Developing the Backend: dev/developing_backend.md
+  - Tutorials:
+    - Gateways 2019: tutorial/gateways2019_tutorial.md
 
 theme: readthedocs
+
+markdown_extensions:
+  - mdx_truly_sane_lists
