@@ -6,4 +6,6 @@ VOLUME /code
 
 WORKDIR /code
 
+EXPOSE 9000
+
 CMD ["./build_js.sh"]
