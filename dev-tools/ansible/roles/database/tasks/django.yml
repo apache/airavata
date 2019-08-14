@@ -36,6 +36,9 @@
   with_items:
   - "{{ groups['django'] }}"
 
+- name: give access to {{ django_db_username }} from localhost
+  mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="localhost"
+
 - name: create new user {{ django_db_username }} with all privileges on all django databases
   mysql_user: name="{{ django_db_username }}"
               password="{{ django_db_password }}"
