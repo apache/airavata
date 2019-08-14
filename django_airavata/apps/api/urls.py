@@ -52,6 +52,8 @@ app_name = 'django_airavata_api'
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^upload$', views.upload_input_file, name='upload_input_file'),
+    url(r'^tus-upload-finish$', views.tus_upload_finish,
+        name='tus_upload_finish'),
     url(r'^download', views.download_file, name='download_file'),
     url(r'^delete-file$', views.delete_file, name='delete_file'),
     url(r'^data-products', views.DataProductView.as_view(),

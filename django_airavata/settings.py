@@ -217,6 +217,13 @@ FILE_UPLOAD_HANDLERS = [
     'django_airavata.uploadhandler.MaxFileSizeTemporaryFileUploadHandler',
 ]
 
+# Tus upload
+# Override and set to a valid tus endpoint, for example
+# "http://localhost:1080/files/"
+TUS_ENDPOINT = None
+# Override and set to the directory where tus uploads will be stored
+TUS_DATA_DIR = None
+
 # Django REST Framework configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

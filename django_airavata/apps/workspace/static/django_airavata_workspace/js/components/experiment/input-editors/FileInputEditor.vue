@@ -62,13 +62,11 @@
         :invalid-feedback="fileUploadInvalidFeedback"
         class="input-file-option"
       >
-        <b-form-file
-          :id="id"
-          v-model="file"
-          v-if="!isDataProductURI"
-          placeholder="Upload file"
-          @input="fileChanged"
-          :state="fileUploadState"
+        <uppy
+          xhr-upload-endpoint="/api/upload"
+          tus-upload-finish-endpoint="/api/tus-upload-finish"
+          @upload-success="uploadSuccess"
+          @upload-started="$emit('uploadstart')"
         />
       </b-form-group>
     </div>
@@ -80,6 +78,7 @@ import { models, services, utils } from "django-airavata-api";
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
 import { components } from "django-airavata-common-ui";
 import UserStorageFileSelectionContainer from "../../storage/UserStorageFileSelectionContainer";
+import Uppy from "./Uppy";
 
 export default {
   name: "file-input-editor",
@@ -87,7 +86,8 @@ export default {
   components: {
     "data-product-viewer": components.DataProductViewer,
     "delete-link": components.DeleteLink,
-    UserStorageFileSelectionContainer
+    UserStorageFileSelectionContainer,
+    Uppy
   },
   computed: {
     isDataProductURI() {
@@ -194,20 +194,6 @@ export default {
         })
         .catch(utils.FetchUtils.reportError);
     },
-    fileChanged() {
-      if (this.file && !this.fileTooLarge) {
-        let data = new FormData();
-        data.append("file", this.file);
-        this.$emit("uploadstart");
-        utils.FetchUtils.post("/api/upload", data, "", { showSpinner: false })
-          .then(result => {
-            this.dataProduct = new models.DataProduct(result["data-product"]);
-            this.data = this.dataProduct.productUri;
-            this.valueChanged();
-          })
-          .finally(() => this.$emit("uploadend"));
-      }
-    },
     unselect() {
       this.file = null;
       this.data = null;
@@ -233,6 +219,12 @@ export default {
           this.fileContent = text;
           this.$refs.modal.show();
         });
+    },
+    uploadSuccess(result) {
+      this.dataProduct = new models.DataProduct(result["data-product"]);
+      this.data = this.dataProduct.productUri;
+      this.valueChanged();
+      this.$emit('uploadend');
     }
   }
 };

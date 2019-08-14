@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -908,6 +909,29 @@ def upload_input_file(request):
 
 
 @login_required
+def tus_upload_finish(request):
+    log.debug("POST={}".format(request.POST))
+    uploadURL = request.POST['uploadURL']
+    # file UUID is last path component in URL. For example:
+    # http://localhost:1080/files/2c44415fdb6259a22f425145b87d0840
+    upload_uuid = urlparse(uploadURL).path.split("/")[-1]
+    upload_bin_path = os.path.join(settings.TUS_DATA_DIR, f"{upload_uuid}.bin")
+    log.debug(f"upload_bin_path={upload_bin_path}")
+    upload_info_path = os.path.join(settings.TUS_DATA_DIR,
+                                    f"{upload_uuid}.info")
+    with open(upload_info_path) as upload_info_file, \
+            open(upload_bin_path, "rb") as upload_file:
+        upload_info = json.load(upload_info_file)
+        filename = upload_info['MetaData']['filename']
+        data_product = data_products_helper.save_input_file_upload(
+            request, upload_file, name=filename)
+    serializer = serializers.DataProductSerializer(
+        data_product, context={'request': request})
+    return JsonResponse({'uploaded': True,
+                         'data-product': serializer.data})
+
+
+@login_required
 def download_file(request):
     # TODO check that user has access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -1708,7 +1732,8 @@ class SettingsAPIView(APIView):
 
     def get(self, request, format=None):
         data = {
-            'fileUploadMaxFileSize': settings.FILE_UPLOAD_MAX_FILE_SIZE
+            'fileUploadMaxFileSize': settings.FILE_UPLOAD_MAX_FILE_SIZE,
+            'tusEndpoint': settings.TUS_ENDPOINT,
         }
         serializer = self.serializer_class(
             data, context={'request': request})

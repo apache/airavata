@@ -27,10 +27,10 @@ def save(request, path, file):
     return data_product
 
 
-def save_input_file_upload(request, file):
+def save_input_file_upload(request, file, name=None):
     """Save input file in staging area for input file uploads."""
     username = request.user.username
-    file_name = os.path.basename(file.name)
+    file_name = name if name is not None else os.path.basename(file.name)
     full_path = datastore.save(username, TMP_INPUT_FILE_UPLOAD_DIR, file)
     data_product = _save_data_product(request, full_path, name=file_name)
     return data_product

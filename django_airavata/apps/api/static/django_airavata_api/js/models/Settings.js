@@ -1,6 +1,6 @@
 import BaseModel from "./BaseModel";
 
-const FIELDS = ["fileUploadMaxFileSize"];
+const FIELDS = ["fileUploadMaxFileSize", "tusEndpoint"];
 
 export default class Settings extends BaseModel {
   constructor(data = {}) {
