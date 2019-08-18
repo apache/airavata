@@ -39,6 +39,8 @@ import org.apache.airavata.service.security.authzcache.AuthzCachedStatus;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.custos.authentication.cpi.CustosAuthenticationService;
+import org.apache.custos.client.authentication.service.AuthenticationServiceClient;
 import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,8 +57,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @RunWith(JMockit.class)
-public class KeyCloakSecurityManagerTest {
+public class SecurityManagerImplTest {
     public static final String TEST_USERNAME = "test-user";
     public static final String TEST_GATEWAY = "test-gateway";
     public static final String TEST_ACCESS_TOKEN = "abc123";
@@ -73,12 +76,16 @@ public class KeyCloakSecurityManagerTest {
     @Mocked
     private SharingRegistryService.Client mockSharingRegistryServiceClient;
     @Mocked
+    private CustosAuthenticationService.Client mockCustosAuthenticationClient;
+    @Mocked
+    private AuthenticationServiceClient custosAuthenticationClientFactory;
+    @Mocked
     private AuthzCacheManagerFactory mockAuthzCacheManagerFactory;
     @Mocked
     private AuthzCacheManager mockAuthzCacheManager;
 
     @Before
-    public void setUp() throws AiravataSecurityException, ApplicationSettingsException {
+    public void setUp() throws AiravataSecurityException, ApplicationSettingsException, TException {
         new Expectations() {{
             mockTrustStoreManager.initializeTrustStoreManager(anyString, anyString);
             mockServerSettings.isAPISecured(); result = true;
@@ -86,7 +93,16 @@ public class KeyCloakSecurityManagerTest {
             mockServerSettings.getRegistryServerPort(); result = "8970"; minTimes = 0;
             mockServerSettings.getSharingRegistryHost(); result = "localhost"; minTimes = 0;
             mockServerSettings.getSharingRegistryPort(); result = "7878"; minTimes = 0;
-            mockServerSettings.getRemoteIDPServiceUrl(); result = "https://iam.server/auth"; minTimes = 0;
+            mockServerSettings.getCustosAuthenticationServerHost(); result="localhost"; minTimes = 0;
+            mockServerSettings.getCustosAuthenticationServerPort(); result="9091"; minTimes = 0;
+            //mockServerSettings.getRemoteIDPServiceUrl(); result = "https://iam.server/auth"; minTimes = 0;
+//            org.apache.custos.commons.model.security.AuthzToken authzToken = new org.apache.custos.commons.model.security.AuthzToken();
+//            authzToken.setAccessToken(TEST_ACCESS_TOKEN);
+//            Map<String,String> claimsMap = new HashMap<>();
+//            claimsMap.put(Constants.USER_NAME, TEST_USERNAME);
+//            claimsMap.put(Constants.GATEWAY_ID, TEST_GATEWAY);
+//            authzToken.setClaimsMap(claimsMap);
+//            mockCustosAuthenticationServiceClient.isUserAuthenticated(authzToken); result = true;
         }};
     }
 
@@ -127,7 +143,7 @@ public class KeyCloakSecurityManagerTest {
     }
 
     private void runGatewayUserMethodTest(@Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection, String methodName, boolean expectedAuthorization) throws IOException, ApplicationSettingsException, AiravataSecurityException, TException {
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
+        //createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
         createExpectationsForAuthzCacheDisabled();
         createExpectationsForGatewayGroupsMembership(false, false);
 
@@ -137,7 +153,7 @@ public class KeyCloakSecurityManagerTest {
     @Test
     public void testAllowedAdminUserMethod(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
+        //createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
         createExpectationsForAuthzCacheDisabled();
         createExpectationsForGatewayGroupsMembership(true, false);
 
@@ -147,7 +163,7 @@ public class KeyCloakSecurityManagerTest {
     @Test
     public void testAllowedReadOnlyAdminUserMethod(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
+        //createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
         createExpectationsForAuthzCacheDisabled();
         createExpectationsForGatewayGroupsMembership(false, true);
 
@@ -157,7 +173,7 @@ public class KeyCloakSecurityManagerTest {
     @Test
     public void testDisallowedReadOnlyAdminUserMethod(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
+        //createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
         createExpectationsForAuthzCacheDisabled();
         createExpectationsForGatewayGroupsMembership(false, true);
 
@@ -183,17 +199,17 @@ public class KeyCloakSecurityManagerTest {
     @Test
     public void testWithAuthzDecisionNotInCache(@Mocked URL anyURL, @Mocked HttpURLConnection openidConfigHttpURLConnection, @Mocked HttpURLConnection userinfoHttpURLConnection) throws AiravataSecurityException, ApplicationSettingsException, IOException, TException {
 
-        createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
+        //createExpectationsForTokenVerification(openidConfigHttpURLConnection, userinfoHttpURLConnection);
         createExpectationsForGatewayGroupsMembership(false, true);
         createExpectationsForAuthzCache(true, "getAllGatewaySSHPubKeys", AuthzCachedStatus.NOT_CACHED);
 
         runIsUserAuthorizedTest("getAllGatewaySSHPubKeys", true);
     }
 
-    private void runIsUserAuthorizedTest(String apiMethod, boolean expectedAuthorization) throws AiravataSecurityException {
+    private void runIsUserAuthorizedTest(String apiMethod, boolean expectedAuthorization) throws AiravataSecurityException, TException {
 
-        KeyCloakSecurityManager keyCloakSecurityManager = new KeyCloakSecurityManager();
-
+        new Expectations() {{ mockCustosAuthenticationClient.isUserAuthenticated(withInstanceOf(org.apache.custos.commons.model.security.AuthzToken.class)); result = true; minTimes = 0;}};
+        AiravataSecurityManagerImpl airavataSecurityManagerImpl = new AiravataSecurityManagerImpl();
         AuthzToken authzToken = new AuthzToken();
         authzToken.setAccessToken(TEST_ACCESS_TOKEN);
         Map<String,String> claimsMap = new HashMap<>();
@@ -202,7 +218,9 @@ public class KeyCloakSecurityManagerTest {
         authzToken.setClaimsMap(claimsMap);
         Map<String, String> metadata = new HashMap<>();
         metadata.put(Constants.API_METHOD_NAME, apiMethod);
-        boolean authorized = keyCloakSecurityManager.isUserAuthorized(authzToken, metadata);
+
+        boolean authorized = airavataSecurityManagerImpl.isUserAuthorized(authzToken, metadata);
+
         if (expectedAuthorization) {
 
             Assert.assertTrue("User should be authorized for method " + apiMethod, authorized);
@@ -212,33 +230,33 @@ public class KeyCloakSecurityManagerTest {
         }
     }
 
-    private void createExpectationsForTokenVerification(HttpURLConnection openidConfigHttpURLConnection, HttpURLConnection userinfoHttpURLConnection) throws IOException, ApplicationSettingsException {
-
-        new Expectations() {{
-
-            // Load openid configuration
-            URL openidConfigUrl = new URL(withSuffix(".well-known/openid-configuration"));
-            openidConfigUrl.openConnection();
-            result = openidConfigHttpURLConnection;
-            String userinfoUrlString = "https://iam.server/auth/realms/test-gateway/protocol/openid-connect/userinfo";
-            openidConfigHttpURLConnection.getInputStream();
-            result = new ByteArrayInputStream(("{\"userinfo_endpoint\": \"" + userinfoUrlString + "\"}").getBytes(StandardCharsets.UTF_8));
-
-            // Load userinfo using token
-            URL userinfoUrl = new URL(userinfoUrlString);
-            userinfoUrl.openConnection();
-            result = userinfoHttpURLConnection;
-            userinfoHttpURLConnection.getInputStream();
-            result = new ByteArrayInputStream(("{" +
-                    "\"preferred_username\": \"test-user\", " +
-                    "\"sub\": \"c7f06e26-120c-41d8-8e5f-d768d6be91cf\", " +
-                    "\"name\": \"Bob Smith\", " +
-                    "\"given_name\": \"Bob\", " +
-                    "\"family_name\": \"Smith\", " +
-                    "\"email\": \"bob@smith.name\"" +
-                    "}").getBytes(StandardCharsets.UTF_8));
-        }};
-    }
+//    private void createExpectationsForTokenVerification(HttpURLConnection openidConfigHttpURLConnection, HttpURLConnection userinfoHttpURLConnection) throws IOException, ApplicationSettingsException {
+//
+//        new Expectations() {{
+//
+//            // Load openid configuration
+//            URL openidConfigUrl = new URL(withSuffix(".well-known/openid-configuration"));
+//            openidConfigUrl.openConnection();
+//            result = openidConfigHttpURLConnection;
+//            String userinfoUrlString = "https://iam.server/auth/realms/test-gateway/protocol/openid-connect/userinfo";
+//            openidConfigHttpURLConnection.getInputStream();
+//            result = new ByteArrayInputStream(("{\"userinfo_endpoint\": \"" + userinfoUrlString + "\"}").getBytes(StandardCharsets.UTF_8));
+//
+//            // Load userinfo using token
+//            URL userinfoUrl = new URL(userinfoUrlString);
+//            userinfoUrl.openConnection();
+//            result = userinfoHttpURLConnection;
+//            userinfoHttpURLConnection.getInputStream();
+//            result = new ByteArrayInputStream(("{" +
+//                    "\"preferred_username\": \"test-user\", " +
+//                    "\"sub\": \"c7f06e26-120c-41d8-8e5f-d768d6be91cf\", " +
+//                    "\"name\": \"Bob Smith\", " +
+//                    "\"given_name\": \"Bob\", " +
+//                    "\"family_name\": \"Smith\", " +
+//                    "\"email\": \"bob@smith.name\"" +
+//                    "}").getBytes(StandardCharsets.UTF_8));
+//        }};
+//    }
     
     private void createExpectationsForGatewayGroupsMembership(boolean isInAdminsGroup, boolean isInReadOnlyAdminsGroup) throws TException {
 

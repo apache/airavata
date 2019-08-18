@@ -135,6 +135,11 @@ public class ServerSettings extends ApplicationSettings {
     public static final String IAM_SERVER_SUPER_ADMIN_USERNAME = "iam.server.super.admin.username";
     public static final String IAM_SERVER_SUPER_ADMIN_PASSWORD = "iam.server.super.admin.password";
 
+    // custos client constants
+    public static final String CUSTOS_PROFILE_HOST = "custos.profile.host";
+    public static final String CUSTOS_PROFILE_PORT = "custos.profile.port";
+    public static final String CUSTOS_AUTHENTICATION_HOST = "custos.authentication.host";
+    public static final String CUSTOS_AUTHENTICATION_PORT = "custos.authentication.port";
 
     /* Caching */
     private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
@@ -502,4 +507,12 @@ public class ServerSettings extends ApplicationSettings {
     public static String getSharingRegistryHost() {
         return getSetting(SHARING_REGISTRY_HOST, "localhost");
     }
+
+    public static String getCustosProfileServiceHost() throws ApplicationSettingsException{ return getSetting(CUSTOS_PROFILE_HOST); }
+
+    public static String getCustosProfileServicePort() throws ApplicationSettingsException{ return getSetting(CUSTOS_PROFILE_PORT); }
+
+    public static String getCustosAuthenticationServerPort() throws ApplicationSettingsException{ return getSetting(CUSTOS_AUTHENTICATION_PORT); }
+
+    public static String getCustosAuthenticationServerHost() throws ApplicationSettingsException{ return getSetting(CUSTOS_AUTHENTICATION_HOST); }
 }

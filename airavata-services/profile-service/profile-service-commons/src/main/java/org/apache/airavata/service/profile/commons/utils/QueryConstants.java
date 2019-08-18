@@ -19,14 +19,18 @@
  */
 package org.apache.airavata.service.profile.commons.utils;
 
+import org.apache.airavata.model.user.CustomDashboard;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.kafka.common.protocol.types.Field;
 
 /**
  * Created by goshenoy on 03/08/2017.
  */
 public class QueryConstants {
 
+    public static final String FIND_CUSTOS_DASHBOARD_BY_AIRAVATA_ID = "SELECT u from CustosDashboardEntity u " +
+            "where u.airavataInternalUserId LIKE:" + CustomDashboard._Fields.AIRAVATA_INTERNAL_USER_ID.getFieldName();
 
     public static final String FIND_USER_PROFILE_BY_USER_ID = "SELECT u FROM UserProfileEntity u " +
             "where u.userId LIKE :" + UserProfile._Fields.USER_ID.getFieldName() + " " +

@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GatewayGroupsInitializer {
 
-    private final static Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
+    private final static Logger logger = LoggerFactory.getLogger(AiravataSecurityManagerImpl.class);
 
     public static GatewayGroups initializeGatewayGroups(String gatewayId) {
 

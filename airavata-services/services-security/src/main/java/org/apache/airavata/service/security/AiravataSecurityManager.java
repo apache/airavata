@@ -40,7 +40,6 @@ public interface AiravataSecurityManager {
      */
     public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData) throws AiravataSecurityException;
 
-
     /**
      * Return an AuthzToken that has the appropriate access to manage user's in the IAM service.
      * @param gatewayId
@@ -48,12 +47,4 @@ public interface AiravataSecurityManager {
      * @throws AiravataSecurityException
      */
     public AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId) throws AiravataSecurityException;
-
-    /**
-     * Get OpenID Connect user profile information from the given AuthzToken.
-     * @param authzToken
-     * @return
-     * @throws AiravataSecurityException
-     */
-    public UserInfo getUserInfoFromAuthzToken(AuthzToken authzToken) throws AiravataSecurityException;
 }
