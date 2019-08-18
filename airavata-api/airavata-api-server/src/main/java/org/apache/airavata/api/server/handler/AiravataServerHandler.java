@@ -1257,8 +1257,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             toCreatedTimeCriteria.setSearchCondition(SearchCondition.LTE);
             toCreatedTimeCriteria.setValue(Long.toString(toTime));
             sharingFilters.add(toCreatedTimeCriteria);
+            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
             sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                    userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.getEntityId()));
+                    userId + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.getEntityId()));
 
             ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds);
             registryClientPool.returnResource(regClient);
@@ -2204,11 +2205,12 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
             ExperimentModel existingExperiment = regClient.getExperiment(airavataExperimentId);
+            ExperimentStatus experimentLastStatus = regClient.getExperimentStatus(airavataExperimentId);
             if (existingExperiment == null){
                 logger.error(airavataExperimentId, "Error while cancelling experiment {}, experiment doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            switch (existingExperiment.getExperimentStatus().get(0).getState()) {
+            switch (experimentLastStatus.getState()) {
                 case COMPLETED: case CANCELED: case FAILED: case CANCELING:
                     logger.warn("Can't terminate already {} experiment", existingExperiment.getExperimentStatus().get(0).getState().name());
                     break;

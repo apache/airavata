@@ -323,7 +323,7 @@ public class AiravataDataMigrator {
         // Migrating from GatewayResourceProfile to GroupResourceProfile
         for (String domainID : domainOwnerMap.keySet()) {
             GatewayGroups gatewayGroups = gatewayGroupsMap.get(domainID);
-            if (needsGroupResourceProfileMigration(domainID, registryServiceClient)) {
+            if (needsGroupResourceProfileMigration(domainID, domainOwnerMap.get(domainID), registryServiceClient, sharingRegistryServerHandler)) {
 
                 GroupResourceProfile groupResourceProfile = migrateGatewayResourceProfileToGroupResourceProfile(domainID, registryServiceClient);
 
@@ -352,7 +352,7 @@ public class AiravataDataMigrator {
                 entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                 entity.setOwnerId(domainOwnerMap.get(domainID));
                 entity.setName(credentialSummary.getToken());
-                entity.setDescription(credentialSummary.getDescription());
+                entity.setDescription(maxLengthString(credentialSummary.getDescription(), 255));
                 if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                     sharingRegistryServerHandler.createEntity(entity);
                 if (gatewayGroupsMap.containsKey(entity.getDomainId())) {
@@ -367,8 +367,7 @@ public class AiravataDataMigrator {
             for (User sharingUser : sharingUsers) {
 
                 String userId = sharingUser.getUserId();
-                int index = userId.lastIndexOf("@");
-                if (index <= 0) {
+                if (!userId.endsWith("@" + domainID)) {
                     System.out.println("Skipping credentials for user " + userId + " since sharing user id is improperly formed");
                     continue;
                 }
@@ -381,7 +380,8 @@ public class AiravataDataMigrator {
                     entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                     entity.setOwnerId(userId);
                     entity.setName(credentialSummary.getToken());
-                    entity.setDescription(credentialSummary.getDescription());
+                    // Cap description length at max 255 characters
+                    entity.setDescription(maxLengthString(credentialSummary.getDescription(), 255));
                     if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                         sharingRegistryServerHandler.createEntity(entity);
                     // Don't need to share USER SSH tokens with any group
@@ -398,7 +398,7 @@ public class AiravataDataMigrator {
                 entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                 entity.setOwnerId(domainOwnerMap.get(domainID));
                 entity.setName(gatewayPasswordEntry.getKey());
-                entity.setDescription(gatewayPasswordEntry.getValue());
+                entity.setDescription(maxLengthString(gatewayPasswordEntry.getValue(), 255));
                 if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                     sharingRegistryServerHandler.createEntity(entity);
                 if (gatewayGroupsMap.containsKey(entity.getDomainId())) {
@@ -439,8 +439,8 @@ public class AiravataDataMigrator {
         // Migrate roles to groups
         List<String> usernames = sharingRegistryServerHandler.getUsers(domain.getDomainId(), 0, -1)
                 .stream()
-                // Filter out bad ids that don't have an "@" in them
-                .filter(user -> user.getUserId().lastIndexOf("@") > 0)
+                // Filter out bad user ids that don't end in "@" + domainId
+                .filter(user -> user.getUserId().endsWith("@" + domain.getDomainId()))
                 .map(user -> user.getUserId().substring(0, user.getUserId().lastIndexOf("@")))
                 .collect(Collectors.toList());
         Map<String, List<String>> roleMap = loadRolesForUsers(domain.getDomainId(), usernames);
@@ -553,10 +553,19 @@ public class AiravataDataMigrator {
         return userGroup;
     }
 
-    private static boolean needsGroupResourceProfileMigration(String gatewayId, RegistryService.Client registryServiceClient) throws TException {
+    private static boolean needsGroupResourceProfileMigration(String gatewayId, String domainOwnerId, RegistryService.Client registryServiceClient, SharingRegistryServerHandler sharingRegistryServerHandler)
+            throws TException {
         // Return true if GatewayResourceProfile has at least one ComputeResourcePreference and there is no GroupResourceProfile
         List<ComputeResourcePreference> computeResourcePreferences = registryServiceClient.getAllGatewayComputeResourcePreferences(gatewayId);
-        List<GroupResourceProfile> groupResourceProfiles = registryServiceClient.getGroupResourceList(gatewayId, Collections.emptyList());
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+        searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+        searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+        List<String> accessibleGRPIds = sharingRegistryServerHandler.searchEntities(gatewayId, domainOwnerId, Collections.singletonList(searchCriteria), 0, -1)
+                .stream()
+                .map(p -> p.getEntityId())
+                .collect(Collectors.toList());
+        List<GroupResourceProfile> groupResourceProfiles = registryServiceClient.getGroupResourceList(gatewayId, accessibleGRPIds);
         return !computeResourcePreferences.isEmpty() && groupResourceProfiles.isEmpty();
     }
 
@@ -634,6 +643,15 @@ public class AiravataDataMigrator {
 
     private static boolean isValid(String s) {
         return s != null && !"".equals(s.trim());
+    }
+
+    private static String maxLengthString(String s, int maxLength) {
+
+        if (s != null) {
+            return s.substring(0, Math.min(maxLength, s.length()));
+        } else {
+            return null;
+        }
     }
 
     private static CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {

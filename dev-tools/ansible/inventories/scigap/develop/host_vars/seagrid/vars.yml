@@ -39,6 +39,7 @@ auth_options:
 
 gateway_id: "seagrid"
 experiment_data_dir: "{{ user_data_dir }}/django-seagrid"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFgLWSw6Mf0tPbkeSyzPMxgT50cNEXFDiE9UnEx0tIm+is9C3hIK78Ct8NAWgPxdXy1vd/9NBVIqkR516NZ7VyGbUHkrtPLOYL+Of9IyvxOQmrLzTLQNS9yVkxwxykJzBePZySyLcOKQdG8YoNj6+2iRolzfo5/w4Gz+MSqKmPJcVH8hjwTdoE5s0hYU4MaLF966hh6LUH7SG31BcTadtEgnE8nYfxeoa20oj0h0n1LKO06OZgVXVN3iulHimQ1paQiW71X9UPUhgpLnYAiI99BmYOQqEM4IndwZLZPwDeb23A0Dh3bLO8CAPgPRcG5b1Da6kABi5i5gcIt3WCJzeP"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587

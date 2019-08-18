@@ -19,9 +19,10 @@
 #
 
 ---
-# Just gather facts on database
-#- hosts: database
-#  gather_facts: True
+# Just gather facts on database to get internal IP address
+- hosts: database
+  gather_facts: True
+
 - hosts: api-orch
   tags: api-orch, airavata
   roles:

@@ -41,6 +41,7 @@ auth_options:
 
 gateway_id: "pfec-hydro"
 experiment_data_dir: "{{ user_data_dir }}/django-pfec-hydro"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCVUiDweafreHh7nN4vabpG0wHrlyYCAObDtjmjP9hist848Y25BP+Rdq+64xHlKmJ1CDDZmjmb9T6JI5JhzYvg0RoD2WxDFcV10y7wamzT7b5TjGK/x11Qwh68qNfAi5amePvkL5oE/HCG95oKityG24EUt3yNOttOLYFnbdnlUXQiDkk1xT/8mbtAPXKnhjopYebwjsK7tYBzGe6YIU0teMA2goWl/6WjTWQBikhSOR1P074qEKzrvqt5mQqVi1HDpHKPP+JA/6upJu2THPNqUw2XuzkwFLkPAjUlnj2NugKTdUZco3lRc2lyjb2OEGuFO6I41WB/xnbBhQOXqDJX"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587

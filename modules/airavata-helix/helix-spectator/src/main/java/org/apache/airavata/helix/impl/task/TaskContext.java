@@ -798,27 +798,32 @@ public class TaskContext {
                     Optional.ofNullable(registryClient.getGatewayResourceProfile(gatewayId))
                             .orElseThrow(() -> new Exception("Invalid GatewayResourceProfile")));
 
+            logger.debug("Using storage resource preference for storage " + processModel.getStorageResourceId());
             ctx.setGatewayStorageResourcePreference(
                     Optional.ofNullable(registryClient.getGatewayStoragePreference(
                             gatewayId,
                             processModel.getStorageResourceId()))
                             .orElseThrow(() -> new Exception("Invalid Gateway StoragePreference")));
 
+            logger.debug("Using application deployment " + processModel.getApplicationDeploymentId());
             ctx.setApplicationDeploymentDescription(
                     Optional.ofNullable(registryClient.getApplicationDeployment(
                             processModel.getApplicationDeploymentId()))
                             .orElseThrow(() -> new Exception("Invalid Application Deployment")));
 
+            logger.debug("Using application interface " + processModel.getApplicationInterfaceId());
             ctx.setApplicationInterfaceDescription(
                     Optional.ofNullable(registryClient.getApplicationInterface(
                             processModel.getApplicationInterfaceId()))
                             .orElseThrow(() -> new Exception("Invalid Application Interface")));
 
+            logger.debug("Using compute resource " + ctx.getComputeResourceId());
             ctx.setComputeResourceDescription(
                     Optional.ofNullable(registryClient.getComputeResource(
                             ctx.getComputeResourceId()))
                             .orElseThrow(() -> new Exception("Invalid Compute Resource Description")));
 
+            logger.debug("Using storage resource " + ctx.getStorageResourceId());
             ctx.setStorageResourceDescription(
                     Optional.ofNullable(registryClient.getStorageResource(
                             ctx.getStorageResourceId()))

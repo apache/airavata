@@ -143,6 +143,7 @@ helix_pre_wm_name: "prewm"
 helix_pre_wm_load_balance_clusters: "false"
 helix_post_wm_name: "postwm"
 helix_post_wm_load_balance_clusters: "false"
+local_data_location: "/home/airavata/temp-storage"
 
 # Listening port for kafka installations
 kafka_listener_port: 9092

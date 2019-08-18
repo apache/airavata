@@ -18,11 +18,12 @@
 # under the License.
 #
 ---
-# TODO: install python34
-# sudo yum -y install python34
+# TODO: install python36
+# sudo yum -y install python36
 # sudo yum -y install httpd-devel
-# sudo yum -y install python34-devel
+# sudo yum -y install python36-devel
 # sudo yum -y install mysql-devel
+# sudo yum -y install gcc
 
 # TODO: fetch and build mod_wsgi
 # mkdir mod_wsgi
@@ -47,3 +48,6 @@
 # TODO: install Node.js EPEL repository and then install nodejs
 # sudo curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
 # sudo yum install nodejs
+
+# TODO: disable package-lock.json creation for the pga user
+# npm config set package-lock false

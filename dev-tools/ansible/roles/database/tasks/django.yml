@@ -22,7 +22,7 @@
 
 # Setup django user and databases
 - name: create django databases
-  mysql_db: name="django_{{ item }}" state=present encoding=utf8
+  mysql_db: name="django_{{ item }}" state=present encoding=utf8 collation=utf8_bin
   with_items:
   - "{{ groups['django'] }}"
 

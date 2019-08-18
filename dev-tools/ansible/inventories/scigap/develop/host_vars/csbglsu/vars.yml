@@ -41,6 +41,7 @@ auth_options:
 
 gateway_id: "csbglsu"
 experiment_data_dir: "{{ user_data_dir }}/django-csbglsu"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFlFv/4KuHykIWcOEvTa64ELh9/qNsF6qf11IjrseYp/th8agceygIViFkwfRZzAPj+Vx11Ic+NXKI3aOZjtauUKl+R+iRTMFDX39deV5hyCHPBJTTw7wqltmH/lxJOU0nMaAnQlXmNu+zHEmz0hhkfKn6sQdYFRMb6eDWtZwJqGHzIrZNOs+wxhJ7FBWQ+yDx8akutKEXX5Zka9fnTgOfoWP+ch262uzI/eeJgwuzlu0iFb7IKdHZm3FJEsUaz0W+u+mKY9uxktW16KW4xS2ox7smVUOyuZgxAwThSQjPe2kVZxJNgbN/uSxuGy0pOC+o+8Av/dK4qPI41A/4qKSv"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587

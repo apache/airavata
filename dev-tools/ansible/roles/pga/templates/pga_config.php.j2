@@ -250,6 +250,18 @@ return array(
          */
         'portal-smtp-server-port' => '587',
 
+        {% if pga_airavata_django_url is defined %}
+        /**
+         * Set the URL of the new Django portal for re-routing
+         */
+        'airavata-django-url' => "{{ pga_airavata_django_url }}",
+        {% endif %}
+
+        /**
+         * Set to true to enable reroute to the new Django portal
+         */
+        'reroute-to-django' => {{ pga_reroute_to_django | ternary("true", "false") }},
+
         /**
          * Set JIRA Issue Collector scripts here.
          */

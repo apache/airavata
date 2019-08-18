@@ -80,10 +80,10 @@ public class GroovyMapBuilder {
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
 
-        List<String> emails = taskContext.getUserProfile().getEmails();
-        if (emails != null && emails.size() > 0) {
-            mapData.setGatewayUserEmail(emails.get(0));
-        }
+        //List<String> emails = taskContext.getUserProfile().getEmails();
+        //if (emails != null && emails.size() > 0) {
+        //    mapData.setGatewayUserEmail(emails.get(0));
+        //}
 
         List<String> inputValues = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), true);
         inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), true));
