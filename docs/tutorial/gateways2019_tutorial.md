@@ -162,3 +162,84 @@ In addition to customizing the UI component you can also apply validations:
 
 Also you can define dependencies between application inputs and show or hide
 inputs based on the values of other inputs.
+
+## (Optional) Tutorial exercise: Create a custom UI component to customize input interface
+
+TBD
+
+## Tutorial exercise: Create a custom output viewers for an output file
+
+By default, the Django portal provides a very simple view for output files that
+allows users to download the file to their local machine. However, it is
+possible to provide additional custom views for output files. Examples include:
+
+- image (visualization)
+- link (perhaps to another web application that can visualize the file)
+- chart
+- parameterized notebook
+
+To be able to create a custom output viewer we'll need to write some Python
+code. First, we'll get a local version of the Django portal running which we'll
+use as a developer environment.
+
+1. Make sure you have Python 3.6+ installed. See
+   [https://www.python.org/downloads/]() for downloadable packages.
+2. You'll also need npm 6.4.1+ to build the JavaScript frontend code. Please
+   install
+   [the most recent LTS version of Node.js](https://nodejs.org/en/download/).
+3. Clone the airavata-django-portal project and create a virtual environment.
+
+```bash
+git clone https://github.com/apache/airavata-django-portal.git
+cd airavata-django-portal
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+4. Now we'll clone another repository that has some supporting files for this
+   tutorial. Change into the parent directory and clone
+   [https://github.com/machristie/gateways19-tutorial]()
+
+```bash
+cd ..
+git clone https://github.com/machristie/gateways19-tutorial.git
+```
+
+5. Copy the `settings_local.py` file from this repo into the Django portal repo:
+
+```bash
+cp gateways19-tutorial/settings_local.py airavata-django-portal/django_airavata/
+```
+
+6. Back in the Django portal repo we'll run the Django migrate command.
+
+```bash
+cd airavata-django-portal
+python manage.py migrate
+```
+
+7. Load a starting set of CMS pages for the portal
+
+```bash
+python manage.py load_default_gateway
+```
+
+8. Build the JavaScript sources for the portal. This one will take some time to
+   complete.
+
+```bash
+./build_js.sh
+```
+
+Once the build finishes we can start the Django server and log in and see our
+experiments.
+
+```bash
+export OAUTHLIB_INSECURE_TRANSPORT=1
+python manage.py runserver
+```
+
+Go to [http://localhost:8080](), click on **Login in**, enter your username and
+password. On the dashboard you should see the your experiments listed on the
+right hand side.

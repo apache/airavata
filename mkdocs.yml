@@ -16,4 +16,5 @@ nav:
 theme: readthedocs
 
 markdown_extensions:
-  - mdx_truly_sane_lists
+  - mdx_truly_sane_lists # allow 2 space indent
+  - sane_lists # allow restarting numbering of ordered lists
