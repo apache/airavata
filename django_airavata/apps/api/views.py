@@ -1733,3 +1733,14 @@ class APIServerStatusCheckView(APIView):
                 "apiServerUp": False
             }
         return Response(data)
+
+
+def notebook_output_view(request):
+    provider_id = request.GET['provider-id']
+    experiment_id = request.GET['experiment-id']
+    experiment_output_name = request.GET['experiment-output-name']
+    data = output_views.generate_data(request,
+                                      provider_id,
+                                      experiment_output_name,
+                                      experiment_id)
+    return HttpResponse(data['output'])

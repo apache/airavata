@@ -66,6 +66,7 @@
             :experiment-output="output"
             :data-products="outputDataProducts[output.name]"
             :output-views="localFullExperiment.outputViews[output.name]"
+            :experiment-id="experiment.experimentId"
           />
         </div>
       </div>

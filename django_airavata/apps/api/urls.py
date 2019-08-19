@@ -93,6 +93,8 @@ urlpatterns = [
     url(r'^api-status-check/',
         views.APIServerStatusCheckView.as_view(),
         name='api-status-check'),
+    url(r'^notebook-output',
+        views.notebook_output_view, name="notebook-output")
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

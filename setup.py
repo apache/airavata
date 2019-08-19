@@ -28,7 +28,9 @@ setup(
             'thrift',
             'thrift_connector',
             'wagtail',
-            'wagtailfontawesome'
+            'wagtailfontawesome',
+            'jupyter',
+            'papermill'
     ],
     extras_require={
         'dev': [
