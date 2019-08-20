@@ -1744,3 +1744,14 @@ def notebook_output_view(request):
                                       experiment_output_name,
                                       experiment_id)
     return HttpResponse(data['output'])
+
+
+def html_output_view(request):
+    provider_id = request.GET['provider-id']
+    experiment_id = request.GET['experiment-id']
+    experiment_output_name = request.GET['experiment-output-name']
+    data = output_views.generate_data(request,
+                                      provider_id,
+                                      experiment_output_name,
+                                      experiment_id)
+    return JsonResponse(data)

@@ -121,8 +121,6 @@ def _get_output_view_providers(experiment_output, application_interface):
             logger.exception(
                 "Failed to parse metadata for output {}".format(
                     experiment_output.name))
-    if 'default' not in output_view_providers:
-        output_view_providers.insert(0, 'default')
     # Add in any output view providers defined on the application interface
     if application_interface is not None:
         app_output_view_providers = _get_application_output_view_providers(
@@ -130,6 +128,8 @@ def _get_output_view_providers(experiment_output, application_interface):
         for view_provider in app_output_view_providers:
             if view_provider not in output_view_providers:
                 output_view_providers.append(view_provider)
+    if 'default' not in output_view_providers:
+        output_view_providers.insert(0, 'default')
     return output_view_providers
 
 
@@ -193,7 +193,7 @@ def _generate_data(request,
             request.authz_token, experiment_output.value)
         if data_products_helper.exists(request, data_product):
             output_file = data_products_helper.open(request, data_product)
-        elif fixture_output_file is not None:
+        elif settings.DEBUG and fixture_output_file is not None:
             output_file = open(fixture_output_file)
     # TODO: change interface to provide output_file as a path
     # TODO: convert experiment and experiment_output to dict/JSON
