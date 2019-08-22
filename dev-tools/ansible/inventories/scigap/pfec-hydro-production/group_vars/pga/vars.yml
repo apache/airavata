@@ -73,7 +73,7 @@ super_admin_portal: "false"
 admin_emails: "['sgrc-iu-group@iu.edu','brandjen@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-#portal_theme: "qusp-gateway-theme"
+portal_theme: "futurewater-gateway-theme"
 #portal_theme_repo: "https://github.com/SciGaP/qusp-gateway-theme.git"
 portal_title: "Future Water Gateway"
 ...
