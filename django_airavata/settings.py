@@ -314,6 +314,25 @@ LOGGING = {
     },
 }
 
+
+def merge_setting(default, custom_setting):
+    # FIXME: only handles dict settings, doesn't handle lists
+    if isinstance(custom_setting, dict):
+        for k in custom_setting.keys():
+            if k not in default:
+                default[k] = custom_setting[k]
+            else:
+                raise Exception("Custom django app setting conflicts with "
+                                "key {} in {}".format(k, default))
+
+
+# Merge settings from custom Django apps
+# FIXME: only handles WEBPACK_LOADER additions
+for custom_django_app in CUSTOM_DJANGO_APPS:
+    if hasattr(custom_django_app, 'settings'):
+        s = custom_django_app.settings
+        merge_setting(WEBPACK_LOADER, getattr(s, 'WEBPACK_LOADER', {}))
+
 # Allow all settings to be overridden by settings_local.py file
 try:
     from django_airavata.settings_local import *  # noqa
