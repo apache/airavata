@@ -43,6 +43,7 @@ django_settings_local_template: "settings_local.py.j2"
 django_extra_settings: {}
 django_database_name: "django_{{ gateway_id }}"
 django_hidden_airavata_apps: "[]"
+django_tus_data_dir: "{{user_data_dir}}/tus-temp-dir"
 
 django_wsgi_processes: 2
 
