@@ -21,7 +21,7 @@ class DefaultViewProvider:
     immediate = True
     name = "Default"
 
-    def generate_data(self, experiment_output, experiment, output_file=None):
+    def generate_data(self, request, experiment_output, experiment, output_file=None):
         return {
         }
 
@@ -32,6 +32,7 @@ class ParameterizedNotebookViewProvider:
     # fixture_output_file = os.path.join(BASE_DIR, "data", "Gaussian.log")
 
     def generate_data(self,
+                      request,
                       experiment_output,
                       experiment,
                       output_file=None,
@@ -198,5 +199,5 @@ def _generate_data(request,
     # TODO: change interface to provide output_file as a path
     # TODO: convert experiment and experiment_output to dict/JSON
     data = output_view_provider.generate_data(
-        experiment_output, experiment, output_file=output_file)
+        request, experiment_output, experiment, output_file=output_file)
     return data
