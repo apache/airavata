@@ -139,6 +139,12 @@ WEBPACK_LOADER = webpack_loader_util.create_webpack_loader_config(STATIC_ROOT)
 # Hidden Airavata apps (not all gateways need all functionality)
 HIDDEN_AIRAVATA_APPS = {{ django_hidden_airavata_apps }}
 
+# Tus uploads
+{% if django_tus_endpoint is defined %}
+TUS_ENDPOINT = "{{ django_tus_endpoint }}"
+TUS_DATA_DIR = "{{ django_tus_data_dir }}"
+{% endif %}
+
 # Extra settings
 {% for extra_setting in django_extra_settings.items() | list %}
 {{ extra_setting[0] }} = '{{ extra_setting[1] }}'
