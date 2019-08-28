@@ -15,8 +15,6 @@ from importlib import import_module
 
 from pkg_resources import iter_entry_points
 
-from django_airavata.app_config import enhance_custom_app_config
-
 from . import webpack_loader_util
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
