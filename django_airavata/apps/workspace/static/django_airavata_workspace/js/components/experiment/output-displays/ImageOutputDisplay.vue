@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { models, utils } from "django-airavata-api";
+import { models } from "django-airavata-api";
 export default {
   name: "image-output-display",
   props: {
