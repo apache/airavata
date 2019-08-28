@@ -34,6 +34,7 @@ import { models } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 import DefaultOutputDisplay from "./DefaultOutputDisplay";
 import HtmlOutputDisplay from "./HtmlOutputDisplay";
+import ImageOutputDisplay from "./ImageOutputDisplay";
 import LinkDisplay from "./LinkDisplay";
 import NotebookOutputDisplay from "./NotebookOutputDisplay";
 
@@ -62,6 +63,7 @@ export default {
     "data-product-viewer": components.DataProductViewer,
     DefaultOutputDisplay,
     HtmlOutputDisplay,
+    ImageOutputDisplay,
     LinkDisplay,
     NotebookOutputDisplay
   },
@@ -83,6 +85,8 @@ export default {
         return "notebook-output-display";
       } else if (this.currentView["display-type"] === "html") {
         return "html-output-display";
+      } else if (this.currentView["display-type"] === "image") {
+        return "image-output-display";
       } else {
         return null;
       }

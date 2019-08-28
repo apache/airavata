@@ -1755,3 +1755,16 @@ def html_output_view(request):
                                       experiment_output_name,
                                       experiment_id)
     return JsonResponse(data)
+
+
+def image_output_view(request):
+    provider_id = request.GET['provider-id']
+    experiment_id = request.GET['experiment-id']
+    experiment_output_name = request.GET['experiment-output-name']
+    data = output_views.generate_data(request,
+                                      provider_id,
+                                      experiment_output_name,
+                                      experiment_id)
+    # data should contain 'image' as a file-like object or raw bytes with the
+    # file data and 'mime-type' with the images mimetype
+    return HttpResponse(data['image'], content_type=data['mime-type'])
