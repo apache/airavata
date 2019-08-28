@@ -182,11 +182,15 @@ To be able to create a custom output viewer we'll need to write some Python
 code. First, we'll get a local version of the Django portal running which we'll
 use as a developer environment.
 
+### Setup local Django portal development environment
+
 1. Make sure you have Python 3.6+ installed. See
-   [https://www.python.org/downloads/]() for downloadable packages.
+   [https://www.python.org/downloads/]() for downloadable packages or use your
+   system's package manager.
 2. You'll also need npm 6.4.1+ to build the JavaScript frontend code. Please
    install
-   [the most recent LTS version of Node.js](https://nodejs.org/en/download/).
+   [the most recent LTS version of Node.js](https://nodejs.org/en/download/) or
+   use your system's package manager.
 3. Clone the airavata-django-portal project and create a virtual environment.
 
 ```bash
@@ -243,3 +247,152 @@ python manage.py runserver
 Go to [http://localhost:8080](), click on **Login in**, enter your username and
 password. On the dashboard you should see the your experiments listed on the
 right hand side.
+
+### Setup the custom output viewer package
+
+1. Change back into the _gateways19-tutorial_ directory and install it into the
+   Django portal's virtual environment. Make sure you still have the Django
+   portal's virtual environment activated; your terminal prompt should start
+   with `(venv)`. If the Django portal virtual environment isn't activated, see
+   step 3 in the previous section. We'll also use pip to install output viewer's
+   dependencies.
+
+```bash
+cd ../gateways19-tutorial
+pip install -r requirements.txt
+python setup.py develop
+```
+
+2. Implement the GaussianLogViewProvider in output_views.py. First we'll add
+   some imports
+
+```python
+import io
+
+import numpy as np
+from matplotlib.figure import Figure
+```
+
+3. Next we'll define the GaussianLogViewProvider class, set it's `display_type`
+   to _image_ and give it a name:
+
+```python
+class GaussianLogViewProvider:
+    display_type = 'image'
+    name = "Gaussian Log Viewer"
+```
+
+4. Now we'll implement the `generate_data` function. This function should return
+   a dictionary with values that are expected for this `display_type`. For a
+   display type of _image_, the required return values are _image_ which should
+   be a bytes array or file-like object with the image bytes and _mime-type_
+   which should be the image's mime type. Here's the `generate_data` function:
+
+```python
+    def generate_data(self, request, experiment_output, experiment, output_file=None):
+        # return dictionary with image data
+        N = 500
+        x = np.random.rand(N)
+        y = np.random.rand(N)
+        fig = Figure()
+        ax = fig.subplots()
+        ax.scatter(x, y)
+        ax.set_title('Random scatterplot')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        buffer = io.BytesIO()
+        fig.savefig(buffer, format='png')
+        image_bytes = buffer.getvalue()
+        buffer.close()
+        return {
+            'image': image_bytes,
+            'mime-type': 'image/png'
+        }
+```
+
+5. Altogether, the output_views.py file should have the following contents:
+
+```python
+import io
+
+import numpy as np
+from matplotlib.figure import Figure
+
+class GaussianLogViewProvider:
+    display_type = 'image'
+    name = "Gaussian Log Viewer"
+
+    def generate_data(self, request, experiment_output, experiment, output_file=None):
+        # return dictionary with image data
+        N = 500
+        x = np.random.rand(N)
+        y = np.random.rand(N)
+        fig = Figure()
+        ax = fig.subplots()
+        ax.scatter(x, y)
+        ax.set_title('Random scatterplot')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        buffer = io.BytesIO()
+        fig.savefig(buffer, format='png')
+        image_bytes = buffer.getvalue()
+        buffer.close()
+        return {
+            'image': image_bytes,
+            'mime-type': 'image/png'
+        }
+```
+
+6. Now we need to register our _output view provider_ with the package metadata
+   so that the Django Portal will be able to discover it. Add the following
+   lines to the `entry_points` parameter in the `setup.py` file:
+
+```python
+setuptools.setup(
+# ...
+    entry_points="""
+[airavata.output_view_providers]
+gaussian-log-image = gateways19_tutorial.output_views:GaussianLogViewProvider
+""",
+)
+```
+
+`gaussian-log-image` is the output view provider id.
+`gateways19_tutorial.output_views` is the module in which the
+`GaussianLogViewProvider` output view provider class is found.
+
+7. Since we've updated the `entry_points` metadata, we need to reinstall this
+   package in the Django Portal's virtual environment.
+
+```bash
+# Activate the airavata-django-portal virtual environment if not already activated
+cd ../airavata-django-portal
+source venv/bin/activate
+cd ../gateways19-tutorial
+python setup.py develop
+```
+
+### Use the GaussianLogViewProvider with the Gaussian log output file
+
+Back in the Django Portal, we'll update the application interface for Gaussian
+to add the GaussianLogViewProvider as an additional output view of the file.
+
+1. Log into your local Django Portal instance.
+2. In the menu at the top, select **Settings**.
+3. Click on the **Gaussian16** application.
+4. Click on the **Interface** tab.
+5. Scroll down to the _Output Field: Gaussian-Application-Output_.
+6. Add the following in the _Metadata_ section:
+
+```json
+{
+  "output-view-providers": ["gaussian-log-image"]
+}
+```
+
+7. Click **Save**.
+8. Go back to the **Workspace** using the menu at the top.
+9. Select your Gaussian16 experiment.
+10. For the .log output file there should be a dropdown menu allowing you to
+    select an alternate view. Select **Gaussian Log Viewer**. Now you should see
+    the image generated by the custom output view provider.
