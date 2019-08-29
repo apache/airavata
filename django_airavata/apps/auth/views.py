@@ -83,6 +83,7 @@ def handle_login(request):
         else:
             messages.error(request, "Login failed. Please try again.")
     except Exception as err:
+        logger.exception("Login failed for user {}".format(username))
         messages.error(request,
                        "Login failed: {}. Please try again.".format(str(err)))
     return render(request, template, {
