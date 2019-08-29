@@ -1454,10 +1454,29 @@ class UserStoragePathView(APIView):
             data_products_helper.create_user_dir(request, path)
 
         data_product = None
+        # Handle direct upload
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = data_products_helper.save(
                 request, path, user_file)
+        # Handle a tus upload
+        elif 'uploadURL' in request.POST:
+            # TODO: factor out tus uploadURL parsing, retrieval
+            uploadURL = request.POST['uploadURL']
+            # file UUID is last path component in URL. For example:
+            # http://localhost:1080/files/2c44415fdb6259a22f425145b87d0840
+            upload_uuid = urlparse(uploadURL).path.split("/")[-1]
+            upload_bin_path = os.path.join(settings.TUS_DATA_DIR,
+                                           f"{upload_uuid}.bin")
+            log.debug(f"upload_bin_path={upload_bin_path}")
+            upload_info_path = os.path.join(settings.TUS_DATA_DIR,
+                                            f"{upload_uuid}.info")
+            with open(upload_info_path) as upload_info_file, \
+                    open(upload_bin_path, "rb") as upload_file:
+                upload_info = json.load(upload_info_file)
+                filename = upload_info['MetaData']['filename']
+                data_product = data_products_helper.save(
+                    request, path, upload_file, name=filename)
         return self._create_response(request, path, uploaded=data_product)
 
     def delete(self, request, path="/", format=None):

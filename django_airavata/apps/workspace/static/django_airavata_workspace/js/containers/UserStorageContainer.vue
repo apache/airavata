@@ -17,14 +17,12 @@
           :state="fileUploadState"
           :invalid-feedback="fileUploadInvalidFeedback"
         >
-          <b-form-file
-            v-model="file"
-            ref="file-input"
-            placeholder="Add file"
-            @input="fileChanged"
-            class="mb-2"
-            :state="fileUploadState"
-          ></b-form-file>
+          <uppy
+            ref="file-upload"
+            :xhr-upload-endpoint="uploadEndpoint"
+            :tus-upload-finish-endpoint="uploadEndpoint"
+            @upload-success="uploadSuccess"
+          />
         </b-form-group>
       </div>
       <div class="col">
@@ -62,8 +60,13 @@
 import { services, session, utils } from "django-airavata-api";
 import { notifications } from "django-airavata-common-ui";
 
+import Uppy from "../components/experiment/input-editors/Uppy";
+
 export default {
   name: "user-storage-container",
+  components: {
+    Uppy
+  },
   computed: {
     storagePath() {
       if (this.$route.path.startsWith("/")) {
@@ -114,6 +117,10 @@ export default {
       } else {
         return null;
       }
+    },
+    uploadEndpoint() {
+      // This endpoint can handle XHR upload or a TUS uploadURL
+      return "/api/user-storage/" + this.storagePath;
     }
   },
   data() {
@@ -165,6 +172,10 @@ export default {
           this.loadUserStoragePath(this.storagePath);
         });
       }
+    },
+    uploadSuccess() {
+      this.$refs["file-upload"].reset();
+      this.loadUserStoragePath(this.storagePath);
     },
     addDirectory() {
       if (this.dirName) {

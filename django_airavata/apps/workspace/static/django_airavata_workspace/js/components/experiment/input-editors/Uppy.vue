@@ -43,23 +43,28 @@ export default {
   destroyed() {
     // TODO: tear down the Uppy instance
   },
+  data() {
+    return {
+      uppy: null
+    }
+  },
   methods: {
     initUppy() {
-      const uppy = Uppy({
+      this.uppy = Uppy({
         // TODO: set id
         autoProceed: true,
         // TODO: add maxFileSize restriction
         debug: true
       });
-      uppy.use(FileInput, { target: this.$refs.fileInput, pretty: false });
-      uppy.use(StatusBar, {
+      this.uppy.use(FileInput, { target: this.$refs.fileInput, pretty: false });
+      this.uppy.use(StatusBar, {
         target: this.$refs.statusBar,
         hideUploadButton: true,
         hideAfterFinish: false
       });
       if (this.settings.tusEndpoint) {
-        uppy.use(Tus, { endpoint: this.settings.tusEndpoint });
-        uppy.on("upload-success", (file, response) => {
+        this.uppy.use(Tus, { endpoint: this.settings.tusEndpoint });
+        this.uppy.on("upload-success", (file, response) => {
           const data = new FormData();
           data.append("uploadURL", response.uploadURL);
           utils.FetchUtils.post(this.tusUploadFinishEndpoint, data, "", {
@@ -69,7 +74,7 @@ export default {
           });
         });
       } else {
-        uppy.use(XHRUpload, {
+        this.uppy.use(XHRUpload, {
           endpoint: this.xhrUploadEndpoint,
           withCredentials: true,
           headers: {
@@ -77,16 +82,19 @@ export default {
           },
           fieldName: 'file'
         });
-        uppy.on("upload-success", (file, response) => {
+        this.uppy.on("upload-success", (file, response) => {
           this.$emit("upload-success", response.body);
         });
       }
-      uppy.on("upload", () => {
+      this.uppy.on("upload", () => {
         this.$emit("upload-started");
       });
-      uppy.on("complete", () => {
+      this.uppy.on("complete", () => {
         this.$emit("upload-finished");
       });
+    },
+    reset() {
+      this.uppy.reset();
     }
   }
 };

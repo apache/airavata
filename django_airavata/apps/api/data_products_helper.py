@@ -19,11 +19,12 @@ logger = logging.getLogger(__name__)
 TMP_INPUT_FILE_UPLOAD_DIR = "tmp"
 
 
-def save(request, path, file):
+def save(request, path, file, name=None):
     "Save file in path in the user's storage."
+    logger.debug("save name=" + name)
     username = request.user.username
-    full_path = datastore.save(username, path, file)
-    data_product = _save_data_product(request, full_path)
+    full_path = datastore.save(username, path, file, name=name)
+    data_product = _save_data_product(request, full_path, name=name)
     return data_product
 
 
@@ -178,6 +179,7 @@ def _get_data_product_uri(request, full_path):
 
 def _save_data_product(request, full_path, name=None):
     "Create, register and record in DB a data product for full_path."
+    logger.debug("_save_data_product name=" + name)
     data_product = _create_data_product(
         request.user.username, full_path, name=name)
     product_uri = request.airavata_client.registerDataProduct(
