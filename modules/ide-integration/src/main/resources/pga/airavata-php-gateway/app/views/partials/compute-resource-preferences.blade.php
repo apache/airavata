@@ -1,11 +1,16 @@
 <!-- String replace is done as Jquery creates problems when using period(.) in id or class. -->
 <div id="cr-{{ str_replace( '.', "_", $computeResource->computeResourceId) }}" class="@if(isset( $show) ) @if( !$show) hide @endif @else hide @endif">
 <h3 class="text-center">Set Preferences</h3>
+ @if($computeResource->deleted)
+ <h5 class="text-center alert-warning">This compute resources is read-only because it has been deleted.
+ </h3>
+
+ @endif
 <div class="form-group">
     <label class="control-label col-md-3">Override by Airavata</label>
 
     <div class="col-md-9">
-        <select class="form-control" name="overridebyAiravata">
+        <select class="form-control" name="overridebyAiravata" @if($computeResource->deleted) disabled @endif>
             <option value="1"
             @if( isset( $preferences) ) @if( 1 == $preferences->overridebyAiravata) selected @endif @endif>True</option>
             <option value="0"
@@ -19,14 +24,16 @@
 
     <div class="col-md-9">
         <input type="text" name="loginUserName" class="form-control"
-               value="@if( isset( $preferences) ){{$preferences->loginUserName}}@endif"/>
+               value="@if( isset( $preferences) ){{$preferences->loginUserName}}@endif"
+               @if($computeResource->deleted) disabled @endif />
     </div>
 </div>
 <div class="form-group">
     <label class="control-label col-md-3">Preferred Job Submission Protocol</label>
 
     <div class="col-md-9">
-        <select name="preferredJobSubmissionProtocol" class="form-control">
+        <select name="preferredJobSubmissionProtocol" class="form-control"
+        @if($computeResource->deleted) disabled @endif >
             @foreach( (array)$computeResource->jobSubmissionInterfaces as $index => $jsi)
             <option value="{{$jsi->jobSubmissionProtocol}}"
             @if( isset( $preferences) ) @if( $preferences->preferredJobSubmissionProtocol ==
@@ -42,7 +49,8 @@
     <label class="control-label col-md-3">Preferred Data Movement Protocol</label>
 
     <div class="col-md-9">
-        <select name="preferredDataMovementProtocol" class="form-control">
+        <select name="preferredDataMovementProtocol" class="form-control"
+         @if($computeResource->deleted) disabled @endif  >
             @foreach( (array)$computeResource->dataMovementInterfaces as $index => $dmi)
             <option value="{{ $dmi->dataMovementProtocol}}"
             @if( isset( $preferences) ) @if( $preferences->preferredDataMovementProtocol == $dmi->dataMovementProtocol)
@@ -55,7 +63,8 @@
     <label class="control-label col-md-3">Preferred Batch Queue</label>
 
     <div class="col-md-9">
-        <select name="preferredBatchQueue" class="form-control">
+        <select name="preferredBatchQueue" class="form-control"
+          @if($computeResource->deleted) disabled @endif >
             <option value="">Select a Queue from list</option>
             @foreach( (array)$computeResource->batchQueues as $index => $queue)
             <option value="{{ $queue->queueName}}"
@@ -70,7 +79,8 @@
 
     <div class="col-md-9">
         <input type="text" name="scratchLocation" class="form-control"
-               value="@if( isset( $preferences) ){{$preferences->scratchLocation}}@endif"/>
+               value="@if( isset( $preferences) ){{$preferences->scratchLocation}}@endif"
+                @if($computeResource->deleted) disabled @endif />
     </div>
 </div>
 
@@ -79,7 +89,8 @@
 
     <div class="col-md-9">
         <input type="text" name="allocationProjectNumber" class="form-control"
-               value="@if( isset( $preferences) ){{$preferences->allocationProjectNumber}}@endif"/>
+               value="@if( isset( $preferences) ){{$preferences->allocationProjectNumber}}@endif"
+                @if($computeResource->deleted) disabled @endif />
     </div>
 </div>
 
@@ -87,7 +98,8 @@
     <label class="control-label col-md-3">Resource Specific Credential Store Token</label>
 
     <div class="col-md-9">
-        <select class="form-control gateway-credential-store-token" name="resourceSpecificCredentialStoreToken" >
+        <select class="form-control gateway-credential-store-token" name="resourceSpecificCredentialStoreToken"
+         @if($computeResource->deleted) disabled @endif >
             <option value="">Select a Credential Token from Store</option>
             @foreach( $tokens as $val)
                 <option value="{{$val->token}}" @if( isset( $preferences) ) @if( $val->token == $preferences->resourceSpecificCredentialStoreToken) selected @endif @endif>
@@ -113,7 +125,8 @@
 
     <div class="col-md-9">
         <input type="text" name="usageReportingGatewayId" class="form-control"
-               value="@if( isset( $preferences) ) {{$preferences->usageReportingGatewayId }}@endif"/>
+               value="@if( isset( $preferences) ) {{$preferences->usageReportingGatewayId }}@endif"
+                 @if($computeResource->deleted) disabled @endif  />
         <small>Enter Id of the Gateway using this resource if it requires reporting its usage back to the resource.</small>
     </div>
 </div>
@@ -124,7 +137,8 @@
 
     <div class="col-md-9">
         <input type="text" name="qualityOfService" class="qualityOfService form-control"
-               value="@if( isset( $preferences) ){{$preferences->qualityOfService}}@endif" data-toggle="popover" data-placement="bottom" data-content="Format: <queue name1>=<qos1>,<queue name2>=<qos2>"/>
+               value="@if( isset( $preferences) ){{$preferences->qualityOfService}}@endif" data-toggle="popover" data-placement="bottom" data-content="Format: <queue name1>=<qos1>,<queue name2>=<qos2>"
+                  @if($computeResource->deleted) disabled @endif />
     </div>
 </div>
 
@@ -133,7 +147,8 @@
 
     <div class="col-md-9">
         <input type="text" name="reservation" class="form-control"
-               value="@if( isset( $preferences) ){{$preferences->reservation}}@endif"/>
+               value="@if( isset( $preferences) ){{$preferences->reservation}}@endif"
+                @if($computeResource->deleted) disabled @endif  />
     </div>
 </div>
 <?php
@@ -152,7 +167,8 @@ if( isset( $preferences) && $preferences->reservationEndTime != '')
 
     <div class="input-group date datetimepicker1">
         <input type="text" name="reservationStartTime" class="form-control"
-               value="@if( isset( $preferences) )@if( trim($preferences->reservationStartTime) != '' || $preferences->reservationStartTime != null){{date('m/d/Y h:i:s A', intval( $reservationStartTime))}}@endif @endif"/>
+               value="@if( isset( $preferences) )@if( trim($preferences->reservationStartTime) != '' || $preferences->reservationStartTime != null){{date('m/d/Y h:i:s A', intval( $reservationStartTime))}}@endif @endif"
+                @if($computeResource->deleted) disabled @endif />
         <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
         </span>
@@ -164,7 +180,8 @@ if( isset( $preferences) && $preferences->reservationEndTime != '')
 
     <div class="input-group date datetimepicker2">
         <input type="text" name="reservationEndTime" class="form-control"
-               value="@if( isset( $preferences) )@if( trim($preferences->reservationEndTime) != ''|| $preferences->reservationStartTime != null){{date('m/d/Y h:i:s A', intval($reservationEndTime))}}@endif @endif"/>
+               value="@if( isset( $preferences) )@if( trim($preferences->reservationEndTime) != ''|| $preferences->reservationStartTime != null){{date('m/d/Y h:i:s A', intval($reservationEndTime))}}@endif @endif"
+                @if($computeResource->deleted) disabled @endif />
         <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
         </span>
@@ -173,7 +190,8 @@ if( isset( $preferences) && $preferences->reservationEndTime != '')
 
 @if(Session::has("admin"))
 <div class="form-group text-center">
-    <input type="submit" class="btn btn-primary submit-crp-form" value="Set preferences"/>
+    <input type="submit" class="btn btn-primary submit-crp-form" value="Set preferences"
+      @if($computeResource->deleted) disabled @endif />
 </div>
 @endif
 </div>

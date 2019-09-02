@@ -19,3 +19,7 @@
 --
 
 use app_catalog;
+ALTER TABLE COMPUTE_RESOURCE
+add COLUMN Deleted smallint default 0;
+
+

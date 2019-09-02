@@ -226,13 +226,15 @@ public interface ComputeResource {
     boolean isComputeResourceExists (String resourceId) throws AppCatalogException;
 
     /**
-     * This method will remove given resource from the system
+     * This method will soft delete given resource from the system. It simply sets the deleted
+     * flag in the compute resource table.
      * @param resourceId unique resource id
      */
     void removeComputeResource (String resourceId) throws AppCatalogException;
 
     /**
-     * This method will remove given resource from the system
+     * This method will undelete compute resource from the system by unsetting the deleted flag
+     * in the compute resource table.
      * @param resourceId unique resource id
      */
     void undeleteComputeResource (String resourceId) throws AppCatalogException;

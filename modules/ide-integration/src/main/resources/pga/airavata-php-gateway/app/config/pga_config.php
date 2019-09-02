@@ -224,7 +224,7 @@ return array(
         /**
          * Whether this portal is the SciGaP admin portal
          */
-        'super-admin-portal' => true,
+        'super-admin-portal' => false,
 
         /**
          * Set the name of theme in use here

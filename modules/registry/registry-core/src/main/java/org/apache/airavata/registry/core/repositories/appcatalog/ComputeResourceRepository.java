@@ -224,7 +224,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
                 return true;
             }
         }
-        return true;
+        return false;
     }
 
     //TODO: Add code to modify the compute resource remove method for a soft delete of compute resource
