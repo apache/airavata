@@ -5,26 +5,24 @@ both simple and complex customizations to the user interface.
 
 Prerequisites: tutorial attendees should have:
 
-- a laptop on which to write Python code
-- Git client
+-   a laptop on which to write Python code
+-   Git client
 
 We'll install Python and Node.js as part of the tutorial.
 
 ## Outline
 
-- Introduction
-- Presentation: Overview of Airavata and Django Portal
-  - History of the Airavata UI and how did we get here
-- Hands on: run a basic computational experiment in the Django portal
-- Tutorial exercise: customize the input user interface for an application
-- (Optional) Tutorial exercise: Create a custom web component to customize the
-  input interface
-- Tutorial exercise: Create a custom output viewer for an output file
-- Tutorial exercise: Create a custom Django app
-  - use the `AiravataAPI` JavaScript library for utilizing the backend Airavata
-    API
-  - develop a simple custom user interface for setting up and visualizing
-    computational experiments
+-   Introduction
+-   Presentation: Overview of Airavata and Django Portal
+    -   History of the Airavata UI and how did we get here
+-   Hands on: run a basic computational experiment in the Django portal
+-   Tutorial exercise: customize the input user interface for an application
+-   Tutorial exercise: Create a custom output viewer for an output file
+-   Tutorial exercise: Create a custom Django app
+    -   use the `AiravataAPI` JavaScript library for utilizing the backend
+        Airavata API
+    -   develop a simple custom user interface for setting up and visualizing
+        computational experiments
 
 ## Hands on: run a Gaussian computational experiment in the Django portal
 
@@ -60,7 +58,7 @@ application requires one input, an _Input-File_. The following are preconfigured
 Gaussian input files. Download one of these to your laptop and then click the
 **Browse** button to upload the file:
 
-- [oxygen.inp](./data/oxygen.inp)
+-   [oxygen.inp](./data/oxygen.inp)
 
 You can click on **View File** to take a quick look at the file.
 
@@ -97,41 +95,41 @@ Field Modification Metadata_ field:
 
 ```json
 {
-  "editor": {
-    "ui-component-id": "radio-button-input-editor",
-    "config": {
-      "options": [
-        {
-          "value": "pw",
-          "text": "PW"
-        },
-        {
-          "value": "pp",
-          "text": "PP"
-        },
-        {
-          "value": "bands",
-          "text": "Bands"
-        },
-        {
-          "value": "tlanczos",
-          "text": "TLanczos"
-        },
-        {
-          "value": "tdavidson,",
-          "text": "TDavidson"
-        },
-        {
-          "value": "neb",
-          "text": "Neb"
-        },
-        {
-          "value": "ph",
-          "text": "PH"
+    "editor": {
+        "ui-component-id": "radio-button-input-editor",
+        "config": {
+            "options": [
+                {
+                    "value": "pw",
+                    "text": "PW"
+                },
+                {
+                    "value": "pp",
+                    "text": "PP"
+                },
+                {
+                    "value": "bands",
+                    "text": "Bands"
+                },
+                {
+                    "value": "tlanczos",
+                    "text": "TLanczos"
+                },
+                {
+                    "value": "tdavidson,",
+                    "text": "TDavidson"
+                },
+                {
+                    "value": "neb",
+                    "text": "Neb"
+                },
+                {
+                    "value": "ph",
+                    "text": "PH"
+                }
+            ]
         }
-      ]
     }
-  }
 }
 ```
 
@@ -144,9 +142,9 @@ _QE-App-Module_ field displays as radio buttons now.
 
 Other UI components are available:
 
-- textarea
-- checkboxes
-- dropdown
+-   textarea
+-   checkboxes
+-   dropdown
 
 We're working to provide a way for custom input editors to be added by the
 community, especially domain specific input editors. For example, a ball and
@@ -155,10 +153,10 @@ interest.
 
 In addition to customizing the UI component you can also apply validations:
 
-- min length
-- max length
-- regular expression
-- ... and more can be easily added
+-   min length
+-   max length
+-   regular expression
+-   ... and more can be easily added
 
 Also you can define dependencies between application inputs and show or hide
 inputs based on the values of other inputs.
@@ -173,10 +171,10 @@ By default, the Django portal provides a very simple view for output files that
 allows users to download the file to their local machine. However, it is
 possible to provide additional custom views for output files. Examples include:
 
-- image (visualization)
-- link (perhaps to another web application that can visualize the file)
-- chart
-- parameterized notebook
+-   image (visualization)
+-   link (perhaps to another web application that can visualize the file)
+-   chart
+-   parameterized notebook
 
 To be able to create a custom output viewer we'll need to write some Python
 code. First, we'll get a local version of the Django portal running which we'll
@@ -386,7 +384,7 @@ to add the GaussianLogViewProvider as an additional output view of the file.
 
 ```json
 {
-  "output-view-providers": ["gaussian-log-image"]
+    "output-view-providers": ["gaussian-log-image"]
 }
 ```
 
@@ -396,3 +394,114 @@ to add the GaussianLogViewProvider as an additional output view of the file.
 10. For the .log output file there should be a dropdown menu allowing you to
     select an alternate view. Select **Gaussian Log Viewer**. Now you should see
     the image generated by the custom output view provider.
+
+## Tutorial exercise: Create a custom Django app
+
+In this tutorial exercise we'll create a fully custom user interface that lives
+within the Django Portal.
+
+What we're going to build is a very simple user interface that will:
+
+-   allow a user to pick a greeting in one of several languages
+-   submit a simple _echo_ job to a batch scheduler to echo that greeting
+-   display the echoed greeting by displaying the STDOUT file produced by the
+    job
+
+To start, we'll just create a simple "Hello World" page for the Django app and
+get it properly registered with the local Django Portal instance.
+
+1. In the `gateways19-tutorial`, create a file with the path
+   `gateways19_tutorial/templates/gateways19_tutorial/hello.html` with the
+   following contents:
+
+```html
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="main-content-wrapper">
+    <main class="main-content">
+        <h1>Hello World</h1>
+    </main>
+</div>
+{% endblock content %}
+```
+
+2. Create a file with the path `gateways19_tutorial/apps.py` with the following
+   contents:
+
+```python
+from django.apps import AppConfig
+
+
+class Gateways19TutorialAppConfig(AppConfig):
+    name = 'gateways19_tutorial'
+    label = name
+    verbose_name = "Gateways 19 Tutorial"
+    fa_icon_class = "fa-comment"
+```
+
+3. Create a file with the path `gateways19_tutorial/views.py` with the following
+   contents:
+
+```python
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+def hello_world(request):
+    return render(request, "gateways19_tutorial/hello.html")
+```
+
+4. Create a file with the path `gateways19_tutorial/urls.py` with the following
+   contents:
+
+```python
+from django.conf.urls import url, include
+
+from . import views
+
+app_name = 'gateways19_tutorial'
+urlpatterns = [
+    url(r'^hello/', views.hello_world, name="home"),
+]
+```
+
+5. We've created the necessary code for our Django app to display the hello
+   world page, but now we need to add some metadata so that the Django Portal
+   knows about this Django app. In `setup.py`, add the following to the
+   entry_points section:
+
+```python
+setuptools.setup(
+# ...
+    entry_points="""
+[airavata.output_view_providers]
+gaussian-log-image = gateways19_tutorial.output_views:GaussianLogViewProvider
+[airavata.djangoapp]
+gateways19_tutorial = gateways19_tutorial.apps:Gateways19TutorialAppConfig
+""",
+)
+```
+
+6. Since we've updated the metadata, we need to install it again into the Django
+   Portal's virtual environment. Make sure that the Django Portal's virtual
+   environment is activated and run:
+
+```bash
+# Activate the airavata-django-portal virtual environment if not already activated
+cd ../airavata-django-portal
+source venv/bin/activate
+cd ../gateways19-tutorial
+python setup.py develop
+```
+
+7. Start the Django Portal server again:
+
+```
+cd ../airavata-django-portal
+export OAUTHLIB_INSECURE_TRANSPORT=1
+python manage.py runserver
+```
+
+Now you should be able to log into the portal locally and see **Gateways 19 Tutorial** in the drop down menu in the header (click on **Workspace** then you should see it in that menu).
