@@ -55,6 +55,21 @@ def move(source_username, source_path, target_username, target_dir, file_name):
     return target_full_path
 
 
+def move_external(external_path, target_username, target_dir, file_name):
+    user_data_storage = _user_data_storage(target_username)
+    # Make file_name a valid filename
+    target_path = os.path.join(target_dir,
+                               user_data_storage.get_valid_name(file_name))
+    # Get available file path: if there is an existing file at target_path
+    # create a uniquely named path
+    target_path = user_data_storage.get_available_name(target_path)
+    if not exists(target_username, target_dir):
+        create_user_dir(target_username, target_dir)
+    target_full_path = path_(target_username, target_path)
+    file_move_safe(external_path, target_full_path)
+    return target_full_path
+
+
 def create_user_dir(username, path):
     user_data_storage = _user_data_storage(username)
     if not user_data_storage.exists(path):

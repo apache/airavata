@@ -919,12 +919,13 @@ def tus_upload_finish(request):
     log.debug(f"upload_bin_path={upload_bin_path}")
     upload_info_path = os.path.join(settings.TUS_DATA_DIR,
                                     f"{upload_uuid}.info")
-    with open(upload_info_path) as upload_info_file, \
-            open(upload_bin_path, "rb") as upload_file:
+    with open(upload_info_path) as upload_info_file:
         upload_info = json.load(upload_info_file)
         filename = upload_info['MetaData']['filename']
-        data_product = data_products_helper.save_input_file_upload(
-            request, upload_file, name=filename)
+        data_product = data_products_helper\
+            .move_input_file_upload_from_filepath(
+                request, upload_bin_path, name=filename)
+    os.remove(upload_info_path)
     serializer = serializers.DataProductSerializer(
         data_product, context={'request': request})
     return JsonResponse({'uploaded': True,
@@ -1471,12 +1472,12 @@ class UserStoragePathView(APIView):
             log.debug(f"upload_bin_path={upload_bin_path}")
             upload_info_path = os.path.join(settings.TUS_DATA_DIR,
                                             f"{upload_uuid}.info")
-            with open(upload_info_path) as upload_info_file, \
-                    open(upload_bin_path, "rb") as upload_file:
+            with open(upload_info_path) as upload_info_file:
                 upload_info = json.load(upload_info_file)
                 filename = upload_info['MetaData']['filename']
-                data_product = data_products_helper.save(
-                    request, path, upload_file, name=filename)
+                data_product = data_products_helper.move_from_filepath(
+                    request, upload_bin_path, path, name=filename)
+            os.remove(upload_info_path)
         return self._create_response(request, path, uploaded=data_product)
 
     def delete(self, request, path="/", format=None):

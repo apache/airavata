@@ -28,6 +28,16 @@ def save(request, path, file, name=None):
     return data_product
 
 
+def move_from_filepath(request, source_path, target_path, name=None):
+    "Move a file from filesystem into user's storage."
+    username = request.user.username
+    file_name = name if name is not None else os.path.basename(source_path)
+    full_path = datastore.move_external(
+        source_path, username, target_path, file_name)
+    data_product = _save_data_product(request, full_path, name=file_name)
+    return data_product
+
+
 def save_input_file_upload(request, file, name=None):
     """Save input file in staging area for input file uploads."""
     username = request.user.username
@@ -68,6 +78,16 @@ def move_input_file_upload(request, data_product, path):
         path,
         file_name)
     _delete_data_product(data_product.ownerName, source_path)
+    data_product = _save_data_product(request, full_path, name=file_name)
+    return data_product
+
+
+def move_input_file_upload_from_filepath(request, source_path, name=None):
+    "Move a file from filesystem into user's input file staging area."
+    username = request.user.username
+    file_name = name if name is not None else os.path.basename(source_path)
+    full_path = datastore.move_external(
+        source_path, username, TMP_INPUT_FILE_UPLOAD_DIR, file_name)
     data_product = _save_data_product(request, full_path, name=file_name)
     return data_product
 
