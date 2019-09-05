@@ -43,6 +43,10 @@ install
     `django_airavata/settings_local.py` and edit the contents to match your
     Keycloak and Airavata server deployments.
 
+    ```
+    cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
+    ```
+
 3.  Run Django migrations
 
     ```
