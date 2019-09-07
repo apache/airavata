@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.helix.adaptor;
 
+import com.google.common.collect.Lists;
 import net.schmizz.keepalive.KeepAliveProvider;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -31,10 +32,11 @@ import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.PasswordUtils;
 import net.schmizz.sshj.userauth.password.Resource;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.agents.api.CommandOutput;
+import net.schmizz.sshj.xfer.FilePermission;
+import net.schmizz.sshj.xfer.LocalDestFile;
+import net.schmizz.sshj.xfer.LocalFileFilter;
+import net.schmizz.sshj.xfer.LocalSourceFile;
+import org.apache.airavata.agents.api.*;
 import org.apache.airavata.helix.adaptor.wrapper.SCPFileTransferWrapper;
 import org.apache.airavata.helix.agent.ssh.StandardOutReader;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -45,11 +47,8 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SSHJAgentAdaptor implements AgentAdaptor {
@@ -203,7 +202,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
-    public void copyFileTo(String localFile, String remoteFile) throws AgentException {
+    public void uploadFile(String localFile, String remoteFile) throws AgentException {
         try(SCPFileTransferWrapper fileTransfer = sshjClient.newSCPFileTransferWrapper()) {
             fileTransfer.upload(localFile, remoteFile);
         } catch (Exception e) {
@@ -212,9 +211,112 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
-    public void copyFileFrom(String remoteFile, String localFile) throws AgentException {
+    public void uploadFile(InputStream localInStream, FileMetadata metadata, String remoteFile) throws AgentException {
+        try(SCPFileTransferWrapper fileTransfer = sshjClient.newSCPFileTransferWrapper()) {
+            fileTransfer.upload(new LocalSourceFile() {
+                @Override
+                public String getName() {
+                    return metadata.getName();
+                }
+
+                @Override
+                public long getLength() {
+                    return metadata.getSize();
+                }
+
+                @Override
+                public InputStream getInputStream() throws IOException {
+                    return localInStream;
+                }
+
+                @Override
+                public int getPermissions() throws IOException {
+                    return 420; //metadata.getPermissions();
+                }
+
+                @Override
+                public boolean isFile() {
+                    return true;
+                }
+
+                @Override
+                public boolean isDirectory() {
+                    return false;
+                }
+
+                @Override
+                public Iterable<? extends LocalSourceFile> getChildren(LocalFileFilter filter) throws IOException {
+                    return null;
+                }
+
+                @Override
+                public boolean providesAtimeMtime() {
+                    return false;
+                }
+
+                @Override
+                public long getLastAccessTime() throws IOException {
+                    return 0;
+                }
+
+                @Override
+                public long getLastModifiedTime() throws IOException {
+                    return 0;
+                }
+            }, remoteFile);
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
+
+    @Override
+    public void downloadFile(String remoteFile, String localFile) throws AgentException {
         try(SCPFileTransferWrapper fileTransfer = sshjClient.newSCPFileTransferWrapper()) {
             fileTransfer.download(remoteFile, localFile);
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
+
+    @Override
+    public void downloadFile(String remoteFile, OutputStream localOutStream, FileMetadata metadata) throws AgentException {
+        try(SCPFileTransferWrapper fileTransfer = sshjClient.newSCPFileTransferWrapper()) {
+            fileTransfer.download(remoteFile, new LocalDestFile() {
+                @Override
+                public OutputStream getOutputStream() throws IOException {
+                    return localOutStream;
+                }
+
+                @Override
+                public LocalDestFile getChild(String name) {
+                    return null;
+                }
+
+                @Override
+                public LocalDestFile getTargetFile(String filename) throws IOException {
+                    return this;
+                }
+
+                @Override
+                public LocalDestFile getTargetDirectory(String dirname) throws IOException {
+                    return null;
+                }
+
+                @Override
+                public void setPermissions(int perms) throws IOException {
+
+                }
+
+                @Override
+                public void setLastAccessedTime(long t) throws IOException {
+
+                }
+
+                @Override
+                public void setLastModifiedTime(long t) throws IOException {
+
+                }
+            });
         } catch (Exception e) {
             throw new AgentException(e);
         }
@@ -245,6 +347,20 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         try (SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
             List<RemoteResourceInfo> ls = sftpClient.ls(parentPath, resource -> isMatch(resource.getName(), fileName));
             return ls.stream().map(RemoteResourceInfo::getPath).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
+
+    @Override
+    public FileMetadata getFileMetadata(String remoteFile) throws AgentException {
+        try (SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
+            FileAttributes stat = sftpClient.stat(remoteFile);
+            FileMetadata metadata = new FileMetadata();
+            metadata.setName(new File(remoteFile).getName());
+            metadata.setSize(stat.getSize());
+            metadata.setPermissions(FilePermission.toMask(stat.getPermissions()));
+            return metadata;
         } catch (Exception e) {
             throw new AgentException(e);
         }
