@@ -20,6 +20,10 @@
 package org.apache.airavata.agents.api;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
 /**
@@ -40,13 +44,19 @@ public interface AgentAdaptor {
 
     public void createDirectory(String path, boolean recursive) throws AgentException;
 
-    public void copyFileTo(String localFile, String remoteFile) throws AgentException;
+    public void uploadFile(String localFile, String remoteFile) throws AgentException;
 
-    public void copyFileFrom(String remoteFile, String localFile) throws AgentException;
+    public void uploadFile(InputStream localInStream, FileMetadata metadata, String remoteFile) throws AgentException;
+
+    public void downloadFile(String remoteFile, String localFile) throws AgentException;
+
+    public void downloadFile(String remoteFile, OutputStream localOutStream, FileMetadata metadata) throws AgentException;
 
     public List<String> listDirectory(String path) throws AgentException;
 
     public Boolean doesFileExist(String filePath) throws AgentException;
 
     public List<String> getFileNameFromExtension(String fileName, String parentPath) throws AgentException;
+
+    public FileMetadata getFileMetadata(String remoteFile) throws AgentException;
 }
