@@ -35,7 +35,10 @@ export default {
       "experiment-output-name": this.experimentOutput.name,
       "provider-id": this.providerId
     }).then(data => {
-      this.rawOutput = data.output
+      this.rawOutput = data.output;
+      if (data.js) {
+        eval(data.js);
+      }
     })
   }
 };
