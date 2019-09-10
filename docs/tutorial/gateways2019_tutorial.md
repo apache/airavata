@@ -74,58 +74,155 @@ file which is the primary output file of _Gaussian_.
 
 ## Tutorial exercise: customize the input user interface for an application
 
-For the exercise we'll define an application based on the _Quantum Espresso_
-quantum chemistry software suite.
+For this exercise we'll define an application based on the Computational Systems
+Biology Group's [_eFindSite_](http://www.brylinski.org/efindsite) drug-binding site detection software.
 
-**TODO**: instructions on defining the application. Maybe only define the
-application inputs.
+### Basic application configuration
 
-From the dashboard we can now run this application. Notice that the user needs
-to type in a string value to provide the module to run which isn't very user
-friendly and it's error prone. Let's change this to a set of radio buttons.
+1. In the portal, after you've logged in, click on the dropdown menu at the top
+   (currently **Workspace** is likely selected) and select **Settings**.
+2. You should see the _Application Catalog_. Click on the **New Application**
+   button.
+3. For _Application Name_ provide `eFindSite-<your username>`. Appending your
+   username will allow you to distinguish your version of _eFindSite_ from other
+   users.
+4. Click **Save**.
+5. Click on the **Interface** tab.
+6. This application has 4 command line inputs. We'll add them now. To add the
+   first one, click on **Add application input** and provide the following
+   information:
+    - _Name_: `Target ID`
+    - _Type_: STRING (which is the default)
+    - _Application Argument_: `-i`
+    - _User Friendly Description_: `3-10 alphanumerical characters.`
+    - _Required_: `True`
+    - _Required on Command Line_: `True`
+7. Add the next three application inputs in the same way, using the values in
+   the table below:
 
-Go back to the **Settings** then click on your application.
+| Name                  | Type   | Application Argument | Required | Required on Command Line |
+| --------------------- | ------ | -------------------- | -------- | ------------------------ |
+| Target Structure      | URI    | `-s`                 | True     | True                     |
+| Screening libraries   | STRING | `-l`                 | False    | True                     |
+| Visualization scripts | STRING | `-v`                 | False    | True                     |
 
-Click on the **Interface** tab.
+(In Airavata, files are represented as URIs. When an application input has type
+_URI_ it means that a file is needed for that input. From a UI point of view,
+this essentially means that the user will be able to upload a file for inputs of
+type URI.)
 
-For the **QE-App-Module** input field add the following to the _Advanced Input
-Field Modification Metadata_ field:
+Normally we would also define the output files for this application, but for
+this exercise we are only interested in exploring the options available in
+customizing the application inputs and we won't actually run this application.
+Likewise, we'll create a dummy deployment for this application now so that we
+can invoke it from the Workspace Dashboard.
 
-**TODO**: more descriptive text values?
+8. Click on the **Deployments** tab.
+9. Click on the **New Deployment** button. Select the first compute resource in
+   the drop down list and click **OK**.
+10. For the _Application Executable Path_, provide the value `/usr/bin/true`.
+    This is the only required field.
+11. Click **Save** at the bottom of the screen.
+12. Use the top level menu to go back to the **Workspace**. You should see your
+    _eFindSite_ application listed there.
+13. Click on your _eFindSite_ application.
+
+If you see a form with the inputs that we registered for the application
+(_Target ID_, etc.) then you have successfully register the application
+interface.
+
+### Improving the application input user interface
+
+There are a few things to point out now:
+
+-   the _Screening libraries_ and _Visualization scripts_ only accept specific
+    values. For example, one of the allowed values for _Screening libraries_ is
+    `screen_drugbank`
+-   the _Target ID_ input takes a string value, but only certain characters
+    (alphanumeric) are allowed and the string value has a minimum and maximum
+    allowed length.
+
+We can make this user interface more user friendly by providing more guidance in
+the application inputs user interface. For the _Screening libraries_ and
+_Visualization scripts_ we'll provide a list of labeled checkboxes for the user
+to select. For the _Target ID_ we'll provide validation feedback that verifies
+that the given value has an allowed length and only allowed characters.
+
+1. Go back to **Settings** and in the **Application Catalog** click on your
+   eFindSite application.
+2. Click on the **Interface** tab.
+3. For _Target ID_, in the _Advanced Input Field Modification Metadata_ box, add
+   the following JSON configuration:
 
 ```json
 {
     "editor": {
-        "ui-component-id": "radio-button-input-editor",
+        "validations": [
+            {
+                "type": "min-length",
+                "value": 3
+            },
+            {
+                "type": "max-length",
+                "value": 10
+            },
+            {
+                "message": "Target ID may only contain alphanumeric characters and underscores.",
+                "type": "regex",
+                "value": "^[a-zA-Z0-9_]+$"
+            }
+        ],
+        "ui-component-id": "string-input-editor"
+    }
+}
+```
+
+This JSON configuration customizes the input editor in two ways:
+
+-   it adds 3 validations: min-length, max-length and a regex
+-   it sets the UI component of the input editor to be the `string-input-editor`
+    (which is also the default)
+
+4. Likewise for _Screening Libraries_, set the _Advanced Input Field
+   Modification Metadata_ to:
+
+```json
+{
+    "editor": {
+        "ui-component-id": "checkbox-input-editor",
         "config": {
             "options": [
                 {
-                    "value": "pw",
-                    "text": "PW"
+                    "text": "BindingDB",
+                    "value": "screen_bindingdb"
                 },
                 {
-                    "value": "pp",
-                    "text": "PP"
+                    "text": "ChEMBL (non-redundant, TC<0.8)",
+                    "value": "screen_chembl_nr"
                 },
                 {
-                    "value": "bands",
-                    "text": "Bands"
+                    "text": "DrugBank",
+                    "value": "screen_drugbank"
                 },
                 {
-                    "value": "tlanczos",
-                    "text": "TLanczos"
+                    "text": "KEGG Compound",
+                    "value": "screen_keggcomp"
                 },
                 {
-                    "value": "tdavidson,",
-                    "text": "TDavidson"
+                    "text": "KEGG Drug",
+                    "value": "screen_keggdrug"
                 },
                 {
-                    "value": "neb",
-                    "text": "Neb"
+                    "text": "NCI-Open",
+                    "value": "screen_nciopen"
                 },
                 {
-                    "value": "ph",
-                    "text": "PH"
+                    "text": "RCSB PDB",
+                    "value": "screen_rcsbpdb"
+                },
+                {
+                    "text": "ZINC12 (non-redundant, TC<0.7)",
+                    "value": "screen_zinc12_nr"
                 }
             ]
         }
@@ -133,17 +230,50 @@ Field Modification Metadata_ field:
 }
 ```
 
-This configures this input field to display as a set of radio buttons and the
-`options` key provides an array of values and text to be displayed for each.
-Feel free to add another option.
+This JSON configuration specifies a different UI component to use as the input
+editor, the `checkbox-input-editor`. It also provides a list of text/value pairs
+for the checkboxes; the values are what will be provided to the application as command line arguments.
 
-Now go back to the **Workspace** and click on your application. Notice that the
-_QE-App-Module_ field displays as radio buttons now.
+5. Similarly for the _Visualization scripts_, provide the following JSON
+   configuration:
+
+```json
+{
+    "editor": {
+        "ui-component-id": "checkbox-input-editor",
+        "config": {
+            "options": [
+                {
+                    "text": "VMD",
+                    "value": "visual_vmd"
+                },
+                {
+                    "text": "PyMOL",
+                    "value": "visual_pymol"
+                },
+                {
+                    "text": "ChimeraX",
+                    "value": "visual_chimerax"
+                }
+            ]
+        }
+    }
+}
+```
+
+6. Click **Save** at the bottom of the page.
+7. Now, go back to the **Workspace** and on the Dashboard click on your
+   _eFindSite_ application. The _application inputs_ form should now reflect
+   your changes.
+8. Try typing an invalid character (for example, `#`) in _Target ID_. Also try
+   typing in more than 10 alphanumeric characters. When an invalid value is
+   provided the validation feedback informs the user of the problem so that the
+   user can correct it.
 
 Other UI components are available:
 
 -   textarea
--   checkboxes
+-   radio buttons
 -   dropdown
 
 We're working to provide a way for custom input editors to be added by the
@@ -151,21 +281,10 @@ community, especially domain specific input editors. For example, a ball and
 stick molecule editor or a map view for selecting a bounding box of a region of
 interest.
 
-In addition to customizing the UI component you can also apply validations:
-
--   min length
--   max length
--   regular expression
--   ... and more can be easily added
-
 Also you can define dependencies between application inputs and show or hide
 inputs based on the values of other inputs.
 
-## (Optional) Tutorial exercise: Create a custom UI component to customize input interface
-
-TBD
-
-## Tutorial exercise: Create a custom output viewers for an output file
+## Tutorial exercise: Create a custom output viewer for an output file
 
 By default, the Django portal provides a very simple view for output files that
 allows users to download the file to their local machine. However, it is
@@ -407,6 +526,8 @@ What we're going to build is a very simple user interface that will:
 -   display the echoed greeting by displaying the STDOUT file produced by the
     job
 
+### Setting up the Django app
+
 To start, we'll just create a simple "Hello World" page for the Django app and
 get it properly registered with the local Django Portal instance.
 
@@ -414,7 +535,7 @@ get it properly registered with the local Django Portal instance.
    `gateways19_tutorial/templates/gateways19_tutorial/hello.html` with the
    following contents:
 
-```html
+```xml
 {% extends 'base.html' %}
 
 {% block content %}
@@ -498,10 +619,14 @@ python setup.py develop
 
 7. Start the Django Portal server again:
 
-```
+```bash
 cd ../airavata-django-portal
 export OAUTHLIB_INSECURE_TRANSPORT=1
 python manage.py runserver
 ```
 
-Now you should be able to log into the portal locally and see **Gateways 19 Tutorial** in the drop down menu in the header (click on **Workspace** then you should see it in that menu).
+Now you should be able to log into the portal locally and see **Gateways 19
+Tutorial** in the drop down menu in the header (click on **Workspace** then you
+should see it in that menu).
+
+### Adding a list of "Hello" greetings
