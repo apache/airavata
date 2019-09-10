@@ -20,8 +20,5 @@ export default function entry(entryPointFunction) {
   // Common Vue configuration
   Vue.use(BootstrapVue);
 
-  // Initialize portal session object with data provided by base.html template
-  session.Session.init(window.AiravataPortalSessionData);
-
   entryPointFunction(Vue);
 }
