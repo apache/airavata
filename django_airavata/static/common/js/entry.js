@@ -1,7 +1,6 @@
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
-import { session } from "django-airavata-api";
 
 GlobalErrorHandler.init();
 
