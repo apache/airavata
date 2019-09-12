@@ -27,6 +27,7 @@ ultrascan ansible_host=156.56.104.18
 testdrive ansible_host=156.56.104.18
 pearc19 ansible_host=156.56.104.18
 dreg ansible_host=156.56.104.18
+searchsra ansible_host=156.56.104.18
 
 # Using the same keycloak as production
 #[keycloak]
