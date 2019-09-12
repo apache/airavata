@@ -145,6 +145,8 @@ TUS_ENDPOINT = "{{ django_tus_endpoint }}"
 TUS_DATA_DIR = "{{ django_tus_data_dir }}"
 {% endif %}
 
+FILE_UPLOAD_MAX_FILE_SIZE = {{ django_file_upload_max_file_size_mb }} * 1024 * 1024
+
 # Extra settings
 {% for extra_setting in django_extra_settings.items() | list %}
 {{ extra_setting[0] }} = '{{ extra_setting[1] }}'
