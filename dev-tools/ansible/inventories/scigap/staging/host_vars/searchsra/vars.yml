@@ -19,11 +19,11 @@
 #
 
 ---
-vhost_servername: "searchsra.scigap.org"
+vhost_servername: "beta.searchsra.scigap.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/searchsra.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/searchsra.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/searchsra.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "searchsra"
