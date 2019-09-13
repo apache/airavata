@@ -7,8 +7,6 @@ from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from django.core.files.move import file_move_safe
 from django.core.files.storage import FileSystemStorage
 
-experiment_data_storage = FileSystemStorage(
-    location=settings.GATEWAY_DATA_STORE_DIR)
 logger = logging.getLogger(__name__)
 
 
