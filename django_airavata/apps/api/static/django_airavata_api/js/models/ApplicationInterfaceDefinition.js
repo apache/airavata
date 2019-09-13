@@ -2,6 +2,7 @@ import BaseModel from "./BaseModel";
 import InputDataObjectType from "./InputDataObjectType";
 import OutputDataObjectType from "./OutputDataObjectType";
 import DataType from "./DataType";
+import Experiment from "./Experiment";
 
 const FIELDS = [
   "applicationInterfaceId",
@@ -59,5 +60,12 @@ export default class ApplicationInterfaceDefinition extends BaseModel {
       this.applicationOutputs = [];
     }
     this.applicationOutputs.push(stdout, stderr);
+  }
+
+  createExperiment() {
+    const experiment = new Experiment();
+    experiment.populateInputsOutputsFromApplicationInterface(this);
+    experiment.executionId = this.applicationInterfaceId;
+    return experiment;
   }
 }
