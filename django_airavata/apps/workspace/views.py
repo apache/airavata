@@ -1,24 +1,12 @@
 
 import json
 import logging
-import os
-from urllib.parse import urlparse
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.files.storage import FileSystemStorage
-from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 
 from airavata.model.application.io.ttypes import DataType
-from airavata.model.data.replica.ttypes import (
-    DataProductModel,
-    DataProductType,
-    DataReplicaLocationModel,
-    ReplicaLocationCategory,
-    ReplicaPersistentType
-)
 from django_airavata.apps.api import data_products_helper
 from django_airavata.apps.api.views import (
     ApplicationModuleViewSet,
