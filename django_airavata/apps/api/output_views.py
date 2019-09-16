@@ -29,7 +29,7 @@ class DefaultViewProvider:
 class ParameterizedNotebookViewProvider:
     display_type = 'notebook'
     name = "Example Parameterized Notebook View"
-    # fixture_output_file = os.path.join(BASE_DIR, "data", "Gaussian.log")
+    # test_output_file = os.path.join(BASE_DIR, "data", "Gaussian.log")
 
     def generate_data(self,
                       request,
@@ -182,9 +182,9 @@ def _generate_data(request,
     # TODO: handle URI_COLLECTION also
     logger.debug("getting data product for {}".format(experiment_output.value))
     output_file = None
-    fixture_output_file = getattr(output_view_provider,
-                                  'fixture_output_file',
-                                  None)
+    test_output_file = getattr(output_view_provider,
+                               'test_output_file',
+                               None)
     if (experiment_output.value and
         experiment_output.type in (DataType.URI,
                                    DataType.STDOUT,
@@ -194,8 +194,8 @@ def _generate_data(request,
             request.authz_token, experiment_output.value)
         if data_products_helper.exists(request, data_product):
             output_file = data_products_helper.open(request, data_product)
-        elif settings.DEBUG and fixture_output_file is not None:
-            output_file = open(fixture_output_file)
+        elif settings.DEBUG and test_output_file is not None:
+            output_file = open(test_output_file)
     # TODO: change interface to provide output_file as a path
     # TODO: convert experiment and experiment_output to dict/JSON
     data = output_view_provider.generate_data(
