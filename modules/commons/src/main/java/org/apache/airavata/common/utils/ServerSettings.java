@@ -502,4 +502,8 @@ public class ServerSettings extends ApplicationSettings {
     public static String getSharingRegistryHost() {
         return getSetting(SHARING_REGISTRY_HOST, "localhost");
     }
+
+    public static Boolean isSteamingEnabled() {
+        return Boolean.valueOf(getSetting(Constants.ENABLE_STREAMING_TRANSFER, "True"));
+    }
 }
