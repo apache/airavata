@@ -75,7 +75,9 @@ file which is the primary output file of _Gaussian_.
 ## Tutorial exercise: customize the input user interface for an application
 
 For this exercise we'll define an application based on the Computational Systems
-Biology Group's [_eFindSite_](http://www.brylinski.org/efindsite) drug-binding site detection software.
+Biology Group's [_eFindSite_](http://www.brylinski.org/efindsite) drug-binding
+site detection software. We'll use this application to demonstrate how to
+customize the user interface used for application inputs.
 
 ### Basic application configuration
 
@@ -97,6 +99,9 @@ Biology Group's [_eFindSite_](http://www.brylinski.org/efindsite) drug-binding s
     - _User Friendly Description_: `3-10 alphanumerical characters.`
     - _Required_: `True`
     - _Required on Command Line_: `True`
+
+![Screenshot of Target ID configuration](./screenshots/gateways19/eFindSite-target-id.png)
+
 7. Add the next three application inputs in the same way, using the values in
    the table below:
 
@@ -114,8 +119,11 @@ type URI.)
 Normally we would also define the output files for this application, but for
 this exercise we are only interested in exploring the options available in
 customizing the application inputs and we won't actually run this application.
-Likewise, we'll create a dummy deployment for this application now so that we
-can invoke it from the Workspace Dashboard.
+We need to register a _deployment_ to be able to invoke this application. An
+application deployment includes the details of how and where an application is
+installed on a compute resource. Since we won't actually run this application,
+we'll just create a dummy deployment so that we can invoke it from the Workspace
+Dashboard.
 
 8. Click on the **Deployments** tab.
 9. Click on the **New Deployment** button. Select the first compute resource in
@@ -143,7 +151,7 @@ There are a few things to point out now:
     allowed length.
 
 We can make this user interface more user friendly by providing more guidance in
-the application inputs user interface. For the _Screening libraries_ and
+the application inputs' user interface. For the _Screening libraries_ and
 _Visualization scripts_ we'll provide a list of labeled checkboxes for the user
 to select. For the _Target ID_ we'll provide validation feedback that verifies
 that the given value has an allowed length and only allowed characters.
@@ -176,6 +184,10 @@ that the given value has an allowed length and only allowed characters.
     }
 }
 ```
+
+It should look something like this:
+
+![Screenshot of Target ID JSON customization](./screenshots/gateways19/eFindSite-target-id-json.png)
 
 This JSON configuration customizes the input editor in two ways:
 
@@ -232,7 +244,8 @@ This JSON configuration customizes the input editor in two ways:
 
 This JSON configuration specifies a different UI component to use as the input
 editor, the `checkbox-input-editor`. It also provides a list of text/value pairs
-for the checkboxes; the values are what will be provided to the application as command line arguments.
+for the checkboxes; the values are what will be provided to the application as
+command line arguments.
 
 5. Similarly for the _Visualization scripts_, provide the following JSON
    configuration:
@@ -270,7 +283,13 @@ for the checkboxes; the values are what will be provided to the application as c
    provided the validation feedback informs the user of the problem so that the
    user can correct it.
 
-Other UI components are available:
+![Screenshot of Target ID user interface with validation feedback](./screenshots/gateways19/eFindSite-target-id-UI.png)
+
+### Additional application input customizations
+
+Other
+[UI components](https://github.com/apache/airavata-django-portal/tree/master/django_airavata/apps/workspace/static/django_airavata_workspace/js/components/experiment/input-editors)
+are available:
 
 -   textarea
 -   radio buttons
