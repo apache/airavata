@@ -302,10 +302,14 @@ public abstract class DataStagingTask extends AiravataTask {
             throw new TaskOnFailException("Failed to fetch metadata for file " + sourcePath, false, e);
         }
 
-        String sourceFileName = sourcePath.substring(sourcePath.lastIndexOf(File.separator) + 1, sourcePath.length());
-        //String tempPath = getLocalDataPath(sourceFileName);
-        //naiveTransfer(storageAdaptor, sourcePath, computeAdaptor, destPath, tempPath);
-        passThroughTransfer(storageAdaptor, sourcePath, computeAdaptor, destPath);
+        if  (ServerSettings.isSteamingEnabled()) {
+            passThroughTransfer(storageAdaptor, sourcePath, computeAdaptor, destPath);
+        } else {
+            String sourceFileName = sourcePath.substring(sourcePath.lastIndexOf(File.separator) + 1, sourcePath.length());
+            String tempPath = getLocalDataPath(sourceFileName);
+            naiveTransfer(storageAdaptor, sourcePath, computeAdaptor, destPath, tempPath);
+        }
+
     }
 
     protected boolean transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
@@ -338,9 +342,13 @@ public abstract class DataStagingTask extends AiravataTask {
             throw new TaskOnFailException("Error while checking the file " + sourcePath + " existence", false, e);
         }
 
-        //String tempPath = getLocalDataPath(fileName);
-        //naiveTransfer(adaptor, sourcePath, storageResourceAdaptor, destPath, tempPath);
-        passThroughTransfer(adaptor, sourcePath, storageResourceAdaptor, destPath);
+
+        if  (ServerSettings.isSteamingEnabled()) {
+            passThroughTransfer(adaptor, sourcePath, storageResourceAdaptor, destPath);
+        } else {
+            String tempPath = getLocalDataPath(fileName);
+            naiveTransfer(adaptor, sourcePath, storageResourceAdaptor, destPath, tempPath);
+        }
         return true;
     }
 
