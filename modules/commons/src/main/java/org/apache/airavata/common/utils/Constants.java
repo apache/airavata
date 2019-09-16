@@ -69,4 +69,6 @@ public final class Constants {
     public static final String TRUSTED_CERTIFICATE_SYSTEM_PROPERTY = "X509_CERT_DIR";
 
     public static final String NEWLINE = System.getProperty("line.separator");
+
+    public static final String ENABLE_STREAMING_TRANSFER = "enable.streaming.transfer";
 }

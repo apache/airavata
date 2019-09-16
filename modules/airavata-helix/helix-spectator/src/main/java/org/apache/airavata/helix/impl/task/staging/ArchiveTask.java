@@ -87,7 +87,7 @@ public class ArchiveTask extends DataStagingTask {
                 CommandOutput tarCommandOutput = adaptor.executeCommand(tarringCommand, null);
                 if (tarCommandOutput.getExitCode() != 0) {
                     throw new TaskOnFailException("Failed while running the tar command " + tarringCommand + ". Sout : " +
-                            tarCommandOutput.getStdOut() + ". Serr " + tarCommandOutput.getStdError(), true, null);
+                            tarCommandOutput.getStdOut() + ". Serr " + tarCommandOutput.getStdError(), false, null);
                 }
 
             } catch (AgentException e) {
@@ -98,7 +98,7 @@ public class ArchiveTask extends DataStagingTask {
 
             if (!fileTransferred) {
                 logger.error("Failed to transfer created archive file " + tarCreationAbsPath);
-                throw new TaskOnFailException("Failed to transfer created archive file " + tarCreationAbsPath, true, null);
+                throw new TaskOnFailException("Failed to transfer created archive file " + tarCreationAbsPath, false, null);
             }
 
             String deleteTarCommand = "rm " + tarCreationAbsPath;
@@ -108,11 +108,11 @@ public class ArchiveTask extends DataStagingTask {
                 CommandOutput rmCommandOutput = adaptor.executeCommand(deleteTarCommand, null);
                 if (rmCommandOutput.getExitCode() != 0) {
                     throw new TaskOnFailException("Failed while running the rm command " + deleteTarCommand + ". Sout : " +
-                            rmCommandOutput.getStdOut() + ". Serr " + rmCommandOutput.getStdError(), true, null);
+                            rmCommandOutput.getStdOut() + ". Serr " + rmCommandOutput.getStdError(), false, null);
                 }
 
             } catch (AgentException e) {
-                throw new TaskOnFailException("Failed while running the rm command " + tarringCommand, true, null);
+                throw new TaskOnFailException("Failed while running the rm command " + tarringCommand, false, null);
             }
 
             String destParent = destFilePath.substring(0, destFilePath.lastIndexOf("/"));
@@ -125,10 +125,10 @@ public class ArchiveTask extends DataStagingTask {
                 CommandOutput unTarCommandOutput = storageResourceAdaptor.executeCommand(unArchiveTarCommand, destParent);
                 if (unTarCommandOutput.getExitCode() != 0) {
                     throw new TaskOnFailException("Failed while running the untar command " + deleteTarCommand + ". Sout : " +
-                            unTarCommandOutput.getStdOut() + ". Serr " + unTarCommandOutput.getStdError(), true, null);
+                            unTarCommandOutput.getStdOut() + ". Serr " + unTarCommandOutput.getStdError(), false, null);
                 }
             } catch (AgentException e) {
-                throw new TaskOnFailException("Failed while running the untar command " + tarringCommand, true, null);
+                throw new TaskOnFailException("Failed while running the untar command " + tarringCommand, false, null);
             }
 
             return onSuccess("Archival task successfully completed");
