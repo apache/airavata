@@ -316,12 +316,12 @@ possible to provide additional custom views for output files. Examples include:
 
 To be able to create a custom output viewer we'll need to write some Python
 code. First, we'll get a local version of the Django portal running which we'll
-use as a developer environment.
+use as a development environment.
 
 ### Setup local Django portal development environment
 
 1. Make sure you have Python 3.6+ installed. See
-   [https://www.python.org/downloads/]() for downloadable packages or use your
+   <https://www.python.org/downloads/> for downloadable packages or use your
    system's package manager.
 2. You'll also need npm 6.4.1+ to build the JavaScript frontend code. Please
    install
@@ -339,7 +339,7 @@ pip install -r requirements.txt
 
 4. Now we'll clone another repository that has some supporting files for this
    tutorial. Change into the parent directory and clone
-   [https://github.com/machristie/gateways19-tutorial]()
+   <https://github.com/machristie/gateways19-tutorial>
 
 ```bash
 cd ..
@@ -380,9 +380,9 @@ export OAUTHLIB_INSECURE_TRANSPORT=1
 python manage.py runserver
 ```
 
-Go to [http://localhost:8080](), click on **Login in**, enter your username and
-password. On the dashboard you should see the your experiments listed on the
-right hand side.
+Go to [http://localhost:8000](http://localhost:8000), click on **Login in**,
+enter your username and password. On the dashboard you should see the your
+experiments listed on the right hand side.
 
 ### Setup the custom output viewer package
 
@@ -390,8 +390,8 @@ right hand side.
    Django portal's virtual environment. Make sure you still have the Django
    portal's virtual environment activated; your terminal prompt should start
    with `(venv)`. If the Django portal virtual environment isn't activated, see
-   step 3 in the previous section. We'll also use pip to install output viewer's
-   dependencies.
+   step 3 in the previous section. We'll also use pip to install the output
+   viewer's dependencies.
 
 ```bash
 cd ../gateways19-tutorial
@@ -399,23 +399,28 @@ pip install -r requirements.txt
 python setup.py develop
 ```
 
-2. Implement the GaussianLogViewProvider in output_views.py. First we'll add
-   some imports
+2. Implement the GaussianEigenvaluesViewProvider in output_views.py. First we'll
+   add some imports
 
 ```python
 import io
+import os
 
 import numpy as np
 from matplotlib.figure import Figure
+
+from cclib.parser import ccopen
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ```
 
-3. Next we'll define the GaussianLogViewProvider class, set it's `display_type`
-   to _image_ and give it a name:
+3. Next we'll define the GaussianEigenvaluesViewProvider class, set it's
+   `display_type` to _image_ and give it a name:
 
 ```python
-class GaussianLogViewProvider:
+class GaussianEigenvaluesViewProvider:
     display_type = 'image'
-    name = "Gaussian Log Viewer"
+    name = "Gaussian Eigenvalues"
 ```
 
 4. Now we'll implement the `generate_data` function. This function should return
@@ -425,58 +430,133 @@ class GaussianLogViewProvider:
    which should be the image's mime type. Here's the `generate_data` function:
 
 ```python
-    def generate_data(self, request, experiment_output, experiment, output_file=None):
-        # return dictionary with image data
-        N = 500
-        x = np.random.rand(N)
-        y = np.random.rand(N)
-        fig = Figure()
+def generate_data(self, request, experiment_output, experiment, output_file=None):
+    # Parse output_file
+    gaussian = ccopen(output_file)
+    data = gaussian.parse()
+    data.listify()
+    homo_eigenvalues = None
+    lumo_eigenvalues = None
+    if hasattr(data, 'homos') and hasattr(data, 'moenergies'):
+        homos = data.homos[0] + 1
+        moenergies = data.moenergies[0]
+        if homos > 9 and len(moenergies) >= homos:
+            homo_eigenvalues = [data.moenergies[0][homos - 1 - i] for i in range(1, 10)]
+        if homos + 9 <= len(moenergies):
+            lumo_eigenvalues = [data.moenergies[0][homos + i] for i in range(1, 10)]
+
+    # Create plot
+    fig = Figure()
+    if homo_eigenvalues and lumo_eigenvalues:
+        fig.suptitle("Eigenvalues")
+        ax = fig.subplots(2, 1)
+        ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
+        ax[0].set_ylabel('eV')
+        ax[0].legend()
+        ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
+        ax[1].set_ylabel('eV')
+        ax[1].legend()
+    else:
         ax = fig.subplots()
-        ax.scatter(x, y)
-        ax.set_title('Random scatterplot')
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
-        buffer = io.BytesIO()
-        fig.savefig(buffer, format='png')
-        image_bytes = buffer.getvalue()
-        buffer.close()
-        return {
-            'image': image_bytes,
-            'mime-type': 'image/png'
-        }
+        ax.text(0.5, 0.5, "No applicable data", horizontalalignment='center',
+            verticalalignment='center', transform=ax.transAxes)
+
+    # Export plot as image buffer
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format='png')
+    image_bytes = buffer.getvalue()
+    buffer.close()
+
+    # return dictionary with image data
+    return {
+        'image': image_bytes,
+        'mime-type': 'image/png'
+    }
 ```
 
-5. Altogether, the output_views.py file should have the following contents:
+This plots the eigenvalues of molecular orbital energies calculated by Gaussian.
+`cclib` is a Python computational chemistry library which is used to read the
+molecular orbital energies. Then `matplotlib` is used to create two plots of
+these values. Finally, the plots are exported as a PNG image that is returns as
+a buffer of bytes.
+
+5. To test this locally we'll need access to a file to test with. While our
+   local portal instance can connect to the Airavata API just like the
+   production deployed Django portal instance, only the production deployed
+   Django portal has access (locally) to the output files generated by users'
+   experiments. So for testing purposes we'll define a file to be used when
+   there is no Gaussian log file available (this test file will only be sued
+   when the Django portal is running in `DEBUG` mode).
+
+Just after the `name` attribute of `GaussianEigenvaluesViewProvider` add the
+following:
+
+```python
+test_output_file = os.path.join(BASE_DIR, "data", "gaussian.log")
+```
+
+6. Altogether, the output_views.py file should have the following contents:
 
 ```python
 import io
+import os
 
 import numpy as np
 from matplotlib.figure import Figure
 
-class GaussianLogViewProvider:
+from cclib.parser import ccopen
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+class GaussianEigenvaluesViewProvider:
     display_type = 'image'
-    name = "Gaussian Log Viewer"
+    name = "Gaussian Eigenvalues"
+    test_output_file = os.path.join(BASE_DIR, "data", "gaussian.log")
 
     def generate_data(self, request, experiment_output, experiment, output_file=None):
-        # return dictionary with image data
-        N = 500
-        x = np.random.rand(N)
-        y = np.random.rand(N)
+
+        # Parse output_file
+        gaussian = ccopen(output_file)
+        data = gaussian.parse()
+        data.listify()
+        homo_eigenvalues = None
+        lumo_eigenvalues = None
+        if hasattr(data, 'homos') and hasattr(data, 'moenergies'):
+            homos = data.homos[0] + 1
+            moenergies = data.moenergies[0]
+            if homos > 9 and len(moenergies) >= homos:
+                homo_eigenvalues = [data.moenergies[0][homos - 1 - i] for i in range(1, 10)]
+            if homos + 9 <= len(moenergies):
+                lumo_eigenvalues = [data.moenergies[0][homos + i] for i in range(1, 10)]
+
+        # Create plot
         fig = Figure()
-        ax = fig.subplots()
-        ax.scatter(x, y)
-        ax.set_title('Random scatterplot')
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
+        if homo_eigenvalues and lumo_eigenvalues:
+            fig.suptitle("Eigenvalues")
+            ax = fig.subplots(2, 1)
+            ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
+            ax[0].set_ylabel('eV')
+            ax[0].legend()
+            ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
+            ax[1].set_ylabel('eV')
+            ax[1].legend()
+        else:
+            ax = fig.subplots()
+            ax.text(0.5, 0.5, "No applicable data", horizontalalignment='center',
+                verticalalignment='center', transform=ax.transAxes)
+
+        # Export plot as image buffer
         buffer = io.BytesIO()
         fig.savefig(buffer, format='png')
         image_bytes = buffer.getvalue()
         buffer.close()
+
+        # return dictionary with image data
         return {
             'image': image_bytes,
             'mime-type': 'image/png'
         }
+
 ```
 
 6. Now we need to register our _output view provider_ with the package metadata
@@ -488,14 +568,14 @@ setuptools.setup(
 # ...
     entry_points="""
 [airavata.output_view_providers]
-gaussian-log-image = gateways19_tutorial.output_views:GaussianLogViewProvider
+gaussian-eigenvalues-plot = gateways19_tutorial.output_views:GaussianEigenvaluesViewProvider
 """,
 )
 ```
 
-`gaussian-log-image` is the output view provider id.
+`gaussian-eigenvalues-plot` is the output view provider id.
 `gateways19_tutorial.output_views` is the module in which the
-`GaussianLogViewProvider` output view provider class is found.
+`GaussianEigenvaluesViewProvider` output view provider class is found.
 
 7. Since we've updated the `entry_points` metadata, we need to reinstall this
    package in the Django Portal's virtual environment.
@@ -508,10 +588,11 @@ cd ../gateways19-tutorial
 python setup.py develop
 ```
 
-### Use the GaussianLogViewProvider with the Gaussian log output file
+### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
 
 Back in the Django Portal, we'll update the application interface for Gaussian
-to add the GaussianLogViewProvider as an additional output view of the file.
+to add the GaussianEigenvaluesViewProvider as an additional output view of the
+file.
 
 1. Log into your local Django Portal instance.
 2. In the menu at the top, select **Settings**.
@@ -522,16 +603,22 @@ to add the GaussianLogViewProvider as an additional output view of the file.
 
 ```json
 {
-    "output-view-providers": ["gaussian-log-image"]
+    "output-view-providers": ["gaussian-eigenvalues-plot"]
 }
 ```
+
+It should look something like this:
+
+![Screenshot of Gaussian log output-view-providers json](./screenshots/gateways19/gaussian-output-view-providers-json.png)
 
 7. Click **Save**.
 8. Go back to the **Workspace** using the menu at the top.
 9. Select your Gaussian16 experiment.
 10. For the .log output file there should be a dropdown menu allowing you to
-    select an alternate view. Select **Gaussian Log Viewer**. Now you should see
-    the image generated by the custom output view provider.
+    select an alternate view. Select **Gaussian Eigenvalues**. Now you should
+    see the image generated by the custom output view provider.
+
+![Screenshot of generated Gaussian eigenvalues plot](./screenshots/gateways19/gaussian-eigenvalues.png)
 
 ## Tutorial exercise: Create a custom Django app
 
