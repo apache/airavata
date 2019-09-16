@@ -96,44 +96,48 @@ public class PoolingSSHJClient extends SSHClient {
 
     ////////////////// client specific operations ///////
 
+    private SSHClient newClientWithSessionValidation() throws IOException {
+        SSHClient newClient = createNewSSHClient();
+        SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis(), clientInfoMap.size());
+        clientInfoMap.put(newClient, info);
+
+        /* if this is the very first connection that is created to the compute host, fetch the MaxSessions
+         * value form SSHD config file in order to tune the pool
+         */
+        logger.info("Fetching max sessions for the connection of " + host);
+        try (SFTPClient sftpClient = newClient.newSFTPClient()) {
+            RemoteFile remoteFile = sftpClient.open("/etc/ssh/sshd_config");
+            byte[] readContent = new byte[(int) remoteFile.length()];
+            remoteFile.read(0, readContent, 0, readContent.length);
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("SSHD config file content : " + new String(readContent));
+            }
+            String[] lines = new String(readContent).split("\n");
+
+            for (String line : lines) {
+                if (line.trim().startsWith("MaxSessions")) {
+                    String[] splits = line.split(" ");
+                    if (splits.length == 2) {
+                        int sessionCount = Integer.parseInt(splits[1]);
+                        logger.info("Max session count is : " + sessionCount + " for " + host);
+                        setMaxSessionsForConnection(sessionCount);
+                    }
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to fetch max session count for " + host + ". Continuing with default value 1. " + e.getMessage() );
+        }
+        return newClient;
+    }
+
     private SSHClient leaseSSHClient() throws Exception {
         lock.writeLock().lock();
 
         try {
             if (clientInfoMap.isEmpty()) {
-                SSHClient newClient = createNewSSHClient();
-                SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis(), 0);
-                clientInfoMap.put(newClient, info);
-
-                /* if this is the very first connection that is created to the compute host, fetch the MaxSessions
-                 * value form SSHD config file in order to tune the pool
-                 */
-                logger.info("Fetching max sessions for the connection of " + host);
-                try (SFTPClient sftpClient = newClient.newSFTPClient()) {
-                    RemoteFile remoteFile = sftpClient.open("/etc/ssh/sshd_config");
-                    byte[] readContent = new byte[(int) remoteFile.length()];
-                    remoteFile.read(0, readContent, 0, readContent.length);
-
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("SSHD config file content : " + new String(readContent));
-                    }
-                    String[] lines = new String(readContent).split("\n");
-
-                    for (String line : lines) {
-                        if (line.trim().startsWith("MaxSessions")) {
-                            String[] splits = line.split(" ");
-                            if (splits.length == 2) {
-                                int sessionCount = Integer.parseInt(splits[1]);
-                                logger.info("Max session count is : " + sessionCount + " for " + host);
-                                setMaxSessionsForConnection(sessionCount);
-                            }
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.warn("Failed to fetch max session count for " + host + ". Continuing with default value 1. " + e.getMessage() );
-                }
-                return newClient;
+                return newClientWithSessionValidation();
 
             } else {
 
@@ -148,17 +152,24 @@ public class PoolingSSHJClient extends SSHClient {
                         // if it exceeds the maximum session count, create a new connection
                         logger.debug("Connection with least amount of sessions exceeds the threshold. So creating a new connection. " +
                                 "Current connection count {} for host {}", clientInfoMap.size(), host);
-                        SSHClient newClient = createNewSSHClient();
-                        SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis(), clientInfoMap.size());
-                        clientInfoMap.put(newClient, info);
-                        return newClient;
+                        return newClientWithSessionValidation();
 
                     } else {
                         // otherwise reuse the same connetion
                         logger.debug("Reusing the same connection {} as it doesn't exceed the threshold for host {}", minEntry.getValue().getClientId(), host);
                         minEntry.getValue().setSessionCount(minEntry.getValue().getSessionCount() + 1);
                         minEntry.getValue().setLastAccessedTime(System.currentTimeMillis());
-                        return minEntry.getKey();
+
+                        SSHClient sshClient = minEntry.getKey();
+
+                        if (!sshClient.isConnected() || !sshClient.isAuthenticated()) {
+                            logger.warn("Client for host {} is not connected or not authenticated. Creating a new client", host);
+                            removeDisconnectedClients(sshClient);
+                            return newClientWithSessionValidation();
+
+                        } else {
+                            return sshClient;
+                        }
                     }
                 } else {
                     throw new Exception("Failed to find a connection in the pool for host " + host);
