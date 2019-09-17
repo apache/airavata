@@ -23,9 +23,9 @@
 - name: install certbot and dependencies
   yum: name={{ item }} state=installed update_cache=yes
   with_items:
-    - certbot-0.34.2-3.el7
-    - python2-acme-0.34.2-1.el7
-    - python2-certbot-apache-0.34.2-1.el7
+    - certbot
+    - python2-acme
+    - python2-certbot-apache
   become_user: root
 
 - name: enable certbot (letsencrypt) renewal
