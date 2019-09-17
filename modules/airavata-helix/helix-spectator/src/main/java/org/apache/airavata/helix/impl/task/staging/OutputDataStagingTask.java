@@ -27,6 +27,7 @@ import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
@@ -38,8 +39,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @TaskDef(name = "Output Data Staging Task")
 public class OutputDataStagingTask extends DataStagingTask {
@@ -107,6 +110,8 @@ public class OutputDataStagingTask extends DataStagingTask {
             // Fetch and validate compute resource adaptor
             AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 
+            List<URI> destinationURIs = new ArrayList<URI>();
+
             if (sourceFileName.contains("*")) {
                 // if file is declared as a wild card
                 logger.info("Handling output files with " + sourceFileName + " extension for task " + getTaskId());
@@ -144,23 +149,26 @@ public class OutputDataStagingTask extends DataStagingTask {
 
                     //Wildcard support is only enabled for output data staging
                     assert processOutput != null;
-                    processOutput.setName(sourceFileName);
-
-                    try {
-                        getTaskContext().getRegistryClient()
-                                .addExperimentProcessOutputs("EXPERIMENT_OUTPUT", Collections.singletonList(processOutput), getExperimentId());
-                        getTaskContext().getRegistryClient()
-                                .addExperimentProcessOutputs("PROCESS_OUTPUT", Collections.singletonList(processOutput), getProcessId());
-                    } catch (TException e) {
-                        throw new TaskOnFailException("Failed to update experiment or process outputs for task " + getTaskId(), true, e);
-                    }
-
                     logger.info("Transferring file " + sourceFileName);
                     boolean transferred = transferFileToStorage(newSourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
                     if (transferred) {
-                        saveExperimentOutput(processOutput.getName(), destinationURI.toString());
+                        destinationURIs.add(destinationURI);
                     } else {
                         logger.warn("File " + sourceFileName + " did not transfer");
+                    }
+
+                    if (processOutput.getType() == DataType.URI) {
+                        if (filePaths.size() > 1) {
+                            logger.warn("More than one file matched wildcard, but output type is URI. Skipping remaining matches: " + filePaths.subList(1, filePaths.size()));
+                        }
+                        break;
+                    }
+                }
+                if (!destinationURIs.isEmpty()) {
+                    if (processOutput.getType() == DataType.URI) {
+                        saveExperimentOutput(processOutput.getName(), destinationURIs.get(0).toString());
+                    } else if (processOutput.getType() == DataType.URI_COLLECTION) {
+                        saveExperimentOutputCollection(processOutput.getName(), destinationURIs.stream().map(URI::toString).collect(Collectors.toList()));
                     }
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
