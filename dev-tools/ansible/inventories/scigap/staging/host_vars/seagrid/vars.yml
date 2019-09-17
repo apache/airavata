@@ -25,6 +25,8 @@ ssl_certificate_file: "/etc/letsencrypt/live/django.staging.seagrid.org/cert.pem
 ssl_certificate_chain_file: "/etc/letsencrypt/live/django.staging.seagrid.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/django.staging.seagrid.org/privkey.pem"
 
+django_file_upload_max_file_size_mb: 5500
+
 ## Keycloak related variables
 tenant_domain: "seagrid"
 oauth_client_key: "{{ vault_oauth_client_key }}"
