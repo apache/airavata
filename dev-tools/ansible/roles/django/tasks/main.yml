@@ -45,12 +45,15 @@
 
 - name: Create virtual environment for Django portal and install dependencies
   pip:
-    requirements: "{{ airavata_django_checkout }}/requirements.txt"
+    requirements: "{{ item }}"
     virtualenv: "{{ django_venv_dir }}"
     virtualenv_command: "{{ python_virtualenv_command }}"
     chdir: "{{ airavata_django_checkout }}"
   become: yes
   become_user: "{{user}}"
+  with_list:
+    - "{{ airavata_django_checkout }}/requirements.txt"
+    - "{{ airavata_django_checkout }}/requirements-mysql.txt"
 
 - name: Install additional dependencies
   pip:
