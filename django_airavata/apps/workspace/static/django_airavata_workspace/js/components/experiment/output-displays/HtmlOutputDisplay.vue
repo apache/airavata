@@ -28,7 +28,7 @@ export default {
     return {
       rawOutput: null,
       isLoading: true,
-      rawJS : `<script>console.log("This can be passed from output view providers");<\/script>;`,
+      rawJSFile : null,
     };
   },
   methods : {
@@ -38,7 +38,7 @@ export default {
       return new Promise(resolve => {
 
         let scriptEl = document.createElement("script");
-        scriptEl.src = "/static/common/js/test.js";
+        scriptEl.src = this.rawJSFile;
         scriptEl.type = "text/javascript";
 
         // Attach script to head
@@ -49,12 +49,6 @@ export default {
         });
       });
     },
-    executeScript() {
-      // This code can be used to execute scripts passed from the output
-      // view providers.
-      let script = this.rawJS.replace(/<\/?script>/g,"")
-      eval(script)
-    },
   },
   created() {
     utils.FetchUtils.get("/api/html-output", {
@@ -63,23 +57,14 @@ export default {
       "provider-id": this.providerId
     }).then(data => {
       this.rawOutput = data.output
-      //this.rawJS = data.js
+      this.rawJSFile = data.js
       this.isLoading = false
     });
-    console.log("Created method is called for HTMLOutputDisplay");
-  },
-  mounted() {
-    eval('console.log("Passed from output providers")');
-    console.log("Mounted method is called for HTMLOutputDisplay");
   },
   watch: {
     isLoading() {
       if(!this.isLoading) {
-        console.log("Data has been loaded and we can print it now. ");
-        this.loadScripts().then(() => {
-        this.executeScript();
-        });
-        console.log(this.rawOutput);
+        this.loadScripts();
       }
     }
   }
