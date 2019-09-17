@@ -36,6 +36,9 @@ setup(
         'dev': [
             'flake8',
             'flake8-isort'
+        ],
+        'mysql': [
+            'mysqlclient'
         ]
     },
     classifiers=[
