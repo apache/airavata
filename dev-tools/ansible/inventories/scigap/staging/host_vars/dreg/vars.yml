@@ -19,6 +19,11 @@
 #
 
 ---
+airavata_django_repo: "https://github.com/shivamriky/airavata-django-portal.git"
+airavata_django_git_branch: "dreg"
+airavata_django_extra_dependencies:
+  - git+https://github.com/SciGaP/dreg-djangoapp.git@gbrowser#egg=dreg-djangoapp
+
 vhost_servername: "beta.dreg.scigap.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/beta.dreg.scigap.org/cert.pem"
