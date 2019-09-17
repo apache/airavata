@@ -632,6 +632,10 @@ What we're going to build is a very simple user interface that will:
 -   display the echoed greeting by displaying the STDOUT file produced by the
     job
 
+This is an intentionally simple example to demonstrate the general principle of
+using custom REST APIs and UI to setup, execute and post-process/visualize the
+output of a computational experiment.
+
 ### Setting up the Django app
 
 To start, we'll just create a simple "Hello World" page for the Django app and
@@ -647,7 +651,9 @@ get it properly registered with the local Django Portal instance.
 {% block content %}
 <div class="main-content-wrapper">
     <main class="main-content">
-        <h1>Hello World</h1>
+        <div class="container-fluid">
+            <h1>Hello World</h1>
+        </div>
     </main>
 </div>
 {% endblock content %}
@@ -680,6 +686,8 @@ def hello_world(request):
     return render(request, "gateways19_tutorial/hello.html")
 ```
 
+This view will simply display the template created in the previous step.
+
 4. Create a file with the path `gateways19_tutorial/urls.py` with the following
    contents:
 
@@ -693,6 +701,8 @@ urlpatterns = [
     url(r'^hello/', views.hello_world, name="home"),
 ]
 ```
+
+This maps the `/hello/` URL to the `hello_world` view.
 
 5. We've created the necessary code for our Django app to display the hello
    world page, but now we need to add some metadata so that the Django Portal
@@ -736,3 +746,441 @@ Tutorial** in the drop down menu in the header (click on **Workspace** then you
 should see it in that menu).
 
 ### Adding a list of "Hello" greetings
+
+Now we'll create a REST endpoint in our custom Django app that will return
+greetings in several languages.
+
+1. In the `views.py` file, add the following import:
+
+```python
+from django.http import JsonResponse
+```
+
+2. Also add the following view:
+
+```python
+@login_required
+def languages(request):
+    return JsonResponse({'languages': [{
+        'lang': 'French',
+        'greeting': 'bonjour',
+    }, {
+        'lang': 'German',
+        'greeting': 'guten tag'
+    }, {
+        'lang': 'Hindi',
+        'greeting': 'namaste'
+    }, {
+        'lang': 'Japanese',
+        'greeting': 'konnichiwa'
+    }, {
+        'lang': 'Swahili',
+        'greeting': 'jambo'
+    }, {
+        'lang': 'Turkish',
+        'greeting': 'merhaba'
+    }]})
+```
+
+3. In `urls.py` add a url mapping for the `languages` view:
+
+```python
+urlpatterns = [
+    url(r'^hello/', views.hello_world, name="home"),
+    url(r'^languages/', views.languages, name="languages"),
+]
+```
+
+4. In `hello.html` add a `<select>` element to the template which will be used
+   to display the greeting options:
+
+```html
+<!-- ... -->
+<h1>Hello World</h1>
+
+<div class="card">
+    <div class="card-header">
+        Run "echo" for different languages
+    </div>
+    <div class="card-body">
+        <select id="greeting-select"></select>
+        <button id="run-button" class="btn btn-primary">Run</button>
+    </div>
+</div>
+<!-- ... --->
+```
+
+5. We'll also add a `scripts` block to the end of `hello.html`. This will load
+   the AiravataAPI JavaScript library which has utilities for interacting with
+   the Django portal's REST API (which can also be used for custom developed
+   REST endpoints) and model classes for Airavata's data models. Then the
+   `utils.FetchUtils` is used to load the languages REST endpoint.
+
+```xml
+<!-- ... -->
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'django_airavata_api/dist/airavata-api.js' %}"></script>
+<script>
+    const { models, services, session, utils } = AiravataAPI;
+
+    utils.FetchUtils.get("/gateways19_tutorial/languages").then(data => {
+        data.languages.forEach(language => {
+            $("#greeting-select").append(
+                `<option value="${language.greeting}">
+                    ${language.lang} - "${language.greeting}"
+                 </option>`
+            );
+        });
+    });
+</script>
+{% endblock scripts %}
+```
+
+Now when you view the custom app at
+[http://localhost:8000/gateways19_tutorial/hello/](http://localhost:8000/gateways19_tutorial/hello/)
+you should see a dropdown of greetings in several languages, like so:
+
+![Screenshot of custom app with languages list](./screenshots/gateways19/custom-app-languages-list.png)
+
+### Displaying a list of recent experiments
+
+Now we'll use the `AiravataAPI` library to load the user's recent experiments.
+
+1. Add a table to display recent experiments to the bottom of `hello.html`:
+
+```xml
+<!-- ... -->
+            <div class="card">
+                <div class="card-header">
+                    Run "echo" for different languages
+                </div>
+                <div class="card-body">
+                    <select id="greeting-select"></select>
+                    <button id="run-button" class="btn btn-primary">Run</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    Experiments
+                </div>
+                <div class="card-body">
+                    <button id="refresh-button" class="btn btn-secondary">Refresh</button>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Application</th>
+                                <th scope="col">Creation Time</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Output</th>
+                            </tr>
+                        </thead>
+                        <tbody id="experiment-list">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock content %}
+```
+
+2. Now we'll use the ExperimentServiceService to load the user's most recent 5
+   _Echo_ experiments and display them in the table. Add the following to the
+   end of the _scripts_ block in `hello.html`:
+
+```javascript
+// ...
+    const appInterfaceId = "Echo_3f480d1f-ea86-4018-94bb-015423d66a1c";
+
+    function loadExperiments() {
+
+        return services.ExperimentSearchService
+            .list({limit: 5,
+                [models.ExperimentSearchFields.USER_NAME.name]: session.Session.username,
+                [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId,
+            })
+            .then(data => {
+                $('#experiment-list').empty();
+                data.results.forEach((exp, index) => {
+                    $('#experiment-list').append(
+                    `<tr>
+                        <td>${exp.name}</td>
+                        <td>${exp.executionId}</td>
+                        <td>${exp.creationTime}</td>
+                        <td>${exp.experimentStatus.name}</td>
+                        <td id="output_${index}"></td>
+                    </tr>`);
+                });
+        });
+    }
+
+    loadExperiments();
+    $("#refresh-button").click(loadExperiments);
+
+</script>
+
+{% endblock scripts %}
+```
+
+The user interface should now look something like:
+
+![Screenshot of list of recent Echo experiments](./screenshots/gateways19/custom-app-experiment-list.png)
+
+### Submitting an Echo job
+
+Now we'll use `AiravataAPI` to submit an Echo job.
+
+1. Add a click handler to the _Run_ button that gets the selected greeting
+   value:
+
+```javascript
+$("#run-button").click(e => {
+    const greeting = $("#greeting-select").val();
+});
+```
+
+2. There are a couple key pieces of information that needed to submit a
+   computational experiment. First, we need the _Application Interface_ for the
+   application, which defines the inputs and outputs of the application. We'll
+   create an _Experiment_ instance from the _Application Interface_ definition:
+
+```javascript
+const loadAppInterface = services.ApplicationInterfaceService.retrieve({
+    lookup: appInterfaceId
+});
+```
+
+3. Second, we need to know where and how the application is deployed. We could
+   let the user then pick where they want to run this application. For this
+   exercise we're going to hard code the resource and the application deployment
+   that will be used for executing the application, but we still need the
+   application deployment information so we can get default values for the
+   application that can be used when submitting the job to that scheduler.
+
+```javascript
+const appDeploymentId =
+    "bigred2.uits.iu.edu_Echo_19dc358d-d241-43d8-918c-f5a21a3b0845";
+const loadQueues = services.ApplicationDeploymentService.getQueues({
+    lookup: appDeploymentId
+});
+```
+
+4. We also need to know a few other pieces of information, like the id of the
+   compute resource, the queue and the groupResourceProfileId which identifies
+   the allocation used to submit the job. Experiments are organized by projects
+   so we'll also load the user's most recently used project:
+
+```javascript
+const resourceHostId =
+    "bigred2.uits.iu.edu_ac140dca-3c88-46d8-b9ed-875d96ea6908";
+const queueName = "cpu";
+const groupResourceProfileId = "6a642772-15fd-4d10-a847-8aef89b71830";
+const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
+```
+
+5. Once we have all of this information we can then create an `Experiment`
+   object then _save_ and _launch_ it. Here's the complete click handler:
+
+```javascript
+$("#run-button").click(e => {
+    const greeting = $("#greeting-select").val();
+    const loadAppInterface = services.ApplicationInterfaceService.retrieve({
+        lookup: appInterfaceId
+    });
+    const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
+    const resourceHostId =
+        "bigred2.uits.iu.edu_ac140dca-3c88-46d8-b9ed-875d96ea6908";
+    const appDeploymentId =
+        "bigred2.uits.iu.edu_Echo_19dc358d-d241-43d8-918c-f5a21a3b0845";
+    const queueName = "cpu";
+    const groupResourceProfileId = "6a642772-15fd-4d10-a847-8aef89b71830";
+    const loadQueues = services.ApplicationDeploymentService.getQueues({
+        lookup: appDeploymentId
+    });
+    Promise.all([loadAppInterface, loadWorkspacePrefs, loadQueues])
+        .then(([appInterface, workspacePrefs, queues]) => {
+            const experiment = appInterface.createExperiment();
+            experiment.experimentName = "Echo " + greeting;
+            experiment.projectId = workspacePrefs.most_recent_project_id;
+            const cpuQueue = queues.find(q => q.queueName === queueName);
+            experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
+            experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
+            experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount =
+                cpuQueue.defaultCPUCount;
+            experiment.userConfigurationData.computationalResourceScheduling.nodeCount =
+                cpuQueue.defaultNodeCount;
+            experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit =
+                cpuQueue.defaultWalltime;
+            experiment.userConfigurationData.computationalResourceScheduling.queueName = queueName;
+            // Copy the selected greeting to the value of the first input
+            experiment.experimentInputs[0].value = greeting;
+
+            return services.ExperimentService.create({ data: experiment });
+        })
+        .then(exp => {
+            return services.ExperimentService.launch({
+                lookup: exp.experimentId
+            });
+        });
+});
+```
+
+Now that we can launch the experiment we can go ahead and give it a try.
+Unfortunately, the job will ultimately fail because Airavata won't be able to
+transfer the file back to our locally running Django portal (if we had our
+locally running Django portal running a public SSH server we could configure it
+so that Airavata could SCP the file back to our local instance). But this custom
+Django app is also deployed in the hosted tutorial Django instance so you can
+run it there to verify it works.
+
+### Parsing the experiment output
+
+Instead of simply reporting the status of the job we would also like to do
+something with the output. The STDOUT of the Echo job has a format like the
+following:
+
+```
+stdout [Echo bonjour]
+Echoed_Output=bonjour
+Job Cleanup ran on Fri Jul 19 12:34:39 EDT 2019
+===============================
+submit_args  : 	 submit_args = /N/dc2/scratch/cgateway/gta-work-dirs/PROCESS_3db6a570-f150-4e01-b659-d422c5e38b32/job_349221662.pbs
+NIDS         : 	 5
+NID Placement: 	 5/4
+```
+
+The value echoed is displayed as a value of the `Echoed_Output` variable on the
+second line of the output. We'll parse that value out and display that in our
+experiment listing table.
+
+1. What we need to do is get identifier for the experiment's STDOUT file. In
+   Airavata, this identifier is called the _Data Product ID_. Once we have that
+   we can get the DataProduct object which has the files metadata, including a
+   `downloadURL`. For each `exp` we can use the `FullExperimentService` to get
+   these details like so:
+
+```javascript
+if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
+    services.FullExperimentService.retrieve({ lookup: exp.experimentId }).then(
+        fullDetails => {
+            const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
+                o => o.name === "Standard Out"
+            ).value;
+            const stdoutDataProduct = fullDetails.outputDataProducts.find(
+                dp => dp.productUri === stdoutDataProductId
+            );
+            if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
+                return fetch(stdoutDataProduct.downloadURL, {
+                    credentials: "same-origin"
+                }).then(result => result.text());
+            }
+        }
+    );
+}
+```
+
+2. Then to parse it we need simply apply a regular expression to get the value:
+
+```javascript
+if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
+    services.FullExperimentService.retrieve({ lookup: exp.experimentId })
+        .then(fullDetails => {
+            const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
+                o => o.name === "Standard Out"
+            ).value;
+            const stdoutDataProduct = fullDetails.outputDataProducts.find(
+                dp => dp.productUri === stdoutDataProductId
+            );
+            if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
+                return fetch(stdoutDataProduct.downloadURL, {
+                    credentials: "same-origin"
+                }).then(result => result.text());
+            }
+        })
+        .then(text => {
+            const regex = /Echoed_Output=(.*)$/m;
+            const result = regex.exec(text);
+            if (result) {
+                $(`#output_${index}`).text(result[1]);
+            }
+        });
+}
+```
+
+3. However, as noted earlier this won't quite work with our local Django
+   instance since it doesn't have access to the output file. That's fine though
+   since we can fake the STDOUT text so that we can test our code locally.
+   Here's the update to the `loadExperiments` function:
+
+```javascript
+const FAKE_STDOUT = `
+stdout [Echo bonjour]
+Echoed_Output=bonjour
+Job Cleanup ran on Fri Jul 19 12:34:39 EDT 2019
+===============================
+submit_args  : 	 submit_args = /N/dc2/scratch/cgateway/gta-work-dirs/PROCESS_3db6a570-f150-4e01-b659-d422c5e38b32/job_349221662.pbs
+NIDS         : 	 5
+NID Placement: 	 5/4
+`;
+
+function loadExperiments() {
+    return services.ExperimentSearchService.list({
+        limit: 5,
+        [models.ExperimentSearchFields.USER_NAME.name]:
+            session.Session.username,
+        [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId
+    }).then(data => {
+        $("#experiment-list").empty();
+        data.results.forEach((exp, index) => {
+            $("#experiment-list").append(
+                `<tr>
+                        <td>${exp.name}</td>
+                        <td>${exp.executionId}</td>
+                        <td>${exp.creationTime}</td>
+                        <td>${exp.experimentStatus.name}</td>
+                        <td id="output_${index}"></td>
+                    </tr>`
+            );
+            // If experiment has finished, load full details, then parse the stdout file
+            if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
+                services.FullExperimentService.retrieve({
+                    lookup: exp.experimentId
+                })
+                    .then(fullDetails => {
+                        const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
+                            o => o.name === "Standard Out"
+                        ).value;
+                        const stdoutDataProduct = fullDetails.outputDataProducts.find(
+                            dp => dp.productUri === stdoutDataProductId
+                        );
+                        if (
+                            stdoutDataProduct &&
+                            stdoutDataProduct.downloadURL
+                        ) {
+                            return fetch(stdoutDataProduct.downloadURL, {
+                                credentials: "same-origin"
+                            }).then(result => result.text());
+                        } else {
+                            // If we can't download it, fake it
+                            return FAKE_STDOUT;
+                        }
+                    })
+                    .then(text => {
+                        const regex = /Echoed_Output=(.*)$/m;
+                        const result = regex.exec(text);
+                        if (result) {
+                            $(`#output_${index}`).text(result[1]);
+                        }
+                    });
+            }
+        });
+    });
+}
+```
+
+You can try out this custom Django app in the deployed instance of the tutorial
+portal where it really does download and parse the standard out.
