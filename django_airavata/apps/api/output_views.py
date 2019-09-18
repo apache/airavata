@@ -80,8 +80,8 @@ def get_output_views(request, experiment, application_interface=None):
                 output_view_provider = settings.OUTPUT_VIEW_PROVIDERS[
                     output_view_provider_id]
             else:
-                logger.error("Unable to find output view provider with "
-                             "name '{}'".format(output_view_provider_id))
+                logger.warning("Unable to find output view provider with "
+                               "name '{}'".format(output_view_provider_id))
             if output_view_provider is not None:
                 view_config = {
                     'provider-id': output_view_provider_id,
