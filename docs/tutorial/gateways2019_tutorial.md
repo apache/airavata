@@ -28,37 +28,41 @@ We'll install Python and Node.js as part of the tutorial.
 
 ### Create a portal user account
 
-First, you'll need a user account. Go to the
-[Create Account](https://pearc19.scigap.org/auth/create-account) page and select
-**Sign in with existing institution credentials**. This will take you to the
-CILogon institution selection page. If you don't find your institution listed
-here, go back to the _Create Account_ page and fill out the form to create an
-account with a username, password, etc.
+First, you'll need a user account. For the in person tutorial we'll have a set
+of pre-created usernames and passwords to use. If you are unable to attend the
+in person tutorial or would otherwise like to create your own account, go to the
+[Create Account](https://gateways19.scigap.org/auth/create-account) page and
+select **Sign in with existing institution credentials**. This will take you to
+the CILogon institution selection page. If you don't find your institution
+listed here, go back to the _Create Account_ page and fill out the form to
+create an account with a username, password, etc.
 
 After you've logged in, an administrator can grant you access to run the
 Gaussian application. During the tutorial we'll grant you access right away and
-let you know.
+let you know. If you're at the in person tutorial and using a pre-created
+username and password, you should already have all of the necessary
+authorizations.
 
 When you log in for the first time you will see a list of applications that are
 available in this science gateway. Applications that you are not able to run are
 greyed out but the other ones you can run. Once you are granted access, refresh
-the page and you should now see that you the _Gaussian_ application is not
+the page and you should now see that you the _Gaussian16_ application is not
 greyed out.
 
 ### Submit a test job
 
-From the dashboard, click on the **Gaussian** application. The page title is
+From the dashboard, click on the **Gaussian16** application. The page title is
 _Create a New Experiment_.
 
 Here you can change the _Experiment Name_, add a _description_ or select a
-different project is you have another project if you have multiple projects.
+different project if you have multiple projects.
 
 We'll focus on the _Application Inputs_ for this hands-on. The Gaussian
-application requires one input, an _Input-File_. The following are preconfigured
-Gaussian input files. Download one of these to your laptop and then click the
-**Browse** button to upload the file:
+application requires one input, an _Input-File_. The following is a
+preconfigured Gaussian input file. Download this to your local computer and then
+click the **Browse** button to upload the file:
 
--   [oxygen.inp](./data/oxygen.inp)
+-   [npentane12diol.inp](./data/npentane12diol.inp)
 
 You can click on **View File** to take a quick look at the file.
 
@@ -70,7 +74,9 @@ Then click **Save and Launch**.
 
 You should then be taken to the _Experiment Summary_ page which will update as
 the job progresses. When the job finishes you'll be able to download the `.log`
-file which is the primary output file of _Gaussian_.
+file which is the primary output file of the gaussian application.
+
+We'll come back to this experiment later in the tutorial.
 
 ## Tutorial exercise: customize the input user interface for an application
 
@@ -136,7 +142,7 @@ Dashboard.
 13. Click on your _eFindSite_ application.
 
 If you see a form with the inputs that we registered for the application
-(_Target ID_, etc.) then you have successfully register the application
+(_Target ID_, etc.) then you have successfully registered the application
 interface.
 
 ### Improving the application input user interface
@@ -323,57 +329,42 @@ use as a development environment.
 1. Make sure you have Python 3.6+ installed. See
    <https://www.python.org/downloads/> for downloadable packages or use your
    system's package manager.
-2. You'll also need npm 6.4.1+ to build the JavaScript frontend code. Please
-   install
-   [the most recent LTS version of Node.js](https://nodejs.org/en/download/) or
-   use your system's package manager.
-3. Clone the airavata-django-portal project and create a virtual environment.
+2. Now we'll clone a repository that has some supporting files for this
+   tutorial. Change to a directory on your system where you will keep the
+   tutorial files and clone <https://github.com/machristie/gateways19-tutorial>
 
 ```bash
-git clone https://github.com/apache/airavata-django-portal.git
-cd airavata-django-portal
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-4. Now we'll clone another repository that has some supporting files for this
-   tutorial. Change into the parent directory and clone
-   <https://github.com/machristie/gateways19-tutorial>
-
-```bash
-cd ..
 git clone https://github.com/machristie/gateways19-tutorial.git
 ```
 
-5. Copy the `settings_local.py` file from this repo into the Django portal repo:
+3. For the sake of convenience, a zip file of the airavata-django-portal code
+   was created for this tutorial. Unzip the airavata-django-portal code into the
+   parent directory.
 
 ```bash
-cp gateways19-tutorial/settings_local.py airavata-django-portal/django_airavata/
+unzip gateways19-tutorial/airavata-django-portal.zip
 ```
 
-6. Back in the Django portal repo we'll run the Django migrate command.
+4. Create a virtual environment.
 
 ```bash
+python3 -m venv venv
+```
+
+5. Activate the virtual environment.
+
+```
+source venv/bin/activate
+```
+
+6. Install the airavata-django-portal dependencies in the virtual environment.
+
+```
 cd airavata-django-portal
-python manage.py migrate
+pip install -r requirements.txt
 ```
 
-7. Load a starting set of CMS pages for the portal
-
-```bash
-python manage.py load_default_gateway
-```
-
-8. Build the JavaScript sources for the portal. This one will take some time to
-   complete.
-
-```bash
-./build_js.sh
-```
-
-Once the build finishes we can start the Django server and log in and see our
-experiments.
+7. We can now start the Django server and log in and see our experiments.
 
 ```bash
 export OAUTHLIB_INSECURE_TRANSPORT=1
@@ -384,13 +375,16 @@ Go to [http://localhost:8000](http://localhost:8000), click on **Login in**,
 enter your username and password. On the dashboard you should see the your
 experiments listed on the right hand side.
 
+After confirming you can log in, go ahead and shutdown the local Django server
+for now by typing `Control-C` in the console.
+
 ### Setup the custom output viewer package
 
 1. Change back into the _gateways19-tutorial_ directory and install it into the
    Django portal's virtual environment. Make sure you still have the Django
    portal's virtual environment activated; your terminal prompt should start
    with `(venv)`. If the Django portal virtual environment isn't activated, see
-   step 3 in the previous section. We'll also use pip to install the output
+   step 5 in the previous section. We'll also use pip to install the output
    viewer's dependencies.
 
 ```bash
@@ -399,8 +393,9 @@ pip install -r requirements.txt
 python setup.py develop
 ```
 
-2. Implement the GaussianEigenvaluesViewProvider in output_views.py. First we'll
-   add some imports
+2. Implement the GaussianEigenvaluesViewProvider in
+   `gateways19-tutorial/gateways19_tutorial/output_views.py`. First we'll add
+   some imports
 
 ```python
 import io
@@ -430,48 +425,48 @@ class GaussianEigenvaluesViewProvider:
    which should be the image's mime type. Here's the `generate_data` function:
 
 ```python
-def generate_data(self, request, experiment_output, experiment, output_file=None):
-    # Parse output_file
-    gaussian = ccopen(output_file)
-    data = gaussian.parse()
-    data.listify()
-    homo_eigenvalues = None
-    lumo_eigenvalues = None
-    if hasattr(data, 'homos') and hasattr(data, 'moenergies'):
-        homos = data.homos[0] + 1
-        moenergies = data.moenergies[0]
-        if homos > 9 and len(moenergies) >= homos:
-            homo_eigenvalues = [data.moenergies[0][homos - 1 - i] for i in range(1, 10)]
-        if homos + 9 <= len(moenergies):
-            lumo_eigenvalues = [data.moenergies[0][homos + i] for i in range(1, 10)]
+    def generate_data(self, request, experiment_output, experiment, output_file=None):
+        # Parse output_file
+        gaussian = ccopen(output_file)
+        data = gaussian.parse()
+        data.listify()
+        homo_eigenvalues = None
+        lumo_eigenvalues = None
+        if hasattr(data, 'homos') and hasattr(data, 'moenergies'):
+            homos = data.homos[0] + 1
+            moenergies = data.moenergies[0]
+            if homos > 9 and len(moenergies) >= homos:
+                homo_eigenvalues = [data.moenergies[0][homos - 1 - i] for i in range(1, 10)]
+            if homos + 9 <= len(moenergies):
+                lumo_eigenvalues = [data.moenergies[0][homos + i] for i in range(1, 10)]
 
-    # Create plot
-    fig = Figure()
-    if homo_eigenvalues and lumo_eigenvalues:
-        fig.suptitle("Eigenvalues")
-        ax = fig.subplots(2, 1)
-        ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
-        ax[0].set_ylabel('eV')
-        ax[0].legend()
-        ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
-        ax[1].set_ylabel('eV')
-        ax[1].legend()
-    else:
-        ax = fig.subplots()
-        ax.text(0.5, 0.5, "No applicable data", horizontalalignment='center',
-            verticalalignment='center', transform=ax.transAxes)
+        # Create plot
+        fig = Figure()
+        if homo_eigenvalues and lumo_eigenvalues:
+            fig.suptitle("Eigenvalues")
+            ax = fig.subplots(2, 1)
+            ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
+            ax[0].set_ylabel('eV')
+            ax[0].legend()
+            ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
+            ax[1].set_ylabel('eV')
+            ax[1].legend()
+        else:
+            ax = fig.subplots()
+            ax.text(0.5, 0.5, "No applicable data", horizontalalignment='center',
+                verticalalignment='center', transform=ax.transAxes)
 
-    # Export plot as image buffer
-    buffer = io.BytesIO()
-    fig.savefig(buffer, format='png')
-    image_bytes = buffer.getvalue()
-    buffer.close()
+        # Export plot as image buffer
+        buffer = io.BytesIO()
+        fig.savefig(buffer, format='png')
+        image_bytes = buffer.getvalue()
+        buffer.close()
 
-    # return dictionary with image data
-    return {
-        'image': image_bytes,
-        'mime-type': 'image/png'
-    }
+        # return dictionary with image data
+        return {
+            'image': image_bytes,
+            'mime-type': 'image/png'
+        }
 ```
 
 This plots the eigenvalues of molecular orbital energies calculated by Gaussian.
@@ -582,24 +577,29 @@ gaussian-eigenvalues-plot = gateways19_tutorial.output_views:GaussianEigenvalues
 
 ```bash
 # Activate the airavata-django-portal virtual environment if not already activated
-cd ../airavata-django-portal
-source venv/bin/activate
-cd ../gateways19-tutorial
+source ../venv/bin/activate
 python setup.py develop
 ```
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
 
-Back in the Django Portal, we'll update the application interface for Gaussian
-to add the GaussianEigenvaluesViewProvider as an additional output view of the
-file.
+Back in the Django Portal, we'll make sure the application interface for
+Gaussian is configured to add the GaussianEigenvaluesViewProvider as an
+additional output view of the file.
 
-1. Log into your local Django Portal instance.
-2. In the menu at the top, select **Settings**.
-3. Click on the **Gaussian16** application.
-4. Click on the **Interface** tab.
-5. Scroll down to the _Output Field: Gaussian-Application-Output_.
-6. Add the following in the _Metadata_ section:
+1. Start the local Django server again.
+
+```
+cd ../airavata-django-portal/
+python manage.py runserver
+```
+
+2. Log into your local Django Portal instance.
+3. In the menu at the top, select **Settings**.
+4. Click on the **Gaussian16** application.
+5. Click on the **Interface** tab.
+6. Scroll down to the _Output Field: Gaussian-Application-Output_.
+7. Verify that the following is in the _Metadata_ section:
 
 ```json
 {
@@ -611,14 +611,15 @@ It should look something like this:
 
 ![Screenshot of Gaussian log output-view-providers json](./screenshots/gateways19/gaussian-output-view-providers-json.png)
 
-7. Click **Save**.
 8. Go back to the **Workspace** using the menu at the top.
-9. Select your Gaussian16 experiment.
+9. Select your Gaussian16 experiment from the right sidebar.
 10. For the .log output file there should be a dropdown menu allowing you to
     select an alternate view. Select **Gaussian Eigenvalues**. Now you should
     see the image generated by the custom output view provider.
 
 ![Screenshot of generated Gaussian eigenvalues plot](./screenshots/gateways19/gaussian-eigenvalues.png)
+
+11. Go ahead and shutdown the Django server again.
 
 ## Tutorial exercise: Create a custom Django app
 
@@ -641,7 +642,7 @@ output of a computational experiment.
 To start, we'll just create a simple "Hello World" page for the Django app and
 get it properly registered with the local Django Portal instance.
 
-1. In the `gateways19-tutorial`, create a file with the path
+1. In the `gateways19-tutorial` directory, create a file with the path
    `gateways19_tutorial/templates/gateways19_tutorial/hello.html` with the
    following contents:
 
@@ -672,6 +673,10 @@ class Gateways19TutorialAppConfig(AppConfig):
     verbose_name = "Gateways 19 Tutorial"
     fa_icon_class = "fa-comment"
 ```
+
+This the main metadata for this custom Django app. Besides the normal metadata
+that the Django framework expects, this also defines a display name
+(`verbose_name`) and an icon (`fa_icon_class`) to use for this custom app.
 
 3. Create a file with the path `gateways19_tutorial/views.py` with the following
    contents:
@@ -726,10 +731,9 @@ gateways19_tutorial = gateways19_tutorial.apps:Gateways19TutorialAppConfig
    environment is activated and run:
 
 ```bash
-# Activate the airavata-django-portal virtual environment if not already activated
-cd ../airavata-django-portal
-source venv/bin/activate
 cd ../gateways19-tutorial
+# Activate the airavata-django-portal virtual environment if not already activated
+source ../venv/bin/activate
 python setup.py develop
 ```
 
@@ -810,13 +814,18 @@ urlpatterns = [
 <!-- ... --->
 ```
 
-5. We'll also add a `scripts` block to the end of `hello.html`. This will load
-   the AiravataAPI JavaScript library which has utilities for interacting with
-   the Django portal's REST API (which can also be used for custom developed
-   REST endpoints) and model classes for Airavata's data models. Then the
-   `utils.FetchUtils` is used to load the languages REST endpoint.
+5. We'll also add the `{% load static %}` directive and then a `scripts` block
+   to the end of `hello.html`. This will load the AiravataAPI JavaScript library
+   which has utilities for interacting with the Django portal's REST API (which
+   can also be used for custom developed REST endpoints) and model classes for
+   Airavata's data models. Then the `utils.FetchUtils` is used to load the
+   languages REST endpoint.
 
 ```xml
+{% extends 'base.html' %}
+
+{% load static %}
+
 <!-- ... -->
 {% endblock content %}
 
@@ -894,7 +903,7 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
 ```javascript
 // ...
-    const appInterfaceId = "Echo_3f480d1f-ea86-4018-94bb-015423d66a1c";
+    const appInterfaceId = "Echo_4be0e1b0-24c5-417d-8d57-a695c2890a05";
 
     function loadExperiments() {
 
@@ -963,7 +972,7 @@ const loadAppInterface = services.ApplicationInterfaceService.retrieve({
 
 ```javascript
 const appDeploymentId =
-    "bigred2.uits.iu.edu_Echo_19dc358d-d241-43d8-918c-f5a21a3b0845";
+    "pearc19-sgrc-cluster.jetstream-cloud.org_Echo_b0e05d53-cace-420b-b280-3626e5e1c94b";
 const loadQueues = services.ApplicationDeploymentService.getQueues({
     lookup: appDeploymentId
 });
@@ -976,9 +985,9 @@ const loadQueues = services.ApplicationDeploymentService.getQueues({
 
 ```javascript
 const resourceHostId =
-    "bigred2.uits.iu.edu_ac140dca-3c88-46d8-b9ed-875d96ea6908";
-const queueName = "cpu";
-const groupResourceProfileId = "6a642772-15fd-4d10-a847-8aef89b71830";
+    "pearc19-sgrc-cluster.jetstream-cloud.org_cf5b3c5d-f524-4c66-883a-03662caa8178";
+const queueName = "cloud";
+const groupResourceProfileId = "573573a8-8084-459f-9a4a-138ab835b7b3";
 const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
 ```
 
@@ -991,30 +1000,30 @@ $("#run-button").click(e => {
     const loadAppInterface = services.ApplicationInterfaceService.retrieve({
         lookup: appInterfaceId
     });
-    const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
-    const resourceHostId =
-        "bigred2.uits.iu.edu_ac140dca-3c88-46d8-b9ed-875d96ea6908";
     const appDeploymentId =
-        "bigred2.uits.iu.edu_Echo_19dc358d-d241-43d8-918c-f5a21a3b0845";
-    const queueName = "cpu";
-    const groupResourceProfileId = "6a642772-15fd-4d10-a847-8aef89b71830";
+        "pearc19-sgrc-cluster.jetstream-cloud.org_Echo_b0e05d53-cace-420b-b280-3626e5e1c94b";
     const loadQueues = services.ApplicationDeploymentService.getQueues({
         lookup: appDeploymentId
     });
+    const resourceHostId =
+        "pearc19-sgrc-cluster.jetstream-cloud.org_cf5b3c5d-f524-4c66-883a-03662caa8178";
+    const queueName = "cloud";
+    const groupResourceProfileId = "573573a8-8084-459f-9a4a-138ab835b7b3";
+    const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
     Promise.all([loadAppInterface, loadWorkspacePrefs, loadQueues])
         .then(([appInterface, workspacePrefs, queues]) => {
             const experiment = appInterface.createExperiment();
             experiment.experimentName = "Echo " + greeting;
             experiment.projectId = workspacePrefs.most_recent_project_id;
-            const cpuQueue = queues.find(q => q.queueName === queueName);
+            const cloudQueue = queues.find(q => q.queueName === queueName);
             experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
             experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
             experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount =
-                cpuQueue.defaultCPUCount;
+                cloudQueue.defaultCPUCount;
             experiment.userConfigurationData.computationalResourceScheduling.nodeCount =
-                cpuQueue.defaultNodeCount;
+                cloudQueue.defaultNodeCount;
             experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit =
-                cpuQueue.defaultWalltime;
+                cloudQueue.defaultWalltime;
             experiment.userConfigurationData.computationalResourceScheduling.queueName = queueName;
             // Copy the selected greeting to the value of the first input
             experiment.experimentInputs[0].value = greeting;
@@ -1037,27 +1046,19 @@ so that Airavata could SCP the file back to our local instance). But this custom
 Django app is also deployed in the hosted tutorial Django instance so you can
 run it there to verify it works.
 
-### Parsing the experiment output
+### Displaying the experiment output
 
 Instead of simply reporting the status of the job we would also like to do
 something with the output. The STDOUT of the Echo job has a format like the
 following:
 
 ```
-stdout [Echo bonjour]
-Echoed_Output=bonjour
-Job Cleanup ran on Fri Jul 19 12:34:39 EDT 2019
-===============================
-submit_args  : 	 submit_args = /N/dc2/scratch/cgateway/gta-work-dirs/PROCESS_3db6a570-f150-4e01-b659-d422c5e38b32/job_349221662.pbs
-NIDS         : 	 5
-NID Placement: 	 5/4
+bonjour
 ```
 
-The value echoed is displayed as a value of the `Echoed_Output` variable on the
-second line of the output. We'll parse that value out and display that in our
-experiment listing table.
+We'll read the STDOUT file and display that in our experiment listing table.
 
-1. What we need to do is get identifier for the experiment's STDOUT file. In
+1. What we need to do is get the identifier for the experiment's STDOUT file. In
    Airavata, this identifier is called the _Data Product ID_. Once we have that
    we can get the DataProduct object which has the files metadata, including a
    `downloadURL`. For each `exp` we can use the `FullExperimentService` to get
@@ -1068,7 +1069,7 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId }).then(
         fullDetails => {
             const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                o => o.name === "Standard Out"
+                o => o.name === "Echo-Standard-Out"
             ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
                 dp => dp.productUri === stdoutDataProductId
@@ -1083,14 +1084,14 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
 }
 ```
 
-2. Then to parse it we need simply apply a regular expression to get the value:
+2. Then we'll simply display the value in the table.
 
 ```javascript
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId })
         .then(fullDetails => {
             const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                o => o.name === "Standard Out"
+                o => o.name === "Echo-Standard-Out"
             ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
                 dp => dp.productUri === stdoutDataProductId
@@ -1102,11 +1103,7 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
             }
         })
         .then(text => {
-            const regex = /Echoed_Output=(.*)$/m;
-            const result = regex.exec(text);
-            if (result) {
-                $(`#output_${index}`).text(result[1]);
-            }
+            $(`#output_${index}`).text(text);
         });
 }
 ```
@@ -1118,13 +1115,7 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
 
 ```javascript
 const FAKE_STDOUT = `
-stdout [Echo bonjour]
-Echoed_Output=bonjour
-Job Cleanup ran on Fri Jul 19 12:34:39 EDT 2019
-===============================
-submit_args  : 	 submit_args = /N/dc2/scratch/cgateway/gta-work-dirs/PROCESS_3db6a570-f150-4e01-b659-d422c5e38b32/job_349221662.pbs
-NIDS         : 	 5
-NID Placement: 	 5/4
+bonjour
 `;
 
 function loadExperiments() {
@@ -1138,12 +1129,12 @@ function loadExperiments() {
         data.results.forEach((exp, index) => {
             $("#experiment-list").append(
                 `<tr>
-                        <td>${exp.name}</td>
-                        <td>${exp.executionId}</td>
-                        <td>${exp.creationTime}</td>
-                        <td>${exp.experimentStatus.name}</td>
-                        <td id="output_${index}"></td>
-                    </tr>`
+                            <td>${exp.name}</td>
+                            <td>${exp.executionId}</td>
+                            <td>${exp.creationTime}</td>
+                            <td>${exp.experimentStatus.name}</td>
+                            <td id="output_${index}"></td>
+                        </tr>`
             );
             // If experiment has finished, load full details, then parse the stdout file
             if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
@@ -1152,7 +1143,7 @@ function loadExperiments() {
                 })
                     .then(fullDetails => {
                         const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                            o => o.name === "Standard Out"
+                            o => o.name === "Echo-Standard-Out"
                         ).value;
                         const stdoutDataProduct = fullDetails.outputDataProducts.find(
                             dp => dp.productUri === stdoutDataProductId
@@ -1170,11 +1161,7 @@ function loadExperiments() {
                         }
                     })
                     .then(text => {
-                        const regex = /Echoed_Output=(.*)$/m;
-                        const result = regex.exec(text);
-                        if (result) {
-                            $(`#output_${index}`).text(result[1]);
-                        }
+                        $(`#output_${index}`).text(text);
                     });
             }
         });
