@@ -34,9 +34,9 @@ auth_options:
   password:
     name: "GatewayS19"
   external:
-#    - name: "existing institution credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "gateways19"
 experiment_data_dir: "{{ user_data_dir }}/gateways19"
