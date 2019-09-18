@@ -32,7 +32,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "GatewayS19"
+    name: "Gateways19"
   external:
     - name: "existing institution credentials"
       idp_alias: "cilogon"
@@ -44,6 +44,6 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCC3SyA
 django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
-portal_title: "GatewayS19 Portal"
+portal_title: "Gateways19 Portal"
 
 ...
