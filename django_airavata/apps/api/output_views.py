@@ -195,7 +195,7 @@ def _generate_data(request,
         if data_products_helper.exists(request, data_product):
             output_file = data_products_helper.open(request, data_product)
         elif settings.DEBUG and test_output_file is not None:
-            output_file = open(test_output_file)
+            output_file = open(test_output_file, 'rb')
     # TODO: change interface to provide output_file as a path
     # TODO: convert experiment and experiment_output to dict/JSON
     data = output_view_provider.generate_data(
