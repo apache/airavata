@@ -330,9 +330,9 @@ use as a development environment.
 
 #### Option #1: Run the portal directly
 
-1. Make sure you have Python 3.6 installed. See
-   <https://www.python.org/downloads/> for downloadable packages or use your
-   system's package manager.
+1. Make sure you have Python 3.6 installed (latest 3.6 release at time of
+   writing is 3.6.9). See <https://www.python.org/downloads/> for downloadable
+   packages or use your system's package manager.
 2. Now we'll clone a repository that has some supporting files for this
    tutorial. Change to a directory on your system where you will keep the
    tutorial files and clone <https://github.com/machristie/gateways19-tutorial>
