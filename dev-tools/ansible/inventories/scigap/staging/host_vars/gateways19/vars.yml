@@ -19,6 +19,8 @@
 #
 
 ---
+airavata_django_extra_dependencies:
+  - git+https://github.com/machristie/gateways19-tutorial.git@solution#egg=gateways19-tutorial
 vhost_servername: "gateways19.scigap.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/gateways19.scigap.org/cert.pem"
