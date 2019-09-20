@@ -330,7 +330,7 @@ use as a development environment.
 
 #### Option #1: Run the portal directly
 
-1. Make sure you have Python 3.6+ installed. See
+1. Make sure you have Python 3.6 installed. See
    <https://www.python.org/downloads/> for downloadable packages or use your
    system's package manager.
 2. Now we'll clone a repository that has some supporting files for this
