@@ -434,7 +434,8 @@ class GaussianEigenvaluesViewProvider:
 ```python
     def generate_data(self, request, experiment_output, experiment, output_file=None):
         # Parse output_file
-        gaussian = ccopen(output_file)
+        output_text = io.TextIOWrapper(output_file)
+        gaussian = ccopen(output_text)
         data = gaussian.parse()
         data.listify()
         homo_eigenvalues = None
@@ -518,7 +519,8 @@ class GaussianEigenvaluesViewProvider:
     def generate_data(self, request, experiment_output, experiment, output_file=None):
 
         # Parse output_file
-        gaussian = ccopen(output_file)
+        output_text = io.TextIOWrapper(output_file)
+        gaussian = ccopen(output_text)
         data = gaussian.parse()
         data.listify()
         homo_eigenvalues = None
