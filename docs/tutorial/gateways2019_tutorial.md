@@ -72,8 +72,8 @@ click the **Browse** button to upload the file:
 You can click on **View File** to take a quick look at the file.
 
 Now we'll select what account to charge and where to run this job. The
-_Allocation_ field should already be selected. Under _Compute Resource_ make
-sure you select **comet.sdsc.edu**.
+_Allocation_ field should already have _Default Gateway Profile_ selected. Under
+_Compute Resource_ make sure you select **comet.sdsc.edu**.
 
 Then click **Save and Launch**.
 
@@ -92,8 +92,11 @@ customize the user interface used for application inputs.
 
 ### Basic application configuration
 
-1. In the portal, after you've logged in, click on the dropdown menu at the top
-   (currently **Workspace** is likely selected) and select **Settings**.
+1. In the portal, click on the dropdown menu at the top right (currently
+   **Workspace** is likely selected) and select **Settings**.
+
+![Screenshot of Settings menu](./screenshots/gateways19/settings_menu.png)
+
 2. You should see the _Application Catalog_. Click on the **New Application**
    button.
 3. For _Application Name_ provide `eFindSite-<your username>`. Appending your
@@ -136,15 +139,16 @@ installed on a compute resource. Since we won't actually run this application,
 we'll just create a dummy deployment so that we can invoke it from the Workspace
 Dashboard.
 
-8. Click on the **Deployments** tab.
-9. Click on the **New Deployment** button. Select the _mike.hpc.lsu.edu_ compute
+8. Click **Save** at the bottom of the screen.
+9. Click on the **Deployments** tab.
+10. Click on the **New Deployment** button. Select the _mike.hpc.lsu.edu_ compute
    resource in the drop down list and click **OK**.
-10. For the _Application Executable Path_, provide the value `/usr/bin/true`.
+11. For the _Application Executable Path_, provide the value `/usr/bin/true`.
     This is the only required field.
-11. Click **Save** at the bottom of the screen.
-12. Use the top level menu to go back to the **Workspace**. You should see your
+12. Click **Save** at the bottom of the screen.
+13. Use the top level menu to go back to the **Workspace**. You should see your
     _eFindSite_ application listed there.
-13. Click on your _eFindSite_ application.
+14. Click on your _eFindSite_ application.
 
 If you see a form with the inputs that we registered for the application
 (_Target ID_, etc.) then you have successfully registered the application
