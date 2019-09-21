@@ -43,7 +43,6 @@ auth_options:
 gateway_id: "gateways19"
 experiment_data_dir: "{{ user_data_dir }}/gateways19"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCC3SyAjqDVPve0v8FKzWp6TAOOzh0p7BBZBMeH/PmP2Ao7CF2uPBQIzeb3zi52zC0pTn0LaQNFa5ZwUWrWb1xMIzjaX98u8Prz/uIhhOibAXmQ8KPSeY1WkBjXLlVgjsT0byD+/tKd3n+Bv5OYDMnwHdg5nnO/kQ8cdBUZa7qQV8gr8qak4Gyh4waMHgCJxHhEBlbaisQSzSsV68HXAjEgn/4k7GWQBW/3qTtjc+BHPItwqRdLU9VZAaLbb7bo4VEDSmpZyzvK0c5VhO5uZ+vEMZzxD2Vje36h8KVmljNRYJ1BoZgL6jjn7uzUqTfb2MOzCnH0R1rpWeif60FH2ROf"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "Gateways19 Portal"
