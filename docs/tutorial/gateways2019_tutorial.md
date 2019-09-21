@@ -141,8 +141,8 @@ Dashboard.
 
 8. Click **Save** at the bottom of the screen.
 9. Click on the **Deployments** tab.
-10. Click on the **New Deployment** button. Select the _mike.hpc.lsu.edu_ compute
-   resource in the drop down list and click **OK**.
+10. Click on the **New Deployment** button. Select the _mike.hpc.lsu.edu_
+    compute resource in the drop down list and click **OK**.
 11. For the _Application Executable Path_, provide the value `/usr/bin/true`.
     This is the only required field.
 12. Click **Save** at the bottom of the screen.
@@ -357,6 +357,10 @@ git clone https://github.com/machristie/gateways19-tutorial.git
 unzip gateways19-tutorial/airavata-django-portal.zip
 ```
 
+!!! note "Windows"
+
+    On Windows run `tar -xf gateways19-tutorial/airavata-django-portal.zip`
+
 4. Create a virtual environment.
 
 ```bash
@@ -364,11 +368,19 @@ cd $HOME/airavata-django-portal
 python3 -m venv venv
 ```
 
+!!! note "Windows"
+
+    On Windows run `python -m venv venv`
+
 5. Activate the virtual environment.
 
 ```
 source venv/bin/activate
 ```
+
+!!! note "Windows"
+
+    On Windows run `venv\Scripts\activate`
 
 6. Install the airavata-django-portal dependencies in the virtual environment.
 
@@ -382,6 +394,13 @@ pip install -r requirements.txt
 export OAUTHLIB_INSECURE_TRANSPORT=1
 python manage.py runserver
 ```
+
+!!! note "Windows"
+
+    On Windows run
+
+        set OAUTHLIB_INSECURE_TRANSPORT=1
+        python manage.py runserver
 
 #### Option #2: Run the portal in a Docker container
 
