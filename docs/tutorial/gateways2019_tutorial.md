@@ -28,7 +28,7 @@ tutorial.
 
 ## Hands on: run a Gaussian computational experiment in the Django portal
 
-### Create a portal user account
+### Log into gateways19.scigap.org
 
 First, you'll need a user account. For the in person tutorial we'll have a set
 of pre-created usernames and passwords to use. If you are unable to attend the
@@ -38,6 +38,9 @@ select **Sign in with existing institution credentials**. This will take you to
 the CILogon institution selection page. If you don't find your institution
 listed here, go back to the _Create Account_ page and fill out the form to
 create an account with a username, password, etc.
+
+Once you have an account,
+[log into the Gateways19 portal](https://gateways19.scigap.org/auth/login).
 
 After you've logged in, an administrator can grant you access to run the
 Gaussian application. During the tutorial we'll grant you access right away and
@@ -134,8 +137,8 @@ we'll just create a dummy deployment so that we can invoke it from the Workspace
 Dashboard.
 
 8. Click on the **Deployments** tab.
-9. Click on the **New Deployment** button. Select the first compute resource in
-   the drop down list and click **OK**.
+9. Click on the **New Deployment** button. Select the _mike.hpc.lsu.edu_ compute
+   resource in the drop down list and click **OK**.
 10. For the _Application Executable Path_, provide the value `/usr/bin/true`.
     This is the only required field.
 11. Click **Save** at the bottom of the screen.
@@ -338,6 +341,7 @@ use as a development environment.
    tutorial files and clone <https://github.com/machristie/gateways19-tutorial>
 
 ```bash
+cd $HOME
 git clone https://github.com/machristie/gateways19-tutorial.git
 ```
 
@@ -352,6 +356,7 @@ unzip gateways19-tutorial/airavata-django-portal.zip
 4. Create a virtual environment.
 
 ```bash
+cd $HOME/airavata-django-portal
 python3 -m venv venv
 ```
 
@@ -364,7 +369,6 @@ source venv/bin/activate
 6. Install the airavata-django-portal dependencies in the virtual environment.
 
 ```
-cd airavata-django-portal
 pip install -r requirements.txt
 ```
 
@@ -382,6 +386,7 @@ python manage.py runserver
 2. Run
 
 ```
+cd $HOME
 git clone https://github.com/machristie/gateways19-tutorial.git
 cd gateways19-tutorial
 docker run --name gateways19-tutorial -p 8000:8000 -v $PWD:/code machristie/gateways19-tutorial
@@ -400,8 +405,8 @@ for now by typing `Control-C` in the console.
 
 1. We've defined a custom output view provider, called
    GaussianEigenvaluesViewProvider, in `output_views.py`. Open
-   `gateways19-tutorial/gateways19_tutorial/output_views.py` in your editor and
-   we'll look at how it is implemented. First we add some imports
+   `$HOME/gateways19-tutorial/gateways19_tutorial/output_views.py` in your
+   editor and we'll look at how it is implemented. First we add some imports
 
 ```python
 import io
@@ -590,7 +595,7 @@ Django portal virtual environment isn't activated, see step 5 in the previous
 section. We'll also use pip to install the output viewer's dependencies.
 
 ```bash
-cd ../gateways19-tutorial
+cd $HOME/gateways19-tutorial
 pip install -r requirements.txt
 python setup.py develop
 ```
@@ -604,7 +609,6 @@ $ cd /code
 $ pip install -r requirements.txt
 $ python setup.py develop
 $ exit
-docker stop gateways19-tutorial
 ```
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
@@ -618,7 +622,7 @@ additional output view of the file.
 **Running Django locally**
 
 ```
-cd ../airavata-django-portal/
+cd $HOME/airavata-django-portal/
 python manage.py runserver
 ```
 
@@ -628,7 +632,7 @@ python manage.py runserver
 docker start -a gateways19-tutorial
 ```
 
-2. Log into your local Django Portal instance.
+2. Log into your local Django Portal instance at <http://localhost:8000>.
 3. In the menu at the top, select **Settings**.
 4. Click on the **Gaussian16** application.
 5. Click on the **Interface** tab.
@@ -671,14 +675,25 @@ This is an intentionally simple example to demonstrate the general principle of
 using custom REST APIs and UI to setup, execute and post-process/visualize the
 output of a computational experiment.
 
+We've already registered the _Echo_ application with the portal, meaning we
+registered its interface and on which compute resource it is deployed.
+
+A
+[Django _application_ or _app_](https://docs.djangoproject.com/en/2.2/ref/applications/)
+is a Python package that may include Django views, url mappings, models, etc.
+It's a way of creating a kind of plug-in that integrates with a Django server.
+We'll create this custom user interface by developing a Django app that uses the
+Django framework as well as the Airavata Django Portal REST APIs and JS library.
+
 ### Setting up the Django app
 
 To start, we'll just create a simple "Hello World" page for the Django app and
 get it properly registered with the local Django Portal instance.
 
 1. In the `gateways19-tutorial` directory, open
-   `gateways19_tutorial/templates/gateways19_tutorial/hello.html`. Some of the
-   HTML view is commented out. The following is the uncommented content:
+   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`.
+   Some of the HTML view is commented out. The following is the uncommented
+   content:
 
 ```xml
 {% extends 'base.html' %}
@@ -694,7 +709,7 @@ get it properly registered with the local Django Portal instance.
 {% endblock content %}
 ```
 
-2. Open the file `gateways19_tutorial/apps.py`:
+2. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/apps.py`:
 
 ```python
 from django.apps import AppConfig
@@ -711,7 +726,7 @@ This the main metadata for this custom Django app. Besides the normal metadata
 that the Django framework expects, this also defines a display name
 (`verbose_name`) and an icon (`fa_icon_class`) to use for this custom app.
 
-3. Open the file `gateways19_tutorial/views.py`:
+3. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/views.py`:
 
 ```python
 from django.shortcuts import render
@@ -725,7 +740,7 @@ def hello_world(request):
 
 This view will simply display the template created in the previous step.
 
-4. Open the file `gateways19_tutorial/urls.py`:
+4. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/urls.py`:
 
 ```python
 from django.conf.urls import url, include
@@ -757,35 +772,7 @@ gateways19_tutorial = gateways19_tutorial.apps:Gateways19TutorialAppConfig
 )
 ```
 
-6. When we update the metadata, we need to install it again into the Django
-   Portal's virtual environment. Since the metadata was already there in the
-   file, we don't need to reinstall this Python package, but keep in mind you
-   would need to reinstall it if you are creating one of these from scratch.
-   Here's how you would reinstall it:
-
-**Running Django locally**
-
-Make sure that the Django Portal's virtual environment is activated and run:
-
-```bash
-cd ../gateways19-tutorial
-# Activate the airavata-django-portal virtual environment if not already activated
-source ../venv/bin/activate
-python setup.py develop
-```
-
-**Running Docker container**
-
-```bash
-docker start gateways19-tutorial
-docker exec -it gateways19-tutorial /bin/bash -l
-$ cd /code
-$ python setup.py develop
-$ exit
-docker stop gateways19-tutorial
-```
-
-7. Start the Django Portal server again:
+6. Start the Django Portal server again:
 
 **Running Django locally**
 
@@ -801,16 +788,17 @@ python manage.py runserver
 docker start -a gateways19-tutorial
 ```
 
-Now you should be able to log into the portal locally and see **Gateways 19
-Tutorial** in the drop down menu in the header (click on **Workspace** then you
-should see it in that menu).
+Now you should be able to [log into the portal locally](http://localhost:8000)
+and see **Gateways 19 Tutorial** in the drop down menu in the header (click on
+**Workspace** then you should see it in that menu).
 
 ### Adding a list of "Hello" greetings
 
 Now we'll create a REST endpoint in our custom Django app that will return
 greetings in several languages.
 
-1. In the `views.py` file, we add the following import:
+1. In the `$HOME/gatewways19-tutorial/gateways19_tutorial/views.py` file, we add
+   the following import:
 
 ```python
 from django.http import JsonResponse
@@ -842,7 +830,8 @@ def languages(request):
     }]})
 ```
 
-3. In `urls.py` we add a url mapping for the `languages` view:
+3. In `$HOME/gateways19-tutorial/gateways19_tutorial/urls.py` we add a url
+   mapping for the `languages` view:
 
 ```python
 urlpatterns = [
@@ -851,10 +840,12 @@ urlpatterns = [
 ]
 ```
 
-4. In `hello.html`, uncomment the comment that starts
-   `<!-- Adding a list of "Hello" greetings` on line 11 and ends on line 21.
-   That is, just delete lines 11 and 21. This adds a `<select>` element to the
-   template which will be used to display the greeting options:
+4. In
+   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`,
+   uncomment the comment that starts `<!-- Adding a list of "Hello" greetings`
+   on line 11 and ends on line 21. That is, just delete lines 11 and 21. This
+   adds a `<select>` element to the template which will be used to display the
+   greeting options:
 
 ```html
 ...
@@ -915,7 +906,9 @@ you should see a dropdown of greetings in several languages, like so:
 
 Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
-1. In `hello.html`, uncomment the comment that begins with
+1. In
+   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`,
+   uncomment the comment that begins with
    `<!-- Displaying a list of recent experiments` on line 21 or so and ends on
    line 45. This adds table to display recent experiments to the bottom of
    `hello.html`:
@@ -958,7 +951,7 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 {% endblock content %}
 ```
 
-2. Now we'll use the ExperimentServiceService to load the user's most recent 5
+2. Now we'll use the ExperimentSearchService to load the user's most recent 5
    _Echo_ experiments and display them in the table. We add the following to the
    end of the _scripts_ block in `hello.html`:
 
@@ -1004,7 +997,9 @@ The user interface should now look something like:
 
 Now we'll use `AiravataAPI` to submit an Echo job.
 
-1. We add a click handler to the _Run_ button that gets the selected greeting
+1. In
+   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`
+   we add a click handler to the _Run_ button that gets the selected greeting
    value:
 
 ```javascript
@@ -1234,3 +1229,15 @@ function loadExperiments() {
 
 You can try out this custom Django app in the deployed instance of the tutorial
 portal where it really does download and parse the standard out.
+
+## Resources
+
+You can browser the final version of the _gateways19-tutorial_ code at
+<https://github.com/machristie/gateways19-tutorial/tree/solution>. If you get
+stuck at some point with the tutorial you can skip to the solution by running
+the following git command in your _gateways19-tutorial_ repo:
+
+```bash
+cd $HOME/gateways19-tutorial
+git reset --hard origin/solution
+```
