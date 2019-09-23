@@ -633,6 +633,7 @@ $ cd /code
 $ pip install -r requirements.txt
 $ python setup.py develop
 $ exit
+docker stop gateways19-tutorial
 ```
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
@@ -802,7 +803,7 @@ gateways19_tutorial = gateways19_tutorial.apps:Gateways19TutorialAppConfig
 **Running Django locally**
 
 ```bash
-cd ../airavata-django-portal
+cd $HOME/airavata-django-portal
 export OAUTHLIB_INSECURE_TRANSPORT=1
 python manage.py runserver
 ```
