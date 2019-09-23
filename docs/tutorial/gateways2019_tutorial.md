@@ -1129,6 +1129,9 @@ Airavata could SCP the file back to our local instance). But this custom Django
 app is also deployed in the hosted tutorial Django instance so you can run it
 there to verify it works.
 
+6. Try this out in the production deployment at
+   <https://gateways19.scigap.org/gateways19_tutorial/hello/>.
+
 ### Displaying the experiment output
 
 Instead of simply reporting the status of the job we would also like to do
@@ -1254,8 +1257,9 @@ function loadExperiments() {
 }
 ```
 
-You can try out this custom Django app in the deployed instance of the tutorial
-portal where it really does download and parse the standard out.
+4. You can try out this custom Django app in the production deployed instance at
+<https://gateways19.scigap.org/gateways19_tutorial/hello/> where it really does
+download and parse the standard out.
 
 ## Resources
 
