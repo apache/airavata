@@ -593,7 +593,8 @@ class GaussianEigenvaluesViewProvider:
 
 6. Now we need to register our _output view provider_ with the package metadata
    so that the Django Portal will be able to discover it. We add the following
-   lines to the `entry_points` parameter in the `setup.py` file:
+   lines to the `entry_points` parameter in the
+   `$HOME/gateways19-tutorial/setup.py` file:
 
 ```python
 setuptools.setup(
@@ -780,8 +781,9 @@ This maps the `/hello/` URL to the `hello_world` view.
 
 5. We've created the necessary code for our Django app to display the hello
    world page, but now we need to add some metadata to this Python package so
-   that the Django Portal knows about this Django app. In `setup.py`, we add the
-   following `[airavata.djangoapp]` metadata to the entry_points section:
+   that the Django Portal knows about this Django app. In
+   `$HOME/gateways19-tutorial/setup.py`, we add the following
+   `[airavata.djangoapp]` metadata to the entry_points section:
 
 ```python
 setuptools.setup(
@@ -815,12 +817,14 @@ Now you should be able to [log into the portal locally](http://localhost:8000)
 and see **Gateways 19 Tutorial** in the drop down menu in the header (click on
 **Workspace** then you should see it in that menu).
 
+![Screenshot of custom app in menu](./screenshots/gateways19/custom-app-menu.png)
+
 ### Adding a list of "Hello" greetings
 
 Now we'll create a REST endpoint in our custom Django app that will return
 greetings in several languages.
 
-1. In the `$HOME/gatewways19-tutorial/gateways19_tutorial/views.py` file, we add
+1. In the `$HOME/gateways19-tutorial/gateways19_tutorial/views.py` file, we add
    the following import:
 
 ```python
@@ -1264,3 +1268,19 @@ the following git command in your _gateways19-tutorial_ repo:
 cd $HOME/gateways19-tutorial
 git reset --hard origin/solution
 ```
+
+### Airavata API
+
+The Django portal provides a REST API bridge to the backend Airavata API. So
+it's helpful to look at what is available in the backend Airavata API. See the
+[Apache Airavata API docs](https://airavata.readthedocs.io/en/master/technical-documentation/airavata-api/)
+
+To see what is in the `AiravataAPI` JavaScript library, take a look at it's
+[index.js](https://github.com/apache/airavata-django-portal/blob/master/django_airavata/apps/api/static/django_airavata_api/js/index.js)
+file in the
+[airavata-django-portal repo](https://github.com/apache/airavata-django-portal).
+
+### Airavata Gateway Hosting
+
+SciGaP provides free Airavata Gateways hosting services. Log in or create an
+account at [scigap.org](https://scigap.org/) to request gateway hosting.
