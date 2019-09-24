@@ -26,7 +26,7 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/ful
 ssl_certificate_key_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "serching-sra"
+tenant_domain: "searching-sra"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
