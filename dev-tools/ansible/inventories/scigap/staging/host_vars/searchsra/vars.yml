@@ -26,7 +26,7 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/ful
 ssl_certificate_key_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "searchsra"
+tenant_domain: "serching-sra"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
@@ -34,12 +34,12 @@ auth_options:
   password:
     name: "SEARCH-SRA"
   external:
-    - name: "existing institution credentials"
-      idp_alias: "cilogon"
-      logo: "images/cilogon-logo-24x24-b.png"
+#    - name: "existing institution credentials"
+#      idp_alias: "cilogon"
+#      logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "searchsra"
-experiment_data_dir: "{{ user_data_dir }}/searchsra"
+gateway_id: "searching-sra"
+experiment_data_dir: "{{ user_data_dir }}/searching-sra"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBqS31Ucj6HB2QaLI0+XORTnvxRPDI6niuZjBAq0nQ3D7HoPohLVNVsqA7a9hksGL9w79PVyugmzGwIPbmnOLHwccO1Pmu5Yc4vg91gH9MMlNy9ZzhmzFwEfir8oefb0MjjPFTBdskL8jMmwebO0hwSWxv96R5Ir/kx/+vGo//XhDh5/4e1DLMJDpVc1A2w+HeNoRQNlgQFqWKZDFRzWVaciRbilueW7Yjxxd9oe2/XLDT7MMs3HBPXsfwMWW5QY3oCUy3AVsxnJWsvSPHpD7dbAB2guHal0j0xrudUwZa8ZLN9He89/EBU6XSQs3Uhb9QBUweosEa7TAIPP5GpRC1"
 django_hidden_airavata_apps: "[]"
 
