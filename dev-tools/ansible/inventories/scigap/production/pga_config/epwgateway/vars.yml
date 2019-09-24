@@ -24,6 +24,7 @@ user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 vhost_servername: "epw-gateway.cs.binghamton.edu"
+vhost_serveralias: "www.epw-gateway.cs.binghamton.edu"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
 ssl_certificate_file: "/etc/letsencrypt/live/epw-gateway.cs.binghamton.edu/cert.pem"
