@@ -19,6 +19,15 @@
 #
 
 ---
+airavata_django_extra_dependencies:
+  # Need to separately install cython in the VM or do two deploys, one with
+  # just cython, then a second with the other dependencies. Reason: pyjnius
+  # requires that cython already be installed and they can't both be installed
+  # at the same time.
+  - cython
+  - git+https://github.com/SciGaP/simccs-maptool.git#egg=simccs-maptool
+  - pyjnius
+
 vhost_servername: "django.simccs.scigap.org"
 vhost_ssl: false
 #ssl_certificate_file: "/etc/letsencrypt/live/django.simccs.scigap.org/cert.pem"
