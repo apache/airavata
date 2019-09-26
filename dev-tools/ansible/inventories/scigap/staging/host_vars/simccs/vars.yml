@@ -28,11 +28,14 @@ airavata_django_extra_dependencies:
   - git+https://github.com/SciGaP/simccs-maptool.git#egg=simccs-maptool
   - pyjnius
 
+django_extra_settings:
+  JAVA_HOME: "/usr/java/default"
+
 vhost_servername: "django.simccs.scigap.org"
-vhost_ssl: false
-#ssl_certificate_file: "/etc/letsencrypt/live/django.simccs.scigap.org/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/django.simccs.scigap.org/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/django.simccs.scigap.org/privkey.pem"
+vhost_ssl: true
+ssl_certificate_file: "/etc/letsencrypt/live/django.simccs.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/django.simccs.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/django.simccs.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "iu-geology-survey"
