@@ -64,8 +64,8 @@ def gateway_groups_middleware(get_response):
                 request.user.is_staff = True
                 request.user.save()
         except Exception as e:
-            log.error("Failed to set is_gateway_admin, "
-                      "is_read_only_gateway_admin for user", exc_info=e)
+            log.warning("Failed to set is_gateway_admin, "
+                        "is_read_only_gateway_admin for user", exc_info=e)
             request.is_gateway_admin = False
             request.is_read_only_gateway_admin = False
 
