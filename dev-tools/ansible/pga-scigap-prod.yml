@@ -42,7 +42,7 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/ultrascan"
 #- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/utah"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/wvsu"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/iugeosurvey"
+#- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/iugeosurvey"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/csbglsu"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/NCSAIndustry"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/Kentucky"
