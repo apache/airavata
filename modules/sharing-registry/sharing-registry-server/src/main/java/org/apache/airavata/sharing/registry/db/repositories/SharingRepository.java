@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Query;
+
 public class SharingRepository extends AbstractRepository<Sharing, SharingEntity, SharingPK> {
     private final static Logger logger = LoggerFactory.getLogger(SharingRepository.class);
 
@@ -93,5 +95,21 @@ public class SharingRepository extends AbstractRepository<Sharing, SharingEntity
         query += "p." + DBConstants.SharingTable.SHARING_TYPE + " <> :" + DBConstants.SharingTable.SHARING_TYPE;
         queryParameters.put(DBConstants.SharingTable.SHARING_TYPE, SharingType.INDIRECT_CASCADING.toString());
         return select(query, queryParameters, 0, -1).size();
+    }
+
+    public void removeAllIndirectCascadingPermissionsForEntity(String domainId, String entityId) throws SharingRegistryException {
+        String query = "DELETE from " + SharingEntity.class.getSimpleName() + " as p";
+        query += " WHERE ";
+        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = :" + DBConstants.SharingTable.DOMAIN_ID + " AND ";
+        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = :" + DBConstants.SharingTable.ENTITY_ID + " AND ";
+        query += "p." + DBConstants.SharingTable.SHARING_TYPE + " = '" + SharingType.INDIRECT_CASCADING.toString() + "' ";
+        final String finalQuery = query;
+        execute(em -> {
+            Query q = em.createQuery(finalQuery);
+            q.setParameter(DBConstants.SharingTable.DOMAIN_ID, domainId);
+            q.setParameter(DBConstants.SharingTable.ENTITY_ID, entityId);
+            q.executeUpdate();
+            return true;
+        });
     }
 }

@@ -185,6 +185,7 @@ regarding the user.</p>
 <tr><td>7</td><td>groupCardinality</td><td><code><a href="#Enum_GroupCardinality">GroupCardinality</a></code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>8</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>9</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+<tr><td>10</td><td>groupAdmins</td><td><code>list&lt;<code><a href="#Struct_GroupAdmin">GroupAdmin</a></code>&gt;</code></td><td></td><td>optional</td><td></td></tr>
 </table><br/><p>User group is a collection of users.</p>
  <li><b>groupId</b> : Group id provided by the client</li>
  <li><b>domainId</b> : Domain id for this user group</li>
@@ -195,6 +196,7 @@ regarding the user.</p>
  <li><b>groupCardinality</b> : Group cardinality (SINGLE_USER, MULTI_USER)</li>
  <li>createdTime : Will be set by the system</li>
  <li>updatedTime : Will be set by the system</li>
+ <li>groupAdmins : Admins for the group</li>
  
 <br/></div><div class="definition"><h3 id="Struct_GroupMembership">Struct: GroupMembership</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>

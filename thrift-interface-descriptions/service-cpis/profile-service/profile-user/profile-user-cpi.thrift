@@ -38,6 +38,20 @@ const string USER_PROFILE_CPI_NAME = "UserProfileService"
 
 service UserProfileService extends base_api.BaseAPI {
 
+  string getAPIVersion ()
+                       throws (1: profile_user_cpi_errors.UserProfileServiceException upe)
+
+  /**
+   * Create an initial UserProfile based on information in the IAM service for this user.
+   */
+  string initializeUserProfile (1: required security_model.AuthzToken authzToken)
+                            throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                    2: airavata_errors.AuthorizationException ae);
+  /**
+   * This method is deprecated and will be removed in future versions of Airavata. Please use
+   * the initializeUserProfile method which fetches the information about the user profile from
+   * IAM service - @Deprecated
+   */
   string addUserProfile (1: required security_model.AuthzToken authzToken,
                          2: required user_profile_model.UserProfile userProfile)
                       throws (1: profile_user_cpi_errors.UserProfileServiceException upe,

@@ -178,6 +178,7 @@ class ExperimentStatus(object):
      - state
      - timeOfStateChange
      - reason
+     - statusId
     """
 
     thrift_spec = (
@@ -185,12 +186,14 @@ class ExperimentStatus(object):
         (1, TType.I32, 'state', None, None, ),  # 1
         (2, TType.I64, 'timeOfStateChange', None, None, ),  # 2
         (3, TType.STRING, 'reason', 'UTF8', None, ),  # 3
+        (4, TType.STRING, 'statusId', 'UTF8', None, ),  # 4
     )
 
-    def __init__(self, state=None, timeOfStateChange=None, reason=None,):
+    def __init__(self, state=None, timeOfStateChange=None, reason=None, statusId=None,):
         self.state = state
         self.timeOfStateChange = timeOfStateChange
         self.reason = reason
+        self.statusId = statusId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -216,6 +219,11 @@ class ExperimentStatus(object):
                     self.reason = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.statusId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -237,6 +245,10 @@ class ExperimentStatus(object):
         if self.reason is not None:
             oprot.writeFieldBegin('reason', TType.STRING, 3)
             oprot.writeString(self.reason.encode('utf-8') if sys.version_info[0] == 2 else self.reason)
+            oprot.writeFieldEnd()
+        if self.statusId is not None:
+            oprot.writeFieldBegin('statusId', TType.STRING, 4)
+            oprot.writeString(self.statusId.encode('utf-8') if sys.version_info[0] == 2 else self.statusId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -264,6 +276,7 @@ class ProcessStatus(object):
      - state
      - timeOfStateChange
      - reason
+     - statusId
     """
 
     thrift_spec = (
@@ -271,12 +284,14 @@ class ProcessStatus(object):
         (1, TType.I32, 'state', None, None, ),  # 1
         (2, TType.I64, 'timeOfStateChange', None, None, ),  # 2
         (3, TType.STRING, 'reason', 'UTF8', None, ),  # 3
+        (4, TType.STRING, 'statusId', 'UTF8', None, ),  # 4
     )
 
-    def __init__(self, state=None, timeOfStateChange=None, reason=None,):
+    def __init__(self, state=None, timeOfStateChange=None, reason=None, statusId=None,):
         self.state = state
         self.timeOfStateChange = timeOfStateChange
         self.reason = reason
+        self.statusId = statusId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -302,6 +317,11 @@ class ProcessStatus(object):
                     self.reason = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.statusId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -323,6 +343,10 @@ class ProcessStatus(object):
         if self.reason is not None:
             oprot.writeFieldBegin('reason', TType.STRING, 3)
             oprot.writeString(self.reason.encode('utf-8') if sys.version_info[0] == 2 else self.reason)
+            oprot.writeFieldEnd()
+        if self.statusId is not None:
+            oprot.writeFieldBegin('statusId', TType.STRING, 4)
+            oprot.writeString(self.statusId.encode('utf-8') if sys.version_info[0] == 2 else self.statusId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -350,6 +374,7 @@ class TaskStatus(object):
      - state
      - timeOfStateChange
      - reason
+     - statusId
     """
 
     thrift_spec = (
@@ -357,12 +382,14 @@ class TaskStatus(object):
         (1, TType.I32, 'state', None, None, ),  # 1
         (2, TType.I64, 'timeOfStateChange', None, None, ),  # 2
         (3, TType.STRING, 'reason', 'UTF8', None, ),  # 3
+        (4, TType.STRING, 'statusId', 'UTF8', None, ),  # 4
     )
 
-    def __init__(self, state=None, timeOfStateChange=None, reason=None,):
+    def __init__(self, state=None, timeOfStateChange=None, reason=None, statusId=None,):
         self.state = state
         self.timeOfStateChange = timeOfStateChange
         self.reason = reason
+        self.statusId = statusId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -388,6 +415,11 @@ class TaskStatus(object):
                     self.reason = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.statusId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -409,6 +441,10 @@ class TaskStatus(object):
         if self.reason is not None:
             oprot.writeFieldBegin('reason', TType.STRING, 3)
             oprot.writeString(self.reason.encode('utf-8') if sys.version_info[0] == 2 else self.reason)
+            oprot.writeFieldEnd()
+        if self.statusId is not None:
+            oprot.writeFieldBegin('statusId', TType.STRING, 4)
+            oprot.writeString(self.statusId.encode('utf-8') if sys.version_info[0] == 2 else self.statusId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -436,6 +472,7 @@ class JobStatus(object):
      - jobState
      - timeOfStateChange
      - reason
+     - statusId
     """
 
     thrift_spec = (
@@ -443,12 +480,14 @@ class JobStatus(object):
         (1, TType.I32, 'jobState', None, None, ),  # 1
         (2, TType.I64, 'timeOfStateChange', None, None, ),  # 2
         (3, TType.STRING, 'reason', 'UTF8', None, ),  # 3
+        (4, TType.STRING, 'statusId', 'UTF8', None, ),  # 4
     )
 
-    def __init__(self, jobState=None, timeOfStateChange=None, reason=None,):
+    def __init__(self, jobState=None, timeOfStateChange=None, reason=None, statusId=None,):
         self.jobState = jobState
         self.timeOfStateChange = timeOfStateChange
         self.reason = reason
+        self.statusId = statusId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -474,6 +513,11 @@ class JobStatus(object):
                     self.reason = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.statusId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -495,6 +539,10 @@ class JobStatus(object):
         if self.reason is not None:
             oprot.writeFieldBegin('reason', TType.STRING, 3)
             oprot.writeString(self.reason.encode('utf-8') if sys.version_info[0] == 2 else self.reason)
+            oprot.writeFieldEnd()
+        if self.statusId is not None:
+            oprot.writeFieldBegin('statusId', TType.STRING, 4)
+            oprot.writeString(self.statusId.encode('utf-8') if sys.version_info[0] == 2 else self.statusId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

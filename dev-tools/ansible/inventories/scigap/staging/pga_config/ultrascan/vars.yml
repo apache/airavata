@@ -53,6 +53,7 @@ experiment_data_dir: "{{ user_data_dir }}/ultrascan"
 gateway_data_store_resource_id: "pga.staging.scigap.org_aa63ffa0-a99f-4885-8f4b-81e3c4c4d737"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqFFN7+93U5cELQCdZl+XiXmFxiSnQDXJaIdTKML3X/KU/0GkwUOBkrKVJaJEgpt+cSPLIg/qM4nVjt3iTfBIx9SPb6q8sHxSKnnNS/mfFvSOn/mxdNVgqNgTlqRy5axaeTn8wxa0afihZZLhU0MvUl0rrAcsR2gBU2zWeE9t+gj/HQ5D/dNmKQUJpexyY79RQi6mDwUPwHPXcLs+6YrJ68kpjmGQgGXUvCK/29neRvKpOXKds8E1kaa9nouxiQDCwAQKtqg8VAtfgMOX8gjur9DC1s45Ryjv+bLDuQ7MFMf5wEWg6QKSYoF94/JX3bC9nVjlL2wGX9HsWPDpWY2K5"
 data_sharing_enabled: "false"
+group_resource_profile_id: "2cf877fb-06a0-412f-90a8-472bd3a52aa9"
 
 ## Portal related variables
 super_admin_portal: "false"

@@ -146,14 +146,28 @@ public class SecurityUtil {
                                         KeyStorePasswordCallback passwordCallback)
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 
-        java.io.FileInputStream fis = null;
-        try {
-            fis = new java.io.FileInputStream(keyStoreFilePath);
-            return loadKeyStore(fis, keyStoreType, passwordCallback);
-        } finally {
-            if (fis != null) {
-                fis.close();
+        File keystoreFile = new File(keyStoreFilePath);
+
+        InputStream is;
+        if (keystoreFile.exists()) {
+            logger.debug("Loading keystore file from path " + keyStoreFilePath);
+            is = new FileInputStream(keyStoreFilePath);
+        } else {
+            logger.debug("Trying to load keystore file form class path " + keyStoreFilePath);
+            is = SecurityUtil.class.getClassLoader().getResourceAsStream(keyStoreFilePath);
+            if (is != null) {
+                logger.debug("Trust store file was loaded form class path " + keyStoreFilePath);
             }
+        }
+
+        if (is == null) {
+            throw new KeyStoreException("Could not find a keystore file in path " + keyStoreFilePath);
+        }
+
+        try {
+            return loadKeyStore(is, keyStoreType, passwordCallback);
+        } finally {
+            is.close();
         }
     }
 

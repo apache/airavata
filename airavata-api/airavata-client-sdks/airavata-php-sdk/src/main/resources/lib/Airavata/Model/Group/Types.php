@@ -21,12 +21,18 @@ final class ResourceType {
   const PROJECT = 0;
   const EXPERIMENT = 1;
   const DATA = 2;
-  const OTHER = 3;
+  const APPLICATION_DEPLOYMENT = 3;
+  const GROUP_RESOURCE_PROFILE = 4;
+  const CREDENTIAL_TOKEN = 5;
+  const OTHER = 6;
   static public $__names = array(
     0 => 'PROJECT',
     1 => 'EXPERIMENT',
     2 => 'DATA',
-    3 => 'OTHER',
+    3 => 'APPLICATION_DEPLOYMENT',
+    4 => 'GROUP_RESOURCE_PROFILE',
+    5 => 'CREDENTIAL_TOKEN',
+    6 => 'OTHER',
   );
 }
 
@@ -64,6 +70,12 @@ class GroupModel {
    * @var string[]
    */
   public $members = null;
+  /**
+   * Note: each admin must also be a member of the group.
+   * 
+   * @var string[]
+   */
+  public $admins = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -92,6 +104,14 @@ class GroupModel {
             'type' => TType::STRING,
             ),
           ),
+        6 => array(
+          'var' => 'admins',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
         );
     }
     if (is_array($vals)) {
@@ -109,6 +129,9 @@ class GroupModel {
       }
       if (isset($vals['members'])) {
         $this->members = $vals['members'];
+      }
+      if (isset($vals['admins'])) {
+        $this->admins = $vals['admins'];
       }
     }
   }
@@ -177,6 +200,23 @@ class GroupModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 6:
+          if ($ftype == TType::LST) {
+            $this->admins = array();
+            $_size6 = 0;
+            $_etype9 = 0;
+            $xfer += $input->readListBegin($_etype9, $_size6);
+            for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
+            {
+              $elem11 = null;
+              $xfer += $input->readString($elem11);
+              $this->admins []= $elem11;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -218,9 +258,26 @@ class GroupModel {
       {
         $output->writeListBegin(TType::STRING, count($this->members));
         {
-          foreach ($this->members as $iter6)
+          foreach ($this->members as $iter12)
           {
-            $xfer += $output->writeString($iter6);
+            $xfer += $output->writeString($iter12);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->admins !== null) {
+      if (!is_array($this->admins)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('admins', TType::LST, 6);
+      {
+        $output->writeListBegin(TType::STRING, count($this->admins));
+        {
+          foreach ($this->admins as $iter13)
+          {
+            $xfer += $output->writeString($iter13);
           }
         }
         $output->writeListEnd();

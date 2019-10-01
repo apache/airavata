@@ -27,7 +27,6 @@ regserver.server.port={{ registry_port }}
 ###########################################################################
 credential.store.server.host={{ cred_store_server_host }}
 credential.store.server.port={{ cred_store_port }}
-security.manager.class=org.apache.airavata.service.security.KeyCloakSecurityManager
 
 ###########################################################################
 # Profile Server Configuration
@@ -71,6 +70,17 @@ experiment.launch..queue.name=experiment.launch.queue
 zookeeper.server.connection={{ zookeeper_connection_url }}
 zookeeper.timeout=30000
 
+###########################################################################
+# Data Parser Configurations
+###########################################################################
+kafka.parsing.broker.url={{ parser_broker_url }}
+kafka.parser.topic={{ parser_broker_topic }}
+kafka.parsing.broker.publisher.id={{ parser_broker_publisher_id }}
+
+###########################################################################
+# Job Submission Task Level Configurations
+###########################################################################
+enable.realtime.monitor=true
 
 local.data.location={{ local_data_location }}
 
@@ -82,4 +92,4 @@ data.parser.delete.container=True
 ###########################################################################
 # Data Staging Task Level Configurations
 ###########################################################################
-enable.streaming.transfer=True
+enable.streaming.transfer=False

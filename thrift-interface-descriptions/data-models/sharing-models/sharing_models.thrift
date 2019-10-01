@@ -105,6 +105,7 @@ enum GroupType {
 * <li><b>groupCardinality</b> : Group cardinality (SINGLE_USER, MULTI_USER)</li>
 * <li>createdTime : Will be set by the system</li>
 * <li>updatedTime : Will be set by the system</li>
+* <li>groupAdmins : Admins for the group</li>
 **/
 struct UserGroup {
  1: optional string groupId,
@@ -115,7 +116,8 @@ struct UserGroup {
  6: optional GroupType groupType,
  7: optional GroupCardinality groupCardinality,
  8: optional i64 createdTime,
- 9: optional i64 updatedTime
+ 9: optional i64 updatedTime,
+ 10: optional list<GroupAdmin> groupAdmins
 }
 
 /**

@@ -36,6 +36,7 @@ doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 #ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
 #ssl_certificate_chain_file: "/etc/pki/tls/certs/seagrid_org_interm.cer"
 #ssl_certificate_key_file: "/etc/pki/tls/private/portal.seagrid.key"
+pga_vhost_template: "{{ inventory_dir }}/templates/pga-vhost.conf.j2"
 
 
 ## Keycloak related variables

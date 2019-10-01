@@ -17,4 +17,12 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+final class Constant extends \Thrift\Type\TConstant {
+  static protected $SHARING_CPI_VERSION;
+
+  static protected function init_SHARING_CPI_VERSION() {
+    return "0.18.0";
+  }
+}
+
 

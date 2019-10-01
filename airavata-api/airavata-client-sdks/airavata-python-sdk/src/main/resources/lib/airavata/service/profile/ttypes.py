@@ -13,5 +13,6 @@ import airavata.service.profile.user.cpi.ttypes
 import airavata.service.profile.tenant.cpi.ttypes
 import airavata.service.profile.iam.admin.services.cpi.ttypes
 import airavata.service.profile.groupmanager.cpi.ttypes
+import airavata.base.api.ttypes
 
 from thrift.transport import TTransport

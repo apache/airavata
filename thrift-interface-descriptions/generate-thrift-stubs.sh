@@ -79,7 +79,7 @@ setup() {
 
     # Thrift files
     AIRAVATA_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/airavata-apis/airavata_api.thrift"
-    SHARING_API_THRIFT_FILE="${BASEDIR}/modules/sharing-registry/thrift_models/sharing_cpi.thrift"
+    SHARING_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/component-cpis/sharing_cpi.thrift"
     DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/airavata_data_models.thrift"
     SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/sharing-models/sharing_models.thrift"
     APP_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/app-catalog-models/app_catalog_models.thrift"

@@ -26,14 +26,14 @@ import java.util.List;
 
 public interface UsrResourceProfile {
     /**
-     * This method will add a gateway profile
+     * This method will add user resource profile
      * @param userResourceProfile object of User resource profile
      * @return gateway id
      */
     String addUserResourceProfile(UserResourceProfile userResourceProfile) throws AppCatalogException;
 
     /**
-     * This method will update a gateway profile
+     * This method will update user resource profile
      * @param userId unique User id
      * @param gatewayId unique gateway id
      * @param updatedProfile updated profile
@@ -43,22 +43,38 @@ public interface UsrResourceProfile {
     /**
      * @param userId
      * @param gatewayId
-     * @return
+     * @return UserResourceProfile
      */
     UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws AppCatalogException;
 
     /**
-     * This method will remove a gateway profile
+     * This method will remove a user resource profile
      * @param userId
      * @param gatewayId unique gateway id
      * @return true or false
      */
     boolean removeUserResourceProfile(String userId, String gatewayId) throws AppCatalogException;
+
+    /**
+     * This method will remove a user compute resource preference
+     * @param userId
+     * @param gatewayId unique gateway id
+     * @param preferenceId
+     * @return true or false
+     */
     boolean removeUserComputeResourcePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException;
+
+    /**
+     * This method will remove a user storage preference
+     * @param userId
+     * @param gatewayId unique gateway id
+     * @param preferenceId
+     * @return true or false
+     */
     boolean removeUserDataStoragePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException;
 
     /**
-     * This method will check whether gateway profile exists
+     * This method will check whether user resource profile exists
      * @param userId
      * @param gatewayId unique gateway id
      * @return true or false
@@ -70,21 +86,46 @@ public interface UsrResourceProfile {
      * @param userId
      * @param gatewayId
      * @param hostId
-     * @return ComputeResourcePreference
+     * @return UserComputeResourcePreference
      */
     UserComputeResourcePreference getUserComputeResourcePreference(String userId, String gatewayId, String hostId) throws AppCatalogException;
+
+    /**
+     * @param userId
+     * @param gatewayId
+     * @return UserStoragePreference
+     */
     UserStoragePreference getUserStoragePreference(String userId, String gatewayId, String storageId) throws AppCatalogException;
 
-
+    /**
+     * @param gatewayName
+     * @return List of gateway ids
+     */
     List<String> getGatewayProfileIds(String gatewayName) throws AppCatalogException;
 
-    /* Implementing this method is critical to validate User Resource Profile
-     *
+    /**
+     * @param userId
+     * @param gatewayID
+     * @return username
      */
     String getUserNamefromID(String userId, String gatewayID) throws AppCatalogException;
 
+    /**
+     * @param userId
+     * @param gatewayId
+     * @return List of UserComputeResourcePreference for given user and gateway
+     */
     List<UserComputeResourcePreference> getAllUserComputeResourcePreferences (String userId, String gatewayId) throws AppCatalogException;
+
+    /**
+     * @param userId
+     * @param gatewayId
+     * @return List of UserStoragePreference for given user and gateway
+     */
     List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayId) throws AppCatalogException;
 
+    /**
+     * @return List of user resource profiles
+     */
     List<UserResourceProfile> getAllUserResourceProfiles() throws AppCatalogException;
 }
