@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@uppy/core": "^1.2.0",
-    "@uppy/file-input": "^1.2.0",
+    "@uppy/drag-drop": "^1.3.0",
     "@uppy/status-bar": "^1.2.0",
     "@uppy/tus": "^1.3.0",
     "@uppy/xhr-upload": "^1.2.0",

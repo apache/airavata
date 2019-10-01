@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div ref="fileInput" />
+  <div class="custom-Uppy">
+    <div ref="dragDrop" />
     <div ref="statusBar" />
   </div>
 </template>
@@ -9,17 +9,15 @@
 import { services, utils } from "django-airavata-api";
 
 import Uppy from "@uppy/core";
-import FileInput from "@uppy/file-input";
+import DragDrop from "@uppy/drag-drop";
 import StatusBar from "@uppy/status-bar";
 import Tus from "@uppy/tus";
 import XHRUpload from "@uppy/xhr-upload";
 
-import "@uppy/core/dist/style.css";
-import "@uppy/status-bar/dist/style.css";
-import "@uppy/file-input/dist/style.css";
+import "@uppy/core/dist/style.min.css";
+import "@uppy/status-bar/dist/style.min.css";
+import "@uppy/drag-drop/dist/style.min.css";
 
-// TODO: dispatch upload start
-// TODO: maybe use dragdrop UI?
 export default {
   name: "uppy",
   props: {
@@ -32,6 +30,10 @@ export default {
     tusUploadFinishEndpoint: {
       type: String,
       required: false
+    },
+    multiple: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -46,7 +48,7 @@ export default {
   data() {
     return {
       uppy: null
-    }
+    };
   },
   methods: {
     initUppy() {
@@ -54,9 +56,13 @@ export default {
         // TODO: set id
         autoProceed: true,
         // TODO: add maxFileSize restriction
-        debug: true
+        debug: true,
+        restrictions: {
+          maxNumberOfFiles: this.multiple ? null : 1,
+        }
       });
-      this.uppy.use(FileInput, { target: this.$refs.fileInput, pretty: false });
+      // TODO: add 'note' here as passed in through prop (Max file upload size is 64MB)
+      this.uppy.use(DragDrop, { target: this.$refs.dragDrop });
       this.uppy.use(StatusBar, {
         target: this.$refs.statusBar,
         hideUploadButton: true,
@@ -78,9 +84,9 @@ export default {
           endpoint: this.xhrUploadEndpoint,
           withCredentials: true,
           headers: {
-            'X-CSRFToken': utils.FetchUtils.getCSRFToken()
+            "X-CSRFToken": utils.FetchUtils.getCSRFToken()
           },
-          fieldName: 'file'
+          fieldName: "file"
         });
         this.uppy.on("upload-success", (file, response) => {
           this.$emit("upload-success", response.body);
@@ -99,3 +105,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.custom-Uppy >>> .uppy-DragDrop-inner {
+  padding: 5px 0px;
+}
+.custom-Uppy >>> .UppyIcon {
+  display: none;
+}
+.custom-Uppy >>> .uppy-DragDrop-label {
+  margin-bottom: 0px;
+}
+</style>

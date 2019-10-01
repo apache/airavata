@@ -22,6 +22,7 @@
             :xhr-upload-endpoint="uploadEndpoint"
             :tus-upload-finish-endpoint="uploadEndpoint"
             @upload-success="uploadSuccess"
+            multiple
           />
         </b-form-group>
       </div>
