@@ -22,7 +22,7 @@ package org.apache.airavata.sharing.registry;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.sharing.registry.models.*;
-import org.apache.airavata.sharing.registry.server.ServerMain;
+import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -43,9 +43,10 @@ public class SharingRegistryServiceTest {
     private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServiceTest.class);
 
     @BeforeClass
-    public static void setUp() throws InterruptedException {
-        ServerMain serverMain = new ServerMain();
-        serverMain.main(new String[]{});
+    public static void setUp() throws Exception {
+        SharingRegistryServer server = new SharingRegistryServer();
+        server.setTestMode(true);
+        server.start();
         Thread.sleep(1000 * 2);
     }
 
@@ -139,6 +140,35 @@ public class SharingRegistryServiceTest {
 
         sharingServiceClient.createUser(user3);
 
+        User user7 = new User();
+        //required
+        user7.setUserId("test-user-7");
+        //required
+        user7.setUserName("test-user-7");
+        //required
+        user7.setDomainId(domainId);
+        //required
+        user7.setFirstName("John");
+        //required
+        user7.setLastName("Doe");
+        //required
+        user7.setEmail("john.doe@abc.com");
+        //optional - this should be bytes of the users image icon
+        //byte[] icon3 = new byte[10];
+        //user3.setIcon(icon3);
+
+        sharingServiceClient.createUser(user7);
+
+        // Test updates to user and how it affects the user's SINGLE_USER group
+        UserGroup singleUserGroupUser7 = sharingServiceClient.getGroup(domainId, user7.getUserId());
+        Assert.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
+        user7.setFirstName("Johnny");
+        sharingServiceClient.updatedUser(user7);
+        User updatedUser7 = sharingServiceClient.getUser(domainId, user7.getUserId());
+        Assert.assertEquals("Johnny", updatedUser7.getFirstName());
+        singleUserGroupUser7 = sharingServiceClient.getGroup(domainId, user7.getUserId());
+        Assert.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
+
         UserGroup userGroup1 = new UserGroup();
         //required
         userGroup1.setGroupId("test-group-1");
@@ -177,18 +207,25 @@ public class SharingRegistryServiceTest {
 
         sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-3"), "test-group-2");
 
+        sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-7"), "test-group-1");
+
         sharingServiceClient.addChildGroupsToParentGroup(domainId, Arrays.asList("test-group-2"), "test-group-1");
 
         //Group roles
         Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-1"));
 
         // user has admin access
-        Assert.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-2")));
-        Assert.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
-        Assert.assertTrue(sharingServiceClient.removeGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-2")));
-        Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
+        Assert.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
+        Assert.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
+
+        UserGroup getGroup = sharingServiceClient.getGroup(domainId, "test-group-1");
+        Assert.assertTrue(getGroup.getGroupAdmins().size() == 1);
+
+        Assert.assertTrue(sharingServiceClient.removeGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
+        Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
 
         // transfer group ownership
+        sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-2"), "test-group-1");
         Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-2"));
         Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
         Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-1"));
@@ -312,7 +349,7 @@ public class SharingRegistryServiceTest {
         searchCriteria.setValue("1");
         searchCriteria.setSearchCondition(SearchCondition.GTE);
         filters.add(searchCriteria);
-        Assert.assertTrue(sharingServiceClient.searchEntities(domainId, "test-user-2", filters, 0, -1).size() == 1);
+        Assert.assertEquals(1, sharingServiceClient.searchEntities(domainId, "test-user-2", filters, 0, -1).size());
 
 
         sharingServiceClient.revokeEntitySharingFromUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE");

@@ -25,13 +25,16 @@ import org.apache.airavata.sharing.registry.db.entities.UserEntity;
 import org.apache.airavata.sharing.registry.db.entities.UserPK;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.airavata.sharing.registry.models.SharingType;
 import org.apache.airavata.sharing.registry.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UserRepository extends AbstractRepository<User, UserEntity, UserPK> {
     private final static Logger logger = LoggerFactory.getLogger(UserRepository.class);
@@ -42,6 +45,18 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
 
 
     public List<User> getAccessibleUsers(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
+        if(permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))){
+            return getAccessibleUsersInternal(domainId, entityId, permissionTypeId, SharingType.DIRECT_CASCADING, SharingType.DIRECT_NON_CASCADING);
+        } else {
+            return getAccessibleUsersInternal(domainId, entityId, permissionTypeId);
+        }
+    }
+
+    public List<User> getDirectlyAccessibleUsers(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
+        return getAccessibleUsersInternal(domainId, entityId, permissionTypeId, SharingType.DIRECT_CASCADING, SharingType.DIRECT_NON_CASCADING);
+    }
+
+    private List<User> getAccessibleUsersInternal(String domainId, String entityId, String permissionTypeId, SharingType... sharingTypes) throws SharingRegistryException {
         Map<String,Object> queryParameters = new HashMap<>();
         String query = "SELECT DISTINCT u from " + UserEntity.class.getSimpleName() + " u, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
@@ -54,9 +69,9 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
         queryParameters.put(DBConstants.SharingTable.ENTITY_ID, entityId);
         queryParameters.put(DBConstants.SharingTable.PERMISSION_TYPE_ID, permissionTypeId);
 
-        if(permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))){
-            query += " AND s." + DBConstants.SharingTable.SHARING_TYPE + " LIKE :" + DBConstants.SharingTable.SHARING_TYPE;
-            queryParameters.put(DBConstants.SharingTable.SHARING_TYPE, "DIRECT_%");
+        if (!Arrays.asList(sharingTypes).isEmpty()) {
+            query += " AND s." + DBConstants.SharingTable.SHARING_TYPE + " IN :" + DBConstants.SharingTable.SHARING_TYPE;
+            queryParameters.put(DBConstants.SharingTable.SHARING_TYPE, Arrays.asList(sharingTypes).stream().map(s -> s.name()).collect(Collectors.toList()));
         }
 
         query += " ORDER BY s.createdTime DESC";

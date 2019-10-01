@@ -21,12 +21,15 @@ package org.apache.airavata.helix.core.util;
 
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.task.api.TaskParamType;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -65,7 +68,11 @@ public class TaskUtil {
                 TaskParam parm = classField.getAnnotation(TaskParam.class);
                 if (parm != null) {
                     classField.setAccessible(true);
-                    result.put(parm.name(), classField.get(data).toString());
+                    if (classField.get(data) instanceof TaskParamType) {
+                        result.put(parm.name(), TaskParamType.class.cast(classField.get(data)).serialize());
+                    } else {
+                        result.put(parm.name(), classField.get(data).toString());
+                    }
                 }
 
                 TaskOutPort outPort = classField.getAnnotation(TaskOutPort.class);
@@ -80,7 +87,7 @@ public class TaskUtil {
         return result;
     }
 
-    public static <T extends AbstractTask> void deserializeTaskData(T instance, Map<String, String> params) throws IllegalAccessException, InstantiationException {
+    public static <T extends AbstractTask> void deserializeTaskData(T instance, Map<String, String> params) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
 
         List<Field> allFields = new ArrayList<>();
         Class genericClass = instance.getClass();
@@ -109,6 +116,12 @@ public class TaskUtil {
                     } else if (classField.getType().isAssignableFrom(Boolean.class) ||
                             classField.getType().isAssignableFrom(Boolean.TYPE)) {
                         classField.set(instance, Boolean.parseBoolean(params.get(param.name())));
+                    } else if (TaskParamType.class.isAssignableFrom(classField.getType())) {
+                        Class<?> clazz = classField.getType();
+                        Constructor<?> ctor = clazz.getConstructor();
+                        Object obj = ctor.newInstance();
+                        ((TaskParamType)obj).deserialize(params.get(param.name()));
+                        classField.set(instance, obj);
                     }
                 }
             }

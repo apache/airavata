@@ -27,5 +27,6 @@ import airavata.model.user.ttypes
 import airavata.model.group.ttypes
 import airavata.model.tenant.ttypes
 import airavata.model.credential.store.ttypes
+import airavata.model.appcatalog.gatewaygroups.ttypes
 
 from thrift.transport import TTransport

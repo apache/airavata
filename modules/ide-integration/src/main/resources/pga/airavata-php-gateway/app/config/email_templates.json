@@ -1,0 +1,103 @@
+{
+  "account_verification" : {
+    "subject" : "$firstName $lastName ($username), Please Verify Your Email Account in $portalTitle",
+    "body" : [
+          "<p>",
+              "Dear $firstName $lastName,<br/>",
+
+              "Someone has created an account with this email address. If this was you,",
+              " click the link below to verify your email address<br/>",
+
+              "<a href=\"$url\">$url</a><br/>",
+
+              "This link will expire within $validTime minutes.<br/>",
+
+              "If you didn't create this account, just ignore this message.",
+          "</p>"
+    ]
+  },
+
+  "email_update_verification" : {
+    "subject" : "$firstName $lastName ($username), Please Verify Your Email Account in $portalTitle",
+    "body" : [
+          "<p>",
+              "Dear $firstName $lastName,<br/>",
+
+              "Please click on the following link to confirm your email address",
+              " and complete updating your email address<br/>",
+
+              "<a href=\"$url\">$url</a><br/>",
+
+              "This link will expire within $validTime minutes.<br/>",
+          "</p>"
+    ]
+  },
+
+  "password_reset" : {
+    "subject" : "Password Reset Request for $firstName $lastName ($username)",
+    "body" : [
+          "<p>",
+              "Dear $firstName $lastName,<br/>",
+
+              "Someone has initiated a password reset request for the account associated with this email address.",
+              " If this was you, click the link below to verify it was you.<br/>",
+
+              "<a href=\"$url\">$url</a><br/>",
+
+              "This link will expire within $validTime minutes.<br/>",
+
+              "If you didn't request a password reset, just ignore this message.",
+          "</p>"
+    ]
+  },
+
+  "gateway_request" : {
+    "subject" : "New Gateway Request",
+    "body" : [
+      "<div>",
+          "<p>",
+              "Dear Admin,<br/>",
+
+              "$firstName $lastName has initiated a new Gateway request.",
+              " The requested Gateway is $gatewayName.",
+              " Please click the link below to verify the request.<br/>",
+
+              "<a href=\"$url\">$url</a><br/>",
+          "</p>",
+      "</div>"
+    ]
+  },
+
+  "update_to_admin" : {
+    "subject" : "Gateway Details Updated",
+    "body" : [
+        "<div>",
+            "<p>",
+                "Dear Admin,<br/>",
+
+                "There has been an update in the Gateway info for Gateway with ID - $gatewayId.",
+                " Please click the link below to view the changes.<br/>",
+
+                "<a href=\"$url\">$url</a><br/>",
+            "</p>",
+        "</div>"
+    ]
+  },
+
+  "update_to_user" : {
+    "subject" : "Gateway Details Updated",
+    "body" : [
+      "<div>",
+      "<p>",
+      "Hello,<br/>",
+
+      "There has been an update in the Gateway info for your Gateway with ID - $gatewayId.",
+      " Please click the link below to view the changes.<br/>",
+
+      "<a href=\"$url\">$url</a><br/>",
+      "</p>",
+      "</div>"
+    ]
+  }
+
+}

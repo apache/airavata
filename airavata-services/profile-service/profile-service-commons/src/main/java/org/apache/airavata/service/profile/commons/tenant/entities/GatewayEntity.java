@@ -239,7 +239,7 @@ public class GatewayEntity {
 
     @PrePersist
     void createdAt() {
-        this.requestCreationTime = new Date().getTime();
+        this.requestCreationTime = System.currentTimeMillis();
     }
 
     @Override

@@ -39,7 +39,9 @@ import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
@@ -58,6 +60,7 @@ import org.slf4j.MDC;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -264,21 +267,7 @@ public abstract class AiravataTask extends AbstractTask {
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 for (OutputDataObjectType expOutput : experimentOutputs) {
                     if (expOutput.getName().equals(outputName)) {
-                        DataProductModel dataProductModel = new DataProductModel();
-                        dataProductModel.setGatewayId(getGatewayId());
-                        dataProductModel.setOwnerName(getProcessModel().getUserName());
-                        dataProductModel.setProductName(outputName);
-                        dataProductModel.setDataProductType(DataProductType.FILE);
-
-                        DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
-                        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResource().getStorageResourceId());
-                        replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
-                        replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
-                        replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
-                        replicaLocationModel.setFilePath(outputVal);
-                        dataProductModel.addToReplicaLocations(replicaLocationModel);
-
-                        String productUri = getRegistryServiceClient().registerDataProduct(dataProductModel);
+                        String productUri = saveDataProduct(outputName, outputVal);
                         expOutput.setValue(productUri);
                         getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
                                 Collections.singletonList(expOutput), experimentId);
@@ -290,6 +279,49 @@ public abstract class AiravataTask extends AbstractTask {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
             throw new TaskOnFailException(msg, true, e);
         }
+    }
+    public void saveExperimentOutputCollection(String outputName, List<String> outputVals) throws TaskOnFailException {
+        try {
+            ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
+            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
+                for (OutputDataObjectType expOutput : experimentOutputs) {
+                    if (expOutput.getName().equals(outputName)) {
+                        List<String> productUris = new ArrayList<String>();
+                        for (String outputVal : outputVals) {
+                            String productUri = saveDataProduct(outputName, outputVal);
+                            productUris.add(productUri);
+                        }
+                        expOutput.setValue(String.join(",", productUris));
+                        getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
+                                Collections.singletonList(expOutput), experimentId);
+                    }
+                }
+            }
+
+        } catch (TException e) {
+            String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
+            throw new TaskOnFailException(msg, true, e);
+        }
+    }
+
+    private String saveDataProduct(String outputName, String outputVal) throws TException {
+
+        DataProductModel dataProductModel = new DataProductModel();
+        dataProductModel.setGatewayId(getGatewayId());
+        dataProductModel.setOwnerName(getProcessModel().getUserName());
+        dataProductModel.setProductName(outputName);
+        dataProductModel.setDataProductType(DataProductType.FILE);
+
+        DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
+        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResourceDescription().getStorageResourceId());
+        replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
+        replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
+        replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
+        replicaLocationModel.setFilePath(outputVal);
+        dataProductModel.addToReplicaLocations(replicaLocationModel);
+
+        return getRegistryServiceClient().registerDataProduct(dataProductModel);
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -421,14 +453,7 @@ public abstract class AiravataTask extends AbstractTask {
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId())
                     .setRegistryClient(getRegistryServiceClient())
                     .setProfileClient(getUserProfileClient())
-                    .setProcessModel(getProcessModel())
-                    .setGatewayResourceProfile(getRegistryServiceClient().getGatewayResourceProfile(gatewayId))
-                    .setGatewayComputeResourcePreference(
-                            getRegistryServiceClient().getGatewayComputeResourcePreference(gatewayId,
-                                    processModel.getComputeResourceId()))
-                    .setGatewayStorageResourcePreference(
-                            getRegistryServiceClient().getGatewayStoragePreference(gatewayId,
-                                    processModel.getStorageResourceId()));
+                    .setProcessModel(getProcessModel());
 
             this.taskContext = taskContextBuilder.build();
             logger.info("Task " + this.taskName + " initialized");

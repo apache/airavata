@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    RewriteEngine On
+
+    # Redirect Trailing Slashes...
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# NOTE: Configuring max file upload size has moved to Ansible vhost config
+# Allow uploading files up to 64MB in size.
+# NOTE: if you change one of these values you will need to change the other one likewise.
+# php_value upload_max_filesize 64M
+# php_value post_max_size 64M

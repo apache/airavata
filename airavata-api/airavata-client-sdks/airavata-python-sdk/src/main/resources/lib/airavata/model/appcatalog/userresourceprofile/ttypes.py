@@ -347,9 +347,6 @@ class UserResourceProfile(object):
 
      identityServerPwdCredToken:
 
-    isNull:
-     Indicates that this instance is just a container for a null value.
-
 
     Attributes:
      - userId
@@ -359,7 +356,6 @@ class UserResourceProfile(object):
      - userStoragePreferences
      - identityServerTenant
      - identityServerPwdCredToken
-     - isNull
     """
 
     thrift_spec = (
@@ -371,10 +367,9 @@ class UserResourceProfile(object):
         (5, TType.LIST, 'userStoragePreferences', (TType.STRUCT, (UserStoragePreference, UserStoragePreference.thrift_spec), False), None, ),  # 5
         (6, TType.STRING, 'identityServerTenant', 'UTF8', None, ),  # 6
         (7, TType.STRING, 'identityServerPwdCredToken', 'UTF8', None, ),  # 7
-        (8, TType.BOOL, 'isNull', None, False, ),  # 8
     )
 
-    def __init__(self, userId=None, gatewayID=None, credentialStoreToken=None, userComputeResourcePreferences=None, userStoragePreferences=None, identityServerTenant=None, identityServerPwdCredToken=None, isNull=thrift_spec[8][4],):
+    def __init__(self, userId=None, gatewayID=None, credentialStoreToken=None, userComputeResourcePreferences=None, userStoragePreferences=None, identityServerTenant=None, identityServerPwdCredToken=None,):
         self.userId = userId
         self.gatewayID = gatewayID
         self.credentialStoreToken = credentialStoreToken
@@ -382,7 +377,6 @@ class UserResourceProfile(object):
         self.userStoragePreferences = userStoragePreferences
         self.identityServerTenant = identityServerTenant
         self.identityServerPwdCredToken = identityServerPwdCredToken
-        self.isNull = isNull
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -440,11 +434,6 @@ class UserResourceProfile(object):
                     self.identityServerPwdCredToken = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 8:
-                if ftype == TType.BOOL:
-                    self.isNull = iprot.readBool()
-                else:
-                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -488,10 +477,6 @@ class UserResourceProfile(object):
         if self.identityServerPwdCredToken is not None:
             oprot.writeFieldBegin('identityServerPwdCredToken', TType.STRING, 7)
             oprot.writeString(self.identityServerPwdCredToken.encode('utf-8') if sys.version_info[0] == 2 else self.identityServerPwdCredToken)
-            oprot.writeFieldEnd()
-        if self.isNull is not None:
-            oprot.writeFieldBegin('isNull', TType.BOOL, 8)
-            oprot.writeBool(self.isNull)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

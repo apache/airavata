@@ -9,15 +9,32 @@
 from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
 from thrift.protocol.TProtocol import TProtocolException
 import sys
+import airavata.base.api.BaseAPI
 import logging
 from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 
 
-class Iface(object):
+class Iface(airavata.base.api.BaseAPI.Iface):
+    def getAPIVersion(self):
+        pass
+
+    def initializeUserProfile(self, authzToken):
+        """
+        Create an initial UserProfile based on information in the IAM service for this user.
+
+        Parameters:
+         - authzToken
+        """
+        pass
+
     def addUserProfile(self, authzToken, userProfile):
         """
+        This method is deprecated and will be removed in future versions of Airavata. Please use
+        the initializeUserProfile method which fetches the information about the user profile from
+        IAM service - @Deprecated
+
         Parameters:
          - authzToken
          - userProfile
@@ -70,15 +87,81 @@ class Iface(object):
         pass
 
 
-class Client(Iface):
+class Client(airavata.base.api.BaseAPI.Client, Iface):
     def __init__(self, iprot, oprot=None):
-        self._iprot = self._oprot = iprot
-        if oprot is not None:
-            self._oprot = oprot
-        self._seqid = 0
+        airavata.base.api.BaseAPI.Client.__init__(self, iprot, oprot)
+
+    def getAPIVersion(self):
+        self.send_getAPIVersion()
+        return self.recv_getAPIVersion()
+
+    def send_getAPIVersion(self):
+        self._oprot.writeMessageBegin('getAPIVersion', TMessageType.CALL, self._seqid)
+        args = getAPIVersion_args()
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getAPIVersion(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getAPIVersion_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.upe is not None:
+            raise result.upe
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result")
+
+    def initializeUserProfile(self, authzToken):
+        """
+        Create an initial UserProfile based on information in the IAM service for this user.
+
+        Parameters:
+         - authzToken
+        """
+        self.send_initializeUserProfile(authzToken)
+        return self.recv_initializeUserProfile()
+
+    def send_initializeUserProfile(self, authzToken):
+        self._oprot.writeMessageBegin('initializeUserProfile', TMessageType.CALL, self._seqid)
+        args = initializeUserProfile_args()
+        args.authzToken = authzToken
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_initializeUserProfile(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = initializeUserProfile_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.upe is not None:
+            raise result.upe
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "initializeUserProfile failed: unknown result")
 
     def addUserProfile(self, authzToken, userProfile):
         """
+        This method is deprecated and will be removed in future versions of Airavata. Please use
+        the initializeUserProfile method which fetches the information about the user profile from
+        IAM service - @Deprecated
+
         Parameters:
          - authzToken
          - userProfile
@@ -310,10 +393,11 @@ class Client(Iface):
         raise TApplicationException(TApplicationException.MISSING_RESULT, "doesUserExist failed: unknown result")
 
 
-class Processor(Iface, TProcessor):
+class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
     def __init__(self, handler):
-        self._handler = handler
-        self._processMap = {}
+        airavata.base.api.BaseAPI.Processor.__init__(self, handler)
+        self._processMap["getAPIVersion"] = Processor.process_getAPIVersion
+        self._processMap["initializeUserProfile"] = Processor.process_initializeUserProfile
         self._processMap["addUserProfile"] = Processor.process_addUserProfile
         self._processMap["updateUserProfile"] = Processor.process_updateUserProfile
         self._processMap["getUserProfileById"] = Processor.process_getUserProfileById
@@ -335,6 +419,53 @@ class Processor(Iface, TProcessor):
         else:
             self._processMap[name](self, seqid, iprot, oprot)
         return True
+
+    def process_getAPIVersion(self, seqid, iprot, oprot):
+        args = getAPIVersion_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getAPIVersion_result()
+        try:
+            result.success = self._handler.getAPIVersion()
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.service.profile.user.cpi.error.ttypes.UserProfileServiceException as upe:
+            msg_type = TMessageType.REPLY
+            result.upe = upe
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getAPIVersion", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_initializeUserProfile(self, seqid, iprot, oprot):
+        args = initializeUserProfile_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = initializeUserProfile_result()
+        try:
+            result.success = self._handler.initializeUserProfile(args.authzToken)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.service.profile.user.cpi.error.ttypes.UserProfileServiceException as upe:
+            msg_type = TMessageType.REPLY
+            result.upe = upe
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("initializeUserProfile", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
 
     def process_addUserProfile(self, seqid, iprot, oprot):
         args = addUserProfile_args()
@@ -487,6 +618,268 @@ class Processor(Iface, TProcessor):
         oprot.trans.flush()
 
 # HELPER FUNCTIONS AND STRUCTURES
+
+
+class getAPIVersion_args(object):
+
+    thrift_spec = (
+    )
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getAPIVersion_args')
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getAPIVersion_result(object):
+    """
+    Attributes:
+     - success
+     - upe
+    """
+
+    thrift_spec = (
+        (0, TType.STRING, 'success', 'UTF8', None, ),  # 0
+        (1, TType.STRUCT, 'upe', (airavata.service.profile.user.cpi.error.ttypes.UserProfileServiceException, airavata.service.profile.user.cpi.error.ttypes.UserProfileServiceException.thrift_spec), None, ),  # 1
+    )
+
+    def __init__(self, success=None, upe=None,):
+        self.success = success
+        self.upe = upe
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.STRING:
+                    self.success = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.upe = airavata.service.profile.user.cpi.error.ttypes.UserProfileServiceException()
+                    self.upe.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getAPIVersion_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.STRING, 0)
+            oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
+            oprot.writeFieldEnd()
+        if self.upe is not None:
+            oprot.writeFieldBegin('upe', TType.STRUCT, 1)
+            self.upe.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class initializeUserProfile_args(object):
+    """
+    Attributes:
+     - authzToken
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+    )
+
+    def __init__(self, authzToken=None,):
+        self.authzToken = authzToken
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('initializeUserProfile_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class initializeUserProfile_result(object):
+    """
+    Attributes:
+     - success
+     - upe
+     - ae
+    """
+
+    thrift_spec = (
+        (0, TType.STRING, 'success', 'UTF8', None, ),  # 0
+        (1, TType.STRUCT, 'upe', (airavata.service.profile.user.cpi.error.ttypes.UserProfileServiceException, airavata.service.profile.user.cpi.error.ttypes.UserProfileServiceException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 2
+    )
+
+    def __init__(self, success=None, upe=None, ae=None,):
+        self.success = success
+        self.upe = upe
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.STRING:
+                    self.success = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.upe = airavata.service.profile.user.cpi.error.ttypes.UserProfileServiceException()
+                    self.upe.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('initializeUserProfile_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.STRING, 0)
+            oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
+            oprot.writeFieldEnd()
+        if self.upe is not None:
+            oprot.writeFieldBegin('upe', TType.STRUCT, 1)
+            self.upe.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 2)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
 
 
 class addUserProfile_args(object):

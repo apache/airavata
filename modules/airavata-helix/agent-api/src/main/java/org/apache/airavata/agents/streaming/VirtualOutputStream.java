@@ -41,7 +41,7 @@ public class VirtualOutputStream extends OutputStream {
             if (byteCount == streamLength) {
                 throw new IOException("Can not write more than the stream length " + streamLength);
             }
-            boolean status = this.queue.offer(b, 2, TimeUnit.MINUTES);
+            boolean status = this.queue.offer(b, 10, TimeUnit.SECONDS);
             if (!status) {
                 throw new IOException("Timed out writing into the queue");
             }

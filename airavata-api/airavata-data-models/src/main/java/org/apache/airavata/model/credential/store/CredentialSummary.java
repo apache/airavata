@@ -55,6 +55,10 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
      */
     TYPE((short)1, "type"),
     GATEWAY_ID((short)2, "gatewayId"),
+    /**
+     * The username corresponds to the Credential's `portalUserName` which is the username of the user that
+     * created the credential.
+     */
     USERNAME((short)3, "username"),
     PUBLIC_KEY((short)4, "publicKey"),
     PERSISTED_TIME((short)5, "persistedTime"),
@@ -264,10 +268,18 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
     }
   }
 
+  /**
+   * The username corresponds to the Credential's `portalUserName` which is the username of the user that
+   * created the credential.
+   */
   public java.lang.String getUsername() {
     return this.username;
   }
 
+  /**
+   * The username corresponds to the Credential's `portalUserName` which is the username of the user that
+   * created the credential.
+   */
   public void setUsername(java.lang.String username) {
     this.username = username;
   }

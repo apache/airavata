@@ -65,6 +65,7 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
   private static final org.apache.thrift.protocol.TField SEARCH_QUERY_FIELD_DESC = new org.apache.thrift.protocol.TField("searchQuery", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField OUTPUT_STREAMING_FIELD_DESC = new org.apache.thrift.protocol.TField("outputStreaming", org.apache.thrift.protocol.TType.BOOL, (short)10);
   private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField META_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("metaData", org.apache.thrift.protocol.TType.STRING, (short)12);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new OutputDataObjectTypeStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new OutputDataObjectTypeTupleSchemeFactory();
@@ -80,6 +81,7 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
   private java.lang.String searchQuery; // optional
   private boolean outputStreaming; // optional
   private java.lang.String storageResourceId; // optional
+  private java.lang.String metaData; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -97,7 +99,8 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
     LOCATION((short)8, "location"),
     SEARCH_QUERY((short)9, "searchQuery"),
     OUTPUT_STREAMING((short)10, "outputStreaming"),
-    STORAGE_RESOURCE_ID((short)11, "storageResourceId");
+    STORAGE_RESOURCE_ID((short)11, "storageResourceId"),
+    META_DATA((short)12, "metaData");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -134,6 +137,8 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
           return OUTPUT_STREAMING;
         case 11: // STORAGE_RESOURCE_ID
           return STORAGE_RESOURCE_ID;
+        case 12: // META_DATA
+          return META_DATA;
         default:
           return null;
       }
@@ -179,7 +184,7 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
   private static final int __DATAMOVEMENT_ISSET_ID = 2;
   private static final int __OUTPUTSTREAMING_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.IS_REQUIRED,_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE,_Fields.DATA_MOVEMENT,_Fields.LOCATION,_Fields.SEARCH_QUERY,_Fields.OUTPUT_STREAMING,_Fields.STORAGE_RESOURCE_ID};
+  private static final _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.IS_REQUIRED,_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE,_Fields.DATA_MOVEMENT,_Fields.LOCATION,_Fields.SEARCH_QUERY,_Fields.OUTPUT_STREAMING,_Fields.STORAGE_RESOURCE_ID,_Fields.META_DATA};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -204,6 +209,8 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
     tmpMap.put(_Fields.OUTPUT_STREAMING, new org.apache.thrift.meta_data.FieldMetaData("outputStreaming", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.STORAGE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.META_DATA, new org.apache.thrift.meta_data.FieldMetaData("metaData", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(OutputDataObjectType.class, metaDataMap);
@@ -249,6 +256,9 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
     if (other.isSetStorageResourceId()) {
       this.storageResourceId = other.storageResourceId;
     }
+    if (other.isSetMetaData()) {
+      this.metaData = other.metaData;
+    }
   }
 
   public OutputDataObjectType deepCopy() {
@@ -272,6 +282,7 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
     setOutputStreamingIsSet(false);
     this.outputStreaming = false;
     this.storageResourceId = null;
+    this.metaData = null;
   }
 
   public java.lang.String getName() {
@@ -531,6 +542,29 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
     }
   }
 
+  public java.lang.String getMetaData() {
+    return this.metaData;
+  }
+
+  public void setMetaData(java.lang.String metaData) {
+    this.metaData = metaData;
+  }
+
+  public void unsetMetaData() {
+    this.metaData = null;
+  }
+
+  /** Returns true if field metaData is set (has been assigned a value) and false otherwise */
+  public boolean isSetMetaData() {
+    return this.metaData != null;
+  }
+
+  public void setMetaDataIsSet(boolean value) {
+    if (!value) {
+      this.metaData = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case NAME:
@@ -621,6 +655,14 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
       }
       break;
 
+    case META_DATA:
+      if (value == null) {
+        unsetMetaData();
+      } else {
+        setMetaData((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -659,6 +701,9 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
     case STORAGE_RESOURCE_ID:
       return getStorageResourceId();
 
+    case META_DATA:
+      return getMetaData();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -692,6 +737,8 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
       return isSetOutputStreaming();
     case STORAGE_RESOURCE_ID:
       return isSetStorageResourceId();
+    case META_DATA:
+      return isSetMetaData();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -810,6 +857,15 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
         return false;
     }
 
+    boolean this_present_metaData = true && this.isSetMetaData();
+    boolean that_present_metaData = true && that.isSetMetaData();
+    if (this_present_metaData || that_present_metaData) {
+      if (!(this_present_metaData && that_present_metaData))
+        return false;
+      if (!this.metaData.equals(that.metaData))
+        return false;
+    }
+
     return true;
   }
 
@@ -860,6 +916,10 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
     hashCode = hashCode * 8191 + ((isSetStorageResourceId()) ? 131071 : 524287);
     if (isSetStorageResourceId())
       hashCode = hashCode * 8191 + storageResourceId.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetMetaData()) ? 131071 : 524287);
+    if (isSetMetaData())
+      hashCode = hashCode * 8191 + metaData.hashCode();
 
     return hashCode;
   }
@@ -982,6 +1042,16 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetMetaData()).compareTo(other.isSetMetaData());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMetaData()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.metaData, other.metaData);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1090,6 +1160,16 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
         sb.append("null");
       } else {
         sb.append(this.storageResourceId);
+      }
+      first = false;
+    }
+    if (isSetMetaData()) {
+      if (!first) sb.append(", ");
+      sb.append("metaData:");
+      if (this.metaData == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.metaData);
       }
       first = false;
     }
@@ -1230,6 +1310,14 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 12: // META_DATA
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.metaData = iprot.readString();
+              struct.setMetaDataIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1310,6 +1398,13 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
           oprot.writeFieldEnd();
         }
       }
+      if (struct.metaData != null) {
+        if (struct.isSetMetaData()) {
+          oprot.writeFieldBegin(META_DATA_FIELD_DESC);
+          oprot.writeString(struct.metaData);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1359,7 +1454,10 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
       if (struct.isSetStorageResourceId()) {
         optionals.set(9);
       }
-      oprot.writeBitSet(optionals, 10);
+      if (struct.isSetMetaData()) {
+        optionals.set(10);
+      }
+      oprot.writeBitSet(optionals, 11);
       if (struct.isSetValue()) {
         oprot.writeString(struct.value);
       }
@@ -1390,6 +1488,9 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
       if (struct.isSetStorageResourceId()) {
         oprot.writeString(struct.storageResourceId);
       }
+      if (struct.isSetMetaData()) {
+        oprot.writeString(struct.metaData);
+      }
     }
 
     @Override
@@ -1397,7 +1498,7 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(10);
+      java.util.BitSet incoming = iprot.readBitSet(11);
       if (incoming.get(0)) {
         struct.value = iprot.readString();
         struct.setValueIsSet(true);
@@ -1437,6 +1538,10 @@ public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataO
       if (incoming.get(9)) {
         struct.storageResourceId = iprot.readString();
         struct.setStorageResourceIdIsSet(true);
+      }
+      if (incoming.get(10)) {
+        struct.metaData = iprot.readString();
+        struct.setMetaDataIsSet(true);
       }
     }
   }

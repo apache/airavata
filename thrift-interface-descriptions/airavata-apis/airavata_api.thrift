@@ -36,13 +36,15 @@ include "../data-models/experiment-catalog-models/scheduling_model.thrift"
 include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
+include "../data-models/app-catalog-models/parser_model.thrift"
 include "../data-models/resource-catalog-models/account_provisioning_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
+include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
-include "../data-models/workflow-models/workflow_data_model.thrift"
+include "../data-models/resource-catalog-models/gateway_groups_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../data-models/user-tenant-group-models/group_manager_model.thrift"
 include "../data-models/user-tenant-group-models/user_profile_model.thrift"
@@ -253,18 +255,8 @@ service Airavata extends base_api.BaseAPI {
    /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
    *
-   * @param gatewayId
-   *    The identifier for the requested Gateway.
-   *
-   * @param userName
-   *    The User for which the credential should be registered. For community accounts, this user is the name of the
-   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
-   *
    * @param description
    *    The description field for a credential type, all type of credential can have a description.
-   *
-   * @param credentialOwnerType
-   *    The type of owner of this credential. Two possible values: GATEWAY (default) and USER
    *
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
@@ -272,23 +264,13 @@ service Airavata extends base_api.BaseAPI {
    *
    **/
    string generateAndRegisterSSHKeys (1: required security_model.AuthzToken authzToken,
-                    2: required string gatewayId,
-                    3: required string userName,
-                    4: string description,
-                    5: credential_store_data_models.CredentialOwnerType credentialOwnerType)
+                    4: string description)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
  /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
-   *
-   * @param gatewayId
-   *    The identifier for the requested Gateway.
-   *
-   * @param portalUserName
-   *    The User for which the credential should be registered. For community accounts, this user is the name of the
-   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
    *
    * @param loginUserName
    *
@@ -300,8 +282,6 @@ service Airavata extends base_api.BaseAPI {
    *
    **/
   string registerPwdCredential (1: required security_model.AuthzToken authzToken,
-                      2: required string gatewayId,
-                      3: required string portalUserName,
                       4: required string loginUserName,
                       5: required string password,
                       6: required string description)
@@ -309,126 +289,31 @@ service Airavata extends base_api.BaseAPI {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
-   /**
-   * Get a Public Key by Providing the Token
-   *
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   *
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   *
-   * @return publicKey
-   *
-   **/
-   string getSSHPubKey (1: required security_model.AuthzToken authzToken,
-                        2: required string airavataCredStoreToken,
-                        3: required string gatewayId)
-           throws (1: airavata_errors.InvalidRequestException ire,
-                   2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase)
+  credential_store_data_models.CredentialSummary getCredentialSummary(1: required security_model.AuthzToken authzToken, 2: required string tokenId)
+             throws (1: airavata_errors.InvalidRequestException ire,
+                     2: airavata_errors.AiravataClientException ace,
+                     3: airavata_errors.AiravataSystemException ase,
+                     4: airavata_errors.AuthorizationException ae)
 
-   /**
-   *
-   * Get all Public Keys of the Gateway
-   *
-   * @param CredStoreToken
-   *    Credential Store Token which you want to find the Public Key for.
-   *
-   * @param gatewayId
-   *    This is the unique identifier of your gateway where the token and public key was generated from.
-   *
-   * @return publicKey
-   *
-   **/
-  map<string, string> getAllGatewaySSHPubKeys (1: required security_model.AuthzToken authzToken,
-                                               2: required string gatewayId)
+  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaries(1: required security_model.AuthzToken authzToken, 2: required credential_store_data_models.SummaryType type)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
-    /**
-       *
-       * Get all Credential summaries for the Gateway
-       *
-       * @param CredStoreToken
-       *    Credential Store Token which you want to find the Public Key for.
-       *
-       * @param credential_store_data_models.SummaryType
-       *    Summary type : SSH,PASSWD or CERT
-       *
-       * @param gatewayId
-       *    This is the unique identifier of your gateway where the token and public key was generated from.
-       *
-       * @return List of Credential Summary Objects
-       *
-       **/
-  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForGateway (1: required security_model.AuthzToken authzToken,
-                                                     2: required credential_store_data_models.SummaryType type,
-                                                     3: required string gatewayId)
-                   throws (1: airavata_errors.InvalidRequestException ire,
-                           2: airavata_errors.AiravataClientException ace,
-                           3: airavata_errors.AiravataSystemException ase)
-
-  /**
-         *
-         * Get all Credential summaries for user in a Gateway
-         *
-         * @param CredStoreToken
-         *    Credential Store Token which you want to find the Public Key for.
-         *
-         * @param credential_store_data_models.SummaryType
-         *    Summary type : SSH,PASSWD or CERT
-         *
-         * @param gatewayId
-         *    This is the unique identifier of your gateway where the token and public key was generated from.
-         *
-         * @param userId
-         *    This is the unique identifier of user whose public keys are to be fetched.
-         *
-         * @return CredentialSummary
-         *
-         **/
-    list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForUsersInGateway (1: required security_model.AuthzToken authzToken,
-                                                         2: required credential_store_data_models.SummaryType type,
-                                                         3: required string gatewayId,
-                                                         4: required string userId)
-                       throws (1: airavata_errors.InvalidRequestException ire,
-                               2: airavata_errors.AiravataClientException ace,
-                               3: airavata_errors.AiravataSystemException ase)
-
-
-  map<string, string> getAllGatewayPWDCredentials (1: required security_model.AuthzToken authzToken,
-                                                 2: required string gatewayId)
-               throws (1: airavata_errors.InvalidRequestException ire,
-                       2: airavata_errors.AiravataClientException ace,
-                       3: airavata_errors.AiravataSystemException ase)
-
-    /**
-    *
-    * Delete a Gateway
-    *
-    * @param gatewayId
-    *    The gateway Id of the Gateway to be deleted.
-    *
-    * @return boolean
-    *    Boolean identifier for the success or failure of the deletion operation.
-    *
-    **/
   bool deleteSSHPubKey (1: required security_model.AuthzToken authzToken,
-                          2: required string airavataCredStoreToken,
-                          3: required string gatewayId)
+                          2: required string airavataCredStoreToken)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
-                     3: airavata_errors.AiravataSystemException ase)
+                     3: airavata_errors.AiravataSystemException ase,
+                     4: airavata_errors.AuthorizationException ae)
 
 
   bool deletePWDCredential (1: required security_model.AuthzToken authzToken,
-                            2: required string airavataCredStoreToken,
-                            3: required string gatewayId)
+                            2: required string airavataCredStoreToken)
                throws (1: airavata_errors.InvalidRequestException ire,
                        2: airavata_errors.AiravataClientException ace,
-                       3: airavata_errors.AiravataSystemException ase)
+                       3: airavata_errors.AiravataSystemException ase,
+                       4: airavata_errors.AuthorizationException ae)
 
    /**
    *
@@ -1391,6 +1276,25 @@ service Airavata extends base_api.BaseAPI {
 
   /**
    *
+   * Fetch all accessible Application Module Descriptions.
+   *
+   * @param gatewayId
+   *    ID of the gateway which need to list all accessible application deployment documentation.
+   *
+   * @return list
+   *    Returns the list of all Application Module Objects that are accessible to the user.
+   *
+  */
+  list<application_deployment_model.ApplicationModule> getAccessibleAppModules (1: required security_model.AuthzToken authzToken,
+                2: required string gatewayId)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+
+  /**
+   *
    * Delete an Application Module.
    *
    * @param appModuleId
@@ -1513,6 +1417,26 @@ service Airavata extends base_api.BaseAPI {
                 4: airavata_errors.AuthorizationException ae)
 
   /**
+   *
+   * Fetch all accessible Application Deployment Descriptions.
+   *
+   * @param gatewayId
+   *    ID of the gateway which need to list all accessible application deployment documentation.
+   * @param permissionType
+   *    ResourcePermissionType to check for this user
+   *
+   * @return list<applicationDeployment.
+   *    Returns the list of all application Deployment Objects that are accessible to the user.
+   *
+  */
+  list<application_deployment_model.ApplicationDeploymentDescription> getAccessibleApplicationDeployments(1: required security_model.AuthzToken authzToken,
+                  2: required string gatewayId, 3: required group_manager_model.ResourcePermissionType permissionType)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
+
+  /**
    * Fetch a list of Deployed Compute Hosts.
    *
    * @param appModuleId
@@ -1522,11 +1446,32 @@ service Airavata extends base_api.BaseAPI {
    *   Returns a list of Deployed Resources.
    *
   */
+  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
   list<string> getAppModuleDeployedResources(1: required security_model.AuthzToken authzToken, 2: required string appModuleId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Fetch a list of Application Deployments that this user can use for executing the given Application Module using the given Group Resource Profile.
+   * The user must have at least READ access to the Group Resource Profile.
+   *
+   * @param appModuleId
+   *    The identifier for the Application Module
+   *
+   * @param groupResourceProfileId
+   *    The identifier for the Group Resource Profile
+   *
+   * @return list<ApplicationDeploymentDescription>
+   *    Returns a list of Application Deployments
+   */
+  list<application_deployment_model.ApplicationDeploymentDescription> getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
+          1: required security_model.AuthzToken authzToken, 2: required string appModuleId, 3: required string groupResourceProfileId)
+      throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
 /*
  *
@@ -1714,6 +1659,7 @@ service Airavata extends base_api.BaseAPI {
    *   Deployments of each modules listed within the interfaces will be listed.
    *
   */
+  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
   map<string, string> getAvailableAppInterfaceComputeResources(1: required security_model.AuthzToken authzToken, 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -3005,6 +2951,24 @@ service Airavata extends base_api.BaseAPI {
                 4: airavata_errors.AuthorizationException ae)
 
     /**
+     * Check if User Resource Profile exists.
+     *
+     * @param userId
+     *   The identifier for the requested user resource profile.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @return bool
+     *
+    */
+    bool isUserResourceProfileExists(1: required security_model.AuthzToken authzToken,
+                  2: required string userId, 3: required string gatewayID)
+        	throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
+    /**
      * Fetch the given User Resource Profile.
      *
      * @param userId
@@ -3348,64 +3312,11 @@ service Airavata extends base_api.BaseAPI {
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.AuthorizationException ae)
 
-
-
-
-  list<string> getAllWorkflows(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
   list<status_models.QueueStatusModel> getLatestQueueStatuses(1: required security_model.AuthzToken authzToken)
         throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,
                         4: airavata_errors.AuthorizationException ae)
-  /**
-   *
-   * API Methods Related for Work-Flow Submission Features.
-   *
-  */
-
-  workflow_data_model.WorkflowModel getWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowTemplateId)
-        throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase,
-                4: airavata_errors.AuthorizationException ae)
-
-  void deleteWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowTemplateId)
-        throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase,
-                4: airavata_errors.AuthorizationException ae)
-
-  string registerWorkflow(1: required security_model.AuthzToken authzToken, 2: required string gatewayId,
-                          3: required workflow_data_model.WorkflowModel workflow)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
-  void updateWorkflow (1: required security_model.AuthzToken authzToken, 2: required string workflowTemplateId,
-                       3: required workflow_data_model.WorkflowModel workflow)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
-  string getWorkflowTemplateId (1: required security_model.AuthzToken authzToken, 2: required string workflowName)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
-  bool isWorkflowExistWithName(1: required security_model.AuthzToken authzToken, 2: required string workflowName)
-          throws (1: airavata_errors.InvalidRequestException ire,
-                  2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
-
 
  /**
  * API Methods related to replica catalog
@@ -3443,26 +3354,212 @@ service Airavata extends base_api.BaseAPI {
  /**
   * Group Manager and Data Sharing Related API methods
   **/
-  bool shareResourceWithUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+  bool shareResourceWithUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                 4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
                throws (1: airavata_errors.InvalidRequestException ire,
                                                 2: airavata_errors.AiravataClientException ace,
                                                 3: airavata_errors.AiravataSystemException ase,
                                                 4: airavata_errors.AuthorizationException ae)
 
- bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+  bool shareResourceWithGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                4: map<string, group_manager_model.ResourcePermissionType> groupPermissionList)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                                                2: airavata_errors.AiravataClientException ace,
+                                                3: airavata_errors.AiravataSystemException ase,
+                                                4: airavata_errors.AuthorizationException ae)
+
+ bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                  4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
 
- list<string> getAllAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+ bool revokeSharingOfResourceFromGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                 4: map<string, group_manager_model.ResourcePermissionType> groupPermissionList)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
                                   4: required group_manager_model.ResourcePermissionType permissionType)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllAccessibleGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                  4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllDirectlyAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                  4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllDirectlyAccessibleGroups(1: required security_model.AuthzToken authzToken, 2: required string resourceId,
+                                  4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ bool userHasAccess(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+
+ string createGroupResourceProfile(1: required security_model.AuthzToken authzToken, 2: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+                                                                         throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                 2: airavata_errors.AiravataClientException ace,
+                                                                                 3: airavata_errors.AiravataSystemException ase,
+                                                                                 4: airavata_errors.AuthorizationException ae)
+
+ void updateGroupResourceProfile(1: required security_model.AuthzToken authzToken, 2: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+                                                                                           throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                                   2: airavata_errors.AiravataClientException ace,
+                                                                                                   3: airavata_errors.AiravataSystemException ase,
+                                                                                                   4: airavata_errors.AuthorizationException ae)
+
+ group_resource_profile_model.GroupResourceProfile getGroupResourceProfile(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId)
+                                                                         throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                 2: airavata_errors.AiravataClientException ace,
+                                                                                 3: airavata_errors.AiravataSystemException ase,
+                                                                                 4: airavata_errors.AuthorizationException ae)
+
+ bool removeGroupResourceProfile(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId)
+                                                                                    throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                             2: airavata_errors.AiravataClientException ace,
+                                                                                             3: airavata_errors.AiravataSystemException ase,
+                                                                                             4: airavata_errors.AuthorizationException ae)
+
+ list<group_resource_profile_model.GroupResourceProfile> getGroupResourceList(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ bool removeGroupComputePrefs(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string groupResourceProfileId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ bool removeGroupComputeResourcePolicy(1: required security_model.AuthzToken authzToken, 2: required string resourcePolicyId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ bool removeGroupBatchQueueResourcePolicy(1: required security_model.AuthzToken authzToken, 2: required string resourcePolicyId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ group_resource_profile_model.GroupComputeResourcePreference getGroupComputeResourcePreference(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string groupResourceProfileId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ group_resource_profile_model.ComputeResourcePolicy getGroupComputeResourcePolicy(1: required security_model.AuthzToken authzToken, 2: required string resourcePolicyId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ group_resource_profile_model.BatchQueueResourcePolicy getBatchQueueResourcePolicy(1: required security_model.AuthzToken authzToken,2: required string resourcePolicyId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ list<group_resource_profile_model.GroupComputeResourcePreference> getGroupComputeResourcePrefList(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ list<group_resource_profile_model.BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ list<group_resource_profile_model.ComputeResourcePolicy> getGroupComputeResourcePolicyList(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+  /**
+   * GatewayGroups API methods
+   */
+ gateway_groups_model.GatewayGroups getGatewayGroups(1: required security_model.AuthzToken authzToken)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ parser_model.Parser getParser(1: required security_model.AuthzToken authzToken, 2: required string parserId, 3: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ string saveParser(1: required security_model.AuthzToken authzToken, 2: required parser_model.Parser parser)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ list<parser_model.Parser> listAllParsers(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ bool removeParser(1: required security_model.AuthzToken authzToken, 2: required string parserId, 3: required string gatewayId) throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae)
+ parser_model.ParsingTemplate getParsingTemplate(1: required security_model.AuthzToken authzToken, 2: required string templateId, 3: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae);
+
+ list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required security_model.AuthzToken authzToken, 2: required string experimentId, 3: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae);
+
+ string saveParsingTemplate(1: required security_model.AuthzToken authzToken, 2: required parser_model.ParsingTemplate parsingTemplate)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae);
+
+ bool removeParsingTemplate(1: required security_model.AuthzToken authzToken, 2: required string templateId, 3: required string gatewayId)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
+
+  list<parser_model.ParsingTemplate> listAllParsingTemplates(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
  //
  //End of API
  }

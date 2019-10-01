@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.security.util;
 
+import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.security.AiravataSecurityException;
 
 import javax.net.ssl.SSLContext;
@@ -39,12 +40,29 @@ public class TrustStoreManager {
             throws AiravataSecurityException {
         try {
             // load and initialize the trust store
-            InputStream trustStream = new FileInputStream(new File(trustStorePath));
+
+            File trustStoreFile = new File(trustStorePath);
+            InputStream is;
+            if (trustStoreFile.exists()) {
+                logger.debug("Loading trust store file from path " + trustStorePath);
+                is = new FileInputStream(trustStorePath);
+            } else {
+                logger.debug("Trying to load trust store file form class path " + trustStorePath);
+                is = SecurityUtil.class.getClassLoader().getResourceAsStream(trustStorePath);
+                if (is != null) {
+                    logger.debug("Trust store file was loaded form class path " + trustStorePath);
+                }
+            }
+
+            if (is == null) {
+                throw new AiravataSecurityException("Could not find a trust store file in path " + trustStorePath);
+            }
+
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 
             char[] trustPassword = trustStorePassword.toCharArray();
 
-            trustStore.load(trustStream, trustPassword);
+            trustStore.load(is, trustPassword);
 
             // initialize a trust manager factory
             TrustManagerFactory trustFactory =

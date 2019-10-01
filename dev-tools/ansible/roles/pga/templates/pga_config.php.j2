@@ -193,7 +193,14 @@ return array(
          /**
           * Data Sharing enabled
           */
-          'data-sharing-enabled' => {{ data_sharing_enabled }}
+          'data-sharing-enabled' => {{ data_sharing_enabled }},
+
+        {% if group_resource_profile_id is defined %}
+        /**
+         * Group Resource Profile ID to use when submitting experiments
+         */
+        'group-resource-profile-id' => '{{ group_resource_profile_id }}',
+        {% endif %}
     ],
 
     /**
@@ -242,6 +249,18 @@ return array(
          * SMTP server port on which the portal should connect
          */
         'portal-smtp-server-port' => '587',
+
+        {% if pga_airavata_django_url is defined %}
+        /**
+         * Set the URL of the new Django portal for re-routing
+         */
+        'airavata-django-url' => "{{ pga_airavata_django_url }}",
+        {% endif %}
+
+        /**
+         * Set to true to enable reroute to the new Django portal
+         */
+        'reroute-to-django' => {{ pga_reroute_to_django | ternary("true", "false") }},
 
         /**
          * Set JIRA Issue Collector scripts here.

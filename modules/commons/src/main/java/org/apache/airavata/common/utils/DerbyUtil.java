@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 
 /**
- * This class includes methods to start stop Derby database. Mainly user for tests.
+ * This class includes methods to start stop Derby database. Mainly used for tests.
  */
 public class DerbyUtil {
 

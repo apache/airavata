@@ -148,6 +148,9 @@ struct DataMovementInterface {
     1: required string dataMovementInterfaceId,
     2: required DataMovementProtocol dataMovementProtocol,
     3: required i32 priorityOrder = 0,
+    4: optional i64 creationTime,
+    5: optional i64 updateTime,
+    6: optional string storageResourceId
 }
 
 

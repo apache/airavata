@@ -96,6 +96,8 @@ class TaskModel(object):
      - subTaskModel
      - taskErrors
      - jobs
+     - maxRetry
+     - currentRetry
     """
 
     thrift_spec = (
@@ -110,9 +112,11 @@ class TaskModel(object):
         (8, TType.STRING, 'subTaskModel', 'BINARY', None, ),  # 8
         (9, TType.LIST, 'taskErrors', (TType.STRUCT, (airavata.model.commons.ttypes.ErrorModel, airavata.model.commons.ttypes.ErrorModel.thrift_spec), False), None, ),  # 9
         (10, TType.LIST, 'jobs', (TType.STRUCT, (airavata.model.job.ttypes.JobModel, airavata.model.job.ttypes.JobModel.thrift_spec), False), None, ),  # 10
+        (11, TType.I32, 'maxRetry', None, None, ),  # 11
+        (12, TType.I32, 'currentRetry', None, None, ),  # 12
     )
 
-    def __init__(self, taskId=thrift_spec[1][4], taskType=None, parentProcessId=None, creationTime=None, lastUpdateTime=None, taskStatuses=None, taskDetail=None, subTaskModel=None, taskErrors=None, jobs=None,):
+    def __init__(self, taskId=thrift_spec[1][4], taskType=None, parentProcessId=None, creationTime=None, lastUpdateTime=None, taskStatuses=None, taskDetail=None, subTaskModel=None, taskErrors=None, jobs=None, maxRetry=None, currentRetry=None,):
         self.taskId = taskId
         self.taskType = taskType
         self.parentProcessId = parentProcessId
@@ -123,6 +127,8 @@ class TaskModel(object):
         self.subTaskModel = subTaskModel
         self.taskErrors = taskErrors
         self.jobs = jobs
+        self.maxRetry = maxRetry
+        self.currentRetry = currentRetry
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -201,6 +207,16 @@ class TaskModel(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.I32:
+                    self.maxRetry = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 12:
+                if ftype == TType.I32:
+                    self.currentRetry = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -259,6 +275,14 @@ class TaskModel(object):
             for iter20 in self.jobs:
                 iter20.write(oprot)
             oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.maxRetry is not None:
+            oprot.writeFieldBegin('maxRetry', TType.I32, 11)
+            oprot.writeI32(self.maxRetry)
+            oprot.writeFieldEnd()
+        if self.currentRetry is not None:
+            oprot.writeFieldBegin('currentRetry', TType.I32, 12)
+            oprot.writeI32(self.currentRetry)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

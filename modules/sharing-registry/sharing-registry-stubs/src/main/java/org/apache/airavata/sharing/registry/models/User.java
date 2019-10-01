@@ -55,15 +55,15 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new UserStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new UserTupleSchemeFactory();
 
-  private java.lang.String userId; // optional
-  private java.lang.String domainId; // optional
-  private java.lang.String userName; // optional
-  private java.lang.String firstName; // optional
-  private java.lang.String lastName; // optional
-  private java.lang.String email; // optional
-  private java.nio.ByteBuffer icon; // optional
-  private long createdTime; // optional
-  private long updatedTime; // optional
+  public java.lang.String userId; // optional
+  public java.lang.String domainId; // optional
+  public java.lang.String userName; // optional
+  public java.lang.String firstName; // optional
+  public java.lang.String lastName; // optional
+  public java.lang.String email; // optional
+  public java.nio.ByteBuffer icon; // optional
+  public long createdTime; // optional
+  public long updatedTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -233,8 +233,9 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return this.userId;
   }
 
-  public void setUserId(java.lang.String userId) {
+  public User setUserId(java.lang.String userId) {
     this.userId = userId;
+    return this;
   }
 
   public void unsetUserId() {
@@ -256,8 +257,9 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return this.domainId;
   }
 
-  public void setDomainId(java.lang.String domainId) {
+  public User setDomainId(java.lang.String domainId) {
     this.domainId = domainId;
+    return this;
   }
 
   public void unsetDomainId() {
@@ -279,8 +281,9 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return this.userName;
   }
 
-  public void setUserName(java.lang.String userName) {
+  public User setUserName(java.lang.String userName) {
     this.userName = userName;
+    return this;
   }
 
   public void unsetUserName() {
@@ -302,8 +305,9 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return this.firstName;
   }
 
-  public void setFirstName(java.lang.String firstName) {
+  public User setFirstName(java.lang.String firstName) {
     this.firstName = firstName;
+    return this;
   }
 
   public void unsetFirstName() {
@@ -325,8 +329,9 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return this.lastName;
   }
 
-  public void setLastName(java.lang.String lastName) {
+  public User setLastName(java.lang.String lastName) {
     this.lastName = lastName;
+    return this;
   }
 
   public void unsetLastName() {
@@ -348,8 +353,9 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return this.email;
   }
 
-  public void setEmail(java.lang.String email) {
+  public User setEmail(java.lang.String email) {
     this.email = email;
+    return this;
   }
 
   public void unsetEmail() {
@@ -376,12 +382,14 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return org.apache.thrift.TBaseHelper.copyBinary(icon);
   }
 
-  public void setIcon(byte[] icon) {
+  public User setIcon(byte[] icon) {
     this.icon = icon == null ? (java.nio.ByteBuffer)null : java.nio.ByteBuffer.wrap(icon.clone());
+    return this;
   }
 
-  public void setIcon(java.nio.ByteBuffer icon) {
+  public User setIcon(java.nio.ByteBuffer icon) {
     this.icon = org.apache.thrift.TBaseHelper.copyBinary(icon);
+    return this;
   }
 
   public void unsetIcon() {
@@ -403,9 +411,10 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return this.createdTime;
   }
 
-  public void setCreatedTime(long createdTime) {
+  public User setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
     setCreatedTimeIsSet(true);
+    return this;
   }
 
   public void unsetCreatedTime() {
@@ -425,9 +434,10 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
     return this.updatedTime;
   }
 
-  public void setUpdatedTime(long updatedTime) {
+  public User setUpdatedTime(long updatedTime) {
     this.updatedTime = updatedTime;
     setUpdatedTimeIsSet(true);
+    return this;
   }
 
   public void unsetUpdatedTime() {
@@ -1050,6 +1060,8 @@ public class User implements org.apache.thrift.TBase<User, User._Fields>, java.i
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

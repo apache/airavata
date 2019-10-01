@@ -53,6 +53,10 @@ public class DBUtil {
         init();
     }
 
+    public DBUtil(JDBCConfig jdbcConfig) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        this(jdbcConfig.getURL(), jdbcConfig.getUser(), jdbcConfig.getPassword(), jdbcConfig.getDriver());
+    }
+
     /**
      * Initializes and load driver. Must be called this before calling anyother method.
      * 
@@ -226,13 +230,7 @@ public class DBUtil {
                 log.error("Error closing prepared statement.", e);
             }
         }
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                log.error("Error closing database connection.", e);
-            }
-        }
+        cleanup(connection);
     }
 
     /**
@@ -276,10 +274,15 @@ public class DBUtil {
     public static void cleanup(Connection connection) {
         if (connection != null) {
             try {
+                if (connection.isClosed()) {
+                    return;
+                }
+                if (!connection.getAutoCommit()) {
+                    connection.rollback();
+                }
                 connection.close();
             } catch (SQLException e) {
-                log.debug("Error closing connection.", e);
-                log.warn("Error closing connection.");
+                throw new RuntimeException("Error closing connection", e);
             }
         }
     }

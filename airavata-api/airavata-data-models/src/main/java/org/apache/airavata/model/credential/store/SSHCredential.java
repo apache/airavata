@@ -36,7 +36,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
   private static final org.apache.thrift.protocol.TField PERSISTED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("persistedTime", org.apache.thrift.protocol.TType.I64, (short)6);
   private static final org.apache.thrift.protocol.TField TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("token", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)8);
-  private static final org.apache.thrift.protocol.TField CREDENTIAL_OWNER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("credentialOwnerType", org.apache.thrift.protocol.TType.I32, (short)9);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new SSHCredentialStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new SSHCredentialTupleSchemeFactory();
@@ -49,7 +48,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
   private long persistedTime; // optional
   private java.lang.String token; // optional
   private java.lang.String description; // optional
-  private CredentialOwnerType credentialOwnerType; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -60,12 +58,7 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
     PRIVATE_KEY((short)5, "privateKey"),
     PERSISTED_TIME((short)6, "persistedTime"),
     TOKEN((short)7, "token"),
-    DESCRIPTION((short)8, "description"),
-    /**
-     * 
-     * @see CredentialOwnerType
-     */
-    CREDENTIAL_OWNER_TYPE((short)9, "credentialOwnerType");
+    DESCRIPTION((short)8, "description");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -96,8 +89,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
           return TOKEN;
         case 8: // DESCRIPTION
           return DESCRIPTION;
-        case 9: // CREDENTIAL_OWNER_TYPE
-          return CREDENTIAL_OWNER_TYPE;
         default:
           return null;
       }
@@ -140,7 +131,7 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
   // isset id assignments
   private static final int __PERSISTEDTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.PASSPHRASE,_Fields.PUBLIC_KEY,_Fields.PRIVATE_KEY,_Fields.PERSISTED_TIME,_Fields.TOKEN,_Fields.DESCRIPTION,_Fields.CREDENTIAL_OWNER_TYPE};
+  private static final _Fields optionals[] = {_Fields.PASSPHRASE,_Fields.PUBLIC_KEY,_Fields.PRIVATE_KEY,_Fields.PERSISTED_TIME,_Fields.TOKEN,_Fields.DESCRIPTION};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -160,15 +151,11 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.CREDENTIAL_OWNER_TYPE, new org.apache.thrift.meta_data.FieldMetaData("credentialOwnerType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, CredentialOwnerType.class)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SSHCredential.class, metaDataMap);
   }
 
   public SSHCredential() {
-    this.credentialOwnerType = org.apache.airavata.model.credential.store.CredentialOwnerType.GATEWAY;
-
   }
 
   public SSHCredential(
@@ -207,9 +194,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
     if (other.isSetDescription()) {
       this.description = other.description;
     }
-    if (other.isSetCredentialOwnerType()) {
-      this.credentialOwnerType = other.credentialOwnerType;
-    }
   }
 
   public SSHCredential deepCopy() {
@@ -227,8 +211,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
     this.persistedTime = 0;
     this.token = null;
     this.description = null;
-    this.credentialOwnerType = org.apache.airavata.model.credential.store.CredentialOwnerType.GATEWAY;
-
   }
 
   public java.lang.String getGatewayId() {
@@ -414,37 +396,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
     }
   }
 
-  /**
-   * 
-   * @see CredentialOwnerType
-   */
-  public CredentialOwnerType getCredentialOwnerType() {
-    return this.credentialOwnerType;
-  }
-
-  /**
-   * 
-   * @see CredentialOwnerType
-   */
-  public void setCredentialOwnerType(CredentialOwnerType credentialOwnerType) {
-    this.credentialOwnerType = credentialOwnerType;
-  }
-
-  public void unsetCredentialOwnerType() {
-    this.credentialOwnerType = null;
-  }
-
-  /** Returns true if field credentialOwnerType is set (has been assigned a value) and false otherwise */
-  public boolean isSetCredentialOwnerType() {
-    return this.credentialOwnerType != null;
-  }
-
-  public void setCredentialOwnerTypeIsSet(boolean value) {
-    if (!value) {
-      this.credentialOwnerType = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case GATEWAY_ID:
@@ -511,14 +462,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
       }
       break;
 
-    case CREDENTIAL_OWNER_TYPE:
-      if (value == null) {
-        unsetCredentialOwnerType();
-      } else {
-        setCredentialOwnerType((CredentialOwnerType)value);
-      }
-      break;
-
     }
   }
 
@@ -548,9 +491,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
     case DESCRIPTION:
       return getDescription();
 
-    case CREDENTIAL_OWNER_TYPE:
-      return getCredentialOwnerType();
-
     }
     throw new java.lang.IllegalStateException();
   }
@@ -578,8 +518,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
       return isSetToken();
     case DESCRIPTION:
       return isSetDescription();
-    case CREDENTIAL_OWNER_TYPE:
-      return isSetCredentialOwnerType();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -671,15 +609,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
         return false;
     }
 
-    boolean this_present_credentialOwnerType = true && this.isSetCredentialOwnerType();
-    boolean that_present_credentialOwnerType = true && that.isSetCredentialOwnerType();
-    if (this_present_credentialOwnerType || that_present_credentialOwnerType) {
-      if (!(this_present_credentialOwnerType && that_present_credentialOwnerType))
-        return false;
-      if (!this.credentialOwnerType.equals(that.credentialOwnerType))
-        return false;
-    }
-
     return true;
   }
 
@@ -718,10 +647,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
     hashCode = hashCode * 8191 + ((isSetDescription()) ? 131071 : 524287);
     if (isSetDescription())
       hashCode = hashCode * 8191 + description.hashCode();
-
-    hashCode = hashCode * 8191 + ((isSetCredentialOwnerType()) ? 131071 : 524287);
-    if (isSetCredentialOwnerType())
-      hashCode = hashCode * 8191 + credentialOwnerType.getValue();
 
     return hashCode;
   }
@@ -814,16 +739,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetCredentialOwnerType()).compareTo(other.isSetCredentialOwnerType());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetCredentialOwnerType()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.credentialOwnerType, other.credentialOwnerType);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -912,16 +827,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
         sb.append("null");
       } else {
         sb.append(this.description);
-      }
-      first = false;
-    }
-    if (isSetCredentialOwnerType()) {
-      if (!first) sb.append(", ");
-      sb.append("credentialOwnerType:");
-      if (this.credentialOwnerType == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.credentialOwnerType);
       }
       first = false;
     }
@@ -1042,14 +947,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // CREDENTIAL_OWNER_TYPE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.credentialOwnerType = org.apache.airavata.model.credential.store.CredentialOwnerType.findByValue(iprot.readI32());
-              struct.setCredentialOwnerTypeIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1113,13 +1010,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
           oprot.writeFieldEnd();
         }
       }
-      if (struct.credentialOwnerType != null) {
-        if (struct.isSetCredentialOwnerType()) {
-          oprot.writeFieldBegin(CREDENTIAL_OWNER_TYPE_FIELD_DESC);
-          oprot.writeI32(struct.credentialOwnerType.getValue());
-          oprot.writeFieldEnd();
-        }
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1158,10 +1048,7 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
       if (struct.isSetDescription()) {
         optionals.set(5);
       }
-      if (struct.isSetCredentialOwnerType()) {
-        optionals.set(6);
-      }
-      oprot.writeBitSet(optionals, 7);
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetPassphrase()) {
         oprot.writeString(struct.passphrase);
       }
@@ -1180,9 +1067,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
       if (struct.isSetDescription()) {
         oprot.writeString(struct.description);
       }
-      if (struct.isSetCredentialOwnerType()) {
-        oprot.writeI32(struct.credentialOwnerType.getValue());
-      }
     }
 
     @Override
@@ -1192,7 +1076,7 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
       struct.setGatewayIdIsSet(true);
       struct.username = iprot.readString();
       struct.setUsernameIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(7);
+      java.util.BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.passphrase = iprot.readString();
         struct.setPassphraseIsSet(true);
@@ -1216,10 +1100,6 @@ public class SSHCredential implements org.apache.thrift.TBase<SSHCredential, SSH
       if (incoming.get(5)) {
         struct.description = iprot.readString();
         struct.setDescriptionIsSet(true);
-      }
-      if (incoming.get(6)) {
-        struct.credentialOwnerType = org.apache.airavata.model.credential.store.CredentialOwnerType.findByValue(iprot.readI32());
-        struct.setCredentialOwnerTypeIsSet(true);
       }
     }
   }

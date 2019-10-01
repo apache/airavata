@@ -45,6 +45,11 @@ service IamAdminServices extends base_api.BaseAPI {
                     throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                             2: airavata_errors.AuthorizationException ae)
 
+    bool isUsernameAvailable(1: required security_model.AuthzToken authzToken,
+                             2: required string username)
+                        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                    2: airavata_errors.AuthorizationException ae)
+
     bool registerUser(1: required security_model.AuthzToken authzToken,
                         2: required string username,
                         3: required string emailAddress,
@@ -61,6 +66,23 @@ service IamAdminServices extends base_api.BaseAPI {
 
     bool isUserEnabled(1: required security_model.AuthzToken authzToken,
                         2: required string username)
+                            throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                        2: airavata_errors.AuthorizationException ae)
+
+    bool isUserExist(1: required security_model.AuthzToken authzToken,
+                     2: required string username)
+                            throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                        2: airavata_errors.AuthorizationException ae)
+
+    user_profile_model.UserProfile getUser(1: required security_model.AuthzToken authzToken,
+                                           2: required string username)
+                            throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                        2: airavata_errors.AuthorizationException ae)
+
+    list<user_profile_model.UserProfile> getUsers(1: required security_model.AuthzToken authzToken,
+                                                  2: required i32 offset,
+                                                  3: required i32 limit,
+                                                  4: optional string search)
                             throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                         2: airavata_errors.AuthorizationException ae)
 
@@ -81,6 +103,11 @@ service IamAdminServices extends base_api.BaseAPI {
                            2: required user_profile_model.UserProfile userDetails)
         throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                 2: airavata_errors.AuthorizationException ae)
+
+    bool deleteUser(1: required security_model.AuthzToken authzToken,
+                                2: required string username)
+                                throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                            2: airavata_errors.AuthorizationException ae)
 
     bool addRoleToUser(1: required security_model.AuthzToken authzToken,
                         2: required string username,
