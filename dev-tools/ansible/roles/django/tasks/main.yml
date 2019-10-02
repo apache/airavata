@@ -157,3 +157,10 @@
   notify:
     - restart httpd
   when: vhost_ssl
+
+- name: copy user's SSH key for the gateway data store
+  authorized_key:
+    user: "{{user}}"
+    key: "{{ gateway_data_store_ssh_public_key }}"
+  become: yes
+  when: gateway_data_store_ssh_public_key != ""
