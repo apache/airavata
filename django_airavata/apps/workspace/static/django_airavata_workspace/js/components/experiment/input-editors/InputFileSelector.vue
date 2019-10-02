@@ -7,7 +7,7 @@
     />
   </div>
   <div
-    class="d-flex align-items-baseline"
+    class="d-flex align-items-center"
     v-else
   >
     <b-button
@@ -15,27 +15,21 @@
       class="input-file-option"
     >Select file from storage</b-button>
     <span class="text-muted mx-3">OR</span>
-    <b-form-group
-      :description="maxFileUploadSizeMessage"
-      :state="fileUploadState"
-      :invalid-feedback="fileUploadInvalidFeedback"
+    <uppy
       class="input-file-option"
-    >
-      <uppy
-        ref="uppy"
-        xhr-upload-endpoint="/api/upload"
-        tus-upload-finish-endpoint="/api/tus-upload-finish"
-        @upload-success="uploadSuccess"
-        @upload-started="$emit('uploadstart')"
-        @upload-finished="uploadFinished"
-        :multiple="multiple"
-      />
-    </b-form-group>
+      ref="uppy"
+      xhr-upload-endpoint="/api/upload"
+      tus-upload-finish-endpoint="/api/tus-upload-finish"
+      @upload-success="uploadSuccess"
+      @upload-started="$emit('uploadstart')"
+      @upload-finished="uploadFinished"
+      :multiple="multiple"
+    />
   </div>
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { models } from "django-airavata-api";
 import UserStorageFileSelectionContainer from "../../storage/UserStorageFileSelectionContainer";
 import Uppy from "./Uppy";
 
@@ -56,56 +50,13 @@ export default {
     Uppy
   },
   computed: {
-    maxFileUploadSizeMB() {
-      return this.settings
-        ? this.settings.fileUploadMaxFileSize / 1024 / 1024
-        : 0;
-    },
-    maxFileUploadSizeMessage() {
-      if (this.maxFileUploadSizeMB) {
-        return (
-          "Max file upload size is " +
-          Math.round(this.maxFileUploadSizeMB) +
-          " MB"
-        );
-      } else {
-        return null;
-      }
-    },
-    fileTooLarge() {
-      return (
-        this.settings &&
-        this.settings.fileUploadMaxFileSize &&
-        this.file &&
-        this.file.size > this.settings.fileUploadMaxFileSize
-      );
-    },
-    fileUploadState() {
-      if (this.fileTooLarge) {
-        return false;
-      } else {
-        return null;
-      }
-    },
-    fileUploadInvalidFeedback() {
-      if (this.fileTooLarge) {
-        return (
-          "File selected is larger than " + this.maxFileUploadSizeMB + " MB"
-        );
-      } else {
-        return null;
-      }
-    }
   },
   data() {
     return {
-      file: null,
       isSelectingFile: false,
-      settings: null
     };
   },
   created() {
-    services.SettingsService.get().then(s => (this.settings = s));
   },
   methods: {
     unselect() {
@@ -124,7 +75,7 @@ export default {
       this.$emit("selected", dataProduct.productUri, dataProduct);
     },
     uploadFinished() {
-      this.$emit('uploadend');
+      this.$emit("uploadend");
       this.$refs.uppy.reset();
     }
   }

@@ -2,6 +2,11 @@
   <div class="custom-Uppy">
     <div ref="dragDrop" />
     <div ref="statusBar" />
+    <b-alert
+      class="mt-1"
+      :show="restrictionFailed"
+      variant="danger"
+    >{{ restrictionFailedMessage }}</b-alert>
   </div>
 </template>
 
@@ -43,26 +48,51 @@ export default {
     });
   },
   destroyed() {
-    // TODO: tear down the Uppy instance
+    if (this.uppy) {
+      this.uppy.close();
+    }
   },
   data() {
     return {
-      uppy: null
+      uppy: null,
+      restrictionFailedMessage: null
     };
+  },
+  computed: {
+    maxFileUploadSizeMB() {
+      return this.settings
+        ? this.settings.fileUploadMaxFileSize / 1024 / 1024
+        : 0;
+    },
+    maxFileUploadSizeMessage() {
+      if (this.maxFileUploadSizeMB) {
+        return (
+          "Max file upload size is " +
+          Math.round(this.maxFileUploadSizeMB) +
+          " MB"
+        );
+      } else {
+        return null;
+      }
+    },
+    restrictionFailed() {
+      return this.restrictionFailedMessage != null;
+    }
   },
   methods: {
     initUppy() {
       this.uppy = Uppy({
-        // TODO: set id
         autoProceed: true,
-        // TODO: add maxFileSize restriction
         debug: true,
         restrictions: {
           maxNumberOfFiles: this.multiple ? null : 1,
+          maxFileSize: this.settings.fileUploadMaxFileSize
         }
       });
-      // TODO: add 'note' here as passed in through prop (Max file upload size is 64MB)
-      this.uppy.use(DragDrop, { target: this.$refs.dragDrop });
+      this.uppy.use(DragDrop, {
+        target: this.$refs.dragDrop,
+        note: this.maxFileUploadSizeMessage
+      });
       this.uppy.use(StatusBar, {
         target: this.$refs.statusBar,
         hideUploadButton: true,
@@ -97,6 +127,10 @@ export default {
       });
       this.uppy.on("complete", () => {
         this.$emit("upload-finished");
+        this.restrictionFailedMessage = null;
+      });
+      this.uppy.on("restriction-failed", (file, error) => {
+        this.restrictionFailedMessage = `${file.name}: ${error.message}`;
       });
     },
     reset() {

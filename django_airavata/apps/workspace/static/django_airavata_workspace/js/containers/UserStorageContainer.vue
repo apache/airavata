@@ -12,19 +12,14 @@
     </div>
     <div class="row">
       <div class="col">
-        <b-form-group
-          :description="maxFileUploadSizeMessage"
-          :state="fileUploadState"
-          :invalid-feedback="fileUploadInvalidFeedback"
-        >
-          <uppy
-            ref="file-upload"
-            :xhr-upload-endpoint="uploadEndpoint"
-            :tus-upload-finish-endpoint="uploadEndpoint"
-            @upload-success="uploadSuccess"
-            multiple
-          />
-        </b-form-group>
+        <uppy
+          class="mb-1"
+          ref="file-upload"
+          :xhr-upload-endpoint="uploadEndpoint"
+          :tus-upload-finish-endpoint="uploadEndpoint"
+          @upload-success="uploadSuccess"
+          multiple
+        />
       </div>
       <div class="col">
         <b-input-group>
@@ -79,46 +74,6 @@ export default {
     username() {
       return session.Session.username;
     },
-    maxFileUploadSizeMB() {
-      return this.settings
-        ? this.settings.fileUploadMaxFileSize / 1024 / 1024
-        : 0;
-    },
-    maxFileUploadSizeMessage() {
-      if (this.maxFileUploadSizeMB) {
-        return (
-          "Max file upload size is " +
-          Math.round(this.maxFileUploadSizeMB) +
-          " MB"
-        );
-      } else {
-        return null;
-      }
-    },
-    fileTooLarge() {
-      return (
-        this.settings &&
-        this.settings.fileUploadMaxFileSize &&
-        this.file &&
-        this.file.size > this.settings.fileUploadMaxFileSize
-      );
-    },
-    fileUploadState() {
-      if (this.fileTooLarge) {
-        return false;
-      } else {
-        return null;
-      }
-    },
-    fileUploadInvalidFeedback() {
-      if (this.fileTooLarge) {
-        return (
-          "File selected is larger than " + this.maxFileUploadSizeMB + " MB"
-        );
-      } else {
-        return null;
-      }
-    },
     uploadEndpoint() {
       // This endpoint can handle XHR upload or a TUS uploadURL
       return "/api/user-storage/" + this.storagePath;
@@ -127,9 +82,7 @@ export default {
   data() {
     return {
       userStoragePath: null,
-      file: null,
       dirName: null,
-      settings: null
     };
   },
   methods: {
@@ -214,7 +167,6 @@ export default {
     } else {
       this.loadUserStoragePath(this.storagePath);
     }
-    services.SettingsService.get().then(s => (this.settings = s));
   },
   watch: {
     $route() {
