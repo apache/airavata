@@ -30,8 +30,8 @@
 
 <script>
 import { models } from "django-airavata-api";
+import { components } from "django-airavata-common-ui";
 import UserStorageFileSelectionContainer from "../../storage/UserStorageFileSelectionContainer";
-import Uppy from "./Uppy";
 
 export default {
   name: "input-file-selector",
@@ -47,17 +47,15 @@ export default {
   },
   components: {
     UserStorageFileSelectionContainer,
-    Uppy
+    uppy: components.Uppy
   },
-  computed: {
-  },
+  computed: {},
   data() {
     return {
-      isSelectingFile: false,
+      isSelectingFile: false
     };
   },
-  created() {
-  },
+  created() {},
   methods: {
     unselect() {
       this.file = null;

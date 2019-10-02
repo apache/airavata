@@ -54,14 +54,12 @@
 
 <script>
 import { services, session, utils } from "django-airavata-api";
-import { notifications } from "django-airavata-common-ui";
-
-import Uppy from "../components/experiment/input-editors/Uppy";
+import { components, notifications } from "django-airavata-common-ui";
 
 export default {
   name: "user-storage-container",
   components: {
-    Uppy
+    uppy: components.Uppy
   },
   computed: {
     storagePath() {
@@ -82,7 +80,7 @@ export default {
   data() {
     return {
       userStoragePath: null,
-      dirName: null,
+      dirName: null
     };
   },
   methods: {
