@@ -42,13 +42,22 @@
   register: airavata_django_portal_tempdir
   run_once: true
 
+- name: Make local temp directory for django portal clone world readable
+  local_action:
+    module: file
+    # The Django portal clone directory needs to be world readable on the
+    # remote server and rsync preserves permissions, so make the local clone
+    # directory world readable
+    path: "{{ airavata_django_portal_tempdir.path }}"
+    mode: o+rx
+  run_once: true
+
 - name: git clone django repo
   local_action:
     module: git
     repo: "{{ airavata_django_repo }}"
     dest: "{{ airavata_django_portal_tempdir.path }}"
-    # TODO: change to {{ airavata_django_git_branch }}
-    version: "local-builds"
+    version: "{{ airavata_django_git_branch }}"
     update: yes
     force: yes
   run_once: true
