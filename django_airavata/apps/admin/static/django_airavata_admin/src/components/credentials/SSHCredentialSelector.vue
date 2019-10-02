@@ -69,7 +69,7 @@ export default {
         ? this.credentials.map(summary => {
             return {
               value: summary.token,
-              text: summary.description
+              text: !summary.description ? summary.description : `No description (${summary.token})`
             };
           })
         : [];
