@@ -55,13 +55,6 @@
   become: yes
   when: ansible_os_family == "RedHat"
 
-- name: copy pga user's SSH key for the gateway data store
-  authorized_key:
-    user: "{{user}}"
-    key: "{{ gateway_data_store_ssh_public_key }}"
-  become: yes
-  when: gateway_data_store_ssh_public_key != ""
-
 # Firewall settings
 - name: Enable https and http service on public zone
   firewalld: service="{{ item }}" permanent=true state=enabled zone=public immediate=True
