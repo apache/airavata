@@ -50,6 +50,8 @@ auth_options:
 
 django_extra_settings:
   JAVA_HOME: "/usr/java/default"
+  MAPTOOL_SETTINGS:
+    CPLEX_APPLICATION_ID: "Cplex_a7eaf483-ab92-4441-baeb-2f302ccb2919"
 
 gateway_id: "simccs"
 experiment_data_dir: "{{ user_data_dir }}/django-simccs"

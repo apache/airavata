@@ -149,5 +149,5 @@ FILE_UPLOAD_MAX_FILE_SIZE = {{ django_file_upload_max_file_size_mb }} * 1024 * 1
 
 # Extra settings
 {% for extra_setting in django_extra_settings.items() | list %}
-{{ extra_setting[0] }} = '{{ extra_setting[1] }}'
+{{ extra_setting[0] }} = {{ extra_setting[1] | to_nice_json }}
 {% endfor %}
