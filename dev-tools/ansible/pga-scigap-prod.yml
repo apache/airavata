@@ -61,4 +61,5 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/mines"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/distantreader"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/pfec-hydro"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/snowvision"
 ...
