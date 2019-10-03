@@ -27,9 +27,9 @@ vhost_servername: "snowvision.scigap.org"
 #vhost_serveralias: "www.mines.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/qusp.mines.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/qusp.mines.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/qusp.mines.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/snowvision.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/snowvision.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/snowvision.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
