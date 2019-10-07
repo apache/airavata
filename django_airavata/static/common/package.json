@@ -14,6 +14,11 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.6.3",
+    "@uppy/core": "^1.2.0",
+    "@uppy/drag-drop": "^1.3.0",
+    "@uppy/status-bar": "^1.2.0",
+    "@uppy/tus": "^1.3.0",
+    "@uppy/xhr-upload": "^1.2.0",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "2.0.0-rc.26",
     "clipboard": "^2.0.4",
