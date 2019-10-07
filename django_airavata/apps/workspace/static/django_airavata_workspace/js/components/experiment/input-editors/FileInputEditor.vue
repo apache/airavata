@@ -41,10 +41,10 @@
       </b-link>
     </div>
     <input-file-selector
-      v-if="!isDataProductURI"
+      v-if="!isDataProductURI || uploading"
       :selectedDataProductURIs="selectedDataProductURIs"
-      @uploadstart="$emit('uploadstart')"
-      @uploadend="$emit('uploadend')"
+      @uploadstart="uploadStart"
+      @uploadend="uploadEnd"
       @selected="fileSelected"
     />
   </div>
@@ -90,7 +90,8 @@ export default {
   data() {
     return {
       dataProduct: null,
-      fileContent: null
+      fileContent: null,
+      uploading: false
     };
   },
   created() {
@@ -148,6 +149,14 @@ export default {
           this.fileContent = text;
           this.$refs.modal.show();
         });
+    },
+    uploadStart() {
+      this.uploading = true;
+      this.$emit("uploadstart");
+    },
+    uploadEnd() {
+      this.uploading = false;
+      this.$emit("uploadend");
     }
   }
 };
