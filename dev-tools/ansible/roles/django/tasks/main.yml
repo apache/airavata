@@ -95,6 +95,7 @@
     detach: false
     volumes:
     - "{{ airavata_django_portal_tempdir.path }}:/code"
+    - "{{ lookup('env', 'HOME') }}/.npm:/root/.npm"
   run_once: true
 
 - name: rsync build Django code to {{ airavata_django_checkout }}
