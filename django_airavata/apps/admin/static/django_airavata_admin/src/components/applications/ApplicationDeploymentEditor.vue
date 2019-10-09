@@ -45,7 +45,7 @@
         <b-form-group label="Default CPU Count" label-for="default-cpu-count">
           <b-form-input id="default-cpu-count" type="number" v-model="data.defaultCPUCount" min="0" :max="maxCPUCount" :disabled="defaultQueueAttributesDisabled"></b-form-input>
         </b-form-group>
-        <b-form-group label="Default Walltime" label-for="default-walltime">
+        <b-form-group label="Default Walltime (in minutes)" label-for="default-walltime">
           <b-form-input id="default-walltime" type="number" v-model="data.defaultWalltime" min="0" :max="maxWalltime" :disabled="defaultQueueAttributesDisabled"></b-form-input>
         </b-form-group>
       </div>
