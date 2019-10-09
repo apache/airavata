@@ -915,7 +915,7 @@ def tus_upload_finish(request):
 
     def move_input_file(file_path, file_name):
         return data_products_helper.move_input_file_upload_from_filepath(
-                request, file_path, name=file_name)
+            request, file_path, name=file_name)
     data_product = tus.move_tus_upload(uploadURL, move_input_file)
     serializer = serializers.DataProductSerializer(
         data_product, context={'request': request})
@@ -1457,7 +1457,7 @@ class UserStoragePathView(APIView):
 
             def move_file(file_path, file_name):
                 return data_products_helper.move_from_filepath(
-                        request, file_path, path, name=file_name)
+                    request, file_path, path, name=file_name)
             data_product = tus.move_tus_upload(uploadURL, move_file)
         return self._create_response(request, path, uploaded=data_product)
 
