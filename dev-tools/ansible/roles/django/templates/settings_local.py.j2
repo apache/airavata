@@ -35,7 +35,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Django - general settings
 DEBUG = {{ django_debug | ternary("True", "False") }}
-STATIC_ROOT = "{{ static_root_dir }}"
+STATIC_ROOT = "{{ doc_root_dir }}/static/"
 ALLOWED_HOSTS = ['{{ vhost_servername }}']
 
 DATABASES = {
