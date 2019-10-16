@@ -11,6 +11,8 @@ nav:
     - Adding a Custom Django App: dev/custom_django_app.md
     - Developing the Frontend: dev/developing_frontend.md
     - Developing the Backend: dev/developing_backend.md
+  - Administrator Guide:
+    - Tusd Installation: admin/tusd.md
   - Tutorials:
     - Gateways 2019: tutorial/gateways2019_tutorial.md
 

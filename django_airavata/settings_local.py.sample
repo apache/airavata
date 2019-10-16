@@ -97,6 +97,12 @@ SHARING_API_SECURE = False
 # Portal settings
 PORTAL_TITLE = 'Django Airavata Gateway'
 
+# Tus upload - uncomment the following to enable tus uploads
+# Override and set to a valid tus endpoint
+# TUS_ENDPOINT = "https://tus.domainname.org/files/"
+# Override and set to the directory where tus uploads will be stored.
+# TUS_DATA_DIR = "/path/to/tus-temp-dir"
+
 # Logging configuration. Uncomment following to override default log configuration
 # LOGGING = {
 #     'version': 1,
