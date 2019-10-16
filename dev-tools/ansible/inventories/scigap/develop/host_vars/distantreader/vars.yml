@@ -40,7 +40,7 @@ auth_options:
 #      idp_alias: "cilogon"
 
 gateway_id: "distantr"
-experiment_data_dir: "{{ user_data_dir }}/django-mines"
+experiment_data_dir: "{{ user_data_dir }}/django-distantreader"
 # gateway_data_store_ssh_public_key: "TODO"
 
 portal_email_host: "smtp.gmail.com"
