@@ -23,6 +23,14 @@ def move_tus_upload(upload_url, move_function):
     logger.debug(f"upload_bin_path={upload_bin_path}")
     upload_info_path = os.path.join(settings.TUS_DATA_DIR,
                                     f"{upload_uuid}.info")
+    if os.path.getsize(upload_bin_path) > settings.FILE_UPLOAD_MAX_FILE_SIZE:
+        error_message = (f"File size of {upload_bin_path} is greater than "
+                         f"the max of {settings.FILE_UPLOAD_MAX_FILE_SIZE} "
+                         f"bytes")
+        logger.error(error_message)
+        os.remove(upload_bin_path)
+        os.remove(upload_info_path)
+        raise Exception(error_message)
     with open(upload_info_path) as upload_info_file:
         upload_info = json.load(upload_info_file)
         filename = upload_info['MetaData']['filename']

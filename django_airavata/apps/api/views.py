@@ -46,6 +46,7 @@ from django_airavata.apps.auth.models import EmailVerification
 
 from . import (
     data_products_helper,
+    exceptions,
     helpers,
     models,
     output_views,
@@ -910,17 +911,19 @@ def upload_input_file(request):
 
 @login_required
 def tus_upload_finish(request):
-    log.debug("POST={}".format(request.POST))
     uploadURL = request.POST['uploadURL']
 
     def move_input_file(file_path, file_name):
         return data_products_helper.move_input_file_upload_from_filepath(
             request, file_path, name=file_name)
-    data_product = tus.move_tus_upload(uploadURL, move_input_file)
-    serializer = serializers.DataProductSerializer(
-        data_product, context={'request': request})
-    return JsonResponse({'uploaded': True,
-                         'data-product': serializer.data})
+    try:
+        data_product = tus.move_tus_upload(uploadURL, move_input_file)
+        serializer = serializers.DataProductSerializer(
+            data_product, context={'request': request})
+        return JsonResponse({'uploaded': True,
+                            'data-product': serializer.data})
+    except Exception as e:
+        return exceptions.generic_json_exception_response(e, status=400)
 
 
 @login_required
