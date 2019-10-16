@@ -34,6 +34,7 @@ saver-x ansible_host=149.165.156.46
 pfec-hydro ansible_host=149.165.156.46
 cyberwater ansible_host=149.165.156.46
 mines ansible_host=149.165.156.46
+distantreader ansible_host=149.165.156.46
 
 [helix]
 149.165.157.37
