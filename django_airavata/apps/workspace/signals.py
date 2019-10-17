@@ -19,5 +19,8 @@ def initialize_user_profile(sender, request, user, **kwargs):
     # following is necessary for users coming from federated login who don't
     # need to verify their email.
     authz_token = get_authz_token(request)
-    user_profile_client_pool.initializeUserProfile(authz_token)
-    log.debug("initialized user profile for {}".format(user.username))
+    if authz_token is not None:
+        user_profile_client_pool.initializeUserProfile(authz_token)
+        log.debug("initialized user profile for {}".format(user.username))
+    else:
+        log.warning(f"Logged in user {user.username} has no access token")
