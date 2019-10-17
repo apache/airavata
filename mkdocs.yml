@@ -11,6 +11,7 @@ nav:
     - Adding a Custom Django App: dev/custom_django_app.md
     - Developing the Frontend: dev/developing_frontend.md
     - Developing the Backend: dev/developing_backend.md
+    - Developing a Wagtail Export (theme): dev/wagtail_export.md
   - Administrator Guide:
     - Tusd Installation: admin/tusd.md
   - Tutorials:
