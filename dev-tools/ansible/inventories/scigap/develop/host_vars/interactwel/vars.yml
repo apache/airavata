@@ -27,6 +27,9 @@ ssl_certificate_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/cert.
 ssl_certificate_chain_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/privkey.pem"
 
+airavata_django_extra_dependencies:
+  - git+https://github.com/InterACTWEL/interactactwel-django-app.git@dev#egg=interactwel-django-app
+
 ## Keycloak related variables
 tenant_domain: "interactwel"
 oauth_client_key: "{{ vault_oauth_client_key }}"
