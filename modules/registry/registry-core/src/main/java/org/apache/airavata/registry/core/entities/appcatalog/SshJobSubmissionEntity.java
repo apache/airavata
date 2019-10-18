@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 
 import javax.persistence.*;
@@ -48,7 +49,7 @@ public class SshJobSubmissionEntity implements Serializable {
 	private String alternativeSshHostname;
 
 	@Column(name="CREATION_TIME", nullable = false, updatable = false)
-	private Timestamp creationTime;
+	private Timestamp creationTime = AiravataUtils.getCurrentTimestamp();
 
 	@Column(name="MONITOR_MODE")
 	private String monitorMode;
