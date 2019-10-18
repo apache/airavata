@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 
 import javax.persistence.*;
@@ -39,7 +40,7 @@ public class ResourceJobManagerEntity implements Serializable {
     private String resourceJobManagerId;
 
     @Column(name = "CREATION_TIME", nullable = false, updatable = false)
-    private Timestamp creationTime;
+    private Timestamp creationTime = AiravataUtils.getCurrentTimestamp();
 
     @Column(name = "JOB_MANAGER_BIN_PATH")
     private String jobManagerBinPath;
