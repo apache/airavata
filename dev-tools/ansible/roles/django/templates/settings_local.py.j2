@@ -30,14 +30,12 @@ defaults specified in settings.py.
 
 import os
 
-from . import webpack_loader_util
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Django - general settings
 DEBUG = {{ django_debug | ternary("True", "False") }}
-STATIC_ROOT = "{{ static_root_dir }}"
+STATIC_ROOT = "{{ doc_root_dir }}/static/"
 ALLOWED_HOSTS = ['{{ vhost_servername }}']
 
 DATABASES = {
@@ -133,9 +131,6 @@ SHARING_API_SECURE = False
 # Portal settings
 PORTAL_TITLE = '{{ portal_title }}'
 
-# webpack_loader override to load from STATIC_ROOT
-WEBPACK_LOADER = webpack_loader_util.create_webpack_loader_config(STATIC_ROOT)
-
 # Hidden Airavata apps (not all gateways need all functionality)
 HIDDEN_AIRAVATA_APPS = {{ django_hidden_airavata_apps }}
 
@@ -149,5 +144,5 @@ FILE_UPLOAD_MAX_FILE_SIZE = {{ django_file_upload_max_file_size_mb }} * 1024 * 1
 
 # Extra settings
 {% for extra_setting in django_extra_settings.items() | list %}
-{{ extra_setting[0] }} = '{{ extra_setting[1] }}'
+{{ extra_setting[0] }} = {{ extra_setting[1] | to_nice_json }}
 {% endfor %}

@@ -20,7 +20,6 @@
 
 ---
 doc_root_dir: "/var/www/django-{{ gateway_id }}"
-static_root_dir: "{{ doc_root_dir }}/static/"
 user_data_dir: "/var/www/user_data"
 django_venv_dir: "{{ doc_root_dir }}/venv"
 # real_user_data_dir is the same as user_data_dir but without symbolic links in it
@@ -75,6 +74,7 @@ gateway_id: "{{ default_gateway }}"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}"
 file_upload_tmp_dir: "{{ experiment_data_dir }}/tmp/"
+gateway_data_store_ssh_public_key: ""
 gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b64-a7cb-d195b0a26c19"
 gateway_data_store_hostname: "{{ groups['django'][0] }}"
 portal_email_tls: false

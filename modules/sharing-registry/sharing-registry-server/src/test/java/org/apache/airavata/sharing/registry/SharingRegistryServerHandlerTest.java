@@ -382,5 +382,40 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertTrue("user3 and user7 in shared users", entityId2SharedUsers.contains(user3) && entityId2SharedUsers.contains(user7));
         Assert.assertEquals(1, sharingRegistryServerHandler.getListOfDirectlySharedGroups(domainId, entityId3, permissionTypeId1).size());
         Assert.assertEquals(groupId2, sharingRegistryServerHandler.getListOfDirectlySharedGroups(domainId, entityId3, permissionTypeId1).get(0).getGroupId());
+
+        // Test that new users are added to initialUserGroupId
+        UserGroup initialUserGroup = new UserGroup();
+        String initialUserGroupName = "initial user group";
+        String initialUserGroupId = domainId + ":" + initialUserGroupName;
+        initialUserGroup.setGroupId(initialUserGroupId);
+        initialUserGroup.setDomainId(domainId);
+        initialUserGroup.setName(initialUserGroupName);
+        initialUserGroup.setDescription("initial user group desc");
+        initialUserGroup.setOwnerId(userId1);
+        initialUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
+        initialUserGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
+        initialUserGroup.setCreatedTime(System.currentTimeMillis());
+        initialUserGroup.setUpdatedTime(System.currentTimeMillis());
+
+        Assert.assertNotNull(sharingRegistryServerHandler.createGroup(initialUserGroup));
+
+        domain.setInitialUserGroupId(initialUserGroupId);
+        Assert.assertTrue(sharingRegistryServerHandler.updateDomain(domain));
+        Assert.assertEquals(initialUserGroupId, sharingRegistryServerHandler.getDomain(domain.getDomainId()).getInitialUserGroupId());
+
+        User user8 = new User();
+        String userName8 = "test-user-8." + System.currentTimeMillis();
+        String userId8 = domainId + ":" + userName8;
+        user8.setUserId(userId8);
+        user8.setUserName(userName8);
+        user8.setDomainId(domainId);
+        user8.setCreatedTime(System.currentTimeMillis());
+        user8.setUpdatedTime(System.currentTimeMillis());
+
+        Assert.assertNotNull(sharingRegistryServerHandler.createUser(user8));
+        List<UserGroup> user8Groups = sharingRegistryServerHandler.getAllMemberGroupsForUser(domain.getDomainId(), userId8);
+        Assert.assertFalse(user8Groups.isEmpty());
+        Assert.assertEquals(1, user8Groups.size());
+        Assert.assertEquals(initialUserGroupId, user8Groups.get(0).getGroupId());
     }
 }

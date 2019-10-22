@@ -51,7 +51,7 @@ public enum ResourcePermissionType implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static ResourcePermissionType findByValue(int value) {
+  public static ResourcePermissionType findByValue(int value) { 
     switch (value) {
       case 0:
         return WRITE;

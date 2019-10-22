@@ -30,8 +30,6 @@ httpd_ssl_conf_file_location:
 httpd_default_conf_template: "default.conf.j2"
 httpd_ssl_conf_template: "ssl.conf.j2"
 
-gateway_data_store_ssh_public_key: ""
-
 httpd_default_http_port: 80
 httpd_default_https_port: 443
 ...
