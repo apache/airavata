@@ -21,6 +21,7 @@ package org.apache.airavata.sharing.registry.migrator.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
@@ -38,10 +39,20 @@ import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
+import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.Status;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.security.AiravataSecurityException;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.service.security.AiravataSecurityManager;
+import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
@@ -72,6 +83,7 @@ public class AiravataDataMigrator {
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
         CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
+        IamAdminServices.Client iamAdminServiceClient = getIamAdminServiceClient();
 
         String query = "SELECT * FROM GATEWAY" + gatewayWhereClause;
         Statement statement = expCatConnection.createStatement();
@@ -204,17 +216,19 @@ public class AiravataDataMigrator {
             } else {
                 continue;
             }
-
+            //find all the active users in keycloak that do not exist in sharing registry service and migrate them to the database
+            AuthzToken authzToken_of_management_user = getManagementUsersAccessToken(domain.getDomainId());
+            List<UserProfile> missingUsers = getUsersToMigrate(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, "", domain.getDomainId());
+            migrateKeycloakUsersToGateway(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, missingUsers);
             if (registryServiceClient.isGatewayGroupsExists(domain.getDomainId())) {
                 GatewayGroups gatewayGroups = registryServiceClient.getGatewayGroups(domain.getDomainId());
                 gatewayGroupsMap.put(domain.getDomainId(), gatewayGroups);
+                addUsersToGroups(sharingRegistryServerHandler, missingUsers, gatewayGroups, domain.getDomainId());
             } else {
-
                 GatewayGroups gatewayGroups = migrateRolesToGatewayGroups(domain, ownerId, sharingRegistryServerHandler, registryServiceClient);
                 gatewayGroupsMap.put(domain.getDomainId(), gatewayGroups);
             }
         }
-
         //Creating project entries
         query = "SELECT * FROM PROJECT" + gatewayWhereClause;
         statement = expCatConnection.createStatement();
@@ -430,6 +444,57 @@ public class AiravataDataMigrator {
         sharingRegistryServerHandler.shareEntityWithGroups(entity.getDomainId(), entity.getEntityId(),
                 Arrays.asList(gatewayGroups.getAdminsGroupId()),
                 entity.getDomainId() + ":" + ResourcePermissionType.WRITE, cascadePermission);
+    }
+
+    private static List<UserProfile> getUsersToMigrate(SharingRegistryServerHandler sharingRegistryServerHandler, IamAdminServices.Client adminServiceClient, AuthzToken authzToken, String search, String domainId) throws TException {
+
+        List<UserProfile> missingUsers = new ArrayList<>();
+        List<UserProfile> keycloakUsers = adminServiceClient.getUsers(authzToken, 0, -1, search);
+        List<String> usernames = sharingRegistryServerHandler.getUsers(domainId, 0, -1).stream()
+                // Filter out bad user ids that don't end in "@" + domainId
+                .filter(user -> user.getUserId().endsWith("@" + domainId))
+                .map(user -> user.getUserId())
+                .collect(Collectors.toList());
+        HashSet<String> usersInSharingRegistry = new HashSet<>(usernames);
+        for (UserProfile profile : keycloakUsers) {
+            if (profile.getState().equals(Status.ACTIVE) && !usersInSharingRegistry.contains(profile.getAiravataInternalUserId())) {
+                missingUsers.add(profile);
+            }
+        }
+        return missingUsers;
+    }
+
+    private static boolean migrateKeycloakUsersToGateway(SharingRegistryServerHandler sharingRegistryServerHandler,IamAdminServices.Client adminServiceClient,AuthzToken authzToken, List<UserProfile> missingUsers) throws TException{
+
+        boolean allUsersUpdated = true;
+        for(UserProfile profile: missingUsers) {
+                allUsersUpdated &= adminServiceClient.enableUser(authzToken, profile.getUserId());
+                User user = new User();
+                user.setUserId(profile.getAiravataInternalUserId());
+                user.setDomainId(profile.getGatewayId());
+                user.setUserName(profile.getUserId());
+                sharingRegistryServerHandler.createUser(user);
+            }
+        return allUsersUpdated;
+    }
+
+    private static boolean addUsersToGroups(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, GatewayGroups gatewayGroups, String domainId) throws TException, ApplicationSettingsException{
+        boolean updatedAllUsers = true;
+        Map<String, List<String>> roleMap = loadRolesForUsers(domainId, missingUsers
+                .stream()
+                .map(user -> user.getAiravataInternalUserId().substring(0, user.getAiravataInternalUserId().lastIndexOf("@")))
+                .collect(Collectors.toList()));
+        if(roleMap.containsKey("gateway-user")){
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, roleMap.get("gateway-user"), gatewayGroups.getDefaultGatewayUsersGroupId());
+        }
+        if(roleMap.containsKey("admin")){
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, roleMap.get("admin"), gatewayGroups.getAdminsGroupId());
+        }
+        if(roleMap.containsKey("admin-read-only")){
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, roleMap.get("admin-read-only"), gatewayGroups.getReadOnlyAdminsGroupId());
+        }
+
+        return updatedAllUsers;
     }
 
     private static GatewayGroups migrateRolesToGatewayGroups(Domain domain, String ownerId, SharingRegistryServerHandler sharingRegistryServerHandler, RegistryService.Client registryServiceClient) throws TException, ApplicationSettingsException {
@@ -674,4 +739,24 @@ public class AiravataDataMigrator {
         }
     }
 
+    private static IamAdminServices.Client getIamAdminServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
+        final String serverHost = ServerSettings.getProfileServiceServerHost();
+        try {
+            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
+        } catch (IamAdminServicesException e) {
+            throw new TException("Unable to create i am admin service client...", e);
+        }
+    }
+
+    private static AuthzToken getManagementUsersAccessToken(String tenantId) throws TException{
+        try {
+            AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+            AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(tenantId);
+            return authzToken;
+        } catch (AiravataSecurityException e){
+            throw new TException("Unable to fetch access token for management user");
+        }
+
+    }
 }
