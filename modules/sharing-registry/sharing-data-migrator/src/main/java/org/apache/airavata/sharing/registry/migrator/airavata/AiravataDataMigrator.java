@@ -218,7 +218,7 @@ public class AiravataDataMigrator {
             }
             //find all the active users in keycloak that do not exist in sharing registry service and migrate them to the database
             AuthzToken authzToken_of_management_user = getManagementUsersAccessToken(domain.getDomainId());
-            List<UserProfile> missingUsers = getUsersToMigrate(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, "", domain.getDomainId());
+            List<UserProfile> missingUsers = getUsersToMigrate(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, null, domain.getDomainId());
             migrateKeycloakUsersToGateway(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, missingUsers);
             if (registryServiceClient.isGatewayGroupsExists(domain.getDomainId())) {
                 GatewayGroups gatewayGroups = registryServiceClient.getGatewayGroups(domain.getDomainId());
@@ -453,11 +453,11 @@ public class AiravataDataMigrator {
         List<String> usernames = sharingRegistryServerHandler.getUsers(domainId, 0, -1).stream()
                 // Filter out bad user ids that don't end in "@" + domainId
                 .filter(user -> user.getUserId().endsWith("@" + domainId))
-                .map(user -> user.getUserId())
+                .map(user -> user.getUserId().split("@")[0])
                 .collect(Collectors.toList());
         HashSet<String> usersInSharingRegistry = new HashSet<>(usernames);
         for (UserProfile profile : keycloakUsers) {
-            if (profile.getState().equals(Status.ACTIVE) && !usersInSharingRegistry.contains(profile.getAiravataInternalUserId())) {
+            if (profile.getState().equals(Status.ACTIVE) && !usersInSharingRegistry.contains(profile.getAiravataInternalUserId().split("@")[0])) {
                 missingUsers.add(profile);
             }
         }
@@ -755,7 +755,7 @@ public class AiravataDataMigrator {
             AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(tenantId);
             return authzToken;
         } catch (AiravataSecurityException e){
-            throw new TException("Unable to fetch access token for management user");
+            throw new TException("Unable to fetch access token for management user for tenant: " + tenantId);
         }
 
     }
