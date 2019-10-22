@@ -24,7 +24,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('Usage: ' + sys.argv[0] + ' [-h host[:port]] [-u url] [-f[ramed]] [-s[sl]] [-novalidate] [-ca_certs certs] [-keyfile keyfile] [-certfile certfile] function [arg1 [arg2...]]')
     print('')
     print('Functions:')
-    print('  string getAPIVersion(AuthzToken authzToken)')
     print('  bool isUserExists(AuthzToken authzToken, string gatewayId, string userName)')
     print('  string addGateway(AuthzToken authzToken, Gateway gateway)')
     print('   getAllUsersInGateway(AuthzToken authzToken, string gatewayId)')
@@ -38,15 +37,12 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool deleteNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
     print('  Notification getNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
     print('   getAllNotifications(AuthzToken authzToken, string gatewayId)')
-    print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName, string description, CredentialOwnerType credentialOwnerType)')
-    print('  string registerPwdCredential(AuthzToken authzToken, string gatewayId, string portalUserName, string loginUserName, string password, string description)')
-    print('  string getSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
-    print('   getAllGatewaySSHPubKeys(AuthzToken authzToken, string gatewayId)')
-    print('   getAllCredentialSummaryForGateway(AuthzToken authzToken, SummaryType type, string gatewayId)')
-    print('   getAllCredentialSummaryForUsersInGateway(AuthzToken authzToken, SummaryType type, string gatewayId, string userId)')
-    print('   getAllGatewayPWDCredentials(AuthzToken authzToken, string gatewayId)')
-    print('  bool deleteSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
-    print('  bool deletePWDCredential(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
+    print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string description)')
+    print('  string registerPwdCredential(AuthzToken authzToken, string loginUserName, string password, string description)')
+    print('  CredentialSummary getCredentialSummary(AuthzToken authzToken, string tokenId)')
+    print('   getAllCredentialSummaries(AuthzToken authzToken, SummaryType type)')
+    print('  bool deleteSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken)')
+    print('  bool deletePWDCredential(AuthzToken authzToken, string airavataCredStoreToken)')
     print('  string createProject(AuthzToken authzToken, string gatewayId, Project project)')
     print('  void updateProject(AuthzToken authzToken, string projectId, Project updatedProject)')
     print('  Project getProject(AuthzToken authzToken, string projectId)')
@@ -79,13 +75,16 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  ApplicationModule getApplicationModule(AuthzToken authzToken, string appModuleId)')
     print('  bool updateApplicationModule(AuthzToken authzToken, string appModuleId, ApplicationModule applicationModule)')
     print('   getAllAppModules(AuthzToken authzToken, string gatewayId)')
+    print('   getAccessibleAppModules(AuthzToken authzToken, string gatewayId)')
     print('  bool deleteApplicationModule(AuthzToken authzToken, string appModuleId)')
     print('  string registerApplicationDeployment(AuthzToken authzToken, string gatewayId, ApplicationDeploymentDescription applicationDeployment)')
     print('  ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, string appDeploymentId)')
     print('  bool updateApplicationDeployment(AuthzToken authzToken, string appDeploymentId, ApplicationDeploymentDescription applicationDeployment)')
     print('  bool deleteApplicationDeployment(AuthzToken authzToken, string appDeploymentId)')
     print('   getAllApplicationDeployments(AuthzToken authzToken, string gatewayId)')
+    print('   getAccessibleApplicationDeployments(AuthzToken authzToken, string gatewayId, ResourcePermissionType permissionType)')
     print('   getAppModuleDeployedResources(AuthzToken authzToken, string appModuleId)')
+    print('   getApplicationDeploymentsForAppModuleAndGroupResourceProfile(AuthzToken authzToken, string appModuleId, string groupResourceProfileId)')
     print('  string registerApplicationInterface(AuthzToken authzToken, string gatewayId, ApplicationInterfaceDescription applicationInterface)')
     print('  string cloneApplicationInterface(AuthzToken authzToken, string existingAppInterfaceID, string newApplicationName, string gatewayId)')
     print('  ApplicationInterfaceDescription getApplicationInterface(AuthzToken authzToken, string appInterfaceId)')
@@ -162,6 +161,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool isSSHSetupCompleteForUserComputeResourcePreference(AuthzToken authzToken, string computeResourceId, string airavataCredStoreToken)')
     print('  UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(AuthzToken authzToken, string computeResourceId, string userId, string airavataCredStoreToken)')
     print('  string registerUserResourceProfile(AuthzToken authzToken, UserResourceProfile userResourceProfile)')
+    print('  bool isUserResourceProfileExists(AuthzToken authzToken, string userId, string gatewayID)')
     print('  UserResourceProfile getUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID)')
     print('  bool updateUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID, UserResourceProfile userResourceProfile)')
     print('  bool deleteUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID)')
@@ -176,22 +176,46 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool updateUserStoragePreference(AuthzToken authzToken, string userId, string gatewayID, string userStorageId, UserStoragePreference userStoragePreference)')
     print('  bool deleteUserComputeResourcePreference(AuthzToken authzToken, string userId, string gatewayID, string userComputeResourceId)')
     print('  bool deleteUserStoragePreference(AuthzToken authzToken, string userId, string gatewayID, string userStorageId)')
-    print('   getAllWorkflows(AuthzToken authzToken, string gatewayId)')
     print('   getLatestQueueStatuses(AuthzToken authzToken)')
-    print('  WorkflowModel getWorkflow(AuthzToken authzToken, string workflowTemplateId)')
-    print('  void deleteWorkflow(AuthzToken authzToken, string workflowTemplateId)')
-    print('  string registerWorkflow(AuthzToken authzToken, string gatewayId, WorkflowModel workflow)')
-    print('  void updateWorkflow(AuthzToken authzToken, string workflowTemplateId, WorkflowModel workflow)')
-    print('  string getWorkflowTemplateId(AuthzToken authzToken, string workflowName)')
-    print('  bool isWorkflowExistWithName(AuthzToken authzToken, string workflowName)')
     print('  string registerDataProduct(AuthzToken authzToken, DataProductModel dataProductModel)')
     print('  DataProductModel getDataProduct(AuthzToken authzToken, string dataProductUri)')
     print('  string registerReplicaLocation(AuthzToken authzToken, DataReplicaLocationModel replicaLocationModel)')
     print('  DataProductModel getParentDataProduct(AuthzToken authzToken, string productUri)')
     print('   getChildDataProducts(AuthzToken authzToken, string productUri)')
-    print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
-    print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
-    print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType, ResourcePermissionType permissionType)')
+    print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId,  userPermissionList)')
+    print('  bool shareResourceWithGroups(AuthzToken authzToken, string resourceId,  groupPermissionList)')
+    print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId,  userPermissionList)')
+    print('  bool revokeSharingOfResourceFromGroups(AuthzToken authzToken, string resourceId,  groupPermissionList)')
+    print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('   getAllAccessibleGroups(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('   getAllDirectlyAccessibleUsers(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('   getAllDirectlyAccessibleGroups(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('  bool userHasAccess(AuthzToken authzToken, string resourceId, ResourcePermissionType permissionType)')
+    print('  string createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
+    print('  void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
+    print('  GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, string groupResourceProfileId)')
+    print('  bool removeGroupResourceProfile(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupResourceList(AuthzToken authzToken, string gatewayId)')
+    print('  bool removeGroupComputePrefs(AuthzToken authzToken, string computeResourceId, string groupResourceProfileId)')
+    print('  bool removeGroupComputeResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  bool removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  GroupComputeResourcePreference getGroupComputeResourcePreference(AuthzToken authzToken, string computeResourceId, string groupResourceProfileId)')
+    print('  ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('   getGroupComputeResourcePrefList(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupBatchQueueResourcePolicyList(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupComputeResourcePolicyList(AuthzToken authzToken, string groupResourceProfileId)')
+    print('  GatewayGroups getGatewayGroups(AuthzToken authzToken)')
+    print('  Parser getParser(AuthzToken authzToken, string parserId, string gatewayId)')
+    print('  string saveParser(AuthzToken authzToken, Parser parser)')
+    print('   listAllParsers(AuthzToken authzToken, string gatewayId)')
+    print('  bool removeParser(AuthzToken authzToken, string parserId, string gatewayId)')
+    print('  ParsingTemplate getParsingTemplate(AuthzToken authzToken, string templateId, string gatewayId)')
+    print('   getParsingTemplatesForExperiment(AuthzToken authzToken, string experimentId, string gatewayId)')
+    print('  string saveParsingTemplate(AuthzToken authzToken, ParsingTemplate parsingTemplate)')
+    print('  bool removeParsingTemplate(AuthzToken authzToken, string templateId, string gatewayId)')
+    print('   listAllParsingTemplates(AuthzToken authzToken, string gatewayId)')
+    print('  string getAPIVersion()')
     print('')
     sys.exit(0)
 
@@ -271,13 +295,7 @@ protocol = TBinaryProtocol(transport)
 client = Airavata.Client(protocol)
 transport.open()
 
-if cmd == 'getAPIVersion':
-    if len(args) != 1:
-        print('getAPIVersion requires 1 args')
-        sys.exit(1)
-    pp.pprint(client.getAPIVersion(eval(args[0]),))
-
-elif cmd == 'isUserExists':
+if cmd == 'isUserExists':
     if len(args) != 3:
         print('isUserExists requires 3 args')
         sys.exit(1)
@@ -356,58 +374,40 @@ elif cmd == 'getAllNotifications':
     pp.pprint(client.getAllNotifications(eval(args[0]), args[1],))
 
 elif cmd == 'generateAndRegisterSSHKeys':
-    if len(args) != 5:
-        print('generateAndRegisterSSHKeys requires 5 args')
+    if len(args) != 2:
+        print('generateAndRegisterSSHKeys requires 2 args')
         sys.exit(1)
-    pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]), args[1], args[2], args[3], eval(args[4]),))
+    pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]), args[1],))
 
 elif cmd == 'registerPwdCredential':
-    if len(args) != 6:
-        print('registerPwdCredential requires 6 args')
-        sys.exit(1)
-    pp.pprint(client.registerPwdCredential(eval(args[0]), args[1], args[2], args[3], args[4], args[5],))
-
-elif cmd == 'getSSHPubKey':
-    if len(args) != 3:
-        print('getSSHPubKey requires 3 args')
-        sys.exit(1)
-    pp.pprint(client.getSSHPubKey(eval(args[0]), args[1], args[2],))
-
-elif cmd == 'getAllGatewaySSHPubKeys':
-    if len(args) != 2:
-        print('getAllGatewaySSHPubKeys requires 2 args')
-        sys.exit(1)
-    pp.pprint(client.getAllGatewaySSHPubKeys(eval(args[0]), args[1],))
-
-elif cmd == 'getAllCredentialSummaryForGateway':
-    if len(args) != 3:
-        print('getAllCredentialSummaryForGateway requires 3 args')
-        sys.exit(1)
-    pp.pprint(client.getAllCredentialSummaryForGateway(eval(args[0]), eval(args[1]), args[2],))
-
-elif cmd == 'getAllCredentialSummaryForUsersInGateway':
     if len(args) != 4:
-        print('getAllCredentialSummaryForUsersInGateway requires 4 args')
+        print('registerPwdCredential requires 4 args')
         sys.exit(1)
-    pp.pprint(client.getAllCredentialSummaryForUsersInGateway(eval(args[0]), eval(args[1]), args[2], args[3],))
+    pp.pprint(client.registerPwdCredential(eval(args[0]), args[1], args[2], args[3],))
 
-elif cmd == 'getAllGatewayPWDCredentials':
+elif cmd == 'getCredentialSummary':
     if len(args) != 2:
-        print('getAllGatewayPWDCredentials requires 2 args')
+        print('getCredentialSummary requires 2 args')
         sys.exit(1)
-    pp.pprint(client.getAllGatewayPWDCredentials(eval(args[0]), args[1],))
+    pp.pprint(client.getCredentialSummary(eval(args[0]), args[1],))
+
+elif cmd == 'getAllCredentialSummaries':
+    if len(args) != 2:
+        print('getAllCredentialSummaries requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getAllCredentialSummaries(eval(args[0]), eval(args[1]),))
 
 elif cmd == 'deleteSSHPubKey':
-    if len(args) != 3:
-        print('deleteSSHPubKey requires 3 args')
+    if len(args) != 2:
+        print('deleteSSHPubKey requires 2 args')
         sys.exit(1)
-    pp.pprint(client.deleteSSHPubKey(eval(args[0]), args[1], args[2],))
+    pp.pprint(client.deleteSSHPubKey(eval(args[0]), args[1],))
 
 elif cmd == 'deletePWDCredential':
-    if len(args) != 3:
-        print('deletePWDCredential requires 3 args')
+    if len(args) != 2:
+        print('deletePWDCredential requires 2 args')
         sys.exit(1)
-    pp.pprint(client.deletePWDCredential(eval(args[0]), args[1], args[2],))
+    pp.pprint(client.deletePWDCredential(eval(args[0]), args[1],))
 
 elif cmd == 'createProject':
     if len(args) != 3:
@@ -601,6 +601,12 @@ elif cmd == 'getAllAppModules':
         sys.exit(1)
     pp.pprint(client.getAllAppModules(eval(args[0]), args[1],))
 
+elif cmd == 'getAccessibleAppModules':
+    if len(args) != 2:
+        print('getAccessibleAppModules requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getAccessibleAppModules(eval(args[0]), args[1],))
+
 elif cmd == 'deleteApplicationModule':
     if len(args) != 2:
         print('deleteApplicationModule requires 2 args')
@@ -637,11 +643,23 @@ elif cmd == 'getAllApplicationDeployments':
         sys.exit(1)
     pp.pprint(client.getAllApplicationDeployments(eval(args[0]), args[1],))
 
+elif cmd == 'getAccessibleApplicationDeployments':
+    if len(args) != 3:
+        print('getAccessibleApplicationDeployments requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAccessibleApplicationDeployments(eval(args[0]), args[1], eval(args[2]),))
+
 elif cmd == 'getAppModuleDeployedResources':
     if len(args) != 2:
         print('getAppModuleDeployedResources requires 2 args')
         sys.exit(1)
     pp.pprint(client.getAppModuleDeployedResources(eval(args[0]), args[1],))
+
+elif cmd == 'getApplicationDeploymentsForAppModuleAndGroupResourceProfile':
+    if len(args) != 3:
+        print('getApplicationDeploymentsForAppModuleAndGroupResourceProfile requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getApplicationDeploymentsForAppModuleAndGroupResourceProfile(eval(args[0]), args[1], args[2],))
 
 elif cmd == 'registerApplicationInterface':
     if len(args) != 3:
@@ -1099,6 +1117,12 @@ elif cmd == 'registerUserResourceProfile':
         sys.exit(1)
     pp.pprint(client.registerUserResourceProfile(eval(args[0]), eval(args[1]),))
 
+elif cmd == 'isUserResourceProfileExists':
+    if len(args) != 3:
+        print('isUserResourceProfileExists requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.isUserResourceProfileExists(eval(args[0]), args[1], args[2],))
+
 elif cmd == 'getUserResourceProfile':
     if len(args) != 3:
         print('getUserResourceProfile requires 3 args')
@@ -1183,53 +1207,11 @@ elif cmd == 'deleteUserStoragePreference':
         sys.exit(1)
     pp.pprint(client.deleteUserStoragePreference(eval(args[0]), args[1], args[2], args[3],))
 
-elif cmd == 'getAllWorkflows':
-    if len(args) != 2:
-        print('getAllWorkflows requires 2 args')
-        sys.exit(1)
-    pp.pprint(client.getAllWorkflows(eval(args[0]), args[1],))
-
 elif cmd == 'getLatestQueueStatuses':
     if len(args) != 1:
         print('getLatestQueueStatuses requires 1 args')
         sys.exit(1)
     pp.pprint(client.getLatestQueueStatuses(eval(args[0]),))
-
-elif cmd == 'getWorkflow':
-    if len(args) != 2:
-        print('getWorkflow requires 2 args')
-        sys.exit(1)
-    pp.pprint(client.getWorkflow(eval(args[0]), args[1],))
-
-elif cmd == 'deleteWorkflow':
-    if len(args) != 2:
-        print('deleteWorkflow requires 2 args')
-        sys.exit(1)
-    pp.pprint(client.deleteWorkflow(eval(args[0]), args[1],))
-
-elif cmd == 'registerWorkflow':
-    if len(args) != 3:
-        print('registerWorkflow requires 3 args')
-        sys.exit(1)
-    pp.pprint(client.registerWorkflow(eval(args[0]), args[1], eval(args[2]),))
-
-elif cmd == 'updateWorkflow':
-    if len(args) != 3:
-        print('updateWorkflow requires 3 args')
-        sys.exit(1)
-    pp.pprint(client.updateWorkflow(eval(args[0]), args[1], eval(args[2]),))
-
-elif cmd == 'getWorkflowTemplateId':
-    if len(args) != 2:
-        print('getWorkflowTemplateId requires 2 args')
-        sys.exit(1)
-    pp.pprint(client.getWorkflowTemplateId(eval(args[0]), args[1],))
-
-elif cmd == 'isWorkflowExistWithName':
-    if len(args) != 2:
-        print('isWorkflowExistWithName requires 2 args')
-        sys.exit(1)
-    pp.pprint(client.isWorkflowExistWithName(eval(args[0]), args[1],))
 
 elif cmd == 'registerDataProduct':
     if len(args) != 2:
@@ -1262,22 +1244,208 @@ elif cmd == 'getChildDataProducts':
     pp.pprint(client.getChildDataProducts(eval(args[0]), args[1],))
 
 elif cmd == 'shareResourceWithUsers':
-    if len(args) != 4:
-        print('shareResourceWithUsers requires 4 args')
+    if len(args) != 3:
+        print('shareResourceWithUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.shareResourceWithUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.shareResourceWithUsers(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'shareResourceWithGroups':
+    if len(args) != 3:
+        print('shareResourceWithGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.shareResourceWithGroups(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'revokeSharingOfResourceFromUsers':
-    if len(args) != 4:
-        print('revokeSharingOfResourceFromUsers requires 4 args')
+    if len(args) != 3:
+        print('revokeSharingOfResourceFromUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.revokeSharingOfResourceFromUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.revokeSharingOfResourceFromUsers(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'revokeSharingOfResourceFromGroups':
+    if len(args) != 3:
+        print('revokeSharingOfResourceFromGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.revokeSharingOfResourceFromGroups(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'getAllAccessibleUsers':
-    if len(args) != 4:
-        print('getAllAccessibleUsers requires 4 args')
+    if len(args) != 3:
+        print('getAllAccessibleUsers requires 3 args')
         sys.exit(1)
-    pp.pprint(client.getAllAccessibleUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+    pp.pprint(client.getAllAccessibleUsers(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'getAllAccessibleGroups':
+    if len(args) != 3:
+        print('getAllAccessibleGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAllAccessibleGroups(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'getAllDirectlyAccessibleUsers':
+    if len(args) != 3:
+        print('getAllDirectlyAccessibleUsers requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAllDirectlyAccessibleUsers(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'getAllDirectlyAccessibleGroups':
+    if len(args) != 3:
+        print('getAllDirectlyAccessibleGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAllDirectlyAccessibleGroups(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'userHasAccess':
+    if len(args) != 3:
+        print('userHasAccess requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.userHasAccess(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'createGroupResourceProfile':
+    if len(args) != 2:
+        print('createGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.createGroupResourceProfile(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'updateGroupResourceProfile':
+    if len(args) != 2:
+        print('updateGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.updateGroupResourceProfile(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'getGroupResourceProfile':
+    if len(args) != 2:
+        print('getGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupResourceProfile(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupResourceProfile':
+    if len(args) != 2:
+        print('removeGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupResourceProfile(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupResourceList':
+    if len(args) != 2:
+        print('getGroupResourceList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupResourceList(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupComputePrefs':
+    if len(args) != 3:
+        print('removeGroupComputePrefs requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupComputePrefs(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'removeGroupComputeResourcePolicy':
+    if len(args) != 2:
+        print('removeGroupComputeResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupComputeResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupBatchQueueResourcePolicy':
+    if len(args) != 2:
+        print('removeGroupBatchQueueResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupBatchQueueResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePreference':
+    if len(args) != 3:
+        print('getGroupComputeResourcePreference requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePreference(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'getGroupComputeResourcePolicy':
+    if len(args) != 2:
+        print('getGroupComputeResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getBatchQueueResourcePolicy':
+    if len(args) != 2:
+        print('getBatchQueueResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getBatchQueueResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePrefList':
+    if len(args) != 2:
+        print('getGroupComputeResourcePrefList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePrefList(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupBatchQueueResourcePolicyList':
+    if len(args) != 2:
+        print('getGroupBatchQueueResourcePolicyList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupBatchQueueResourcePolicyList(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePolicyList':
+    if len(args) != 2:
+        print('getGroupComputeResourcePolicyList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePolicyList(eval(args[0]), args[1],))
+
+elif cmd == 'getGatewayGroups':
+    if len(args) != 1:
+        print('getGatewayGroups requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.getGatewayGroups(eval(args[0]),))
+
+elif cmd == 'getParser':
+    if len(args) != 3:
+        print('getParser requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getParser(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'saveParser':
+    if len(args) != 2:
+        print('saveParser requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.saveParser(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'listAllParsers':
+    if len(args) != 2:
+        print('listAllParsers requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.listAllParsers(eval(args[0]), args[1],))
+
+elif cmd == 'removeParser':
+    if len(args) != 3:
+        print('removeParser requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeParser(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'getParsingTemplate':
+    if len(args) != 3:
+        print('getParsingTemplate requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getParsingTemplate(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'getParsingTemplatesForExperiment':
+    if len(args) != 3:
+        print('getParsingTemplatesForExperiment requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getParsingTemplatesForExperiment(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'saveParsingTemplate':
+    if len(args) != 2:
+        print('saveParsingTemplate requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.saveParsingTemplate(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'removeParsingTemplate':
+    if len(args) != 3:
+        print('removeParsingTemplate requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeParsingTemplate(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'listAllParsingTemplates':
+    if len(args) != 2:
+        print('listAllParsingTemplates requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.listAllParsingTemplates(eval(args[0]), args[1],))
+
+elif cmd == 'getAPIVersion':
+    if len(args) != 0:
+        print('getAPIVersion requires 0 args')
+        sys.exit(1)
+    pp.pprint(client.getAPIVersion())
 
 else:
     print('Unrecognized method %s' % cmd)

@@ -20,8 +20,7 @@
     under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -39,7 +38,7 @@
     <artifactId>airavata</artifactId>
     <packaging>pom</packaging>
     <name>Airavata</name>
-    <version>0.18-SNAPSHOT</version>
+    <version>0.19-SNAPSHOT</version>
 
     <url>http://airavata.apache.org/</url>
     <inceptionYear>2011</inceptionYear>
@@ -118,6 +117,8 @@
         <json.version>20160212</json.version>
         <commons.io.version>2.4</commons.io.version>
         <google.guava.version>20.0</google.guava.version>
+        <jacoco.version>0.8.1</jacoco.version>
+        <openjpa.version>2.4.3</openjpa.version>
     </properties>
 
     <developers>
@@ -557,9 +558,24 @@
             </snapshots>
         </repository>
         <repository>
+            <id>wso2</id>
+            <name>Repository</name>
+            <url>https://dist.wso2.org/maven2</url>
+        </repository>
+        <repository>
             <id>oauth</id>
             <name>OAuth Repository</name>
             <url>https://oauth.googlecode.com/svn/code/maven</url>
+        </repository>
+        <repository>
+            <id>wso2-nexus</id>
+            <name>WSO2 internal Repository</name>
+            <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
         </repository>
     </repositories>
 
@@ -581,7 +597,13 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
+		    <plugin>
+		       <groupId>org.apache.maven.plugins</groupId>
+		       <artifactId>maven-jar-plugins</artifactId>
+		       <version>${openjpa.version}</version>
+		    </plugin>
+		    
+		    <plugin>
                         <groupId>com.lukegb.mojo</groupId>
                         <artifactId>gitdescribe-maven-plugin</artifactId>
                         <version>3.0</version>
@@ -689,6 +711,45 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.version}</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>post-unit-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Sets the path to the file which contains the execution data. -->
+
+                                    <dataFile>target/jacoco.exec</dataFile>
+                                    <!-- Sets the output directory for the code coverage report. -->
+                                    <outputDirectory>target/jacoco-ut</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
             <activation>
@@ -713,6 +774,7 @@
                 <module>modules/job-monitor</module>
                 <module>modules/distribution</module>
                 <module>tools</module>
+                <module>modules/ide-integration</module>
             </modules>
         </profile>
         <profile>

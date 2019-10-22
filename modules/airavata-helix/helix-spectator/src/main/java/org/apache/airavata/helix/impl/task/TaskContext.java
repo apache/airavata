@@ -24,16 +24,24 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -54,58 +62,65 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+/**
+ * Note: process context property use lazy loading approach. In runtime you will see some properties as null
+ * unless you have access it previously. Once that property access using the api,it will be set to correct value.
+ */
 public class TaskContext {
 
     private final static Logger logger = LoggerFactory.getLogger(TaskContext.class);
-    // process model
-    private final String processId;
-    private final String gatewayId;
-    //private final String tokenId;
+
+    private Publisher statusPublisher;
+    private RegistryService.Client registryClient;
+    private UserProfileService.Client profileClient;
+
+    private String processId;
+    private String gatewayId;
+    private String taskId;
+
     private ProcessModel processModel;
+    private JobModel jobModel;
+    private Object subTaskModel = null;
+
     private String workingDir;
     private String scratchLocation;
     private String inputDir;
     private String outputDir;
-    private String localWorkingDir;
+    private String stdoutLocation;
+    private String stderrLocation;
+
     private GatewayResourceProfile gatewayResourceProfile;
-    private ComputeResourcePreference gatewayComputeResourcePreference;
-    private StoragePreference gatewayStorageResourcePreference;
     private UserResourceProfile userResourceProfile;
+    private GroupResourceProfile groupResourceProfile;
+    private UserProfile userProfile;
+
+    private StoragePreference gatewayStorageResourcePreference;
     private UserComputeResourcePreference userComputeResourcePreference;
     private UserStoragePreference userStoragePreference;
+    private GroupComputeResourcePreference groupComputeResourcePreference;
+
     private ComputeResourceDescription computeResourceDescription;
     private ApplicationDeploymentDescription applicationDeploymentDescription;
     private ApplicationInterfaceDescription applicationInterfaceDescription;
-    private Map<String, String> sshProperties;
-    private String stdoutLocation;
-    private String stderrLocation;
+    private StorageResourceDescription storageResourceDescription;
+
     private JobSubmissionProtocol jobSubmissionProtocol;
     private DataMovementProtocol dataMovementProtocol;
-    private JobModel jobModel;
-    private StorageResourceDescription storageResource;
-    private MonitorMode monitorMode;
     private ResourceJobManager resourceJobManager;
-    private boolean handOver;
-    private boolean cancel;
+
     private List<String> taskExecutionOrder;
     private List<TaskModel> taskList;
     private Map<String, TaskModel> taskMap;
-    private boolean pauseTaskExecution = false;  // Task can pause task execution by setting this value
-    private boolean complete = false; // all tasks executed?
-    private boolean recovery = false; // is process in recovery mode?
-    private TaskModel currentExecutingTaskModel; // current execution task model in case we pause process execution we need this to continue process exectuion again
-    private boolean acknowledge;
-    private boolean recoveryWithCancel = false;
-    private String usageReportingGatewayId;
-    private List<String> queueSpecificMacros;
-    private String taskId;
-    private Object subTaskModel = null;
-    private RegistryService.Client registryClient;
-    private UserProfileService.Client profileClient;
-    private UserProfile userProfile;
-
 
     /**
      * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -117,8 +132,20 @@ public class TaskContext {
         this.taskId = taskId;
     }
 
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
     public String getGatewayId() {
         return gatewayId;
+    }
+
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     public String getProcessId() {
@@ -127,6 +154,14 @@ public class TaskContext {
 
     public String getTaskId() {
         return taskId;
+    }
+
+    public Publisher getStatusPublisher() {
+        return statusPublisher;
+    }
+
+    public void setStatusPublisher(Publisher statusPublisher) {
+        this.statusPublisher = statusPublisher;
     }
 
     public ProcessModel getProcessModel() {
@@ -158,12 +193,16 @@ public class TaskContext {
                 scratchLocation = userComputeResourcePreference.getScratchLocation();
             } else if (isValid(processModel.getProcessResourceSchedule().getOverrideScratchLocation())) {
                 scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
-            }else {
-                scratchLocation = gatewayComputeResourcePreference.getScratchLocation();
+            } else if (isSetGroupResourceProfile() && groupComputeResourcePreference != null &&
+                    isValid(groupComputeResourcePreference.getScratchLocation())) {
+                scratchLocation = groupComputeResourcePreference.getScratchLocation();
+            } else {
+                throw new RuntimeException("Can't find a specified scratch location for compute resource " + getComputeResourceId());
             }
         }
         return scratchLocation;
     }
+
 
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
@@ -175,6 +214,22 @@ public class TaskContext {
 
     public void setGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         this.gatewayResourceProfile = gatewayResourceProfile;
+    }
+
+    public GroupResourceProfile getGroupResourceProfile() {
+        return groupResourceProfile;
+    }
+
+    public void setGroupResourceProfile(GroupResourceProfile groupResourceProfile) {
+        this.groupResourceProfile = groupResourceProfile;
+    }
+
+    public GroupComputeResourcePreference getGroupComputeResourcePreference() {
+        return groupComputeResourcePreference;
+    }
+
+    public void setGroupComputeResourcePreference(GroupComputeResourcePreference groupComputeResourcePreference) {
+        this.groupComputeResourcePreference = groupComputeResourcePreference;
     }
 
     public UserResourceProfile getUserResourceProfile() {
@@ -207,15 +262,6 @@ public class TaskContext {
 
     public void setGatewayStorageResourcePreference(StoragePreference gatewayStorageResourcePreference) {
         this.gatewayStorageResourcePreference = gatewayStorageResourcePreference;
-    }
-
-
-    public Map<String, String> getSshProperties() {
-        return sshProperties;
-    }
-
-    public void setSshProperties(Map<String, String> sshProperties) {
-        this.sshProperties = sshProperties;
     }
 
     public ComputeResourceDescription getComputeResourceDescription() {
@@ -283,18 +329,23 @@ public class TaskContext {
 
     public JobSubmissionProtocol getJobSubmissionProtocol() {
         if (jobSubmissionProtocol == null) {
-            jobSubmissionProtocol = gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
+            // Take highest priority one
+            List<JobSubmissionInterface> jobSubmissionInterfaces = computeResourceDescription.getJobSubmissionInterfaces();
+            Collections.sort(jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
+            jobSubmissionProtocol = jobSubmissionInterfaces.get(0).getJobSubmissionProtocol();
         }
         return jobSubmissionProtocol;
     }
-
     public void setJobSubmissionProtocol(JobSubmissionProtocol jobSubmissionProtocol) {
         this.jobSubmissionProtocol = jobSubmissionProtocol;
     }
 
     public DataMovementProtocol getDataMovementProtocol() {
         if (dataMovementProtocol == null) {
-            dataMovementProtocol = gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
+            // Take highest priority one
+            List<DataMovementInterface> dataMovementInterfaces = computeResourceDescription.getDataMovementInterfaces();
+            Collections.sort(dataMovementInterfaces, Comparator.comparingInt(DataMovementInterface::getPriorityOrder));
+            dataMovementProtocol = dataMovementInterfaces.get(0).getDataMovementProtocol();
         }
         return dataMovementProtocol;
     }
@@ -355,14 +406,6 @@ public class TaskContext {
         this.jobModel = jobModel;
     }
 
-    public ComputeResourcePreference getGatewayComputeResourcePreference() {
-        return gatewayComputeResourcePreference;
-    }
-
-    public void setGatewayComputeResourcePreference(ComputeResourcePreference gatewayComputeResourcePreference) {
-        this.gatewayComputeResourcePreference = gatewayComputeResourcePreference;
-    }
-
     public ProcessState getProcessState() {
         if(processModel.getProcessStatuses() != null && processModel.getProcessStatuses().size() > 0)
             return processModel.getProcessStatuses().get(0).getState();
@@ -408,7 +451,7 @@ public class TaskContext {
                 isValid(userComputeResourcePreference.getComputeResourceId())) {
             return userComputeResourcePreference.getComputeResourceId();
         } else {
-            return gatewayComputeResourcePreference.getComputeResourceId();
+            return groupComputeResourcePreference.getComputeResourceId();
         }
     }
 
@@ -420,12 +463,12 @@ public class TaskContext {
             } else {
                 return userResourceProfile.getCredentialStoreToken();
             }
+        }  else if (isSetGroupResourceProfile() &&
+                groupComputeResourcePreference != null &&
+                isValid(groupComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+            return groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
         } else {
-            if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
-                return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
-            } else {
-                return gatewayResourceProfile.getCredentialStoreToken();
-            }
+            return groupResourceProfile.getDefaultCredentialStoreToken();
         }
     }
 
@@ -438,19 +481,11 @@ public class TaskContext {
     }
 
     public JobSubmissionProtocol getPreferredJobSubmissionProtocol(){
-        return gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
+        return getJobSubmissionProtocol();
     }
 
     public DataMovementProtocol getPreferredDataMovementProtocol() {
-        return gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
-    }
-
-    public void setMonitorMode(MonitorMode monitorMode) {
-        this.monitorMode = monitorMode;
-    }
-
-    public MonitorMode getMonitorMode() {
-        return monitorMode;
+        return getDataMovementProtocol();
     }
 
     public void setResourceJobManager(ResourceJobManager resourceJobManager) {
@@ -499,44 +534,35 @@ public class TaskContext {
         return processModel.getExperimentId();
     }
 
-    public StorageResourceDescription getStorageResource() {
-        return storageResource;
+    public StorageResourceDescription getStorageResourceDescription() {
+        return storageResourceDescription;
     }
 
-    public void setStorageResource(StorageResourceDescription storageResource) {
-        this.storageResource = storageResource;
-    }
-
-    public void setAcknowledge(boolean acknowledge) {
-        this.acknowledge = acknowledge;
-    }
-
-    public boolean isAcknowledge() {
-        return acknowledge;
-    }
-
-    public boolean isRecoveryWithCancel() {
-        return recoveryWithCancel;
-    }
-
-    public void setRecoveryWithCancel(boolean recoveryWithCancel) {
-        this.recoveryWithCancel = recoveryWithCancel;
+    public void setStorageResourceDescription(StorageResourceDescription storageResourceDescription) {
+        this.storageResourceDescription = storageResourceDescription;
     }
 
     public boolean isUseUserCRPref() {
         return getProcessModel().isUseUserCRPref();
     }
 
-    public String getComputeResourceLoginUserName(){
+    public boolean isSetGroupResourceProfile() {
+        return getProcessModel().isSetGroupResourceProfileId();
+    }
+
+    public String getComputeResourceLoginUserName() {
         if (isUseUserCRPref() &&
                 userComputeResourcePreference != null &&
                 isValid(userComputeResourcePreference.getLoginUserName())) {
             return userComputeResourcePreference.getLoginUserName();
         } else if (isValid(processModel.getProcessResourceSchedule().getOverrideLoginUserName())) {
             return processModel.getProcessResourceSchedule().getOverrideLoginUserName();
-        } else {
-            return gatewayComputeResourcePreference.getLoginUserName();
+        } else if (isSetGroupResourceProfile() &&
+                groupComputeResourcePreference != null &&
+                isValid(groupComputeResourcePreference.getLoginUserName())){
+            return groupComputeResourcePreference.getLoginUserName();
         }
+        throw new RuntimeException("Can't find login username for compute resource");
     }
 
     public String getStorageResourceLoginUserName(){
@@ -594,15 +620,19 @@ public class TaskContext {
         return str != null && !str.trim().isEmpty();
     }
 
-    public String getUsageReportingGatewayId() {
-        return gatewayComputeResourcePreference.getUsageReportingGatewayId();
-    }
-
     public String getAllocationProjectNumber() {
         if (isValid(processModel.getProcessResourceSchedule().getOverrideAllocationProjectNumber())) {
             return processModel.getProcessResourceSchedule().getOverrideAllocationProjectNumber();
+        } else if (isUseUserCRPref() &&
+                userComputeResourcePreference != null &&
+                userComputeResourcePreference.getAllocationProjectNumber() != null) {
+            return userComputeResourcePreference.getAllocationProjectNumber();
+        } else if (isSetGroupResourceProfile() &&
+                groupComputeResourcePreference != null &&
+                isValid(groupComputeResourcePreference.getAllocationProjectNumber())){
+            return groupComputeResourcePreference.getAllocationProjectNumber();
         } else {
-            return gatewayComputeResourcePreference.getAllocationProjectNumber();
+            return null;
         }
     }
 
@@ -616,9 +646,9 @@ public class TaskContext {
             start = userComputeResourcePreference.getReservationStartTime();
             end = userComputeResourcePreference.getReservationEndTime();
         } else {
-            reservation = gatewayComputeResourcePreference.getReservation();
-            start = gatewayComputeResourcePreference.getReservationStartTime();
-            end = gatewayComputeResourcePreference.getReservationEndTime();
+            reservation = groupComputeResourcePreference.getReservation();
+            start = groupComputeResourcePreference.getReservationStartTime();
+            end = groupComputeResourcePreference.getReservationEndTime();
         }
         if (reservation != null && start > 0 && start < end) {
             long now = Calendar.getInstance().getTimeInMillis();
@@ -635,7 +665,7 @@ public class TaskContext {
                 isValid(userComputeResourcePreference.getQualityOfService())) {
             return userComputeResourcePreference.getQualityOfService();
         } else {
-            return gatewayComputeResourcePreference.getQualityOfService();
+            return groupComputeResourcePreference.getQualityOfService();
         }
     }
 
@@ -647,8 +677,13 @@ public class TaskContext {
             return userComputeResourcePreference.getPreferredBatchQueue();
         } else if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
             return processModel.getProcessResourceSchedule().getQueueName();
-        } else {
-            return gatewayComputeResourcePreference.getPreferredBatchQueue();
+        }  else {
+            Optional<BatchQueue> defaultQueue = computeResourceDescription.getBatchQueues().stream().filter(q -> q.isIsDefaultQueue()).findFirst();
+            if (defaultQueue.isPresent()) {
+                return defaultQueue.get().getQueueName();
+            } else {
+                throw new RuntimeException("Can't find default queue for resource " + computeResourceDescription.getComputeResourceId());
+            }
         }
     }
 
@@ -713,9 +748,6 @@ public class TaskContext {
         private final String taskId;
         private RegistryService.Client registryClient;
         private UserProfileService.Client profileClient;
-        private GatewayResourceProfile gatewayResourceProfile;
-        private ComputeResourcePreference gatewayComputeResourcePreference;
-        private StoragePreference gatewayStorageResourcePreference;
         private ProcessModel processModel;
 
         @SuppressWarnings("WeakerAccess")
@@ -726,21 +758,6 @@ public class TaskContext {
             this.processId = processId;
             this.gatewayId = gatewayId;
             this.taskId = taskId;
-        }
-
-        public TaskContextBuilder setGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
-            this.gatewayResourceProfile = gatewayResourceProfile;
-            return this;
-        }
-
-        public TaskContextBuilder setGatewayComputeResourcePreference(ComputeResourcePreference gatewayComputeResourcePreference) {
-            this.gatewayComputeResourcePreference = gatewayComputeResourcePreference;
-            return this;
-        }
-
-        public TaskContextBuilder setGatewayStorageResourcePreference(StoragePreference gatewayStorageResourcePreference) {
-            this.gatewayStorageResourcePreference = gatewayStorageResourcePreference;
-            return this;
         }
 
         public TaskContextBuilder setProcessModel(ProcessModel processModel) {
@@ -759,15 +776,7 @@ public class TaskContext {
         }
 
         public TaskContext build() throws Exception {
-            if (notValid(gatewayResourceProfile)) {
-                throwError("Invalid GatewayResourceProfile");
-            }
-            if (notValid(gatewayComputeResourcePreference)) {
-                throwError("Invalid Gateway ComputeResourcePreference");
-            }
-            if (notValid(gatewayStorageResourcePreference)) {
-                throwError("Invalid Gateway StoragePreference");
-            }
+
             if (notValid(processModel)) {
                 throwError("Invalid Process Model");
             }
@@ -779,13 +788,46 @@ public class TaskContext {
             ctx.setRegistryClient(registryClient);
             ctx.setProcessModel(processModel);
             ctx.setProfileClient(profileClient);
-            ctx.setGatewayResourceProfile(gatewayResourceProfile);
-            ctx.setGatewayComputeResourcePreference(gatewayComputeResourcePreference);
-            ctx.setGatewayStorageResourcePreference(gatewayStorageResourcePreference);
-            ctx.setApplicationDeploymentDescription(registryClient.getApplicationDeployment(processModel.getApplicationDeploymentId()));
-            ctx.setApplicationInterfaceDescription(registryClient.getApplicationInterface(processModel.getApplicationInterfaceId()));
-            ctx.setComputeResourceDescription(registryClient.getComputeResource(ctx.getComputeResourceId()));
-            ctx.setStorageResource(registryClient.getStorageResource(ctx.getStorageResourceId()));
+
+            ctx.setGroupComputeResourcePreference(registryClient.getGroupComputeResourcePreference(processModel.getComputeResourceId(),
+                    processModel.getGroupResourceProfileId()));
+
+            ctx.setGroupResourceProfile(registryClient.getGroupResourceProfile(processModel.getGroupResourceProfileId()));
+
+            ctx.setGatewayResourceProfile(
+                    Optional.ofNullable(registryClient.getGatewayResourceProfile(gatewayId))
+                            .orElseThrow(() -> new Exception("Invalid GatewayResourceProfile")));
+
+            logger.debug("Using storage resource preference for storage " + processModel.getStorageResourceId());
+            ctx.setGatewayStorageResourcePreference(
+                    Optional.ofNullable(registryClient.getGatewayStoragePreference(
+                            gatewayId,
+                            processModel.getStorageResourceId()))
+                            .orElseThrow(() -> new Exception("Invalid Gateway StoragePreference")));
+
+            logger.debug("Using application deployment " + processModel.getApplicationDeploymentId());
+            ctx.setApplicationDeploymentDescription(
+                    Optional.ofNullable(registryClient.getApplicationDeployment(
+                            processModel.getApplicationDeploymentId()))
+                            .orElseThrow(() -> new Exception("Invalid Application Deployment")));
+
+            logger.debug("Using application interface " + processModel.getApplicationInterfaceId());
+            ctx.setApplicationInterfaceDescription(
+                    Optional.ofNullable(registryClient.getApplicationInterface(
+                            processModel.getApplicationInterfaceId()))
+                            .orElseThrow(() -> new Exception("Invalid Application Interface")));
+
+            logger.debug("Using compute resource " + ctx.getComputeResourceId());
+            ctx.setComputeResourceDescription(
+                    Optional.ofNullable(registryClient.getComputeResource(
+                            ctx.getComputeResourceId()))
+                            .orElseThrow(() -> new Exception("Invalid Compute Resource Description")));
+
+            logger.debug("Using storage resource " + ctx.getStorageResourceId());
+            ctx.setStorageResourceDescription(
+                    Optional.ofNullable(registryClient.getStorageResource(
+                            ctx.getStorageResourceId()))
+                            .orElseThrow(() -> new Exception("Invalid Storage Resource Description")));
 
             if (processModel.isUseUserCRPref()) {
                 ctx.setUserResourceProfile(registryClient.getUserResourceProfile(processModel.getUserName(), gatewayId));
@@ -834,8 +876,6 @@ public class TaskContext {
         private void throwError(String msg) throws Exception {
             throw new Exception(msg);
         }
-
     }
 }
-
 

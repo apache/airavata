@@ -32,6 +32,10 @@ public class Constants {
      * List of publishers in which sharing service is interested.
      * Add publishers as required
      */
-    public static final List<String> PUBLISHERS = new ArrayList<String>(){{add(DBEventService.USER_PROFILE.toString());
-        add(DBEventService.TENANT.toString());};};
+    public static final List<String> PUBLISHERS = new ArrayList<String>(){{
+        add(DBEventService.USER_PROFILE.toString());
+        add(DBEventService.TENANT.toString());
+        add(DBEventService.REGISTRY.toString());
+        add(DBEventService.IAM_ADMIN.toString());
+    }};
 }

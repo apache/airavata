@@ -99,9 +99,6 @@ struct UserStoragePreference {
  *
  *  identityServerPwdCredToken:
  *
- * isNull:
- *  Indicates that this instance is just a container for a null value.
- *
 */
 struct UserResourceProfile {
     1: required string userId,
@@ -111,5 +108,4 @@ struct UserResourceProfile {
     5: optional list<UserStoragePreference> userStoragePreferences,
     6: optional string identityServerTenant,
     7: optional string identityServerPwdCredToken,
-    8: optional bool isNull = false
 }

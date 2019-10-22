@@ -1,0 +1,13 @@
+.breadcrumb {
+    background-color: #FFFFFF;
+}
+.user-settings {
+    background-color: #FFFFFF;
+    text-align: center;
+}
+.user-settings .well {
+    background-color: #FFFFFF;
+}
+.user-setting-icon {
+    font-size: 2.5em;
+}

@@ -39,8 +39,6 @@ realtime_monitor_broker_publisher: "RealtimeProducer"
 realtime_monitor_broker_consumer_group: "monitor"
 realtime_monitor_broker_topic: "helix-airavata-mq"
 
-job_monitor_broker_topic: "parsed-data"
-
 # kafka related variables
 job_monitor_broker_topic: "parsed-data"
 job_monitor_broker_consumer_group: "MonitoringConsumer"

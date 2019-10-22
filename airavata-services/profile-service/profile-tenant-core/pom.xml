@@ -24,7 +24,7 @@
     <parent>
         <artifactId>profile-service</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.18-SNAPSHOT</version>
+        <version>0.19-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -37,7 +37,6 @@
         <surefire.version>2.18.1</surefire.version>
         <skipTests>false</skipTests>
         <mysql.connector.version>5.1.34</mysql.connector.version>
-        <openjpa.version>2.2.0</openjpa.version>
     </properties>
 
     <dependencies>

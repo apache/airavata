@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
+import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.JobVerificationTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
@@ -277,35 +278,48 @@ public class PostWorkflowManager extends WorkflowManager {
         }
         allTasks.add(completingTask);
 
+        ParsingTriggeringTask parsingTriggeringTask = new ParsingTriggeringTask();
+        parsingTriggeringTask.setGatewayId(experimentModel.getGatewayId());
+        parsingTriggeringTask.setExperimentId(experimentModel.getExperimentId());
+        parsingTriggeringTask.setProcessId(processModel.getProcessId());
+        parsingTriggeringTask.setTaskId("Parsing-Triggering-Task");
+        parsingTriggeringTask.setSkipTaskStatusPublish(true);
+        if (allTasks.size() > 0) {
+            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(parsingTriggeringTask.getTaskId(), parsingTriggeringTask));
+        }
+        allTasks.add(parsingTriggeringTask);
+
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
 
         registerWorkflowForProcess(processId, workflowName, "POST");
     }
 
-    private void runConsumer() throws ApplicationSettingsException {
+    public void startServer() throws Exception {
+
+        init();
         final Consumer<String, JobStatusResult> consumer = createConsumer();
+        new Thread(() -> {
 
-        while (true) {
-            final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
+            while (true) {
+                final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
 
-            for (TopicPartition partition : consumerRecords.partitions()) {
-                List<ConsumerRecord<String, JobStatusResult>> partitionRecords = consumerRecords.records(partition);
-                for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
-                    boolean success = process(record.value());
-                    logger.info("Status of processing " + record.value().getJobId() + " : " + success);
-                    if (success) {
-                        consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
+                for (TopicPartition partition : consumerRecords.partitions()) {
+                    List<ConsumerRecord<String, JobStatusResult>> partitionRecords = consumerRecords.records(partition);
+                    for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
+                        boolean success = process(record.value());
+                        logger.info("Status of processing " + record.value().getJobId() + " : " + success);
+                        if (success) {
+                            consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
+                        }
                     }
                 }
+
+                consumerRecords.forEach(record -> process(record.value()));
+
+                consumer.commitAsync();
             }
-
-            consumerRecords.forEach(record -> {
-                process(record.value());
-            });
-
-            consumer.commitAsync();
-        }
+        }).start();
     }
 
     private void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
@@ -347,10 +361,13 @@ public class PostWorkflowManager extends WorkflowManager {
         }
     }
 
+    public void stopServer() {
+
+    }
+
     public static void main(String[] args) throws Exception {
 
         PostWorkflowManager postManager = new PostWorkflowManager();
-        postManager.init();
-        postManager.runConsumer();
+        postManager.startServer();
     }
 }

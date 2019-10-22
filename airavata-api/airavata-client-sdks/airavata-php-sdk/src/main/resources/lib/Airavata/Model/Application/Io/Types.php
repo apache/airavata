@@ -490,6 +490,10 @@ class OutputDataObjectType {
    * @var string
    */
   public $storageResourceId = null;
+  /**
+   * @var string
+   */
+  public $metaData = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -538,6 +542,10 @@ class OutputDataObjectType {
           'var' => 'storageResourceId',
           'type' => TType::STRING,
           ),
+        12 => array(
+          'var' => 'metaData',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -573,6 +581,9 @@ class OutputDataObjectType {
       }
       if (isset($vals['storageResourceId'])) {
         $this->storageResourceId = $vals['storageResourceId'];
+      }
+      if (isset($vals['metaData'])) {
+        $this->metaData = $vals['metaData'];
       }
     }
   }
@@ -673,6 +684,13 @@ class OutputDataObjectType {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 12:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->metaData);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -739,6 +757,11 @@ class OutputDataObjectType {
     if ($this->storageResourceId !== null) {
       $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 11);
       $xfer += $output->writeString($this->storageResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->metaData !== null) {
+      $xfer += $output->writeFieldBegin('metaData', TType::STRING, 12);
+      $xfer += $output->writeString($this->metaData);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

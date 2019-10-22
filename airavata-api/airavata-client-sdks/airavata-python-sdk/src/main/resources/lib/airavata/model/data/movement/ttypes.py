@@ -504,6 +504,9 @@ class DataMovementInterface(object):
      - dataMovementInterfaceId
      - dataMovementProtocol
      - priorityOrder
+     - creationTime
+     - updateTime
+     - storageResourceId
     """
 
     thrift_spec = (
@@ -511,12 +514,18 @@ class DataMovementInterface(object):
         (1, TType.STRING, 'dataMovementInterfaceId', 'UTF8', None, ),  # 1
         (2, TType.I32, 'dataMovementProtocol', None, None, ),  # 2
         (3, TType.I32, 'priorityOrder', None, 0, ),  # 3
+        (4, TType.I64, 'creationTime', None, None, ),  # 4
+        (5, TType.I64, 'updateTime', None, None, ),  # 5
+        (6, TType.STRING, 'storageResourceId', 'UTF8', None, ),  # 6
     )
 
-    def __init__(self, dataMovementInterfaceId=None, dataMovementProtocol=None, priorityOrder=thrift_spec[3][4],):
+    def __init__(self, dataMovementInterfaceId=None, dataMovementProtocol=None, priorityOrder=thrift_spec[3][4], creationTime=None, updateTime=None, storageResourceId=None,):
         self.dataMovementInterfaceId = dataMovementInterfaceId
         self.dataMovementProtocol = dataMovementProtocol
         self.priorityOrder = priorityOrder
+        self.creationTime = creationTime
+        self.updateTime = updateTime
+        self.storageResourceId = storageResourceId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -542,6 +551,21 @@ class DataMovementInterface(object):
                     self.priorityOrder = iprot.readI32()
                 else:
                     iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I64:
+                    self.creationTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I64:
+                    self.updateTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.STRING:
+                    self.storageResourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -563,6 +587,18 @@ class DataMovementInterface(object):
         if self.priorityOrder is not None:
             oprot.writeFieldBegin('priorityOrder', TType.I32, 3)
             oprot.writeI32(self.priorityOrder)
+            oprot.writeFieldEnd()
+        if self.creationTime is not None:
+            oprot.writeFieldBegin('creationTime', TType.I64, 4)
+            oprot.writeI64(self.creationTime)
+            oprot.writeFieldEnd()
+        if self.updateTime is not None:
+            oprot.writeFieldBegin('updateTime', TType.I64, 5)
+            oprot.writeI64(self.updateTime)
+            oprot.writeFieldEnd()
+        if self.storageResourceId is not None:
+            oprot.writeFieldBegin('storageResourceId', TType.STRING, 6)
+            oprot.writeString(self.storageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.storageResourceId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

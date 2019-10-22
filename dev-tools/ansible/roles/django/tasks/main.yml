@@ -1,0 +1,226 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# Need database facts to populate db connection info in settings_local.py
+- name: Gather facts about database servers
+  setup:
+  delegate_to: "{{item}}"
+  delegate_facts: True
+  with_items:
+  - "{{ groups['database'] }}"
+
+- name: Create root directory
+  file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
+  become: yes
+
+- name: Create local temp directory for django portal clone and build
+  local_action:
+    module: tempfile
+    # The temp directory must be in a location that allows it to be mounted
+    # into the Docker container. On macOS the default behavior creates temp
+    # directories in /var but /var isn't available to Docker containers.
+    path: /tmp
+    state: directory
+  register: airavata_django_portal_tempdir
+  run_once: true
+
+- name: Make local temp directory for django portal clone world readable
+  local_action:
+    module: file
+    # The Django portal clone directory needs to be world readable on the
+    # remote server and rsync preserves permissions, so make the local clone
+    # directory world readable
+    path: "{{ airavata_django_portal_tempdir.path }}"
+    mode: o+rx
+  run_once: true
+
+- name: git clone django repo
+  local_action:
+    module: git
+    repo: "{{ airavata_django_repo }}"
+    dest: "{{ airavata_django_portal_tempdir.path }}"
+    version: "{{ airavata_django_git_branch }}"
+    update: yes
+    force: yes
+  run_once: true
+
+# TODO: check if Docker is running (docker_host_info can_talk_to_docker https://docs.ansible.com/ansible/latest/modules/docker_host_info_module.html#return-values)
+# NOTE: docker_host_info only available from Ansible 2.8
+# - name: check if Docker is running
+#   local_action:
+#     module: docker_host_info
+#   register: docker_result
+#   run_once: true
+#
+# - name: Fail if Docker isn't running
+#   local_action:
+#     module: fail
+#     msg: Docker daemon isn't running or isn't accessible. Start Docker daemon and then rerun this playbook.
+#   when: not docker_result.can_talk_to_docker
+#   run_once: true
+
+- name: build Docker image for building the JS
+  local_action:
+    module: docker_image
+    path: "{{ airavata_django_portal_tempdir.path }}/scripts/docker-build/"
+    name: airavata-django-build
+    force: true
+    # source: build
+  run_once: true
+
+- name: build Django JS code in Docker container
+  local_action:
+    module: docker_container
+    name: ansible-airavata-django-build
+    image: airavata-django-build
+    cleanup: true
+    detach: false
+    volumes:
+    - "{{ airavata_django_portal_tempdir.path }}:/code"
+    - "{{ lookup('env', 'HOME') }}/.npm:/root/.npm"
+  run_once: true
+
+- name: rsync build Django code to {{ airavata_django_checkout }}
+  synchronize:
+    src: "{{ airavata_django_portal_tempdir.path }}/"
+    dest: "{{ airavata_django_checkout }}"
+    rsync_opts:
+      - "--exclude=node_modules"
+    # Bug: become_user doesn't work with synchronize: https://github.com/ansible/ansible/issues/29698
+    rsync_path: "sudo -u {{ user }} rsync"
+  # become: yes
+  # become_user: "{{user}}"
+
+- name: Create virtual environment for Django portal and install dependencies
+  pip:
+    requirements: "{{ item }}"
+    virtualenv: "{{ django_venv_dir }}"
+    virtualenv_command: "{{ python_virtualenv_command }}"
+    chdir: "{{ airavata_django_checkout }}"
+  become: yes
+  become_user: "{{user}}"
+  with_list:
+    - "{{ airavata_django_checkout }}/requirements.txt"
+    - "{{ airavata_django_checkout }}/requirements-mysql.txt"
+
+- name: Install additional dependencies
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+  with_list: "{{ airavata_django_extra_dependencies }}"
+
+- name: Copy the settings_local.py file
+  template: src={{ django_settings_local_template }} dest="{{ airavata_django_checkout }}/django_airavata/settings_local.py" owner="{{user}}" group="{{group}}"
+  become: yes
+  notify:
+    - restart uwsgi
+
+- name: Run Django's manage.py migrate
+  django_manage:
+    command: migrate
+    app_path: "{{ airavata_django_checkout }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+
+- name: Run Django's manage.py collectstatic
+  django_manage:
+    command: "collectstatic -i node_modules --noinput"
+    app_path: "{{ airavata_django_checkout }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+  notify:
+    - restart uwsgi
+
+- name: Create experiment data dir
+  file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=yes follow=yes
+  become: yes
+
+- name: Create file upload tmp dir
+  file: path="{{ file_upload_tmp_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=yes
+  become: yes
+
+- name: set selinux context to allow read on static directory
+  sefcontext:
+    target: "{{ doc_root_dir }}/static(/.*)?"
+    setype: httpd_sys_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: set selinux context to allow exec on virtual env directory
+  sefcontext:
+    target: "{{ django_venv_dir }}(/.*)?"
+    setype: httpd_sys_script_exec_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: set selinux context to allow read/write on django directory
+  sefcontext:
+    target: "{{ airavata_django_checkout }}(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: Allow Django code to execute Java code (Pyjnius, see https://github.com/SciGaP/simccs-maptool)
+  seboolean:
+    name: httpd_execmem
+    state: yes
+    persistent: yes
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: run restorecon on those directories
+  command: restorecon -F -R {{ doc_root_dir }}
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: copy virtual host config file
+  template: src={{ django_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  when: not vhost_ssl
+
+- name: copy SSL enabled virtual host config file
+  template: src={{ django_ssl_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  when: vhost_ssl
+
+- name: copy user's SSH key for the gateway data store
+  authorized_key:
+    user: "{{user}}"
+    key: "{{ gateway_data_store_ssh_public_key }}"
+  become: yes
+  when: gateway_data_store_ssh_public_key != ""

@@ -32,7 +32,7 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     private final static Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
 
-    private final static String[] taskClassNames = {
+    public final static String[] TASK_CLASS_NAMES = {
             "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
             "org.apache.airavata.helix.impl.task.staging.InputDataStagingTask",
             "org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask",
@@ -46,6 +46,7 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
             "org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask",
             "org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask",
             "org.apache.airavata.helix.impl.task.parsing.DataParsingTask",
+            "org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask",
             "org.apache.airavata.helix.impl.task.mock.MockTask"
     };
 
@@ -54,21 +55,28 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
         super(taskClasses, taskTypeName);
     }
 
+    public void startServer() {
+        Thread t = new Thread(this);
+        t.start();
+    }
+
+    public void stopServer() {
+
+    }
+
     public static void main(String args[]) {
         logger.info("Starting global participant");
 
         try {
             ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
 
-            for (String taskClassName : taskClassNames) {
+            for (String taskClassName : TASK_CLASS_NAMES) {
                 logger.debug("Adding task class: " + taskClassName + " to the global participant");
                 taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
             }
 
             GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
-
-            Thread t = new Thread(participant);
-            t.start();
+            participant.startServer();
 
         } catch (Exception e) {
             logger.error("Failed to start global participant", e);

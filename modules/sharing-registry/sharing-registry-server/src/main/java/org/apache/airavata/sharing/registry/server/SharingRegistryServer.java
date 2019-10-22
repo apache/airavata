@@ -22,6 +22,7 @@ package org.apache.airavata.sharing.registry.server;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.registry.messaging.SharingServiceDBEventMessagingFactory;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
@@ -49,6 +50,7 @@ public class SharingRegistryServer implements IServer {
 
     private IServer.ServerStatus status;
     private TServer server;
+    private boolean testMode = false;
 
     public SharingRegistryServer() {
         setStatus(IServer.ServerStatus.STOPPED);
@@ -71,7 +73,8 @@ public class SharingRegistryServer implements IServer {
 
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(SHARING_REG_SERVER_PORT));
             final String serverHost = ServerSettings.getSetting(SHARING_REG_SERVER_HOST);
-            SharingRegistryService.Processor processor = new SharingRegistryService.Processor(new SharingRegistryServerHandler());
+            SharingRegistryService.Processor processor = new SharingRegistryService.Processor(
+                    new SharingRegistryServerHandler(createSharingRegistryDBInitConfig()));
 
             TServerTransport serverTransport;
 
@@ -171,5 +174,21 @@ public class SharingRegistryServer implements IServer {
 
     public void setServer(TServer server) {
         this.server = server;
+    }
+
+    public boolean isTestMode() {
+        return testMode;
+    }
+
+    public void setTestMode(boolean testMode) {
+        this.testMode = testMode;
+    }
+
+    private SharingRegistryDBInitConfig createSharingRegistryDBInitConfig() {
+        SharingRegistryDBInitConfig sharingRegistryDBInitConfig = new SharingRegistryDBInitConfig();
+        if (this.testMode) {
+            sharingRegistryDBInitConfig.setDBInitScriptPrefix("sharing-registry");
+        }
+        return sharingRegistryDBInitConfig;
     }
 }

@@ -1,5 +1,5 @@
 ---
-# inventory file : scigap production deployment
+# inventory file : scigap develop deployment
 
 [zookeeper]
 149.165.156.195
@@ -21,3 +21,22 @@
 
 [keycloak]
 149.165.156.151
+
+[django]
+seagrid ansible_host=149.165.156.46
+simvascular ansible_host=149.165.156.46
+simccs ansible_host=149.165.156.46
+interactwel ansible_host=149.165.156.46
+usd ansible_host=149.165.156.46
+csbglsu ansible_host=149.165.156.46
+nexttdb ansible_host=149.165.156.46
+saver-x ansible_host=149.165.156.46
+pfec-hydro ansible_host=149.165.156.46
+cyberwater ansible_host=149.165.156.46
+mines ansible_host=149.165.156.46
+
+[helix]
+149.165.157.37
+
+[kafka]
+149.165.157.37

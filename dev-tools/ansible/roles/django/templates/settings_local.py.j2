@@ -1,0 +1,148 @@
+{#
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+#}
+
+"""
+Override default Django settings for a particular instance.
+
+Copy this file to settings_local.py and modify as appropriate. This file will
+be imported into settings.py last of all so settings in this file override any
+defaults specified in settings.py.
+"""
+
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Django - general settings
+DEBUG = {{ django_debug | ternary("True", "False") }}
+STATIC_ROOT = "{{ doc_root_dir }}/static/"
+ALLOWED_HOSTS = ['{{ vhost_servername }}']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': '{{ django_database_name }}',
+        'HOST': '{{ db_server }}',
+        'USER': '{{ django_db_username }}',
+        'PASSWORD': '{{ django_db_password }}'
+    },
+    'OPTIONS': {
+        'init_command': 'SET default_storage_engine=INNODB,collation_connection=utf8_bin',
+    }
+}
+
+# Django - Email settings
+# Uncomment and specify the following for sending emails (default email backend
+# just prints to the console)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = '{{ portal_email_host }}'
+EMAIL_PORT = {{ portal_email_port }}
+EMAIL_HOST_USER = '{{ portal_email_username }}'
+EMAIL_HOST_PASSWORD = '{{ portal_email_password }}'
+EMAIL_USE_TLS = {{ portal_email_tls | ternary("True", "False") }}
+# ADMINS receive error emails
+ADMINS = {{ django_error_emails }}
+# PORTAL_ADMINS receive administrative emails, like when a new user is created
+# This can be set to a different value than ADMINS so that the PORTAL_ADMINS
+# don't receive error emails
+PORTAL_ADMINS = {{ admin_emails }}
+SERVER_EMAIL = '{{ portal_server_email }}'
+
+# Keycloak Configuration
+KEYCLOAK_CLIENT_ID = '{{ oauth_client_key }}'
+KEYCLOAK_CLIENT_SECRET = '{{ oauth_client_secret }}'
+KEYCLOAK_AUTHORIZE_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/auth'
+KEYCLOAK_TOKEN_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/token'
+KEYCLOAK_USERINFO_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/userinfo'
+KEYCLOAK_LOGOUT_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/logout'
+KEYCLOAK_CA_CERTFILE = os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")
+KEYCLOAK_VERIFY_SSL = True
+
+AUTHENTICATION_OPTIONS = {
+
+    {% if auth_options.password %}
+    'password': {
+        'name': '{{ auth_options.password.name }}',
+        {% if auth_options.password.logo is defined %}
+        'logo': '{{ auth_options.password.logo }}',
+        {% endif %}
+    },
+    {% endif %}
+    {% if auth_options.external %}
+    'external': [
+        {% for external in auth_options.external %}
+        {
+            'idp_alias': '{{ external.idp_alias }}',
+            'name': '{{ external.name }}',
+            {% if external.logo is defined %}
+            'logo': '{{ external.logo }}',
+            {% endif %}
+        },
+        {% endfor %}
+    ]
+    {% endif %}
+}
+
+# Airavata API Configuration
+GATEWAY_ID = '{{ gateway_id }}'
+AIRAVATA_API_HOST = '{{ api_server_host }}'
+{% if api_secured %}
+AIRAVATA_API_PORT = {{ api_server_tls_port }}
+AIRAVATA_API_SECURE = True
+{% else %}
+AIRAVATA_API_PORT = {{ api_server_port }}
+AIRAVATA_API_SECURE = False
+{% endif %}
+GATEWAY_DATA_STORE_RESOURCE_ID = '{{ gateway_data_store_resource_id }}'
+GATEWAY_DATA_STORE_DIR = '{{ experiment_data_dir }}'
+GATEWAY_DATA_STORE_HOSTNAME = '{{ gateway_data_store_hostname }}'
+FILE_UPLOAD_TEMP_DIR = "{{ file_upload_tmp_dir }}"
+
+# Profile Service Configuration
+PROFILE_SERVICE_HOST = '{{ profile_service_host }}'
+PROFILE_SERVICE_PORT = {{ profile_service_port }}
+PROFILE_SERVICE_SECURE = False
+
+# Sharing API Configuration
+SHARING_API_HOST = '{{ sharing_registry_host }}'
+SHARING_API_PORT = {{ sharing_registry_port }}
+SHARING_API_SECURE = False
+
+# Portal settings
+PORTAL_TITLE = '{{ portal_title }}'
+
+# Hidden Airavata apps (not all gateways need all functionality)
+HIDDEN_AIRAVATA_APPS = {{ django_hidden_airavata_apps }}
+
+# Tus uploads
+{% if django_tus_endpoint is defined %}
+TUS_ENDPOINT = "{{ django_tus_endpoint }}"
+TUS_DATA_DIR = "{{ django_tus_data_dir }}"
+{% endif %}
+
+FILE_UPLOAD_MAX_FILE_SIZE = {{ django_file_upload_max_file_size_mb }} * 1024 * 1024
+
+# Extra settings
+{% for extra_setting in django_extra_settings.items() | list %}
+{{ extra_setting[0] }} = {{ extra_setting[1] | to_nice_json }}
+{% endfor %}

@@ -57,9 +57,19 @@ public interface TenantManagementInterface {
     Gateway configureClient(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException;
 
     /**
+     * Check if username is available to be used for creating a new user account.
+     * @param accessToken needs to have access to searching across users by username
+     * @param tenantId
+     * @param username
+     * @return
+     */
+    boolean isUsernameAvailable(String accessToken, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
      * Method to create user in Identity Server
      *
-     * @param realmAdminCreds identity server realm admin credentials
+     * @param accessToken
+     * @param tenantId
      * @param username
      * @param emailAddress
      * @param firstName
@@ -68,58 +78,101 @@ public interface TenantManagementInterface {
      * @return true if user created
      * @throws IamAdminServicesException
      */
-    boolean createUser(PasswordCredential realmAdminCreds, String tenantId, String username, String emailAddress, String firstName, String lastName, String newPassword) throws IamAdminServicesException;
+    boolean createUser(String accessToken, String tenantId, String username, String emailAddress, String firstName, String lastName, String newPassword) throws IamAdminServicesException;
 
     /**
      * Method to enable user in Identity Server
      *
-     * @param realmAdminCreds identity server realm admin credentials
+     * @param accessToken
      * @param tenantId
      * @param username
      * @return boolean.
      */
-    boolean enableUserAccount(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException;
+    boolean enableUserAccount(String accessToken, String tenantId, String username) throws IamAdminServicesException;
 
     /**
      * Method to check if user is enabled in Identity Server
      *
-     * @param realmAdminCreds identity server realm admin credentials
+     * @param accessToken
      * @param tenantId
      * @param username
      * @return boolean.
      */
-    boolean isUserAccountEnabled(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException;
+    boolean isUserAccountEnabled(String accessToken, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
+     * Return whether user exists with username.
+     *
+     * @param accessToken
+     * @param tenantId
+     * @param username
+     * @return
+     */
+    boolean isUserExist(String accessToken, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
+     * Get user profile information from Identity Server
+     *
+     * @param accessToken
+     * @param tenantId
+     * @param username
+     * @return
+     */
+    UserProfile getUser(String accessToken, String tenantId, String username) throws IamAdminServicesException;
+
+    /**
+     * Get a paginated list of user profiles from Identity Server
+     * 
+     * @param accessToken
+     * @param tenantId
+     * @param offset
+     * @param limit
+     * @param search String - optional, if specified used to search user profiles
+     * @return
+     * @throws IamAdminServicesException
+     */
+    List<UserProfile> getUsers(String accessToken, String tenantId, int offset, int limit, String search) throws IamAdminServicesException;
 
     /**
      * Method to reset user password in Identity Server
      *
-     * @param realmAdminCreds identity server realm admin credentials
+     * @param accessToken
      * @param tenantId
      * @param username
      * @param newPassword
      * @return boolean
      */
-    boolean resetUserPassword(PasswordCredential realmAdminCreds, String tenantId, String username, String newPassword) throws IamAdminServicesException;
+    boolean resetUserPassword(String accessToken, String tenantId, String username, String newPassword) throws IamAdminServicesException;
 
     /**
      * Method to find user in Identity Server
      *
-     * @param realmAdminCreds identity server realm admin credentials
+     * @param accessToken
      * @param tenantId required
      * @param email required
      * @param username can be null
      * @return Gateway object.
      */
-    List<UserProfile> findUser(PasswordCredential realmAdminCreds, String tenantId, String email, String username) throws IamAdminServicesException;
+    List<UserProfile> findUser(String accessToken, String tenantId, String email, String username) throws IamAdminServicesException;
 
     /**
      * Update the user's profile in the Identity Server
-     * @param realmAdminCreds
+     * @param accessToken
      * @param tenantId
      * @param username
      * @param userDetails
      */
-    void updateUserProfile(PasswordCredential realmAdminCreds, String tenantId, String username, UserProfile userDetails) throws IamAdminServicesException;
+    void updateUserProfile(String accessToken, String tenantId, String username, UserProfile userDetails) throws IamAdminServicesException;
+
+    /**
+     * Delete this user from the IAM service.
+     * @param accessToken
+     * @param tenantId
+     * @param username
+     * @return
+     * @throws IamAdminServicesException
+     */
+    boolean deleteUser(String accessToken, String tenantId, String username) throws IamAdminServicesException;
 
     /**
      * Add the given role to the user.
@@ -131,6 +184,7 @@ public interface TenantManagementInterface {
      * @return
      * @throws IamAdminServicesException
      */
+    @Deprecated
     boolean addRoleToUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName) throws IamAdminServicesException;
 
     /**
@@ -143,6 +197,7 @@ public interface TenantManagementInterface {
      * @return
      * @throws IamAdminServicesException
      */
+    @Deprecated
     boolean removeRoleFromUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName) throws IamAdminServicesException;
 
     /**
@@ -154,5 +209,6 @@ public interface TenantManagementInterface {
      * @return
      * @throws IamAdminServicesException
      */
+    @Deprecated
     List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName) throws IamAdminServicesException;
 }

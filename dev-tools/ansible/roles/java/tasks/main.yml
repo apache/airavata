@@ -19,12 +19,20 @@
 #
 
 ---
-# Install Orcal Java
+- name: Check if oracle java 8 rpm already downloaded
+  stat:
+    path: "{{ java_dir_source }}/{{ java_rpm_filename }}"
+  register: rpm_stat_result
+  tags:
+    - always
+
+# Install Oracle Java
 - name: download oracle java 8 rpm
   get_url: url="{{ java_rpm_url }}" dest="{{ java_dir_source }}" headers='Cookie:oraclelicense=accept-securebackup-cookie'
   become: yes
   tags:
        - always
+  when: not rpm_stat_result.stat.exists
 
 - name: Install oracle java 8
   yum: name="{{ java_dir_source }}/{{ java_rpm_filename }}" state=present

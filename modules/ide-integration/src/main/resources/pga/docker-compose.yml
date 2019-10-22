@@ -1,0 +1,11 @@
+version: '2.1'
+services:
+  pga:
+    image: dimuthuupe/pga:1.0
+    volumes:
+      - ./airavata-php-gateway:/var/www/portals/default
+      - ./exp-data-dir:/var/www/portals/gateway-user-data
+    ports:
+      - "8008:80"
+    mem_limit: 3G
+    mem_reservation: 3G

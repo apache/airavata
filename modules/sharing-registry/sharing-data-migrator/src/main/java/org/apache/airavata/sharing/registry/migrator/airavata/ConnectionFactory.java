@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.sharing.registry.migrator.airavata;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,17 +34,26 @@ public class ConnectionFactory {
     //static reference to itself
     private static ConnectionFactory instance;
 
-    public static final String EXPCAT_URL = "jdbc:mysql://localhost/airavata_exp_catalog";
-    public static final String EXPCAT_USER = "root";
-    public static final String EXPCAT_PASSWORD = "";
-    public static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
+    private static final String REGISTRY_DB_URL = "registry.jdbc.url";
+    private static final String REGISTRY_DB_USER = "registry.jdbc.user";
+    private static final String REGISTRY_DB_PASSWORD = "registry.jdbc.password";
+    private static final String REGISTRY_DB_DRIVER = "registry.jdbc.driver";
+
 
     private static Connection expCatConnection;
 
     //private constructor
     private ConnectionFactory() throws ClassNotFoundException, SQLException {
-        Class.forName(DRIVER_CLASS);
-        expCatConnection = DriverManager.getConnection(EXPCAT_URL, EXPCAT_USER, EXPCAT_PASSWORD);
+        try {
+            final String EXPCAT_URL = ServerSettings.getSetting(REGISTRY_DB_URL);
+            final String EXPCAT_USER = ServerSettings.getSetting(REGISTRY_DB_USER);
+            final String EXPCAT_PASSWORD = ServerSettings.getSetting(REGISTRY_DB_PASSWORD);
+            final String DRIVER_CLASS = ServerSettings.getSetting(REGISTRY_DB_DRIVER);
+            Class.forName(DRIVER_CLASS);
+            expCatConnection = DriverManager.getConnection(EXPCAT_URL, EXPCAT_USER, EXPCAT_PASSWORD);
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException("Failed to load application setting", e);
+        }
     }
 
     public static ConnectionFactory getInstance() throws SQLException, ClassNotFoundException {

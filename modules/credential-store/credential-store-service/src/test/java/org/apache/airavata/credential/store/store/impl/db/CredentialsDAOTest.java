@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -179,6 +178,9 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
         try {
             CertificateCredential certificateCredential = getTestCredentialObject();
+            credentialsDAO.addCredentials(certificateCredential.getCommunityUser().getGatewayName(),
+                    certificateCredential, connection);
+            certificateCredential.setToken("tom2");
             credentialsDAO.addCredentials(certificateCredential.getCommunityUser().getGatewayName(),
                     certificateCredential, connection);
 
@@ -421,7 +423,34 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         try {
             List<Credential> list = credentialsDAO.getCredentials("gw1", connection);
 
+            Assert.assertEquals(2, list.size());
+        } finally {
+            connection.close();
+        }
+
+    }
+
+    @Test
+    public void testGetGatewayCredentialsForAccessibleTokenIds() throws Exception {
+
+        addTestCredentials();
+
+        Connection connection = getConnection();
+
+        try {
+            List<Credential> list = credentialsDAO.getCredentials("gw1", Arrays.asList("tom"), connection);
+
             Assert.assertEquals(1, list.size());
+            list = credentialsDAO.getCredentials("gw1", Arrays.asList("tom", "tom2"), connection);
+            Assert.assertEquals(2, list.size());
+            list = credentialsDAO.getCredentials("gw1", Arrays.asList("tom2"), connection);
+            Assert.assertEquals(1, list.size());
+            list = credentialsDAO.getCredentials("gw1", Arrays.asList("non-existent-token-id"), connection);
+            Assert.assertEquals(0, list.size());
+            list = credentialsDAO.getCredentials("gw1", Arrays.asList(), connection);
+            Assert.assertEquals(0, list.size());
+            list = credentialsDAO.getCredentials("gw1", null, connection);
+            Assert.assertEquals(0, list.size());
         } finally {
             connection.close();
         }
