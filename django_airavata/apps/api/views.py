@@ -221,8 +221,10 @@ class ExperimentViewSet(APIBackedViewSet):
         exp_data_dir = experiment.userConfigurationData.experimentDataDir
         for experiment_input in experiment.experimentInputs:
             if experiment_input.type == DataType.URI:
-                experiment_input.value = self._move_if_tmp_input_file_upload(
-                    experiment_input.value, exp_data_dir)
+                if experiment_input.value:
+                    experiment_input.value = \
+                        self._move_if_tmp_input_file_upload(
+                            experiment_input.value, exp_data_dir)
             elif experiment_input.type == DataType.URI_COLLECTION:
                 data_product_uris = experiment_input.value.split(
                     ",") if experiment_input.value else []
