@@ -1,0 +1,74 @@
+
+# SELinux configuration
+- name: set selinux to enforcing
+  selinux: state=enforcing policy=targeted
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: allow httpd to connect out to the network
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: copy default virtual host file
+  template: src={{ httpd_default_conf_template }} dest={{ httpd_default_conf_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+
+- name: copy modified ssl.conf file
+  template: src={{ httpd_ssl_conf_template }} dest={{ httpd_ssl_conf_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  # TODO: make the same fix (disabling SSLv3) on Debian systems too
+  when: ansible_os_family == "RedHat"
+
+# Gateway user data directory and SSH key
+- name: Create user data dir {{ real_user_data_dir }}
+  file: path="{{ real_user_data_dir }}" state=directory owner="{{user}}" group="{{group}}"
+  become: yes
+
+- name: Symlink user data dir {{ user_data_dir }} to {{ real_user_data_dir }}
+  file: src="{{ real_user_data_dir }}" dest="{{ user_data_dir }}" state=link owner="{{user}}" group="{{group}}"
+  become: yes
+  when: user_data_dir != real_user_data_dir
+
+- name: set selinux context to allow read/write on the user data directory
+  sefcontext:
+    # For SELinux file contexts, the real path without symbolic links must be used
+    target: "{{ real_user_data_dir }}(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: run restorecon on user data directory
+  command: restorecon -F -R {{ user_data_dir }}
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+# Firewall settings
+- name: Enable https and http service on public zone
+  firewalld: service="{{ item }}" permanent=true state=enabled zone=public immediate=True
+  with_items:
+    - http
+    - https
+  become: yes
+
+- name: open firewall port {{ httpd_default_http_port }}
+  firewalld: port="{{ httpd_default_http_port }}/tcp"
+             zone=public permanent=true state=enabled immediate=yes
+  become: yes
+
+- name: open firewall port {{ httpd_default_https_port }}
+  firewalld: port="{{ httpd_default_https_port }}/tcp"
+             zone=public permanent=true state=enabled immediate=yes
+  become: yes

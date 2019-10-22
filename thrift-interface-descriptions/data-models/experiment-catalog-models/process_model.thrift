@@ -30,6 +30,13 @@ namespace cpp apache.airavata.model.process
 namespace py airavata.model.process
 
 
+struct ProcessWorkflow {
+    1: required string processId;
+    2: required string workflowId;
+    3: optional i64 creationTime;
+    4: optional string type;
+}
+
 /**
  * ProcessModel: A structure holding the process details. The infromation is derived based on user provided
  *          configuration data or system inferred information from scheduling and QoS parameters.
@@ -63,13 +70,7 @@ struct ProcessModel {
     21: optional bool generateCert = 0,
     22: optional string experimentDataDir,
     23: optional string userName,
-    24: optional bool useUserCRPref;
-    25: optional list<ProcessWorkflow> processWorkflows;
-}
-
-struct ProcessWorkflow {
-    1: required string processId;
-    2: required string workflowId;
-    3: optional i64 creationTime;
-    4: optional string type;
+    24: optional bool useUserCRPref,
+    25: optional string groupResourceProfileId;
+    26: optional list<ProcessWorkflow> processWorkflows;
 }

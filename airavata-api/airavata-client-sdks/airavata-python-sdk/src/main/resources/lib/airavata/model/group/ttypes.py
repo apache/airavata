@@ -18,20 +18,29 @@ class ResourceType(object):
     PROJECT = 0
     EXPERIMENT = 1
     DATA = 2
-    OTHER = 3
+    APPLICATION_DEPLOYMENT = 3
+    GROUP_RESOURCE_PROFILE = 4
+    CREDENTIAL_TOKEN = 5
+    OTHER = 6
 
     _VALUES_TO_NAMES = {
         0: "PROJECT",
         1: "EXPERIMENT",
         2: "DATA",
-        3: "OTHER",
+        3: "APPLICATION_DEPLOYMENT",
+        4: "GROUP_RESOURCE_PROFILE",
+        5: "CREDENTIAL_TOKEN",
+        6: "OTHER",
     }
 
     _NAMES_TO_VALUES = {
         "PROJECT": 0,
         "EXPERIMENT": 1,
         "DATA": 2,
-        "OTHER": 3,
+        "APPLICATION_DEPLOYMENT": 3,
+        "GROUP_RESOURCE_PROFILE": 4,
+        "CREDENTIAL_TOKEN": 5,
+        "OTHER": 6,
     }
 
 
@@ -61,6 +70,7 @@ class GroupModel(object):
      - ownerId
      - description
      - members
+     - admins: Note: each admin must also be a member of the group.
     """
 
     thrift_spec = (
@@ -70,14 +80,16 @@ class GroupModel(object):
         (3, TType.STRING, 'ownerId', 'UTF8', None, ),  # 3
         (4, TType.STRING, 'description', 'UTF8', None, ),  # 4
         (5, TType.LIST, 'members', (TType.STRING, 'UTF8', False), None, ),  # 5
+        (6, TType.LIST, 'admins', (TType.STRING, 'UTF8', False), None, ),  # 6
     )
 
-    def __init__(self, id=None, name=None, ownerId=None, description=None, members=None,):
+    def __init__(self, id=None, name=None, ownerId=None, description=None, members=None, admins=None,):
         self.id = id
         self.name = name
         self.ownerId = ownerId
         self.description = description
         self.members = members
+        self.admins = admins
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -118,6 +130,16 @@ class GroupModel(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.LIST:
+                    self.admins = []
+                    (_etype9, _size6) = iprot.readListBegin()
+                    for _i10 in range(_size6):
+                        _elem11 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.admins.append(_elem11)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -147,8 +169,15 @@ class GroupModel(object):
         if self.members is not None:
             oprot.writeFieldBegin('members', TType.LIST, 5)
             oprot.writeListBegin(TType.STRING, len(self.members))
-            for iter6 in self.members:
-                oprot.writeString(iter6.encode('utf-8') if sys.version_info[0] == 2 else iter6)
+            for iter12 in self.members:
+                oprot.writeString(iter12.encode('utf-8') if sys.version_info[0] == 2 else iter12)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.admins is not None:
+            oprot.writeFieldBegin('admins', TType.LIST, 6)
+            oprot.writeListBegin(TType.STRING, len(self.admins))
+            for iter13 in self.admins:
+                oprot.writeString(iter13.encode('utf-8') if sys.version_info[0] == 2 else iter13)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()

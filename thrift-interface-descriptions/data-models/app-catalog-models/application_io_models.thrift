@@ -119,4 +119,5 @@ struct OutputDataObjectType {
     9: optional string searchQuery,
     10: optional bool outputStreaming,
     11: optional string storageResourceId,
+    12: optional string metaData,
 }

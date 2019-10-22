@@ -99,6 +99,8 @@ portal_theme: "base"
 portal_theme_repo: ""
 portal_title: "Airavata PHP Gateway"
 pga_google_analytics_id: ""
+# When pga_reroute_to_django is true, pga_airavata_django_url should also be set
+pga_reroute_to_django: false
 
 pga_default_http_port: 80
 pga_default_https_port: 443

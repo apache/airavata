@@ -1,0 +1,49 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "beta.searchsra.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/beta.searchsra.scigap.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "searching-sra"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "SEARCH-SRA"
+  external:
+#    - name: "existing institution credentials"
+#      idp_alias: "cilogon"
+#      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "searching-sra"
+experiment_data_dir: "{{ user_data_dir }}/searching-sra"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDT8DxXNvFn8DUfe8t7VAPXnNIVOWCE4tYv59qY8uJU4BjnOtEnbDZAqrXuCCns9FsgxF6evftuXudzD/xa/yhSzKSlYv1kETFPrt8suW7h1iI6R1UlreacKnng4VqmveTsR/AoMpSP6YvRyXxf4J60QZylpmkfCoZq4fZjZz9mCme8cqBjakqF6EGnhL3k8e9yJ4PU8KWektcpegHIVajsNwIRsK1bxpLh0FocyQyC2u0Wsd2trIR9YjGAGfogB1/ifOvKTcxuYQQGfnj5fZyLz+sT7GOpb+i/CXLfURr9aIU4quuXh3FUB89u4dglQoDt7LDnkyazZI9ZIcBjCNvb"
+django_hidden_airavata_apps: "[]"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
+portal_title: "Search-SRA Portal"
+
+...

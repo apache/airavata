@@ -69,7 +69,7 @@ public class VirtualInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         try {
-            Integer cont =  queue.poll(2, TimeUnit.MINUTES);
+            Integer cont =  queue.poll(10, TimeUnit.SECONDS);
             if (cont == null) {
                 throw new IOException("Timed out reading from the queue");
             }

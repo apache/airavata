@@ -72,7 +72,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         super.init(manager, workflowName, jobName, taskName);
         try {
             TaskUtil.deserializeTaskData(this, this.callbackContext.getTaskConfig().getConfigMap());
-        } catch (IllegalAccessException | InstantiationException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if (participant != null) {

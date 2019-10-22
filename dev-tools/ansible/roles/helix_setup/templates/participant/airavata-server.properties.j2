@@ -71,6 +71,17 @@ experiment.launch..queue.name=experiment.launch.queue
 zookeeper.server.connection={{ zookeeper_connection_url }}
 zookeeper.timeout=30000
 
+###########################################################################
+# Data Parser Configurations
+###########################################################################
+kafka.parsing.broker.url={{ parser_broker_url }}
+kafka.parser.topic={{ parser_broker_topic }}
+kafka.parsing.broker.publisher.id={{ parser_broker_publisher_id }}
+
+###########################################################################
+# Job Submission Task Level Configurations
+###########################################################################
+enable.realtime.monitor=true
 
 local.data.location={{ local_data_location }}
 

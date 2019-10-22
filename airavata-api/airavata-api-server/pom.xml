@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata-api</artifactId>
-        <version>0.18-SNAPSHOT</version>
+        <version>0.19-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -142,6 +142,12 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>profile-service-stubs</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>1.39</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

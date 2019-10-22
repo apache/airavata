@@ -67,18 +67,21 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  Entity getEntity(string domainId, string entityId)')
     print('   searchEntities(string domainId, string userId,  filters, i32 offset, i32 limit)')
     print('   getListOfSharedUsers(string domainId, string entityId, string permissionTypeId)')
+    print('   getListOfDirectlySharedUsers(string domainId, string entityId, string permissionTypeId)')
     print('   getListOfSharedGroups(string domainId, string entityId, string permissionTypeId)')
+    print('   getListOfDirectlySharedGroups(string domainId, string entityId, string permissionTypeId)')
     print('  string createPermissionType(PermissionType permissionType)')
     print('  bool updatePermissionType(PermissionType permissionType)')
     print('  bool isPermissionExists(string dimainId, string permissionId)')
     print('  bool deletePermissionType(string domainId, string permissionTypeId)')
     print('  PermissionType getPermissionType(string domainId, string permissionTypeId)')
     print('   getPermissionTypes(string domainId, i32 offset, i32 limit)')
-    print('  bool shareEntityWithUsers(string domainId, string entityId,  userList, string perssionTypeId, bool cascadePermission)')
-    print('  bool revokeEntitySharingFromUsers(string domainId, string entityId,  userList, string perssionTypeId)')
-    print('  bool shareEntityWithGroups(string domainId, string entityId,  groupList, string perssionTypeId, bool cascadePermission)')
-    print('  bool revokeEntitySharingFromGroups(string domainId, string entityId,  groupList, string perssionTypeId)')
+    print('  bool shareEntityWithUsers(string domainId, string entityId,  userList, string permissionTypeId, bool cascadePermission)')
+    print('  bool revokeEntitySharingFromUsers(string domainId, string entityId,  userList, string permissionTypeId)')
+    print('  bool shareEntityWithGroups(string domainId, string entityId,  groupList, string permissionTypeId, bool cascadePermission)')
+    print('  bool revokeEntitySharingFromGroups(string domainId, string entityId,  groupList, string permissionTypeId)')
     print('  bool userHasAccess(string domainId, string userId, string entityId, string permissionTypeId)')
+    print('  string getAPIVersion()')
     print('')
     sys.exit(0)
 
@@ -416,11 +419,23 @@ elif cmd == 'getListOfSharedUsers':
         sys.exit(1)
     pp.pprint(client.getListOfSharedUsers(args[0], args[1], args[2],))
 
+elif cmd == 'getListOfDirectlySharedUsers':
+    if len(args) != 3:
+        print('getListOfDirectlySharedUsers requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getListOfDirectlySharedUsers(args[0], args[1], args[2],))
+
 elif cmd == 'getListOfSharedGroups':
     if len(args) != 3:
         print('getListOfSharedGroups requires 3 args')
         sys.exit(1)
     pp.pprint(client.getListOfSharedGroups(args[0], args[1], args[2],))
+
+elif cmd == 'getListOfDirectlySharedGroups':
+    if len(args) != 3:
+        print('getListOfDirectlySharedGroups requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getListOfDirectlySharedGroups(args[0], args[1], args[2],))
 
 elif cmd == 'createPermissionType':
     if len(args) != 1:
@@ -487,6 +502,12 @@ elif cmd == 'userHasAccess':
         print('userHasAccess requires 4 args')
         sys.exit(1)
     pp.pprint(client.userHasAccess(args[0], args[1], args[2], args[3],))
+
+elif cmd == 'getAPIVersion':
+    if len(args) != 0:
+        print('getAPIVersion requires 0 args')
+        sys.exit(1)
+    pp.pprint(client.getAPIVersion())
 
 else:
     print('Unrecognized method %s' % cmd)

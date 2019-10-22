@@ -58,6 +58,9 @@ public class AdaptorSupportImpl implements AdaptorSupport {
 
     public AgentAdaptor fetchAdaptor(String gatewayId, String computeResourceId, JobSubmissionProtocol protocol, String authToken, String userId) throws AgentException {
 
+        logger.debug("Fetching adaptor for compute resource " + computeResourceId + " with token " + authToken +
+                " with user " + userId + " with protocol" + protocol.name());
+
         Optional<AgentAdaptor> agentAdaptorOp = agentStore.getAgentAdaptor(computeResourceId, protocol, authToken, userId);
         if (agentAdaptorOp.isPresent()) {
             logger.debug("Re using the adaptor for gateway " + gatewayId + ", compute resource " +
@@ -88,6 +91,10 @@ public class AdaptorSupportImpl implements AdaptorSupport {
 
     @Override
     public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId) throws AgentException {
+
+        logger.debug("Fetching adaptor for storage resource " + storageResourceId + " with token " + authToken +
+                " with user " + userId + " with protocol" + protocol.name());
+
         Optional<StorageResourceAdaptor> agentAdaptorOp = agentStore.getStorageAdaptor(storageResourceId, protocol, authToken, userId);
         if (agentAdaptorOp.isPresent()) {
             logger.debug("Re using the storage adaptor for gateway " + gatewayId + ", storage resource " +
