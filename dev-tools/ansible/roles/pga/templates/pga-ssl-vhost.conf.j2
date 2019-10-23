@@ -18,14 +18,12 @@
     ## Redirect all http traffic to https
     RewriteEngine On
     RewriteCond %{HTTPS} off
-    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+    # Redirect to SSL domain name
+    RewriteRule (.*) https://{{ vhost_servername }}%{REQUEST_URI}
 </VirtualHost>
 
 <VirtualHost *:{{pga_default_https_port}}>
     ServerName {{ vhost_servername }}
-    {% if vhost_serveralias is defined %}
-    ServerAlias {{ vhost_serveralias }}
-    {% endif %}
 
     DocumentRoot {{ doc_root_dir }}/public
     <Directory "{{ doc_root_dir }}/public">
