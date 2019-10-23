@@ -82,7 +82,7 @@
         <org.slf4j.version>1.7.25</org.slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <axiom.version>1.2.8</axiom.version>
-        <surefire.version>2.18.1</surefire.version>
+        <surefire.version>3.0.0-M1</surefire.version>
         <junit.version>4.12</junit.version>
         <curator.version>2.8.0</curator.version>
         <!--remove xmlbeans version -->
@@ -121,6 +121,7 @@
         <openjpa.version>2.4.3</openjpa.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <jaxb.version>2.4.0-b180830.0359</jaxb.version>
+        <jmockit.version>1.44</jmockit.version>
     </properties>
 
     <developers>
@@ -685,6 +686,13 @@
                                 tests -->
                             <!-- Integration tests are run using the fail-safe plugin in the module
                                 pom -->
+                            <useSystemClassLoader>false</useSystemClassLoader>
+                            <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                            <argLine>
+                                -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
+                            </argLine>
+                            <reuseForks>false</reuseForks>
+
                             <excludes>
                                 <exclude>**/IT.java</exclude>
                                 <exclude>**/*TestWithMyProxyAuth.java</exclude>
