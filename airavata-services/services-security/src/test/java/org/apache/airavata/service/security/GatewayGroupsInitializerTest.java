@@ -23,7 +23,6 @@ package org.apache.airavata.service.security;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-//import mockit.integration.junit4.JMockit;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -37,12 +36,10 @@ import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-//import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//@RunWith(JMockit.class)
 public class GatewayGroupsInitializerTest {
     public static final String GATEWAY_ID = "test-gateway";
     public static final String IDENTITY_SERVER_PWD_CRED_TOKEN = "identity-server-pwd-cred-token";

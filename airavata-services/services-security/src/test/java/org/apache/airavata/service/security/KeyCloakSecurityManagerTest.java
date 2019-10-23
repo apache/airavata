@@ -22,7 +22,6 @@ package org.apache.airavata.service.security;
 
 import mockit.Expectations;
 import mockit.Mocked;
-//import mockit.integration.junit4.JMockit;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -43,7 +42,6 @@ import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-//import org.junit.runner.RunWith;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -55,7 +53,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@RunWith(JMockit.class)
 public class KeyCloakSecurityManagerTest {
     public static final String TEST_USERNAME = "test-user";
     public static final String TEST_GATEWAY = "test-gateway";
