@@ -216,18 +216,18 @@ public class AiravataDataMigrator {
             } else {
                 continue;
             }
-            //find all the active users in keycloak that do not exist in sharing registry service and migrate them to the database
-            AuthzToken authzToken_of_management_user = getManagementUsersAccessToken(domain.getDomainId());
-            List<UserProfile> missingUsers = getUsersToMigrate(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, null, domain.getDomainId());
-            migrateKeycloakUsersToGateway(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, missingUsers);
             if (registryServiceClient.isGatewayGroupsExists(domain.getDomainId())) {
                 GatewayGroups gatewayGroups = registryServiceClient.getGatewayGroups(domain.getDomainId());
                 gatewayGroupsMap.put(domain.getDomainId(), gatewayGroups);
-                addUsersToGroups(sharingRegistryServerHandler, missingUsers, gatewayGroups, domain.getDomainId());
             } else {
                 GatewayGroups gatewayGroups = migrateRolesToGatewayGroups(domain, ownerId, sharingRegistryServerHandler, registryServiceClient);
                 gatewayGroupsMap.put(domain.getDomainId(), gatewayGroups);
             }
+            //find all the active users in keycloak that do not exist in sharing registry service and migrate them to the database
+            AuthzToken authzToken_of_management_user = getManagementUsersAccessToken(domain.getDomainId());
+            List<UserProfile> missingUsers = getUsersToMigrate(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, null, domain.getDomainId());
+            migrateKeycloakUsersToGateway(iamAdminServiceClient, authzToken_of_management_user, missingUsers);
+            addUsersToGroups(sharingRegistryServerHandler, missingUsers, gatewayGroupsMap.get(domain.getDomainId()), domain.getDomainId());
         }
         //Creating project entries
         query = "SELECT * FROM PROJECT" + gatewayWhereClause;
@@ -450,48 +450,59 @@ public class AiravataDataMigrator {
 
         List<UserProfile> missingUsers = new ArrayList<>();
         List<UserProfile> keycloakUsers = adminServiceClient.getUsers(authzToken, 0, -1, search);
-        List<String> usernames = sharingRegistryServerHandler.getUsers(domainId, 0, -1).stream()
-                // Filter out bad user ids that don't end in "@" + domainId
-                .filter(user -> user.getUserId().endsWith("@" + domainId))
-                .map(user -> user.getUserId().split("@")[0])
-                .collect(Collectors.toList());
-        HashSet<String> usersInSharingRegistry = new HashSet<>(usernames);
+
         for (UserProfile profile : keycloakUsers) {
-            if (profile.getState().equals(Status.ACTIVE) && !usersInSharingRegistry.contains(profile.getAiravataInternalUserId().split("@")[0])) {
+            if (profile.getState().equals(Status.ACTIVE) && !sharingRegistryServerHandler.isUserExists(domainId, profile.getAiravataInternalUserId())) {
                 missingUsers.add(profile);
             }
         }
         return missingUsers;
     }
 
-    private static boolean migrateKeycloakUsersToGateway(SharingRegistryServerHandler sharingRegistryServerHandler,IamAdminServices.Client adminServiceClient,AuthzToken authzToken, List<UserProfile> missingUsers) throws TException{
+    private static boolean migrateKeycloakUsersToGateway(IamAdminServices.Client adminServiceClient,AuthzToken authzToken, List<UserProfile> missingUsers) throws TException{
 
         boolean allUsersUpdated = true;
         for(UserProfile profile: missingUsers) {
                 allUsersUpdated &= adminServiceClient.enableUser(authzToken, profile.getUserId());
-                User user = new User();
-                user.setUserId(profile.getAiravataInternalUserId());
-                user.setDomainId(profile.getGatewayId());
-                user.setUserName(profile.getUserId());
-                sharingRegistryServerHandler.createUser(user);
             }
         return allUsersUpdated;
     }
-
+    private static void checkUsersInSharingRegistryService(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, String domainId) throws TException{
+        for(UserProfile users: missingUsers){
+            if(!sharingRegistryServerHandler.isUserExists(users.getAiravataInternalUserId(), domainId)){
+                User user = new User();
+                user.setUserId(users.getAiravataInternalUserId());
+                user.setDomainId(users.getGatewayId());
+                user.setUserName(users.getUserId());
+                sharingRegistryServerHandler.createUser(user);
+            }
+        }
+    }
     private static boolean addUsersToGroups(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, GatewayGroups gatewayGroups, String domainId) throws TException, ApplicationSettingsException{
+        //before adding to groups make sure sharing registry has the user otherwise add it
+        checkUsersInSharingRegistryService(sharingRegistryServerHandler, missingUsers, domainId);
         boolean updatedAllUsers = true;
         Map<String, List<String>> roleMap = loadRolesForUsers(domainId, missingUsers
                 .stream()
                 .map(user -> user.getAiravataInternalUserId().substring(0, user.getAiravataInternalUserId().lastIndexOf("@")))
                 .collect(Collectors.toList()));
         if(roleMap.containsKey("gateway-user")){
-            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, roleMap.get("gateway-user"), gatewayGroups.getDefaultGatewayUsersGroupId());
+            List<String> userIds = roleMap.get("gateway-user").stream()
+                    .map(username -> username + "@" + domainId)
+                    .collect(Collectors.toList());
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, userIds, gatewayGroups.getDefaultGatewayUsersGroupId());
         }
         if(roleMap.containsKey("admin")){
-            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, roleMap.get("admin"), gatewayGroups.getAdminsGroupId());
+            List<String> userIds = roleMap.get("admin").stream()
+                    .map(username -> username + "@" + domainId)
+                    .collect(Collectors.toList());
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, userIds, gatewayGroups.getAdminsGroupId());
         }
         if(roleMap.containsKey("admin-read-only")){
-            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, roleMap.get("admin-read-only"), gatewayGroups.getReadOnlyAdminsGroupId());
+            List<String> userIds = roleMap.get("admin-read-only").stream()
+                    .map(username -> username + "@" + domainId)
+                    .collect(Collectors.toList());
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, userIds, gatewayGroups.getReadOnlyAdminsGroupId());
         }
 
         return updatedAllUsers;
