@@ -688,9 +688,7 @@
                                 pom -->
                             <useSystemClassLoader>false</useSystemClassLoader>
                             <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-                            <argLine>
-                                -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
-                            </argLine>
+
                             <reuseForks>false</reuseForks>
 
                             <excludes>
@@ -794,10 +792,9 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.1</version>
+                        <version>3.8.0</version>
                         <configuration>
-                            <source>1.8</source>
-                            <target>1.8</target>
+                            <release>11</release>
                         </configuration>
                     </plugin>
                     <plugin>
