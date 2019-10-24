@@ -82,16 +82,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <!--<source>1.8</source>-->
+                    <!--<target>1.8</target>-->
+                    <release>11</release>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
-                <version>2.4.3</version>
+                <version>${openjpa.version}</version>
                 <configuration>
                     <includes>**/entities/*.class</includes>
                     <excludes>**/entities/XML*.class</excludes>
