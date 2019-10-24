@@ -47,7 +47,7 @@ public class ServerMain {
     private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
     private static boolean serversLoaded=false;
 	private static final String stopFileNamePrefix = "server_stop";
-	private static int serverPID=-1;
+	private static long serverPID=-1;
 	private static final String serverStartedFileNamePrefix = "server_start";
 	private static boolean systemShutDown=false;
 	private static String STOP_COMMAND_STR = "stop";
@@ -347,7 +347,7 @@ public class ServerMain {
 	}
 
 	private static String getServerStartedFileName() {
-		return new File(new File(System.getenv("AIRAVATA_HOME"),"bin"),serverStartedFileNamePrefix+"_"+Integer.toString(serverPID)).toString();
+		return new File(new File(System.getenv("AIRAVATA_HOME"),"bin"),serverStartedFileNamePrefix+"_"+Long.toString(serverPID)).toString();
 	}
 
 	public static void stopAllServers() {
@@ -415,23 +415,36 @@ public class ServerMain {
 		ServerMain.systemShutDown = systemShutDown;
 	}
 	
-	private static int getPID(){
-		try {
-			java.lang.management.RuntimeMXBean runtime = java.lang.management.ManagementFactory
-					.getRuntimeMXBean();
-			java.lang.reflect.Field jvm = runtime.getClass()
-					.getDeclaredField("jvm");
-			jvm.setAccessible(true);
-			sun.management.VMManagement mgmt = (sun.management.VMManagement) jvm
-					.get(runtime);
-			java.lang.reflect.Method pid_method = mgmt.getClass()
-					.getDeclaredMethod("getProcessId");
-			pid_method.setAccessible(true);
+//	private static int getPID(){
+//		try {
+//			java.lang.management.RuntimeMXBean runtime = java.lang.management.ManagementFactory
+//					.getRuntimeMXBean();
+//			java.lang.reflect.Field jvm = runtime.getClass()
+//					.getDeclaredField("jvm");
+//			jvm.setAccessible(true);
+//			sun.management.VMManagement mgmt = (sun.management.VMManagement) jvm
+//					.get(runtime);
+//			java.lang.reflect.Method pid_method = mgmt.getClass()
+//					.getDeclaredMethod("getProcessId");
+//			pid_method.setAccessible(true);
+//
+//			int pid = (Integer) pid_method.invoke(mgmt);
+//			return pid;
+//		} catch (Exception e) {
+//			return -1;
+//		}
+//	}
 
-			int pid = (Integer) pid_method.invoke(mgmt);
-			return pid;
+	//getPID from ProcessHandle JDK 9 and onwards
+	private static long getPID () {
+		try {
+			return ProcessHandle.current().pid();
 		} catch (Exception e) {
 			return -1;
 		}
+
 	}
+
+
+
 }

@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * A user store which talks to LDAP server. User credentials and user information are stored in a LDAP server.
@@ -66,7 +65,7 @@ public class LDAPUserStore implements UserStore {
     @Override
     public boolean authenticate(Object credentials) throws UserStoreException {
         log.error("LDAP user store only supports authenticating with user name and password.");
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public void configure(Node specificConfigurationNode) throws UserStoreException {

@@ -32,6 +32,19 @@
     <artifactId>airavata-standalone-server</artifactId>
     <name>Airavata Standalone Server</name>
     <description>Module Containing Classes which start the Airavata Standalone Server</description>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!--<source>9</source>-->
+                    <!--<target>9</target>-->
+                    <release>11</release>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
