@@ -182,7 +182,8 @@ public class AiravataAPIServer implements IServer{
 	@Override
 	public void start() throws Exception {
 		setStatus(ServerStatus.STARTING);
-        //Obtain a AiravataServerHandler object from Guice which is wrapped with interception logic.
+        //Obtain a AiravataServerHandl
+		// er object from Guice which is wrapped with interception logic.
         Injector injector = Guice.createInjector(new SecurityModule());
         Airavata.Processor<Airavata.Iface> airavataAPIServer =
                 new Airavata.Processor<Airavata.Iface>(injector.getInstance(AiravataServerHandler.class));

@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.sql.SQLException;
 
@@ -46,7 +45,7 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
     @Override
     public boolean authenticate(String userName, Object credentials) throws UserStoreException {
         // This user store only supports session tokens.
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
