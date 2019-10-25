@@ -52,4 +52,6 @@ kafka_listener_port: 9092
 kafka_rest_proxy_listener_port: 8082
 
 local_data_location: "/tmp"
+
+thrift_client_pool_abandoned_removal_enabled: false
 ...
