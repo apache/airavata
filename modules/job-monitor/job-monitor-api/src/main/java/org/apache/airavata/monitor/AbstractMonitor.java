@@ -6,7 +6,7 @@ import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -35,14 +35,16 @@ public class AbstractMonitor {
 
     private void initRegistryClientPool() throws ApplicationSettingsException {
 
-        GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
-        poolConfig.maxActive = 100;
-        poolConfig.minIdle = 5;
-        poolConfig.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
-        poolConfig.testOnBorrow = true;
-        poolConfig.testWhileIdle = true;
-        poolConfig.numTestsPerEvictionRun = 10;
-        poolConfig.maxWait = 3000;
+        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
+        poolConfig.setMaxTotal(100);
+        poolConfig.setMinIdle(5);
+        poolConfig.setBlockWhenExhausted(true);
+        poolConfig.setTestOnBorrow(true);
+        poolConfig.setTestWhileIdle(true);
+        // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
+        poolConfig.setTimeBetweenEvictionRunsMillis(5L * 60L * 1000L);
+        poolConfig.setNumTestsPerEvictionRun(10);
+        poolConfig.setMaxWaitMillis(3000);
 
         this.registryClientPool = new ThriftClientPool<>(
                 RegistryService.Client::new, poolConfig, ServerSettings.getRegistryServerHost(),

@@ -21,7 +21,6 @@ package org.apache.airavata.registry.api.service.messaging;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftClientPool;
@@ -39,7 +38,7 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,14 +56,16 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
 
     public RegistryServiceDBEventHandler() throws ApplicationSettingsException, RegistryServiceException {
 
-        GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
-        poolConfig.maxActive = 5;
-        poolConfig.minIdle = 1;
-        poolConfig.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
-        poolConfig.testOnBorrow = true;
-        poolConfig.testWhileIdle = true;
-        poolConfig.numTestsPerEvictionRun = 10;
-        poolConfig.maxWait = 3000;
+        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
+        poolConfig.setMaxTotal(5);
+        poolConfig.setMinIdle(1);
+        poolConfig.setBlockWhenExhausted(true);
+        poolConfig.setTestOnBorrow(true);
+        poolConfig.setTestWhileIdle(true);
+        // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
+        poolConfig.setTimeBetweenEvictionRunsMillis(5L * 60L * 1000L);
+        poolConfig.setNumTestsPerEvictionRun(10);
+        poolConfig.setMaxWaitMillis(3000);
 
         registryClientPool = new ThriftClientPool<>(
                 tProtocol -> new RegistryService.Client(tProtocol), poolConfig, ServerSettings.getRegistryServerHost(),

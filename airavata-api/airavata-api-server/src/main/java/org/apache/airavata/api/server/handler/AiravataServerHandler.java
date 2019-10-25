@@ -88,7 +88,7 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,23 +111,19 @@ public class AiravataServerHandler implements Airavata.Iface {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
             experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
 
-            GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
-            poolConfig.maxActive = 100;
-            poolConfig.minIdle = 5;
-            poolConfig.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
-            poolConfig.testOnBorrow = true;
-            poolConfig.testWhileIdle = true;
-            poolConfig.numTestsPerEvictionRun = 10;
-            poolConfig.maxWait = 3000;
-
-            sharingClientPool = new ThriftClientPool<>(
-                    tProtocol -> new SharingRegistryService.Client(tProtocol), poolConfig, ServerSettings.getSharingRegistryHost(),
-                    Integer.parseInt(ServerSettings.getSharingRegistryPort()));
+        sharingClientPool = new ThriftClientPool<>(
+                    tProtocol -> new SharingRegistryService.Client(tProtocol),
+                    this.<SharingRegistryService.Client>createGenericObjectPoolConfig(),
+                    ServerSettings.getSharingRegistryHost(), Integer.parseInt(ServerSettings.getSharingRegistryPort()));
             registryClientPool = new ThriftClientPool<>(
-                    tProtocol -> new RegistryService.Client(tProtocol), poolConfig, ServerSettings.getRegistryServerHost(),
+                    tProtocol -> new RegistryService.Client(tProtocol), 
+                    this.<RegistryService.Client>createGenericObjectPoolConfig(),
+                    ServerSettings.getRegistryServerHost(),
                     Integer.parseInt(ServerSettings.getRegistryServerPort()));
             csClientPool = new ThriftClientPool<>(
-                    tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
+                    tProtocol -> new CredentialStoreService.Client(tProtocol), 
+                    this.<CredentialStoreService.Client>createGenericObjectPoolConfig(),
+                    ServerSettings.getCredentialStoreServerHost(),
                     Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
 
             initSharingRegistry();
@@ -139,6 +135,21 @@ public class AiravataServerHandler implements Airavata.Iface {
         } catch (TException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         }
+    }
+
+    private <T> GenericObjectPoolConfig<T> createGenericObjectPoolConfig() {
+
+        GenericObjectPoolConfig<T> poolConfig = new GenericObjectPoolConfig<T>();
+        poolConfig.setMaxTotal(100);
+        poolConfig.setMinIdle(5);
+        poolConfig.setBlockWhenExhausted(true);
+        poolConfig.setTestOnBorrow(true);
+        poolConfig.setTestWhileIdle(true);
+        // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
+        poolConfig.setTimeBetweenEvictionRunsMillis(5L * 60L * 1000L);
+        poolConfig.setNumTestsPerEvictionRun(10);
+        poolConfig.setMaxWaitMillis(3000);
+        return poolConfig;
     }
 
     /**
