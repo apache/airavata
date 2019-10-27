@@ -11,9 +11,20 @@ logger = logging.getLogger(__name__)
 
 
 def exists(username, path):
-    """Check if replica for data product exists in this data store."""
+    """Check if file path exists in this data store."""
     try:
-        return _user_data_storage(username).exists(path)
+        return (_user_data_storage(username).exists(path) and
+                os.path.isfile(path_(username, path)))
+    except SuspiciousFileOperation as e:
+        logger.warning("Invalid path for user {}: {}".format(username, str(e)))
+        return False
+
+
+def dir_exists(username, path):
+    """Check if directory path exists in this data store."""
+    try:
+        return (_user_data_storage(username).exists(path) and
+                os.path.isdir(path_(username, path)))
     except SuspiciousFileOperation as e:
         logger.warning("Invalid path for user {}: {}".format(username, str(e)))
         return False
@@ -61,7 +72,7 @@ def move_external(external_path, target_username, target_dir, file_name):
     # Get available file path: if there is an existing file at target_path
     # create a uniquely named path
     target_path = user_data_storage.get_available_name(target_path)
-    if not exists(target_username, target_dir):
+    if not dir_exists(target_username, target_dir):
         create_user_dir(target_username, target_dir)
     target_full_path = path_(target_username, target_path)
     file_move_safe(external_path, target_full_path)
@@ -98,7 +109,7 @@ def delete(username, path):
 
 def delete_dir(username, path):
     """Delete entire directory in this data store."""
-    if exists(username, path):
+    if dir_exists(username, path):
         user_path = path_(username, path)
         shutil.rmtree(user_path)
     else:
@@ -135,19 +146,6 @@ def get_experiment_dir(
         os.chmod(experiment_dir,
                  mode=user_experiment_data_storage.directory_permissions_mode)
     return experiment_dir
-
-
-def user_file_exists(username, file_path):
-    """Check if file path exists in user's data storage space."""
-    try:
-        # file_path can be relative or absolute
-        user_experiment_data_storage = _user_data_storage(username)
-        return user_experiment_data_storage.exists(file_path)
-    except SuspiciousFileOperation as e:
-        logger.warning(
-            "File does not exist for user {} at file path {}".format(
-                username, file_path))
-        return False
 
 
 def list_user_dir(username, file_path):

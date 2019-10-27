@@ -104,12 +104,12 @@ def exists(request, data_product):
 
 
 def dir_exists(request, path):
-    return datastore.exists(request.user.username, path)
+    return datastore.dir_exists(request.user.username, path)
 
 
 def user_file_exists(request, path):
     """If file exists, return data product URI, else None."""
-    if datastore.user_file_exists(request.user.username, path):
+    if datastore.exists(request.user.username, path):
         full_path = datastore.path(request.user.username, path)
         data_product_uri = _get_data_product_uri(request, full_path)
         return data_product_uri
@@ -134,7 +134,7 @@ def delete(request, data_product):
 
 
 def listdir(request, path):
-    if datastore.user_file_exists(request.user.username, path):
+    if datastore.dir_exists(request.user.username, path):
         directories, files = datastore.list_user_dir(
             request.user.username, path)
         directories_data = []
