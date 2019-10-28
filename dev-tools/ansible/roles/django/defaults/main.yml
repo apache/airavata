@@ -26,6 +26,7 @@ django_venv_dir: "{{ doc_root_dir }}/venv"
 real_user_data_dir: "{{ user_data_dir }}"
 vhost_servername: "{{ groups['django'][0] }}"
 vhost_ssl: False
+vhost_aliases: []
 httpd_confd_file_location:
  RedHat: "/etc/httpd/conf.d/django-{{ gateway_id }}.conf"
  Debian: "/etc/apache2/sites-available/django-{{ gateway_id }}.conf"
