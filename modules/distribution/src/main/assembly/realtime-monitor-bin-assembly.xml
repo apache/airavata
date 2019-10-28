@@ -113,6 +113,8 @@
                 <include>org.slf4j:log4j-over-slf4j:jar</include>
                 <include>com.github.danielwegener:logback-kafka-appender:jar</include>
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>
+
+                <include>org.apache.commons:commons-pool2:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
