@@ -119,6 +119,7 @@
         <google.guava.version>20.0</google.guava.version>
         <jacoco.version>0.8.1</jacoco.version>
         <openjpa.version>2.4.3</openjpa.version>
+        <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
     </properties>
 
     <developers>
@@ -533,6 +534,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${google.guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${org.apache.commons.pool2.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
