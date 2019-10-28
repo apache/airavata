@@ -20,8 +20,12 @@
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.base.api.BaseAPI;
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.AbandonedConfig;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -34,50 +38,76 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
 
     private static final Logger logger = LoggerFactory.getLogger(ThriftClientPool.class);
 
-    private final GenericObjectPool internalPool;
+    private final GenericObjectPool<T> internalPool;
 
-    public ThriftClientPool(ClientFactory<T> clientFactory,
-                            GenericObjectPool.Config poolConfig, String host, int port) {
-        this(clientFactory, new BinaryOverSocketProtocolFactory(host, port),
-                poolConfig);
+    public ThriftClientPool(ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig, String host,
+            int port) {
+        this(clientFactory, new BinaryOverSocketProtocolFactory(host, port), poolConfig);
     }
 
-    public ThriftClientPool(ClientFactory<T> clientFactory,
-                            ProtocolFactory protocolFactory, GenericObjectPool.Config poolConfig) {
-        this.internalPool = new GenericObjectPool(new ThriftClientFactory(
-                clientFactory, protocolFactory), poolConfig);
+    public ThriftClientPool(ClientFactory<T> clientFactory, ProtocolFactory protocolFactory,
+            GenericObjectPoolConfig<T> poolConfig) {
+
+        AbandonedConfig abandonedConfig = null;
+        if (ApplicationSettings.isThriftClientPoolAbandonedRemovalEnabled()) {
+            abandonedConfig = new AbandonedConfig();
+            abandonedConfig.setLogAbandoned(true);
+            abandonedConfig.setRemoveAbandonedOnBorrow(true);
+            abandonedConfig.setRemoveAbandonedOnMaintenance(true);
+        }
+        this.internalPool = new GenericObjectPool<T>(new ThriftClientFactory(clientFactory, protocolFactory),
+                poolConfig, abandonedConfig);
     }
 
-    class ThriftClientFactory extends BasePoolableObjectFactory {
+    public ThriftClientPool(ClientFactory<T> clientFactory, ProtocolFactory protocolFactory,
+            GenericObjectPoolConfig<T> poolConfig, AbandonedConfig abandonedConfig) {
+
+        if (abandonedConfig != null && abandonedConfig.getRemoveAbandonedOnMaintenance()
+                && poolConfig.getTimeBetweenEvictionRunsMillis() <= 0) {
+            logger.warn("Abandoned removal is enabled but"
+                    + " removeAbandonedOnMaintenance won't run since"
+                    + " timeBetweenEvictionRunsMillis is not positive, current value: {}",
+                    poolConfig.getTimeBetweenEvictionRunsMillis());
+        }
+        this.internalPool = new GenericObjectPool<T>(new ThriftClientFactory(clientFactory, protocolFactory),
+                poolConfig, abandonedConfig);
+    }
+
+    class ThriftClientFactory extends BasePooledObjectFactory<T> {
 
         private ClientFactory<T> clientFactory;
         private ProtocolFactory protocolFactory;
 
-        public ThriftClientFactory(ClientFactory<T> clientFactory,
-                                   ProtocolFactory protocolFactory) {
+        public ThriftClientFactory(ClientFactory<T> clientFactory, ProtocolFactory protocolFactory) {
             this.clientFactory = clientFactory;
             this.protocolFactory = protocolFactory;
         }
 
         @Override
-        public T makeObject() throws Exception {
+        public T create() throws Exception {
             try {
                 TProtocol protocol = protocolFactory.make();
                 return clientFactory.make(protocol);
             } catch (Exception e) {
                 logger.warn(e.getMessage(), e);
-                throw new ThriftClientException(
-                        "Can not make a new object for pool", e);
+                throw new ThriftClientException("Can not make a new object for pool", e);
             }
         }
 
-        public void destroyObject(T obj) throws Exception {
+        @Override
+        public void destroyObject(PooledObject<T> pooledObject) throws Exception {
+            T obj = pooledObject.getObject();
             if (obj.getOutputProtocol().getTransport().isOpen()) {
                 obj.getOutputProtocol().getTransport().close();
             }
             if (obj.getInputProtocol().getTransport().isOpen()) {
                 obj.getInputProtocol().getTransport().close();
             }
+        }
+
+        @Override
+        public PooledObject<T> wrap(T obj) {
+            return new DefaultPooledObject<T>(obj);
         }
     }
 
@@ -129,7 +159,7 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         try {
             for( int i = 0; i < 10 ; i++) {
                 // This tries to fetch a client from the pool and validate it before returning.
-                final T client = (T) internalPool.borrowObject();
+                final T client = internalPool.borrowObject();
                 try {
                     String apiVersion = client.getAPIVersion();
                     logger.debug("Validated client and fetched api version " + apiVersion);
