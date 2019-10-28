@@ -1,0 +1,5 @@
+**/node_modules
+venv
+**.pyc
+.git
+**/dist
