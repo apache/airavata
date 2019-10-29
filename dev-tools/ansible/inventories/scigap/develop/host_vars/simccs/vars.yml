@@ -25,7 +25,7 @@ airavata_django_extra_dependencies:
   # requires that cython already be installed and they can't both be installed
   # at the same time.
   - cython
-  - git+https://github.com/SciGaP/simccs-maptool.git#egg=simccs-maptool
+  - git+https://github.com/SciGaP/simccs-maptool.git@dev#egg=simccs-maptool
   - pyjnius
 vhost_servername: "beta.simccs.org"
 vhost_ssl: True
