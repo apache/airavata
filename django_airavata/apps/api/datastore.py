@@ -82,7 +82,7 @@ def move_external(external_path, target_username, target_dir, file_name):
 def create_user_dir(username, path):
     user_data_storage = _user_data_storage(username)
     if not user_data_storage.exists(path):
-        os.makedirs(user_data_storage.path(path))
+        _makedirs(username, user_data_storage.path(path))
     else:
         raise Exception(
             "Directory {} already exists".format(path))
@@ -139,13 +139,18 @@ def get_experiment_dir(
         user_experiment_data_storage = _user_data_storage(username)
         experiment_dir = user_experiment_data_storage.path(path)
     if not user_experiment_data_storage.exists(experiment_dir):
-        os.makedirs(
-            experiment_dir,
-            mode=user_experiment_data_storage.directory_permissions_mode)
-        # os.makedirs mode isn't always respected so need to chmod to be sure
-        os.chmod(experiment_dir,
-                 mode=user_experiment_data_storage.directory_permissions_mode)
+        _makedirs(username, experiment_dir)
     return experiment_dir
+
+
+def _makedirs(username, dir_path):
+    user_experiment_data_storage = _user_data_storage(username)
+    os.makedirs(dir_path,
+                mode=user_experiment_data_storage.directory_permissions_mode)
+    # os.makedirs mode isn't always respected so need to chmod to be sure
+    os.chmod(dir_path,
+             mode=user_experiment_data_storage.directory_permissions_mode)
+
 
 
 def list_user_dir(username, file_path):
