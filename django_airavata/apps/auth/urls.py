@@ -23,4 +23,7 @@ urlpatterns = [
     url(r'^forgot-password/$', views.forgot_password, name="forgot_password"),
     url(r'^reset-password/(?P<code>[\w-]+)/$', views.reset_password,
         name="reset_password"),
+    url(r'^login-desktop/$', views.login_desktop, name="login_desktop"),
+    url(r'^login-desktop-success/$',
+        views.login_desktop_success, name="login_desktop_success"),
 ]
