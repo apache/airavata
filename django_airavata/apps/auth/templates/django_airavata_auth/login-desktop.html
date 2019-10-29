@@ -2,15 +2,17 @@
 
 {% block content %}
 
-<main class="main-content">
-<div class="container">
-    {% if options.external %}
-    {% include "./partials/externals_login_form.html" %}
-    {% endif %}
+<div class="main-content-wrapper">
+  <main class="main-content">
+  <div class="container">
+      {% if options.external %}
+      {% include "./partials/externals_login_form.html" %}
+      {% endif %}
 
-    {% if options.password %}
-    {% include "./partials/username_password_login_form.html" %}
-    {% endif %}
+      {% if options.password %}
+      {% include "./partials/username_password_login_form.html" %}
+      {% endif %}
+  </div>
+  </main>
 </div>
-</main>
 {% endblock content %}

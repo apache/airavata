@@ -452,14 +452,15 @@ def login_desktop_success(request):
 
 
 def _create_login_desktop_success_response(request):
-    valid_time = (request.session['ACCESS_TOKEN_EXPIRES_AT'] - time.time())
+    valid_time = int(request.session['ACCESS_TOKEN_EXPIRES_AT'] - time.time())
     return redirect(
         reverse('django_airavata_auth:login_desktop_success') +
         "?" + urlencode({
             'status': 'ok',
             'code': request.session['ACCESS_TOKEN'],
             'refresh_code': request.session['REFRESH_TOKEN'],
-            'valid_time': valid_time
+            'valid_time': valid_time,
+            'username': request.user.username
         }))
 
 
