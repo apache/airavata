@@ -29,6 +29,7 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/django.staging.seagrid.org/fu
 ssl_certificate_key_file: "/etc/letsencrypt/live/django.staging.seagrid.org/privkey.pem"
 
 django_file_upload_max_file_size_mb: 5500
+django_pga_url: "https://staging.seagrid.org"
 
 ## Keycloak related variables
 tenant_domain: "seagrid"
