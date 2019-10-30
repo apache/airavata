@@ -64,3 +64,9 @@ regserver.server.port=8970
 ###########################################################################
 credential.store.server.host=localhost
 credential.store.server.port=8960
+
+###########################################################################
+# Profile Service Configuration
+###########################################################################
+profile.service.server.host=localhost
+profile.service.server.port=8962
