@@ -51,6 +51,7 @@ sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
 trust.store=../../configuration/server/src/main/resources/client_truststore.jks
 trust.store.password=airavata
 iam.server.url=http://localhost/auth
+security.manager.class=org.apache.airavata.service.security.KeyCloakSecurityManager
 
 ###########################################################################
 #  Registry Server Configurations
@@ -70,3 +71,9 @@ credential.store.server.port=8960
 ###########################################################################
 profile.service.server.host=localhost
 profile.service.server.port=8962
+
+###########################################################################
+# Sharing API Server Configuration
+###########################################################################
+sharing.registry.server.host=localhost
+sharing.registry.server.port=7878
