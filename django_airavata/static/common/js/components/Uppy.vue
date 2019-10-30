@@ -55,7 +55,8 @@ export default {
   data() {
     return {
       uppy: null,
-      restrictionFailedMessage: null
+      restrictionFailedMessage: null,
+      settings: null
     };
   },
   computed: {

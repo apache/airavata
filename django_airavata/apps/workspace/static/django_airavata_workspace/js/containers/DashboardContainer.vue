@@ -1,5 +1,6 @@
 <template>
   <div>
+    <pga-link />
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">Dashboard</h1>
@@ -75,6 +76,7 @@
 import { services, session } from "django-airavata-api";
 import { components as comps } from "django-airavata-common-ui";
 import urls from "../utils/urls";
+import PgaLink from "../components/PgaLink";
 
 export default {
   name: "dashboard-container",
@@ -88,7 +90,8 @@ export default {
   },
   components: {
     "application-card": comps.ApplicationCard,
-    "favorite-toggle": comps.FavoriteToggle
+    "favorite-toggle": comps.FavoriteToggle,
+    "pga-link": PgaLink
   },
   methods: {
     handleAppSelected: function(appModule) {
@@ -109,7 +112,8 @@ export default {
           );
           this.$nextTick(() => {
             this.$refs.favoriteApplicationCards[index].$el.scrollIntoView({
-              behavior: "smooth", block: "center"
+              behavior: "smooth",
+              block: "center"
             });
           });
         });

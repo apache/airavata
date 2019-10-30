@@ -222,6 +222,9 @@ TUS_ENDPOINT = None
 # Override and set to the directory where tus uploads will be stored
 TUS_DATA_DIR = None
 
+# Legacy (PGA) Portal link - provide a link to the legacy portal
+PGA_URL = None
+
 # Django REST Framework configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

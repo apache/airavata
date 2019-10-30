@@ -103,6 +103,9 @@ PORTAL_TITLE = 'Django Airavata Gateway'
 # Override and set to the directory where tus uploads will be stored.
 # TUS_DATA_DIR = "/path/to/tus-temp-dir"
 
+# Legacy (PGA) Portal link - uncomment to provide a link to the legacy portal
+# PGA_URL = '...'
+
 # Logging configuration. Uncomment following to override default log configuration
 # LOGGING = {
 #     'version': 1,

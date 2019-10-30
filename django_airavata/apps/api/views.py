@@ -1740,6 +1740,7 @@ class SettingsAPIView(APIView):
         data = {
             'fileUploadMaxFileSize': settings.FILE_UPLOAD_MAX_FILE_SIZE,
             'tusEndpoint': settings.TUS_ENDPOINT,
+            'pgaUrl': settings.PGA_URL
         }
         serializer = self.serializer_class(
             data, context={'request': request})

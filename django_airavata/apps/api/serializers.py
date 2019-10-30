@@ -976,3 +976,4 @@ class LogRecordSerializer(serializers.Serializer):
 class SettingsSerializer(serializers.Serializer):
     fileUploadMaxFileSize = serializers.IntegerField()
     tusEndpoint = serializers.CharField()
+    pgaUrl = serializers.CharField()
