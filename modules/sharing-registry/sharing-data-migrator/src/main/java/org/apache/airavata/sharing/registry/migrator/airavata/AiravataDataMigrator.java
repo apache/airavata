@@ -764,7 +764,7 @@ public class AiravataDataMigrator {
             AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(tenantId);
             return authzToken;
         } catch (AiravataSecurityException e){
-            throw new TException("Unable to fetch access token for management user for tenant: " + tenantId);
+            throw new TException("Unable to fetch access token for management user for tenant: " + tenantId, e);
         }
 
     }
