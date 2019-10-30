@@ -467,7 +467,7 @@ public class AiravataDataMigrator {
     }
     private static void checkUsersInSharingRegistryService(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, String domainId) throws TException{
         for(UserProfile users: missingUsers){
-            if(!sharingRegistryServerHandler.isUserExists(users.getAiravataInternalUserId(), domainId)){
+            if(!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())){
                 User user = new User();
                 user.setUserId(users.getAiravataInternalUserId());
                 user.setDomainId(users.getGatewayId());
