@@ -31,7 +31,7 @@ airavata_source_dir: "{{ user_home }}/staging-source"
 airavata_repo: "https://github.com/apache/airavata.git"
 airavata_dist: "apache-airavata-api-server-0.19-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
-git_branch: staging
+git_branch: master
 
 # Database related variables
 db_server: "{{ hostvars[groups['database'][0]]['ansible_default_ipv4']['address'] }}"
