@@ -466,13 +466,24 @@ public class AiravataDataMigrator {
         return allUsersUpdated;
     }
     private static void checkUsersInSharingRegistryService(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, String domainId) throws TException{
-        for(UserProfile users: missingUsers){
-            if(!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())){
-                User user = new User();
-                user.setUserId(users.getAiravataInternalUserId());
-                user.setDomainId(users.getGatewayId());
-                user.setUserName(users.getUserId());
-                sharingRegistryServerHandler.createUser(user);
+        System.out.println("Waiting for " + missingUsers.size() + " missing users to be propogated to sharing db");
+        while (true) {
+            boolean missingInSharing = false;
+            for (UserProfile users : missingUsers) {
+                if (!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())) {
+                    missingInSharing = true;
+                    break;
+                }
+            }
+            if (!missingInSharing) {
+                break;
+            }
+            try {
+                System.out.print(".");
+                // wait for 1 second
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
