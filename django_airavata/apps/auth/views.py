@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.forms import ValidationError
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render, resolve_url
 from django.template import Context, Template
 from django.urls import reverse
@@ -449,6 +449,24 @@ def login_desktop(request):
 
 def login_desktop_success(request):
     return render(request, 'django_airavata_auth/login-desktop-success.html')
+
+
+def refreshed_token_desktop(request):
+    refresh_code = request.GET['refresh_code']
+    user = authenticate(refresh_token=refresh_code, request=request)
+    if user is not None:
+        valid_time = int(request.session['ACCESS_TOKEN_EXPIRES_AT'] -
+                         time.time())
+        return JsonResponse({
+            'status': 'ok',
+            'code': request.session['ACCESS_TOKEN'],
+            'refresh_code': request.session['REFRESH_TOKEN'],
+            'valid_time': valid_time,
+        })
+    else:
+        return JsonResponse({
+            'status': 'failed',
+        })
 
 
 def _create_login_desktop_success_response(request):

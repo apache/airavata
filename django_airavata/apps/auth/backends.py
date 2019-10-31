@@ -18,7 +18,11 @@ class KeycloakBackend(object):
     """Django authentication backend for Keycloak."""
 
     @sensitive_variables('password')
-    def authenticate(self, request=None, username=None, password=None):
+    def authenticate(self,
+                     request=None,
+                     username=None,
+                     password=None,
+                     refresh_token=None):
         try:
             if username and password:
                 token, userinfo = self._get_token_and_userinfo_password_flow(
@@ -28,10 +32,18 @@ class KeycloakBackend(object):
             # user is already logged in and can use refresh token
             elif request.user and not utils.is_refresh_token_expired(request):
                 logger.debug("Refreshing token...")
-                token = self._get_token_from_refresh_token(request)
+                token, userinfo = \
+                    self._get_token_and_userinfo_from_refresh_token(request)
                 self._process_token(request, token)
                 # user is already logged in
                 return request.user
+            elif refresh_token:
+                logger.debug("Refreshing supplied token...")
+                token, userinfo = \
+                    self._get_token_and_userinfo_from_refresh_token(
+                        request, refresh_token=refresh_token)
+                self._process_token(request, token)
+                return self._process_userinfo(request, userinfo)
             else:
                 token, userinfo = self._get_token_and_userinfo_redirect_flow(
                     request)
@@ -88,23 +100,29 @@ class KeycloakBackend(object):
         userinfo = oauth2_session.get(userinfo_url).json()
         return token, userinfo
 
-    def _get_token_from_refresh_token(self, request):
+    def _get_token_and_userinfo_from_refresh_token(self,
+                                                   request,
+                                                   refresh_token=None):
         client_id = settings.KEYCLOAK_CLIENT_ID
         client_secret = settings.KEYCLOAK_CLIENT_SECRET
         token_url = settings.KEYCLOAK_TOKEN_URL
+        userinfo_url = settings.KEYCLOAK_USERINFO_URL
         verify_ssl = settings.KEYCLOAK_VERIFY_SSL
         oauth2_session = OAuth2Session(client_id, scope='openid')
         if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
             oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
-        refresh_token = request.session['REFRESH_TOKEN']
+        refresh_token_ = (refresh_token
+                          if refresh_token is not None
+                          else request.session['REFRESH_TOKEN'])
         # refresh_token doesn't take client_secret kwarg, so create auth
         # explicitly
         auth = requests.auth.HTTPBasicAuth(client_id, client_secret)
         token = oauth2_session.refresh_token(token_url=token_url,
-                                             refresh_token=refresh_token,
+                                             refresh_token=refresh_token_,
                                              auth=auth,
                                              verify=verify_ssl)
-        return token
+        userinfo = oauth2_session.get(userinfo_url).json()
+        return token, userinfo
 
     def _process_token(self, request, token):
         # TODO validate the JWS signature
