@@ -150,8 +150,8 @@ class CustomEmbedBlock(StructBlock):
     class Meta:
         icon = "fa-link"
         template = "blocks/embed_block.html"
-        help_text = ("Insert an embed URL e.g "
-                     "https://www.youtube.com/embed/SGJFWirQ3ks")
+        help_text = ("Insert a youtube URL e.g "
+                     "https://www.youtube.com/watch?v=SGJFWirQ3ks")
 
 
 class CssCommentBlock(StructBlock):
