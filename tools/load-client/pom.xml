@@ -44,6 +44,11 @@
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-authz-client</artifactId>
+            <version>2.5.4.Final</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -1,5 +1,7 @@
 package org.apache.airavata.tools.load;
 
+import org.apache.airavata.model.security.AuthzToken;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,9 @@ public class Configuration {
     private String applicationInterfaceId;
     private String computeResourceId;
     private String storageResourceId;
+    private String keycloakUrl;
+    private String keycloakClientId;
+    private String keycloakClientSecret;
 
     private String experimentBaseName;
 
@@ -24,6 +29,20 @@ public class Configuration {
     private int concurrentUsers;
     private int iterationsPerUser;
     private int randomMSDelayWithinSubmissions;
+
+
+    private AuthzToken authzToken;
+
+    public AuthzToken getAuthzToken() throws Exception {
+
+        if (authzToken == null) {
+            System.out.print("Enter password for user " + getUserId() + " in gateway " + getGatewayId() + " : ");
+            String pw = new String(System.console().readPassword());
+            authzToken = Authenticator.getAuthzToken(getUserId(), pw, getGatewayId(),
+                    getKeycloakUrl(), getKeycloakClientId(), getKeycloakClientSecret());
+        }
+        return authzToken;
+    }
 
     private List<Input> inputs = new ArrayList<>();
 
@@ -182,5 +201,29 @@ public class Configuration {
         public void setValue(String value) {
             this.value = value;
         }
+    }
+
+    public String getKeycloakUrl() {
+        return keycloakUrl;
+    }
+
+    public void setKeycloakUrl(String keycloakUrl) {
+        this.keycloakUrl = keycloakUrl;
+    }
+
+    public String getKeycloakClientId() {
+        return keycloakClientId;
+    }
+
+    public void setKeycloakClientId(String keycloakClientId) {
+        this.keycloakClientId = keycloakClientId;
+    }
+
+    public String getKeycloakClientSecret() {
+        return keycloakClientSecret;
+    }
+
+    public void setKeycloakClientSecret(String keycloakClientSecret) {
+        this.keycloakClientSecret = keycloakClientSecret;
     }
 }
