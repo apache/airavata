@@ -441,6 +441,12 @@
             <artifactId>realtime-monitor</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- For thrift client pool -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
     </dependencies>
 
     <url>http://airavata.apache.org/</url>

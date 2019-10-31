@@ -142,6 +142,10 @@ TUS_DATA_DIR = "{{ django_tus_data_dir }}"
 
 FILE_UPLOAD_MAX_FILE_SIZE = {{ django_file_upload_max_file_size_mb }} * 1024 * 1024
 
+{% if django_pga_url is defined %}
+PGA_URL = "{{ django_pga_url }}"
+{% endif %}
+
 # Extra settings
 {% for extra_setting in django_extra_settings.items() | list %}
 {{ extra_setting[0] }} = {{ extra_setting[1] | to_nice_json }}
