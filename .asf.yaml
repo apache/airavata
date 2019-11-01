@@ -3,9 +3,11 @@ github:
   homepage: https://airavata.apache.org/
   labels:
     - airavata
-    - science gateways
-    - cloud native
+    - sciencegateways
+    - gateways
+    - cloudnative
     - microservices
     - java
-    - workflow orchestrator
-    - big data
+    - workfloworchestrator
+    - workflow
+    - bigdata
