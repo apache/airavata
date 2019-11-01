@@ -19,8 +19,6 @@
 #
 
 ---
-pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-pga_git_branch: "staging"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/scigap"
