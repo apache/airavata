@@ -569,9 +569,7 @@ class UserProfileSerializer(
 
 class GroupComputeResourcePreferenceSerializer(
         thrift_utils.create_serializer_class(GroupComputeResourcePreference)):
-
-    class Meta:
-        required = ('scratchLocation',)
+    pass
 
 
 class GroupResourceProfileSerializer(
