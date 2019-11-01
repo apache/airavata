@@ -53,6 +53,7 @@ import org.apache.airavata.service.security.AiravataSecurityManager;
 import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.registry.utils.ThriftDataModelConversion;
 import org.apache.thrift.TException;
 
 import java.sql.Connection;
@@ -467,7 +468,10 @@ public class AiravataDataMigrator {
     }
     private static void checkUsersInSharingRegistryService(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, String domainId) throws TException{
         System.out.println("Waiting for " + missingUsers.size() + " missing users to be propogated to sharing db");
-        while (true) {
+        int waitCount = 0;
+        // Wait up to 10 seconds for event based replication to complete, then
+        // add missing users to sharing registry
+        while (waitCount < 10) {
             boolean missingInSharing = false;
             for (UserProfile users : missingUsers) {
                 if (!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())) {
@@ -482,8 +486,15 @@ public class AiravataDataMigrator {
                 System.out.print(".");
                 // wait for 1 second
                 Thread.sleep(1000);
+                waitCount++;
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
+            }
+        }
+
+        for (UserProfile users : missingUsers) {
+            if (!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())) {
+                sharingRegistryServerHandler.createUser(ThriftDataModelConversion.getUser(users));
             }
         }
     }
