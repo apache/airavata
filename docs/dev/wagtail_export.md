@@ -41,25 +41,20 @@ Airavata backend running.
 python manage.py createsuperuser
 ```
 
-4. You can either start from scratch, or start from an existing Wagtail export.
-   If you don't want to start from an export you can start the server, log into
-   <http://localhost:8000/cms> and start creating pages.
-
-5. To start from an existing Wagtail export, first remove the database.
-
-```
-rm db.sqlite3
-```
-
-6. Run `python manage.py migrate`.
-
-7. Run `python manage.py load_cms_data FILENAME`, where FILENAME is the name of
-   one of the Wagtail exports in
+4. (Optional) To start from an existing Wagtail export, run
+   `python manage.py load_cms_data FILENAME`, where FILENAME is the name of one
+   of the Wagtail exports in
    [fixtures](https://github.com/apache/airavata-django-portal/tree/master/django_airavata/wagtailapps/base/fixtures)
    directory. For example, you can run
 
 ```
 python manage.py load_cms_data default.json
+```
+
+5. Start the Django server and log in at <http://localhost:8000/cms>
+
+```
+python manage.py runserver
 ```
 
 ## Creating the Wagtail export
@@ -78,6 +73,49 @@ Where you can change `myexport` to whatever you want to meaningfully name the
 export file.
 
 2. Commit any media files that were added as part of creating the Wagtail pages.
+
+## Resetting your local environment
+
+1. To start over, first remove (or rename) the database.
+
+!!! warning
+
+    db.sqlite3 stores all of the Wagtail changes you have made. Only remove
+    this if you have already exported the wagtail changes to a file. See the
+    previous section.
+
+```
+rm db.sqlite3
+```
+
+2. Migrate the database:
+
+```
+python manage.py migrate
+```
+
+3. Create a superuser account. You'll use this to log into wagtail and edit
+   pages:
+
+```
+python manage.py createsuperuser
+```
+
+4. (Optional) To start from an existing Wagtail export, run
+   `python manage.py load_cms_data FILENAME`, where FILENAME is the name of one
+   of the Wagtail exports in
+   [fixtures](https://github.com/apache/airavata-django-portal/tree/master/django_airavata/wagtailapps/base/fixtures)
+   directory. For example, you can run
+
+```
+python manage.py load_cms_data default.json
+```
+
+5. Start the Django server and log in at <http://localhost:8000/cms>
+
+```
+python manage.py runserver
+```
 
 ## Importing a Wagtail export
 
