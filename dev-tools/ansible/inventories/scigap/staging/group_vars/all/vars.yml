@@ -113,7 +113,7 @@ monitor_email_password: "{{ vault_monitor_email_password }}"
 
 # PGA variables
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-pga_git_branch: "staging"
+pga_git_branch: "master"
 user_data_dir: "/var/www/portals/gateway-user-data"
 real_user_data_dir: "/data/gateway-user-data"
 ## Airavata Client related variables
