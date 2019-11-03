@@ -26,6 +26,7 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/django.simvascular.scigap.org
 ssl_certificate_key_file: "/etc/letsencrypt/live/django.simvascular.scigap.org/privkey.pem"
 
 django_file_upload_max_file_size_mb: 2000
+django_pga_url: "https://gateway.simvascular.org"
 
 ## Keycloak related variables
 tenant_domain: "simvascular"
