@@ -43,7 +43,6 @@ auth_options:
 gateway_id: "sdstate"
 experiment_data_dir: "{{ user_data_dir }}/sdstate"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7vqwM+CWfqVWODe3iLsKN9leJ9nI+pKFZhrVUG8K/ODycXT5tQOxMhsC+HG6/wJ1W7+LeA6uvVnltnFlVozfTs2jeJzVQ71UvfUiZFVhXian3f8Nd4DXBvqPUY8dmhWP/UJCIKO47fSI/RC2ZlMa1K4yRYPdRgLRuSmtzG8Rb7YGVjkt1uDOLMh6hAS1KKpWVSxESFeqqoKj2xqOKBnbf2PdJt/D4/2R6H8D/WAM0cdZnls5fmiUysHK+bU8atzMukLQ6STglVv0WuqNGdAw6zWZH+Kaj8bP19jfkGCbMLP1vPYRkcxLmtnSzbg2Hams9npwdAA+xwwjuS6/tAX+p"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Chad Julius','Chad.Julius@sdstate.edu'),('Kevin Brandt','Kevin.Brandt@sdstate.edu'),('Luke Gassman','luke.gassman@sdstate.edu')]"
 portal_title: "South Dakota State University Gateway"

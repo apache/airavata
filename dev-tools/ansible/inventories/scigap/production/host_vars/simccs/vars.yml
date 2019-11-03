@@ -55,7 +55,6 @@ auth_options:
 gateway_id: "iu-geology-survey"
 experiment_data_dir: "{{ user_data_dir }}/iu-geology-survey"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEuA1indjdczBXg2qrmD0bB0QfKq0u2q3o25DegTaty5LoogW+APEvXmwc2g6PzkM75MgfMsTErMQaQ3/PoElADQKg2/NePz05YWobn9zrPZFeRWfOqWMjFDx72cffHKBzgnahFDBlR/YJhf4IZJ+EOA1zMiMF2oZQmEYQtbQFhbKPF+jrScEQeuXVuXWSS2sKNAVKj3pY4kmi9kEOYELee/O6ghBUfrVhB95vDKJPgmQSuo3pgkLRdflTBSAQ54UchwjXi2RA9Xv0RXJF/JyyRGn6bSbRxYhsm5RJeiBVj4ua7p2b36rSYVqtVsTKEonx5kYdKzwyjJXWpjB2KtQp"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Kevin Ellett', 'kmellett@indiana.edu'),('Ryan Kammer', 'rkammer@indiana.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "SimCCS Portal"

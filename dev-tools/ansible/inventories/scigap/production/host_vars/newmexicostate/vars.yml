@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "new-mexico-state"
 experiment_data_dir: "{{ user_data_dir }}/new-mexico-state"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCRYbUBGqEqUkcsAkQPetJDTTIWGGFbB7DBzvSQUT26SqHpRZQR3J4lCvzmH8/T3KoQC4uxnph5RpiemMeoQIxIJ8hH9Pod3Z0xK2qu6b/jDrbX+UbepkBl8Xc8aE6UWAX4C6rnn1X4ktqLp9GDE2G9CN4+pZxDanK5h7+68qsiz/rpzUEHVDPzo1A5YRPE2cFgOp4s207zE/GaXH2A/+vucdbTmoy2hND3uYkaaMe4ygMlakDDlkMTl5dlgaHuoqVu0pOSnsUimpxV87LpXqWaD1d6G+IVW1CNjKtVBvz/z4aFMLWhqWLYZlLpsoGi4ZqXf3u0A4ajL+6uXgiGuIRX"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Diana Toups Dugas','dugasdvt@ad.nmsu.edu')]"
 portal_title: "New Mexico State Science Gateway"

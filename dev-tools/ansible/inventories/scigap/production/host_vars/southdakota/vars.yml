@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "southdakota"
 experiment_data_dir: "{{ user_data_dir }}/southdakota"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIUqpKWHwawFHnbWvs6pie+fDA9NlqMZNvzil7e8FQz7543+FOzdTl/octACjGnSTwHewpyTe9sAUVcnq6VJ5XYtApR68zMasEzyCZUMWhMqEuxopRZcUGDJVcq5hD4RZcer3aMPWSVmXVCNJeT4EsB52Zp2DfDVgfaOOfY8Ga4mcR2IdOyizV8HWXTH6vWFK+dD1GoPY0ECikwlsF1QA0vzqAcb1NYOTc70hZ9Pb0/78XF790joZ80hRsHGIc7IfncoLgRUkKSkMaoXbfy/tbqf76V0ZxaQOgayaLGF19oBlREO6ZQ3rDCOWgVJC32dCwAsaL9qWd0IZrprUEUQOd"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Adison Kleinsasser','Adison.Kleinsasser@usd.edu'),('Bill James','CBill.Conn@usd.edu'),('Luke Gassman','luke.gassman@sdstate.edu')]"
 portal_title: "South Dakota State University Gateway"

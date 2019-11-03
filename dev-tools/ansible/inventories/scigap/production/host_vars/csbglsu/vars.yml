@@ -42,7 +42,6 @@ auth_options:
 gateway_id: "lsu-computational-sys-biology"
 experiment_data_dir: "{{ user_data_dir }}/lsu-computational-sys-biology"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDc/WQnD40zGuO+bIMsWc0ey8oxDzEj/dPFPg8LN7oNn/V7pi74mF2D57wgA8KsxcpsNydcReSXZhx6FynlK6iABDZP5QdREmhm87gkrMQUA/ZI7R2q7ekchbRtCnrGwU/pdHBh4penaiScs08o7OPfqJJp/TfgwH92dA9dThqGf9hD1Y0nmWECfvX56rXAggcgZl+Q6IFD0VFinFMkqZRWFFi4Zm7yiKCNWYXvXlIGjFOlDp0/ONGg5wjpCFivhI934Uk6Y69hSMhnFJc6g1JHD4PLaBILlUjwEikmH6KL3ii6Wt30pou+tIihBDBv0ODR4jDiOeBJGkcisWeh3Uzj"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Michal Brylinski', 'mbrylinski@lsu.edu')]"
 portal_title: "LSU Computational Sys Biology"

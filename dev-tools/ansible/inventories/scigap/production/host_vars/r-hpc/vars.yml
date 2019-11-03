@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "r-hpc"
 experiment_data_dir: "{{ user_data_dir }}/r-hpc"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCq78vXnKfEBQleOpj3UGEZE9VDkUk8zO2grZ+u4gGdfV5Wx7jE0453PdQAdOjGxrusP5ERzWtwgg3myVRPGoq7cZOFL/7N96l1a+IxOZuJnEcL47EAGniOohl9NMnE0URWN8GA06Ou2pCHzraVhffG/QQocXPLaWbV2RU7dwh35AylBVBoxDWrcQ2xs+AZZjFtRg+XQouVbd6cVIuP0JtNQWOUZPKBb97XIoq28jl1bNcBLjiiSZ5ki8G5YgGwFD/aWXei8bX/iNfKWuiCgDXOuGH0yNs9j+SRyphkY+j1607ShUMcFxiLe7VBOztfgW/dCeyNkuMRhk6J8K8HgRGb"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC','sgrc-iu-group@iu.edu')]"
 portal_title: "R-HPC Science Gateway"

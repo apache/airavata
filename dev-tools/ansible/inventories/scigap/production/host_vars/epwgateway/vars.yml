@@ -19,8 +19,8 @@
 #
 
 ---
-vhost_servername: "sciencegateway.brylinski.org"
-vhost_server_redirect: "epw-gateway.cs.binghamton.edu/"
+vhost_servername: "epw-gateway.cs.binghamton.edu"
+vhost_serveralias: "www.epw-gateway.cs.binghamton.edu"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/epw-gateway.cs.binghamton.edu/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/epw-gateway.cs.binghamton.edu/fullchain.pem"
@@ -42,7 +42,6 @@ auth_options:
 gateway_id: "epw-gateway"
 experiment_data_dir: "{{ user_data_dir }}/epw-gateway"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCSqYzuDDUNK3uX4AG7sg9diKERh716i0lA5RfbvfUhm+hVmyJ1P+0/OLZqwrwqzd9+1v/U08GAhys/qeOD2+x0ujgyKtY+5cjk3Td01sVTEmcXJPYhhWyAOrhhUAVAL51Zh7u2Zd/0RWf3iG0fuPPQQaBCIEY3wApwuqsLVk9G0plMtZgzXPGLgK9Ou8xJ8806yGx92nc1b1grmgkYugv5SQTe2lhmrXI/WUnfuoweadNzU0uSwwL6AaZa9grCAV1YVnGq6IX+Euwpx/P1pSRNWkoNHkm8fpkz/6dqq5YFxgr3QN0JQU5OSbbwWTWQcXr1kWNx+yS4qCtDc42EHsf3"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Angel Beltre','abeltre1@binghamton.edu'),('Srinidhi Raghavendra','gsraghav2@binghamton.edu'),('Madhusudhan Govindaraju','mgovinda@binghamton.edu')]"
 portal_title: "Electron-Phonon-Wannier (EPW) Gateway"
