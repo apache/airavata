@@ -23,13 +23,13 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "www.searchsra.org"
+vhost_servername: "pga.searchsra.scigap.org"
 vhost_serveralias: "sciencegateway.searchsra.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/www.searchsra.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/www.searchsra.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/www.searchsra.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/pga.searchsra.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/pga.searchsra.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/pga.searchsra.scigap.org/privkey.pem"
 
 php_upload_max_filesize: "10M"
 php_post_max_size: "60M"
