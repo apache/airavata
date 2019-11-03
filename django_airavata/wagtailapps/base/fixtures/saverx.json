@@ -110,7 +110,7 @@
     "pk": 2,
     "fields": {
         "password": "pbkdf2_sha256$36000$ERbcYUAHzqrT$FC/sDt2R810gdwczdl8qn26EWPIgNoQKcigtSS7Dhl0=",
-        "last_login": "2019-11-01T13:47:36.534Z",
+        "last_login": "2019-11-03T05:35:17.433Z",
         "is_superuser": true,
         "username": "eabeysin",
         "first_name": "",
@@ -877,9 +877,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2019-11-01T07:09:07.844Z",
-        "last_published_at": "2019-11-02T18:44:29.804Z",
-        "latest_revision_created_at": "2019-11-02T18:44:29.785Z",
-        "live_revision": 297
+        "last_published_at": "2019-11-03T05:35:25.214Z",
+        "latest_revision_created_at": "2019-11-03T05:35:25.192Z",
+        "live_revision": 298
     }
 },
 {
@@ -1961,6 +1961,20 @@
     }
 },
 {
+    "model": "wagtailcore.pagerevision",
+    "pk": 298,
+    "fields": {
+        "page": 11,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T05:35:25.192Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 11, \"path\": \"0001000100010008\", \"depth\": 4, \"numchild\": 0, \"title\": \"Cite Us\", \"draft_title\": \"Cite Us\", \"slug\": \"cite-us\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/cite-us/\", \"owner\": 2, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2019-11-01T07:09:07.844Z\", \"last_published_at\": \"2019-11-02T18:44:29.804Z\", \"latest_revision_created_at\": \"2019-11-02T18:44:29.785Z\", \"live_revision\": 297, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 31, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-3\\\", \\\"body\\\": \\\"<h2><b>Cite Us</b></h2>\\\"}, \\\"id\\\": \\\"8902a118-08d2-4851-a4a0-13af0598bb78\\\"}]\", \"page\": 11}, {\"pk\": 32, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"eeb20565-91f8-4964-b207-731e171edf17\\\"}]\", \"page\": 11}, {\"pk\": 33, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-4\\\", \\\"body\\\": \\\"<p>It is critical to have our work cited so we can continue to develop exciting tools for you. Please be sure to not only cite our gateway, https://singlecellgateway.wharton.upenn.edu/, but to also cite <a href=\\\\\\\"https://www.biorxiv.org/content/10.1101/457879v2\\\\\\\">Our Publication</a>.</p><h4><b>Acknowledgments</b></h4><p>Development of the Apache Airavata used to develop the science gateway is supported by NSF award #1339774.</p>\\\"}, \\\"id\\\": \\\"035299ac-68cd-43fa-b0bf-5897339b9390\\\"}]\", \"page\": 11}]}",
+        "approved_go_live_at": null
+    }
+},
+{
     "model": "wagtailcore.grouppagepermission",
     "pk": 1,
     "fields": {
@@ -2253,6 +2267,13 @@
     }
 },
 {
+    "model": "django_airavata_wagtail_base.navextra",
+    "pk": 1,
+    "fields": {
+        "nav": "[{\"type\": \"nav\", \"value\": {\"custom_class\": \"second-nav\", \"nav_items\": [{\"type\": \"create_account_link\", \"value\": {\"link\": \"/auth/create-account\", \"link_text\": \"Create Account\", \"image\": null, \"icon_class\": \"fas fa-user\", \"show\": \"not-logged-in\", \"horizontal_alignment\": \"push-right\"}, \"id\": \"75cc8055-a341-40aa-b03c-e22e3c46a668\"}, {\"type\": \"login_link\", \"value\": {\"link\": \"/auth/login\", \"link_text\": \"Log in\", \"image\": null, \"icon_class\": \"fas fa-sign-in-alt\", \"show\": \"not-logged-in\", \"horizontal_alignment\": \"\"}, \"id\": \"934af25e-82ef-4cb7-87d8-7b6c2bfb5a4c\"}, {\"type\": \"dashboard_link\", \"value\": {\"link\": \"/workspace/dashboard\", \"link_text\": \"Go to Dashboard\", \"image\": null, \"icon_class\": \"fas fa-arrow-circle-right\", \"show\": \"logged-in\", \"horizontal_alignment\": \"push-right\"}, \"id\": \"8ff7cf09-b113-4e85-82c8-34e0fe9668c9\"}, {\"type\": \"logout_link\", \"value\": {\"link\": \"/auth/logout\", \"link_text\": \"Logout\", \"image\": null, \"icon_class\": \"fas fa-sign-out-alt\", \"show\": \"logged-in\", \"horizontal_alignment\": \"\"}, \"id\": \"a124a951-e330-4d32-abe1-ef5dece30bec\"}]}, \"id\": \"cc6bbe9e-3c98-432e-83c5-665017e45b3a\"}]"
+    }
+},
+{
     "model": "django_airavata_wagtail_base.customcss",
     "pk": 1,
     "fields": {
@@ -2273,8 +2294,8 @@
         "logo": 9,
         "logo_redirect_link": "/",
         "logo_with_text": "no",
-        "logo_width": 400,
-        "logo_height": null,
+        "logo_width": 325,
+        "logo_height": 50,
         "logo_text": null,
         "logo_text_color": null,
         "logo_text_size": null
