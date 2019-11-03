@@ -110,7 +110,7 @@
     "pk": 2,
     "fields": {
         "password": "pbkdf2_sha256$36000$ERbcYUAHzqrT$FC/sDt2R810gdwczdl8qn26EWPIgNoQKcigtSS7Dhl0=",
-        "last_login": "2019-11-02T18:51:57.334Z",
+        "last_login": "2019-11-03T05:38:24.573Z",
         "is_superuser": true,
         "username": "eabeysin",
         "first_name": "",
@@ -877,9 +877,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2018-04-05T23:03:07.327Z",
-        "last_published_at": "2019-11-02T19:10:15.151Z",
-        "latest_revision_created_at": "2019-11-02T19:10:15.129Z",
-        "live_revision": 301
+        "last_published_at": "2019-11-03T05:41:45.099Z",
+        "latest_revision_created_at": "2019-11-03T05:41:45.074Z",
+        "live_revision": 309
     }
 },
 {
@@ -2149,6 +2149,20 @@
     }
 },
 {
+    "model": "wagtailcore.pagerevision",
+    "pk": 309,
+    "fields": {
+        "page": 3,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T05:41:45.074Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 4, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-05T23:03:07.327Z\", \"last_published_at\": \"2019-11-02T19:10:15.151Z\", \"latest_revision_created_at\": \"2019-11-02T19:10:15.129Z\", \"live_revision\": 301, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 15, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"2000\\\", \\\"height\\\": 350, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 mt-0\\\"}, \\\"id\\\": \\\"1460a2e8-f993-4227-a043-d19921c00828\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Distant Reader Gateway\\\", \\\"size\\\": \\\"h2\\\", \\\"custom_class\\\": \\\"col-md-8 ml-auto mt-5\\\"}, \\\"id\\\": \\\"051d329e-2488-4d24-946d-89c991d3c949\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"716a1455-bcc8-4169-9cc0-40251e1979af\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-4\\\", \\\"body\\\": \\\"<p>The Distant Reader is a tool for reading.</p><p>The Distant Reader empowers you to <i>use &amp; understand</i> large amounts of textual information both quickly &amp; easily. For example, the Distant Reader can consume the entire issue of a scholarly journal, the complete works of a given author, or the content found at the other end of an arbitrarily long list of URLs. Thus, the Distant Reader is akin to a book&#x27;s table-of-contents or back-of-the-book index but at scale. It simplifies the process of identifying trends &amp; anomalies in a corpus, and then it enables you to further investigate those trends &amp; anomalies.</p><p>Technically speaking, the Distant Reader is a system which locally harvests/caches content you specify. It then transforms the content into plain text, performs sets of natural language processing &amp; text mining against the text, saves the results in a number of formats, reduces the whole to a cross-platform database file, queries the database thus summarizing the collection, zips the results of the entire process into a single file, and makes the file available to you for further investigation -- &quot;reading&quot;.</p><p>A list of published &quot;study carrels&quot; -- the output of the Distant Reader is available at <a href=\\\\\\\"http://carrels.distantreader.org/\\\\\\\">http://carrels.distantreader.org</a>.</p><p>I don&#x27;t know about you, but now-a-days I can find plenty of scholarly &amp; authoritative content. My problem is not one of discovery but instead one of comprehension. <i>How do I make sense of all the content I find?</i> The Distant Reader is intended to address this question by making observations against a corpus and providing tools for interpreting the results. It is my hope you will find the tool as useful as I do.</p><p></p><p>Eric Lease Morgan &lt;emorgan@nd.edu&gt;<br/> August 21, 2019</p>\\\"}, \\\"id\\\": \\\"1cddf952-fc7e-423f-9e74-b702ba43e8c4\\\"}]\", \"page\": 3}]}",
+        "approved_go_live_at": null
+    }
+},
+{
     "model": "wagtailcore.grouppagepermission",
     "pk": 1,
     "fields": {
@@ -2441,6 +2455,13 @@
     }
 },
 {
+    "model": "django_airavata_wagtail_base.navextra",
+    "pk": 1,
+    "fields": {
+        "nav": "[{\"type\": \"nav\", \"value\": {\"custom_class\": \"second-nav\", \"nav_items\": [{\"type\": \"create_account_link\", \"value\": {\"link\": \"/auth/create-account\", \"link_text\": \"Create Account\", \"image\": null, \"icon_class\": \"fas fa-user\", \"show\": \"not-logged-in\", \"horizontal_alignment\": \"push-right\"}, \"id\": \"79637e8f-4713-4bbb-b046-addefcfdb34b\"}, {\"type\": \"login_link\", \"value\": {\"link\": \"/auth/login\", \"link_text\": \"Log in\", \"image\": null, \"icon_class\": \"fas fa-sign-in-alt\", \"show\": \"not-logged-in\", \"horizontal_alignment\": \"\"}, \"id\": \"3decb16e-3486-45ca-8400-4560e05c9bfc\"}, {\"type\": \"dashboard_link\", \"value\": {\"link\": \"/workspace/dashboard\", \"link_text\": \"Go to Dashboard\", \"image\": null, \"icon_class\": \"fas fa-arrow-circle-right\", \"show\": \"logged-in\", \"horizontal_alignment\": \"push-right\"}, \"id\": \"e974181b-eab8-4d05-b9fb-1531fc3a88bf\"}, {\"type\": \"logout_link\", \"value\": {\"link\": \"/auth/logout\", \"link_text\": \"Logout\", \"image\": null, \"icon_class\": \"fas fa-sign-out-alt\", \"show\": \"logged-in\", \"horizontal_alignment\": \"\"}, \"id\": \"9437317f-acef-4b5d-9da7-15a0b508ccd2\"}]}, \"id\": \"5b6c4acd-6663-4a3f-929e-2b0b1616d7e2\"}]"
+    }
+},
+{
     "model": "django_airavata_wagtail_base.customcss",
     "pk": 1,
     "fields": {
@@ -2473,7 +2494,7 @@
     "pk": 1,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 15, \"caption\": \"\", \"width\": \"2000\", \"height\": 400, \"redirect_url\": \"\", \"custom_class\": \"col-md-12 mt-3\"}, \"id\": \"1460a2e8-f993-4227-a043-d19921c00828\"}]",
+        "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 15, \"caption\": \"\", \"width\": \"2000\", \"height\": 350, \"redirect_url\": \"\", \"custom_class\": \"col-md-12 mt-0\"}, \"id\": \"1460a2e8-f993-4227-a043-d19921c00828\"}]",
         "page": 3
     }
 },
@@ -2490,8 +2511,8 @@
     "model": "django_airavata_wagtail_base.rowblankpagerelation",
     "pk": 3,
     "fields": {
-        "sort_order": 2,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-2 mx-auto\", \"body\": \"<p></p><hr/><p></p><h4><a href=\\\"http://searchsra.scigap.org/login\\\">Login</a></h4><hr/><p></p><h4><a href=\\\"http://searchsra.scigap.org/create\\\">Register</a></h4><hr/><p></p>\"}, \"id\": \"7f899743-ff1a-496c-8223-1922763f5c2f\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-8\", \"body\": \"<h3>Welcome!</h3><p>The Distant Reader is a tool for reading.</p><p>The Distant Reader empowers you to <i>use &amp; understand</i> large amounts of textual information both quickly &amp; easily. For example, the Distant Reader can consume the entire issue of a scholarly journal, the complete works of a given author, or the content found at the other end of an arbitrarily long list of URLs. Thus, the Distant Reader is akin to a book&#x27;s table-of-contents or back-of-the-book index but at scale. It simplifies the process of identifying trends &amp; anomalies in a corpus, and then it enables you to further investigate those trends &amp; anomalies.</p><p>Technically speaking, the Distant Reader is a system which locally harvests/caches content you specify. It then transforms the content into plain text, performs sets of natural language processing &amp; text mining against the text, saves the results in a number of formats, reduces the whole to a cross-platform database file, queries the database thus summarizing the collection, zips the results of the entire process into a single file, and makes the file available to you for further investigation -- &quot;reading&quot;.</p><p>A list of published &quot;study carrels&quot; -- the output of the Distant Reader is available at <a href=\\\"http://carrels.distantreader.org/\\\">http://carrels.distantreader.org</a>.</p><p>I don&#x27;t know about you, but now-a-days I can find plenty of scholarly &amp; authoritative content. My problem is not one of discovery but instead one of comprehension. <i>How do I make sense of all the content I find?</i> The Distant Reader is intended to address this question by making observations against a corpus and providing tools for interpreting the results. It is my hope you will find the tool as useful as I do.</p><p></p><p>Eric Lease Morgan &lt;emorgan@nd.edu&gt;<br/> August 21, 2019</p>\"}, \"id\": \"1cddf952-fc7e-423f-9e74-b702ba43e8c4\"}]",
+        "sort_order": 3,
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-10 mx-auto mt-4\", \"body\": \"<p>The Distant Reader is a tool for reading.</p><p>The Distant Reader empowers you to <i>use &amp; understand</i> large amounts of textual information both quickly &amp; easily. For example, the Distant Reader can consume the entire issue of a scholarly journal, the complete works of a given author, or the content found at the other end of an arbitrarily long list of URLs. Thus, the Distant Reader is akin to a book&#x27;s table-of-contents or back-of-the-book index but at scale. It simplifies the process of identifying trends &amp; anomalies in a corpus, and then it enables you to further investigate those trends &amp; anomalies.</p><p>Technically speaking, the Distant Reader is a system which locally harvests/caches content you specify. It then transforms the content into plain text, performs sets of natural language processing &amp; text mining against the text, saves the results in a number of formats, reduces the whole to a cross-platform database file, queries the database thus summarizing the collection, zips the results of the entire process into a single file, and makes the file available to you for further investigation -- &quot;reading&quot;.</p><p>A list of published &quot;study carrels&quot; -- the output of the Distant Reader is available at <a href=\\\"http://carrels.distantreader.org/\\\">http://carrels.distantreader.org</a>.</p><p>I don&#x27;t know about you, but now-a-days I can find plenty of scholarly &amp; authoritative content. My problem is not one of discovery but instead one of comprehension. <i>How do I make sense of all the content I find?</i> The Distant Reader is intended to address this question by making observations against a corpus and providing tools for interpreting the results. It is my hope you will find the tool as useful as I do.</p><p></p><p>Eric Lease Morgan &lt;emorgan@nd.edu&gt;<br/> August 21, 2019</p>\"}, \"id\": \"1cddf952-fc7e-423f-9e74-b702ba43e8c4\"}]",
         "page": 3
     }
 },
@@ -2601,6 +2622,15 @@
         "sort_order": 0,
         "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-3\", \"body\": \"<h2><a href=\\\"http://carrels.distantreader.org/\\\">Study Carrels</a></h2>\"}, \"id\": \"42418b5d-ad5f-4e92-96e9-d61a8f036ad6\"}]",
         "page": 12
+    }
+},
+{
+    "model": "django_airavata_wagtail_base.rowblankpagerelation",
+    "pk": 43,
+    "fields": {
+        "sort_order": 2,
+        "body": "[{\"type\": \"horizontal_rule\", \"value\": {\"thickness\": 2, \"bg_color\": \"#20b2aa\", \"custom_class\": \"col-md-10 mx-auto\"}, \"id\": \"716a1455-bcc8-4169-9cc0-40251e1979af\"}]",
+        "page": 3
     }
 },
 {
