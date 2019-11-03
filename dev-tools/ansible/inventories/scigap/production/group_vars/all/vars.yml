@@ -20,7 +20,7 @@
 
 ---
 ansible_connection: ssh
-ansible_user: centos
+ansible_user: root
 
 user: airavata
 group: airavata
