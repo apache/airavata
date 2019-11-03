@@ -25,6 +25,8 @@ ssl_certificate_file: "/etc/letsencrypt/live/distantreader.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/distantreader.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/distantreader.org/privkey.pem"
 
+django_pga_url: "https://distantreader.scigap.org"
+
 ## Keycloak related variables
 tenant_domain: "distantreader"
 oauth_client_key: "{{ vault_oauth_client_key }}"
