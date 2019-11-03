@@ -40,7 +40,7 @@ auth_options:
 
 gateway_id: "searching-sra"
 experiment_data_dir: "{{ user_data_dir }}/searching-sra"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDT8DxXNvFn8DUfe8t7VAPXnNIVOWCE4tYv59qY8uJU4BjnOtEnbDZAqrXuCCns9FsgxF6evftuXudzD/xa/yhSzKSlYv1kETFPrt8suW7h1iI6R1UlreacKnng4VqmveTsR/AoMpSP6YvRyXxf4J60QZylpmkfCoZq4fZjZz9mCme8cqBjakqF6EGnhL3k8e9yJ4PU8KWektcpegHIVajsNwIRsK1bxpLh0FocyQyC2u0Wsd2trIR9YjGAGfogB1/ifOvKTcxuYQQGfnj5fZyLz+sT7GOpb+i/CXLfURr9aIU4quuXh3FUB89u4dglQoDt7LDnkyazZI9ZIcBjCNvb"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCx981DispO1AnkOAwq1oJ3iaYUW6KT4jn4OPSrvIb1fJyjkNdBK8KQUTviBMgqLH9+FlIx/FYjN7sVLelGUmfOgguIWB4Ea2epAyvGFfrVeF83w5A4uILfrd5AJQuk0sZkNjnnGmmpx6z60IThaof2f14uD7JPcn5Kf0xnfmhJGIo2DYJRp8DYJ4Upd1ENu4p3CqylZGBFTx0ROe3hCNj28BxCY+kTgKTQJQHdwuHK9WxovQHdv2ZrN9GeSyIPUX8W1PpYKqM2i8xGaagPUamHON9TonHyuAdd84CagonwuaG54+jbFbB9uW/zhhnP5vNRxK8aSNIhszOucE2g8xzL"
 django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Robert Edwards', 'redwards@sdsu.edu'),('Mats Rynge','rynge@isi.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
