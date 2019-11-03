@@ -10,6 +10,3 @@ scigap02.sciencegateways.iu.edu ansible_user=root
 [pga]
 # Hosted on Jetstream
 149.165.171.92 ansible_user=centos
-
-[django]
-futurewater ansible_host=149.165.171.92 ansible_user=centos

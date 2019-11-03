@@ -20,30 +20,12 @@
 
 ---
 
-user: "pga"
-group: "pga"
+# NOTE: futurewater is deployed to a Jetstream VM
+
 gateway_data_store_hostname: "gateway.futurewater.indiana.edu"
 gateway_data_store_resource_id: "js-171-92.jetstream-cloud.org_1a76397d-cc28-4ec9-82e8-d27c5cf80c79"
-django_wsgi_processes: 2
-doc_root_dir: "/var/www/portals/django-{{gateway_id}}"
-django_database_name: "django_{{ inventory_hostname }}"
-django_db_username: "django"
-django_db_password: "{{ vault_db_password }}"
-django_hidden_airavata_apps: "['django_airavata_dataparsers']"
 # TODO change
 # django_tus_endpoint: "https://tus.staging.scigap.org/files/"
-
-# Default email settings
-portal_email_host: "smtp.gmail.com"
-portal_email_port: 587
-portal_email_tls: true
-portal_email_username: "pga.airavata@gmail.com"
-portal_email_password: "{{ vault_portal_email_password }}"
-portal_server_email: "{{ portal_email_username }}"
-
-django_error_emails: "[('SciGaP Errors', 'bugs@scigap.org')]"
-
-airavata_django_repo: "https://github.com/apache/airavata-django-portal.git"
 
 vhost_servername: "django.futurewater.scigap.org"
 vhost_ssl: True

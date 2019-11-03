@@ -59,3 +59,5 @@ wvsu ansible_host=156.56.104.84
 # dreg jetstream server
 dreg ansible_host=149.165.156.72 ansible_user=centos
 
+# futurewater jetstream server
+futurewater ansible_host=149.165.171.92 ansible_user=centos
