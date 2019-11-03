@@ -67,4 +67,5 @@ portal_theme: "searchingsra-gateway-theme"
 #portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
 portal_title: "Searching SRA"
 pga_airavata_django_url: "https://www.searchsra.org"
+pga_reroute_to_django: true
 ...
