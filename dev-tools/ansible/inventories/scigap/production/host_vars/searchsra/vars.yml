@@ -19,11 +19,11 @@
 #
 
 ---
-vhost_servername: "searchsra.org"
+vhost_servername: "www.searchsra.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/searchsra.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/searchsra.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/searchsra.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/www.searchsra.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/www.searchsra.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/www.searchsra.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "searching-sra"
