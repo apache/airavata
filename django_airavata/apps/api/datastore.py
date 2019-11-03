@@ -82,7 +82,7 @@ def move_external(external_path, target_username, target_dir, file_name):
 def create_user_dir(username, path):
     user_data_storage = _user_data_storage(username)
     if not user_data_storage.exists(path):
-        _makedirs(username, user_data_storage.path(path))
+        _makedirs(username, path)
     else:
         raise Exception(
             "Directory {} already exists".format(path))
@@ -124,8 +124,13 @@ def get_experiment_dir(
     """Return an experiment directory (full path) for the given experiment."""
     user_experiment_data_storage = _user_data_storage(username)
     if path is None:
+        proj_dir_name = user_experiment_data_storage.get_valid_name(
+            project_name)
+        # AIRAVATA-3245 Make project directory with correct permissions
+        if not user_experiment_data_storage.exists(proj_dir_name):
+            _makedirs(username, proj_dir_name)
         experiment_dir_name = os.path.join(
-            user_experiment_data_storage.get_valid_name(project_name),
+            proj_dir_name,
             user_experiment_data_storage.get_valid_name(experiment_name))
         # Since there may already be another experiment with the same name in
         # this project, we need to check for available name
@@ -145,12 +150,12 @@ def get_experiment_dir(
 
 def _makedirs(username, dir_path):
     user_experiment_data_storage = _user_data_storage(username)
-    os.makedirs(dir_path,
+    full_path = user_experiment_data_storage.path(dir_path)
+    os.makedirs(full_path,
                 mode=user_experiment_data_storage.directory_permissions_mode)
     # os.makedirs mode isn't always respected so need to chmod to be sure
-    os.chmod(dir_path,
+    os.chmod(full_path,
              mode=user_experiment_data_storage.directory_permissions_mode)
-
 
 
 def list_user_dir(username, file_path):
