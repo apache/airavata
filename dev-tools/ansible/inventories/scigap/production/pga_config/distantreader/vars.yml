@@ -65,4 +65,5 @@ portal_theme: "distantreader-gateway-theme"
 portal_theme_repo: "https://github.com/SciGaP/distantreader-gateway-theme"
 portal_title: "Distant Reader Gateway"
 pga_airavata_django_url: "https://distantreader.org"
+pga_reroute_to_django: true
 ...
