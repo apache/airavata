@@ -1,22 +1,22 @@
 # inventory file : scigap production deployment
 
 [zookeeper]
-scigap07.sciencegateways.iu.edu ansible_user=root
+scigap03.sciencegateways.iu.edu ansible_user=root
 
 [rabbitmq]
-scigap06.sciencegateways.iu.edu ansible_user=root
+scigap02.sciencegateways.iu.edu ansible_user=root
 
 [database]
-scigap05.sciencegateways.iu.edu ansible_user=root
+scigap01.sciencegateways.iu.edu ansible_user=root
 
 [api-orch]
-scigap06.sciencegateways.iu.edu ansible_user=root
+scigap02.sciencegateways.iu.edu ansible_user=root
 
 [helix]
-scigap07.sciencegateways.iu.edu ansible_user=root
+scigap03.sciencegateways.iu.edu ansible_user=root
 
 [kafka]
-scigap07.sciencegateways.iu.edu ansible_user=root
+scigap03.sciencegateways.iu.edu ansible_user=root
 
 [pga]
 gf4.ucs.indiana.edu ansible_user=root
@@ -24,6 +24,7 @@ gf4.ucs.indiana.edu ansible_user=root
 [keycloak]
 gf7.ucs.indiana.edu ansible_user=root
 
+[django]
 seagrid ansible_host=156.56.104.84
 testdrive ansible_host=156.56.104.84
 searchsra ansible_host=156.56.104.84
