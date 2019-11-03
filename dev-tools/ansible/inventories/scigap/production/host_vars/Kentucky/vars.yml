@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "university-of-kentucky-hpc-gateway"
 experiment_data_dir: "{{ user_data_dir }}/university-of-kentucky-hpc-gateway"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC8nCMkOgELG+FgKIC5wTdGn6ZRlnCfhn5ebrpMDagXTM0lacLplKThhOg4EXFOjxGOW83f4HBjKBJXpqRUunCL053Foox9/xqtk6Sa7jwRugL0rIBQJC4hZiHin2W0zHseoIQtghz+AbyofjUABYxOCpbKUuR3plyVv/68iqZOscPmVDw2bS9MLBHRZI5BvZ8FwKSEtn7uEV+XXvI4FXaRQfTg/arbgLietD+y+EyxOkSW3PXtu4xvQ2e6AA9LTKn2fGLHS/atEXgS+pBxVKWcCgpOxUCgNq/F8OQWEVDGFG3Pz3b45n7O62YWUgbS1Jn+FQVRw5Pfb4P31+hF3EJX"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Vikram Gazula','vgazu2@uky.edu')]"
 portal_title: "University of Kentucky HPC Gateway"

@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "georgiastate"
 experiment_data_dir: "{{ user_data_dir }}/georgia-state"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFSg9IEgsXlGhgPkj4hPuON30rbE3/gUUn4K3NVvBFKLyQQ8Pm/NR6dZmFglQR1HxBRSnq4WmH3EVyxHuT7MkQDAjTkclEuhaRjcYN0nua8g4dI9SgO9DeqbOyurVIuw/YChP5nC+6/ubMyzYPr6Z5xU5QHZI/QlVG4nz3joMIKkRXt/bsaEvv+/nzED/j6FTdK6P6dg1ESkNVZUPqhtWpwuC28Et7/86jcEObJedwx8geLoxKogPZ6kqO+Q/WUHDtMpFYtwuPaiYuN3Pb/GCvnDRsSoFmtRU+UH1UIdEy0piYUuBW+5aCv/PbH/UtHFg1Y1942TYCXv4rl1i/KW1z"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Suranga Edirisinghe Pathirannehelage','neranjan@gsu.edu')]"
 portal_title: "Georgia State Science Gateway"

@@ -1,24 +1,15 @@
 ---
 # inventory file : scigap production deployment
 
-[zookeeper]
-scigap07.sciencegateways.iu.edu ansible_user=root
-
-[rabbitmq]
-scigap06.sciencegateways.iu.edu ansible_user=root
-
 [database]
-scigap05.sciencegateways.iu.edu ansible_user=root
+scigap01.sciencegateways.iu.edu ansible_user=root
 
 [api-orch]
-scigap06.sciencegateways.iu.edu ansible_user=root
-
-[helix]
-scigap07.sciencegateways.iu.edu ansible_user=root
-
-[kafka]
-scigap07.sciencegateways.iu.edu ansible_user=root
+scigap02.sciencegateways.iu.edu ansible_user=root
 
 [pga]
 # Hosted on Jetstream
 149.165.156.72 ansible_user=centos
+
+[django]
+dreg ansible_host=149.165.156.72 ansible_user=centos

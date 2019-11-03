@@ -63,4 +63,5 @@ portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "distantreader-gateway-theme"
 portal_theme_repo: "https://github.com/SciGaP/distantreader-gateway-theme"
 portal_title: "Distant Reader Gateway"
+pga_airavata_django_url: "https://distantreader.org"
 ...

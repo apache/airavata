@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "phasta"
 experiment_data_dir: "{{ user_data_dir }}/phasta"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIvxQcdWfZPnXgM1mU++kTuX2ydkQ5BxK0w4stY9qEwJDUoRxF6nstTFBEDkhS34/oBYsJIH9IM4UPxiiplwoIPSYRpqI24pmVNnfJakcsFmxeSVmQRI7SztedXca9IAn9DelJZyORonYsfbsYIDQNzAiMUVs+K9l4flZUqVIZwYrrKfDbd2StC3DUvCugKgJk+v+XsRUxGsebk8wqE273GYPtMt4bdTQFZMfCLg52pXUqrK8RTbL+WdB7uCVXAGC2vu7OsI5+BJSVVUUPiA3vS9oiuZS9qPAYEwowEs+RMl56sGLh5udvhMxaSDn4zqWKTo/LNXcO2p2Y9sit90LD"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Cameron Smith','smithc11@rpi.edu')]"
 portal_title: "Phasta Science Gateway"

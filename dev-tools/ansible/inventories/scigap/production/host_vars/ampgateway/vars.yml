@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "amp"
 experiment_data_dir: "{{ user_data_dir }}/searching-sra"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCAfFAdLrGC/om63ipx9RhuzcGnMlVQkKsuy5NtUgK7I4OdTJ1Ck1H/ARBwiWNQy08GO2HETfM7StCROwW+tlZ6n+THBkbei4G8q6xV6UXlC3BJxuDlwkxnyOFSYEt8Qd2g8IC/X0qo9/m5Ea9Z5axzTk+n2OZlV87DrLheV+OVhgf+yYGVo9egTZ7Kg/TV/Hl1xeU5JgRcPPrLrWYn8vEQo7xT5boS3X9y2o7FgNTdUf5K10ZJ37RWcLQpzZ+7zEKs/P/I/QU+BUhxRRfnEf/4e4L3OFE36SQ4DSFmu3lKU4BcQQb3A6SfQGC1PwQdD5y9MUkpit4hMCSJLjVBTN3H"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Barry Schneider', '	bis@nist.gov')]"
 portal_title: "Atomic and Molecular Physics and Optics Gateway"

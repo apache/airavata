@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "ncsa-industry-gateway"
 experiment_data_dir: "{{ user_data_dir }}/ncsa-industry-gateway"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCajV9E/lBaAdpDecuhB2/Qv3losWr+zNVMwJcpq8ZPiWKA9AFJNT8TW3/VJC/RtrzVzmITMqJYOaQM5mPAOn5D6T7y2CvHxIFL5MktNc1dNiCXbg0nT+zQFirIGNskbs9xE5AWJDsNXOWj1Hjaffk80WjpRNvreXV3mrvdSi0BQYKxp0zIuXNgSR8/LjvYSWn+L/xhrP5eMYcOPlVsrkp1O7imeiib4je0ZNzsd6YXIfNhNoJIzod0AinpmM85zJ/OuemHePE0c4hiU7caOxhBiRxzNCSpN+IFLvo/l8txdnXP1nTwvahZtvVaxuj4OHEeaLSVU8CPxmwBGQEuN4AP"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "NCSA Industry Gateway"

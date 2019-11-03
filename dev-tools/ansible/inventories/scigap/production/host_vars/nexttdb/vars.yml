@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "nexttdb"
 experiment_data_dir: "{{ user_data_dir }}/nexttdb"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9jXb9oP4qh3S5Au98nYyV6rOfBXgnvq2asVuapb+a2zyzKKXVxl254IKvFC709F3U9i0re/Z+FQO9qDPZFAgQLps8anyE6+xKuU0DUvzk76OVX/ZMlHfSyRFqKuDBIln02M5rM6qLEUjh7INk1y6z0D1kPW3TsU7w7uY66k4FSAX9qAEZlemy4oCCIQVrege4ZWYSd02H/jXm6j6z7XPI63UbXhpFbZHwdGEAeiQaaas9fDDsy33lN66fC39qV80R5A/7rYQwhyfL1V3wic97lplNyPdZ2fGSUUtFLZxOtJQ1IhDq6kCSYVgQg8U3QviJ5QlYs2CSusshcWUkIZQ/"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Chen Zhu','chenzhu@indiana.edu'),('Lei Gong','lgong@indiana.edu'),('Kevin Tu','tuk@iu.edu')]"
 portal_title: "NextGen Thermodynamics Gateway"

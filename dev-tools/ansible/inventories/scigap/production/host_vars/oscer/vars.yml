@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "oscer"
 experiment_data_dir: "{{ user_data_dir }}/oscer"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZs3ErVmOoQ7GCRwsBJkh3BQVPaoeDw6cja67kXJPCBP7hQ1m9ld0h+PeIt/O8qwPgVN9kGf2fGeekJ9hTjAN8jk0xnU7og7F1RYg6+TqnugyfKZ22ZjfGf/tcc0Wd5BlokvMVJIsLCIv1N0OyxELrGi33y3U98egzn7r0j0uhtNZVN2AC4m1OpRJL7S9FRv9Z7CBXEs7x1j9ctyi3+Q8kBjWm7D78QPqCd2ODrHIDsPZpHm8CUOwHy9p7M+E2bbhkeGxExQhmBIFF75U4Lm3dzUzSmQGvUOppT+Nler8im7ArxS/8OJHEMOi4nW9J+BvtpDztQDAraJAX+VRNjaH5"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "OU Science Gateway"

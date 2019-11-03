@@ -41,7 +41,6 @@ auth_options:
 gateway_id: "snowvision"
 experiment_data_dir: "{{ user_data_dir }}/snowvision"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCovd8MvofK9SPJZiElqP4rd3xpaHZ7qXK0RFxRQxcCTcAJbDMGubZlo1+N0Io02ZIVkKfdtbee+sznpQ6ri6MMaK1xnYmfyMT5yj/pUZo+g/jIC0PMYQcHpnq49U7Fz2BBYqbc9EAAcU35X4ctof1/UwlWMFa+gegky8NngHBZmZSpgIzVb5jlgti14OD5ETVFG4YvZ2ZRhkQESSuZPFdjxiXoDqsJkF80cD+JTu5LWha1UwhAC2yrGZuI/16WABzx/zUGOS0NK0RYS/giIzVGQSYVp9S8GgZKuvJx3xk7nW6HOMbjpVeukjkWareIkVAWXgFIMptX0QRhL4mcjCIB"
-django_hidden_airavata_apps: "[]"
 
 admin_emails: "[('SGRC','sgrc-iu-group@iu.edu')]"
 portal_title: "SnowVision Gateway"
