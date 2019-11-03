@@ -25,6 +25,9 @@ ssl_certificate_file: "/etc/letsencrypt/live/www.searchsra.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/www.searchsra.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/www.searchsra.org/privkey.pem"
 
+django_file_upload_max_file_size_mb: 60
+django_pga_url: "https://pga.searchsra.scigap.org"
+
 ## Keycloak related variables
 tenant_domain: "searching-sra"
 oauth_client_key: "{{ vault_oauth_client_key }}"
