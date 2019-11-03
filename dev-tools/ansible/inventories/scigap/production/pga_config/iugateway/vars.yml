@@ -52,6 +52,7 @@ gateway_id: "iugateway"
 experiment_data_dir: "{{ user_data_dir }}/iugateway"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCjKGnDVSWXJynfzyOOcACuXG8KdIaPvx1idpsMeioYAX+T+W2wK86tHfD2B9QxzmrcjvAZD7/GvTcMotBUQ+5nJyFyYkRDKL5XtC2HWaMijCmsGFgODfc+i3E274Cw9oYAamRPTCUShoqogd9jzW8gaIzTy+2sU5R/dYAUeiHM2ov9SpIJXNuCoT12R948iUd3b2amnBIJvy/DnhorLXz7MQ70l9cWQp986ZVOS32JRUZhk/2nLHQLxP9cwjP3kVXEtoaOZc3lwypOzdA/xJq4pRTb4s8mZ4SaQIzHBPBYneU85+P6j7cjlV3UeN+0YwvnXe1iWaoUuoUFrNmzudlf"
+group_resource_profile_id: "f5e64678-ef87-45a3-b29e-34bf58011c3a"
 
 ## Portal related variables
 super_admin_portal: "false"
