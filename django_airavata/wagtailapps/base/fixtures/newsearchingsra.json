@@ -110,7 +110,7 @@
     "pk": 2,
     "fields": {
         "password": "pbkdf2_sha256$36000$ERbcYUAHzqrT$FC/sDt2R810gdwczdl8qn26EWPIgNoQKcigtSS7Dhl0=",
-        "last_login": "2019-10-31T17:12:28.081Z",
+        "last_login": "2019-11-03T05:07:55.036Z",
         "is_superuser": true,
         "username": "eabeysin",
         "first_name": "",
@@ -121,14 +121,6 @@
         "date_joined": "2019-10-30T20:28:00.324Z",
         "groups": [],
         "user_permissions": []
-    }
-},
-{
-    "model": "sessions.session",
-    "pk": "dbq2tskfv9e3olqn003lijmq7x894bl5",
-    "fields": {
-        "session_data": "ZmViZTBkNDE5ZWM1ODBlYjkxYzdhY2M3MDA3YzBkNmY2OWZiY2QwMTp7Il9hdXRoX3VzZXJfaWQiOiIyIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJmMDhmMWE4ZGUyZGMxZTE4YWE4MjVhNDg4YzcyNzRhZDViMDJlMjVjIn0=",
-        "expire_date": "2019-11-13T20:28:39.134Z"
     }
 },
 {
@@ -429,6 +421,106 @@
     }
 },
 {
+    "model": "wagtailimages.image",
+    "pk": 8,
+    "fields": {
+        "collection": 1,
+        "title": "SRA Banner",
+        "file": "original_images/sra-top-banner.png",
+        "width": 2320,
+        "height": 284,
+        "created_at": "2019-11-03T04:44:28.954Z",
+        "uploaded_by_user": [
+            "eabeysin"
+        ],
+        "focal_point_x": null,
+        "focal_point_y": null,
+        "focal_point_width": null,
+        "focal_point_height": null,
+        "file_size": null
+    }
+},
+{
+    "model": "wagtailimages.image",
+    "pk": 9,
+    "fields": {
+        "collection": 1,
+        "title": "SRA Logo",
+        "file": "original_images/sra-logo.png",
+        "width": 983,
+        "height": 228,
+        "created_at": "2019-11-03T04:44:53.550Z",
+        "uploaded_by_user": [
+            "eabeysin"
+        ],
+        "focal_point_x": null,
+        "focal_point_y": null,
+        "focal_point_width": null,
+        "focal_point_height": null,
+        "file_size": 15021
+    }
+},
+{
+    "model": "wagtailimages.image",
+    "pk": 10,
+    "fields": {
+        "collection": 1,
+        "title": "metagenome number",
+        "file": "original_images/metagenomenumber.png",
+        "width": 838,
+        "height": 628,
+        "created_at": "2019-11-03T04:48:55.983Z",
+        "uploaded_by_user": [
+            "eabeysin"
+        ],
+        "focal_point_x": null,
+        "focal_point_y": null,
+        "focal_point_width": null,
+        "focal_point_height": null,
+        "file_size": null
+    }
+},
+{
+    "model": "wagtailimages.image",
+    "pk": 11,
+    "fields": {
+        "collection": 1,
+        "title": "Login screen",
+        "file": "original_images/Screen_Shot_2019-11-03_at_12.51.11_AM.png",
+        "width": 1998,
+        "height": 1034,
+        "created_at": "2019-11-03T04:52:00.182Z",
+        "uploaded_by_user": [
+            "eabeysin"
+        ],
+        "focal_point_x": null,
+        "focal_point_y": null,
+        "focal_point_width": null,
+        "focal_point_height": null,
+        "file_size": null
+    }
+},
+{
+    "model": "wagtailimages.image",
+    "pk": 12,
+    "fields": {
+        "collection": 1,
+        "title": "workspace",
+        "file": "original_images/SRA_workspace.png",
+        "width": 1998,
+        "height": 990,
+        "created_at": "2019-11-03T04:54:24.629Z",
+        "uploaded_by_user": [
+            "eabeysin"
+        ],
+        "focal_point_x": null,
+        "focal_point_y": null,
+        "focal_point_width": null,
+        "focal_point_height": null,
+        "file_size": null
+    }
+},
+{
     "model": "wagtailimages.rendition",
     "pk": 1,
     "fields": {
@@ -645,6 +737,186 @@
     }
 },
 {
+    "model": "wagtailimages.rendition",
+    "pk": 22,
+    "fields": {
+        "filter_spec": "max-165x165",
+        "file": "images/sra-top-banner.max-165x165.png",
+        "width": 165,
+        "height": 20,
+        "focal_point_key": "",
+        "image": 8
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 23,
+    "fields": {
+        "filter_spec": "original",
+        "file": "images/sra-top-banner.original.png",
+        "width": 2320,
+        "height": 284,
+        "focal_point_key": "",
+        "image": 8
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 24,
+    "fields": {
+        "filter_spec": "max-165x165",
+        "file": "images/sra-logo.max-165x165.png",
+        "width": 165,
+        "height": 38,
+        "focal_point_key": "",
+        "image": 9
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 25,
+    "fields": {
+        "filter_spec": "original",
+        "file": "images/sra-logo.original.png",
+        "width": 983,
+        "height": 228,
+        "focal_point_key": "",
+        "image": 9
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 26,
+    "fields": {
+        "filter_spec": "max-165x165",
+        "file": "images/metagenomenumber.max-165x165.png",
+        "width": 165,
+        "height": 123,
+        "focal_point_key": "",
+        "image": 10
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 27,
+    "fields": {
+        "filter_spec": "original",
+        "file": "images/metagenomenumber.original.png",
+        "width": 838,
+        "height": 628,
+        "focal_point_key": "",
+        "image": 10
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 28,
+    "fields": {
+        "filter_spec": "max-800x600",
+        "file": "images/Screen_Shot_2019-11-03_at_12.51.11_AM.max-800x600.png",
+        "width": 800,
+        "height": 414,
+        "focal_point_key": "",
+        "image": 11
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 29,
+    "fields": {
+        "filter_spec": "width-500",
+        "file": "images/Screen_Shot_2019-11-03_at_12.51.11_AM.width-500.png",
+        "width": 500,
+        "height": 258,
+        "focal_point_key": "",
+        "image": 11
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 30,
+    "fields": {
+        "filter_spec": "max-165x165",
+        "file": "images/Screen_Shot_2019-11-03_at_12.51.11_AM.max-165x165.png",
+        "width": 165,
+        "height": 85,
+        "focal_point_key": "",
+        "image": 11
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 31,
+    "fields": {
+        "filter_spec": "width-800",
+        "file": "images/Screen_Shot_2019-11-03_at_12.51.11_AM.width-800.png",
+        "width": 800,
+        "height": 414,
+        "focal_point_key": "",
+        "image": 11
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 32,
+    "fields": {
+        "filter_spec": "max-800x600",
+        "file": "images/SRA_workspace.max-800x600.png",
+        "width": 800,
+        "height": 396,
+        "focal_point_key": "",
+        "image": 12
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 33,
+    "fields": {
+        "filter_spec": "width-500",
+        "file": "images/SRA_workspace.width-500.png",
+        "width": 500,
+        "height": 247,
+        "focal_point_key": "",
+        "image": 12
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 34,
+    "fields": {
+        "filter_spec": "max-165x165",
+        "file": "images/SRA_workspace.max-165x165.png",
+        "width": 165,
+        "height": 81,
+        "focal_point_key": "",
+        "image": 12
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 35,
+    "fields": {
+        "filter_spec": "width-800",
+        "file": "images/SRA_workspace.width-800.png",
+        "width": 800,
+        "height": 396,
+        "focal_point_key": "",
+        "image": 12
+    }
+},
+{
+    "model": "wagtailimages.rendition",
+    "pk": 36,
+    "fields": {
+        "filter_spec": "max-800x600",
+        "file": "images/sra-logo.max-800x600.png",
+        "width": 800,
+        "height": 185,
+        "focal_point_key": "",
+        "image": 9
+    }
+},
+{
     "model": "wagtailcore.site",
     "pk": 2,
     "fields": {
@@ -745,9 +1017,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2018-04-05T23:03:07.327Z",
-        "last_published_at": "2019-11-01T09:20:52.614Z",
-        "latest_revision_created_at": "2019-11-01T09:20:52.583Z",
-        "live_revision": 282
+        "last_published_at": "2019-11-03T04:45:24.265Z",
+        "latest_revision_created_at": "2019-11-03T04:45:24.239Z",
+        "live_revision": 283
     }
 },
 {
@@ -778,9 +1050,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2018-04-06T00:02:02.704Z",
-        "last_published_at": "2019-11-01T09:12:59.658Z",
-        "latest_revision_created_at": "2019-11-01T09:12:59.636Z",
-        "live_revision": 281
+        "last_published_at": "2019-11-03T04:54:57.887Z",
+        "latest_revision_created_at": "2019-11-03T04:54:57.863Z",
+        "live_revision": 292
     }
 },
 {
@@ -811,9 +1083,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2018-04-06T00:06:12.220Z",
-        "last_published_at": "2019-11-01T07:12:48.745Z",
-        "latest_revision_created_at": "2019-11-01T07:12:48.718Z",
-        "live_revision": 278
+        "last_published_at": "2019-11-03T04:47:08.470Z",
+        "latest_revision_created_at": "2019-11-03T04:47:08.450Z",
+        "live_revision": 285
     }
 },
 {
@@ -844,9 +1116,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2018-04-06T00:07:14.453Z",
-        "last_published_at": "2018-04-10T23:06:01.371Z",
-        "latest_revision_created_at": "2018-04-10T23:06:01.342Z",
-        "live_revision": 248
+        "last_published_at": "2019-11-03T05:07:26.527Z",
+        "latest_revision_created_at": "2019-11-03T05:07:26.506Z",
+        "live_revision": 293
     }
 },
 {
@@ -877,9 +1149,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2019-10-31T17:33:18.200Z",
-        "last_published_at": "2019-11-01T07:06:50.418Z",
-        "latest_revision_created_at": "2019-11-01T07:06:50.378Z",
-        "live_revision": 272
+        "last_published_at": "2019-11-03T04:49:06.223Z",
+        "latest_revision_created_at": "2019-11-03T04:49:06.191Z",
+        "live_revision": 289
     }
 },
 {
@@ -910,9 +1182,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2019-10-31T19:37:48.648Z",
-        "last_published_at": "2019-11-01T07:13:23.135Z",
-        "latest_revision_created_at": "2019-11-01T07:13:23.108Z",
-        "live_revision": 279
+        "last_published_at": "2019-11-03T04:47:39.408Z",
+        "latest_revision_created_at": "2019-11-03T04:47:39.386Z",
+        "live_revision": 287
     }
 },
 {
@@ -943,9 +1215,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2019-10-31T19:56:09.051Z",
-        "last_published_at": "2019-11-01T00:31:02.382Z",
-        "latest_revision_created_at": "2019-11-01T00:31:02.362Z",
-        "live_revision": 265
+        "last_published_at": "2019-11-03T04:49:31.845Z",
+        "latest_revision_created_at": "2019-11-03T04:49:31.824Z",
+        "live_revision": 291
     }
 },
 {
@@ -976,9 +1248,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2019-11-01T00:32:05.215Z",
-        "last_published_at": "2019-11-01T00:32:05.215Z",
-        "latest_revision_created_at": "2019-11-01T00:32:05.198Z",
-        "live_revision": 266
+        "last_published_at": "2019-11-03T04:49:19.934Z",
+        "latest_revision_created_at": "2019-11-03T04:49:19.915Z",
+        "live_revision": 290
     }
 },
 {
@@ -1009,9 +1281,9 @@
         "expired": false,
         "locked": false,
         "first_published_at": "2019-11-01T07:09:07.844Z",
-        "last_published_at": "2019-11-01T07:11:26.471Z",
-        "latest_revision_created_at": "2019-11-01T07:11:26.449Z",
-        "live_revision": 277
+        "last_published_at": "2019-11-03T04:47:52.053Z",
+        "latest_revision_created_at": "2019-11-03T04:47:52.033Z",
+        "live_revision": 288
     }
 },
 {
@@ -2065,6 +2337,160 @@
     }
 },
 {
+    "model": "wagtailcore.pagerevision",
+    "pk": 283,
+    "fields": {
+        "page": 3,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:45:24.239Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 8, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-05T23:03:07.327Z\", \"last_published_at\": \"2019-11-01T09:20:52.614Z\", \"latest_revision_created_at\": \"2019-11-01T09:20:52.583Z\", \"live_revision\": 282, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 8, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 mt-4\\\"}, \\\"id\\\": \\\"1460a2e8-f993-4227-a043-d19921c00828\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 9, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"240\\\", \\\"height\\\": 60, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"offset-md-1 col-md-2 mt-5\\\"}, \\\"id\\\": \\\"79c267c9-51a4-4cb9-8c96-6918df2b85eb\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Searching SRA Gateway\\\", \\\"size\\\": \\\"h2\\\", \\\"custom_class\\\": \\\"col-md-8 ml-auto mt-5\\\"}, \\\"id\\\": \\\"051d329e-2488-4d24-946d-89c991d3c949\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-2 mx-auto\\\", \\\"body\\\": \\\"<p></p><hr/><p></p><h4><a href=\\\\\\\"http://searchsra.scigap.org/login\\\\\\\">Login</a></h4><hr/><p></p><h4><a href=\\\\\\\"http://searchsra.scigap.org/create\\\\\\\">Register</a></h4><hr/><p></p>\\\"}, \\\"id\\\": \\\"7f899743-ff1a-496c-8223-1922763f5c2f\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8\\\", \\\"body\\\": \\\"<h3>Welcome!</h3><p>We are generating sequence data at an alarming rate! The <a href=\\\\\\\"https://www.ncbi.nlm.nih.gov/sra/\\\\\\\">Sequence Read Archive</a> currently contains ~10 petabytes of sequence data (~1016 pb) and through 2016 has grown at approximately 10 TB of sequence data per day. We\\\\u2019re here to help you search through that data and find meaning to your own data!</p><p>At searchsra.org we have identified the metagenomics data in the sequence read archive using the open source <a href=\\\\\\\"https://github.com/linsalrob/partie/\\\\\\\">PARTIE</a>, and we provide both nucleotide and protein searches so that you can explore that data.</p><p>Click on one of the buttons to learn more, or register to create an account and get started.</p>\\\"}, \\\"id\\\": \\\"1cddf952-fc7e-423f-9e74-b702ba43e8c4\\\"}]\", \"page\": 3}, {\"pk\": 17, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Protein Search\\\", \\\"button_link\\\": \\\"protein-searches\\\", \\\"button_color\\\": \\\"\\\", \\\"button_size\\\": \\\"btn-sm\\\", \\\"custom_class\\\": \\\"offset-md-4 col-md-2 button-sra mb-10\\\"}, \\\"id\\\": \\\"0a02ad8f-5f5a-4fde-b017-72ab9114d261\\\"}, {\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Nucleotide Search\\\", \\\"button_link\\\": \\\"nucleotide-searches\\\", \\\"button_color\\\": \\\"\\\", \\\"button_size\\\": \\\"btn-sm\\\", \\\"custom_class\\\": \\\"offset-md-1  col-md-2  button-sra mb-10\\\"}, \\\"id\\\": \\\"535d1efb-574c-4843-b038-f942fd8a2524\\\"}, {\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Metagenomes\\\", \\\"button_link\\\": \\\"metagenomes\\\", \\\"button_color\\\": \\\"\\\", \\\"button_size\\\": \\\"btn-sm\\\", \\\"custom_class\\\": \\\"offset-md-1 col-md-2 button-sra  mb-10\\\"}, \\\"id\\\": \\\"7c889ba4-e7a5-422b-9a73-aad6e39b5a49\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-2 mx-auto mt-10\\\"}, \\\"id\\\": \\\"6c71eb29-4cde-4627-ae76-abb8e516be8d\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"is_card_img_overlay\\\": false, \\\"card_img\\\": 3, \\\"card_img_width\\\": 350, \\\"card_img_height\\\": 100, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SciGaP is a hosted service with a public API that science gateways can use to manage applications and workflows running on remote supercomputers, as well as other services. Gateway developers can thus concentrate their efforts on building their scientific communities and not worry about operations.</p><p>Science Gateway Platform as a Service (SciGaP) provides application programmer interfaces (APIs) to hosted generic infrastructure services that can be used by domain science communities to create Science Gateways.</p><p><a href=\\\\\\\"http://scigap.org/\\\\\\\">Learn more</a></p>\\\", \\\"card_bg_color\\\": \\\"\\\", \\\"card_text_color\\\": \\\"\\\", \\\"buttons\\\": [], \\\"custom_class\\\": \\\"col-md-4 sponsor-cards mt-10\\\"}, \\\"id\\\": \\\"773b57c5-379e-4925-a0fa-cb972e13ecb2\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"is_card_img_overlay\\\": false, \\\"card_img\\\": 4, \\\"card_img_width\\\": 300, \\\"card_img_height\\\": 100, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p><p><a href=\\\\\\\"http://airavata.apache.org/\\\\\\\">Learn more</a></p>\\\", \\\"card_bg_color\\\": \\\"\\\", \\\"card_text_color\\\": \\\"\\\", \\\"buttons\\\": [], \\\"custom_class\\\": \\\"sponsor-cards\\\"}, \\\"id\\\": \\\"fa47723b-1b3f-4151-a0bd-5cb84521137d\\\"}]\", \"page\": 3}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 284,
+    "fields": {
+        "page": 6,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:46:33.021Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 6, \"path\": \"0001000100010003\", \"depth\": 4, \"numchild\": 0, \"title\": \"Contact\", \"draft_title\": \"Contact\", \"slug\": \"contact\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/contact/\", \"owner\": 1, \"seo_title\": \"contact\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T00:07:14.453Z\", \"last_published_at\": \"2018-04-10T23:06:01.371Z\", \"latest_revision_created_at\": \"2018-04-10T23:06:01.342Z\", \"live_revision\": 248, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 7, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\", \\\"body\\\": \\\"<h2><b>Contact</b></h2>\\\"}, \\\"id\\\": \\\"30401d0e-fa90-44e2-9838-ad604884fd45\\\"}]\", \"page\": 6}, {\"pk\": null, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"f0826e95-def4-49a0-a7b9-e9971c2bed12\\\"}]\", \"page\": 6}, {\"pk\": null, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"\\\", \\\"body\\\": \\\"<p>For more information about searchsra.org, Please contact Prof. Rob Edwards at San Diego State University;</p><p>Here is his <a href=\\\\\\\"https://edwards.sdsu.edu/research/SRA\\\\\\\">Blog</a>.</p><p>More information on <a href=\\\\\\\"https://edwards.sdsu.edu/research/similarity-searching-the-sra/\\\\\\\">Search SRA</a></p>\\\"}, \\\"id\\\": \\\"a545c958-d342-40fb-b26c-0c5581728be2\\\"}]\", \"page\": 6}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 285,
+    "fields": {
+        "page": 5,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:47:08.450Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 5, \"path\": \"0001000100010002\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 1, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T00:06:12.220Z\", \"last_published_at\": \"2019-11-01T07:12:48.745Z\", \"latest_revision_created_at\": \"2019-11-01T07:12:48.718Z\", \"live_revision\": 278, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 6, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-3\\\", \\\"body\\\": \\\"<h2><b>About</b></h2>\\\"}, \\\"id\\\": \\\"8902a118-08d2-4851-a4a0-13af0598bb78\\\"}]\", \"page\": 5}, {\"pk\": 34, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"834a7fb0-3a87-41e1-9835-9c7f065536e0\\\"}]\", \"page\": 5}, {\"pk\": 35, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-4\\\", \\\"body\\\": \\\"<p>Searching the SRA was the brainchild of <a href=\\\\\\\"https://edwards.sdsu.edu/research/\\\\\\\">Rob Edwards</a> at <a href=\\\\\\\"https://www.sdsu.edu/\\\\\\\">San Diego State University</a>. As a pioneer of metagenomics, Rob was frustrated that most of the DNA sequences that were publicly available were not searchable or useable, and he couldn\\\\u2019t find crAssphage in any of them. He started by <a href=\\\\\\\"https://edwards.sdsu.edu/research/sra/\\\\\\\">exploring the SRA</a> to find out where that phage was hiding.</p><p>Rob and graduate student Kyle Levi teamed up with <a href=\\\\\\\"https://jetstream-cloud.org/\\\\\\\">JetStream</a>, part of the <a href=\\\\\\\"https://www.xsede.org/\\\\\\\">Extreme Science and Engineering Discovery Environment</a> supported by the <a href=\\\\\\\"https://nsf.gov/\\\\\\\">NSF</a> to provide the compute resources required to search through the SRA. With an initial trial allocation of compute resources, Rob was able to identify thousands of metagenomes that contain crAssphage. As soon as Rob described this approach, other people wanted to search their data against the SRA, and so Rob needed a solution that didn\\\\u2019t involve his email!</p><p>Taking advantage of the XSEDEs Extended Collaborative Support Services (ECSS), Rob teamed up with Eroma Abeysinghe from <a href=\\\\\\\"https://scigap.org/\\\\\\\">SciGP team</a> who deployed and configured the gateway front end and Mats Rynge who developed the back end of the search system.</p><p>The computation is provided through grant number TG-MCB170036 from XSEDE. This work used the Extreme Science and Engineering Discovery Environment (XSEDE), which is supported by National Science Foundation grant number ACI-1548562.</p>\\\"}, \\\"id\\\": \\\"372b1b92-bb87-4d9c-ab13-b859cca6b717\\\"}]\", \"page\": 5}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 286,
+    "fields": {
+        "page": 4,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:47:28.264Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"Documentation\", \"draft_title\": \"Documentation\", \"slug\": \"documentation\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/documentation/\", \"owner\": 1, \"seo_title\": \"documentation\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T00:02:02.704Z\", \"last_published_at\": \"2019-11-01T09:12:59.658Z\", \"latest_revision_created_at\": \"2019-11-01T09:12:59.636Z\", \"live_revision\": 281, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 8, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Training and Documentation\\\", \\\"size\\\": \\\"h2\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto text-center mt-3\\\"}, \\\"id\\\": \\\"1f991a16-5c01-4ae1-b59c-f2b441eb8c8e\\\"}]\", \"page\": 4}, {\"pk\": 9, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"b16b1142-31d1-4263-92cb-3055aebcfd1e\\\"}]\", \"page\": 4}, {\"pk\": 10, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-5\\\", \\\"body\\\": \\\"<h4><b>Search SRA Gateway User Manual</b></h4><p><b>Gateway Access</b></p><ul><li>Create a gateway account at https://www.searchsra.org/. Use &#x27;Create account&#x27;. Provide your details and you will receive an email for account verification.</li><li>Click the link in the email received and confirm your email. Hint: The email sometimes tends to land on &#x27;Junk email&#x27; or &#x27;Trash&#x27;.</li><li>When the gateway administrator grants access, you would receive a notification email.</li><li>Log in to the gateway, You are ready to Search through the SRA!</li></ul><embed alt=\\\\\\\"Login Page\\\\\\\" embedtype=\\\\\\\"image\\\\\\\" format=\\\\\\\"left\\\\\\\" id=\\\\\\\"5\\\\\\\"/><p></p><p><b>Getting Started</b></p><ul><li>When logged in you would be on your home page, Workspace.</li><li>You would see your application placeholders.</li><li>Choose the one you want to use and click to navigate to the &#x27;Create Experiment&#x27; page.</li><li>To your right, you would see all your recent experiments.</li><li>On the top-right menu, you will have<ul><li>Workspace (you are there now)</li><li>Groups</li><li>Settings</li></ul></li><li>The left vertical menu is the child menu of what you select from the above, right-hand drop-down menu.</li><li>Workspace has<ul><li>Dashboard</li><li>Experiments</li><li>Projects</li><li>Storage</li></ul></li><li>What is an Experiment? - Experiment is the gateway record you create in order to launch a job in a remote cluster/supercomputer/HPC.</li></ul>\\\"}, \\\"id\\\": \\\"3d40f99c-b31e-4737-bd89-748263952647\\\"}]\", \"page\": 4}, {\"pk\": 36, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-5\\\", \\\"body\\\": \\\"<p><b>Save &amp; Launch an Experiment</b></p><ul><li>To create a new Experiment from the Dashboard select your application.</li><li>In Create Experiment default values are provided for the name.<ul><li>Experiment Description (Optional)</li><li>Project (LOV) - Last used will be selected for you</li><li>Application (LOV)</li><li>Application configurations will have default set values with option to change.</li><li>Application Inputs (Mandatory)</li></ul></li><li>Save &amp; Launch</li><li>When providing Application inputs;<ul><li>Fasta-Reference-File (Mandatory)</li><li>Select existing Search IDs File OR provide your own.</li></ul></li><li>After providing the files you could &#x27;Save&#x27; the experiment for later submission. If saved you could edit the experiment prior to launching.</li><li>Once launched, you could cancel the experiment, which will cancel the job running in the remote cluster.</li></ul><p></p><embed alt=\\\\\\\"Workspace\\\\\\\" embedtype=\\\\\\\"image\\\\\\\" format=\\\\\\\"left\\\\\\\" id=\\\\\\\"7\\\\\\\"/><p></p>\\\"}, \\\"id\\\": \\\"a5512dab-d059-43bf-b650-c0232eb59722\\\"}]\", \"page\": 4}, {\"pk\": 37, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-5\\\", \\\"body\\\": \\\"<p><b>Other Gateway Features</b></p><ul><li>Users can share their experiments with other gateway users or user groups. When sharing, you can decide on the level of access to grant.<ul><li>Read Access</li><li>Write Access</li></ul></li><li>To create new experiments similar to an existing one, you can clone the experiment from Experiment Summary page.</li><li>Users can create their own user groups to share research experiments, data files.</li><li>Group Resource Profile of the user enables to user to use their own research allocation/logins for computations.</li></ul>\\\"}, \\\"id\\\": \\\"e399cccc-c840-4ea3-b6c5-e949d25646ce\\\"}]\", \"page\": 4}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 287,
+    "fields": {
+        "page": 8,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:47:39.386Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 8, \"path\": \"0001000100010005\", \"depth\": 4, \"numchild\": 0, \"title\": \"Protein Searches\", \"draft_title\": \"Protein Searches\", \"slug\": \"protein-searches\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/protein-searches/\", \"owner\": 2, \"seo_title\": \"Protein Search\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2019-10-31T19:37:48.648Z\", \"last_published_at\": \"2019-11-01T07:13:23.135Z\", \"latest_revision_created_at\": \"2019-11-01T07:13:23.108Z\", \"live_revision\": 279, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 18, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-3\\\", \\\"body\\\": \\\"<h2>Protein Searches</h2>\\\"}, \\\"id\\\": \\\"76523e90-a067-4e49-af23-74cbf04d366a\\\"}]\", \"page\": 8}, {\"pk\": 19, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"3902258b-bcae-4d55-8896-0b60f5121461\\\"}]\", \"page\": 8}, {\"pk\": 20, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-4\\\", \\\"body\\\": \\\"<p>The SRA houses DNA sequences, and so for protein:nucleotide searches we need to translate the SRA DNA sequences to compare them to the fasta file of protein sequences you upload. We use the ultrafast DIAMOND algorithm to compare translated DNA and proteins. We provide you with a compressed zip file containing the tab-separated diamond output for your downstream processing.<br/></p><p>The command that we currently use for diamond is:</p><p><b><i>diamond blastx -f 6 qseqid sseqid pident length mismatch qstart qend sstart send evalue bitscore sseq qseq -d DATA -q SRAMG -o SRAID.m8</i></b><br/></p><p>SRAMG is one of our preprocessed metagenomes, and DATA is the fasta file that you upload.<br/></p><p>Register or login to get started searching.</p>\\\"}, \\\"id\\\": \\\"097e400f-649f-4e3e-8e8c-8b1a0beb15a4\\\"}]\", \"page\": 8}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 288,
+    "fields": {
+        "page": 11,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:47:52.033Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 11, \"path\": \"0001000100010008\", \"depth\": 4, \"numchild\": 0, \"title\": \"Cite Us\", \"draft_title\": \"Cite Us\", \"slug\": \"cite-us\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/cite-us/\", \"owner\": 2, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2019-11-01T07:09:07.844Z\", \"last_published_at\": \"2019-11-01T07:11:26.471Z\", \"latest_revision_created_at\": \"2019-11-01T07:11:26.449Z\", \"live_revision\": 277, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 31, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-3\\\", \\\"body\\\": \\\"<h2><b>Cite Us</b></h2>\\\"}, \\\"id\\\": \\\"8902a118-08d2-4851-a4a0-13af0598bb78\\\"}]\", \"page\": 11}, {\"pk\": 32, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"eeb20565-91f8-4964-b207-731e171edf17\\\"}]\", \"page\": 11}, {\"pk\": 33, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-4\\\", \\\"body\\\": \\\"<p>It is critical for bioinformaticians to have their work cited so we can continue to develop exciting tools for you. Please be sure to not only cite searchsra.org, but to also cite the tools that we have used to build this amazing resource.</p><p>You can download the <a href=\\\\\\\"https://www.searchsra.org/themes/searchingsra-gateway-theme/assets/img/ref.tex\\\\\\\">bibtex file</a> with these citations and import that into your favorite reference manager.</p><ul><li>Levi, Kyle Rynge, Mats Abeysinghe, Eroma, and Edwards, Robert A. Searching the Sequence Read Archive using Jetstream and WranglerPEARC 18.</li><li>Torres PJ, Edwards RA, McNair KA. 2017. PARTIE: a partition engine to separate metagenomic and amplicon projects in the Sequence Read Archive. Bioinformatics 33:2389\\\\u20132391.</li><li>Towns J, Cockerill T, Dahan M, Foster I, Gaither K, Grimshaw A, Hazlewood V, Lathrop S, Lifka D, Peterson GD, Roskies R, Scott JR, Wilkins-Diehr N. 2014. XSEDE: Accelerating Scientific Discovery. Computing in Science Engineering 16:62\\\\u201374.</li><li>Stewart CA, Cockerill TM, Foster I, Hancock D, Merchant N, Skidmore E, Stanzione D, Taylor J, Tuecke S, Turner G, Vaughn M, Gaffney NI. 2015. Jetstream: a self-provisioned, scalable science and engineering cloud environment, p. 29. In Proceedings of the 2015 XSEDE Conference: Scientific Advancements Enabled by Enhanced Cyberinfrastructure. ACM.</li><li>Buchfink B, Xie C, Huson DH. 2015. Fast and sensitive protein alignment using DIAMOND. Nat Methods 12:59\\\\u201360.</li><li>Langmead B, Salzberg SL. 2012. Fast gapped-read alignment with Bowtie 2. Nat Methods 9:357\\\\u2013359.</li></ul><h4></h4><h4><b>Acknowledgements</b></h4><p>This work used the Extreme Science and Engineering Discovery Environment (XSEDE), which is supported by National Science Foundation grant number ACI-1548562. Development of the Apache Airavata used to develop the science gateway is supported by NSF award #1339774. XSEDE resources used include JetStream and Wrangler at Indiana University through allocation TG-MCB170036.</p>\\\"}, \\\"id\\\": \\\"035299ac-68cd-43fa-b0bf-5897339b9390\\\"}]\", \"page\": 11}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 289,
+    "fields": {
+        "page": 7,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:49:06.191Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 7, \"path\": \"0001000100010004\", \"depth\": 4, \"numchild\": 0, \"title\": \"Examples\", \"draft_title\": \"Examples\", \"slug\": \"examples\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/examples/\", \"owner\": 2, \"seo_title\": \"Examples\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2019-10-31T17:33:18.200Z\", \"last_published_at\": \"2019-11-01T07:06:50.418Z\", \"latest_revision_created_at\": \"2019-11-01T07:06:50.378Z\", \"live_revision\": 272, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 11, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-3\\\", \\\"body\\\": \\\"<h2>Examples</h2>\\\"}, \\\"id\\\": \\\"8b2b4792-41f0-4bc8-8461-c59713380db9\\\"}]\", \"page\": 7}, {\"pk\": 12, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"96c0e02d-6c7e-4a74-8475-0423bb136b97\\\"}]\", \"page\": 7}, {\"pk\": 13, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\", \\\"body\\\": \\\"<p>Rob has searched the SRA hundreds of times for crAssphage and this figure shows the abundance of crAssphage across 10,260 metagenomes that contain it.</p><p>The genome is 97kb, and the horizontal axis shows the position in the genome. The vertical axis shows metagenomes, each one is a row. The darker the color, the more abundant crAssphage is in those metagenomes. There are some regions of the exemplar phage that are not present in many of the metagenomes, as shown by the whiter regions, while much of the phage genome is highly conserved.</p><p>The boxes at the bottom show the positions of individual genes along the genome.</p>\\\"}, \\\"id\\\": \\\"c2e5cb07-3e9e-447d-b4af-bcc4c01b51e6\\\"}]\", \"page\": 7}, {\"pk\": 27, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 10, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"540\\\", \\\"height\\\": 400, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\"}, \\\"id\\\": \\\"5428221d-dddb-450d-9287-47aa5f1849b2\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\", \\\"body\\\": \\\"<p>In 2018 students at SDSU used the underpinnings of searchsra.org to develop independent research projects to explore metagenomes. Watch their videos to understand more about their amazing research stories:</p><ul><li>What Viruses are Carried by Mosquitoes in Southern California?</li></ul>\\\"}, \\\"id\\\": \\\"7d2d18da-2cff-408c-ac43-b5b5d5677b02\\\"}, {\\\"type\\\": \\\"embed_block\\\", \\\"value\\\": {\\\"embed\\\": \\\"https://www.youtube.com/watch?v=cTqNDb3VKzk\\\", \\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-0 mb-5\\\"}, \\\"id\\\": \\\"23774090-c430-4a5e-b4ce-a19f2f4d404d\\\"}]\", \"page\": 7}, {\"pk\": 14, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\", \\\"body\\\": \\\"<ul><li>Virus PhiX174 - a Common Contaminant of Metagenomes</li></ul>\\\"}, \\\"id\\\": \\\"91d9da76-f891-4000-a808-57e121d46052\\\"}, {\\\"type\\\": \\\"embed_block\\\", \\\"value\\\": {\\\"embed\\\": \\\"https://www.youtube.com/watch?v=cn5i00ygg-w\\\", \\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-0 mb-5\\\"}, \\\"id\\\": \\\"b38774eb-bb64-4a8a-b782-7818751e50ee\\\"}]\", \"page\": 7}, {\"pk\": 15, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\", \\\"body\\\": \\\"<ul><li>Contractile Injection Systems (CIS) in the Sequence Read Archive</li></ul>\\\"}, \\\"id\\\": \\\"ce337e79-0612-4ec7-bbb8-2b5c201a15a2\\\"}, {\\\"type\\\": \\\"embed_block\\\", \\\"value\\\": {\\\"embed\\\": \\\"https://www.youtube.com/watch?v=uJkBOY2XeX8\\\", \\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-0 mb-5\\\"}, \\\"id\\\": \\\"c5aa4992-a2f6-433b-b56e-a9b099da65b1\\\"}]\", \"page\": 7}, {\"pk\": 16, \"sort_order\": 6, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\", \\\"body\\\": \\\"<ul><li>Antibiotic Resistance in Patients Undergoing Immune Checkpoint Therapy</li></ul>\\\"}, \\\"id\\\": \\\"2e070750-63e7-49df-b393-30ee5970dc9b\\\"}, {\\\"type\\\": \\\"embed_block\\\", \\\"value\\\": {\\\"embed\\\": \\\"https://www.youtube.com/watch?v=a_K4asDZwvw\\\", \\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-0 mb-5\\\"}, \\\"id\\\": \\\"c9cbe24d-909c-4201-9ce9-05ef5031c6b6\\\"}]\", \"page\": 7}, {\"pk\": 28, \"sort_order\": 7, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\", \\\"body\\\": \\\"<ul><li>Antibiotic Resistance In Patients Undergoing Selective Digestive Deconatmination</li></ul>\\\"}, \\\"id\\\": \\\"6c2a0273-981f-4e49-aff9-da756fc29fcc\\\"}, {\\\"type\\\": \\\"embed_block\\\", \\\"value\\\": {\\\"embed\\\": \\\"https://www.youtube.com/watch?v=-dX_ijbDOkA\\\", \\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-0 mb-5\\\"}, \\\"id\\\": \\\"2c6678f5-e5d0-4878-869e-e4620b8938f9\\\"}]\", \"page\": 7}, {\"pk\": 29, \"sort_order\": 8, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\", \\\"body\\\": \\\"<ul><li>Can Antibiotic Resistance Genes in the Human Skin Microbiome be Spread Through Swimming Pools?</li></ul>\\\"}, \\\"id\\\": \\\"8b0a80e4-7ec4-4038-b177-99d33ffba7eb\\\"}, {\\\"type\\\": \\\"embed_block\\\", \\\"value\\\": {\\\"embed\\\": \\\"https://www.youtube.com/watch?v=x_qWwKJBT7M\\\", \\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-0 mb-5\\\"}, \\\"id\\\": \\\"86f9f2e2-54d6-424d-a980-9b1217ffb5d3\\\"}]\", \"page\": 7}, {\"pk\": 30, \"sort_order\": 9, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-2\\\", \\\"body\\\": \\\"<ul><li>Antibiotic Resistance Genes in Cystic Fibrosis Lung Metagenomes</li></ul>\\\"}, \\\"id\\\": \\\"0bc68b76-28c1-4b82-83ef-949866fa4f47\\\"}, {\\\"type\\\": \\\"embed_block\\\", \\\"value\\\": {\\\"embed\\\": \\\"https://www.youtube.com/watch?v=CwijuLSJm8M\\\", \\\"custom_class\\\": \\\"offset-md-2 col-md-10 mx-auto mt-0\\\"}, \\\"id\\\": \\\"b5a52afb-f2dd-47b5-9a81-f7190d8715a6\\\"}]\", \"page\": 7}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 290,
+    "fields": {
+        "page": 10,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:49:19.915Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 10, \"path\": \"0001000100010007\", \"depth\": 4, \"numchild\": 0, \"title\": \"Nucleotide Searches\", \"draft_title\": \"Nucleotide Searches\", \"slug\": \"nucleotide-searches\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/nucleotide-searches/\", \"owner\": 2, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2019-11-01T00:32:05.215Z\", \"last_published_at\": \"2019-11-01T00:32:05.215Z\", \"latest_revision_created_at\": \"2019-11-01T00:32:05.198Z\", \"live_revision\": 266, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 24, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-3\\\", \\\"body\\\": \\\"<h2>Nucleotide Searches</h2>\\\"}, \\\"id\\\": \\\"d1d7f554-d33b-4298-8811-19ac9ac42b0f\\\"}]\", \"page\": 10}, {\"pk\": 25, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"2834366b-cea4-490d-aedf-6b8d7ecef04c\\\"}]\", \"page\": 10}, {\"pk\": 26, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-4\\\", \\\"body\\\": \\\"<p>The SRA houses DNA sequences, and so for nucleotide:nucleotide searches we use <a href=\\\\\\\"http://bowtie-bio.sourceforge.net/bowtie2/index.shtml\\\\\\\">bowtie2</a> to compare the fasta file of DNA sequences you upload against the set of SRA IDs of the metagenomes that you choose to search. We convert the output to binary sequence alignment format and provide you with a compressed zip file containing both the bam and bam index files for your downstream processing.<br/></p><p>The command that we currently use for bowtie2 is:</p><p><b><i>bowtie2 -p 6 -q --no-unal -x SRAMG -U DATA | samtools view -bS - | samtools sort - OUTPUT</i></b><br/></p><p>SRAMG is one of our preprocessed <a href=\\\\\\\"https://www.searchsra.org/pages/metagenomes\\\\\\\">metagenomes</a>, and DATA is the fasta file that you upload.<br/></p><p>Register or login to get started searching.</p>\\\"}, \\\"id\\\": \\\"b0b6d617-2463-4521-8e52-f92d8bff9c89\\\"}]\", \"page\": 10}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 291,
+    "fields": {
+        "page": 9,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:49:31.824Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 9, \"path\": \"0001000100010006\", \"depth\": 4, \"numchild\": 0, \"title\": \"Metagenomes\", \"draft_title\": \"Metagenomes\", \"slug\": \"metagenomes\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/metagenomes/\", \"owner\": 2, \"seo_title\": \"Metagenomes\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2019-10-31T19:56:09.051Z\", \"last_published_at\": \"2019-11-01T00:31:02.382Z\", \"latest_revision_created_at\": \"2019-11-01T00:31:02.362Z\", \"live_revision\": 265, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 21, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-3\\\", \\\"body\\\": \\\"<h2>Metagenomes</h2>\\\"}, \\\"id\\\": \\\"09641fe1-e7e2-4220-bb4c-575e32203dfa\\\"}]\", \"page\": 9}, {\"pk\": 22, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"7ad6426d-0fc7-4c4b-bd2e-210176f2d571\\\"}]\", \"page\": 9}, {\"pk\": 23, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-4\\\", \\\"body\\\": \\\"<p>We have scoured the sequence read archive to identify those data sets that are random metagenomic sequences. There are two popular approaches often called metagenomics: First, amplicon sequencing includes amplifying a single piece of DNA (e.g. the 16S gene from bacteria or COX1 gene from eukaryotes), and sequencing that gene en masse. These studies provide a taxonomic profile of an environment but don\\\\u2019t tell you what is happening in that environment. We don\\\\u2019t include those data here. The second type of study, whole shotgun (WGS) metagenomics, is where random samples of the microbial genomes in the environment are sequenced, usually without amplification, and results in a mixture of all the DNA in the sample. These studies give a holistic understanding of bacterial communities and are the focus of the data we have available for you here.</p><p>Over the last decade, metagenomics sequencing has focused on understanding the role of microbes in the environment and reconstructing genomes out of environmental sequences. The growth of the SRA, however, allows us to think in fundamentally different ways. With the abundance of random sequences from diverse environments in a single repository, instead of asking what genomes or metabolisms are found in a particular environment, we can ask what environments contain a gene, protein, genome, or metabolism of interest.</p><p>This massive volume of data could also be used to identify genes that are conserved across environments, or environments that are hotspots of microbial or gene diversification. However, this kind of computational approach to microbial ecology requires large compute and storage capabilities, that we are providing here thanks to support of XSEDE and the NSF. The WGS projects in the SRA are accumulating at ~3,000 runs per month (averaged from June 2016\\\\u2013June 2017), and the combined WGS data sets exceeds 100TB of data. At searchSRA.org our goal is to enable you to search this data for things you are interested in!</p><p>Using our high-throughput, automated, machine learning approach we identify the new metagenomics data sets that have been added to the sequence read archive and preprocess those to prepare them for searching. We extract 100,000 sequences from each file, approximately 1% of the data, and use that as the input to our search.</p><p>We can only use 1% of the data because even though we have <a href=\\\\\\\"https://www.xsede.org/\\\\\\\">XSEDE\\\\u2019s</a> compute resources backing us up, we still want the search to complete in time.</p><p>What this means for you is that we are liable to false negatives in our search: when we demonstrate a sequence is present, it really is. However, if we do not report hits to a metagenome, it is possible that there are a few sequences in the metagenome that would match your query that we don\\\\u2019t report. That is the trade-off we have to make to get you results in a reasonable time!</p><p><a href=\\\\\\\"https://www.searchsra.org/themes/searchingsra-gateway-theme/assets/img/sra_ids.txt\\\\\\\">Here is a list</a> of the current sequence data sets available.</p><p>Register or login to get started searching.</p>\\\"}, \\\"id\\\": \\\"47080190-6aac-4de5-9418-aa794b20c2d7\\\"}]\", \"page\": 9}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 292,
+    "fields": {
+        "page": 4,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T04:54:57.863Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"Documentation\", \"draft_title\": \"Documentation\", \"slug\": \"documentation\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/documentation/\", \"owner\": 1, \"seo_title\": \"documentation\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T00:02:02.704Z\", \"last_published_at\": \"2019-11-03T04:47:28.288Z\", \"latest_revision_created_at\": \"2019-11-03T04:47:28.264Z\", \"live_revision\": 286, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 8, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Training and Documentation\\\", \\\"size\\\": \\\"h2\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto text-center mt-3\\\"}, \\\"id\\\": \\\"1f991a16-5c01-4ae1-b59c-f2b441eb8c8e\\\"}]\", \"page\": 4}, {\"pk\": 9, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"b16b1142-31d1-4263-92cb-3055aebcfd1e\\\"}]\", \"page\": 4}, {\"pk\": 10, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-5\\\", \\\"body\\\": \\\"<h4></h4><p></p><p><b>Search SRA Gateway User Manual</b></p><p><b>Gateway Access</b></p><ul><li>Create a gateway account at https://www.searchsra.org/. Use &#x27;Create account&#x27;. Provide your details and you will receive an email for account verification.</li><li>Click the link in the email received and confirm your email. Hint: The email sometimes tends to land on &#x27;Junk email&#x27; or &#x27;Trash&#x27;.</li><li>When the gateway administrator grants access, you would receive a notification email.</li><li>Log in to the gateway, You are ready to Search through the SRA!</li></ul><p></p><p></p><embed alt=\\\\\\\"Login screen\\\\\\\" embedtype=\\\\\\\"image\\\\\\\" format=\\\\\\\"fullwidth\\\\\\\" id=\\\\\\\"11\\\\\\\"/><p></p><p></p><p></p><p><b>Getting Started</b></p><ul><li>When logged in you would be on your home page, Workspace.</li><li>You would see your application placeholders.</li><li>Choose the one you want to use and click to navigate to the &#x27;Create Experiment&#x27; page.</li><li>To your right, you would see all your recent experiments.</li><li>On the top-right menu, you will have<ul><li>Workspace (you are there now)</li><li>Groups</li><li>Settings</li></ul></li><li>The left vertical menu is the child menu of what you select from the above, right-hand drop-down menu.</li><li>Workspace has<ul><li>Dashboard</li><li>Experiments</li><li>Projects</li><li>Storage</li></ul></li><li>What is an Experiment? - Experiment is the gateway record you create in order to launch a job in a remote cluster/supercomputer/HPC.</li></ul>\\\"}, \\\"id\\\": \\\"3d40f99c-b31e-4737-bd89-748263952647\\\"}]\", \"page\": 4}, {\"pk\": 36, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-5\\\", \\\"body\\\": \\\"<p><b>Save &amp; Launch an Experiment</b></p><ul><li>To create a new Experiment from the Dashboard select your application.</li><li>In Create Experiment default values are provided for the name.<ul><li>Experiment Description (Optional)</li><li>Project (LOV) - Last used will be selected for you</li><li>Application (LOV)</li><li>Application configurations will have default set values with option to change.</li><li>Application Inputs (Mandatory)</li></ul></li><li>Save &amp; Launch</li><li>When providing Application inputs;<ul><li>Fasta-Reference-File (Mandatory)</li><li>Select existing Search IDs File OR provide your own.</li></ul></li><li>After providing the files you could &#x27;Save&#x27; the experiment for later submission. If saved you could edit the experiment prior to launching.</li><li>Once launched, you could cancel the experiment, which will cancel the job running in the remote cluster.</li></ul><p></p><embed alt=\\\\\\\"workspace\\\\\\\" embedtype=\\\\\\\"image\\\\\\\" format=\\\\\\\"fullwidth\\\\\\\" id=\\\\\\\"12\\\\\\\"/><p></p><p></p><p></p>\\\"}, \\\"id\\\": \\\"a5512dab-d059-43bf-b650-c0232eb59722\\\"}]\", \"page\": 4}, {\"pk\": 37, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-5\\\", \\\"body\\\": \\\"<p><b>Other Gateway Features</b></p><ul><li>Users can share their experiments with other gateway users or user groups. When sharing, you can decide on the level of access to grant.<ul><li>Read Access</li><li>Write Access</li></ul></li><li>To create new experiments similar to an existing one, you can clone the experiment from Experiment Summary page.</li><li>Users can create their own user groups to share research experiments, data files.</li><li>Group Resource Profile of the user enables to user to use their own research allocation/logins for computations.</li></ul>\\\"}, \\\"id\\\": \\\"e399cccc-c840-4ea3-b6c5-e949d25646ce\\\"}]\", \"page\": 4}]}",
+        "approved_go_live_at": null
+    }
+},
+{
+    "model": "wagtailcore.pagerevision",
+    "pk": 293,
+    "fields": {
+        "page": 6,
+        "submitted_for_moderation": false,
+        "created_at": "2019-11-03T05:07:26.506Z",
+        "user": [
+            "eabeysin"
+        ],
+        "content_json": "{\"pk\": 6, \"path\": \"0001000100010003\", \"depth\": 4, \"numchild\": 0, \"title\": \"Contact\", \"draft_title\": \"Contact\", \"slug\": \"contact\", \"content_type\": 35, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/contact/\", \"owner\": 1, \"seo_title\": \"contact\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T00:07:14.453Z\", \"last_published_at\": \"2019-11-03T04:46:33.043Z\", \"latest_revision_created_at\": \"2019-11-03T04:46:33.021Z\", \"live_revision\": 284, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"show_announcements\": \"yes\", \"row\": [{\"pk\": 7, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\", \\\"body\\\": \\\"<h2><b>Contact</b></h2>\\\"}, \\\"id\\\": \\\"30401d0e-fa90-44e2-9838-ad604884fd45\\\"}]\", \"page\": 6}, {\"pk\": 38, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#20b2aa\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"f0826e95-def4-49a0-a7b9-e9971c2bed12\\\"}]\", \"page\": 6}, {\"pk\": 39, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto mt-4\\\", \\\"body\\\": \\\"<p>For more information about searchsra.org, Please contact Prof. Rob Edwards at San Diego State University;</p><p>Here is his <a href=\\\\\\\"https://edwards.sdsu.edu/research/SRA\\\\\\\">Blog</a>.</p><p>More information on <a href=\\\\\\\"https://edwards.sdsu.edu/research/similarity-searching-the-sra/\\\\\\\">Search SRA</a></p>\\\"}, \\\"id\\\": \\\"a545c958-d342-40fb-b26c-0c5581728be2\\\"}]\", \"page\": 6}]}",
+        "approved_go_live_at": null
+    }
+},
+{
     "model": "wagtailcore.grouppagepermission",
     "pk": 1,
     "fields": {
@@ -2393,21 +2819,28 @@
     }
 },
 {
+    "model": "django_airavata_wagtail_base.navextra",
+    "pk": 1,
+    "fields": {
+        "nav": "[{\"type\": \"nav\", \"value\": {\"custom_class\": \"second nav\", \"nav_items\": [{\"type\": \"nav_item\", \"value\": {\"link\": \"/auth/create-account\", \"link_text\": \"Create Account\", \"image\": null, \"icon_class\": \"fas fa-user\", \"show\": \"not-logged-in\", \"horizontal_alignment\": \"push-right\"}, \"id\": \"0d7e57cd-f2aa-448a-af21-c2d0ea9afe05\"}, {\"type\": \"nav_item\", \"value\": {\"link\": \"/auth/login\", \"link_text\": \"Log In\", \"image\": null, \"icon_class\": \"fas fa-sign-in-alt\", \"show\": \"not-logged-in\", \"horizontal_alignment\": \"\"}, \"id\": \"388827b6-97cd-4bd5-b545-a6d15e21f9e1\"}, {\"type\": \"dashboard_link\", \"value\": {\"link\": \"/workspace/dashboard\", \"link_text\": \"Go to Dashboard\", \"image\": null, \"icon_class\": \"fas fa-arrow-circle-right\", \"show\": \"logged-in\", \"horizontal_alignment\": \"push-right\"}, \"id\": \"b2db51ff-8788-406a-8daa-13f503f7bff4\"}, {\"type\": \"logout_link\", \"value\": {\"link\": \"/auth/logout\", \"link_text\": \"Logout\", \"image\": null, \"icon_class\": \"fas fa-sign-out-alt\", \"show\": \"logged-in\", \"horizontal_alignment\": \"\"}, \"id\": \"530a6cfc-d022-4ba1-b427-edd3d47428db\"}]}, \"id\": \"60176410-c34f-4cfe-86df-60618c783bcc\"}]"
+    }
+},
+{
     "model": "django_airavata_wagtail_base.customcss",
     "pk": 1,
     "fields": {
-        "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"-----navbar styles----\"}, \"id\": \"f4355b2e-dd22-4a1b-b570-f15ec9eb0df4\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #FFFFFF;\\r\\nheight: 73px;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #5e91e5 !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\nbackground-color: #efefef;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 18px;\\r\\n}\", \"id\": \"1d20d1b8-c531-413d-8783-7fd5e98d41c6\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------ second nav styles-------\"}, \"id\": \"2c6ad41f-9eb1-4321-9a08-efcaeaba7181\"}, {\"type\": \"css_block\", \"value\": \".second-nav {\\r\\nbackground: #1C293C;\\r\\npadding: 10px;\\r\\n}\\r\\n.second-nav a {\\r\\ncolor: #999;\\r\\n}\\r\\n.second-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\n}\", \"id\": \"b482aebf-0b18-4dc3-8c9d-819124285160\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------sponsor logo on home page styles------\"}, \"id\": \"37dea527-a577-417e-b54f-21ffa48611ed\"}, {\"type\": \"css_block\", \"value\": \".card {\\r\\nborder:none !important;\\r\\n}\", \"id\": \"20e9fed6-5885-439c-992f-1286101808f9\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"search SRA custom button\"}, \"id\": \"3614dacc-270a-43c3-9145-b7afd1e97be7\"}, {\"type\": \"css_block\", \"value\": \".button-sra {\\r\\n    background: linear-gradient(to right, #99ccff ,  #e6e6e6);\\r\\n    border-width: 1px;\\r\\n    border-color: #e6e6e6;\\r\\n    border-radius: 10px;\\r\\n    color: White;\\r\\n    border-style: solid;\\r\\n    padding: 10px 10px;\\r\\n    text-align: center;\\r\\n    font-size: 18px;\\r\\n    cursor: pointer;\\r\\n    font-weight: bold;\\r\\n}\", \"id\": \"c9ecbd95-f97b-42fb-b870-5a3fa93b647d\"}]"
+        "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"-----navbar styles----\"}, \"id\": \"f4355b2e-dd22-4a1b-b570-f15ec9eb0df4\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #FFFFFF;\\r\\nheight: 73px;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #5e91e5 !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\nbackground-color: #efefef;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 18px;\\r\\n}\", \"id\": \"1d20d1b8-c531-413d-8783-7fd5e98d41c6\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------ second nav styles-------\"}, \"id\": \"2c6ad41f-9eb1-4321-9a08-efcaeaba7181\"}, {\"type\": \"css_block\", \"value\": \".second-nav {\\r\\nbackground-color: #303E4E;\\r\\ncolor: #efefef;\\r\\npadding: 10px;\\r\\n}\\r\\n.second-nav a {\\r\\ncolor: #ffffff;\\r\\n}\", \"id\": \"b482aebf-0b18-4dc3-8c9d-819124285160\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------sponsor logo on home page styles------\"}, \"id\": \"37dea527-a577-417e-b54f-21ffa48611ed\"}, {\"type\": \"css_block\", \"value\": \".card {\\r\\nborder:none !important;\\r\\n}\", \"id\": \"20e9fed6-5885-439c-992f-1286101808f9\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"search SRA custom button\"}, \"id\": \"3614dacc-270a-43c3-9145-b7afd1e97be7\"}, {\"type\": \"css_block\", \"value\": \".button-sra {\\r\\n    background: linear-gradient(to right, #99ccff ,  #e6e6e6);\\r\\n    border-width: 1px;\\r\\n    border-color: #e6e6e6;\\r\\n    border-radius: 10px;\\r\\n    color: White;\\r\\n    border-style: solid;\\r\\n    padding: 10px 10px;\\r\\n    text-align: center;\\r\\n    font-size: 18px;\\r\\n    cursor: pointer;\\r\\n    font-weight: bold;\\r\\n}\", \"id\": \"c9ecbd95-f97b-42fb-b870-5a3fa93b647d\"}]"
     }
 },
 {
     "model": "django_airavata_wagtail_base.navbar",
     "pk": 1,
     "fields": {
-        "logo": 1,
+        "logo": 9,
         "logo_redirect_link": "/",
         "logo_with_text": "no",
         "logo_width": 400,
-        "logo_height": null,
+        "logo_height": 300,
         "logo_text": null,
         "logo_text_color": null,
         "logo_text_size": null
@@ -2418,7 +2851,7 @@
     "pk": 1,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 2, \"caption\": \"\", \"width\": \"\", \"height\": null, \"redirect_url\": \"\", \"custom_class\": \"col-md-12 mt-4\"}, \"id\": \"1460a2e8-f993-4227-a043-d19921c00828\"}]",
+        "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 8, \"caption\": \"\", \"width\": \"\", \"height\": null, \"redirect_url\": \"\", \"custom_class\": \"col-md-12 mt-4\"}, \"id\": \"1460a2e8-f993-4227-a043-d19921c00828\"}]",
         "page": 3
     }
 },
@@ -2427,7 +2860,7 @@
     "pk": 2,
     "fields": {
         "sort_order": 1,
-        "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 1, \"caption\": \"\", \"width\": \"240\", \"height\": 60, \"redirect_url\": \"\", \"custom_class\": \"offset-md-1 col-md-2 mt-5\"}, \"id\": \"79c267c9-51a4-4cb9-8c96-6918df2b85eb\"}, {\"type\": \"heading_block\", \"value\": {\"heading_text\": \"Searching SRA Gateway\", \"size\": \"h2\", \"custom_class\": \"col-md-8 ml-auto mt-5\"}, \"id\": \"051d329e-2488-4d24-946d-89c991d3c949\"}]",
+        "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 9, \"caption\": \"\", \"width\": \"240\", \"height\": 60, \"redirect_url\": \"\", \"custom_class\": \"offset-md-1 col-md-2 mt-5\"}, \"id\": \"79c267c9-51a4-4cb9-8c96-6918df2b85eb\"}, {\"type\": \"heading_block\", \"value\": {\"heading_text\": \"Searching SRA Gateway\", \"size\": \"h2\", \"custom_class\": \"col-md-8 ml-auto mt-5\"}, \"id\": \"051d329e-2488-4d24-946d-89c991d3c949\"}]",
         "page": 3
     }
 },
@@ -2454,7 +2887,7 @@
     "pk": 6,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-5\", \"body\": \"<h2><b>About</b></h2>\"}, \"id\": \"8902a118-08d2-4851-a4a0-13af0598bb78\"}]",
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-3\", \"body\": \"<h2><b>About</b></h2>\"}, \"id\": \"8902a118-08d2-4851-a4a0-13af0598bb78\"}]",
         "page": 5
     }
 },
@@ -2472,7 +2905,7 @@
     "pk": 8,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"heading_block\", \"value\": {\"heading_text\": \"Training and Documentation\", \"size\": \"h2\", \"custom_class\": \"col-md-10 mx-auto text-center mt-5\"}, \"id\": \"1f991a16-5c01-4ae1-b59c-f2b441eb8c8e\"}]",
+        "body": "[{\"type\": \"heading_block\", \"value\": {\"heading_text\": \"Training and Documentation\", \"size\": \"h2\", \"custom_class\": \"col-md-10 mx-auto text-center mt-3\"}, \"id\": \"1f991a16-5c01-4ae1-b59c-f2b441eb8c8e\"}]",
         "page": 4
     }
 },
@@ -2490,7 +2923,7 @@
     "pk": 10,
     "fields": {
         "sort_order": 2,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-10 mx-auto mt-5\", \"body\": \"<h4><b>Search SRA Gateway User Manual</b></h4><p><b>Gateway Access</b></p><ul><li>Create a gateway account at https://www.searchsra.org/. Use &#x27;Create account&#x27;. Provide your details and you will receive an email for account verification.</li><li>Click the link in the email received and confirm your email. Hint: The email sometimes tends to land on &#x27;Junk email&#x27; or &#x27;Trash&#x27;.</li><li>When the gateway administrator grants access, you would receive a notification email.</li><li>Log in to the gateway, You are ready to Search through the SRA!</li></ul><embed alt=\\\"Login Page\\\" embedtype=\\\"image\\\" format=\\\"left\\\" id=\\\"5\\\"/><p></p><p><b>Getting Started</b></p><ul><li>When logged in you would be on your home page, Workspace.</li><li>You would see your application placeholders.</li><li>Choose the one you want to use and click to navigate to the &#x27;Create Experiment&#x27; page.</li><li>To your right, you would see all your recent experiments.</li><li>On the top-right menu, you will have<ul><li>Workspace (you are there now)</li><li>Groups</li><li>Settings</li></ul></li><li>The left vertical menu is the child menu of what you select from the above, right-hand drop-down menu.</li><li>Workspace has<ul><li>Dashboard</li><li>Experiments</li><li>Projects</li><li>Storage</li></ul></li><li>What is an Experiment? - Experiment is the gateway record you create in order to launch a job in a remote cluster/supercomputer/HPC.</li></ul>\"}, \"id\": \"3d40f99c-b31e-4737-bd89-748263952647\"}]",
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-10 mx-auto mt-5\", \"body\": \"<h4></h4><p></p><p><b>Search SRA Gateway User Manual</b></p><p><b>Gateway Access</b></p><ul><li>Create a gateway account at https://www.searchsra.org/. Use &#x27;Create account&#x27;. Provide your details and you will receive an email for account verification.</li><li>Click the link in the email received and confirm your email. Hint: The email sometimes tends to land on &#x27;Junk email&#x27; or &#x27;Trash&#x27;.</li><li>When the gateway administrator grants access, you would receive a notification email.</li><li>Log in to the gateway, You are ready to Search through the SRA!</li></ul><p></p><p></p><embed alt=\\\"Login screen\\\" embedtype=\\\"image\\\" format=\\\"fullwidth\\\" id=\\\"11\\\"/><p></p><p></p><p></p><p><b>Getting Started</b></p><ul><li>When logged in you would be on your home page, Workspace.</li><li>You would see your application placeholders.</li><li>Choose the one you want to use and click to navigate to the &#x27;Create Experiment&#x27; page.</li><li>To your right, you would see all your recent experiments.</li><li>On the top-right menu, you will have<ul><li>Workspace (you are there now)</li><li>Groups</li><li>Settings</li></ul></li><li>The left vertical menu is the child menu of what you select from the above, right-hand drop-down menu.</li><li>Workspace has<ul><li>Dashboard</li><li>Experiments</li><li>Projects</li><li>Storage</li></ul></li><li>What is an Experiment? - Experiment is the gateway record you create in order to launch a job in a remote cluster/supercomputer/HPC.</li></ul>\"}, \"id\": \"3d40f99c-b31e-4737-bd89-748263952647\"}]",
         "page": 4
     }
 },
@@ -2499,7 +2932,7 @@
     "pk": 11,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-2\", \"body\": \"<h2>Examples</h2>\"}, \"id\": \"8b2b4792-41f0-4bc8-8461-c59713380db9\"}]",
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-3\", \"body\": \"<h2>Examples</h2>\"}, \"id\": \"8b2b4792-41f0-4bc8-8461-c59713380db9\"}]",
         "page": 7
     }
 },
@@ -2562,7 +2995,7 @@
     "pk": 18,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-2\", \"body\": \"<h2>Protein Searches</h2>\"}, \"id\": \"76523e90-a067-4e49-af23-74cbf04d366a\"}]",
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-3\", \"body\": \"<h2>Protein Searches</h2>\"}, \"id\": \"76523e90-a067-4e49-af23-74cbf04d366a\"}]",
         "page": 8
     }
 },
@@ -2589,7 +3022,7 @@
     "pk": 21,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-5\", \"body\": \"<h2>Metagenomes</h2>\"}, \"id\": \"09641fe1-e7e2-4220-bb4c-575e32203dfa\"}]",
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-3\", \"body\": \"<h2>Metagenomes</h2>\"}, \"id\": \"09641fe1-e7e2-4220-bb4c-575e32203dfa\"}]",
         "page": 9
     }
 },
@@ -2616,7 +3049,7 @@
     "pk": 24,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-5\", \"body\": \"<h2>Nucleotide Searches</h2>\"}, \"id\": \"d1d7f554-d33b-4298-8811-19ac9ac42b0f\"}]",
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-3\", \"body\": \"<h2>Nucleotide Searches</h2>\"}, \"id\": \"d1d7f554-d33b-4298-8811-19ac9ac42b0f\"}]",
         "page": 10
     }
 },
@@ -2643,7 +3076,7 @@
     "pk": 27,
     "fields": {
         "sort_order": 3,
-        "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 6, \"caption\": \"\", \"width\": \"540\", \"height\": 400, \"redirect_url\": \"\", \"custom_class\": \"offset-md-2 col-md-10 mx-auto mt-2\"}, \"id\": \"5428221d-dddb-450d-9287-47aa5f1849b2\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"offset-md-2 col-md-10 mx-auto mt-2\", \"body\": \"<p>In 2018 students at SDSU used the underpinnings of searchsra.org to develop independent research projects to explore metagenomes. Watch their videos to understand more about their amazing research stories:</p><ul><li>What Viruses are Carried by Mosquitoes in Southern California?</li></ul>\"}, \"id\": \"7d2d18da-2cff-408c-ac43-b5b5d5677b02\"}, {\"type\": \"embed_block\", \"value\": {\"embed\": \"https://www.youtube.com/watch?v=cTqNDb3VKzk\", \"custom_class\": \"offset-md-2 col-md-10 mx-auto mt-0 mb-5\"}, \"id\": \"23774090-c430-4a5e-b4ce-a19f2f4d404d\"}]",
+        "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 10, \"caption\": \"\", \"width\": \"540\", \"height\": 400, \"redirect_url\": \"\", \"custom_class\": \"offset-md-2 col-md-10 mx-auto mt-2\"}, \"id\": \"5428221d-dddb-450d-9287-47aa5f1849b2\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"offset-md-2 col-md-10 mx-auto mt-2\", \"body\": \"<p>In 2018 students at SDSU used the underpinnings of searchsra.org to develop independent research projects to explore metagenomes. Watch their videos to understand more about their amazing research stories:</p><ul><li>What Viruses are Carried by Mosquitoes in Southern California?</li></ul>\"}, \"id\": \"7d2d18da-2cff-408c-ac43-b5b5d5677b02\"}, {\"type\": \"embed_block\", \"value\": {\"embed\": \"https://www.youtube.com/watch?v=cTqNDb3VKzk\", \"custom_class\": \"offset-md-2 col-md-10 mx-auto mt-0 mb-5\"}, \"id\": \"23774090-c430-4a5e-b4ce-a19f2f4d404d\"}]",
         "page": 7
     }
 },
@@ -2679,7 +3112,7 @@
     "pk": 31,
     "fields": {
         "sort_order": 0,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-5\", \"body\": \"<h2><b>Cite Us</b></h2>\"}, \"id\": \"8902a118-08d2-4851-a4a0-13af0598bb78\"}]",
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center mt-3\", \"body\": \"<h2><b>Cite Us</b></h2>\"}, \"id\": \"8902a118-08d2-4851-a4a0-13af0598bb78\"}]",
         "page": 11
     }
 },
@@ -2724,7 +3157,7 @@
     "pk": 36,
     "fields": {
         "sort_order": 3,
-        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-10 mx-auto mt-5\", \"body\": \"<p><b>Save &amp; Launch an Experiment</b></p><ul><li>To create a new Experiment from the Dashboard select your application.</li><li>In Create Experiment default values are provided for the name.<ul><li>Experiment Description (Optional)</li><li>Project (LOV) - Last used will be selected for you</li><li>Application (LOV)</li><li>Application configurations will have default set values with option to change.</li><li>Application Inputs (Mandatory)</li></ul></li><li>Save &amp; Launch</li><li>When providing Application inputs;<ul><li>Fasta-Reference-File (Mandatory)</li><li>Select existing Search IDs File OR provide your own.</li></ul></li><li>After providing the files you could &#x27;Save&#x27; the experiment for later submission. If saved you could edit the experiment prior to launching.</li><li>Once launched, you could cancel the experiment, which will cancel the job running in the remote cluster.</li></ul><p></p><embed alt=\\\"Workspace\\\" embedtype=\\\"image\\\" format=\\\"left\\\" id=\\\"7\\\"/><p></p>\"}, \"id\": \"a5512dab-d059-43bf-b650-c0232eb59722\"}]",
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-10 mx-auto mt-5\", \"body\": \"<p><b>Save &amp; Launch an Experiment</b></p><ul><li>To create a new Experiment from the Dashboard select your application.</li><li>In Create Experiment default values are provided for the name.<ul><li>Experiment Description (Optional)</li><li>Project (LOV) - Last used will be selected for you</li><li>Application (LOV)</li><li>Application configurations will have default set values with option to change.</li><li>Application Inputs (Mandatory)</li></ul></li><li>Save &amp; Launch</li><li>When providing Application inputs;<ul><li>Fasta-Reference-File (Mandatory)</li><li>Select existing Search IDs File OR provide your own.</li></ul></li><li>After providing the files you could &#x27;Save&#x27; the experiment for later submission. If saved you could edit the experiment prior to launching.</li><li>Once launched, you could cancel the experiment, which will cancel the job running in the remote cluster.</li></ul><p></p><embed alt=\\\"workspace\\\" embedtype=\\\"image\\\" format=\\\"fullwidth\\\" id=\\\"12\\\"/><p></p><p></p><p></p>\"}, \"id\": \"a5512dab-d059-43bf-b650-c0232eb59722\"}]",
         "page": 4
     }
 },
@@ -2735,6 +3168,24 @@
         "sort_order": 4,
         "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-10 mx-auto mt-5\", \"body\": \"<p><b>Other Gateway Features</b></p><ul><li>Users can share their experiments with other gateway users or user groups. When sharing, you can decide on the level of access to grant.<ul><li>Read Access</li><li>Write Access</li></ul></li><li>To create new experiments similar to an existing one, you can clone the experiment from Experiment Summary page.</li><li>Users can create their own user groups to share research experiments, data files.</li><li>Group Resource Profile of the user enables to user to use their own research allocation/logins for computations.</li></ul>\"}, \"id\": \"e399cccc-c840-4ea3-b6c5-e949d25646ce\"}]",
         "page": 4
+    }
+},
+{
+    "model": "django_airavata_wagtail_base.rowblankpagerelation",
+    "pk": 38,
+    "fields": {
+        "sort_order": 1,
+        "body": "[{\"type\": \"horizontal_rule\", \"value\": {\"thickness\": 2, \"bg_color\": \"#20b2aa\", \"custom_class\": \"col-md-10 mx-auto\"}, \"id\": \"f0826e95-def4-49a0-a7b9-e9971c2bed12\"}]",
+        "page": 6
+    }
+},
+{
+    "model": "django_airavata_wagtail_base.rowblankpagerelation",
+    "pk": 39,
+    "fields": {
+        "sort_order": 2,
+        "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-10 mx-auto mt-4\", \"body\": \"<p>For more information about searchsra.org, Please contact Prof. Rob Edwards at San Diego State University;</p><p>Here is his <a href=\\\"https://edwards.sdsu.edu/research/SRA\\\">Blog</a>.</p><p>More information on <a href=\\\"https://edwards.sdsu.edu/research/similarity-searching-the-sra/\\\">Search SRA</a></p>\"}, \"id\": \"a545c958-d342-40fb-b26c-0c5581728be2\"}]",
+        "page": 6
     }
 },
 {
