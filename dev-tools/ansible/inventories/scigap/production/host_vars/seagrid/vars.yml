@@ -21,6 +21,9 @@
 ---
 vhost_servername: "seagrid.org"
 vhost_ssl: True
+vhost_aliases:
+  - url: /seagrid-rich-client/
+    path: "{{ doc_root_dir }}/static/seagrid-rich-client/"
 ssl_certificate_file: "/etc/letsencrypt/live/seagrid.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/seagrid.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/seagrid.org/privkey.pem"
