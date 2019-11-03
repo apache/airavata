@@ -67,6 +67,7 @@ gateway_id: "pfec-hydro"
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "js-171-92.jetstream-cloud.org_1a76397d-cc28-4ec9-82e8-d27c5cf80c79"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9qczDIVUhTxPmMsvF2J/NGIWo35HDgm3IUL41w1bUi5FX3CzuKwWtBh6IGoY4l+ibvWiRw2w9+MLWPhAWglLjXXekHCc/C5LuU8qi6zGZgQfD6U4yFpHXmkZLUHt30iKbLJXgypy7MaQ4n3sWDXJe2Dbsc4FMSK+KXFQ5KNZ/meOCCurEswcDyz4Mrvf9ZSZWzq6vPTXtdHo+/oRMmiGNZqhcBkqIWfz5alzyq4HTAidz5uc6fD8mqj1hg87qywv6OwMUAxB84S8glcLs5ZzuTbpGl3sdftVH9zqabx6eAGXX9V389qdLp1k//u45ph+INOk11HFCCxmh/YmqQM9f"
+group_resource_profile_id: "f5000275-61c9-4abc-973b-6168d4e8c63b"
 
 ## Portal related variables
 super_admin_portal: "false"

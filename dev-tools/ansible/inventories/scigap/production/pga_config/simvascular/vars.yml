@@ -58,6 +58,7 @@ gateway_id: "simvascular"
 experiment_data_dir: "{{ user_data_dir }}/simvascular"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: ""
+group_resource_profile_id: "6359d7f5-be13-4548-9762-943c1cc1a6f2"
 
 ## Portal related variables
 super_admin_portal: "false"
