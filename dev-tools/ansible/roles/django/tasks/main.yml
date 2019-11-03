@@ -104,6 +104,7 @@
     dest: "{{ airavata_django_checkout }}"
     rsync_opts:
       - "--exclude=node_modules"
+      - "--exclude=.git"
     # Bug: become_user doesn't work with synchronize: https://github.com/ansible/ansible/issues/29698
     rsync_path: "sudo -u {{ user }} rsync"
   # become: yes
@@ -153,8 +154,9 @@
   notify:
     - restart uwsgi
 
+# TODO: this is really slow with lots of files
 - name: Create experiment data dir
-  file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=yes follow=yes
+  file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" recurse=no follow=yes
   become: yes
 
 - name: Create file upload tmp dir
