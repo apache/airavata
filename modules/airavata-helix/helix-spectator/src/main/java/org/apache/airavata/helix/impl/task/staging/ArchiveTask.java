@@ -39,12 +39,8 @@ import java.net.URISyntaxException;
 public class ArchiveTask extends DataStagingTask {
 
     private final static Logger logger = LoggerFactory.getLogger(ArchiveTask.class);
-    private final static long MAX_ARCHIVE_SIZE = 1024 * 1024 * 20; // 20GB
+    private final static long MAX_ARCHIVE_SIZE = 1024L * 1024L * 1024L * 20L; // 20GB
 
-
-    public static void main(String a[]) {
-        System.out.println(MAX_ARCHIVE_SIZE);
-    }
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         logger.info("Starting archival task " + getTaskId() + " in experiment " + getExperimentId());
@@ -126,10 +122,10 @@ public class ArchiveTask extends DataStagingTask {
 
                     return onSuccess("Archival task successfully completed");
                 } else {
-                    logger.error("Archive size {} is larger than the maximum allowed size {}. So skipping the transfer.",
-                            fileMetadata.getSize(), maxArchiveSize);
+                    logger.error("Archive size {} MB is larger than the maximum allowed size {} MB. So skipping the transfer.",
+                            fileMetadata.getSize() / (1024L * 1024L), maxArchiveSize / (1024L * 1024L));
                     // This is not a recoverable issue. So mark it as critical
-                    throw new TaskOnFailException("Archive task was skipped as size is " + fileMetadata.getSize(), true, null);
+                    throw new TaskOnFailException("Archive task was skipped as size is " + fileMetadata.getSize() / (1024L * 1024L) + " MB", true, null);
                 }
 
             } finally {
