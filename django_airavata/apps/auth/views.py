@@ -49,6 +49,8 @@ def redirect_login(request, idp_alias):
     redirect_uri += '?idp_alias=' + quote(idp_alias)
     if 'next' in request.GET:
         redirect_uri += "&next=" + quote(request.GET['next'])
+    if 'login_desktop' in request.GET:
+        redirect_uri += "&login_desktop=" + quote(request.GET['login_desktop'])
     oauth2_session = OAuth2Session(
         client_id, scope='openid', redirect_uri=redirect_uri)
     authorization_url, state = oauth2_session.authorization_url(
@@ -114,6 +116,7 @@ def callback(request):
     try:
         user = authenticate(request=request)
         login(request, user)
+        login_desktop = request.GET.get('login_desktop', "false") == "true"
         if login_desktop:
             return _create_login_desktop_success_response(request)
         next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
