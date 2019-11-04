@@ -33,7 +33,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "R-HPC Science Gateway"
-  external:
+#  external:
 #    - name: "existing institution credentials"
 #      idp_alias: "cilogon"
  #     logo: "images/cilogon-logo-24x24-b.png"

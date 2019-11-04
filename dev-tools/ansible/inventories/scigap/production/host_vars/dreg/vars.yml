@@ -44,7 +44,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "dREG"
-  external:
+#  external:
 
 gateway_id: "cornelldna"
 experiment_data_dir: "{{ user_data_dir }}/cornelldna"
