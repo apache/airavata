@@ -80,7 +80,7 @@ KEYCLOAK_VERIFY_SSL = True
 
 AUTHENTICATION_OPTIONS = {
 
-    {% if auth_options.password %}
+    {% if auth_options.password is defined %}
     'password': {
         'name': '{{ auth_options.password.name }}',
         {% if auth_options.password.logo is defined %}
@@ -88,7 +88,7 @@ AUTHENTICATION_OPTIONS = {
         {% endif %}
     },
     {% endif %}
-    {% if auth_options.external %}
+    {% if auth_options.external is defined %}
     'external': [
         {% for external in auth_options.external %}
         {

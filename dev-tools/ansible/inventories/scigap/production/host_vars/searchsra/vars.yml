@@ -36,7 +36,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "SEARCH-SRA"
-  external:
+#  external:
 #    - name: "existing institution credentials"
 #      idp_alias: "cilogon"
 #      logo: "images/cilogon-logo-24x24-b.png"

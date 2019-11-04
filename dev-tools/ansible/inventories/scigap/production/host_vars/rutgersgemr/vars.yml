@@ -33,10 +33,10 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Prostate Cancer Prediction Gateway"
-  external:
-#    - name: "existing institution credentials"
-#      idp_alias: "cilogon"
- #     logo: "images/cilogon-logo-24x24-b.png"
+  # external:
+  #  - name: "existing institution credentials"
+  #    idp_alias: "cilogon"
+  #    logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "prostate-cancer-prediction"
 experiment_data_dir: "{{ user_data_dir }}/prostate-cancer-prediction"
