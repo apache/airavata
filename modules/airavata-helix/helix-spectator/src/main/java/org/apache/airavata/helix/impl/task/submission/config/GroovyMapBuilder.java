@@ -383,6 +383,9 @@ public class GroovyMapBuilder {
             }
             if (processModel.isEnableEmailNotification()) {
                 List<String> emailList = processModel.getEmailAddresses();
+                if (emailList == null) {
+                    throw new TaskOnFailException("At least one email should be provided as the email notification is turned on", false, null);
+                }
                 String elist = listToCsv(emailList, ',');
                 if (elist != null && !elist.isEmpty()) {
                     if (emailIds != null && !emailIds.isEmpty()) {
