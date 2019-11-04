@@ -45,7 +45,7 @@ gateway_id: "simvascular"
 experiment_data_dir: "{{ user_data_dir }}/searching-sra"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCNdivlUyLh11poF2vufwa8pCjVY0/fkvym9qdpEeu6nS55CVZe5VXqA1NZ+IwVDabAFwoLrUvaWt7eE8POEZNiBgtonZ21x6KIK5/HilSM6jHds1u6NY436AiHqmcybO/u+NkUI8gUjWTbs4S/i/2WfvAHZc3dbcCHls3QgG55TqOdNnh2pjFLSA1wu0d1qRnrPwnje/yC4GD+3XU1HPLHb9FXLHO4umswKq8sDk2lOIN7u08pCF8Y+BPYfmEdvY8oFwdVsj3OoA3fWEE42xTjb3g65X2oCbhco1g1ya0cfJMgSUbHCcOc2D//rXD+L4/z0/A2VCiEFJtTllrws609"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Robert Edwards', 'redwards@sdsu.edu'),('Mats Rynge','rynge@isi.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Alison Marsden', 'amarsden@stanford.edu'), ('Nathan Wilson', 'nwilson@osmsc.com'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "SimVascular Gateway Portal"
 
 ...
