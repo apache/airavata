@@ -24,8 +24,7 @@
 
 gateway_data_store_hostname: "dreg.dnasequence.org"
 gateway_data_store_resource_id: "js-156-72.jetstream-cloud.org_758cf5c0-71f4-4268-bb42-5ede23cfeea9"
-# TODO change
-# django_tus_endpoint: "https://tus.staging.scigap.org/files/"
+django_tus_endpoint: "https://tus.dreg.scigap.org/files/"
 
 # airavata_django_extra_dependencies:
 #   - git+https://github.com/SciGaP/dreg-djangoapp.git@gbrowser#egg=dreg-djangoapp
