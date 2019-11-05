@@ -24,8 +24,7 @@
 
 gateway_data_store_hostname: "gateway.futurewater.indiana.edu"
 gateway_data_store_resource_id: "js-171-92.jetstream-cloud.org_1a76397d-cc28-4ec9-82e8-d27c5cf80c79"
-# TODO change
-# django_tus_endpoint: "https://tus.staging.scigap.org/files/"
+django_tus_endpoint: "https://tus.scigap.org/files/"
 
 vhost_servername: "django.futurewater.scigap.org"
 vhost_ssl: True
