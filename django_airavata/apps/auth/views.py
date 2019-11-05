@@ -114,9 +114,9 @@ def start_logout(request):
 
 def callback(request):
     try:
+        login_desktop = request.GET.get('login_desktop', "false") == "true"
         user = authenticate(request=request)
         login(request, user)
-        login_desktop = request.GET.get('login_desktop', "false") == "true"
         if login_desktop:
             return _create_login_desktop_success_response(request)
         next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
