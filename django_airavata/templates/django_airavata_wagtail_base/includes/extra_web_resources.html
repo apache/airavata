@@ -1,0 +1,7 @@
+{% for css_link in extra_web_resources.css_links.all %}
+<link media="all" type="text/css" rel="stylesheet" href="{{ css_link.url }}">
+{% endfor %}
+
+{% for js_link in extra_web_resources.js_links.all %}
+<script src="{{ js_link.url }}"></script>
+{% endfor %}
