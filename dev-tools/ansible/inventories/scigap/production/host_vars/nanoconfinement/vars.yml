@@ -40,7 +40,7 @@ auth_options:
 
 gateway_id: "nanoconfinement"
 experiment_data_dir: "{{ user_data_dir }}/nanoconfinement"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIUqpKWHwawFHnbWvs6pie+fDA9NlqMZNvzil7e8FQz7543+FOzdTl/octACjGnSTwHewpyTe9sAUVcnq6VJ5XYtApR68zMasEzyCZUMWhMqEuxopRZcUGDJVcq5hD4RZcer3aMPWSVmXVCNJeT4EsB52Zp2DfDVgfaOOfY8Ga4mcR2IdOyizV8HWXTH6vWFK+dD1GoPY0ECikwlsF1QA0vzqAcb1NYOTc70hZ9Pb0/78XF790joZ80hRsHGIc7IfncoLgRUkKSkMaoXbfy/tbqf76V0ZxaQOgayaLGF19oBlREO6ZQ3rDCOWgVJC32dCwAsaL9qWd0IZrprUEUQOd"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdKakVGKVsEzdUnL34veOjBIkGlKfRdhADwQCYHSaTf5iT7PmCvtS+f9evb0XbSOyGsJ/w2Z33VgLztrqDTydE+oiuOrYpWqsBzU0c58v2JoPMN8ETd52MWP/Tig3mJXb47er51UbZV8/ST+j963kXJdOpNb8vAfb4wiwwLW+ipaw61hCLfh+somxMf5TUAEToUnW8+Qcm1VEmN87Jl9e/b1Alp7K7579hiUw+jHcSgw153yQj/qQHJQzOvPbCjmr/1Eyw/OP/a+MDZyDIJpkQkfMeH9KemFmlWM8TjOoDYn6S3jmfuFTR6A/mIkx6K551Zib4Kx82cgjMoNe6aqfb"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Jadhao, Vikram','vjadhao@iu.edu')]"
 portal_title: "Nano Confinement Science Gateway"
