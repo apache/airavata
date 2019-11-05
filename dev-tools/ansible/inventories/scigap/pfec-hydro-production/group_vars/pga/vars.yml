@@ -77,4 +77,6 @@ portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "futurewater-gateway-theme"
 portal_theme_repo: "https://github.com/SciGaP/futurewater-gateway-theme.git"
 portal_title: "Future Water Gateway"
+pga_airavata_django_url: "https://django.futurewater.scigap.org"
+pga_reroute_to_django: true
 ...
