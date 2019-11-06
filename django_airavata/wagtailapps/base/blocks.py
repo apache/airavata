@@ -10,6 +10,7 @@ from wagtail.core.blocks import (
     StructBlock,
     TextBlock
 )
+from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 
@@ -432,6 +433,28 @@ class BootstrapMediaObject(StructBlock):
         template = "blocks/bootstrap/media.html"
 
 
+class BootstrapEmbedVideo(StructBlock):
+    """
+    Use Bootstrap's Embed component with video tag.
+    """
+    video = DocumentChooserBlock(required=True)
+    aspect_ratio = ChoiceBlock(choices=[
+        ('21by9', '21 x 9'),
+        ('16by9', '16 x 9'),
+        ('4by3', '4 x 3'),
+        ('1by1', '1 x 1'),
+    ], default='4by3', help_text="Aspect ratio")
+    custom_class = TextBlock(
+        required=False,
+        blank=True,
+        help_text="control this element by giving unique class names "
+                  "separated by space and styling the class in css")
+
+    class Meta:
+        icon = "media"
+        template = "blocks/bootstrap/embed-video.html"
+
+
 # StreamBlocks
 class BaseStreamBlock(StreamBlock):
     """
@@ -452,6 +475,7 @@ class BaseStreamBlock(StreamBlock):
     placeholder_block = PlaceholderBlock()
     font_awesome_icon_block = FontAwesomeIcon()
     iu_footer_block = IuFooter()
+    bootstrap_embed_video = BootstrapEmbedVideo()
 
 
 class CssStreamBlock(StreamBlock):
