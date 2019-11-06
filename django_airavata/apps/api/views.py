@@ -363,7 +363,7 @@ class ExperimentViewSet(APIBackedViewSet):
                 for data_product_uri in data_product_uris:
                     cloned_data_product = self._copy_experiment_input_uri(
                         data_product_uri)
-                    if cloned_data_product.productUri is None:
+                    if cloned_data_product is None:
                         log.warning(
                             "Omitting a cloned input value for {}".format(
                                 experiment_input.name))
