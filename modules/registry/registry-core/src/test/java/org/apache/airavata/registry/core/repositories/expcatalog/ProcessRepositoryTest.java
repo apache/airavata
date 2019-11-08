@@ -99,6 +99,8 @@ public class ProcessRepositoryTest extends TestBase {
 
         processModel.setProcessDetail("detail");
         processModel.setUseUserCRPref(true);
+        processModel.addToEmailAddresses("notify@example.com");
+        processModel.addToEmailAddresses("notify1@example.com");
 
         TaskModel jobSubmissionTask = new TaskModel();
         jobSubmissionTask.setTaskType(TaskTypes.JOB_SUBMISSION);
@@ -121,6 +123,9 @@ public class ProcessRepositoryTest extends TestBase {
         assertEquals("Added process should automatically have 1 status", 1, retrievedProcess.getProcessStatusesSize());
         assertEquals("Added process should automatically have 1 status that is CREATED", ProcessState.CREATED, retrievedProcess.getProcessStatuses().get(0).getState());
         assertEquals(2, retrievedProcess.getTasksSize());
+        assertEquals(2, retrievedProcess.getEmailAddressesSize());
+        assertEquals("notify@example.com", retrievedProcess.getEmailAddresses().get(0));
+        assertEquals("notify1@example.com", retrievedProcess.getEmailAddresses().get(1));
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
         assertEquals(processId, processRepository.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));
