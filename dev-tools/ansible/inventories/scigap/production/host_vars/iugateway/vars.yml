@@ -37,7 +37,7 @@ auth_options:
       logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "iugateway"
-experiment_data_dir: "{{ user_data_dir }}/searching-sra"
+experiment_data_dir: "{{ user_data_dir }}/iugateway"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCNmVTNvPmK0P4IL8TFSd6I7qwui3KK8I96AxS28kBcQMgfJHk4jIf9TFxXWmroMmMhALnbNi8S1+ltTFZTMgFZ61bWMSCEfw6J0EUKuc9Nk2SFAltvGwQPM/yQZV2l9Sp5Tvx5Ya0fwmcFL/J9GcQNgMtJNQk500fIzJPT6/IFtISSuaezjehyKfIbUesZBYM+LXVo25c+jZp7zYUwQ84Ow/DBh3CplXsYVa74LbQgV0ddoXtj5vOEvfEdGVpCRt177qo8O+XxapmG4Kc3n5YGAwMLDgx8Cj1TDoKruNx33BW6gcasps8hpcRmlt/HVMbDsFZzBKBRI4GWohiUuPev"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Abhinav Thota','athota@iu.edu')]"
