@@ -1,8 +1,12 @@
+import logging
+
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
-from wagtail.admin.rich_text.converters.html_to_contentstate import (
+from django.shortcuts import redirect
+from wagtail.admin.rich_text.converters.html_to_contentstate import \
     InlineStyleElementHandler
-)
 from wagtail.core import hooks
+
+logger = logging.getLogger(__name__)
 
 
 @hooks.register('register_rich_text_features')
@@ -37,3 +41,18 @@ def register_custom_style_feature(features):
         'contentstate', feature_name, db_conversion)
 
     features.default_features.append(feature_name)
+
+
+DIRECT_SERVE_FILE_EXTENSIONS = ["pdf"]
+
+
+@hooks.register('before_serve_document')
+def direct_serve_document(document, request):
+    try:
+        file_extension = document.file.name.split(".")[-1]
+        if (file_extension in DIRECT_SERVE_FILE_EXTENSIONS and
+                'download' not in request.GET):
+            return redirect(document.file.url)
+    except Exception as e:
+        logger.warning("direct_serve_document error: ", exc_info=e)
+        return None
