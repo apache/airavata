@@ -53,6 +53,7 @@ import org.apache.airavata.service.security.AiravataSecurityManager;
 import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.registry.utils.ThriftDataModelConversion;
 import org.apache.thrift.TException;
 
 import java.sql.Connection;
@@ -466,13 +467,34 @@ public class AiravataDataMigrator {
         return allUsersUpdated;
     }
     private static void checkUsersInSharingRegistryService(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, String domainId) throws TException{
-        for(UserProfile users: missingUsers){
-            if(!sharingRegistryServerHandler.isUserExists(users.getAiravataInternalUserId(), domainId)){
-                User user = new User();
-                user.setUserId(users.getAiravataInternalUserId());
-                user.setDomainId(users.getGatewayId());
-                user.setUserName(users.getUserId());
-                sharingRegistryServerHandler.createUser(user);
+        System.out.println("Waiting for " + missingUsers.size() + " missing users to be propogated to sharing db");
+        int waitCount = 0;
+        // Wait up to 10 seconds for event based replication to complete, then
+        // add missing users to sharing registry
+        while (waitCount < 10) {
+            boolean missingInSharing = false;
+            for (UserProfile users : missingUsers) {
+                if (!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())) {
+                    missingInSharing = true;
+                    break;
+                }
+            }
+            if (!missingInSharing) {
+                break;
+            }
+            try {
+                System.out.print(".");
+                // wait for 1 second
+                Thread.sleep(1000);
+                waitCount++;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        for (UserProfile users : missingUsers) {
+            if (!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())) {
+                sharingRegistryServerHandler.createUser(ThriftDataModelConversion.getUser(users));
             }
         }
     }
@@ -764,7 +786,7 @@ public class AiravataDataMigrator {
             AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(tenantId);
             return authzToken;
         } catch (AiravataSecurityException e){
-            throw new TException("Unable to fetch access token for management user for tenant: " + tenantId);
+            throw new TException("Unable to fetch access token for management user for tenant: " + tenantId, e);
         }
 
     }

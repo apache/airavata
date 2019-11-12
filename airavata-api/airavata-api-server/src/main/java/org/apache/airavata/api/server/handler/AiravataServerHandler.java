@@ -196,8 +196,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                     registryClient.updateGatewayResourceProfile(ServerSettings.getDefaultUserGateway(), gatewayResourceProfile);
                 }
 
-                registryClientPool.returnResource(registryClient);
             }
+
+            registryClientPool.returnResource(registryClient);
         } catch (Exception e) {
             logger.error("Failed to add the password credentials for the default gateway", e);
 
@@ -1270,7 +1271,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingFilters.add(toCreatedTimeCriteria);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
             sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                    userId + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.getEntityId()));
+                    userId + "@" + gatewayId, sharingFilters, 0, Integer.MAX_VALUE).forEach(e -> accessibleExpIds.add(e.getEntityId()));
 
             ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds);
             registryClientPool.returnResource(regClient);
@@ -1995,6 +1996,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             submitExperiment(gatewayId, airavataExperimentId);
             logger.info("Experiment with ExpId: " + airavataExperimentId + " was submitted in gateway with gatewayID: " + gatewayId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
         } catch (InvalidRequestException|ExperimentNotFoundException|AuthorizationException e) {
             logger.error(e.getMessage(), e);
             registryClientPool.returnResource(regClient);

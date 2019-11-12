@@ -77,8 +77,11 @@ public class ExperimentRepositoryTest extends TestBase {
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId != null);
+        assertEquals(0, experimentRepository.getExperiment(experimentId).getEmailAddressesSize());
 
         experimentModel.setDescription("description");
+        experimentModel.addToEmailAddresses("notify@example.com");
+        experimentModel.addToEmailAddresses("notify2@example.com");
         experimentRepository.updateExperiment(experimentModel, experimentId);
 
         ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
@@ -87,6 +90,9 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
         assertEquals(1, retrievedExperimentModel.getExperimentStatusSize());
         assertEquals(ExperimentState.CREATED, retrievedExperimentModel.getExperimentStatus().get(0).getState());
+        assertEquals(2, retrievedExperimentModel.getEmailAddressesSize());
+        assertEquals("notify@example.com", retrievedExperimentModel.getEmailAddresses().get(0));
+        assertEquals("notify2@example.com", retrievedExperimentModel.getEmailAddresses().get(1));
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);
