@@ -103,7 +103,11 @@ export default {
     loadDataProduct(dataProductURI) {
       services.DataProductService.retrieve({ lookup: dataProductURI }).then(
         dataProduct => (this.dataProduct = dataProduct)
-      );
+      ).catch(() => {
+        // If we're unable to load data product, reset data to null
+        this.data = null;
+        this.valueChanged();
+      });
     },
     deleteDataProduct() {
       utils.FetchUtils.delete(
