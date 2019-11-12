@@ -7,6 +7,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.commons.cli.*;
+import org.keycloak.authorization.client.AuthzClient;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -43,6 +44,11 @@ public class LoadClient {
             }
         }
 
+        // Making sure that all authzkeys are loaded
+        for (Configuration cfg : configurations.getConfigurations()) {
+            cfg.getAuthzToken();
+        }
+
         securityManager.loadCertificate(configurations.getApiHost(), configurations.getApiPort());
         createStorageResourceManagers(configurations);
     }
@@ -50,18 +56,12 @@ public class LoadClient {
     public void start() throws Exception {
         for (Configuration configuration : configurations.getConfigurations()) {
 
-            AuthzToken mockAuthzToken = new AuthzToken("");
-            Map<String, String> claimsMap = new HashMap<>();
-            claimsMap.put(Constants.USER_NAME, configuration.getUserId());
-            claimsMap.put(Constants.GATEWAY_ID, configuration.getGatewayId());
-            mockAuthzToken.setClaimsMap(claimsMap);
-
             UnitLoad unitLoad = new UnitLoad(configurations.getApiHost(), configurations.getApiPort(),
                     securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(),
-                    storageResourceManagerStore.get(configuration.getStorageResourceId()), mockAuthzToken);
+                    storageResourceManagerStore.get(configuration.getStorageResourceId()), configuration.getAuthzToken());
 
             StatusMonitor statusMonitor = new StatusMonitor(configurations.getApiHost(), configurations.getApiPort(),
-                    securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(), mockAuthzToken);
+                    securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(), configuration.getAuthzToken());
 
             CompletionService<List<String>> completion = unitLoad.execute(configuration);
 
@@ -82,6 +82,7 @@ public class LoadClient {
 
     private void createStorageResourceManagers(Configurations configurations) throws Exception {
 
+
         Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(configurations.getApiHost(), configurations.getApiPort(),
                 securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(), 100000);
 
@@ -89,10 +90,17 @@ public class LoadClient {
             String storageResourceId = configuration.getStorageResourceId();
 
             if (!storageResourceManagerStore.containsKey(storageResourceId)) {
-                StorageResourceDescription storageResource = airavataClient.getStorageResource(new AuthzToken(""), storageResourceId);
-                StoragePreference gatewayStoragePreference = airavataClient.getGatewayStoragePreference(new AuthzToken(""), configuration.getGatewayId(), storageResourceId);
-                StorageResourceManager storageResourceManager = new StorageResourceManager(gatewayStoragePreference, storageResource, privateKeyFile, publicKeyFile, passPhrase);
+                StorageResourceDescription storageResource = airavataClient
+                        .getStorageResource(configuration.getAuthzToken(), storageResourceId);
+
+                StoragePreference gatewayStoragePreference = airavataClient
+                        .getGatewayStoragePreference(configuration.getAuthzToken(),
+                                configuration.getGatewayId(), storageResourceId);
+
+                StorageResourceManager storageResourceManager = new StorageResourceManager(gatewayStoragePreference,
+                        storageResource, privateKeyFile, publicKeyFile, passPhrase);
                 storageResourceManager.init();
+
                 storageResourceManagerStore.put(storageResourceId, storageResourceManager);
             }
         }

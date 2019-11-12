@@ -23,13 +23,13 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "distantreader.org"
+vhost_servername: "distantreader.scigap.org"
 #vhost_serveralias: "distantreader.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/distantreader.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/distantreader.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/distantreader.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/distantreader.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/distantreader.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/distantreader.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -54,6 +54,7 @@ gateway_id: "distantreader"
 experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCCgAWzF/GHT0ZesTM9JtUtvYBmaunOc5V4ab5//jUjC7vjF7s1fon4MvALvWCoC1uPvppG3NRzq4huAQCX89wu/9zJErpuKDpkjjTf90cHl+YxzHGGFUUtllSTZzhSyhUaMXC1qzeJg7TLdzOct+21HyoqSIJe86Aj8DQuAMXky6l7XFz5YqMkzY9kG/sS0rFRfpjz4K3zWe/Y7a0lQnKzePM/d6zrcdkiYhlMrCbEFcrWWMYNpIkWq7psjQiQ9SlICrNso6NQQSNy4CeoItDGSe7GsXdQLqdRMXUKua22G7wrq2ibh4Kqcid+mVJ8kyYQJO2UCdC2cOYd0EljmHh/"
+group_resource_profile_id: "505b44ef-2e4f-4f20-a7ee-3e0d0b088749"
 
 ## Portal related variables
 super_admin_portal: "false"
@@ -63,4 +64,6 @@ portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "distantreader-gateway-theme"
 portal_theme_repo: "https://github.com/SciGaP/distantreader-gateway-theme"
 portal_title: "Distant Reader Gateway"
+pga_airavata_django_url: "https://distantreader.org"
+pga_reroute_to_django: true
 ...

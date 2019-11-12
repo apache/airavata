@@ -1,0 +1,48 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "sciencegateway.nmsu.edu"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "new-mexico-state"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "New Mexico State Science Gateway"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "new-mexico-state"
+experiment_data_dir: "{{ user_data_dir }}/new-mexico-state"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCRYbUBGqEqUkcsAkQPetJDTTIWGGFbB7DBzvSQUT26SqHpRZQR3J4lCvzmH8/T3KoQC4uxnph5RpiemMeoQIxIJ8hH9Pod3Z0xK2qu6b/jDrbX+UbepkBl8Xc8aE6UWAX4C6rnn1X4ktqLp9GDE2G9CN4+pZxDanK5h7+68qsiz/rpzUEHVDPzo1A5YRPE2cFgOp4s207zE/GaXH2A/+vucdbTmoy2hND3uYkaaMe4ygMlakDDlkMTl5dlgaHuoqVu0pOSnsUimpxV87LpXqWaD1d6G+IVW1CNjKtVBvz/z4aFMLWhqWLYZlLpsoGi4ZqXf3u0A4ajL+6uXgiGuIRX"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Diana Toups Dugas','dugasdvt@ad.nmsu.edu')]"
+portal_title: "New Mexico State Science Gateway"
+
+...

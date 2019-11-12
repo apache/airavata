@@ -417,8 +417,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                         break;
                     case URI:
                     case URI_COLLECTION:
-                        if ((processInput.getValue() == null || processInput.getValue() == "") && !processInput.isIsRequired()) {
+                        if ((processInput.getValue() == null || processInput.getValue().equals("")) && !processInput.isIsRequired()) {
                             logger.debug("Skipping input data staging task for {} since value is empty and not required", processInput.getName());
+                            break;
                         }
                         final RegistryService.Client registryClient = getRegistryServiceClient();
                         try {

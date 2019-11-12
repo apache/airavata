@@ -19,10 +19,8 @@
  */
 package org.apache.airavata.helix.impl.task.staging;
 
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.agents.api.*;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -41,6 +39,7 @@ import java.net.URISyntaxException;
 public class ArchiveTask extends DataStagingTask {
 
     private final static Logger logger = LoggerFactory.getLogger(ArchiveTask.class);
+    private final static long MAX_ARCHIVE_SIZE = 1024L * 1024L * 1024L * 20L; // 20GB
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
@@ -94,44 +93,55 @@ public class ArchiveTask extends DataStagingTask {
                 throw new TaskOnFailException("Failed while running the tar command " + tarringCommand, true, null);
             }
 
-            boolean fileTransferred = transferFileToStorage(tarCreationAbsPath, destFilePath, archiveFileName, adaptor, storageResourceAdaptor);
-
-            if (!fileTransferred) {
-                logger.error("Failed to transfer created archive file " + tarCreationAbsPath);
-                throw new TaskOnFailException("Failed to transfer created archive file " + tarCreationAbsPath, false, null);
-            }
-
-            String deleteTarCommand = "rm " + tarCreationAbsPath;
-            logger.info("Running delete temporary tar command " + deleteTarCommand);
-
             try {
-                CommandOutput rmCommandOutput = adaptor.executeCommand(deleteTarCommand, null);
-                if (rmCommandOutput.getExitCode() != 0) {
-                    throw new TaskOnFailException("Failed while running the rm command " + deleteTarCommand + ". Sout : " +
-                            rmCommandOutput.getStdOut() + ". Serr " + rmCommandOutput.getStdError(), false, null);
+                FileMetadata fileMetadata = adaptor.getFileMetadata(tarCreationAbsPath);
+                long maxArchiveSize = Long.parseLong(ServerSettings.getSetting("max.archive.size", MAX_ARCHIVE_SIZE + ""));
+
+                if (fileMetadata.getSize() < maxArchiveSize) {
+                    boolean fileTransferred = transferFileToStorage(tarCreationAbsPath, destFilePath, archiveFileName, adaptor, storageResourceAdaptor);
+                    if (!fileTransferred) {
+                        logger.error("Failed to transfer created archive file " + tarCreationAbsPath);
+                        throw new TaskOnFailException("Failed to transfer created archive file " + tarCreationAbsPath, false, null);
+                    }
+
+                    String destParent = destFilePath.substring(0, destFilePath.lastIndexOf("/"));
+                    final String storageArchiveDir = "ARCHIVE";
+                    String unArchiveTarCommand = "mkdir " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
+                            + storageArchiveDir + " && rm " + archiveFileName + " && chmod 755 -R " + storageArchiveDir + "/*";
+                    logger.info("Running Un archiving command on storage resource " + unArchiveTarCommand);
+
+                    try {
+                        CommandOutput unTarCommandOutput = storageResourceAdaptor.executeCommand(unArchiveTarCommand, destParent);
+                        if (unTarCommandOutput.getExitCode() != 0) {
+                            throw new TaskOnFailException("Failed while running the untar command " + unTarCommandOutput + ". Sout : " +
+                                    unTarCommandOutput.getStdOut() + ". Serr " + unTarCommandOutput.getStdError(), false, null);
+                        }
+                    } catch (AgentException e) {
+                        throw new TaskOnFailException("Failed while running the untar command " + tarringCommand, false, null);
+                    }
+
+                    return onSuccess("Archival task successfully completed");
+                } else {
+                    logger.error("Archive size {} MB is larger than the maximum allowed size {} MB. So skipping the transfer.",
+                            fileMetadata.getSize() / (1024L * 1024L), maxArchiveSize / (1024L * 1024L));
+                    // This is not a recoverable issue. So mark it as critical
+                    throw new TaskOnFailException("Archive task was skipped as size is " + fileMetadata.getSize() / (1024L * 1024L) + " MB", true, null);
                 }
 
-            } catch (AgentException e) {
-                throw new TaskOnFailException("Failed while running the rm command " + tarringCommand, false, null);
-            }
+            } finally {
+                String deleteTarCommand = "rm " + tarCreationAbsPath;
+                logger.info("Running delete temporary tar command " + deleteTarCommand);
+                try {
+                    CommandOutput rmCommandOutput = adaptor.executeCommand(deleteTarCommand, null);
+                    if (rmCommandOutput.getExitCode() != 0) {
+                        logger.error("Failed while running the rm command " + deleteTarCommand + ". Sout : " +
+                                rmCommandOutput.getStdOut() + ". Serr " + rmCommandOutput.getStdError());
+                    }
 
-            String destParent = destFilePath.substring(0, destFilePath.lastIndexOf("/"));
-            final String storageArchiveDir = "ARCHIVE";
-            String unArchiveTarCommand = "mkdir " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
-                    + storageArchiveDir + " && rm " + archiveFileName + " && chmod 755 -R " + storageArchiveDir + "/*";
-            logger.info("Running Un archiving command on storage resource " + unArchiveTarCommand);
-
-            try {
-                CommandOutput unTarCommandOutput = storageResourceAdaptor.executeCommand(unArchiveTarCommand, destParent);
-                if (unTarCommandOutput.getExitCode() != 0) {
-                    throw new TaskOnFailException("Failed while running the untar command " + deleteTarCommand + ". Sout : " +
-                            unTarCommandOutput.getStdOut() + ". Serr " + unTarCommandOutput.getStdError(), false, null);
+                } catch (AgentException e) {
+                    logger.error("Failed while running the rm command " + tarringCommand, e);
                 }
-            } catch (AgentException e) {
-                throw new TaskOnFailException("Failed while running the untar command " + tarringCommand, false, null);
             }
-
-            return onSuccess("Archival task successfully completed");
 
         } catch (TaskOnFailException e) {
             if (e.getError() != null) {
@@ -142,8 +152,8 @@ public class ArchiveTask extends DataStagingTask {
             return onFail(e.getReason(), e.isCritical(), e.getError());
 
         } catch (Exception e) {
-            logger.error("Unknown error while executing output data staging task " + getTaskId(), e);
-            return onFail("Unknown error while executing output data staging task " + getTaskId(), false,  e);
+            logger.error("Unknown error while executing archiving staging task " + getTaskId(), e);
+            return onFail("Unknown error while executing archiving staging task " + getTaskId(), false,  e);
         }
     }
 

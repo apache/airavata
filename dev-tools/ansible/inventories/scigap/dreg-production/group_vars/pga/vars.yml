@@ -61,6 +61,7 @@ gateway_id: "cornelldna"
 experiment_data_dir: "{{ user_data_dir }}/cornell-dnasequence"
 gateway_data_store_resource_id: "js-156-72.jetstream-cloud.org_758cf5c0-71f4-4268-bb42-5ede23cfeea9"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTs6k2lSt5nn+UF3N1rAko9WjdtHZ1xLcKxCG4+4AVMdTIeng12g+1qB5hIFiDgesT/D/nzoA27EFj5nWiYanxBySNgl1Re8kR0nEqQbR0zj1dSibmfjW+vmOZzEiNSrNoLlc4KbFgqFCRGIlZ1bWZ7yHtJ3I7xxfKhvvxCTzJ4K71v1aovnDTUYophy2lUsdOcOq84Qhv3ITZafgblz3mJSwVpnnI72IepzonzDUdcf/w0lKCl70L9MgQAZ2V4e9sQZWJLI5s1VtJsqKggtgI4goPyxXROoH9PTUZFqvvYjLGW8JVS9eZKblSKil09yckPfZCSk1i/UD/uY6O7bjf"
+group_resource_profile_id: "93f2b6f9-8012-4d00-afa2-52bfba9bc954"
 
 ## Portal related variables
 super_admin_portal: "false"
@@ -71,4 +72,6 @@ portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "dreg"
 portal_title: "dREG DNA Sequencing"
 pga_google_analytics_id: "UA-111528347-3"
+pga_airavata_django_url: "https://django.dreg.scigap.org"
+pga_reroute_to_django: true
 ...

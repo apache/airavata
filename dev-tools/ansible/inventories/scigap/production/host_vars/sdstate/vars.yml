@@ -1,0 +1,50 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "sciencegateway.sdstate.edu"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.sdstate.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.sdstate.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.sdstate.edu/privkey.pem"
+
+django_file_upload_max_file_size_mb: 2500
+
+## Keycloak related variables
+tenant_domain: "sdstate"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "South Dakota State University Gateway"
+  external:
+    - name: "South Dakota Login"
+      idp_alias: "sdsu"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "sdstate"
+experiment_data_dir: "{{ user_data_dir }}/sdstate"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7vqwM+CWfqVWODe3iLsKN9leJ9nI+pKFZhrVUG8K/ODycXT5tQOxMhsC+HG6/wJ1W7+LeA6uvVnltnFlVozfTs2jeJzVQ71UvfUiZFVhXian3f8Nd4DXBvqPUY8dmhWP/UJCIKO47fSI/RC2ZlMa1K4yRYPdRgLRuSmtzG8Rb7YGVjkt1uDOLMh6hAS1KKpWVSxESFeqqoKj2xqOKBnbf2PdJt/D4/2R6H8D/WAM0cdZnls5fmiUysHK+bU8atzMukLQ6STglVv0WuqNGdAw6zWZH+Kaj8bP19jfkGCbMLP1vPYRkcxLmtnSzbg2Hams9npwdAA+xwwjuS6/tAX+p"
+
+admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Chad Julius','Chad.Julius@sdstate.edu'),('Kevin Brandt','Kevin.Brandt@sdstate.edu'),('Luke Gassman','luke.gassman@sdstate.edu')]"
+portal_title: "South Dakota State University Gateway"
+
+...
