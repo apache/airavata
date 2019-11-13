@@ -187,7 +187,10 @@ class ExperimentViewSet(APIBackedViewSet):
             userName=self.username)
         experiment_id = self.request.airavata_client.createExperiment(
             self.authz_token, self.gateway_id, experiment)
-        self._update_most_recent_project(experiment.projectId)
+        self._update_workspace_preferences(
+            project_id=experiment.projectId,
+            group_resource_profile_id=experiment.userConfigurationData.groupResourceProfileId,
+            compute_resource_id=experiment.userConfigurationData.computationalResourceScheduling.resourceHostId)
         experiment.experimentId = experiment_id
 
     def perform_update(self, serializer):
@@ -196,7 +199,10 @@ class ExperimentViewSet(APIBackedViewSet):
             userName=self.username)
         self.request.airavata_client.updateExperiment(
             self.authz_token, experiment.experimentId, experiment)
-        self._update_most_recent_project(experiment.projectId)
+        self._update_workspace_preferences(
+            project_id=experiment.projectId,
+            group_resource_profile_id=experiment.userConfigurationData.groupResourceProfileId,
+            compute_resource_id=experiment.userConfigurationData.computationalResourceScheduling.resourceHostId)
 
     def _set_storage_id_and_data_dir(self, experiment):
         # Storage ID
@@ -385,9 +391,13 @@ class ExperimentViewSet(APIBackedViewSet):
                         "product {}".format(source_data_product))
             return None
 
-    def _update_most_recent_project(self, project_id):
+    def _update_workspace_preferences(self, project_id,
+                                      group_resource_profile_id,
+                                      compute_resource_id):
         prefs = helpers.WorkspacePreferencesHelper().get(self.request)
         prefs.most_recent_project_id = project_id
+        prefs.most_recent_group_resource_profile_id = group_resource_profile_id
+        prefs.most_recent_compute_resource_id = compute_resource_id
         prefs.save()
 
 
