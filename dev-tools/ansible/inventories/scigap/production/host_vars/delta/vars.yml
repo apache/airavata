@@ -20,11 +20,11 @@
 
 ---
 
-# NOTE: futurewater is deployed to a Jetstream VM
+# NOTE: Delta gateway is deployed to a Jetstream VM
 
-gateway_data_store_hostname: "gateway.futurewater.indiana.edu"
+gateway_data_store_hostname: "delta-topology.org"
 gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_61fe21d4-07ea-41fc-9f2e-104bc3061318"
-#django_tus_endpoint: "https://tus.scigap.org/files/"
+#django_tus_endpoint: "https://tus.scigap.org/files/" this requires manual installation steps outside of Ansible.
 
 vhost_servername: "delta-topology.org"
 vhost_ssl: True
