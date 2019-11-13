@@ -27,10 +27,10 @@ gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_61fe21d4-07e
 #django_tus_endpoint: "https://tus.scigap.org/files/" this requires manual installation steps outside of Ansible.
 
 vhost_servername: "delta-topology.org"
-vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/delta-topology.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/delta-topology.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/delta-topology.org/privkey.pem"
+vhost_ssl: False
+#ssl_certificate_file: "/etc/letsencrypt/live/delta-topology.org/cert.pem"
+#ssl_certificate_chain_file: "/etc/letsencrypt/live/delta-topology.org/fullchain.pem"
+#ssl_certificate_key_file: "/etc/letsencrypt/live/delta-topology.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "delta"
