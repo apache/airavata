@@ -25,6 +25,7 @@ ssl_certificate_file: "/etc/letsencrypt/live/distantreader.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/distantreader.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/distantreader.org/privkey.pem"
 
+django_file_upload_max_file_size_mb: 128
 django_pga_url: "https://distantreader.scigap.org"
 
 ## Keycloak related variables
