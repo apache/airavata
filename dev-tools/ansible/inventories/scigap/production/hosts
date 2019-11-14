@@ -65,4 +65,6 @@ dreg ansible_host=149.165.156.72 ansible_user=centos
 # futurewater jetstream server
 futurewater ansible_host=149.165.171.92 ansible_user=centos
 
+# Delta Jetstream server
+delta ansible_host=149.165.169.250 ansible_user=centos
 
