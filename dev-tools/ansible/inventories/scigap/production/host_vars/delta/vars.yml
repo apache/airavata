@@ -47,7 +47,7 @@ auth_options:
 
 gateway_id: "delta"
 experiment_data_dir: "{{ user_data_dir }}/delta"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9qczDIVUhTxPmMsvF2J/NGIWo35HDgm3IUL41w1bUi5FX3CzuKwWtBh6IGoY4l+ibvWiRw2w9+MLWPhAWglLjXXekHCc/C5LuU8qi6zGZgQfD6U4yFpHXmkZLUHt30iKbLJXgypy7MaQ4n3sWDXJe2Dbsc4FMSK+KXFQ5KNZ/meOCCurEswcDyz4Mrvf9ZSZWzq6vPTXtdHo+/oRMmiGNZqhcBkqIWfz5alzyq4HTAidz5uc6fD8mqj1hg87qywv6OwMUAxB84S8glcLs5ZzuTbpGl3sdftVH9zqabx6eAGXX9V389qdLp1k//u45ph+INOk11HFCCxmh/YmqQM9f"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZPtb93iKEr3udILpDWrnIiaAaJdaguzCjJKrSEt2c6nvb8ODPorpJzzaMAtq9GRljFu5F0Oue+JkmLIv7P8y61Q8PPsjdNL9+ioKncNDbzF9YBQJbUIhwMtdBtu3hYWVR10kUgY+CQA9wQ9/KuCfr8G3cZ3PQIC2XaEmXuF4Zhn7Gu8JKs9cFTDa2xBFBBpCkzK8+zY+OCcLE+M0O8jhJ0c4gaqIMExrKS7nnvRuWhO8XHhFFExD7MxyHAiIrR5AGJ/aR49bgqpZAuqS8qZDnH5YHMkcBMr27PDqBxU9IQxGzSTppxjQX4CAC6lRZZ+MXrd6SXskiloXw2Kaaw/SB"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Aurora Clark','auclark@wsu.edu'),('Sudhakar Pamidighantam','pamidigs@iu.edu')]"
 portal_title: "DELTA Gateway"
