@@ -40,10 +40,10 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "DELTA Gateway"
-# external:
-#    - name: "existing institution credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+ external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "delta"
 experiment_data_dir: "{{ user_data_dir }}/delta"
