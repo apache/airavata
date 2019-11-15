@@ -19,15 +19,22 @@
 #
 
 ---
-# Run the following setup once
-- hosts: django[0]
+# Run the following setup once per server (each server can have one or more Django vhosts)
+- hosts: django
+  tasks:
+    - group_by: key=django_{{ ansible_hostname }}
+- hosts: django
   name: webserver setup
   roles:
-    - env_setup
+    - role: env_setup
+      when: inventory_hostname == groups['django_' +  ansible_hostname][0]
     # Oracle JDK is needed by Django apps that call Java code (e.g., SimCCS Maptool)
-    - java
-    - httpd
-    - letsencrypt
+    - role: java
+      when: inventory_hostname == groups['django_' +  ansible_hostname][0]
+    - role: httpd
+      when: inventory_hostname == groups['django_' +  ansible_hostname][0]
+    - role: letsencrypt
+      when: inventory_hostname == groups['django_' +  ansible_hostname][0]
 
 # Create a django virtual host
 - hosts: django

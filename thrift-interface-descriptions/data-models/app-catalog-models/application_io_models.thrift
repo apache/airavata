@@ -64,6 +64,8 @@ enum DataType{
  * metaData:
  *   Any metadat. This is typically ignore by Airavata and is used by gateways for application configuration.
  *
+ * overrideFilename:
+ *   Rename input file to given value when staging to compute resource.
 */
 struct InputDataObjectType {
     1: required string name,
@@ -78,7 +80,8 @@ struct InputDataObjectType {
     10: optional bool requiredToAddedToCommandLine,
     11: optional bool dataStaged,
     12: optional string storageResourceId,
-    13: optional bool isReadOnly
+    13: optional bool isReadOnly,
+    14: optional string overrideFilename
 }
 
 /**
