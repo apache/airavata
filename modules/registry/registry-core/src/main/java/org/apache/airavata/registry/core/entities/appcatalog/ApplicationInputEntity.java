@@ -79,6 +79,9 @@ public class ApplicationInputEntity implements Serializable {
 	@Column(name = "IS_READ_ONLY")
 	private boolean isReadOnly;
 
+	@Column(name = "OVERRIDE_FILENAME")
+	private String overrideFilename;
+
 	@ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
 	@JoinColumn(name = "INTERFACE_ID", nullable = false, updatable = false)
 	@ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
@@ -190,6 +193,14 @@ public class ApplicationInputEntity implements Serializable {
 
 	public void setIsReadOnly(boolean isReadOnly) {
 		this.isReadOnly = isReadOnly;
+	}
+
+	public String getOverrideFilename() {
+		return overrideFilename;
+	}
+
+	public void setOverrideFilename(String overrideFilename) {
+		this.overrideFilename = overrideFilename;
 	}
 
 	public ApplicationInterfaceEntity getApplicationInterface() {
