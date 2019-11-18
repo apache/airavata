@@ -105,6 +105,8 @@
     rsync_opts:
       - "--exclude=node_modules"
       - "--exclude=.git"
+      # Don't copy over wsgi.py just yet since that triggers a restart of uwsgi
+      - "--exclude=wsgi.py"
     # Bug: become_user doesn't work with synchronize: https://github.com/ansible/ansible/issues/29698
     rsync_path: "sudo -u {{ user }} rsync"
   # become: yes
@@ -226,3 +228,13 @@
     key: "{{ gateway_data_store_ssh_public_key }}"
   become: yes
   when: gateway_data_store_ssh_public_key != ""
+
+- name: Copy the wsgi.py file
+  copy:
+    src: "{{ airavata_django_portal_tempdir.path }}/django_airavata/wsgi.py"
+    dest: "{{ airavata_django_checkout }}/django_airavata/wsgi.py"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  become: yes
+  notify:
+    - restart uwsgi
