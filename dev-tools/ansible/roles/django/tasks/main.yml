@@ -111,6 +111,8 @@
     rsync_path: "sudo -u {{ user }} rsync"
   # become: yes
   # become_user: "{{user}}"
+  notify:
+    - restart uwsgi
 
 - name: Create virtual environment for Django portal and install dependencies
   pip:
