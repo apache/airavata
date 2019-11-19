@@ -22,7 +22,7 @@
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "2.0.0-rc.26",
     "clipboard": "^2.0.4",
-    "django-airavata-api": "file:../../apps/api",
+    "django-airavata-api": "link:../../apps/api",
     "jquery": "^3.3.1",
     "moment": "^2.24.0",
     "popper.js": "^1.14.6",
