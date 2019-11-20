@@ -23,7 +23,26 @@
   yum: name={{ item }} state=latest update_cache=yes
   with_items:
     - git
-    - maven
+  become_user: root
+
+- name: download {{ apache_maven_version }}
+  get_url: url="{{ apache_maven_url }}" dest="/opt/{{ apache_maven_version }}-bin.tar.gz"
+  become: yes
+  become_user: root
+
+- name: unzip maven
+  unarchive:
+    src: /opt/{{ apache_maven_version }}-bin.tar.gz
+    dest: /opt
+    remote_src: yes
+  become: yes
+  become_user: root
+
+- name: add maven to PATH
+  template:
+    src: maven.sh
+    dest: /etc/profile.d/maven.sh
+  become: yes
   become_user: root
 
 # Setup airavata source
@@ -45,7 +64,7 @@
   tags: update
 
 - name: Run maven build
-  command: mvn clean install -Dmaven.test.skip=true chdir="{{ airavata_source_dir }}/"
+  command: /opt/{{apache_maven_version}}/bin/mvn clean install -Dmaven.test.skip=true chdir="{{ airavata_source_dir }}/"
   environment:
       MAVEN_OPTS: "-Xmx2048m"
   register: build
