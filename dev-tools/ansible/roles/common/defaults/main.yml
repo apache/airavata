@@ -21,3 +21,6 @@
 keystore_src_path: "airavata.jks"
 client_truststore_src_path: "airavata.jks"
 cred_keystore_src_path: "airavata_sym.jks"
+
+apache_maven_version: "apache-maven-3.6.2"
+apache_maven_url: "https://www-eu.apache.org/dist/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz"
