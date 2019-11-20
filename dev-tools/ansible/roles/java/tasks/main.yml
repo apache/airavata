@@ -21,6 +21,7 @@
 ---
 - name: Install OpenJDK 11
   yum: name=java-11-openjdk-devel state=latest update_cache=yes
+  become: yes
   tags:
     - always
 
