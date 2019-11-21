@@ -20,7 +20,7 @@
 
 ---
 #airavata_django_git_branch: "simccs"
-vhost_servername: "nexttdb.sciencegateway.scigap.org/"
+vhost_servername: "nexttdb.sciencegateway.scigap.org"
 vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org
 ssl_certificate_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/cert.pem"
