@@ -15,7 +15,6 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from airavata.api.error.ttypes import ProjectNotFoundException
 from airavata.model.appcatalog.computeresource.ttypes import (
     CloudJobSubmission,
     GlobusJobSubmission,
@@ -505,10 +504,13 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             log.exception("Failed to load compute resource for {}".format(
                 compute_resource_id))
             compute_resource = None
-        try:
+        if self.request.airavata_client.userHasAccess(
+                self.authz_token,
+                experimentModel.projectId,
+                ResourcePermissionType.READ):
             project = self.request.airavata_client.getProject(
                 self.authz_token, experimentModel.projectId)
-        except ProjectNotFoundException as pnfe:
+        else:
             # User may not have access to project, only experiment
             project = None
         job_details = self.request.airavata_client.getJobDetails(
