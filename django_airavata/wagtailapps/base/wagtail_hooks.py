@@ -2,8 +2,9 @@ import logging
 
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from django.shortcuts import redirect
-from wagtail.admin.rich_text.converters.html_to_contentstate import \
+from wagtail.admin.rich_text.converters.html_to_contentstate import (
     InlineStyleElementHandler
+)
 from wagtail.core import hooks
 
 logger = logging.getLogger(__name__)
