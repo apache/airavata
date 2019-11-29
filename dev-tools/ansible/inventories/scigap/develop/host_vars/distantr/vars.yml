@@ -20,27 +20,27 @@
 
 ---
 #airavata_django_git_branch: "simccs"
-vhost_servername: "nexttdb.sciencegateway.scigap.org"
+vhost_servername: "beta.distantreader.scigap.org"
 vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/beta.distantreader.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.distantreader.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/beta.distantreader.scigap.org/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "nexttdb"
+tenant_domain: "distantr"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "Next Generation Thermodynamics Gateway"
+    name: "Distant Reader Gateway"
   external:
-    - name: "Existing Institute"
-      idp_alias: "cilogon"
+#    - name: "Existing Institute Login"
+#      idp_alias: "cilogon"
 
-gateway_id: "nexttdb"
-experiment_data_dir: "{{ user_data_dir }}/django-nexttdb"
+gateway_id: "distantr"
+experiment_data_dir: "{{ user_data_dir }}/django-distantreader"
 # gateway_data_store_ssh_public_key: "TODO"
 
 portal_email_host: "smtp.gmail.com"
@@ -48,6 +48,7 @@ portal_email_port: 587
 portal_email_tls: true
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Eric Lease Morgan','emorgan@nd.edu')]"
 portal_server_email: "{{ portal_email_username }}"
-portal_title: "Next Generation Thermodynamics"
+portal_title: "Distant Reader Gateway"
 ...

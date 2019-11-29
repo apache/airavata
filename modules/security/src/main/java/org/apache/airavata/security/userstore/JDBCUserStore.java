@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
 
@@ -71,7 +70,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
     @Override
     public boolean authenticate(Object credentials) throws UserStoreException {
         log.error("JDBC user store only supports user name, password based authentication.");
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

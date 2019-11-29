@@ -91,6 +91,13 @@
             <artifactId>airavata-messaging-core</artifactId>
             <version>0.19-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons.lang.version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -98,10 +105,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>11</release>
+                    <source>9</source>
+                    <target>9</target>
+                    <!--<compilerArgs>-->
+                        <!--<arg>&#45;&#45;add-opens=java.base/java.lang=ALL-UNNAMED</arg>-->
+                    <!--</compilerArgs>-->
+                    <!--<fork>true</fork>-->
                 </configuration>
             </plugin>
             <plugin>

@@ -25,7 +25,7 @@ airavata_django_extra_dependencies:
   # requires that cython already be installed and they can't both be installed
   # at the same time.
   - cython
-  - git+https://github.com/SciGaP/simccs-maptool.git#egg=simccs-maptool
+  - git+https://github.com/SciGaP/simccs-maptool.git@dev#egg=simccs-maptool
   - pyjnius
 vhost_servername: "beta.simccs.org"
 vhost_ssl: True
@@ -52,6 +52,7 @@ django_extra_settings:
   JAVA_HOME: "/usr/java/default"
   MAPTOOL_SETTINGS:
     CPLEX_APPLICATION_ID: "Cplex_a7eaf483-ab92-4441-baeb-2f302ccb2919"
+    DATASETS_DIR: "/data/gateway-user-data/simccs-datasets"
 
 gateway_id: "simccs"
 experiment_data_dir: "{{ user_data_dir }}/django-simccs"
