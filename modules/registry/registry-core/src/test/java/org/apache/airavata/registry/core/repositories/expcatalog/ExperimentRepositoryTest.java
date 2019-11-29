@@ -77,8 +77,11 @@ public class ExperimentRepositoryTest extends TestBase {
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId != null);
+        assertEquals(0, experimentRepository.getExperiment(experimentId).getEmailAddressesSize());
 
         experimentModel.setDescription("description");
+        experimentModel.addToEmailAddresses("notify@example.com");
+        experimentModel.addToEmailAddresses("notify2@example.com");
         experimentRepository.updateExperiment(experimentModel, experimentId);
 
         ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
@@ -87,6 +90,9 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
         assertEquals(1, retrievedExperimentModel.getExperimentStatusSize());
         assertEquals(ExperimentState.CREATED, retrievedExperimentModel.getExperimentStatus().get(0).getState());
+        assertEquals(2, retrievedExperimentModel.getEmailAddressesSize());
+        assertEquals("notify@example.com", retrievedExperimentModel.getEmailAddresses().get(0));
+        assertEquals("notify2@example.com", retrievedExperimentModel.getEmailAddresses().get(1));
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);
@@ -170,6 +176,7 @@ public class ExperimentRepositoryTest extends TestBase {
         input1.setStorageResourceId("storageResourceId");
         input1.setUserFriendlyDescription("First argument");
         input1.setValue("value1");
+        input1.setOverrideFilename("gaussian.com");
         experimentModel.addToExperimentInputs(input1);
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
@@ -191,6 +198,7 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("storageResourceId", retrievedInput1.getStorageResourceId());
         assertEquals("First argument", retrievedInput1.getUserFriendlyDescription());
         assertEquals("value1", retrievedInput1.getValue());
+        assertEquals("gaussian.com", retrievedInput1.getOverrideFilename());
 
         // Update values of the input
         retrievedInput1.setIsRequired(false);
@@ -205,6 +213,7 @@ public class ExperimentRepositoryTest extends TestBase {
         retrievedInput1.setStorageResourceId("storageResourceId2");
         retrievedInput1.setUserFriendlyDescription("First argument~");
         retrievedInput1.setValue("value1a");
+        retrievedInput1.setOverrideFilename("gaussian.com-updated");
 
         experimentRepository.updateExperiment(retrievedExperimentModel, experimentId);
 
@@ -223,6 +232,7 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("storageResourceId2", retrievedInput1.getStorageResourceId());
         assertEquals("First argument~", retrievedInput1.getUserFriendlyDescription());
         assertEquals("value1a", retrievedInput1.getValue());
+        assertEquals("gaussian.com-updated", retrievedInput1.getOverrideFilename());
 
         experimentRepository.removeExperiment(experimentId);
         assertFalse(experimentRepository.isExperimentExist(experimentId));

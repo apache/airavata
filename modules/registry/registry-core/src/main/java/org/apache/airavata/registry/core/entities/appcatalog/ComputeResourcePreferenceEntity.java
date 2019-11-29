@@ -53,7 +53,7 @@ public class ComputeResourcePreferenceEntity implements Serializable {
     private String loginUserName;
 
     @Column(name = "OVERRIDE_BY_AIRAVATA")
-    private short overridebyAiravata;
+    private boolean overridebyAiravata;
 
     @Column(name = "PREFERED_BATCH_QUEUE")
     private String preferredBatchQueue;
@@ -208,11 +208,11 @@ public class ComputeResourcePreferenceEntity implements Serializable {
         this.loginUserName = loginUserName;
     }
 
-    public short getOverridebyAiravata() {
+    public boolean isOverridebyAiravata() {
         return overridebyAiravata;
     }
 
-    public void setOverridebyAiravata(short overridebyAiravata) {
+    public void setOverridebyAiravata(boolean overridebyAiravata) {
         this.overridebyAiravata = overridebyAiravata;
     }
 

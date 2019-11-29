@@ -29,6 +29,8 @@
 - hosts: helix
   tags: helix, airavata
   roles:
+    - env_setup
+    - java
     - role: common
       become: yes
       become_user: "{{user}}"

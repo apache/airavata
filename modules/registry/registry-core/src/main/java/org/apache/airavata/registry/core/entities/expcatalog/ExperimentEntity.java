@@ -75,7 +75,7 @@ public class ExperimentEntity implements Serializable {
 
     @Lob
     @Column(name = "EMAIL_ADDRESSES")
-    public List<String> emailAddresses;
+    public String emailAddresses;
 
     @OneToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL,
             mappedBy = "experiment", fetch = FetchType.EAGER)
@@ -201,11 +201,11 @@ public class ExperimentEntity implements Serializable {
         this.enableEmailNotification = enableEmailNotification;
     }
 
-    public List<String> getEmailAddresses() {
+    public String getEmailAddresses() {
         return emailAddresses;
     }
 
-    public void setEmailAddresses(List<String> emailAddresses) {
+    public void setEmailAddresses(String emailAddresses) {
         this.emailAddresses = emailAddresses;
     }
 

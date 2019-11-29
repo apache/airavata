@@ -1996,6 +1996,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             submitExperiment(gatewayId, airavataExperimentId);
             logger.info("Experiment with ExpId: " + airavataExperimentId + " was submitted in gateway with gatewayID: " + gatewayId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
         } catch (InvalidRequestException|ExperimentNotFoundException|AuthorizationException e) {
             logger.error(e.getMessage(), e);
             registryClientPool.returnResource(regClient);

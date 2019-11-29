@@ -154,6 +154,11 @@
                     <systemPropertyVariables>
                         <credential.module.directory>${basedir}</credential.module.directory>
                     </systemPropertyVariables>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+
+                    <reuseForks>false</reuseForks>
+
                     <excludes>
                         <exclude>**/DAOBaseTestCase.java</exclude>
                         <exclude>**/MappingDAOTest.java</exclude>
