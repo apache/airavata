@@ -77,25 +77,35 @@
 #   when: not docker_result.can_talk_to_docker
 #   run_once: true
 
-- name: build Docker image for building the JS
+- name: build airavata-django-portal Docker image
   local_action:
     module: docker_image
-    path: "{{ airavata_django_portal_tempdir.path }}/scripts/docker-build/"
-    name: airavata-django-build
+    path: "{{ airavata_django_portal_tempdir.path }}/"
+    name: airavata-django-portal
     force: true
     # source: build
   run_once: true
 
-- name: build Django JS code in Docker container
+- name: create Docker container so we can copy built files out of it
   local_action:
     module: docker_container
-    name: ansible-airavata-django-build
-    image: airavata-django-build
-    cleanup: true
-    detach: false
+    # Don't need to start the container, just create it
+    state: present
+    name: ansible-airavata-django-portal
+    image: airavata-django-portal
     volumes:
-    - "{{ airavata_django_portal_tempdir.path }}:/code"
-    - "{{ lookup('env', 'HOME') }}/.npm:/root/.npm"
+      - "{{ airavata_django_portal_tempdir.path }}/django_airavata/settings_local.py.sample:/code/django_airavata/settings_local.py"
+  run_once: true
+
+- name: copy built JS files from Docker container
+  local_action: command docker cp ansible-airavata-django-portal:/code/. {{ airavata_django_portal_tempdir.path }}
+  run_once: true
+
+- name: remove Docker container
+  local_action:
+    module: docker_container
+    state: absent
+    name: ansible-airavata-django-portal
   run_once: true
 
 - name: rsync build Django code to {{ airavata_django_checkout }}
@@ -240,3 +250,10 @@
   become: yes
   notify:
     - restart uwsgi
+
+- name: remove Django portal clone temp directory
+  local_action:
+    module: file
+    state: absent
+    path: "{{ airavata_django_portal_tempdir.path }}"
+  run_once: true
