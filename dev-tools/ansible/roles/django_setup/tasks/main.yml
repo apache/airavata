@@ -49,5 +49,15 @@
 # sudo curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
 # sudo yum install nodejs
 
-# TODO: disable package-lock.json creation for the pga user
-# npm config set package-lock false
+# Install yarn
+- name: Add yarn yum repository on CentOS
+  get_url:
+    url: "https://dl.yarnpkg.com/rpm/yarn.repo"
+    dest: "/etc/yum.repos.d/yarn.repo"
+  become: yes
+  when: ansible_distribution == 'CentOS'
+
+- name: Install yarn (RedHat)
+  yum: name=yarn state=latest update_cache=yes
+  become: yes
+  when: ansible_os_family == "RedHat"
