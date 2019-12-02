@@ -124,13 +124,6 @@
   notify:
     - restart uwsgi
 
-- name: remove Django portal clone temp directory
-  local_action:
-    module: file
-    state: absent
-    path: "{{ airavata_django_portal_tempdir.path }}"
-  run_once: true
-
 - name: Create virtual environment for Django portal and install dependencies
   pip:
     requirements: "{{ item }}"
@@ -257,3 +250,10 @@
   become: yes
   notify:
     - restart uwsgi
+
+- name: remove Django portal clone temp directory
+  local_action:
+    module: file
+    state: absent
+    path: "{{ airavata_django_portal_tempdir.path }}"
+  run_once: true
