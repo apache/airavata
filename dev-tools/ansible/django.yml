@@ -35,6 +35,8 @@
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
     - role: letsencrypt
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
+    - role: django_setup
+      when: inventory_hostname == groups['django_' +  ansible_hostname][0]
 
 # Create a django virtual host
 - hosts: django
