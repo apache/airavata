@@ -93,6 +93,8 @@
     state: present
     name: ansible-airavata-django-portal
     image: airavata-django-portal
+    volumes:
+      - "{{ airavata_django_portal_tempdir.path }}/django_airavata/settings_local.py.sample:/code/django_airavata/settings_local.py"
   run_once: true
 
 - name: copy built JS files from Docker container
