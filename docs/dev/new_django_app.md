@@ -272,6 +272,9 @@ django_airavata/apps/myapp):
 }
 ```
 
+Run `yarn` which will install these dependencies and also create a
+`yarn.lock` file with locked dependency versions.
+
 Add a `babel.config.js` to this directory too:
 
 ```javascript
@@ -388,7 +391,7 @@ a line in there for your Django app, like so:
 
 ```bash
 ...
-(cd $SCRIPT_DIR/django_airavata/apps/myapp && npm install && npm run build) || exit 1
+(cd $SCRIPT_DIR/django_airavata/apps/myapp && yarn && yarn run build) || exit 1
 ```
 
 You can test it by running `./build_js.sh` in the root folder.
