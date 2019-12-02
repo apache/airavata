@@ -35,7 +35,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Distant Reader Gateway"
-  external:
+#  external:
 #    - name: "Existing Institute Login"
 #      idp_alias: "cilogon"
 
