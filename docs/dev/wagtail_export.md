@@ -34,14 +34,20 @@ MIDDLEWARE = [
 This allows you to log in locally, without needing to setup Keycloak or have an
 Airavata backend running.
 
-3. Create a superuser account. You'll use this to log into wagtail and edit
+3. Make sure your virtual environment is activated if not already.
+
+```
+source venv/bin/activate
+```
+
+4. Create a superuser account. You'll use this to log into wagtail and edit
    pages:
 
 ```
 python manage.py createsuperuser
 ```
 
-4. (Optional) To start from an existing Wagtail export, run
+5. (Optional) To start from an existing Wagtail export, run
    `python manage.py load_cms_data FILENAME`, where FILENAME is the name of one
    of the Wagtail exports in
    [fixtures](https://github.com/apache/airavata-django-portal/tree/master/django_airavata/wagtailapps/base/fixtures)
@@ -51,7 +57,7 @@ python manage.py createsuperuser
 python manage.py load_cms_data default.json
 ```
 
-5. Start the Django server and log in at <http://localhost:8000/cms>
+6. Start the Django server and log in at <http://localhost:8000/cms>
 
 ```
 python manage.py runserver
@@ -61,7 +67,13 @@ python manage.py runserver
 
 Once you have the pages just the way you want them, you can now export them.
 
-1. Run the following to export the Wagtail settings into a JSON file in the
+1. Make sure your virtual environment is activated if not already.
+
+```
+source venv/bin/activate
+```
+
+2. Run the following to export the Wagtail settings into a JSON file in the
    fixtures directory:
 
 ```bash
@@ -72,7 +84,7 @@ python manage.py dumpdata --natural-foreign --exclude auth.permission \
 Where you can change `myexport` to whatever you want to meaningfully name the
 export file.
 
-2. Commit any media files that were added as part of creating the Wagtail pages.
+3. Commit any media files that were added as part of creating the Wagtail pages.
 
 ## Resetting your local environment
 
@@ -88,20 +100,26 @@ export file.
 rm db.sqlite3
 ```
 
-2. Migrate the database:
+2. Make sure your virtual environment is activated if not already.
+
+```
+source venv/bin/activate
+```
+
+3. Migrate the database:
 
 ```
 python manage.py migrate
 ```
 
-3. Create a superuser account. You'll use this to log into wagtail and edit
+4. Create a superuser account. You'll use this to log into wagtail and edit
    pages:
 
 ```
 python manage.py createsuperuser
 ```
 
-4. (Optional) To start from an existing Wagtail export, run
+5. (Optional) To start from an existing Wagtail export, run
    `python manage.py load_cms_data FILENAME`, where FILENAME is the name of one
    of the Wagtail exports in
    [fixtures](https://github.com/apache/airavata-django-portal/tree/master/django_airavata/wagtailapps/base/fixtures)
@@ -111,7 +129,7 @@ python manage.py createsuperuser
 python manage.py load_cms_data default.json
 ```
 
-5. Start the Django server and log in at <http://localhost:8000/cms>
+6. Start the Django server and log in at <http://localhost:8000/cms>
 
 ```
 python manage.py runserver
@@ -122,7 +140,12 @@ python manage.py runserver
 You can import a Wagtail export by running the following command on a newly
 created Django instance.
 
-1. Make sure you have the virtual environment activated.
+1. Make sure your virtual environment is activated if not already.
+
+```
+source venv/bin/activate
+```
+
 2. Run
 
 ```bash
