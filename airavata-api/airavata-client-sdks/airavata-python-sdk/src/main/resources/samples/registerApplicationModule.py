@@ -41,13 +41,14 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def create_project(airavataClient,authz_token,gatewayID,projectObj):
-    airavataClient.createProject(authz_token,gatewayID,projectObj)
-    print 'Project created'
+def register_application_module(airavataClient,authz_token,gatewayID,appModuleObj):
+    appModuleId = airavataClient.registerApplicationModule(authz_token,gatewayID,appModuleObj)
+    return appModuleId
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Create project")
-    parser.add_argument('projName',type=str, help= "Name of the new project")
+    parser = argparse.ArgumentParser(description ="Register application module")
+    parser.add_argument('appModuleName',type=str, help= "Application Module name")
+    
     
     args = parser.parse_args()
     print args
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    print 'gateway id:',gatewayID
+    #print(authz_token)
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -68,13 +69,13 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-    projectObj = Project()
-    projectObj.owner = username
-    projectObj.name = args.projName
-    projectObj.gatewayId = gatewayID
-    
+    appModuleObj = ApplicationModule()
+    appModuleObj.appModuleName = args.appModuleName
+   
+    appModuleId = register_application_module(airavataClient,authz_token,gatewayID,appModuleObj)
 
-    create_project(airavataClient,authz_token,gatewayID,projectObj) 
+    
+    print 'Application modules registered , ID: ', appModuleId
     
 
     transport.close()

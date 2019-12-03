@@ -41,14 +41,15 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def create_project(airavataClient,authz_token,gatewayID,projectObj):
-    airavataClient.createProject(authz_token,gatewayID,projectObj)
-    print 'Project created'
+def clone_experiment(airavataClient,authz_token,expID,expName,projId):
+    cloneExpId = airavataClient.cloneExperiment(authz_token,expID,expName,projId)
+    return cloneExpId      
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Create project")
-    parser.add_argument('projName',type=str, help= "Name of the new project")
-    
+    parser = argparse.ArgumentParser(description ="Clone experiment using experimentID")
+    parser.add_argument('expID',type=str, help= "ExperimentID of experiment to clone")
+    parser.add_argument('expName',type=str, help= "Experiment name of new experiment")
+    parser.add_argument('projId',type=str, help= "Project id of new experiment")
     args = parser.parse_args()
     print args
 
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    print 'gateway id:',gatewayID
+    #print(authz_token)
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -68,13 +69,11 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-    projectObj = Project()
-    projectObj.owner = username
-    projectObj.name = args.projName
-    projectObj.gatewayId = gatewayID
-    
+    expId = args.expID
+    expName = args.expName
+    projId = args.projId
 
-    create_project(airavataClient,authz_token,gatewayID,projectObj) 
-    
+    newExpId = clone_experiment(airavataClient,authz_token,expId,expName,projId) 
+    print 'Cloned experiment Id', newExpId
 
     transport.close()

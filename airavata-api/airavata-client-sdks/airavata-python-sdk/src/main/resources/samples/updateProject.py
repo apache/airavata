@@ -41,14 +41,15 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def create_project(airavataClient,authz_token,gatewayID,projectObj):
-    airavataClient.createProject(authz_token,gatewayID,projectObj)
-    print 'Project created'
+def update_project(airavataClient,authz_token,projId,updatedProjectObj):
+    airavataClient.updateProject(authz_token,projId,updatedProjectObj)
+    print 'Project updated'
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Create project")
-    parser.add_argument('projName',type=str, help= "Name of the new project")
-    
+    parser = argparse.ArgumentParser(description ="Update Project")
+    parser.add_argument('projId',type=str, help= "Id of the project to update")
+    parser.add_argument('projName',type=str, help= "New name of the project to update")
+    parser.add_argument('projOwner',type=str, help= "New owner of the project to update")
     args = parser.parse_args()
     print args
 
@@ -68,13 +69,12 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-    projectObj = Project()
-    projectObj.owner = username
-    projectObj.name = args.projName
-    projectObj.gatewayId = gatewayID
-    
-
-    create_project(airavataClient,authz_token,gatewayID,projectObj) 
+    projId = args.projId
+    updatedProjectObj = Project()
+    updatedProjectObj.owner = args.projOwner
+    updatedProjectObj.name = args.projName
+    updatedProjectObj.gatewayId = gatewayID
+    update_project(airavataClient,authz_token,projId,updatedProjectObj) 
     
 
     transport.close()

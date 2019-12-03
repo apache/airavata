@@ -41,13 +41,16 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def create_project(airavataClient,authz_token,gatewayID,projectObj):
-    airavataClient.createProject(authz_token,gatewayID,projectObj)
-    print 'Project created'
+def clone_experiment(airavataClient,authz_token,expID,expName):
+    cloneExpId = airavataClient.cloneExperiment(authz_token,expID,expName)
+    return cloneExpId      
+
+def get_experiments_in_projects(airavataClient,authz_token,projId):
+    experimentList = airavataClient.getExperimentsInProject(authz_token,projId,-1,0)    
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Create project")
-    parser.add_argument('projName',type=str, help= "Name of the new project")
+    parser = argparse.ArgumentParser(description ="Get all experiment in a project")
+    parser.add_argument('projectID',type=str, help= "projectID of experiment to clone")
     
     args = parser.parse_args()
     print args
@@ -58,8 +61,8 @@ if __name__ == '__main__':
 
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
-    authz_token = get_authz_token(token,username,gatewayID)
-    print 'gateway id:',gatewayID
+    authz_token = get_authz_token(token,username)
+    #print(authz_token)
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -68,13 +71,9 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-    projectObj = Project()
-    projectObj.owner = username
-    projectObj.name = args.projName
-    projectObj.gatewayId = gatewayID
-    
+    projId = args.projectID  
 
-    create_project(airavataClient,authz_token,gatewayID,projectObj) 
-    
+    expList = get_experiments_in_projects(airavataClient,authz_token,projId)
+    print 'List of experiments', expList
 
     transport.close()

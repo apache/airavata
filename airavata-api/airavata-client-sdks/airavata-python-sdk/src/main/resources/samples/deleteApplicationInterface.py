@@ -41,16 +41,15 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def create_project(airavataClient,authz_token,gatewayID,projectObj):
-    airavataClient.createProject(authz_token,gatewayID,projectObj)
-    print 'Project created'
+def delete_application_interface(airavataClient,authz_token,appInterfaceId):
+    result = airavataClient.deleteApplicationInterface(authz_token,appInterfaceId)
+    return result
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Create project")
-    parser.add_argument('projName',type=str, help= "Name of the new project")
-    
+    parser = argparse.ArgumentParser(description ="Delete application interface")
+    parser.add_argument('appInterfaceId',type=str, help= "Application InterfaceId")
     args = parser.parse_args()
-    print args
+    
 
     config = configparser.RawConfigParser()
     config.read('../conf/airavata-client.properties')
@@ -59,7 +58,7 @@ if __name__ == '__main__':
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    print 'gateway id:',gatewayID
+    #print(authz_token)
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -68,13 +67,12 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-    projectObj = Project()
-    projectObj.owner = username
-    projectObj.name = args.projName
-    projectObj.gatewayId = gatewayID
-    
+    appInterfaceObj = ApplicationInterfaceDescription()
+    appInterfaceObj.applicationName = args.appName
 
-    create_project(airavataClient,authz_token,gatewayID,projectObj) 
+    result= delete_application_interface(airavataClient,authz_token,gatewayID,appInterfaceObj)
+
     
+    print 'Deleted Application interface , result: ', result
 
     transport.close()

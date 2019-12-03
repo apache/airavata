@@ -41,25 +41,22 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def create_project(airavataClient,authz_token,gatewayID,projectObj):
-    airavataClient.createProject(authz_token,gatewayID,projectObj)
-    print 'Project created'
+def get_application_deployment(airavataClient,authz_token,appDeployId):
+    appDeployObj = airavataClient.getApplicationDeployment(authz_token,appDeployId)
+    return appDeployObj
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Create project")
-    parser.add_argument('projName',type=str, help= "Name of the new project")
-    
+    parser = argparse.ArgumentParser(description ="Get a particular application deployment details")
+    parser.add_argument('appDeployId',type=str, help= "Application deploy ID")
     args = parser.parse_args()
-    print args
-
+   
     config = configparser.RawConfigParser()
     config.read('../conf/airavata-client.properties')
     token = config.get('GatewayProperties', 'cred_token_id')
-
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    print 'gateway id:',gatewayID
+   
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -68,13 +65,9 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-    projectObj = Project()
-    projectObj.owner = username
-    projectObj.name = args.projName
-    projectObj.gatewayId = gatewayID
-    
+    appModuleId = args.appModuleId
 
-    create_project(airavataClient,authz_token,gatewayID,projectObj) 
-    
+    appDeployObj = get_application_deployment(airavataClient,authz_token,appDeployId)
 
+    print 'Application Deployment details : ', appDeployObj
     transport.close()
