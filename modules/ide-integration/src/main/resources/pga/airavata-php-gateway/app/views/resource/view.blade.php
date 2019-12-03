@@ -20,11 +20,13 @@
 <div class="well">
     <h4>Compute Resource : {{ $computeResource->hostName }}
         @if(Session::has("admin"))
+        @if(!$computeResource->deleted)
         <div class="pull-right">
             <a href="{{URL::to('/')}}/cr/edit?crId={{Input::get('crId') }}" title="Edit">
                 <span class="glyphicon glyphicon-pencil"></span>
             </a>
         </div>
+        @endif
         @endif
     </h4>
 </div>

@@ -215,12 +215,35 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public boolean isComputeResourceExists(String resourceId) throws AppCatalogException {
-        return isExists(resourceId);
+        if(isExists(resourceId)){
+            ComputeResourceDescription computeResourceDescription = getComputeResource(resourceId);
+            if(computeResourceDescription.isDeleted()){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //TODO: Add code to modify the compute resource remove method for a soft delete of compute resource
+    @Override
+    public void removeComputeResource(String resourceId) throws AppCatalogException {
+        ComputeResourceDescription computeResourceDescription = getComputeResource(resourceId);
+        computeResourceDescription.setEnabled(false);
+        computeResourceDescription.setDeleted(true);
+        updateComputeResource(resourceId, computeResourceDescription);
+        //delete(resourceId);
     }
 
     @Override
-    public void removeComputeResource(String resourceId) throws AppCatalogException {
-        delete(resourceId);
+    public void undeleteComputeResource(String resourceId) throws AppCatalogException {
+        //TODO: Add code to undelete compute resource
+        ComputeResourceDescription computeResourceDescription = getComputeResource(resourceId);
+        computeResourceDescription.setDeleted(false);
+        updateComputeResource(resourceId, computeResourceDescription);
+        //delete(resourceId);
     }
 
     @Override

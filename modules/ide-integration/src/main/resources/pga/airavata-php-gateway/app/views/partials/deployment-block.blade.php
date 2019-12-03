@@ -22,11 +22,13 @@
     <label class="control-label">Application Compute Host</label>
     <select name="computeHostId" class="form-control computeHostId" required readonly>
         @foreach( $computeResourcePreferences as $computeResourcePreference)
+        @if($computeResourcePreference->enabled)
         <option value="{{{ $computeResourcePreference->computeResourceId }}}"
         @if( isset($deploymentObject) && $computeResourcePreference->computeResourceId == $deploymentObject->computeHostId) selected @endif
         >
         {{{ $computeResourcePreference->crName }}}
         </option>
+        @endif
         @endforeach
     </select>
 </div>

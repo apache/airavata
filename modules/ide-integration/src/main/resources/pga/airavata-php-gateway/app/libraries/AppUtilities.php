@@ -141,6 +141,11 @@ class AppUtilities
         $computeResourcePreferences = $gatewayResourceProfile->computeResourcePreferences;
         foreach ($computeResourcePreferences as $computeResourcePreference) {
             $computeResourcePreference->crName = $computeResources[$computeResourcePreference->computeResourceId];
+            foreach ($computeResourceFullObjects as $CRFull) {
+              if($CRFull->computeResourceId ==  $computeResourcePreference->computeResourceId){
+                $computeResourcePreference->enabled = $CRFull->enabled;
+              }
+            }
         }
         // Sort compute resource preferences by crName
         usort($computeResourcePreferences, CommonUtilities::arrSortObjsByKey('crName', 'ASC'));

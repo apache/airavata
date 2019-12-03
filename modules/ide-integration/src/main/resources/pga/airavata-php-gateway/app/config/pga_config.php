@@ -271,7 +271,7 @@ return array(
          * Set this to true if theme has set links to login
          */
         'theme-based-login-links-configured' => false,
-        
+
         /**
          * Set JIRA Issue Collector scripts here.
          */
@@ -296,12 +296,12 @@ return array(
         ],
 
         /**
-         * Set Google Analytics Id here. ID format that generates from  
-         * creating tracker object should be 
+         * Set Google Analytics Id here. ID format that generates from
+         * creating tracker object should be
          *
-         * UA-XXXXX-Y 
+         * UA-XXXXX-Y
          *
-         * for it to be working correctly. Currently it is only set for 
+         * for it to be working correctly. Currently it is only set for
          * sending pageviews.
          */
         'google-analytics-id' => ''

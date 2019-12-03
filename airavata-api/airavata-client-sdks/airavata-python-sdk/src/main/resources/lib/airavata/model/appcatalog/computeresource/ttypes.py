@@ -1387,6 +1387,7 @@ class ComputeResourceDescription(object):
      - defaultNodeCount
      - defaultCPUCount
      - defaultWalltime
+     - deleted
     """
 
     thrift_spec = (
@@ -1409,9 +1410,10 @@ class ComputeResourceDescription(object):
         (16, TType.I32, 'defaultNodeCount', None, None, ),  # 16
         (17, TType.I32, 'defaultCPUCount', None, None, ),  # 17
         (18, TType.I32, 'defaultWalltime', None, None, ),  # 18
+        (19, TType.BOOL, 'deleted', None, None, ),  # 19
     )
 
-    def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, gatewayUsageReporting=None, gatewayUsageModuleLoadCommand=None, gatewayUsageExecutable=None, cpusPerNode=None, defaultNodeCount=None, defaultCPUCount=None, defaultWalltime=None,):
+    def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, gatewayUsageReporting=None, gatewayUsageModuleLoadCommand=None, gatewayUsageExecutable=None, cpusPerNode=None, defaultNodeCount=None, defaultCPUCount=None, defaultWalltime=None, deleted=None,):
         self.computeResourceId = computeResourceId
         self.hostName = hostName
         self.hostAliases = hostAliases
@@ -1430,6 +1432,7 @@ class ComputeResourceDescription(object):
         self.defaultNodeCount = defaultNodeCount
         self.defaultCPUCount = defaultCPUCount
         self.defaultWalltime = defaultWalltime
+        self.deleted = deleted
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -1564,6 +1567,11 @@ class ComputeResourceDescription(object):
                     self.defaultWalltime = iprot.readI32()
                 else:
                     iprot.skip(ftype)
+            elif fid == 19:
+                if ftype == TType.BOOL:
+                    self.deleted = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -1664,6 +1672,10 @@ class ComputeResourceDescription(object):
         if self.defaultWalltime is not None:
             oprot.writeFieldBegin('defaultWalltime', TType.I32, 18)
             oprot.writeI32(self.defaultWalltime)
+            oprot.writeFieldEnd()
+        if self.deleted is not None:
+            oprot.writeFieldBegin('deleted', TType.BOOL, 19)
+            oprot.writeBool(self.deleted)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
