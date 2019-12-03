@@ -41,12 +41,17 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
+def clone_experiment(airavataClient,authz_token,expID,expName):
+    cloneExpId = airavataClient.cloneExperiment(authz_token,expID,expName)
+    return cloneExpId      
 
+def get_experiments_in_projects(airavataClient,authz_token,projId):
+    experimentList = airavataClient.getExperimentsInProject(authz_token,projId,-1,0)    
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Clone experiment using experimentID")
-    parser.add_argument('expID',type=string, help= "ExperimentID of experiment to clone")
-    parser.add_argument('expName',type=string, help= "Experiment name of new experiment")
+    parser = argparse.ArgumentParser(description ="Get all experiment in a project")
+    parser.add_argument('projectID',type=str, help= "projectID of experiment to clone")
+    
     args = parser.parse_args()
     print args
 
@@ -62,9 +67,13 @@ if __name__ == '__main__':
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
 
-    transport = get_transport(hostname, port)
+    transport = get_transport(hostname, 9930)
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-    print 'Current API version is', airavataClient.getAPIVersion(authz_token)
+    projId = args.projectID  
+
+    expList = get_experiments_in_projects(airavataClient,authz_token,projId)
+    print 'List of experiments', expList
+
     transport.close()
