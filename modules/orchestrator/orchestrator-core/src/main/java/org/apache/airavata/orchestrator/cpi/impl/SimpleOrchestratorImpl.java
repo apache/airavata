@@ -628,11 +628,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             DataMovementProtocol dataMovementProtocol =
                     OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
             String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
+            StringBuilder destinationPath = new StringBuilder(workingDir);
+            Optional.ofNullable(processInput.getOverrideFilename()).ifPresent(destinationPath::append); //If an override filename is provided
+
             destination = new URI(dataMovementProtocol.name(),
                     loginUserName,
                     computeResource.getHostName(),
                     OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
-                    workingDir , null, null);
+                    destinationPath.toString(), null, null);
         } catch (URISyntaxException e) {
             throw new OrchestratorException("Error while constructing destination file URI", e);
         }
