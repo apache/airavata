@@ -11,7 +11,7 @@
         <span class="sr-only">Delete</span>
       </b-link>
     </div>
-    <b-collapse :visible="!collapse">
+    <b-collapse :id="id+'-collapse'" :visible="!collapse">
       <b-form-group label="Name" :label-for="id+'-name'">
         <b-form-input :id="id+'-name'" type="text" v-model="data.name" ref="nameInput" required :disabled="readonly"></b-form-input>
       </b-form-group>
