@@ -1,7 +1,7 @@
 <template>
 
-  <span v-if="dataProduct.downloadURL">
-    <a :href="dataProduct.downloadURL" class="action-link">
+  <span v-if="downloadURL">
+    <a :href="downloadURL" class="action-link">
       <i class="fa fa-download"></i>
       {{ filename }}
     </a>
@@ -21,6 +21,9 @@ export default {
     inputFile: {
       type: Boolean,
       default: false
+    },
+    mimeType: {
+      type: String
     }
   },
   computed: {
@@ -32,6 +35,15 @@ export default {
         return this.dataProduct.productName;
       } else {
         return this.dataProduct.filename;
+      }
+    },
+    downloadURL() {
+      if (!this.dataProduct.downloadURL) {
+        return null;
+      } else if (this.mimeType) {
+        return `${this.dataProduct.downloadURL}&mime-type=${encodeURIComponent(this.mimeType)}`;
+      } else {
+        return this.dataProduct.downloadURL;
       }
     }
   }

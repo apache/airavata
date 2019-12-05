@@ -1,41 +1,40 @@
-
-import BaseModel from './BaseModel';
-import DataType from './DataType';
-import uuidv4 from 'uuid/v4';
+import BaseModel from "./BaseModel";
+import DataType from "./DataType";
+import uuidv4 from "uuid/v4";
 
 const FIELDS = [
-  'name',
-  'value',
+  "name",
+  "value",
   {
-    name: 'type',
+    name: "type",
     type: DataType,
-    default: DataType.URI,
+    default: DataType.URI
   },
-  'applicationArgument',
+  "applicationArgument",
   {
-    name: 'isRequired',
-    type: 'boolean',
+    name: "isRequired",
+    type: "boolean",
     default: false
   },
   {
-    name: 'requiredToAddedToCommandLine',
-    type: 'boolean',
-    default: false,
-  },
-  {
-    name: 'dataMovement',
-    type: 'boolean',
+    name: "requiredToAddedToCommandLine",
+    type: "boolean",
     default: false
   },
-  'location',
-  'searchQuery',
   {
-    name: 'outputStreaming',
-    type: 'boolean',
+    name: "dataMovement",
+    type: "boolean",
     default: false
   },
-  'storageResourceId',
-  'metaData'
+  "location",
+  "searchQuery",
+  {
+    name: "outputStreaming",
+    type: "boolean",
+    default: false
+  },
+  "storageResourceId",
+  "metaData"
 ];
 
 export default class OutputDataObjectType extends BaseModel {
@@ -48,6 +47,16 @@ export default class OutputDataObjectType extends BaseModel {
   get key() {
     return this._key;
   }
+
+  get fileMetadata() {
+    return this.metaData ? this.metaData["file-metadata"] : null;
+  }
+
+  get fileMetadataMimeType() {
+    return this.fileMetadata && this.fileMetadata["mime-type"]
+      ? this.fileMetadata["mime-type"]
+      : null;
+  }
 }
 
-OutputDataObjectType.VALID_DATA_TYPES = DataType.values
+OutputDataObjectType.VALID_DATA_TYPES = DataType.values;

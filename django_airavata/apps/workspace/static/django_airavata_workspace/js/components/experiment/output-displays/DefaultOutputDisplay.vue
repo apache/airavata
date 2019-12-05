@@ -4,6 +4,7 @@
       v-for="dp in dataProducts"
       :data-product="dp"
       :key="dp.productUri"
+      :mime-type="fileMimeType"
     />
   </div>
 </template>
@@ -29,8 +30,20 @@ export default {
   },
   components: {
     "data-product-viewer": components.DataProductViewer
+  },
+  computed: {
+    fileMimeType() {
+      if (this.experimentOutput.fileMetadataMimeType) {
+        return this.experimentOutput.fileMetadataMimeType;
+      } else if (
+        this.experimentOutput.dataType === models.DataType.STDOUT ||
+        this.experimentOutput.dataType === models.DataType.STDERR
+      ) {
+        return "text/plain";
+      } else {
+        return null;
+      }
+    }
   }
 };
 </script>
-
-

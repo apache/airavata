@@ -49,12 +49,22 @@ export default class ApplicationInterfaceDefinition extends BaseModel {
     const stdout = new OutputDataObjectType({
       name: "Standard-Out",
       type: DataType.STDOUT,
-      isRequired: true
+      isRequired: true,
+      metaData: {
+        "file-metadata": {
+          "mime-type": "text/plain"
+        }
+      }
     });
     const stderr = new OutputDataObjectType({
       name: "Standard-Error",
       type: DataType.STDERR,
-      isRequired: true
+      isRequired: true,
+      metaData: {
+        "file-metadata": {
+          "mime-type": "text/plain"
+        }
+      }
     });
     if (!this.applicationOutputs) {
       this.applicationOutputs = [];

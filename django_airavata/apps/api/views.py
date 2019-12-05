@@ -944,21 +944,28 @@ def tus_upload_finish(request):
 def download_file(request):
     # TODO check that user has access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
+    force_download = 'download' in request.GET
     data_product = None
     try:
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, data_product_uri)
+        mime_type = "application/octet-stream"  # default mime-type
+        if (data_product.productMetadata and
+                'mime-type' in data_product.productMetadata):
+            mime_type = data_product.productMetadata['mime-type']
+        # 'mime-type' url parameter overrides
+        mime_type = request.GET.get('mime-type', mime_type)
     except Exception as e:
         log.warning("Failed to load DataProduct for {}"
                     .format(data_product_uri), exc_info=True)
         raise Http404("data product does not exist") from e
     try:
         data_file = data_products_helper.open(request, data_product)
-        response = FileResponse(data_file,
-                                content_type="application/octet-stream")
+        response = FileResponse(data_file, content_type=mime_type)
         file_name = os.path.basename(data_file.name)
-        response['Content-Disposition'] = ('attachment; filename="{}"'
-                                           .format(file_name))
+        if mime_type == 'application/octet-stream' or force_download:
+            response['Content-Disposition'] = ('attachment; filename="{}"'
+                                               .format(file_name))
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
