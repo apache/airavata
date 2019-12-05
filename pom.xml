@@ -119,6 +119,7 @@
         <google.guava.version>20.0</google.guava.version>
         <jacoco.version>0.8.1</jacoco.version>
         <openjpa.version>3.1.0</openjpa.version>
+        <dozer.version>5.4.0</dozer.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <jaxb.version>2.4.0-b180830.0359</jaxb.version>
         <jmockit.version>1.44</jmockit.version>
