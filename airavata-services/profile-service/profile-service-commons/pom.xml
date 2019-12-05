@@ -43,7 +43,7 @@
         <dependency>
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
-            <version>5.4.0</version>
+            <version>${dozer.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
