@@ -15,11 +15,14 @@
       <b-form-group label="Name" :label-for="id+'-name'">
         <b-form-input :id="id+'-name'" type="text" v-model="data.name" ref="nameInput" required :disabled="readonly"></b-form-input>
       </b-form-group>
-      <b-form-group label="Initial Value" :label-for="id+'-value'">
-        <b-form-input :id="id+'-value'" type="text" v-model="data.value" :disabled="readonly"></b-form-input>
-      </b-form-group>
       <b-form-group label="Type" :label-for="id+'-type'">
         <b-form-select :id="id+'-type'" v-model="data.type" :options="inputTypeOptions" :disabled="readonly" />
+      </b-form-group>
+      <b-form-group label="Initial Value" :label-for="id+'-value'" v-if="showValueField">
+        <b-form-input :id="id+'-value'" type="text" v-model="data.value" :disabled="readonly"></b-form-input>
+      </b-form-group>
+      <b-form-group label="Override Filename" :label-for="id+'-value'" v-if="showOverrideFilenameField">
+        <b-form-input :id="id+'-override-filename'" type="text" v-model="data.overrideFilename" :disabled="readonly"></b-form-input>
       </b-form-group>
       <b-form-group label="Application Argument" :label-for="id+'-argument'">
         <b-form-input :id="id+'-argument'" type="text" v-model="data.applicationArgument" :disabled="readonly"></b-form-input>
@@ -102,6 +105,12 @@ export default {
     },
     id() {
       return "id-" + this.data.key;
+    },
+    showValueField() {
+      return this.data.type.isSimpleValueType
+    },
+    showOverrideFilenameField() {
+      return this.data.type === models.DataType.URI;
     }
   },
   methods: {

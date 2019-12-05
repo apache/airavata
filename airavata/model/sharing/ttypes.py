@@ -190,6 +190,7 @@ class Domain(object):
     <li>description : A short description for the domain</li>
     <li>createdTime : Will be set by the system</li>
     <li>updatedTime : Will be set by the system</li>
+    <li>initialUserGroupId : New users will automatically be added to this group</li>
 
 
     Attributes:
@@ -198,6 +199,7 @@ class Domain(object):
      - description
      - createdTime
      - updatedTime
+     - initialUserGroupId
     """
 
     thrift_spec = (
@@ -207,14 +209,16 @@ class Domain(object):
         (3, TType.STRING, 'description', 'UTF8', None, ),  # 3
         (4, TType.I64, 'createdTime', None, None, ),  # 4
         (5, TType.I64, 'updatedTime', None, None, ),  # 5
+        (6, TType.STRING, 'initialUserGroupId', 'UTF8', None, ),  # 6
     )
 
-    def __init__(self, domainId=thrift_spec[1][4], name=None, description=None, createdTime=None, updatedTime=None,):
+    def __init__(self, domainId=thrift_spec[1][4], name=None, description=None, createdTime=None, updatedTime=None, initialUserGroupId=None,):
         self.domainId = domainId
         self.name = name
         self.description = description
         self.createdTime = createdTime
         self.updatedTime = updatedTime
+        self.initialUserGroupId = initialUserGroupId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -250,6 +254,11 @@ class Domain(object):
                     self.updatedTime = iprot.readI64()
                 else:
                     iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.STRING:
+                    self.initialUserGroupId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -279,6 +288,10 @@ class Domain(object):
         if self.updatedTime is not None:
             oprot.writeFieldBegin('updatedTime', TType.I64, 5)
             oprot.writeI64(self.updatedTime)
+            oprot.writeFieldEnd()
+        if self.initialUserGroupId is not None:
+            oprot.writeFieldBegin('initialUserGroupId', TType.STRING, 6)
+            oprot.writeString(self.initialUserGroupId.encode('utf-8') if sys.version_info[0] == 2 else self.initialUserGroupId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
