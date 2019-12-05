@@ -91,7 +91,7 @@ export default {
   },
   data() {
     return {
-      focusApplicationInputIndex: null,
+      focusApplicationInputKey: null,
       focusApplicationOutputKey: null,
       dragOptions: {
         handle: ".drag-handle"
@@ -113,8 +113,9 @@ export default {
       Object.assign(input, newValue);
     },
     addApplicationInput() {
-      this.data.applicationInputs.push(new models.InputDataObjectType());
-      this.focusApplicationInputIndex = this.data.applicationInputs.length - 1;
+      const appInput = new models.InputDataObjectType();
+      this.data.applicationInputs.push(appInput);
+      this.focusApplicationInputKey = appInput.key;
     },
     deleteInput(input) {
       const inputIndex = this.data.applicationInputs.findIndex(
