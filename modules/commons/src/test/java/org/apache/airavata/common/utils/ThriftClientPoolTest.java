@@ -13,9 +13,7 @@ import org.junit.runner.RunWith;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 
-@RunWith(JMockit.class)
 public class ThriftClientPoolTest {
 
     @Mocked

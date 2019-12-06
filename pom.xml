@@ -708,7 +708,7 @@
                             <!-- Integration tests are run using the fail-safe plugin in the module
                                 pom -->
                             <useSystemClassLoader>false</useSystemClassLoader>
-                            <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                            <argLine>-Xmx1024m -XX:MaxPermSize=256m -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
 
                             <reuseForks>false</reuseForks>
 
