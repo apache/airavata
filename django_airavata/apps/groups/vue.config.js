@@ -7,6 +7,7 @@ module.exports = {
       ? "http://localhost:9000/static/django_airavata_groups/dist/"
       : "/static/django_airavata_groups/dist/",
   outputDir: "./static/django_airavata_groups/dist",
+  productionSourceMap: false,
   pages: {
     'group-list': './static/django_airavata_groups/js/group-listing-entry-point.js',
     'group-create': './static/django_airavata_groups/js/group-create-entry-point.js',

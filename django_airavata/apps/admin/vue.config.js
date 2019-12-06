@@ -7,6 +7,7 @@ module.exports = {
       ? "http://localhost:9000/static/django_airavata_admin/dist/"
       : "/static/django_airavata_admin/dist/",
   outputDir: "./static/django_airavata_admin/dist",
+  productionSourceMap: false,
   css: {
     loaderOptions: {
       postcss: {

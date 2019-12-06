@@ -295,6 +295,7 @@ module.exports = {
       ? "http://localhost:9000/static/django_airavata_myapp/dist/"
       : "/static/django_airavata_myapp/dist/",
   outputDir: "./static/django_airavata_myapp/dist",
+  productionSourceMap: false,
   pages: {
     home: "./static/django_airavata_myapp/js/entry-home"
     // additional entry points go here ...

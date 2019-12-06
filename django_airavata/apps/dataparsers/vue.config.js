@@ -7,6 +7,7 @@ module.exports = {
       ? "http://localhost:9000/static/django_airavata_dataparsers/dist/"
       : "/static/django_airavata_dataparsers/dist/",
   outputDir: "./static/django_airavata_dataparsers/dist",
+  productionSourceMap: false,
   pages: {
       'parser-details': './static/django_airavata_dataparsers/js/entry-parser-details',
       'parser-list': './static/django_airavata_dataparsers/js/parser-listing-entry-point.js',
