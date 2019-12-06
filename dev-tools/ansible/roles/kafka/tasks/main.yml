@@ -60,7 +60,7 @@
   become: yes
 
 # Config rest proxy and start
-- name: Copy kafka server properties file
+- name: Copy kafka rest proxy properties file
   template: src=kafka-rest.properties.j2
             dest="{{ kafka_dir }}/etc/kafka-rest/kafka-rest.properties"
             owner={{ user }}
