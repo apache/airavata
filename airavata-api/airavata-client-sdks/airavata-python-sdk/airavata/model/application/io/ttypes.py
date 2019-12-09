@@ -74,8 +74,6 @@ class InputDataObjectType(object):
     metaData:
       Any metadat. This is typically ignore by Airavata and is used by gateways for application configuration.
 
-    overrideFilename:
-      Rename input file to given value when staging to compute resource.
 
     Attributes:
      - name
@@ -91,7 +89,6 @@ class InputDataObjectType(object):
      - dataStaged
      - storageResourceId
      - isReadOnly
-     - overrideFilename
     """
 
     thrift_spec = (
@@ -109,10 +106,9 @@ class InputDataObjectType(object):
         (11, TType.BOOL, 'dataStaged', None, None, ),  # 11
         (12, TType.STRING, 'storageResourceId', 'UTF8', None, ),  # 12
         (13, TType.BOOL, 'isReadOnly', None, None, ),  # 13
-        (14, TType.STRING, 'overrideFilename', 'UTF8', None, ),  # 14
     )
 
-    def __init__(self, name=None, value=None, type=None, applicationArgument=None, standardInput=None, userFriendlyDescription=None, metaData=None, inputOrder=None, isRequired=None, requiredToAddedToCommandLine=None, dataStaged=None, storageResourceId=None, isReadOnly=None, overrideFilename=None,):
+    def __init__(self, name=None, value=None, type=None, applicationArgument=None, standardInput=None, userFriendlyDescription=None, metaData=None, inputOrder=None, isRequired=None, requiredToAddedToCommandLine=None, dataStaged=None, storageResourceId=None, isReadOnly=None,):
         self.name = name
         self.value = value
         self.type = type
@@ -126,7 +122,6 @@ class InputDataObjectType(object):
         self.dataStaged = dataStaged
         self.storageResourceId = storageResourceId
         self.isReadOnly = isReadOnly
-        self.overrideFilename = overrideFilename
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -202,11 +197,6 @@ class InputDataObjectType(object):
                     self.isReadOnly = iprot.readBool()
                 else:
                     iprot.skip(ftype)
-            elif fid == 14:
-                if ftype == TType.STRING:
-                    self.overrideFilename = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -268,10 +258,6 @@ class InputDataObjectType(object):
         if self.isReadOnly is not None:
             oprot.writeFieldBegin('isReadOnly', TType.BOOL, 13)
             oprot.writeBool(self.isReadOnly)
-            oprot.writeFieldEnd()
-        if self.overrideFilename is not None:
-            oprot.writeFieldBegin('overrideFilename', TType.STRING, 14)
-            oprot.writeString(self.overrideFilename.encode('utf-8') if sys.version_info[0] == 2 else self.overrideFilename)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
