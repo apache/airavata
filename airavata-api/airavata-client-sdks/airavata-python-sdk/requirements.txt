@@ -1,0 +1,4 @@
+requests==2.13.0
+requests-oauthlib==0.7.0
+thrift==0.10.0
+thrift_connector==0.24
