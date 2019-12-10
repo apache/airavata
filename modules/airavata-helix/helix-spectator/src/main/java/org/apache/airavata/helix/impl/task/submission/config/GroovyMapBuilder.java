@@ -259,10 +259,14 @@ public class GroovyMapBuilder {
                 if (inputDataObjectType.getValue() != null
                         && !inputDataObjectType.getValue().equals("")) {
                     if (inputDataObjectType.getType() == DataType.URI) {
-                        // set only the relative path
-                        String filePath = inputDataObjectType.getValue();
-                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                        inputValues.add(filePath);
+                        if (inputDataObjectType.getOverrideFilename() != null) {
+                            inputValues.add(inputDataObjectType.getOverrideFilename());
+                        } else {
+                            // set only the relative path
+                            String filePath = inputDataObjectType.getValue();
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                            inputValues.add(filePath);
+                        }
                     } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
                         String filePaths = inputDataObjectType.getValue();
                         String[] paths = filePaths.split(MULTIPLE_INPUTS_SPLITTER);
