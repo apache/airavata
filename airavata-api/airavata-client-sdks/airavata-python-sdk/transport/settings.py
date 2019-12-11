@@ -1,21 +1,80 @@
-# Airavata API Configuration
-GATEWAY_ID = 'default'
-AIRAVATA_API_HOST = 'localhost'
-AIRAVATA_API_PORT = 9930
-AIRAVATA_API_SECURE = True
-GATEWAY_DATA_STORE_RESOURCE_ID = 'airavata.host_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd'
-GATEWAY_DATA_STORE_DIR = '/tmp'
-GATEWAY_DATA_STORE_HOSTNAME = 'localhost'
-FILE_UPLOAD_TEMP_DIR = '/tmp'
+#  Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 
-# Profile Service Configuration
-PROFILE_SERVICE_HOST = AIRAVATA_API_HOST
-PROFILE_SERVICE_PORT = 8962
-PROFILE_SERVICE_SECURE = False
+import configparser
+import os
 
-# Sharing API Configuration
-SHARING_API_HOST = AIRAVATA_API_HOST
-SHARING_API_PORT = 7878
-SHARING_API_SECURE = False
+config = configparser.ConfigParser()
+config.read('../transport/settings.ini')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-THRIFT_CLIENT_POOL_KEEPALIVE = True
+
+class APIServerClientSettings(object):
+
+    def __init__(self):
+        self.API_SERVER_HOST = config.get('APIServer', 'API_HOST')
+        self.API_SERVER_PORT = config.getint('APIServer', 'API_PORT')
+        self.API_SERVER_SECURE = config.getboolean('APIServer', 'API_SECURE')
+
+
+class IAMAdminClientSettings(object):
+    def __init__(self):
+        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
+        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
+        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
+
+
+class TenantProfileServerClientSettings(object):
+    def __init__(self):
+        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
+        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
+        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
+
+
+class GroupManagerClientSettings(object):
+    def __init__(self):
+        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
+        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
+        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
+
+
+class SharingAPIClientSettings(object):
+    def __init__(self):
+        self.SHARING_API_HOST = config.get('SharingServer','SHARING_API_HOST')
+        self.SHARING_API_PORT = config.getint('SharingServer','SHARING_API_PORT')
+        self.SHARING_API_SECURE = config.getboolean('SharingServer','SHARING_API_SECURE')
+
+
+class UserProfileClientSettings(object):
+    def __init__(self):
+        self.PROFILE_SERVICE_HOST = config.get('ProfileServer','PROFILE_SERVICE_HOST')
+        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer','PROFILE_SERVICE_PORT')
+        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer','PROFILE_SERVICE_SECURE')
+
+
+class ThriftSettings(object):
+    def __init__(self):
+        self.THRIFT_CLIENT_POOL_KEEPALIVE = config.getfloat('Thrift', 'THRIFT_CLIENT_POOL_KEEPALIVE')
+
+
+class KeycloakConfiguration(object):
+    def __init__(self):
+        self.KEYCLOAK_CA_CERTIFICATE = os.path.join(BASE_DIR, "samples", "resources", "incommon_rsa_server_ca.pem")
+        self.CLIENT_ID = config.get('KeycloakServer', 'CLIENT_ID')
+        self.CLIENT_SECRET = config.get('KeycloakServer', 'CLIENT_SECRET')
+        self.TOKEN_URL = config.get('KeycloakServer', 'TOKEN_URL')
+        self.USER_INFO_URL = config.get('KeycloakServer', 'USER_INFO_URL')
+        self.VERIFY_SSL = config.getboolean('KeycloakServer', 'VERIFY_SSL')
