@@ -7,6 +7,7 @@ module.exports = {
       ? "http://localhost:9000/static/django_airavata_workspace/dist/"
       : "/static/django_airavata_workspace/dist/",
   outputDir: "./static/django_airavata_workspace/dist",
+  productionSourceMap: false,
   pages: {
       'project-list': './static/django_airavata_workspace/js/entry-project-list',
       'dashboard': './static/django_airavata_workspace/js/entry-dashboard',

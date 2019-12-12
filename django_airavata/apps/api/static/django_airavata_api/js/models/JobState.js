@@ -11,4 +11,5 @@ JobState.init([
     'FAILED',
     'SUSPENDED',
     'UNKNOWN',
+    'NON_CRITICAL_FAIL',
 ]);

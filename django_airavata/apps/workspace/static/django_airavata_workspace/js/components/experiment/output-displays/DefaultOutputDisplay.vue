@@ -36,8 +36,8 @@ export default {
       if (this.experimentOutput.fileMetadataMimeType) {
         return this.experimentOutput.fileMetadataMimeType;
       } else if (
-        this.experimentOutput.dataType === models.DataType.STDOUT ||
-        this.experimentOutput.dataType === models.DataType.STDERR
+        this.experimentOutput.type === models.DataType.STDOUT ||
+        this.experimentOutput.type === models.DataType.STDERR
       ) {
         return "text/plain";
       } else {
