@@ -248,6 +248,8 @@ Integrate With Your Clients
       - remove_parsing_template( authz_token, template_id, gateway_id)
       - list_all_parsing_templates( authz_token, gateway_id)
       
+   Sample implementations can be found at [api_server_client_samples](samples/api_server_client_samples.py)
+      
    -  [group_manager_client](clients/group_manager_client.py)
    
       - create_group( authz_token, group_model)
@@ -263,6 +265,8 @@ Integrate With Your Clients
       - remove_group_admins( authz_token, group_id, admin_ids)
       - has_admin_access( authz_token, group_id, admin_id)
       - has_owner_access( authz_token, group_id, owner_id)
+      
+   Sample implementations can be found at [group_manager_client_samples](samples/group_manager_client_samples.py)
       
    -   [iam_admin_client](clients/iam_admin_client.py)
       
@@ -281,6 +285,9 @@ Integrate With Your Clients
        - add_role_to_user( authz_token, username, role_name)
        - remove_role_from_user( authz_token, username, role_name)
        -  get_users_with_role( authz_token, role_name)
+   
+   Sample implementations can be found at [iam_admin_client_samples](samples/iam_admin_client_samples.py)
+    
     
    - [sharing_registry_client](clients/sharing_registry_client.py)   
        
@@ -340,6 +347,10 @@ Integrate With Your Clients
        - revoke_entity_sharing_from_groups( domain_id, entity_id, group_list, permission_type_id)
        - user_has_access( domain_id, user_id, entity_id, permission_type_id) 
        
+   Sample implementations can be found at [sharing_registry_client_samples](samples/sharing_registry_client_samples.py)
+       
+       
+       
    - [tenant_profile_client](clients/tenant_profile_client.py)
    
        - add_gateway( authz_token, gateway)
@@ -349,6 +360,9 @@ Integrate With Your Clients
        - get_all_gateways( authz_token)
        - is_gateway_exist( authz_token, gateway_id)
        - get_all_gateways_for_user( authz_token, requester_username)
+   
+   Sample implementations can be found at [tenant_profile_client_samples](samples/tenant_profile_client_samples.py)    
+       
        
    - [user_profile_client](clients/user_profile_client.py)
        
@@ -359,3 +373,5 @@ Integrate With Your Clients
        - delete_user_profile( authz_token, user_id, gateway_id)
        - get_all_user_profiles_in_gateway( authz_token, gateway_id, offset, limit)
        - does_user_exist( authz_token, user_id, gateway_id)
+       
+   Sample implementations can be found at [user_profile_client_samples](samples/user_profile_client_samples.py)
