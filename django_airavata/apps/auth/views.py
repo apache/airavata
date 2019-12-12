@@ -7,11 +7,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import EmailMessage
 from django.forms import ValidationError
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render, resolve_url
-from django.template import Context, Template
+from django.template import Context
 from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
@@ -305,7 +304,7 @@ def _create_and_send_email_verification_link(
         "portal_title": settings.PORTAL_TITLE,
         "url": verification_uri,
     })
-    _send_email_to_user(models.VERIFY_EMAIL_TEMPLATE, context)
+    utils.send_email_to_user(models.VERIFY_EMAIL_TEMPLATE, context)
 
 
 def forgot_password(request):
@@ -371,7 +370,7 @@ def _create_and_send_password_reset_request_link(request, username):
         "portal_title": settings.PORTAL_TITLE,
         "url": verification_uri,
     })
-    _send_email_to_user(models.PASSWORD_RESET_EMAIL_TEMPLATE, context)
+    utils.send_email_to_user(models.PASSWORD_RESET_EMAIL_TEMPLATE, context)
 
 
 def reset_password(request, code):
@@ -421,23 +420,6 @@ def reset_password(request, code):
         'form': form,
         'code': code
     })
-
-
-def _send_email_to_user(template_id, context):
-    email_template = models.EmailTemplate.objects.get(
-        pk=template_id)
-    subject = Template(email_template.subject).render(context)
-    body = Template(email_template.body).render(context)
-    msg = EmailMessage(
-        subject=subject,
-        body=body,
-        from_email="{} <{}>".format(settings.PORTAL_TITLE,
-                                    settings.SERVER_EMAIL),
-        to=["{} {} <{}>".format(context['first_name'],
-                                context['last_name'],
-                                context['email'])])
-    msg.content_subtype = 'html'
-    msg.send()
 
 
 def login_desktop(request):

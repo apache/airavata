@@ -235,6 +235,7 @@ REST_FRAMEWORK = {
     ),
     'EXCEPTION_HANDLER':
         'django_airavata.apps.api.exceptions.custom_exception_handler',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 AUTHENTICATION_BACKENDS = [

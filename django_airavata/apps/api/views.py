@@ -50,6 +50,7 @@ from . import (
     models,
     output_views,
     serializers,
+    signals,
     thrift_utils,
     tus,
     view_utils
@@ -87,6 +88,8 @@ class GroupViewSet(APIBackedViewSet):
         group_id = self.request.profile_service['group_manager'].createGroup(
             self.authz_token, group)
         group.id = group_id
+        users_added_to_group = set(group.members) - {group.ownerId}
+        self._send_users_added_to_group(users_added_to_group, group)
 
     def perform_update(self, serializer):
         group = serializer.save()
@@ -94,6 +97,7 @@ class GroupViewSet(APIBackedViewSet):
         if len(group._added_members) > 0:
             group_manager_client.addUsersToGroup(
                 self.authz_token, group._added_members, group.id)
+            self._send_users_added_to_group(group._added_members, group)
         if len(group._removed_members) > 0:
             group_manager_client.removeUsersFromGroup(
                 self.authz_token, group._removed_members, group.id)
@@ -109,6 +113,17 @@ class GroupViewSet(APIBackedViewSet):
         group_manager_client = self.request.profile_service['group_manager']
         group_manager_client.deleteGroup(
             self.authz_token, group.id, group.ownerId)
+
+    def _send_users_added_to_group(self, internal_user_ids, group):
+        for internal_user_id in internal_user_ids:
+            user_id, gateway_id = internal_user_id.rsplit("@", maxsplit=1)
+            user_profile = self.request.profile_service['user_profile'].getUserProfileById(
+                self.authz_token, user_id, gateway_id)
+            signals.user_added_to_group.send(
+                sender=self.__class__,
+                user=user_profile,
+                group=group,
+                request=self.request)
 
 
 class ProjectViewSet(APIBackedViewSet):
@@ -1596,10 +1611,20 @@ class IAMUserViewSet(mixins.RetrieveModelMixin,
     def perform_update(self, serializer):
         managed_user_profile = serializer.save()
         group_manager_client = self.request.profile_service['group_manager']
+        user_profile_client = self.request.profile_service['user_profile']
         user_id = managed_user_profile['airavataInternalUserId']
+        username = managed_user_profile['userId']
         for group_id in managed_user_profile['_added_group_ids']:
+            user_profile = user_profile_client.getUserProfileById(
+                self.authz_token, username, settings.GATEWAY_ID)
+            group = group_manager_client.getGroup(self.authz_token, group_id)
             group_manager_client.addUsersToGroup(
                 self.authz_token, [user_id], group_id)
+            signals.user_added_to_group.send(
+                sender=self.__class__,
+                user=user_profile,
+                group=group,
+                request=self.request)
         for group_id in managed_user_profile['_removed_group_ids']:
             group_manager_client.removeUsersFromGroup(
                 self.authz_token, [user_id], group_id)
