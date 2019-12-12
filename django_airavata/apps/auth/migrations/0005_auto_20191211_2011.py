@@ -27,12 +27,13 @@ def default_templates(apps, schema_editor):
         <p>
         You may have access to additional applications now that you are a
         member of {{group_name}}. To check what applications you have access
-        to, please check: {{dashboard_url}}.
+        to, please check: <a href="{{dashboard_url}}">{{dashboard_url}}</a>.
         </p>
 
         <p>
         You may also have access to additional experiments. To check what
-        experiments you have access to, please check: {{experiments_url}}.
+        experiments you have access to, please check: <a
+        href="{{experiments_url}}">{{experiments_url}}</a>.
         </p>
 
         <p>
