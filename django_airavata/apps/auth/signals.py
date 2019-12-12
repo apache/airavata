@@ -9,7 +9,7 @@ from . import models, utils
 
 
 @receiver(user_added_to_group, dispatch_uid="auth_email_user_added_to_group")
-def email_user_added_to_group(sender, user, group, request, **kwargs):
+def email_user_added_to_group(sender, user, groups, request, **kwargs):
     context = Context({
         "email": user.emails[0],
         "first_name": user.firstName,
@@ -20,6 +20,6 @@ def email_user_added_to_group(sender, user, group, request, **kwargs):
             reverse("django_airavata_workspace:dashboard")),
         "experiments_url": request.build_absolute_uri(
             reverse("django_airavata_workspace:experiments")),
-        "group_name": group.name
+        "group_names": [g.name for g in groups]
     })
     utils.send_email_to_user(models.USER_ADDED_TO_GROUP_TEMPLATE, context)

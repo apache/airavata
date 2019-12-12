@@ -12,22 +12,22 @@ def default_templates(apps, schema_editor):
     EmailTemplate = apps.get_model("django_airavata_auth", "EmailTemplate")
     user_added_to_group_template = EmailTemplate(
         template_type=USER_ADDED_TO_GROUP_TEMPLATE,
-        subject="You've been added to group [{{group_name}}] in {{portal_title}}",
+        subject="You've been added to group{{ group_names|length|pluralize }} [{{group_names|join:'] and ['}}] in {{portal_title}}",
         body="""
         <p>
         Dear {{first_name}} {{last_name}},
         </p>
 
         <p>
-        Your user account (username {{username}}) has been added to the group
-        {{group_name}}. {{portal_title}} uses groups to share applications
-        and experiments.
+        Your user account (username {{username}}) has been added to the
+        group{{ group_names|length|pluralize }} {{group_names|join:' and '}}.
+        {{portal_title}} uses groups to share applications and experiments.
         </p>
 
         <p>
         You may have access to additional applications now that you are a
-        member of {{group_name}}. To check what applications you have access
-        to, please check: <a href="{{dashboard_url}}">{{dashboard_url}}</a>.
+        member of {{group_names|join:' and '}}. To check what applications you
+        have access to, please check: <a href="{{dashboard_url}}">{{dashboard_url}}</a>.
         </p>
 
         <p>

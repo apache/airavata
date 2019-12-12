@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 # Signals
-user_added_to_group = Signal(providing_args=["user", "group", "request"])
+user_added_to_group = Signal(providing_args=["user", "groups", "request"])
 
 
 # Receivers

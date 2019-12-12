@@ -122,7 +122,7 @@ class GroupViewSet(APIBackedViewSet):
             signals.user_added_to_group.send(
                 sender=self.__class__,
                 user=user_profile,
-                group=group,
+                groups=[group],
                 request=self.request)
 
 
@@ -1613,18 +1613,21 @@ class IAMUserViewSet(mixins.RetrieveModelMixin,
         group_manager_client = self.request.profile_service['group_manager']
         user_profile_client = self.request.profile_service['user_profile']
         user_id = managed_user_profile['airavataInternalUserId']
-        username = managed_user_profile['userId']
+        user_profile = user_profile_client.getUserProfileById(
+            self.authz_token,
+            managed_user_profile['userId'],
+            settings.GATEWAY_ID)
+        added_groups = []
         for group_id in managed_user_profile['_added_group_ids']:
-            user_profile = user_profile_client.getUserProfileById(
-                self.authz_token, username, settings.GATEWAY_ID)
             group = group_manager_client.getGroup(self.authz_token, group_id)
             group_manager_client.addUsersToGroup(
                 self.authz_token, [user_id], group_id)
-            signals.user_added_to_group.send(
-                sender=self.__class__,
-                user=user_profile,
-                group=group,
-                request=self.request)
+            added_groups.append(group)
+        signals.user_added_to_group.send(
+            sender=self.__class__,
+            user=user_profile,
+            groups=added_groups,
+            request=self.request)
         for group_id in managed_user_profile['_removed_group_ids']:
             group_manager_client.removeUsersFromGroup(
                 self.authz_token, [user_id], group_id)
