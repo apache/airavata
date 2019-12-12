@@ -43,7 +43,7 @@ The Apache Airavata Python SDK for  third party clients to  integrate with Airav
             
        [settings.ini](transport/settings.ini)
        
-###Generating Distribution Archives (Optional)
+### Generating Distribution Archives (Optional)
 
    You can generate *.tar.gz ot .whl distribution and install to any external project. 
    
@@ -69,7 +69,7 @@ You should be able to install those packages into your project.
 
 
 
-###Integrate With Your Clients
+### Integrate With Your Clients
 
    - [api_server_client](clients/api_server_client.py)
       - is_user_exists (authz_token, gateway_id, user_name)
