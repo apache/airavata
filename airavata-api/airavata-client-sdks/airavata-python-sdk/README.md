@@ -45,7 +45,7 @@ The Apache Airavata Python SDK for  third party clients to  integrate with Airav
        
 ### Generating Distribution Archives (Optional)
 
-   You can generate *.tar.gz ot .whl distribution and install to any external project. 
+   You can generate *.tar.gz or .whl distribution and install to any external project. 
    
    - Make sure you have the latest versions of setuptools and wheel installed
     
@@ -72,7 +72,6 @@ You should be able to install those packages into your project.
 ### Integrate With Your Clients
 
    - [api_server_client](clients/api_server_client.py)
-      - is_user_exists (authz_token, gateway_id, user_name)
       - is_user_exists(authz_token, gateway_id, user_name)
       - add_gateway( authz_token, [gateway](airavata/model/workspace/ttypes.py)) 
       - get_all_users_in_gateway( authz_token, gateway_id)
