@@ -109,10 +109,12 @@ def send_email_to_user(template_id, context):
     msg = EmailMessage(
         subject=subject,
         body=body,
-        from_email="{} <{}>".format(settings.PORTAL_TITLE,
-                                    settings.SERVER_EMAIL),
-        to=["{} {} <{}>".format(context['first_name'],
-                                context['last_name'],
-                                context['email'])])
+        from_email="\"{}\" <{}>".format(settings.PORTAL_TITLE,
+                                        settings.SERVER_EMAIL),
+        to=["\"{} {}\" <{}>".format(context['first_name'],
+                                    context['last_name'],
+                                    context['email'])],
+        reply_to=[f"\"{a[0]}\" <{a[1]}>" for a in settings.PORTAL_ADMINS]
+    )
     msg.content_subtype = 'html'
     msg.send()
