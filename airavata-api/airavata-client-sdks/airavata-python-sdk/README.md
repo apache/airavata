@@ -2,7 +2,7 @@
 The Apache Airavata Python SDK for  third party clients to  integrate with Airavata middleware
 
 
-Folder Structure
+###Folder Structure
 
  - airavata
       
@@ -22,7 +22,7 @@ Folder Structure
    Includes connection handling classes and connection pool implementations
               
 
-Before The Integration
+### Before  Integration
 
   -  Create a virtual environment
                 
@@ -42,8 +42,34 @@ Before The Integration
   -  Create a INI file containing server configuration details. For more information refer to default settings file
             
        [settings.ini](transport/settings.ini)
-             
-Integrate With Your Clients
+       
+###Generating Distribution Archives (Optional)
+
+   You can generate *.tar.gz ot .whl distribution and install to any external project. 
+   
+   - Make sure you have the latest versions of setuptools and wheel installed
+    
+       ```
+       python3 -m pip install --user --upgrade setuptools wheel
+       ``` 
+   - Now run this command from the same directory where setup.py is located
+   
+        ```
+        python3 setup.py sdist bdist_wheel
+        ```
+   - This command should output a lot of text and once completed should generate two files in the dist directory
+   
+        ```
+        dist/
+            airavata_python_sdk-1.0.0-py2.py3-none-any.whl
+            airavata-python-sdk-1.0.0.tar.gz
+        ```     
+
+You should be able to install those packages into your project.
+
+
+
+###Integrate With Your Clients
 
    - [api_server_client](clients/api_server_client.py)
       - is_user_exists (authz_token, gateway_id, user_name)
