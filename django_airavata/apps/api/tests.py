@@ -13,10 +13,12 @@ from airavata.model.user.ttypes import UserProfile
 from . import signals, views
 
 GATEWAY_ID = "test-gateway"
+PORTAL_ADMINS = [('Admin Name', 'admin@example.com')]
 
 
 @override_settings(
-    GATEWAY_ID=GATEWAY_ID
+    GATEWAY_ID=GATEWAY_ID,
+    PORTAL_ADMINS=PORTAL_ADMINS
 )
 class GroupViewSetTests(TestCase):
 
@@ -164,7 +166,8 @@ class GroupViewSetTests(TestCase):
 
 
 @override_settings(
-    GATEWAY_ID=GATEWAY_ID
+    GATEWAY_ID=GATEWAY_ID,
+    PORTAL_ADMINS=PORTAL_ADMINS
 )
 class IAMUserViewSetTests(TestCase):
 

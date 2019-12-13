@@ -13,6 +13,7 @@ SERVER_EMAIL = "admin@test-gateway.com"
 PORTAL_TITLE = "Test Gateway"
 PORTAL_ADMINS = [('Portal Admin', 'admin@test-gateway.com')]
 
+
 @override_settings(
     GATEWAY_ID=GATEWAY_ID,
     SERVER_EMAIL=SERVER_EMAIL,
@@ -79,4 +80,3 @@ class EmailUserAddedToGroupSignalReceiverTests(TestCase):
                 reverse("django_airavata_workspace:experiments")),
             msg.body)
         self.assertIn(self.user.userId, msg.body)
-
