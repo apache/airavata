@@ -46,7 +46,6 @@
                 <module>java-client-samples</module>
                 <module>airavata-php-sdk</module>
                 <module>airavata-cpp-sdk</module>
-                <module>airavata-python-sdk</module>
             </modules>
         </profile>
     </profiles>
