@@ -19,21 +19,17 @@
 #
 
 ---
-doc_root_dir: "/var/www/{{ gateway_id }}"
-user_data_dir: "/var/www/user_data"
-# real_user_data_dir is the same as user_data_dir but without symbolic links in it
-real_user_data_dir: "{{ user_data_dir }}"
-httpd_default_conf_file_location:
- RedHat: "/etc/httpd/conf.d/default.conf"
- Debian: "/etc/apache2/sites-available/default.conf"
-httpd_ssl_conf_file_location:
- RedHat: "/etc/httpd/conf.d/ssl.conf"
- # TODO: Debian file layout is different, so we really need a different ssl.conf for Debian
- Debian: "/etc/apache2/mods-available/ssl.conf"
 
-httpd_default_conf_template: "default.conf.j2"
-httpd_ssl_conf_template: "ssl.conf.j2"
+- name: Install pre-requisites
+  yum: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - git
+    - httpd
+    - mod_ssl
+    - libselinux-python
+    - policycoreutils-python
+  become: yes
 
-httpd_default_http_port: 80
-httpd_default_https_port: 443
-...
+- name: install epel release
+  yum: name=epel-release state=present
+  become: yes

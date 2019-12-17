@@ -19,21 +19,10 @@
 #
 
 ---
-doc_root_dir: "/var/www/{{ gateway_id }}"
-user_data_dir: "/var/www/user_data"
-# real_user_data_dir is the same as user_data_dir but without symbolic links in it
-real_user_data_dir: "{{ user_data_dir }}"
-httpd_default_conf_file_location:
- RedHat: "/etc/httpd/conf.d/default.conf"
- Debian: "/etc/apache2/sites-available/default.conf"
-httpd_ssl_conf_file_location:
- RedHat: "/etc/httpd/conf.d/ssl.conf"
- # TODO: Debian file layout is different, so we really need a different ssl.conf for Debian
- Debian: "/etc/apache2/mods-available/ssl.conf"
+mod_wsgi_dir: /opt/mod_wsgi
+mod_wsgi_url: https://github.com/GrahamDumpleton/mod_wsgi/archive/4.5.17.tar.gz
+mod_wsgi_tarball_dest: "{{ mod_wsgi_dir }}/{{ mod_wsgi_url | basename }}"
+mod_wsgi_unarchive_dir: "{{ mod_wsgi_dir }}/mod_wsgi-4.5.17"
+httpd_conf_modules_dir: "/etc/httpd/conf.modules.d"
 
-httpd_default_conf_template: "default.conf.j2"
-httpd_ssl_conf_template: "ssl.conf.j2"
-
-httpd_default_http_port: 80
-httpd_default_https_port: 443
 ...
