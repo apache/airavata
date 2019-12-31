@@ -7,4 +7,4 @@ RUN mkdir /var/www/portals
 RUN a2enmod rewrite
 EXPOSE 80
 EXPOSE 443
-CMD [ "/bin/sh", "-c", "composer --working-dir=/var/www/portals/default install && echo 'Starting sever..' && /usr/sbin/apache2ctl -D FOREGROUND"]
+CMD [ "/bin/sh", "-c", "mkdir -p /var/www/portals/default/app/storage/views/ && mkdir -p /var/www/portals/default/app/storage/sessions/ && composer --working-dir=/var/www/portals/default install && echo 'Starting sever..' && /usr/sbin/apache2ctl -D FOREGROUND"]
