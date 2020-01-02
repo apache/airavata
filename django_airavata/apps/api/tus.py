@@ -12,7 +12,7 @@ def move_tus_upload(upload_url, move_function):
     """
     Move upload identified by upload_url using the provided move_function.
 
-    move_function signature should be (file_path, file_name). It's
+    move_function signature should be (file_path, file_name, file_type). It's
     return value will be returned.
     """
     # file UUID is last path component in URL. For example:
@@ -34,6 +34,7 @@ def move_tus_upload(upload_url, move_function):
     with open(upload_info_path) as upload_info_file:
         upload_info = json.load(upload_info_file)
         filename = upload_info['MetaData']['filename']
-        result = move_function(upload_bin_path, filename)
+        filetype = upload_info['MetaData']['filetype']
+        result = move_function(upload_bin_path, filename, filetype)
     os.remove(upload_info_path)
     return result

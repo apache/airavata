@@ -926,7 +926,7 @@ def upload_input_file(request):
     try:
         input_file = request.FILES['file']
         data_product = data_products_helper.save_input_file_upload(
-            request, input_file)
+            request, input_file, content_type=input_file.content_type)
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
         return JsonResponse({'uploaded': True,
@@ -942,9 +942,9 @@ def upload_input_file(request):
 def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
-    def move_input_file(file_path, file_name):
+    def move_input_file(file_path, file_name, file_type):
         return data_products_helper.move_input_file_upload_from_filepath(
-            request, file_path, name=file_name)
+            request, file_path, name=file_name, content_type=file_type)
     try:
         data_product = tus.move_tus_upload(uploadURL, move_input_file)
         serializer = serializers.DataProductSerializer(
@@ -1489,14 +1489,15 @@ class UserStoragePathView(APIView):
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = data_products_helper.save(
-                request, path, user_file)
+                request, path, user_file, content_type=user_file.content_type)
         # Handle a tus upload
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
 
-            def move_file(file_path, file_name):
+            def move_file(file_path, file_name, file_type):
                 return data_products_helper.move_from_filepath(
-                    request, file_path, path, name=file_name)
+                    request, file_path, path, name=file_name,
+                    content_type=file_type)
             data_product = tus.move_tus_upload(uploadURL, move_file)
         return self._create_response(request, path, uploaded=data_product)
 

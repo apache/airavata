@@ -1,4 +1,6 @@
+import copy
 import logging
+import mimetypes
 import os
 from urllib.parse import urlparse
 
@@ -19,30 +21,34 @@ logger = logging.getLogger(__name__)
 TMP_INPUT_FILE_UPLOAD_DIR = "tmp"
 
 
-def save(request, path, file, name=None):
+def save(request, path, file, name=None, content_type=None):
     "Save file in path in the user's storage."
     username = request.user.username
     full_path = datastore.save(username, path, file, name=name)
-    data_product = _save_data_product(request, full_path, name=name)
+    data_product = _save_data_product(request, full_path, name=name,
+                                      content_type=content_type)
     return data_product
 
 
-def move_from_filepath(request, source_path, target_path, name=None):
+def move_from_filepath(request, source_path, target_path, name=None,
+                       content_type=None):
     "Move a file from filesystem into user's storage."
     username = request.user.username
     file_name = name if name is not None else os.path.basename(source_path)
     full_path = datastore.move_external(
         source_path, username, target_path, file_name)
-    data_product = _save_data_product(request, full_path, name=file_name)
+    data_product = _save_data_product(request, full_path, name=file_name,
+                                      content_type=content_type)
     return data_product
 
 
-def save_input_file_upload(request, file, name=None):
+def save_input_file_upload(request, file, name=None, content_type=None):
     """Save input file in staging area for input file uploads."""
     username = request.user.username
     file_name = name if name is not None else os.path.basename(file.name)
     full_path = datastore.save(username, TMP_INPUT_FILE_UPLOAD_DIR, file)
-    data_product = _save_data_product(request, full_path, name=file_name)
+    data_product = _save_data_product(request, full_path, name=file_name,
+                                      content_type=content_type)
     return data_product
 
 
@@ -54,7 +60,7 @@ def copy_input_file_upload(request, data_product):
                                request.user.username,
                                TMP_INPUT_FILE_UPLOAD_DIR,
                                name=name)
-    return _save_data_product(request, full_path, name=name)
+    return _save_copy_of_data_product(request, full_path, data_product)
 
 
 def is_input_file_upload(request, data_product):
@@ -77,17 +83,19 @@ def move_input_file_upload(request, data_product, path):
         path,
         file_name)
     _delete_data_product(data_product.ownerName, source_path)
-    data_product = _save_data_product(request, full_path, name=file_name)
+    data_product = _save_copy_of_data_product(request, full_path, data_product)
     return data_product
 
 
-def move_input_file_upload_from_filepath(request, source_path, name=None):
+def move_input_file_upload_from_filepath(request, source_path, name=None,
+                                         content_type=None):
     "Move a file from filesystem into user's input file staging area."
     username = request.user.username
     file_name = name if name is not None else os.path.basename(source_path)
     full_path = datastore.move_external(
         source_path, username, TMP_INPUT_FILE_UPLOAD_DIR, file_name)
-    data_product = _save_data_product(request, full_path, name=file_name)
+    data_product = _save_data_product(request, full_path, name=file_name,
+                                      content_type=content_type)
     return data_product
 
 
@@ -196,19 +204,43 @@ def _get_data_product_uri(request, full_path):
     return product_uri
 
 
-def _save_data_product(request, full_path, name=None):
+def _save_data_product(request, full_path, name=None, content_type=None):
     "Create, register and record in DB a data product for full_path."
     data_product = _create_data_product(
-        request.user.username, full_path, name=name)
+        request.user.username, full_path, name=name, content_type=content_type)
+    product_uri = _register_data_product(request, full_path, data_product)
+    data_product.productUri = product_uri
+    return data_product
+
+
+def _register_data_product(request, full_path, data_product):
     product_uri = request.airavata_client.registerDataProduct(
         request.authz_token, data_product)
-    data_product.productUri = product_uri
     user_file_instance = models.User_Files(
         username=request.user.username,
         file_path=full_path,
         file_dpu=product_uri)
     user_file_instance.save()
-    return data_product
+    return product_uri
+
+
+def _save_copy_of_data_product(request, full_path, data_product):
+    """Save copy of a data product with a different path."""
+    data_product_copy = _copy_data_product(request, data_product, full_path)
+    product_uri = _register_data_product(request, full_path, data_product_copy)
+    data_product_copy.productUri = product_uri
+    return data_product_copy
+
+
+def _copy_data_product(request, data_product, full_path):
+    """Create an unsaved copy of a data product with different path."""
+    data_product_copy = copy.copy(data_product)
+    data_product_copy.productUri = None
+    data_product_copy.ownerName = request.user.username
+    data_replica_location = _create_replica_location(
+        full_path, data_product_copy.productName)
+    data_product_copy.replicaLocations = [data_replica_location]
+    return data_product_copy
 
 
 def _delete_data_product(username, full_path):
@@ -220,7 +252,8 @@ def _delete_data_product(username, full_path):
         user_file.delete()
 
 
-def _create_data_product(username, full_path, name=None):
+def _create_data_product(username, full_path, name=None,
+                         content_type=None):
     data_product = DataProductModel()
     data_product.gatewayId = settings.GATEWAY_ID
     data_product.ownerName = username
@@ -230,6 +263,19 @@ def _create_data_product(username, full_path, name=None):
         file_name = os.path.basename(full_path)
     data_product.productName = file_name
     data_product.dataProductType = DataProductType.FILE
+    if content_type is not None:
+        data_product.productMetadata = {'mime-type': content_type}
+    else:
+        # Try to guess the content-type from file extension
+        guessed_type, encoding = mimetypes.guess_type(file_name)
+        if guessed_type is not None:
+            data_product.productMetadata = {'mime-type': guessed_type}
+    data_replica_location = _create_replica_location(full_path, file_name)
+    data_product.replicaLocations = [data_replica_location]
+    return data_product
+
+
+def _create_replica_location(full_path, file_name):
     data_replica_location = DataReplicaLocationModel()
     data_replica_location.storageResourceId = \
         settings.GATEWAY_DATA_STORE_RESOURCE_ID
@@ -242,8 +288,7 @@ def _create_data_product(username, full_path, name=None):
     data_replica_location.filePath = \
         "file://{}:{}".format(settings.GATEWAY_DATA_STORE_HOSTNAME,
                               full_path)
-    data_product.replicaLocations = [data_replica_location]
-    return data_product
+    return data_replica_location
 
 
 def _get_replica_filepath(data_product):
