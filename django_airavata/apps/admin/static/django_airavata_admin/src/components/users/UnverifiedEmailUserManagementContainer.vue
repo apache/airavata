@@ -8,6 +8,7 @@
               hover
               :fields="fields"
               :items="items"
+              fixed="true"
             >
               <template
                 slot="creationTime"
