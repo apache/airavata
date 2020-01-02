@@ -506,4 +506,8 @@ public class ServerSettings extends ApplicationSettings {
     public static Boolean isSteamingEnabled() {
         return Boolean.valueOf(getSetting(Constants.ENABLE_STREAMING_TRANSFER, "True"));
     }
+
+    public static Boolean isAgentTransferEnabled() {
+        return Boolean.valueOf(getSetting(Constants.ENABLE_AGENT_TRANSFER, "True"));
+    }
 }

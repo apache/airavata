@@ -35,6 +35,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>mft-admin</artifactId>
+            <version>0.01-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>task-core</artifactId>
             <version>0.19-SNAPSHOT</version>
             <exclusions>
@@ -42,12 +48,26 @@
                     <groupId>commons-io</groupId>
                     <artifactId>commons-io</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>registry-api-service</artifactId>
             <version>0.19-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId> com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -63,6 +83,12 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>services-security</artifactId>
             <version>0.19-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -96,11 +122,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>services-security</artifactId>
-            <version>0.19-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messaging-core</artifactId>
             <version>0.19-SNAPSHOT</version>
         </dependency>
@@ -118,11 +139,23 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>5.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java</artifactId>
             <version>3.0.14</version>
+            <exclusions>
+                <exclusion>
+                    <groupId> com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

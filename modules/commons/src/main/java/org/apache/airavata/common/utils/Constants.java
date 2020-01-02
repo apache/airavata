@@ -71,4 +71,5 @@ public final class Constants {
     public static final String NEWLINE = System.getProperty("line.separator");
 
     public static final String ENABLE_STREAMING_TRANSFER = "enable.streaming.transfer";
+    public static final String ENABLE_AGENT_TRANSFER = "enable.agent.transfer";
 }
