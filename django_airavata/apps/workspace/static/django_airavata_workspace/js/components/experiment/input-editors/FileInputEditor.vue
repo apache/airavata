@@ -8,8 +8,9 @@
         class="mr-auto"
         :data-product="dataProduct"
         :input-file="true"
+        :open-in-new-window="true"
       />
-      <b-link @click="viewFile">
+      <b-link @click="viewFile" v-if="isViewable">
         View File <i class="fa fa-eye"></i>
         <span class="sr-only">View file</span>
       </b-link>
@@ -85,6 +86,9 @@ export default {
       } else {
         return [];
       }
+    },
+    isViewable() {
+      return this.dataProduct.isText;
     }
   },
   data() {

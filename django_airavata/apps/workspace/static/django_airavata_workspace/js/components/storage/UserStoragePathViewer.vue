@@ -22,7 +22,7 @@
           v-else
           :href="data.item.downloadURL"
           :target="downloadTarget"
-        > <i class="fa fa-download"></i> {{ data.item.name }}</b-link>
+        > {{ data.item.name }}</b-link>
       </template>
       <template
         slot="createdTimestamp"

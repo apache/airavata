@@ -32,6 +32,7 @@ const FIELDS = [
 ];
 
 const FILENAME_REGEX = /[^/]+$/;
+const TEXT_MIME_TYPE_REGEX = /^text\/.+/;
 
 export default class DataProduct extends BaseModel {
     constructor(data = {}) {
@@ -48,5 +49,13 @@ export default class DataProduct extends BaseModel {
             }
         }
         return null;
+    }
+
+    get isText() {
+      return this.mimeType && TEXT_MIME_TYPE_REGEX.test(this.mimeType);
+    }
+
+    get mimeType() {
+      return this.productMetadata && this.productMetadata['mime-type'] ? this.productMetadata['mime-type'] : null;
     }
 }
