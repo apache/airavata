@@ -1,8 +1,7 @@
 <template>
 
   <span v-if="downloadURL">
-    <a :href="downloadURL" class="action-link">
-      <i class="fa fa-download"></i>
+    <a :href="downloadURL" class="action-link" :target="linkTarget">
       {{ filename }}
     </a>
   </span>
@@ -24,6 +23,10 @@ export default {
     },
     mimeType: {
       type: String
+    },
+    openInNewWindow: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -45,6 +48,9 @@ export default {
       } else {
         return this.dataProduct.downloadURL;
       }
+    },
+    linkTarget() {
+      return this.openInNewWindow ? "_blank": "_self";
     }
   }
 };

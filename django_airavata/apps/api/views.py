@@ -975,12 +975,14 @@ def download_file(request):
                     .format(data_product_uri), exc_info=True)
         raise Http404("data product does not exist") from e
     try:
-        data_file = data_products_helper.open(request, data_product)
+        data_file = data_products_helper.open_file(request, data_product)
         response = FileResponse(data_file, content_type=mime_type)
         file_name = os.path.basename(data_file.name)
         if mime_type == 'application/octet-stream' or force_download:
             response['Content-Disposition'] = ('attachment; filename="{}"'
                                                .format(file_name))
+        else:
+            response['Content-Disposition'] = f'filename="{file_name}"'
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e

@@ -99,7 +99,7 @@ def move_input_file_upload_from_filepath(request, source_path, name=None,
     return data_product
 
 
-def open(request, data_product):
+def open_file(request, data_product):
     "Return file object for replica if it exists in user storage."
     path = _get_replica_filepath(data_product)
     return datastore.open(data_product.ownerName, path)
@@ -263,16 +263,28 @@ def _create_data_product(username, full_path, name=None,
         file_name = os.path.basename(full_path)
     data_product.productName = file_name
     data_product.dataProductType = DataProductType.FILE
-    if content_type is not None:
-        data_product.productMetadata = {'mime-type': content_type}
-    else:
-        # Try to guess the content-type from file extension
-        guessed_type, encoding = mimetypes.guess_type(file_name)
-        if guessed_type is not None:
-            data_product.productMetadata = {'mime-type': guessed_type}
+    final_content_type = _determine_content_type(full_path, content_type)
+    if final_content_type is not None:
+        data_product.productMetadata = {'mime-type': final_content_type}
     data_replica_location = _create_replica_location(full_path, file_name)
     data_product.replicaLocations = [data_replica_location]
     return data_product
+
+
+def _determine_content_type(full_path, content_type=None):
+    result = content_type
+    if result is None:
+        # Try to guess the content-type from file extension
+        guessed_type, encoding = mimetypes.guess_type(full_path)
+        result = guessed_type
+    if result is None or result == 'application/octet-stream':
+        # Check if file is Unicode text by trying to read some of it
+        try:
+            open(full_path, 'r').read(1024)
+            result = 'text/plain'
+        except UnicodeDecodeError:
+            logger.debug(f"Failed to read as Unicode text: {full_path}")
+    return result
 
 
 def _create_replica_location(full_path, file_name):

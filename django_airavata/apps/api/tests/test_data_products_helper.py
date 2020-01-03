@@ -91,6 +91,42 @@ class SaveTests(BaseTestCase):
             self.assertEqual(f"file://gateway.com:{path}/bar.txt",
                              dp.replicaLocations[0].filePath)
 
+    def test_save_with_unknown_text_file_type(self):
+        "Test save with unknown file ext for text file"
+        with tempfile.TemporaryDirectory() as tmpdirname, \
+                self.settings(GATEWAY_DATA_STORE_DIR=tmpdirname,
+                              GATEWAY_DATA_STORE_HOSTNAME="gateway.com"):
+            path = os.path.join(
+                tmpdirname, "foo.someext")
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'w') as f:
+                f.write("Some Unicode text")
+            with open(path, 'r') as f:
+                dp = data_products_helper.save(
+                    self.request, "some/path", f,
+                    content_type="application/octet-stream")
+                # Make sure that the file contents are tested to see if text
+                self.assertDictEqual({'mime-type': 'text/plain'},
+                                     dp.productMetadata)
+
+    def test_save_with_unknown_binary_file_type(self):
+        "Test save with unknown file ext for binary file"
+        with tempfile.TemporaryDirectory() as tmpdirname, \
+                self.settings(GATEWAY_DATA_STORE_DIR=tmpdirname,
+                              GATEWAY_DATA_STORE_HOSTNAME="gateway.com"):
+            path = os.path.join(
+                tmpdirname, "foo.someext")
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'wb') as f:
+                f.write(bytes(range(256)))
+            with open(path, 'rb') as f:
+                dp = data_products_helper.save(
+                    self.request, "some/path", f,
+                    content_type="application/octet-stream")
+                # Make sure that DID NOT determine file contents are text
+                self.assertDictEqual({'mime-type': 'application/octet-stream'},
+                                     dp.productMetadata)
+
 
 class CopyInputFileUploadTests(BaseTestCase):
     def test_copy_input_file_upload(self):
