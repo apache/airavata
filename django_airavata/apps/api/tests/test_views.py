@@ -9,8 +9,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from airavata.model.appcatalog.gatewaygroups.ttypes import GatewayGroups
 from airavata.model.group.ttypes import GroupModel
 from airavata.model.user.ttypes import UserProfile
-
-from . import signals, views
+from django_airavata.apps.api import signals, views
 
 GATEWAY_ID = "test-gateway"
 PORTAL_ADMINS = [('Admin Name', 'admin@example.com')]
