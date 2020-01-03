@@ -160,22 +160,28 @@ public class PreWorkflowManager extends WorkflowManager {
         }
 
         String experimentId = processModel.getExperimentId();
-
-        List<String> workflows = processModel.getProcessWorkflows().stream().map(ProcessWorkflow::getWorkflowId).collect(Collectors.toList());
         final List<AbstractTask> allTasks = new ArrayList<>();
-        if (workflows != null && workflows.size() > 0) {
-            for (String wf : workflows) {
-                logger.info("Creating cancellation task for workflow " + wf + " of process " + processId);
-                WorkflowCancellationTask wfct = new WorkflowCancellationTask();
-                wfct.setTaskId(UUID.randomUUID().toString());
-                wfct.setCancellingWorkflowName(wf);
 
-                if (allTasks.size() > 0) {
-                    allTasks.get(allTasks.size() -1).setNextTask(new OutPort(wfct.getTaskId(), wfct));
+        Optional<List<String>> workflowsOpt = Optional.ofNullable(processModel.getProcessWorkflows()).map(wfs -> wfs.stream().map(ProcessWorkflow::getWorkflowId).collect(Collectors.toList()));
+
+        if (workflowsOpt.isPresent()) {
+            List<String> workflows = workflowsOpt.get();
+            if (workflows.size() > 0) {
+                for (String wf : workflows) {
+                    logger.info("Creating cancellation task for workflow " + wf + " of process " + processId);
+                    WorkflowCancellationTask wfct = new WorkflowCancellationTask();
+                    wfct.setTaskId(UUID.randomUUID().toString());
+                    wfct.setCancellingWorkflowName(wf);
+
+                    if (allTasks.size() > 0) {
+                        allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(wfct.getTaskId(), wfct));
+                    }
+                    allTasks.add(wfct);
                 }
-                allTasks.add(wfct);
-            }
 
+            } else {
+                logger.warn("No workflow registered with process " + processId + " to cancel");
+            }
         } else {
             logger.warn("No workflow registered with process " + processId + " to cancel");
         }
@@ -212,6 +218,7 @@ public class PreWorkflowManager extends WorkflowManager {
     public static void main(String[] args) throws Exception {
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
         preWorkflowManager.startServer();
+        preWorkflowManager.createAndLaunchCancelWorkflow("PROCESS_7e19c779-e326-43d2-b025-aaa3a4b44c95","ultrascan");
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {
