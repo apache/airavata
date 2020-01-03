@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.impl.task.staging;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
@@ -34,7 +33,6 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -70,7 +68,7 @@ public class InputDataStagingTask extends DataStagingTask {
 
             try {
 
-                String sourceUrls[];
+                String[] sourceUrls;
 
                 if (dataStagingTaskModel.getProcessInput().getType() == DataType.URI_COLLECTION) {
                     logger.info("Found a URI collection so splitting by comma for path " + dataStagingTaskModel.getSource());
