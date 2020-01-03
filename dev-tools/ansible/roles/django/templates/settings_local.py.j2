@@ -134,15 +134,15 @@ PORTAL_TITLE = '{{ portal_title }}'
 # Hidden Airavata apps (not all gateways need all functionality)
 HIDDEN_AIRAVATA_APPS = {{ django_hidden_airavata_apps }}
 
+{% if django_tus_endpoint is defined and django_tus_endpoint %}
 # Tus uploads
-{% if django_tus_endpoint is defined %}
 TUS_ENDPOINT = "{{ django_tus_endpoint }}"
 TUS_DATA_DIR = "{{ django_tus_data_dir }}"
 {% endif %}
 
 FILE_UPLOAD_MAX_FILE_SIZE = {{ django_file_upload_max_file_size_mb }} * 1024 * 1024
 
-{% if django_pga_url is defined %}
+{% if django_pga_url is defined and django_pga_url %}
 PGA_URL = "{{ django_pga_url }}"
 {% endif %}
 

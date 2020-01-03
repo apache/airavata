@@ -18,46 +18,59 @@
 # under the License.
 #
 ---
-# TODO: install python36
-# sudo yum -y install python36
-# sudo yum -y install httpd-devel
-# sudo yum -y install python36-devel
-# sudo yum -y install mysql-devel
-# sudo yum -y install gcc
 
-# TODO: fetch and build mod_wsgi
-# mkdir mod_wsgi
-# cd mod_wsgi/
-# curl -LO https://github.com/GrahamDumpleton/mod_wsgi/archive/4.5.17.tar.gz
-# tar zxf 4.5.17.tar.gz
-# cd mod_wsgi-4.5.17/
-# ./configure --with-python=/usr/bin/python3
-# make
-# sudo make install
+- name: Install Airavata Django Portal prerequisites
+  yum: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - python36
+    - httpd-devel
+    - python36-devel
+    - mysql-devel
+    - gcc
+  become_user: root
 
-# TODO: configure apache to load mod_wsgi
-# * configure Apache to load mod_wsgi
-# ```
-# sudo vim /etc/httpd/conf.modules.d/00-wsgi.conf
-# ```
-# * 00-wsgi.conf file contains
-# ```
-# LoadModule wsgi_module modules/mod_wsgi.so
-# ```
+- name: Create mod_wsgi directory
+  file: path={{ mod_wsgi_dir }} state=directory
+  become: yes
 
-# TODO: install Node.js EPEL repository and then install nodejs
-# sudo curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
-# sudo yum install nodejs
-
-# Install yarn
-- name: Add yarn yum repository on CentOS
+- name: Fetch mod_wsgi
   get_url:
-    url: "https://dl.yarnpkg.com/rpm/yarn.repo"
-    dest: "/etc/yum.repos.d/yarn.repo"
+    url: "{{ mod_wsgi_url }}"
+    dest: "{{ mod_wsgi_tarball_dest }}"
   become: yes
-  when: ansible_distribution == 'CentOS'
 
-- name: Install yarn (RedHat)
-  yum: name=yarn state=latest update_cache=yes
+- name: Untar mod_wsgi
+  unarchive:
+    src: "{{ mod_wsgi_tarball_dest }}"
+    remote_src: yes
+    dest: "{{ mod_wsgi_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}"
   become: yes
-  when: ansible_os_family == "RedHat"
+
+- name: Configure mod_wsgi
+  command: ./configure --with-python=/usr/bin/python3
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}/Makefile"
+  become: yes
+
+- name: make mod_wsgi
+  command: make
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}/src/server/mod_wsgi.la"
+  become: yes
+
+- name: make install mod_wsgi
+  command: make install
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+  become: yes
+
+- name: Copy mod_wsgi config file
+  copy:
+    src: 00-wsgi.conf
+    dest: "{{ httpd_conf_modules_dir }}/00-wsgi.conf"
+  become: yes
+
+...
