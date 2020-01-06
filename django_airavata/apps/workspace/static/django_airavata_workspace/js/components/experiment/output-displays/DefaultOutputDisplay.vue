@@ -1,11 +1,9 @@
 <template>
   <div>
-    <data-product-viewer
-      v-for="dp in dataProducts"
-      :data-product="dp"
-      :key="dp.productUri"
-      :mime-type="fileMimeType"
-    />
+    <div v-for="dp in dataProducts" :key="dp.productUri">
+      <img v-if="dp.isImage && dp.downloadURL" class="image-preview rounded" :src="dp.downloadURL" />
+      <data-product-viewer :data-product="dp" :mime-type="fileMimeType" />
+    </div>
   </div>
 </template>
 
@@ -47,3 +45,10 @@ export default {
   }
 };
 </script>
+<style scoped>
+.image-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 120px;
+}
+</style>

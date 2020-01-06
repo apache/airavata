@@ -33,6 +33,7 @@ const FIELDS = [
 
 const FILENAME_REGEX = /[^/]+$/;
 const TEXT_MIME_TYPE_REGEX = /^text\/.+/;
+const IMAGE_MIME_TYPE_REGEX = /^image\/.+/;
 
 export default class DataProduct extends BaseModel {
     constructor(data = {}) {
@@ -53,6 +54,10 @@ export default class DataProduct extends BaseModel {
 
     get isText() {
       return this.mimeType && TEXT_MIME_TYPE_REGEX.test(this.mimeType);
+    }
+
+    get isImage() {
+      return this.mimeType && IMAGE_MIME_TYPE_REGEX.test(this.mimeType);
     }
 
     get mimeType() {
