@@ -208,6 +208,7 @@
                 <include>io.netty:netty-transport-native-kqueue:jar</include>
 
                 <include>org.apache.commons:commons-pool2:jar</include>
+                <include>org.json:json:jar</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
