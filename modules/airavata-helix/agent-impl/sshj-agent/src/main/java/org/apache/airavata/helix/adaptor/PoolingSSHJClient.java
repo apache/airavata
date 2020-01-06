@@ -165,7 +165,7 @@ public class PoolingSSHJClient extends SSHClient {
 
                         if (!sshClient.isConnected() || !sshClient.isAuthenticated() || !sshClient.isErrored()) {
                             logger.warn("Client for host {} is not connected or not authenticated. Creating a new client", host);
-                            removeDisconnectedClients(sshClient);
+                            removeDisconnectedClients(sshClient, true);
                             return newClientWithSessionValidation();
                         } else {
                             return sshClient;
@@ -181,14 +181,16 @@ public class PoolingSSHJClient extends SSHClient {
         }
     }
 
-    private void removeDisconnectedClients(SSHClientWrapper client) {
+    private void removeDisconnectedClients(SSHClientWrapper client, boolean doDisconnect) {
         lock.writeLock().lock();
 
-        try {
-            client.disconnect();
-        } catch (Exception e) {
-            log.warn("Errored while disconnecting the client " + e.getMessage());
-            // Ignore
+        if (doDisconnect) {
+            try {
+                client.disconnect();
+            } catch (Exception e) {
+                log.warn("Errored while disconnecting the client " + e.getMessage());
+                // Ignore
+            }
         }
 
         try {
@@ -255,7 +257,7 @@ public class PoolingSSHJClient extends SSHClient {
             @Override
             public void notifyDisconnect(DisconnectReason reason, String message) {
                 logger.warn("Connection disconnected " + message + " due to " + reason.name());
-                removeDisconnectedClients(sshClient);
+                removeDisconnectedClients(sshClient, false);
             }
         });
 
