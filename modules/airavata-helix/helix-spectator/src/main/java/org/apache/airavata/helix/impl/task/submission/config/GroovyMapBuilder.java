@@ -253,8 +253,7 @@ public class GroovyMapBuilder {
                 }
 
                 if (!inputDataObjectType.isIsRequired() &&
-                        (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue())) &&
-                        (inputDataObjectType.getType() == DataType.URI || inputDataObjectType.getType() == DataType.URI_COLLECTION)) {
+                        (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
                     // For URI/ Collection non required inputs, if the value is empty, ignore it. Fix for airavata-3276
                     continue;
                 }
