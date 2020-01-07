@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.helix.impl.task.staging;
 
+import io.grpc.StatusRuntimeException;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
@@ -27,10 +28,8 @@ import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.airavata.mft.admin.MFTAdmin;
-import org.apache.airavata.mft.admin.models.AgentInfo;
-import org.apache.airavata.mft.admin.models.TransferRequest;
-import org.apache.airavata.mft.admin.models.TransferState;
+import org.apache.airavata.mft.api.client.MFTApiClient;
+import org.apache.airavata.mft.api.service.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -188,32 +187,39 @@ public class OutputDataStagingTask extends DataStagingTask {
                     String destId = "STORAGE:" + destinationURI.getPath() + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId();
                     String destToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getTaskContext().getStorageResourceLoginUserName() + ":" + getGatewayId();
 
-                    TransferRequest request = new TransferRequest();
-                    request.setSourceId(sourceId);
-                    request.setSourceToken(sourceToken);
-                    request.setSourceType("SCP");
+                    TransferApiRequest request = TransferApiRequest.newBuilder()
+                            .setSourceId(sourceId)
+                            .setSourceToken(sourceToken)
+                            .setSourceType("SCP")
+                            .setDestinationId(destId)
+                            .setDestinationToken(destToken)
+                            .setDestinationType("SCP")
+                            .setSourceResourceBackend("AIRAVATA")
+                            .setSourceCredentialBackend("AIRAVATA")
+                            .setDestResourceBackend("AIRAVATA")
+                            .setDestCredentialBackend("AIRAVATA")
+                            .setAffinityTransfer(false).build();
 
-                    request.setDestinationId(destId);
-                    request.setDestinationToken(destToken);
-                    request.setDestinationType("SCP");
+                    MFTApiServiceGrpc.MFTApiServiceBlockingStub mftClient = MFTApiClient.buildClient(
+                            ServerSettings.getSetting("mft.server.host"),
+                            Integer.parseInt(ServerSettings.getSetting("mft.server.port")));
 
-                    MFTAdmin mftAdmin = new MFTAdmin();
-                    List<AgentInfo> liveAgentInfos = mftAdmin.getLiveAgentInfos();
-                    if (liveAgentInfos.size() == 0) {
-                        throw new TaskOnFailException("No active agent available", false, null);
-                    }
-
-                    String transferId = mftAdmin.submitTransfer(liveAgentInfos.get(0).getId(), request);
-                    logger.info("Submitted to Agent " + liveAgentInfos.get(0).getId() + ". Transfer id " + transferId);
+                    TransferApiResponse response = mftClient.submitTransfer(request);
+                    logger.info("Submitted file transfer with id " + response.getTransferId());
 
                     while (true) {
-                        TransferState transferState = mftAdmin.getTransferState(transferId);
-                        logger.info("Transfer status of " + transferId + " is " + transferState.getState());
-                        if ("COMPLETED".equals(transferState.getState())) {
-                            transferred = true;
-                            break;
-                        } else if ("FAILED".equals(transferState.getState())) {
-                            throw new TaskOnFailException("Transfer " + transferId + " failed", false, null);
+                        try {
+                            TransferStateApiResponse transferState = mftClient.getTransferState(
+                                    TransferStateApiRequest.newBuilder().setTransferId(response.getTransferId()).build());
+                            logger.info("Transfer status of " + response.getTransferId() + " is " + transferState.getState());
+                            if ("COMPLETED".equals(transferState.getState())) {
+                                transferred = true;
+                                break;
+                            } else if ("FAILED".equals(transferState.getState())) {
+                                throw new TaskOnFailException("Transfer " + response.getTransferId() + " failed", false, null);
+                            }
+                        } catch (StatusRuntimeException e) {
+                            logger.info("No status for transfer " + response.getTransferId());
                         }
                         Thread.sleep(1000);
                     }
