@@ -27,7 +27,7 @@
     - python36-devel
     - mysql-devel
     - gcc
-  become_user: root
+  become: yes
 
 - name: Create mod_wsgi directory
   file: path={{ mod_wsgi_dir }} state=directory

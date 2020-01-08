@@ -25,6 +25,8 @@
 gateway_data_store_hostname: "dreg.dnasequence.org"
 gateway_data_store_resource_id: "js-156-72.jetstream-cloud.org_758cf5c0-71f4-4268-bb42-5ede23cfeea9"
 django_tus_endpoint: "https://tus.dreg.scigap.org/files/"
+# Increase max upload size to 1GB
+django_file_upload_max_file_size_mb: 1024
 
 # airavata_django_extra_dependencies:
 #   - git+https://github.com/SciGaP/dreg-djangoapp.git@gbrowser#egg=dreg-djangoapp
