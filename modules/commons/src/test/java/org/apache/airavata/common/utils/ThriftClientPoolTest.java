@@ -1,5 +1,8 @@
 package org.apache.airavata.common.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.apache.airavata.base.api.BaseAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -69,6 +72,10 @@ public class ThriftClientPoolTest {
         abandonedConfig.setRemoveAbandonedTimeout(1);
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setLogAbandoned(true);
+        StringWriter log = new StringWriter();
+        Assert.assertEquals("Initial length of log is 0", 0, log.toString().length());
+        PrintWriter logWriter = new PrintWriter(log);
+        abandonedConfig.setLogWriter(logWriter);
         ThriftClientPool<BaseAPI.Client> thriftClientPool = new ThriftClientPool<>((protocol) -> mockClient, () -> null,
                 poolConfig, abandonedConfig);
         thriftClientPool.getResource();
@@ -79,6 +86,10 @@ public class ThriftClientPoolTest {
         } catch (InterruptedException e) {
             Assert.fail("sleep interrupted");
         }
+
+        Assert.assertTrue(log.toString().length() > 0);
+        // The stack trace should contain this method's name
+        Assert.assertTrue(log.toString().contains("testWithAbandonConfigAndAbandoned"));
 
         new Verifications() {
             {
