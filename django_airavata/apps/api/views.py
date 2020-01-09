@@ -664,6 +664,7 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         application_interface = serializer.save()
+        self._update_input_metadata(application_interface)
         log.debug("application_interface: {}".format(application_interface))
         app_interface_id = self.request.airavata_client.registerApplicationInterface(
             self.authz_token, self.gateway_id, application_interface)
@@ -671,6 +672,7 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
 
     def perform_update(self, serializer):
         application_interface = serializer.save()
+        self._update_input_metadata(application_interface)
         self.request.airavata_client.updateApplicationInterface(
             self.authz_token,
             application_interface.applicationInterfaceId,
@@ -679,6 +681,21 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
     def perform_destroy(self, instance):
         self.request.airavata_client.deleteApplicationInterface(
             self.authz_token, instance.applicationInterfaceId)
+
+    def _update_input_metadata(self, app_interface):
+        for app_input in app_interface.applicationInputs:
+            if app_input.metaData:
+                metadata = json.loads(app_input.metaData)
+                # Automatically add {showOptions: {isRequired: true/false}} to
+                # toggle isRequired on hidden/shown inputs
+                if ("editor" in metadata and
+                    "dependencies" in metadata["editor"] and
+                        "show" in metadata["editor"]["dependencies"]):
+                    if "showOptions" not in metadata["editor"]["dependencies"]:
+                        metadata["editor"]["dependencies"]["showOptions"] = {}
+                    o = metadata["editor"]["dependencies"]["showOptions"]
+                    o["isRequired"] = app_input.isRequired
+                    app_input.metaData = json.dumps(metadata)
 
     @detail_route()
     def compute_resources(self, request, app_interface_id):
@@ -950,7 +967,7 @@ def tus_upload_finish(request):
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
         return JsonResponse({'uploaded': True,
-                            'data-product': serializer.data})
+                             'data-product': serializer.data})
     except Exception as e:
         return exceptions.generic_json_exception_response(e, status=400)
 
