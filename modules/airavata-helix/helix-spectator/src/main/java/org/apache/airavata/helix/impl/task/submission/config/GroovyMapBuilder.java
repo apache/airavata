@@ -251,6 +251,13 @@ public class GroovyMapBuilder {
                 if (commandLineOnly && !inputDataObjectType.isRequiredToAddedToCommandLine()) {
                     continue;
                 }
+
+                if (!inputDataObjectType.isIsRequired() &&
+                        (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
+                    // For URI/ Collection non required inputs, if the value is empty, ignore it. Fix for airavata-3276
+                    continue;
+                }
+
                 if (inputDataObjectType.getApplicationArgument() != null
                         && !inputDataObjectType.getApplicationArgument().equals("")) {
                     inputValues.add(inputDataObjectType.getApplicationArgument());
