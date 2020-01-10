@@ -55,6 +55,7 @@ public class ApplicationSettings {
 
     // ThriftClientPool Constants
     private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED = "thrift.client.pool.abandoned.removal.enabled";
+    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED = "thrift.client.pool.abandoned.removal.logged";
     
     protected static ApplicationSettings INSTANCE;
     public static enum ShutdownStrategy{
@@ -440,6 +441,10 @@ public class ApplicationSettings {
 
     public static boolean isThriftClientPoolAbandonedRemovalEnabled() {
         return Boolean.valueOf(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED, "false"));
+    }
+
+    public static boolean isThriftClientPoolAbandonedRemovalLogged() {
+        return Boolean.valueOf(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED, "false"));
     }
 
     /**
