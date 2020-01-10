@@ -47,4 +47,5 @@ helix_log_max_history: 30
 helix_log_total_size_cap: "1GB"
 
 thrift_client_pool_abandoned_removal_enabled: false
+thrift_client_pool_abandoned_removal_logged: false
 ...
