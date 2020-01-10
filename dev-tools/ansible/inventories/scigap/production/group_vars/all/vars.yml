@@ -170,3 +170,4 @@ platform_monitor_email_password: "{{ vault_platform_monitor_email_password }}"
 platform_monitor_target_email_addresses: "dimuthu.upeksha2@gmail.com,dwannipu@iu.edu"
 
 thrift_client_pool_abandoned_removal_enabled: true
+thrift_client_pool_abandoned_removal_logged: false

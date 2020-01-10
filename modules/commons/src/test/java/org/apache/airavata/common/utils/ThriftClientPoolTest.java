@@ -102,6 +102,58 @@ public class ThriftClientPoolTest {
         };
     }
 
+    @Test
+    public void testWithAbandonConfigAndAbandonedAndNotLogged() throws TException {
+
+        new Expectations() {
+            {
+                mockClient.getAPIVersion();
+                result = "0.19";
+                mockClient.getInputProtocol().getTransport().isOpen();
+                result = true;
+                mockClient.getOutputProtocol().getTransport().isOpen();
+                result = true;
+            }
+        };
+
+        GenericObjectPoolConfig<BaseAPI.Client> poolConfig = new GenericObjectPoolConfig<>();
+        // timeBetweenEvictionRunsMillis must be positive for abandoned removal on
+        // maintenance to run
+        poolConfig.setTimeBetweenEvictionRunsMillis(1);
+        AbandonedConfig abandonedConfig = new AbandonedConfig();
+        abandonedConfig.setRemoveAbandonedTimeout(1);
+        abandonedConfig.setRemoveAbandonedOnMaintenance(true);
+        abandonedConfig.setLogAbandoned(false);
+        // Setup log writer so we can verify that nothing was logged
+        StringWriter log = new StringWriter();
+        Assert.assertEquals("Initial length of log is 0", 0, log.toString().length());
+        PrintWriter logWriter = new PrintWriter(log);
+        abandonedConfig.setLogWriter(logWriter);
+        ThriftClientPool<BaseAPI.Client> thriftClientPool = new ThriftClientPool<>((protocol) -> mockClient, () -> null,
+                poolConfig, abandonedConfig);
+        thriftClientPool.getResource();
+        try {
+            // Sleep long enough for the client to be considered abandoned
+            Thread.sleep(1001);
+            thriftClientPool.close();
+        } catch (InterruptedException e) {
+            Assert.fail("sleep interrupted");
+        }
+
+        // Verify that nothing was logged
+        Assert.assertEquals(0, log.toString().length());
+
+        new Verifications() {
+            {
+                // Verify client is destroyed when abandoned
+                mockClient.getInputProtocol().getTransport().close();
+                times = 1;
+                mockClient.getOutputProtocol().getTransport().close();
+                times = 1;
+            }
+        };
+    }
+
     /**
      * Just like #{@link #testWithAbandonConfigAndAbandoned()} but using default
      * configuration.
