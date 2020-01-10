@@ -67,10 +67,14 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         AbandonedConfig abandonedConfig = null;
         if (ApplicationSettings.isThriftClientPoolAbandonedRemovalEnabled()) {
             abandonedConfig = new AbandonedConfig();
-            abandonedConfig.setLogAbandoned(true);
             abandonedConfig.setRemoveAbandonedOnBorrow(true);
             abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-            abandonedConfig.setLogWriter(new PrintWriter(new ErrorLoggingStringWriter()));
+            if (ApplicationSettings.isThriftClientPoolAbandonedRemovalLogged()) {
+                abandonedConfig.setLogAbandoned(true);
+                abandonedConfig.setLogWriter(new PrintWriter(new ErrorLoggingStringWriter()));
+            } else {
+                abandonedConfig.setLogAbandoned(false);
+            }
         }
         this.internalPool = new GenericObjectPool<T>(new ThriftClientFactory(clientFactory, protocolFactory),
                 poolConfig, abandonedConfig);

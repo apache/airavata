@@ -175,3 +175,4 @@ parser_storage_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b
 parser_broker_publisher_id: "ParserProducer"
 
 thrift_client_pool_abandoned_removal_enabled: true
+thrift_client_pool_abandoned_removal_logged: true
