@@ -19,6 +19,9 @@
  */
 package org.apache.airavata.common.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.apache.airavata.base.api.BaseAPI;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -40,6 +43,19 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
 
     private final GenericObjectPool<T> internalPool;
 
+    /**
+     * StringWriter that flushes to SLF4J logger.
+     */
+    private static class ErrorLoggingStringWriter extends StringWriter {
+
+        @Override
+        public void flush() {
+            logger.error(this.toString());
+            // Reset buffer
+            this.getBuffer().setLength(0);
+        }
+    }
+
     public ThriftClientPool(ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig, String host,
             int port) {
         this(clientFactory, new BinaryOverSocketProtocolFactory(host, port), poolConfig);
@@ -54,6 +70,7 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
             abandonedConfig.setLogAbandoned(true);
             abandonedConfig.setRemoveAbandonedOnBorrow(true);
             abandonedConfig.setRemoveAbandonedOnMaintenance(true);
+            abandonedConfig.setLogWriter(new PrintWriter(new ErrorLoggingStringWriter()));
         }
         this.internalPool = new GenericObjectPool<T>(new ThriftClientFactory(clientFactory, protocolFactory),
                 poolConfig, abandonedConfig);
