@@ -168,11 +168,8 @@ export default class InputDataObjectType extends BaseModel {
    *         ]
    *       },
    *       "showOptions": {        // Optional
-   *         "toggle": [
-   *           "requiredToAddedToCommandLine", // Names of properties on this application
-   *                                           // input to toggle when show changes
-   *           ...
-   *         ]
+   *         "isRequired": true    // Set isRequired to true when shown, false otherwise (Note:
+   *                               // REST API automatically adds and updates this metadata as needed)
    *       }
    *     }
    *   }
