@@ -33,6 +33,7 @@
     state: started
     enabled: true
     name: certbot-renew
+    daemon_reload: true
   become: true
   become_user: root
 
@@ -41,5 +42,6 @@
     state: started
     enabled: true
     name: certbot-renew.timer
+    daemon_reload: true
   become: true
   become_user: root
