@@ -52,7 +52,7 @@
     mode: o+rx
   run_once: true
 
-- name: git clone django repo
+- name: git clone {{ airavata_django_git_branch }} branch of {{ airavata_django_repo }}
   local_action:
     module: git
     repo: "{{ airavata_django_repo }}"
@@ -179,11 +179,13 @@
   become: yes
   become_user: "{{user}}"
 
-- name: Find built JS/CSS files in /static directory accessed more than 30d ago
+- name: Find built JS/CSS files in /static directory last accessed more than 30d ago
   find:
     paths: "{{ doc_root_dir }}/static"
     age: 30d
     age_stamp: atime
+    patterns: ".*\\.[0-9a-f]{8}\\.js(\\.map)?,.*\\.[0-9a-f]{8}\\.css"
+    use_regex: yes
     recurse: yes
   register: static_files_to_delete
   become: yes
