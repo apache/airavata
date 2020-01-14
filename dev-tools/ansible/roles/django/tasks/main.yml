@@ -108,7 +108,7 @@
     name: ansible-airavata-django-portal
   run_once: true
 
-- name: rsync build Django code to {{ airavata_django_checkout }}
+- name: rsync built Django code to {{ airavata_django_checkout }}
   synchronize:
     src: "{{ airavata_django_portal_tempdir.path }}/"
     dest: "{{ airavata_django_checkout }}"
@@ -124,7 +124,7 @@
   notify:
     - restart uwsgi
 
-- name: rsync build Django code to {{ airavata_django_checkout }}, deleting older built files
+- name: rsync built Django code to {{ airavata_django_checkout }}, deleting older built files
   synchronize:
     src: "{{ airavata_django_portal_tempdir.path }}/{{ item }}/"
     dest: "{{ airavata_django_checkout }}/{{ item }}"
