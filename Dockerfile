@@ -3,6 +3,7 @@ FROM node:lts-alpine as build-stage
 RUN apk add yarn
 
 # build api javascript
+# api must come first, then common, since the others depend on these
 WORKDIR /code/django_airavata/apps/api
 COPY ./django_airavata/apps/api/package.json ./django_airavata/apps/api/yarn.lock ./
 RUN yarn
@@ -16,11 +17,11 @@ RUN yarn
 COPY ./django_airavata/static/common/ .
 RUN yarn run build
 
-# build admin javascript
-WORKDIR /code/django_airavata/apps/admin
-COPY ./django_airavata/apps/admin/package.json ./django_airavata/apps/admin/yarn.lock ./
+# build dataparsers javascript
+WORKDIR /code/django_airavata/apps/dataparsers
+COPY ./django_airavata/apps/dataparsers/package.json ./django_airavata/apps/dataparsers/yarn.lock ./
 RUN yarn
-COPY ./django_airavata/apps/admin/ .
+COPY ./django_airavata/apps/dataparsers/ .
 RUN yarn run build
 
 # build groups javascript
@@ -31,10 +32,19 @@ COPY ./django_airavata/apps/groups/ .
 RUN yarn run build
 
 # build workspace/django-airavata-workspace-plugin-api javascript
+# This one must come before workspace build
 WORKDIR /code/django_airavata/apps/workspace/django-airavata-workspace-plugin-api
 COPY ./django_airavata/apps/workspace/django-airavata-workspace-plugin-api/package.json ./django_airavata/apps/workspace/django-airavata-workspace-plugin-api/yarn.lock ./
 RUN yarn
 COPY ./django_airavata/apps/workspace/django-airavata-workspace-plugin-api/ .
+RUN yarn run build
+
+# build admin javascript
+# To reuse cache best, putting the two most volatile apps, admin and workspace, last
+WORKDIR /code/django_airavata/apps/admin
+COPY ./django_airavata/apps/admin/package.json ./django_airavata/apps/admin/yarn.lock ./
+RUN yarn
+COPY ./django_airavata/apps/admin/ .
 RUN yarn run build
 
 # build workspace javascript
@@ -42,13 +52,6 @@ WORKDIR /code/django_airavata/apps/workspace
 COPY ./django_airavata/apps/workspace/package.json ./django_airavata/apps/workspace/yarn.lock ./
 RUN yarn
 COPY ./django_airavata/apps/workspace/ .
-RUN yarn run build
-
-# build dataparsers javascript
-WORKDIR /code/django_airavata/apps/dataparsers
-COPY ./django_airavata/apps/dataparsers/package.json ./django_airavata/apps/dataparsers/yarn.lock ./
-RUN yarn
-COPY ./django_airavata/apps/dataparsers/ .
 RUN yarn run build
 
 
