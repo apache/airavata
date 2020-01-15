@@ -48,7 +48,6 @@ saverx ansible_host=156.56.104.84
 sdstate ansible_host=156.56.104.84
 seagrid ansible_host=156.56.104.84
 searchsra ansible_host=156.56.104.84
-simccs ansible_host=156.56.104.84
 simvascular ansible_host=156.56.104.84
 snowvision ansible_host=156.56.104.84
 southdakota ansible_host=156.56.104.84
@@ -68,4 +67,4 @@ futurewater ansible_host=149.165.171.92 ansible_user=centos
 delta ansible_host=149.165.169.250 ansible_user=centos
 
 # simccs server
-newsimccs ansible_host=scigap11.sciencegateways.iu.edu ansible_user=root
+simccs ansible_host=scigap11.sciencegateways.iu.edu ansible_user=root
