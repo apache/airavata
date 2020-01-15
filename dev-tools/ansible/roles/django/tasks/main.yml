@@ -98,8 +98,9 @@
   run_once: true
 
 - name: copy built JS files from Docker container
-  local_action: command docker cp ansible-airavata-django-portal:/code/. {{ airavata_django_portal_tempdir.path }}
+  local_action: command docker cp ansible-airavata-django-portal:/code/{{ item }}/. {{ airavata_django_portal_tempdir.path }}/{{ item }}
   run_once: true
+  with_items: "{{ django_portal_js_build_dirs }}"
 
 - name: remove Docker container
   local_action:
@@ -137,13 +138,7 @@
   # become_user: "{{user}}"
   notify:
     - restart uwsgi
-  with_items:
-    - "django_airavata/apps/api/static/django_airavata_api"
-    - "django_airavata/static/common"
-    - "django_airavata/apps/admin/static/django_airavata_admin"
-    - "django_airavata/apps/groups/static/django_airavata_groups"
-    - "django_airavata/apps/workspace/static/django_airavata_workspace"
-    - "django_airavata/apps/dataparsers/static/django_airavata_dataparsers"
+  with_items: "{{ django_portal_js_build_dirs }}"
 
 - name: Create virtual environment for Django portal and install dependencies
   pip:
@@ -184,6 +179,7 @@
     paths: "{{ doc_root_dir }}/static"
     age: 30d
     age_stamp: atime
+    # built JS files have a 8 character hash, e.g., "dashboard.567f67c4.js"
     patterns: ".*\\.[0-9a-f]{8}\\.js(\\.map)?,.*\\.[0-9a-f]{8}\\.css"
     use_regex: yes
     recurse: yes
