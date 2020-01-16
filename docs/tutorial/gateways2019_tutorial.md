@@ -28,19 +28,19 @@ tutorial.
 
 ## Hands on: run a Gaussian computational experiment in the Django portal
 
-### Log into gateways19.scigap.org
+### Log into testdrive.airavata.org
 
 First, you'll need a user account. For the in person tutorial we'll have a set
 of pre-created usernames and passwords to use. If you are unable to attend the
 in person tutorial or would otherwise like to create your own account, go to the
-[Create Account](https://gateways19.scigap.org/auth/create-account) page and
+[Create Account](https://testdrive.airavata.org/auth/create-account) page and
 select **Sign in with existing institution credentials**. This will take you to
 the CILogon institution selection page. If you don't find your institution
 listed here, go back to the _Create Account_ page and fill out the form to
 create an account with a username, password, etc.
 
 Once you have an account,
-[log into the Gateways19 portal](https://gateways19.scigap.org/auth/login).
+[log into the Airavata Testdrive portal](https://testdrive.airavata.org/auth/login).
 
 After you've logged in, an administrator can grant you access to run the
 Gaussian application. During the tutorial we'll grant you access right away and
