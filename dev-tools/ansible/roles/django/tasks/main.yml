@@ -124,6 +124,7 @@
   # become_user: "{{user}}"
   notify:
     - restart uwsgi
+    - delete older files
 
 - name: rsync built Django code to {{ airavata_django_checkout }}, deleting older built files
   synchronize:
@@ -138,6 +139,7 @@
   # become_user: "{{user}}"
   notify:
     - restart uwsgi
+    - delete older files
   with_items: "{{ django_portal_js_build_dirs }}"
 
 - name: Create virtual environment for Django portal and install dependencies
@@ -174,27 +176,6 @@
   become: yes
   become_user: "{{user}}"
 
-- name: Find built JS/CSS files in /static directory last accessed more than 30d ago
-  find:
-    paths: "{{ doc_root_dir }}/static"
-    age: 30d
-    age_stamp: atime
-    # built JS files have a 8 character hash, e.g., "dashboard.567f67c4.js"
-    patterns: ".*\\.[0-9a-f]{8}\\.js(\\.map)?,.*\\.[0-9a-f]{8}\\.css"
-    use_regex: yes
-    recurse: yes
-  register: static_files_to_delete
-  become: yes
-  become_user: "{{user}}"
-
-- name: Remove older built files from /static directory
-  file:
-    path: "{{ item.path }}"
-    state: absent
-  with_items: "{{ static_files_to_delete.files }}"
-  become: yes
-  become_user: "{{user}}"
-
 - name: Run Django's manage.py collectstatic
   django_manage:
     command: "collectstatic -i node_modules --noinput"
@@ -204,6 +185,7 @@
   become_user: "{{user}}"
   notify:
     - restart uwsgi
+    - delete older files
 
 # TODO: this is really slow with lots of files
 - name: Create experiment data dir
