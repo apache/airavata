@@ -41,3 +41,6 @@ distantr ansible_host=149.165.156.46
 
 [kafka]
 149.165.157.37
+
+[Django Dev AMP Gateway]
+amp ansible_host=149.165.169.129
