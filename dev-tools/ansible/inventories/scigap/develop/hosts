@@ -35,6 +35,7 @@ pfec-hydro ansible_host=149.165.156.46
 cyberwater ansible_host=149.165.156.46
 mines ansible_host=149.165.156.46
 distantr ansible_host=149.165.156.46
+amp ansible_host=149.165.169.129
 
 [helix]
 149.165.157.37
