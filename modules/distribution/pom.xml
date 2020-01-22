@@ -400,6 +400,11 @@
             <artifactId>profile-service-server</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.3.2.Final</version>
+        </dependency>
         <!-- Needed for IamAdminServices Keycloak client -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
