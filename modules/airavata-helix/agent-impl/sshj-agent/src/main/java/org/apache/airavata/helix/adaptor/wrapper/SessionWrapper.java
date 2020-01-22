@@ -39,10 +39,12 @@ public class SessionWrapper implements Session {
 
     private Session session;
     private Consumer<Integer> onCloseFunction;
+    private SSHClientWrapper originalSSHClient;
 
-    public SessionWrapper(Session session, Consumer<Integer> onCloseFunction) {
+    public SessionWrapper(Session session, Consumer<Integer> onCloseFunction, SSHClientWrapper originalSSHClient) {
         this.session = session;
         this.onCloseFunction = onCloseFunction;
+        this.originalSSHClient = originalSSHClient;
     }
 
     @Override
@@ -179,5 +181,13 @@ public class SessionWrapper implements Session {
     @Override
     public void handle(Message msg, SSHPacket buf) throws SSHException {
         session.handle(msg, buf);
+    }
+
+    public boolean isErrored() {
+        return originalSSHClient.isErrored();
+    }
+
+    public void setErrored(boolean errored) {
+        this.originalSSHClient.setErrored(errored);
     }
 }

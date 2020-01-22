@@ -20,28 +20,16 @@
 
 ---
 
-- name: install certbot and dependencies
-  yum: name={{ item }} state=installed update_cache=yes
+- name: Install pre-requisites
+  yum: name="{{ item }}" state=latest update_cache=yes
   with_items:
-    - certbot
-    - python2-acme
-    - python2-certbot-apache
-  become_user: root
+    - git
+    - httpd
+    - mod_ssl
+    - libselinux-python
+    - policycoreutils-python
+  become: yes
 
-- name: enable certbot (letsencrypt) renewal
-  systemd:
-    state: started
-    enabled: true
-    name: certbot-renew
-    daemon_reload: true
-  become: true
-  become_user: root
-
-- name: enable certbot (letsencrypt) renewal timer
-  systemd:
-    state: started
-    enabled: true
-    name: certbot-renew.timer
-    daemon_reload: true
-  become: true
-  become_user: root
+- name: install epel release
+  yum: name=epel-release state=present
+  become: yes

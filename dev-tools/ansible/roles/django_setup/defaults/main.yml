@@ -19,29 +19,10 @@
 #
 
 ---
+mod_wsgi_dir: /opt/mod_wsgi
+mod_wsgi_url: https://github.com/GrahamDumpleton/mod_wsgi/archive/4.5.17.tar.gz
+mod_wsgi_tarball_dest: "{{ mod_wsgi_dir }}/{{ mod_wsgi_url | basename }}"
+mod_wsgi_unarchive_dir: "{{ mod_wsgi_dir }}/mod_wsgi-4.5.17"
+httpd_conf_modules_dir: "/etc/httpd/conf.modules.d"
 
-- name: install certbot and dependencies
-  yum: name={{ item }} state=installed update_cache=yes
-  with_items:
-    - certbot
-    - python2-acme
-    - python2-certbot-apache
-  become_user: root
-
-- name: enable certbot (letsencrypt) renewal
-  systemd:
-    state: started
-    enabled: true
-    name: certbot-renew
-    daemon_reload: true
-  become: true
-  become_user: root
-
-- name: enable certbot (letsencrypt) renewal timer
-  systemd:
-    state: started
-    enabled: true
-    name: certbot-renew.timer
-    daemon_reload: true
-  become: true
-  become_user: root
+...

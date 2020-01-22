@@ -52,6 +52,16 @@ django_debug: false
 django_error_emails: "{{ admin_emails }}"
 python_virtualenv_command: "pyvenv-3.6"
 
+# These directories need to be copied out of the build container and then
+# separately rsynced to deployment
+django_portal_js_build_dirs:
+  - "django_airavata/apps/api/static/django_airavata_api/dist"
+  - "django_airavata/static/common/dist"
+  - "django_airavata/apps/admin/static/django_airavata_admin/dist"
+  - "django_airavata/apps/groups/static/django_airavata_groups/dist"
+  - "django_airavata/apps/workspace/static/django_airavata_workspace/dist"
+  - "django_airavata/apps/dataparsers/static/django_airavata_dataparsers/dist"
+
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
 oauth_client_key: "RuLl_Uw7i_KXaLoAGJkiasTfyBYa"

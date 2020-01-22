@@ -185,3 +185,4 @@ parser_storage_resource_id: "pga.staging.scigap.org_aa63ffa0-a99f-4885-8f4b-81e3
 parser_broker_publisher_id: "ParserProducer"
 
 thrift_client_pool_abandoned_removal_enabled: true
+thrift_client_pool_abandoned_removal_logged: true

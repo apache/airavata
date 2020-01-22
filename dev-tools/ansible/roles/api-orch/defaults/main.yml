@@ -46,3 +46,4 @@ default_registry_password : "admin"
 api_orch_systemd_unit_file: "/etc/systemd/system/apiorch.service"
 
 thrift_client_pool_abandoned_removal_enabled: false
+thrift_client_pool_abandoned_removal_logged: false
