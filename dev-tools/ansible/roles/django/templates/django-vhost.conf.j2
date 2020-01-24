@@ -29,6 +29,7 @@
 
 <VirtualHost *:{{ httpd_default_http_port }}>
     ServerName {{ vhost_servername }}
+    TimeOut {{ vhost_timeout }}
     
     Alias /robots.txt {{ doc_root_dir }}/static/robots.txt
     Alias /favicon.ico {{ doc_root_dir }}/static/favicon.ico
