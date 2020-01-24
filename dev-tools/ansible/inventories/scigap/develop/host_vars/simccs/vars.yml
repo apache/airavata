@@ -19,13 +19,15 @@
 #
 
 ---
+simccs_maptool_branch: "issue-50-Use-national-cost-surface-for-from-scratch-scenarios"
+# simccs_maptool_branch: "dev"
 airavata_django_extra_dependencies:
   # Need to separately install cython in the VM or do two deploys, one with
   # just cython, then a second with the other dependencies. Reason: pyjnius
   # requires that cython already be installed and they can't both be installed
   # at the same time.
   - cython
-  - git+https://github.com/SciGaP/simccs-maptool.git@dev#egg=simccs-maptool
+  - "git+https://github.com/SciGaP/simccs-maptool.git@{{ simccs_maptool_branch }}#egg=simccs-maptool"
   - pyjnius
 vhost_servername: "beta.simccs.org"
 vhost_ssl: True
@@ -53,6 +55,7 @@ django_extra_settings:
   MAPTOOL_SETTINGS:
     CPLEX_APPLICATION_ID: "Cplex_a7eaf483-ab92-4441-baeb-2f302ccb2919"
     DATASETS_DIR: "/data/gateway-user-data/simccs-datasets"
+    JAVA_OPTIONS: "-Xmx12g"
 
 gateway_id: "simccs"
 experiment_data_dir: "{{ user_data_dir }}/django-simccs"
