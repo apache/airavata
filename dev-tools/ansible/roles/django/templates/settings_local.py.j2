@@ -88,7 +88,7 @@ AUTHENTICATION_OPTIONS = {
         {% endif %}
     },
     {% endif %}
-    {% if auth_options.external is defined %}
+    {% if auth_options.external is defined and auth_options.external %}
     'external': [
         {% for external in auth_options.external %}
         {
