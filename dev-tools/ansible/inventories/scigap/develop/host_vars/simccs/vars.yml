@@ -19,8 +19,8 @@
 #
 
 ---
-simccs_maptool_branch: "issue-50-Use-national-cost-surface-for-from-scratch-scenarios"
-# simccs_maptool_branch: "dev"
+# simccs_maptool_branch: "issue-50-Use-national-cost-surface-for-from-scratch-scenarios"
+simccs_maptool_branch: "dev"
 airavata_django_extra_dependencies:
   # Need to separately install cython in the VM or do two deploys, one with
   # just cython, then a second with the other dependencies. Reason: pyjnius
