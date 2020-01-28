@@ -35,10 +35,10 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "SMALTR Gateway"
-#  external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "smaltr"
 experiment_data_dir: "{{ user_data_dir }}/smaltr"
