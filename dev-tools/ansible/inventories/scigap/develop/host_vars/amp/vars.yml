@@ -37,9 +37,9 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Dev AMP"
-  external:
-    - name: "Existing Institute Login"
-      idp_alias: "cilogon"
+#  external:
+#    - name: "Existing Institute Login"
+#      idp_alias: "cilogon"
 
 gateway_id: "amp"
 experiment_data_dir: "{{ user_data_dir }}/django-amp"
