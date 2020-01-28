@@ -21,11 +21,11 @@
 ---
 #airavata_django_git_branch: "simccs"
 vhost_servername: "dev.ampgateway.org"
-vhost_ssl: false
+vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org
-#ssl_certificate_file: "/etc/letsencrypt/live/cyberwater.scigap.org/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/cyberwater.scigap.org/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/cyberwater.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/dev.ampgateway.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.ampgateway.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/dev.ampgateway.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "amp"
