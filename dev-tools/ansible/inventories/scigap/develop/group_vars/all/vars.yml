@@ -32,7 +32,7 @@ airavata_source_dir: "{{ user_home }}/develop-source"
 airavata_repo: "https://github.com/apache/airavata.git"
 airavata_dist: "apache-airavata-api-server-0.19-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
-git_branch: develop
+git_branch: RPID+SEAGrid
 
 # Database related variables
 # FIXME: once we get the entire dev stack on the same network we can use the
