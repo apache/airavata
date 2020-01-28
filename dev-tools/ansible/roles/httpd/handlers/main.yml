@@ -24,3 +24,5 @@
 - name: restart httpd
   service: name={{ httpd_name[ansible_os_family] }} state=reloaded enabled=yes
   become: yes
+
+#{{ httpd_name[ansible_os_family] }}
