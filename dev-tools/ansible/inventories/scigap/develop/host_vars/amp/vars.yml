@@ -19,6 +19,8 @@
 #
 
 ---
+# No symlink, user_data_dir is same as real_user_data_dir
+user_data_dir: "{{ real_user_data_dir }}"
 #airavata_django_git_branch: "simccs"
 vhost_servername: "dev.ampgateway.org"
 vhost_ssl: true
