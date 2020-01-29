@@ -1,6 +1,7 @@
 import logging
+import time
 from datetime import datetime, timedelta, timezone
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 from django.conf import settings
 from django.contrib import messages
@@ -8,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.forms import ValidationError
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render, resolve_url
 from django.template import Context, Template
 from django.urls import reverse
@@ -48,6 +49,8 @@ def redirect_login(request, idp_alias):
     redirect_uri += '?idp_alias=' + quote(idp_alias)
     if 'next' in request.GET:
         redirect_uri += "&next=" + quote(request.GET['next'])
+    if 'login_desktop' in request.GET:
+        redirect_uri += "&login_desktop=" + quote(request.GET['login_desktop'])
     oauth2_session = OAuth2Session(
         client_id, scope='openid', redirect_uri=redirect_uri)
     authorization_url, state = oauth2_session.authorization_url(
@@ -70,6 +73,7 @@ def handle_login(request):
     username = request.POST['username']
     password = request.POST['password']
     login_type = request.POST.get('login_type', None)
+    login_desktop = request.POST.get('login_desktop', "false") == "true"
     template = "django_airavata_auth/login.html"
     if login_type and login_type == 'password':
         template = "django_airavata_auth/login_username_password.html"
@@ -78,13 +82,20 @@ def handle_login(request):
     try:
         if user is not None:
             login(request, user)
-            next_url = request.POST.get('next', settings.LOGIN_REDIRECT_URL)
-            return redirect(next_url)
+            if login_desktop:
+                return _create_login_desktop_success_response(request)
+            else:
+                next_url = request.POST.get('next',
+                                            settings.LOGIN_REDIRECT_URL)
+                return redirect(next_url)
         else:
             messages.error(request, "Login failed. Please try again.")
     except Exception as err:
+        logger.exception("Login failed for user {}".format(username))
         messages.error(request,
                        "Login failed: {}. Please try again.".format(str(err)))
+    if login_desktop:
+        return _create_login_desktop_failed_response(request)
     return render(request, template, {
         'username': username,
         'next': request.POST.get('next', None),
@@ -103,8 +114,11 @@ def start_logout(request):
 
 def callback(request):
     try:
+        login_desktop = request.GET.get('login_desktop', "false") == "true"
         user = authenticate(request=request)
         login(request, user)
+        if login_desktop:
+            return _create_login_desktop_success_response(request)
         next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
         return redirect(next_url)
     except Exception as err:
@@ -114,6 +128,9 @@ def callback(request):
             request,
             "Failed to process OAuth2 callback: {}".format(str(err)))
         idp_alias = request.GET.get('idp_alias')
+        if login_desktop:
+            return _create_login_desktop_failed_response(
+                request, idp_alias=idp_alias)
         return redirect(reverse('django_airavata_auth:callback-error',
                                 args=(idp_alias,)))
 
@@ -421,3 +438,59 @@ def _send_email_to_user(template_id, context):
                                 context['email'])])
     msg.content_subtype = 'html'
     msg.send()
+
+
+def login_desktop(request):
+    context = {
+        'options': settings.AUTHENTICATION_OPTIONS,
+        'login_desktop': True
+    }
+    if 'username' in request.GET:
+        context['username'] = request.GET['username']
+    return render(request, 'django_airavata_auth/login-desktop.html', context)
+
+
+def login_desktop_success(request):
+    return render(request, 'django_airavata_auth/login-desktop-success.html')
+
+
+def refreshed_token_desktop(request):
+    refresh_code = request.GET['refresh_code']
+    user = authenticate(refresh_token=refresh_code, request=request)
+    if user is not None:
+        valid_time = int(request.session['ACCESS_TOKEN_EXPIRES_AT'] -
+                         time.time())
+        return JsonResponse({
+            'status': 'ok',
+            'code': request.session['ACCESS_TOKEN'],
+            'refresh_code': request.session['REFRESH_TOKEN'],
+            'valid_time': valid_time,
+        })
+    else:
+        return JsonResponse({
+            'status': 'failed',
+        })
+
+
+def _create_login_desktop_success_response(request):
+    valid_time = int(request.session['ACCESS_TOKEN_EXPIRES_AT'] - time.time())
+    return redirect(
+        reverse('django_airavata_auth:login_desktop_success') +
+        "?" + urlencode({
+            'status': 'ok',
+            'code': request.session['ACCESS_TOKEN'],
+            'refresh_code': request.session['REFRESH_TOKEN'],
+            'valid_time': valid_time,
+            'username': request.user.username
+        }))
+
+
+def _create_login_desktop_failed_response(request, idp_alias=None):
+    params = {'status': 'failed'}
+    if idp_alias is not None:
+        return redirect(reverse('django_airavata_auth:callback-error',
+                                args=(idp_alias,)) + "?" + urlencode(params))
+    if 'username' in request.POST:
+        params['username'] = request.POST['username']
+    return redirect(reverse('django_airavata_auth:login_desktop') +
+                    "?" + urlencode(params))

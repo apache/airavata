@@ -6,6 +6,7 @@ from django_airavata.wagtailapps.base.models import (
     Announcements,
     CustomCss,
     CustomHeaderLinks,
+    ExtraWebResources,
     FooterText,
     GatewayIcon,
     GatewayTitle,
@@ -183,4 +184,13 @@ def gateway_title(context):
     return {
         'gateway_title': gateway_title,
         'default_title': settings.PORTAL_TITLE,
+    }
+
+
+@register.inclusion_tag('django_airavata_wagtail_base/includes/extra_web_resources.html',
+                        takes_context=True)
+def extra_web_resources(context):
+    extra_web_resources = ExtraWebResources.objects.first()
+    return {
+        'extra_web_resources': extra_web_resources,
     }

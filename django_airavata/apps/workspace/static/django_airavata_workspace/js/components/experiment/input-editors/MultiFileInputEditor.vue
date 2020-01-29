@@ -2,25 +2,31 @@
   <div>
     <div
       class="mb-2"
-      v-for="fileEntry in fileEntries"
-      :key="fileEntry.id"
+      v-for="dataProductURI in selectedDataProductURIs"
+      :key="dataProductURI"
     >
       <file-input-editor
-        :value="fileEntry.value"
-        :id="fileEntry.id"
+        :value="dataProductURI"
+        :id="dataProductURI"
         :experiment="experiment"
         :experiment-input="experimentInput"
-        @input="updatedFile($event, fileEntry)"
-        @uploadstart="uploadStart(fileEntry)"
-        @uploadend="uploadEnd(fileEntry)"
+        @input="updatedFile($event, dataProductURI)"
       />
     </div>
+    <input-file-selector
+      :selectedDataProductURIs="selectedDataProductURIs"
+      @selected="fileSelected"
+      @uploadstart="$emit('uploadstart')"
+      @uploadend="$emit('uploadend')"
+      multiple
+    />
   </div>
 </template>
 
 <script>
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
 import FileInputEditor from "./FileInputEditor.vue";
+import InputFileSelector from "./InputFileSelector";
 
 export default {
   name: "multi-file-input-editor",
@@ -31,38 +37,32 @@ export default {
     }
   },
   components: {
-    FileInputEditor
+    FileInputEditor,
+    InputFileSelector
   },
   data() {
-    return {
-      newFileCount: 0,
-      fileEntries: this.createFileEntries(this.value)
-    };
+    return {};
   },
-  computed: {},
+  computed: {
+    selectedDataProductURIs() {
+      return this.createValueArray(this.value);
+    }
+  },
   methods: {
-    addFile() {
-      this.fileEntries.push({
-        id: this.id + "-" + this.newFileCount++,
-        value: null,
-        uploading: false
-      });
-    },
-    updatedFile(newValue, fileEntry) {
-      if (!newValue && fileEntry.value) {
-        this.removeFile(fileEntry);
-      } else {
-        fileEntry.value = newValue;
+    updatedFile(newValue, dataProductURI) {
+      // Only remove is handled here, input-file-selector handles adding
+      if (!newValue) {
+        this.removeFile(dataProductURI);
       }
-      this.data = this.fileEntries
-        .filter(e => e.value) // exclude null entries
-        .map(e => e.value)
-        .join(",");
-      this.valueChanged();
     },
-    removeFile(fileEntry) {
-      const index = this.fileEntries.findIndex(e => e.id === fileEntry.id);
-      this.fileEntries.splice(index, 1);
+    removeFile(dataProductURI) {
+      const index = this.selectedDataProductURIs.findIndex(
+        u => u === dataProductURI
+      );
+      const copyDataProductURIs = this.selectedDataProductURIs.slice();
+      copyDataProductURIs.splice(index, 1);
+      this.data = copyDataProductURIs.join(",");
+      this.valueChanged();
     },
     createValueArray(value) {
       if (value && typeof value === "string") {
@@ -71,49 +71,11 @@ export default {
         return [];
       }
     },
-    createFileEntries(value) {
-      const valueArray = this.createValueArray(value);
-      const fileEntries = valueArray.map(v => {
-        return {
-          id: this.id + "-" + v,
-          value: v,
-          uploading: false
-        };
-      });
-      // Add a null entry to accept an additional upload
-      fileEntries.push(this.getNullFileEntry());
-      return fileEntries;
-    },
-    getNullFileEntry() {
-      // Reuse the old null entry if it exists, otherwise create a new one
-      if (
-        this.fileEntries &&
-        this.fileEntries.length > 0 &&
-        this.fileEntries[this.fileEntries.length - 1].value === null
-      ) {
-        return this.fileEntries[this.fileEntries.length - 1];
-      } else {
-        return {
-          id: this.id + "-" + this.newFileCount++,
-          value: null,
-          uploading: false
-        };
-      }
-    },
-    uploadStart(fileEntry) {
-      fileEntry.uploading = true;
-      this.$emit("uploadstart");
-    },
-    uploadEnd(fileEntry) {
-      fileEntry.uploading = false;
-      if (this.fileEntries.every(fe => !fe.uploading)) {
-        this.$emit("uploadend");
-      }
-    }
-  },
-  watch: {
-    value(newValue) {
-      this.fileEntries = this.createFileEntries(newValue);
+    fileSelected(dataProductURI) {
+      const values = this.createValueArray(this.value);
+      values.push(dataProductURI);
+      this.data = values.join(",");
+      this.valueChanged();
     }
   }
 };

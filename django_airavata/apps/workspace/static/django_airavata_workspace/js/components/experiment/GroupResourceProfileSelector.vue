@@ -29,10 +29,13 @@ export default {
         return {
             groupResourceProfileId: this.value,
             groupResourceProfiles: [],
+            workspacePreferences: null
         }
     },
     mounted: function () {
-        this.loadGroupResourceProfiles();
+      this.loadWorkspacePreferences().then(() => {
+        return this.loadGroupResourceProfiles()
+      });
     },
     computed: {
         groupResourceProfileOptions: function() {
@@ -52,16 +55,20 @@ export default {
     },
     methods: {
         loadGroupResourceProfiles: function() {
-            services.GroupResourceProfileService.list()
+            return services.GroupResourceProfileService.list()
                 .then(groupResourceProfiles => {
                     this.groupResourceProfiles = groupResourceProfiles;
                     if ((!this.value || !this.selectedValueInGroupResourceProfileList(groupResourceProfiles)) && this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
-                        // Automatically pick the first one for now if none selected
-                        // TODO: automatically select the last one user selected
-                        this.groupResourceProfileId = this.groupResourceProfiles[0].groupResourceProfileId;
+                        // automatically select the last one user selected
+                        this.groupResourceProfileId = this.workspacePreferences.most_recent_group_resource_profile_id;
                         this.emitValueChanged();
                     }
                 })
+        },
+        loadWorkspacePreferences() {
+          return services.WorkspacePreferencesService.get().then(
+            workspacePreferences => this.workspacePreferences = workspacePreferences
+          )
         },
         groupResourceProfileChanged: function(groupResourceProfileId) {
             this.groupResourceProfileId = groupResourceProfileId

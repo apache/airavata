@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { services } from "django-airavata-api";
 import { notifications } from "django-airavata-common-ui";
 import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
 import urls from "../utils/urls";
@@ -37,40 +37,40 @@ export default {
     },
     handleSavedAndLaunchedExperiment: function(experiment) {
       // Redirect to experiment view
-      urls.navigateToViewExperiment(experiment, {launching: true});
+      urls.navigateToViewExperiment(experiment, { launching: true });
     }
   },
   computed: {},
   mounted: function() {
-    const experiment = new models.Experiment();
     const loadAppModule = services.ApplicationModuleService.retrieve(
       { lookup: this.appModuleId },
       { ignoreErrors: true }
-    ).then(appModule => {
-      experiment.experimentName =
-        appModule.appModuleName + " on " + moment().format("lll");
-      this.appModule = appModule;
-    });
+    );
     const loadAppInterface = services.ApplicationModuleService.getApplicationInterface(
       { lookup: this.appModuleId },
       { ignoreErrors: true }
-    ).then(appInterface => {
-      experiment.populateInputsOutputsFromApplicationInterface(appInterface);
-      if (this.userInputFiles) {
-        Object.keys(this.userInputFiles).forEach(k => {
-          const experimentInput = experiment.experimentInputs.find(inp => inp.name === k);
-          if (experimentInput) {
-            experimentInput.value = this.userInputFiles[k];
-          }
-        })
-      }
-      experiment.executionId = appInterface.applicationInterfaceId;
-    });
-    if (this.experimentDataDir) {
-      experiment.userConfigurationData.experimentDataDir = this.experimentDataDir;
-    }
+    );
     Promise.all([loadAppModule, loadAppInterface])
-      .then(() => (this.experiment = experiment))
+      .then(([appModule, appInterface]) => {
+        const experiment = appInterface.createExperiment();
+        experiment.experimentName =
+          appModule.appModuleName + " on " + moment().format("lll");
+        this.appModule = appModule;
+        if (this.userInputFiles) {
+          Object.keys(this.userInputFiles).forEach(k => {
+            const experimentInput = experiment.experimentInputs.find(
+              inp => inp.name === k
+            );
+            if (experimentInput) {
+              experimentInput.value = this.userInputFiles[k];
+            }
+          });
+        }
+        if (this.experimentDataDir) {
+          experiment.userConfigurationData.experimentDataDir = this.experimentDataDir;
+        }
+        this.experiment = experiment;
+      })
       .catch(error => {
         notifications.NotificationList.addError(error);
       });

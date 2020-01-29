@@ -11,11 +11,14 @@ nav:
     - Adding a Custom Django App: dev/custom_django_app.md
     - Developing the Frontend: dev/developing_frontend.md
     - Developing the Backend: dev/developing_backend.md
+    - Developing a Wagtail Export (theme): dev/wagtail_export.md
+  - Administrator Guide:
+    - Tusd Installation: admin/tusd.md
   - Tutorials:
     - Gateways 2019: tutorial/gateways2019_tutorial.md
 
 theme: readthedocs
 
 markdown_extensions:
-  - mdx_truly_sane_lists # allow 2 space indent
   - sane_lists # allow restarting numbering of ordered lists
+  - admonition

@@ -51,7 +51,6 @@ export default {
         valueChanged: function() {
             this.inputHasBegun = true;
             this.$emit('input', this.data);
-            this.checkValidation();
         },
         checkValidation: function() {
             if (this.valid) {
@@ -67,6 +66,9 @@ export default {
     watch: {
         value(newValue) {
           this.data = newValue;
+        },
+        valid() {
+          this.checkValidation();
         }
     }
 }

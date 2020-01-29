@@ -7,15 +7,24 @@ from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from django.core.files.move import file_move_safe
 from django.core.files.storage import FileSystemStorage
 
-experiment_data_storage = FileSystemStorage(
-    location=settings.GATEWAY_DATA_STORE_DIR)
 logger = logging.getLogger(__name__)
 
 
 def exists(username, path):
-    """Check if replica for data product exists in this data store."""
+    """Check if file path exists in this data store."""
     try:
-        return _user_data_storage(username).exists(path)
+        return (_user_data_storage(username).exists(path) and
+                os.path.isfile(path_(username, path)))
+    except SuspiciousFileOperation as e:
+        logger.warning("Invalid path for user {}: {}".format(username, str(e)))
+        return False
+
+
+def dir_exists(username, path):
+    """Check if directory path exists in this data store."""
+    try:
+        return (_user_data_storage(username).exists(path) and
+                os.path.isdir(path_(username, path)))
     except SuspiciousFileOperation as e:
         logger.warning("Invalid path for user {}: {}".format(username, str(e)))
         return False
@@ -55,10 +64,25 @@ def move(source_username, source_path, target_username, target_dir, file_name):
     return target_full_path
 
 
+def move_external(external_path, target_username, target_dir, file_name):
+    user_data_storage = _user_data_storage(target_username)
+    # Make file_name a valid filename
+    target_path = os.path.join(target_dir,
+                               user_data_storage.get_valid_name(file_name))
+    # Get available file path: if there is an existing file at target_path
+    # create a uniquely named path
+    target_path = user_data_storage.get_available_name(target_path)
+    if not dir_exists(target_username, target_dir):
+        create_user_dir(target_username, target_dir)
+    target_full_path = path_(target_username, target_path)
+    file_move_safe(external_path, target_full_path)
+    return target_full_path
+
+
 def create_user_dir(username, path):
     user_data_storage = _user_data_storage(username)
     if not user_data_storage.exists(path):
-        os.makedirs(user_data_storage.path(path))
+        _makedirs(username, path)
     else:
         raise Exception(
             "Directory {} already exists".format(path))
@@ -85,7 +109,7 @@ def delete(username, path):
 
 def delete_dir(username, path):
     """Delete entire directory in this data store."""
-    if exists(username, path):
+    if dir_exists(username, path):
         user_path = path_(username, path)
         shutil.rmtree(user_path)
     else:
@@ -100,8 +124,13 @@ def get_experiment_dir(
     """Return an experiment directory (full path) for the given experiment."""
     user_experiment_data_storage = _user_data_storage(username)
     if path is None:
+        proj_dir_name = user_experiment_data_storage.get_valid_name(
+            project_name)
+        # AIRAVATA-3245 Make project directory with correct permissions
+        if not user_experiment_data_storage.exists(proj_dir_name):
+            _makedirs(username, proj_dir_name)
         experiment_dir_name = os.path.join(
-            user_experiment_data_storage.get_valid_name(project_name),
+            proj_dir_name,
             user_experiment_data_storage.get_valid_name(experiment_name))
         # Since there may already be another experiment with the same name in
         # this project, we need to check for available name
@@ -115,26 +144,18 @@ def get_experiment_dir(
         user_experiment_data_storage = _user_data_storage(username)
         experiment_dir = user_experiment_data_storage.path(path)
     if not user_experiment_data_storage.exists(experiment_dir):
-        os.makedirs(
-            experiment_dir,
-            mode=user_experiment_data_storage.directory_permissions_mode)
-        # os.makedirs mode isn't always respected so need to chmod to be sure
-        os.chmod(experiment_dir,
-                 mode=user_experiment_data_storage.directory_permissions_mode)
+        _makedirs(username, experiment_dir)
     return experiment_dir
 
 
-def user_file_exists(username, file_path):
-    """Check if file path exists in user's data storage space."""
-    try:
-        # file_path can be relative or absolute
-        user_experiment_data_storage = _user_data_storage(username)
-        return user_experiment_data_storage.exists(file_path)
-    except SuspiciousFileOperation as e:
-        logger.warning(
-            "File does not exist for user {} at file path {}".format(
-                username, file_path))
-        return False
+def _makedirs(username, dir_path):
+    user_experiment_data_storage = _user_data_storage(username)
+    full_path = user_experiment_data_storage.path(dir_path)
+    os.makedirs(full_path,
+                mode=user_experiment_data_storage.directory_permissions_mode)
+    # os.makedirs mode isn't always respected so need to chmod to be sure
+    os.chmod(full_path,
+             mode=user_experiment_data_storage.directory_permissions_mode)
 
 
 def list_user_dir(username, file_path):

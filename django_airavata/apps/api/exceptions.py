@@ -1,6 +1,7 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
@@ -52,3 +53,9 @@ def custom_exception_handler(exc, context):
         )
 
     return response
+
+
+# For non-Django REST Framework error responses
+def generic_json_exception_response(
+        exc, status=status.HTTP_500_INTERNAL_SERVER_ERROR):
+    return JsonResponse({'detail': str(exc)}, status=status)

@@ -60,12 +60,19 @@ export default class BaseModel {
                 if (fieldValue instanceof BaseEnum){
                     return fieldValue;
                 }
+                let enumValue = null;
                 if (typeof fieldValue === 'string') {
                     // convert by name if type is string
-                    return modelClass.byName(fieldValue);
+                    enumValue = modelClass.byName(fieldValue);
                 } else {
                     // Otherwise it is an integer that we need to convert to enum
-                    return modelClass.byValue(fieldValue);
+                    enumValue = modelClass.byValue(fieldValue);
+                }
+                if (!enumValue) {
+                    // enum wasn't found, construct an enum instance from the value
+                    return new BaseEnum(`Unknown value: ${fieldValue}`, fieldValue);
+                } else {
+                    return enumValue;
                 }
             } else if (fieldValue instanceof modelClass) {
                 // No conversion necessary, just return the fieldValue

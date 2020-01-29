@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 
+import os
+
 from django.db import models
 from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     InlinePanel,
@@ -372,6 +375,61 @@ class GatewayTitle(models.Model):
 
     class Meta:
         verbose_name_plural = 'Gateway Title'
+
+
+@register_snippet
+class ExtraWebResources(ClusterableModel):
+    """
+    Links to CSS and JavaScript to be included in all pages.
+    """
+
+    panels = [
+        InlinePanel('css_links', label="CSS Links"),
+        InlinePanel('js_links', label="JS Links"),
+    ]
+
+    def __str__(self):
+        try:
+            return "Extra Web Resources: {}".format(", ".join(
+                [os.path.basename(l.url) for l in self.css_links.all()] +
+                [os.path.basename(l.url) for l in self.js_links.all()]))
+        except Exception:
+            return "Extra Web Resources"
+
+    class Meta:
+        verbose_name_plural = 'Extra Web Resources'
+
+
+class CssLink(Orderable):
+    url = models.CharField(
+        max_length=255,
+        help_text='URL of CSS stylesheet.'
+    )
+    panels = [
+        FieldPanel('url'),
+    ]
+    extra_web_resources = ParentalKey(ExtraWebResources,
+                                      on_delete=models.CASCADE,
+                                      related_name="css_links")
+
+    class Meta:
+        verbose_name = 'CSS Link'
+
+
+class JsLink(Orderable):
+    url = models.CharField(
+        max_length=255,
+        help_text='URL of JavaScript script.'
+    )
+    panels = [
+        FieldPanel('url'),
+    ]
+    extra_web_resources = ParentalKey(ExtraWebResources,
+                                      on_delete=models.CASCADE,
+                                      related_name="js_links")
+
+    class Meta:
+        verbose_name = 'JS Link'
 
 
 class HomePage(Page):

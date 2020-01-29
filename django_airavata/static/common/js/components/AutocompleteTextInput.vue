@@ -61,6 +61,9 @@ export default {
       this.searchValue = value;
     },
     enter() {
+      if (this.filtered.length === 0) {
+        return;
+      }
       this.emitSelectedItem(this.current);
       this.searchValue = "";
       this.open = false;

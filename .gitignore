@@ -1,5 +1,5 @@
 *.pyc
-db.sqlite3
+*.sqlite3
 settings_local.py
 settings_local*.py
 .DS_Store

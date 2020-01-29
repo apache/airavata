@@ -15,9 +15,9 @@
       </b-link>
       <b-modal
         :title="dataProduct.productName"
-        class="view-file-modal"
         ref="modal"
         ok-only
+        scrollable
       >
         <pre>{{ fileContent }}</pre>
       </b-modal>
@@ -40,36 +40,13 @@
         ></i>
       </b-link>
     </div>
-    <div v-if="isSelectingFile">
-      <user-storage-file-selection-container
-        @file-selected="fileSelected"
-        @cancel="cancelFileSelection"
-        :selected-data-product-uris="selectedDataProductURIs"
-      />
-    </div>
-    <div
-      class="d-flex align-items-baseline"
-      v-if="!isSelectingFile && !isDataProductURI"
-    >
-      <b-button
-        @click="isSelectingFile=true"
-        class="input-file-option"
-      >Select file from storage</b-button>
-      <span class="text-muted mx-3">OR</span>
-      <b-form-group
-        :description="maxFileUploadSizeMessage"
-        :state="fileUploadState"
-        :invalid-feedback="fileUploadInvalidFeedback"
-        class="input-file-option"
-      >
-        <uppy
-          xhr-upload-endpoint="/api/upload"
-          tus-upload-finish-endpoint="/api/tus-upload-finish"
-          @upload-success="uploadSuccess"
-          @upload-started="$emit('uploadstart')"
-        />
-      </b-form-group>
-    </div>
+    <input-file-selector
+      v-if="!isDataProductURI || uploading"
+      :selectedDataProductURIs="selectedDataProductURIs"
+      @uploadstart="uploadStart"
+      @uploadend="uploadEnd"
+      @selected="fileSelected"
+    />
   </div>
 </template>
 
@@ -77,8 +54,7 @@
 import { models, services, utils } from "django-airavata-api";
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
 import { components } from "django-airavata-common-ui";
-import UserStorageFileSelectionContainer from "../../storage/UserStorageFileSelectionContainer";
-import Uppy from "./Uppy";
+import InputFileSelector from "./InputFileSelector";
 
 export default {
   name: "file-input-editor",
@@ -86,8 +62,7 @@ export default {
   components: {
     "data-product-viewer": components.DataProductViewer,
     "delete-link": components.DeleteLink,
-    UserStorageFileSelectionContainer,
-    Uppy
+    InputFileSelector
   },
   computed: {
     isDataProductURI() {
@@ -110,68 +85,29 @@ export default {
       } else {
         return [];
       }
-    },
-    maxFileUploadSizeMB() {
-      return this.settings
-        ? this.settings.fileUploadMaxFileSize / 1024 / 1024
-        : 0;
-    },
-    maxFileUploadSizeMessage() {
-      if (this.maxFileUploadSizeMB) {
-        return (
-          "Max file upload size is " +
-          Math.round(this.maxFileUploadSizeMB) +
-          " MB"
-        );
-      } else {
-        return null;
-      }
-    },
-    fileTooLarge() {
-      return (
-        this.settings &&
-        this.settings.fileUploadMaxFileSize &&
-        this.file &&
-        this.file.size > this.settings.fileUploadMaxFileSize
-      );
-    },
-    fileUploadState() {
-      if (this.fileTooLarge) {
-        return false;
-      } else {
-        return null;
-      }
-    },
-    fileUploadInvalidFeedback() {
-      if (this.fileTooLarge) {
-        return (
-          "File selected is larger than " + this.maxFileUploadSizeMB + " MB"
-        );
-      } else {
-        return null;
-      }
     }
   },
   data() {
     return {
       dataProduct: null,
-      file: null,
-      isSelectingFile: false,
-      settings: null,
-      fileContent: null
+      fileContent: null,
+      uploading: false
     };
   },
   created() {
     if (this.isDataProductURI) {
       this.loadDataProduct(this.value);
     }
-    services.SettingsService.get().then(s => (this.settings = s));
   },
   methods: {
     loadDataProduct(dataProductURI) {
       services.DataProductService.retrieve({ lookup: dataProductURI }).then(
         dataProduct => (this.dataProduct = dataProduct)
-      );
+      ).catch(() => {
+        // If we're unable to load data product, reset data to null
+        this.data = null;
+        this.valueChanged();
+      });
     },
     deleteDataProduct() {
       utils.FetchUtils.delete(
@@ -195,19 +131,17 @@ export default {
         .catch(utils.FetchUtils.reportError);
     },
     unselect() {
-      this.file = null;
       this.data = null;
       this.valueChanged();
     },
-    fileSelected(dataProductURI) {
+    fileSelected(dataProductURI, dataProduct) {
       this.data = dataProductURI;
-      this.isSelectingFile = false;
-      this.loadDataProduct(dataProductURI);
+      if (!dataProduct) {
+        this.loadDataProduct(dataProductURI);
+      } else {
+        this.dataProduct = dataProduct;
+      }
       this.valueChanged();
-    },
-    cancelFileSelection() {
-      this.isSelectingFile = false;
-      this.unselect();
     },
     viewFile() {
       this.fileContent = null;
@@ -220,11 +154,13 @@ export default {
           this.$refs.modal.show();
         });
     },
-    uploadSuccess(result) {
-      this.dataProduct = new models.DataProduct(result["data-product"]);
-      this.data = this.dataProduct.productUri;
-      this.valueChanged();
-      this.$emit('uploadend');
+    uploadStart() {
+      this.uploading = true;
+      this.$emit("uploadstart");
+    },
+    uploadEnd() {
+      this.uploading = false;
+      this.$emit("uploadend");
     }
   }
 };
@@ -233,9 +169,5 @@ export default {
 <style scoped>
 .input-file-option {
   flex: 1 1 50%;
-}
-.view-file-modal >>> .modal-body {
-  max-height: 50vh;
-  overflow: auto;
 }
 </style>

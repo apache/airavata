@@ -67,16 +67,15 @@ properties:
 - _nav_ - **optional** provide navigation into sections of the app. The _nav_ is
   optional but is necessary to provide users with a link from the left hand side
   navigation bar to a url in your app.
-  - _label_ - textual label, displayed on hover in the side navigation bar
-  - _icon_ - FontAwesome icon, see _fa_icon_class_ above
-  - _url_ - named or namespaced url
-  - _active_prefixes_ - list of strings that come after this app's base url for
-    all urls that are considered "active" for this nav item. This is used to
-    highlight the currently active nav item in the left side navigation bar. For
-    example, let's say the app's base url is "/myapp" and urls belonging to the
-    "projects" nav item are of the form "/myapp/projects/`<project_id>`" and
-    "/myapp/new-project". Then you would set _active_prefixes_ to `["projects",
-    "new-project"].
+    - _label_ - textual label, displayed on hover in the side navigation bar
+    - _icon_ - FontAwesome icon, see _fa_icon_class_ above
+    - _url_ - named or namespaced url
+    - _active_prefixes_ - list of strings that come after this app's base url for
+        all urls that are considered "active" for this nav item. This is used to
+        highlight the currently active nav item in the left side navigation bar. For
+        example, let's say the app's base url is "/myapp" and urls belonging to the
+        "projects" nav item are of the form "/myapp/projects/`<project_id>`" and
+        "/myapp/new-project". Then you would set _active_prefixes_ to `["projects", "new-project"]`.
 
 ### Add AppConfig to INSTALLED_APPS
 
@@ -92,21 +91,18 @@ INSTALLED_APPS = [
 ### Add Webpack bundle loader config to settings.py
 
 If the new app has Webpack built frontend, then add the following configuration
-to webpack_loader_util.py:
+to WEBPACK_LOADER in settings.py:
 
 ```python
 ...
 'MYAPP': {
   'BUNDLE_DIR_NAME': 'django_airavata_myapp/dist/',
   'STATS_FILE': os.path.join(
-      static_root if static_root else
-      os.path.join(
-          BASE_DIR,
-          'django_airavata',
-          'apps',
-          'myapp',
-          'static',
-      ),
+      BASE_DIR,
+      'django_airavata',
+      'apps',
+      'myapp',
+      'static',
       'django_airavata_myapp',
       'dist',
       'webpack-stats.json'),
@@ -275,6 +271,9 @@ django_airavata/apps/myapp):
 }
 ```
 
+Run `yarn` which will install these dependencies and also create a
+`yarn.lock` file with locked dependency versions.
+
 Add a `babel.config.js` to this directory too:
 
 ```javascript
@@ -288,16 +287,14 @@ Now add a `vue.config.js` file too:
 ```javascript
 const BundleTracker = require("webpack-bundle-tracker");
 const path = require("path");
-const staticDir = process.env.STATIC_ROOT
-  ? process.env.STATIC_ROOT
-  : "./static/";
 
 module.exports = {
   publicPath:
     process.env.NODE_ENV === "development"
       ? "http://localhost:9000/static/django_airavata_myapp/dist/"
       : "/static/django_airavata_myapp/dist/",
-  outputDir: staticDir + "django_airavata_myapp/dist",
+  outputDir: "./static/django_airavata_myapp/dist",
+  productionSourceMap: false,
   pages: {
     home: "./static/django_airavata_myapp/js/entry-home"
     // additional entry points go here ...
@@ -315,7 +312,7 @@ module.exports = {
     plugins: [
       new BundleTracker({
         filename: "webpack-stats.json",
-        path: staticDir + "django_airavata_myapp/dist/"
+        path: "./static/django_airavata_myapp/dist/"
       })
     ],
     optimization: {
@@ -394,7 +391,7 @@ a line in there for your Django app, like so:
 
 ```bash
 ...
-(cd $SCRIPT_DIR/django_airavata/apps/myapp && npm install && npm run build) || exit 1
+(cd $SCRIPT_DIR/django_airavata/apps/myapp && yarn && yarn run build) || exit 1
 ```
 
 You can test it by running `./build_js.sh` in the root folder.

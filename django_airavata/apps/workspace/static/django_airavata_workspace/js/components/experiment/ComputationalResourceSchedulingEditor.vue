@@ -15,13 +15,12 @@
             required
             @change="computeResourceChanged"
             :state="getValidationState('resourceHostId')"
-            :disabled="!computeResourceOptions || computeResourceOptions.length === 0"
+            :disabled="
+              !computeResourceOptions || computeResourceOptions.length === 0
+            "
           >
             <template slot="first">
-              <option
-                :value="null"
-                disabled
-              >Select a Compute Resource</option>
+              <option :value="null" disabled>Select a Compute Resource</option>
             </template>
           </b-form-select>
         </b-form-group>
@@ -60,7 +59,7 @@ export default {
   mixins: [mixins.VModelMixin],
   props: {
     value: {
-      type: models.ComputationalResourceSchedulingModel,
+      type: models.ComputationalResourceSchedulingModel
     },
     appModuleId: {
       type: String,
@@ -77,21 +76,24 @@ export default {
       applicationDeployments: [],
       selectedGroupResourceProfileData: null,
       resourceHostId: this.value.resourceHostId,
-      invalidQueueSettings: false
+      invalidQueueSettings: false,
+      workspacePreferences: null
     };
   },
   components: {
     QueueSettingsEditor
   },
   mounted: function() {
-    this.loadApplicationDeployments(
-      this.appModuleId,
-      this.groupResourceProfileId
-    );
+    this.loadWorkspacePreferences().then(() => {
+      this.loadApplicationDeployments(
+        this.appModuleId,
+        this.groupResourceProfileId
+      );
+    });
     this.loadComputeResourceNames();
     this.loadGroupResourceProfile();
     this.validate();
-    this.$on('input', () => this.validate());
+    this.$on("input", () => this.validate());
   },
   computed: {
     localComputationalResourceScheduling() {
@@ -208,13 +210,19 @@ export default {
         computeResourceNames => (this.computeResources = computeResourceNames)
       );
     },
+    loadWorkspacePreferences() {
+      return services.WorkspacePreferencesService.get().then(
+        workspacePreferences =>
+          (this.workspacePreferences = workspacePreferences)
+      );
+    },
     queueSettingsChanged: function() {
       // QueueSettingsEditor updates the full
       // ComputationalResourceSchedulingModel instance but doesn't know
       // the resourceHostId so we need to copy it back into the instance
       // whenever it changes
       this.localComputationalResourceScheduling.resourceHostId = this.resourceHostId;
-      this.$emit('input', this.data);
+      this.$emit("input", this.data);
     },
     queueSettingsValidityChanged(valid) {
       this.invalidQueueSettings = !valid;
@@ -249,6 +257,25 @@ export default {
         this.resourceHostId = null;
         this.computeResourceChanged(null);
       }
+      // Apply preferred (most recently used) compute resource
+      if (
+        this.resourceHostId === null &&
+        this.workspacePreferences.most_recent_compute_resource_id &&
+        newOptions.find(
+          opt =>
+            opt.value ===
+            this.workspacePreferences.most_recent_compute_resource_id
+        )
+      ) {
+        this.resourceHostId = this.workspacePreferences.most_recent_compute_resource_id;
+        this.computeResourceChanged(null);
+      }
+      // If none selected, just pick the first one
+      if (
+        this.resourceHostId === null && newOptions.length > 0
+      ) {
+        this.resourceHostId = newOptions[0].value;
+      }
     },
     groupResourceProfileId: function(newGroupResourceProfileId) {
       this.loadApplicationDeployments(
@@ -267,5 +294,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

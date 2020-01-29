@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
-from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -16,7 +15,6 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from airavata.api.error.ttypes import ProjectNotFoundException
 from airavata.model.appcatalog.computeresource.ttypes import (
     CloudJobSubmission,
     GlobusJobSubmission,
@@ -47,11 +45,13 @@ from django_airavata.apps.auth.models import EmailVerification
 
 from . import (
     data_products_helper,
+    exceptions,
     helpers,
     models,
     output_views,
     serializers,
     thrift_utils,
+    tus,
     view_utils
 )
 
@@ -186,7 +186,10 @@ class ExperimentViewSet(APIBackedViewSet):
             userName=self.username)
         experiment_id = self.request.airavata_client.createExperiment(
             self.authz_token, self.gateway_id, experiment)
-        self._update_most_recent_project(experiment.projectId)
+        self._update_workspace_preferences(
+            project_id=experiment.projectId,
+            group_resource_profile_id=experiment.userConfigurationData.groupResourceProfileId,
+            compute_resource_id=experiment.userConfigurationData.computationalResourceScheduling.resourceHostId)
         experiment.experimentId = experiment_id
 
     def perform_update(self, serializer):
@@ -195,7 +198,10 @@ class ExperimentViewSet(APIBackedViewSet):
             userName=self.username)
         self.request.airavata_client.updateExperiment(
             self.authz_token, experiment.experimentId, experiment)
-        self._update_most_recent_project(experiment.projectId)
+        self._update_workspace_preferences(
+            project_id=experiment.projectId,
+            group_resource_profile_id=experiment.userConfigurationData.groupResourceProfileId,
+            compute_resource_id=experiment.userConfigurationData.computationalResourceScheduling.resourceHostId)
 
     def _set_storage_id_and_data_dir(self, experiment):
         # Storage ID
@@ -220,8 +226,10 @@ class ExperimentViewSet(APIBackedViewSet):
         exp_data_dir = experiment.userConfigurationData.experimentDataDir
         for experiment_input in experiment.experimentInputs:
             if experiment_input.type == DataType.URI:
-                experiment_input.value = self._move_if_tmp_input_file_upload(
-                    experiment_input.value, exp_data_dir)
+                if experiment_input.value:
+                    experiment_input.value = \
+                        self._move_if_tmp_input_file_upload(
+                            experiment_input.value, exp_data_dir)
             elif experiment_input.type == DataType.URI_COLLECTION:
                 data_product_uris = experiment_input.value.split(
                     ",") if experiment_input.value else []
@@ -360,7 +368,7 @@ class ExperimentViewSet(APIBackedViewSet):
                 for data_product_uri in data_product_uris:
                     cloned_data_product = self._copy_experiment_input_uri(
                         data_product_uri)
-                    if cloned_data_product.productUri is None:
+                    if cloned_data_product is None:
                         log.warning(
                             "Omitting a cloned input value for {}".format(
                                 experiment_input.name))
@@ -382,9 +390,13 @@ class ExperimentViewSet(APIBackedViewSet):
                         "product {}".format(source_data_product))
             return None
 
-    def _update_most_recent_project(self, project_id):
+    def _update_workspace_preferences(self, project_id,
+                                      group_resource_profile_id,
+                                      compute_resource_id):
         prefs = helpers.WorkspacePreferencesHelper().get(self.request)
         prefs.most_recent_project_id = project_id
+        prefs.most_recent_group_resource_profile_id = group_resource_profile_id
+        prefs.most_recent_compute_resource_id = compute_resource_id
         prefs.save()
 
 
@@ -492,10 +504,13 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             log.exception("Failed to load compute resource for {}".format(
                 compute_resource_id))
             compute_resource = None
-        try:
+        if self.request.airavata_client.userHasAccess(
+                self.authz_token,
+                experimentModel.projectId,
+                ResourcePermissionType.READ):
             project = self.request.airavata_client.getProject(
                 self.authz_token, experimentModel.projectId)
-        except ProjectNotFoundException as pnfe:
+        else:
             # User may not have access to project, only experiment
             project = None
         job_details = self.request.airavata_client.getJobDetails(
@@ -910,46 +925,47 @@ def upload_input_file(request):
 
 @login_required
 def tus_upload_finish(request):
-    log.debug("POST={}".format(request.POST))
     uploadURL = request.POST['uploadURL']
-    # file UUID is last path component in URL. For example:
-    # http://localhost:1080/files/2c44415fdb6259a22f425145b87d0840
-    upload_uuid = urlparse(uploadURL).path.split("/")[-1]
-    upload_bin_path = os.path.join(settings.TUS_DATA_DIR, f"{upload_uuid}.bin")
-    log.debug(f"upload_bin_path={upload_bin_path}")
-    upload_info_path = os.path.join(settings.TUS_DATA_DIR,
-                                    f"{upload_uuid}.info")
-    with open(upload_info_path) as upload_info_file, \
-            open(upload_bin_path, "rb") as upload_file:
-        upload_info = json.load(upload_info_file)
-        filename = upload_info['MetaData']['filename']
-        data_product = data_products_helper.save_input_file_upload(
-            request, upload_file, name=filename)
-    serializer = serializers.DataProductSerializer(
-        data_product, context={'request': request})
-    return JsonResponse({'uploaded': True,
-                         'data-product': serializer.data})
+
+    def move_input_file(file_path, file_name):
+        return data_products_helper.move_input_file_upload_from_filepath(
+            request, file_path, name=file_name)
+    try:
+        data_product = tus.move_tus_upload(uploadURL, move_input_file)
+        serializer = serializers.DataProductSerializer(
+            data_product, context={'request': request})
+        return JsonResponse({'uploaded': True,
+                            'data-product': serializer.data})
+    except Exception as e:
+        return exceptions.generic_json_exception_response(e, status=400)
 
 
 @login_required
 def download_file(request):
     # TODO check that user has access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
+    force_download = 'download' in request.GET
     data_product = None
     try:
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, data_product_uri)
+        mime_type = "application/octet-stream"  # default mime-type
+        if (data_product.productMetadata and
+                'mime-type' in data_product.productMetadata):
+            mime_type = data_product.productMetadata['mime-type']
+        # 'mime-type' url parameter overrides
+        mime_type = request.GET.get('mime-type', mime_type)
     except Exception as e:
         log.warning("Failed to load DataProduct for {}"
                     .format(data_product_uri), exc_info=True)
         raise Http404("data product does not exist") from e
     try:
         data_file = data_products_helper.open(request, data_product)
-        response = FileResponse(data_file,
-                                content_type="application/octet-stream")
+        response = FileResponse(data_file, content_type=mime_type)
         file_name = os.path.basename(data_file.name)
-        response['Content-Disposition'] = ('attachment; filename="{}"'
-                                           .format(file_name))
+        if mime_type == 'application/octet-stream' or force_download:
+            response['Content-Disposition'] = ('attachment; filename="{}"'
+                                               .format(file_name))
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
@@ -1454,10 +1470,19 @@ class UserStoragePathView(APIView):
             data_products_helper.create_user_dir(request, path)
 
         data_product = None
+        # Handle direct upload
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = data_products_helper.save(
                 request, path, user_file)
+        # Handle a tus upload
+        elif 'uploadURL' in request.POST:
+            uploadURL = request.POST['uploadURL']
+
+            def move_file(file_path, file_name):
+                return data_products_helper.move_from_filepath(
+                    request, file_path, path, name=file_name)
+            data_product = tus.move_tus_upload(uploadURL, move_file)
         return self._create_response(request, path, uploaded=data_product)
 
     def delete(self, request, path="/", format=None):
@@ -1734,6 +1759,7 @@ class SettingsAPIView(APIView):
         data = {
             'fileUploadMaxFileSize': settings.FILE_UPLOAD_MAX_FILE_SIZE,
             'tusEndpoint': settings.TUS_ENDPOINT,
+            'pgaUrl': settings.PGA_URL
         }
         serializer = self.serializer_class(
             data, context={'request': request})

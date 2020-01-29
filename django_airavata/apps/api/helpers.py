@@ -28,6 +28,10 @@ class WorkspacePreferencesHelper:
         most_recent_project = self._get_most_recent_project(request)
         workspace_preferences.most_recent_project_id = \
             most_recent_project.projectID
+        first_grp = \
+            self._get_first_group_resource_profile(request)
+        workspace_preferences.most_recent_group_resource_profile_id = \
+            first_grp.groupResourceProfileId if first_grp else None
         return workspace_preferences
 
     def _get_most_recent_project(self, request):
@@ -40,6 +44,16 @@ class WorkspacePreferencesHelper:
                 return project
         return None
 
+    def _get_first_group_resource_profile(self, request):
+        "Return first accessible group resource profile"
+
+        group_resource_profiles = request.airavata_client.getGroupResourceList(
+            request.authz_token, settings.GATEWAY_ID)
+        if len(group_resource_profiles) > 0:
+            return group_resource_profiles[0]
+        else:
+            return None
+
     def _check(self, request, prefs):
         "Validate preference values and update as needed."
         if (not prefs.most_recent_project_id or
@@ -50,9 +64,27 @@ class WorkspacePreferencesHelper:
                     most_recent_project.projectID))
             prefs.most_recent_project_id = most_recent_project.projectID
             prefs.save()
+        if (not prefs.most_recent_group_resource_profile_id or
+                not self._can_read(
+                    request,
+                    prefs.most_recent_group_resource_profile_id)):
+            first_grp = self._get_first_group_resource_profile(request)
+            if first_grp:
+                logger.warn(f"_check: updating "
+                            f"most_recent_group_resource_profile_id to "
+                            f"{first_grp.groupResourceProfileId}")
+                prefs.most_recent_group_resource_profile_id = \
+                    first_grp.groupResourceProfileId
+                prefs.save()
 
     def _can_write(self, request, entity_id):
         return request.airavata_client.userHasAccess(
             request.authz_token,
             entity_id,
             ResourcePermissionType.WRITE)
+
+    def _can_read(self, request, entity_id):
+        return request.airavata_client.userHasAccess(
+            request.authz_token,
+            entity_id,
+            ResourcePermissionType.READ)

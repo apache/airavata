@@ -19,6 +19,7 @@ import Sidebar from "./components/Sidebar.vue";
 import SidebarFeed from "./components/SidebarFeed.vue";
 import SidebarHeader from "./components/SidebarHeader.vue";
 import UnsavedChangesGuard from "./components/UnsavedChangesGuard.vue";
+import Uppy from "./components/Uppy";
 
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
 import ValidationErrors from "./errors/ValidationErrors";
@@ -55,7 +56,8 @@ const components = {
   Sidebar,
   SidebarFeed,
   SidebarHeader,
-  UnsavedChangesGuard
+  UnsavedChangesGuard,
+  Uppy
 };
 
 const errors = {

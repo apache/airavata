@@ -19,11 +19,21 @@ logger = logging.getLogger(__name__)
 TMP_INPUT_FILE_UPLOAD_DIR = "tmp"
 
 
-def save(request, path, file):
+def save(request, path, file, name=None):
     "Save file in path in the user's storage."
     username = request.user.username
-    full_path = datastore.save(username, path, file)
-    data_product = _save_data_product(request, full_path)
+    full_path = datastore.save(username, path, file, name=name)
+    data_product = _save_data_product(request, full_path, name=name)
+    return data_product
+
+
+def move_from_filepath(request, source_path, target_path, name=None):
+    "Move a file from filesystem into user's storage."
+    username = request.user.username
+    file_name = name if name is not None else os.path.basename(source_path)
+    full_path = datastore.move_external(
+        source_path, username, target_path, file_name)
+    data_product = _save_data_product(request, full_path, name=file_name)
     return data_product
 
 
@@ -71,6 +81,16 @@ def move_input_file_upload(request, data_product, path):
     return data_product
 
 
+def move_input_file_upload_from_filepath(request, source_path, name=None):
+    "Move a file from filesystem into user's input file staging area."
+    username = request.user.username
+    file_name = name if name is not None else os.path.basename(source_path)
+    full_path = datastore.move_external(
+        source_path, username, TMP_INPUT_FILE_UPLOAD_DIR, file_name)
+    data_product = _save_data_product(request, full_path, name=file_name)
+    return data_product
+
+
 def open(request, data_product):
     "Return file object for replica if it exists in user storage."
     path = _get_replica_filepath(data_product)
@@ -84,12 +104,12 @@ def exists(request, data_product):
 
 
 def dir_exists(request, path):
-    return datastore.exists(request.user.username, path)
+    return datastore.dir_exists(request.user.username, path)
 
 
 def user_file_exists(request, path):
     """If file exists, return data product URI, else None."""
-    if datastore.user_file_exists(request.user.username, path):
+    if datastore.exists(request.user.username, path):
         full_path = datastore.path(request.user.username, path)
         data_product_uri = _get_data_product_uri(request, full_path)
         return data_product_uri
@@ -114,7 +134,7 @@ def delete(request, data_product):
 
 
 def listdir(request, path):
-    if datastore.user_file_exists(request.user.username, path):
+    if datastore.dir_exists(request.user.username, path):
         directories, files = datastore.list_user_dir(
             request.user.username, path)
         directories_data = []

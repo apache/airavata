@@ -1,18 +1,19 @@
 # Getting started with Vue.js development
 
-Make sure you have
-[the latest version of Node.js LTS installed](https://nodejs.org/en/download/).
+Make sure you have [the latest version of Node.js LTS
+installed](https://nodejs.org/en/download/). You also need to install [the
+Yarn package manager](https://yarnpkg.com).
 
 Start the Django portal (`python manage.py runserver`). Navigate to the Django
-app directory and run `npm install` and then `npm run serve` to start up the dev
+app directory and run `yarn` and then `yarn` to start up the dev
 server. Now you can load the Django app in your browser and as you make code
 changes they should automatically be hot-reloaded in the browser. For example,
 if you wanted to work on the _workspace_ app's frontend code, you could do
 
 ```
 cd django_airavata/apps/workspace
-npm install
-npm run serve
+yarn
+yarn run serve
 ```
 
 Then in your browser go to
@@ -23,7 +24,7 @@ the app's JS and CSS from the dev server URLs, which it will fail to do. To go
 back to a pre dev server state run:
 
 ```
-npm run build
+yarn run build
 ```
 
 # Development
@@ -33,10 +34,12 @@ npm run build
 If you need to add a JavaScript dependency, run the following:
 
 ```
-npm install --save <name of dependency>
+yarn add <name of dependency>
 ```
 
 This automatically updates the `package.json` file with the added dependency.
+The `yarn.lock` file is also updated with a locked version of the added
+dependency.
 
 ## Adding an entry point
 
@@ -51,10 +54,9 @@ import { components, entry } from "django-airavata-common-ui";
 import SomethingListContainer from "./containers/SomethingListContainer.vue";
 
 entry(Vue => {
-  new Vue({
-    render: h =>
-      h(components.MainLayout, [h(SomethingListContainer)])
-  }).$mount("#something-list");
+    new Vue({
+        render: h => h(components.MainLayout, [h(SomethingListContainer)])
+    }).$mount("#something-list");
 });
 ```
 
@@ -132,24 +134,24 @@ import { components, entry } from "django-airavata-common-ui";
 import ViewSomethingContainer from "./containers/ViewSomethingContainer.vue";
 
 entry(Vue => {
-  new Vue({
-    render(h) {
-      return h(components.MainLayout, [
-        h(ViewSomethingContainer, {
-          props: {
-            somethingId: this.somethingId
-          }
-        })
-      ]);
-    },
-    data() {
-      return {
-        somethingId: null
-      };
-    },
-    beforeMount() {
-      this.somethingId = this.$el.dataset.somethingId;
-    }
-  }).$mount("#view-something");
+    new Vue({
+        render(h) {
+            return h(components.MainLayout, [
+                h(ViewSomethingContainer, {
+                    props: {
+                        somethingId: this.somethingId
+                    }
+                })
+            ]);
+        },
+        data() {
+            return {
+                somethingId: null
+            };
+        },
+        beforeMount() {
+            this.somethingId = this.$el.dataset.somethingId;
+        }
+    }).$mount("#view-something");
 });
 ```

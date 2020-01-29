@@ -205,6 +205,7 @@ export default {
             });
             appInterface.addStandardOutAndStandardErrorOutputs();
             this.appInterface = appInterface;
+            this.appInterfaceIsDirty = true;
             return Promise.resolve(null);
           } else {
             throw error;

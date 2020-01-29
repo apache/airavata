@@ -9,6 +9,8 @@
                 <a
                 {% if next %}
                     href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}?next={{ next | urlencode }}"
+                {% elif login_desktop %}
+                    href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}?login_desktop=true"
                 {% else %}
                     href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}"
                 {% endif %}

@@ -333,7 +333,7 @@ export default {
     },
     isEditable() {
       return (
-        this.experiment.isEditable && this.localFullExperiment.applicationName
+        this.experiment.isEditable && this.localFullExperiment.applicationName && !this.launching
       );
     },
     isLaunchable(){

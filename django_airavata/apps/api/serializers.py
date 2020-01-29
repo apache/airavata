@@ -569,9 +569,7 @@ class UserProfileSerializer(
 
 class GroupComputeResourcePreferenceSerializer(
         thrift_utils.create_serializer_class(GroupComputeResourcePreference)):
-
-    class Meta:
-        required = ('scratchLocation',)
+    pass
 
 
 class GroupResourceProfileSerializer(
@@ -976,3 +974,4 @@ class LogRecordSerializer(serializers.Serializer):
 class SettingsSerializer(serializers.Serializer):
     fileUploadMaxFileSize = serializers.IntegerField()
     tusEndpoint = serializers.CharField()
+    pgaUrl = serializers.CharField()
