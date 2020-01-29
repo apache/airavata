@@ -1,47 +1,27 @@
 ---
-# inventory file : scigap develop deployment
+# inventory file
+# NOTE: update the CHANGEMEs to the actual ip address or hostname.
 
 [zookeeper]
-149.165.156.195
+149.165.157.21 ansible_connection=ssh ansible_user=root
 
 [rabbitmq]
-149.165.156.195
+149.165.157.21 ansible_connection=ssh ansible_user=root
 
 [database]
-149.165.156.27
+149.165.157.21 ansible_connection=ssh ansible_user=root
 
 [api-orch]
-149.165.156.195
-
-[gfac]
-149.165.157.37
+149.165.157.21 ansible_connection=ssh ansible_user=root
 
 [pga]
-149.165.156.46
+149.165.157.21 ansible_user=root
 
 [keycloak]
-149.165.156.151
-
-[django]
-seagrid ansible_host=149.165.156.46
-simvascular ansible_host=149.165.156.46
-simccs ansible_host=149.165.156.46
-interactwel ansible_host=149.165.156.46
-usd ansible_host=149.165.156.46
-csbglsu ansible_host=149.165.156.46
-nexttdb ansible_host=149.165.156.46
-saver-x ansible_host=149.165.156.46
-pfec-hydro ansible_host=149.165.156.46
-cyberwater ansible_host=149.165.156.46
-mines ansible_host=149.165.156.46
-distantr ansible_host=149.165.156.46
-amp ansible_host=149.165.169.129
-
-[helix]
-149.165.157.37
+iamdev.rpid.seagrid.org ansible_connection=ssh ansible_user=root
 
 [kafka]
-149.165.157.37
+149.165.157.21 ansible_connection=ssh ansible_user=root
 
-#Django Dev AMP Gateway
-amp ansible_host=149.165.169.129 ansible_user=centos
+[helix]
+149.165.157.21 ansible_connection=ssh ansible_user=root
