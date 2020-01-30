@@ -37,7 +37,7 @@ logger.addHandler(handler)
 class GroupManagerClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.group_manager_settings = GroupManagerClientSettings()
+        self.group_manager_settings = GroupManagerClientSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.group_manager_client_pool = utils.initialize_group_manager_client(
             self.group_manager_settings.PROFILE_SERVICE_HOST,

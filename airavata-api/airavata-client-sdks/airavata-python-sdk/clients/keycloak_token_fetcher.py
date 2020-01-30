@@ -14,33 +14,54 @@
 #  limitations under the License.
 #
 
+import configparser
+
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient
 from airavata.model.security.ttypes import AuthzToken
 
 from transport.settings import KeycloakConfiguration
+import os
 
-keycloak_config = KeycloakConfiguration()
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def get_token_and_user_info_password_flow(username, password, gateway_id):
-    client_id = keycloak_config.CLIENT_ID
-    client_secret = keycloak_config.CLIENT_SECRET
-    token_url = keycloak_config.TOKEN_URL
-    userinfo_url = keycloak_config.USER_INFO_URL
-    verify_ssl = keycloak_config.VERIFY_SSL
-    oauth2_session = OAuth2Session(client=LegacyApplicationClient(
-        client_id=client_id))
-    oauth2_session.verify = keycloak_config.KEYCLOAK_CA_CERTIFICATE
-    token = oauth2_session.fetch_token(token_url=token_url,
-                                       username=username,
-                                       password=password,
-                                       client_id=client_id,
-                                       client_secret=client_secret,
-                                       verify=verify_ssl)
 
-    claimsMap = {
-        "userName": username,
-        "gatewayID": gateway_id
-    }
-    return AuthzToken(accessToken=token['access_token'], claimsMap=claimsMap)
+class Authenticator(object):
+
+    def __init__(self, configuration_file_location=None):
+        self.keycloak_settings = KeycloakConfiguration(configuration_file_location)
+        self._load_settings(configuration_file_location)
+
+    def get_token_and_user_info_password_flow(self, username, password, gateway_id):
+        client_id = self.keycloak_settings.CLIENT_ID
+        client_secret = self.keycloak_settings.CLIENT_SECRET
+        token_url = self.keycloak_settings.TOKEN_URL
+        userinfo_url = self.keycloak_settings.USER_INFO_URL
+        verify_ssl = self.keycloak_settings.VERIFY_SSL
+        oauth2_session = OAuth2Session(client=LegacyApplicationClient(
+            client_id=client_id))
+        oauth2_session.verify = self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE
+        token = oauth2_session.fetch_token(token_url=token_url,
+                                           username=username,
+                                           password=password,
+                                           client_id=client_id,
+                                           client_secret=client_secret,
+                                           verify=verify_ssl)
+
+        claimsMap = {
+            "userName": username,
+            "gatewayID": gateway_id
+        }
+        return AuthzToken(accessToken=token['access_token'], claimsMap=claimsMap)
+
+    def _load_settings(self, configuration_file_location):
+        if configuration_file_location is not None:
+            config = configparser.ConfigParser()
+            config.read(configuration_file_location)
+            self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE = config.get("KeycloakServer",'CERTIFICATE_FILE_PATH')
+            self.keycloak_settings.CLIENT_ID = config.get('KeycloakServer', 'CLIENT_ID')
+            self.keycloak_settings.CLIENT_SECRET = config.get('KeycloakServer', 'CLIENT_SECRET')
+            self.keycloak_settings.TOKEN_URL = config.get('KeycloakServer', 'TOKEN_URL')
+            self.keycloak_settings.USER_INFO_URL = config.get('KeycloakServer', 'USER_INFO_URL')
+            self.keycloak_settings.VERIFY_SSL = config.getboolean('KeycloakServer', 'VERIFY_SSL')

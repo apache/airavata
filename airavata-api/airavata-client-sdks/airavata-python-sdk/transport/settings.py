@@ -18,60 +18,77 @@ import configparser
 import os
 
 config = configparser.ConfigParser()
-config.read('../transport/settings.ini')
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+defaultSettings = os.path.join(BASE_DIR, "transport", "settings.ini")
+config.read(defaultSettings)
 
 class APIServerClientSettings(object):
 
-    def __init__(self):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
         self.API_SERVER_HOST = config.get('APIServer', 'API_HOST')
         self.API_SERVER_PORT = config.getint('APIServer', 'API_PORT')
         self.API_SERVER_SECURE = config.getboolean('APIServer', 'API_SECURE')
 
 
 class IAMAdminClientSettings(object):
-    def __init__(self):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
         self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
         self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
         self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
 
 
 class TenantProfileServerClientSettings(object):
-    def __init__(self):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
         self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
         self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
         self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
 
 
 class GroupManagerClientSettings(object):
-    def __init__(self):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
         self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
         self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
         self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
 
 
 class SharingAPIClientSettings(object):
-    def __init__(self):
-        self.SHARING_API_HOST = config.get('SharingServer','SHARING_API_HOST')
-        self.SHARING_API_PORT = config.getint('SharingServer','SHARING_API_PORT')
-        self.SHARING_API_SECURE = config.getboolean('SharingServer','SHARING_API_SECURE')
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
+        self.SHARING_API_HOST = config.get('SharingServer', 'SHARING_API_HOST')
+        self.SHARING_API_PORT = config.getint('SharingServer', 'SHARING_API_PORT')
+        self.SHARING_API_SECURE = config.getboolean('SharingServer', 'SHARING_API_SECURE')
 
 
 class UserProfileClientSettings(object):
-    def __init__(self):
-        self.PROFILE_SERVICE_HOST = config.get('ProfileServer','PROFILE_SERVICE_HOST')
-        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer','PROFILE_SERVICE_PORT')
-        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer','PROFILE_SERVICE_SECURE')
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
+        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
+        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
+        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
 
 
 class ThriftSettings(object):
-    def __init__(self):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
         self.THRIFT_CLIENT_POOL_KEEPALIVE = config.getfloat('Thrift', 'THRIFT_CLIENT_POOL_KEEPALIVE')
 
 
 class KeycloakConfiguration(object):
-    def __init__(self):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
         self.KEYCLOAK_CA_CERTIFICATE = os.path.join(BASE_DIR, "samples", "resources", "incommon_rsa_server_ca.pem")
         self.CLIENT_ID = config.get('KeycloakServer', 'CLIENT_ID')
         self.CLIENT_SECRET = config.get('KeycloakServer', 'CLIENT_SECRET')

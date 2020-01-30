@@ -30,7 +30,7 @@ logger.setLevel(logging.DEBUG)
 class APIServerClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.api_server_settings = APIServerClientSettings()
+        self.api_server_settings = APIServerClientSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.api_server_client_pool = utils.initialize_api_client_pool(self.api_server_settings.API_SERVER_HOST,
                                                                        self.api_server_settings.API_SERVER_PORT,
@@ -5400,7 +5400,7 @@ class APIServerClient(object):
          - gateway_id
         """
         try:
-            return self.api_server_client_pool.get_user_resource_profile(authz_token, user_id, gateway_id)
+            return self.api_server_client_pool.getUserResourceProfile(authz_token, user_id, gateway_id)
         except InvalidRequestException:
             logger.exception("Error occurred in get_user_resource_profile," " probably due to invalid parameters ",
                              )
