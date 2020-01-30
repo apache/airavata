@@ -21,30 +21,30 @@
 ---
 
 
-vhost_servername: "smaltr.org"
+vhost_servername: "toppic.sciencegateways.iu.edu"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/smaltr.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/smaltr.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/smaltr.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "smaltr"
+tenant_domain: "toppic"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "SMALTR Gateway"
+    name: "TopPIC Gateway"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "smaltr"
-experiment_data_dir: "{{ user_data_dir }}/smaltr"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtM2RTAS0ZnwJNjYEWjvt2JArjyoCZQzBJlXYvqeRyYTQPeSTH5nJP1VCkpJ4a7B44gHkcKGORkvNd+PrW7An8otTIGlXfbwn5L20CeKPsk6fWwF99fU4JFvakNANgAfefsQ3OrTgBBvZWkKeK7JztMHbEZw+SJoPZnjlxoKRib/Ymt6Bo/gh833eHth+Rvp2v3k4DPu6cTsOaTCv45JT8E3dBeERASZNdepKanxiQpz/QZg344JxYYQpJP5zKQ7jmfUphDkwFkp7RlAYgkSVC7yiQSgRqcKR38BXEAMqR/0eax/T1IujDKscSJpS/ibXToOl8qoRDwMStAi6Ym2wx"
+gateway_id: "toppic"
+experiment_data_dir: "{{ user_data_dir }}/toppic"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfQ9gNhK9Sbs/0uUL1i4xuIXqw+zW+cnKc6O7t1VC8jyGL/awc4tWoTDCyXhloKmxcfHw+ci769AXp8FxC74JE12HqmZ7gmujRrsLMhHpdA1GlptSMjdiQ9jUHp4z5UYEczATBL8EHKVHCFbWp48vZ8hsPaKUy9dWKuvFJ/Q7h0j2h40DtAfkJLLMhRiuShautRA3pwEXEyKwrQDNNi64am7bX7W8AczxWwijE1atXHdyC1CUm2Ni5b9DWAx2+Dc3COvEnEYFsh1Oov0JMf/KnAeNlJaq9cTR+YD///wHNlHJyzuSqfAW457u0teoACvmcBZgizjX8KweATXTVyANh"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Aaron Frank' 'afrankz@umich.edu')]"
-portal_title: "SMALTR Gateway"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Liu Xiaowen' 'xwliu@iupui.edu'),('In Kwon Choi','inkwchoi@iu.edu')]"
+portal_title: "TopPIC Gateway"
 
 ...
