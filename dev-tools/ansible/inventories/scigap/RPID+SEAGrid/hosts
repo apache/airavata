@@ -17,6 +17,9 @@
 [pga]
 149.165.157.21 ansible_user=root
 
+[django]
+seagrid ansible_host=149.165.157.21 ansible_user=root
+
 [keycloak]
 iamdev.rpid.seagrid.org ansible_connection=ssh ansible_user=root
 
