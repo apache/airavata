@@ -29,7 +29,7 @@ pga_git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-#vhost_servername: "CHANGEME"
+vhost_servername: "rpid.scigap.seagrid.org"
 #vhost_serveralias: "CHANGEME"
 # Enable and change the following to enable SSL
 #vhost_ssl: True
@@ -42,7 +42,7 @@ pga_vhost_template: "{{ inventory_dir }}/templates/pga-vhost.conf.j2"
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
 admin_username: "default-admin"
-admin_password: "123456"
+admin_password: "{{ vault_default_registry_password }}"
 oauth_client_key: "pga"
 oauth_client_secret: "db863a66-f0cd-45b0-bc44-decd3fd73b79"
 oidc_discovery_url: "https://{{ groups['keycloak'][0] }}/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
@@ -56,16 +56,16 @@ oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
 
 gateway_id: "default"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/exp-dir"
-gateway_data_store_resource_id: "CHANGEME"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClwPzT95sK4eA5vuOHe+9cDewjkfBZA0GLt7SfHtJ5Zp/DBWRb5ykobX7JbwJGN9eHmVnW1yL5O708/dLL3y8kT0MjEP5jxZKMSayAiP9c2yN8dved4DIomX3omqsztIcbllei+QM9YvFY7tTtjWFTtAX6WxkZEvzcv2MDTLbgqJ537B4WRRWchXFws98QfDZvlfvdql6BcoZMwDCjdNOl8ZqSTS0PC22+HFesdhMh4mjjNj3Sm2MqxjU8FmSjVlC37dubqS9lZMeKuwsgT1nMjCB8tL+FH5eneNLVKvsvJL4AgQNo84YFi/Gels40zVuCqXVRNsAw/Tn+9sH9JgVx"
+experiment_data_dir: "{{ user_data_dir }}/default"
+#gateway_data_store_resource_id: "CHANGEME"
+#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClwPzT95sK4eA5vuOHe+9cDewjkfBZA0GLt7SfHtJ5Zp/DBWRb5ykobX7JbwJGN9eHmVnW1yL5O708/dLL3y8kT0MjEP5jxZKMSayAiP9c2yN8dved4DIomX3omqsztIcbllei+QM9YvFY7tTtjWFTtAX6WxkZEvzcv2MDTLbgqJ537B4WRRWchXFws98QfDZvlfvdql6BcoZMwDCjdNOl8ZqSTS0PC22+HFesdhMh4mjjNj3Sm2MqxjU8FmSjVlC37dubqS9lZMeKuwsgT1nMjCB8tL+FH5eneNLVKvsvJL4AgQNo84YFi/Gels40zVuCqXVRNsAw/Tn+9sH9JgVx"
 
 ## Portal related variables
 super_admin_portal: "true"
-admin_emails: "['CHANGEME']"
+admin_emails: "['eabeysin@iu.edu']"
 #example: admin_emails: "['emailaddress1@example.com', 'emailaddress2@example.com']"
-portal_email_username: ""
-portal_email_password: ""
+portal_email_username: "pga.airavata.gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "base"
-portal_title: "Airavata"
+portal_title: "SciGaP Portal"
 ...
