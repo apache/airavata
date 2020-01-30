@@ -37,7 +37,7 @@ logger.addHandler(handler)
 class UserProfileClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.user_profile_client_settings = UserProfileClientSettings()
+        self.user_profile_client_settings = UserProfileClientSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.user_profile_client_pool = utils.initialize_user_profile_client(
             self.user_profile_client_settings.PROFILE_SERVICE_HOST,
