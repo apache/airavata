@@ -36,6 +36,7 @@ vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/django.dreg.scigap.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/django.dreg.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/django.dreg.scigap.org/privkey.pem"
+django_ssl_vhost_template: "{{ inventory_dir }}/host_vars/dreg/files/django-ssl-vhost.conf.j2"
 
 ## Keycloak related variables
 tenant_domain: "cornelldna"

@@ -27,6 +27,8 @@
     - python36-devel
     - mysql-devel
     - gcc
+    - zlib-devel
+    - openssl-devel
   become: yes
 
 - name: Create mod_wsgi directory
