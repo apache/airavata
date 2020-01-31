@@ -41,7 +41,7 @@ old_airavata_dist: "apache-airavata-server-0.19-SNAPSHOT"
 git_branch: "RPID+SEAGrid"
 
 # Database related variables
-db_server: "{{ groups['database'][0] }}"
+db_server: "localhost"
 db_server_port: "3306"
 db_user: "airavata"
 db_password: "{{ vault_db_password }}"
@@ -74,7 +74,7 @@ zookeeper_connection_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port
 # API Server related variables
 api_server_name: "apiserver-node0"
 api_server_host: "{{ groups['api-orch'][0] }}"
-api_server_bind_host: "{{ api_server_host }}"
+# api_server_bind_host: "{{ api_server_host }}"
 api_server_port: "8930"
 api_secured: "false"
 tls_enable: "true"
@@ -90,14 +90,14 @@ orchestrator_host: "{{ groups['api-orch'][0] }}"
 orchestrator_port: "8940"
 api_orch_dir: "{{ deployment_dir }}/api-orchestrator"
 api_orch_log_dir: "{{ api_orch_dir }}/logs"
-orchestrator_bind_host: "{{ orchestrator_host }}"
+# orchestrator_bind_host: "{{ orchestrator_host }}"
 
 # registry related variables
 registry_name: regserver-node0
 registry_host: "{{ groups['api-orch'][0] }}"
 registry_port: 8970
 default_gateway: "default"
-registry_bind_host: "{{ registry_host }}"
+# registry_bind_host: "{{ registry_host }}"
 default_registry_user: "default-admin"
 default_registry_password: "{{ vault_default_registry_password }}"
 
@@ -112,7 +112,7 @@ cred_keystore_alias: "seckey"
 cred_store_server_host: "{{ groups['api-orch'][0] }}"
 cred_store_port: "8960"
 keystores_location: "{{ deployment_dir }}/keystores"
-cred_store_server_bind_host: "{{ cred_store_server_host }}"
+# cred_store_server_bind_host: "{{ cred_store_server_host }}"
 
 #removed gfac configurations.
 
@@ -134,12 +134,12 @@ pga_default_https_port: 8443
 # Sharing Registry related variables
 sharing_registry_host: "{{ groups['api-orch'][0] }}"
 sharing_registry_port: 7878
-sharing_registry_bind_host: "{{ sharing_registry_host }}"
+# sharing_registry_bind_host: "{{ sharing_registry_host }}"
 
 # Profile Service related variables
 profile_service_host: "{{ groups['api-orch'][0] }}"
 profile_service_port: 8962
-profile_service_bind_host: "{{ profile_service_host }}"
+# profile_service_bind_host: "{{ profile_service_host }}"
 
 # Keycloak
 keycloak_ssl_keystore_file: "{{ keystore_src_path }}"
