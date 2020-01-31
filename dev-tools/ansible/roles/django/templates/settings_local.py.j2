@@ -75,7 +75,9 @@ KEYCLOAK_AUTHORIZE_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/pro
 KEYCLOAK_TOKEN_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/token'
 KEYCLOAK_USERINFO_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/userinfo'
 KEYCLOAK_LOGOUT_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/logout'
-KEYCLOAK_CA_CERTFILE = os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")
+{% if django_keycloak_ca_certfile_path %}
+KEYCLOAK_CA_CERTFILE = {{ django_keycloak_ca_certfile_path }}
+{% endif %}
 KEYCLOAK_VERIFY_SSL = True
 
 AUTHENTICATION_OPTIONS = {
