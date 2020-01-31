@@ -29,20 +29,18 @@
 
 <VirtualHost *:{{ httpd_default_http_port }}>
     ServerName {{ vhost_servername }}
-
+    
     ## Redirect all http traffic to https
     RewriteEngine On
     RewriteCond %{HTTPS} off
+    # Don't redirect /gbrowser and /gbfile requests to HTTPS
+    RewriteCond %{THE_REQUEST} !\s/dreg/(gbrowser|gbfile)
     RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 </VirtualHost>
 
 <VirtualHost *:{{ httpd_default_https_port }}>
     ServerName {{ vhost_servername }}
 
-    # Reverse proxy to geoserver on gf8
-    ProxyPass /geoserver "http://gf8.ucs.indiana.edu/geoserver"
-    ProxyPassReverse /geoserver "http://gf8.ucs.indiana.edu/geoserver"
-    
     Alias /robots.txt {{ doc_root_dir }}/static/robots.txt
     Alias /favicon.ico {{ doc_root_dir }}/static/favicon.ico
 
@@ -58,6 +56,14 @@
     <Directory {{ airavata_django_checkout }}/django_airavata/media>
         Require all granted
     </Directory>
+
+    {# Additional aliases #}
+    {% for alias in vhost_aliases %}
+    Alias "{{ alias.url }}" "{{ alias.path }}"
+    <Directory "{{ alias.path }}">
+        Require all granted
+    </Directory>
+    {% endfor %}
 
     WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes={{ django_wsgi_processes }} user={{ user }} group={{ group }}
     WSGIProcessGroup {{ vhost_servername }}
