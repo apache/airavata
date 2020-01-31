@@ -30,5 +30,5 @@ django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysingh
 django_database_name: "django_{{ inventory_hostname }}"
 db_server: "localhost"
 django_hidden_airavata_apps: "['django_airavata_dataparsers']"
-django_tus_endpoint: "https://tus.dev.scigap.org/files/"
+# django_tus_endpoint: "https://tus.dev.scigap.org/files/"
 airavata_django_git_branch: "RPID+SEAGrid"
