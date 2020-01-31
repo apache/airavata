@@ -46,6 +46,13 @@ django_hidden_airavata_apps: "[]"
 django_tus_data_dir: "{{user_data_dir}}/tus-temp-dir"
 django_file_upload_max_file_size_mb: 64
 
+# Should be a python expression that evaluates to a string representing a file path. For example:
+# django_keycloak_ca_certfile_path: "/etc/ca.pem"
+# or 
+# django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
+# By default it has no value meaning system default CA certs will be used for validation.
+django_keycloak_ca_certfile_path:
+
 django_wsgi_processes: 2
 
 django_debug: false
