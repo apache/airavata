@@ -33,10 +33,9 @@ vhost_servername: "rpid.scigap.seagrid.org"
 #vhost_serveralias: "CHANGEME"
 # Enable and change the following to enable SSL
 vhost_ssl: True
-ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/seagrid_org_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/portal.seagrid.key"
-pga_vhost_template: "{{ inventory_dir }}/templates/pga-vhost.conf.j2"
+ssl_certificate_file: "/etc/letsencrypt/live/rpid.scigap.seagrid.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/rpid.scigap.seagrid.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/rpid.scigap.seagrid.org/privkey.pem"
 
 
 ## Keycloak related variables

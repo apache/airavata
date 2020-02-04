@@ -128,8 +128,8 @@ airavata_port: "9930"
 airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
 auth_verify_peer: "false"
 oauth_service_url: "{{ iam_server_url }}"
-pga_default_http_port: 8008
-pga_default_https_port: 8443
+# pga_default_http_port: 8008
+# pga_default_https_port: 8443
 
 # Sharing Registry related variables
 sharing_registry_host: "{{ groups['api-orch'][0] }}"
