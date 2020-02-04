@@ -27,15 +27,25 @@ import java.util.function.Consumer;
 public class SFTPClientWrapper extends SFTPClient {
     private SFTPClient sftpClient;
     private Consumer<Integer> onCloseFunction;
+    private SSHClientWrapper originalSSHClient;
 
-    public SFTPClientWrapper(SFTPClient sftpClient, Consumer<Integer> onCloseFunction) {
+    public SFTPClientWrapper(SFTPClient sftpClient, Consumer<Integer> onCloseFunction, SSHClientWrapper originalSSHClient) {
         super(sftpClient.getSFTPEngine());
         this.onCloseFunction = onCloseFunction;
+        this.originalSSHClient = originalSSHClient;
     }
 
     @Override
     public void close() throws IOException {
         onCloseFunction.accept(-1);
         super.close();
+    }
+
+    public boolean isErrored() {
+        return originalSSHClient.isErrored();
+    }
+
+    public void setErrored(boolean errored) {
+        this.originalSSHClient.setErrored(errored);
     }
 }

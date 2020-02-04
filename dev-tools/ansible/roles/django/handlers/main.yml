@@ -31,3 +31,21 @@
     state: touch
   become: yes
   become_user: "{{ user }}"
+
+# Cleaning up older built files should come after uwsgi restart, restart will
+# pick up newer webpack-stats.json files and only serve newer JS/CSS files
+- name: copy remove_old_js_css_files.py script
+  copy:
+    src: remove_old_js_css_files.py
+    dest: /usr/local/bin/remove_old_js_css_files.py
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0755
+  become: yes
+  listen: "delete older files"
+
+- name: execute remove_old_js_css_files.py script
+  command: /usr/local/bin/remove_old_js_css_files.py -b "{{ doc_root_dir }}/static"
+  listen: "delete older files"
+  become: yes
+  become_user: "{{ user }}"

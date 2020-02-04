@@ -48,13 +48,16 @@ saverx ansible_host=156.56.104.84
 sdstate ansible_host=156.56.104.84
 seagrid ansible_host=156.56.104.84
 searchsra ansible_host=156.56.104.84
-simccs ansible_host=156.56.104.84
 simvascular ansible_host=156.56.104.84
 snowvision ansible_host=156.56.104.84
 southdakota ansible_host=156.56.104.84
 testdrive ansible_host=156.56.104.84
 uab ansible_host=156.56.104.84
 wvsu ansible_host=156.56.104.84
+pace-gatech ansible_host=156.56.104.84
+cgpe ansible_host=156.56.104.84
+smaltr ansible_host=156.56.104.84
+toppic ansible_host=156.56.104.84
 
 # dreg jetstream server
 dreg ansible_host=149.165.156.72 ansible_user=centos
@@ -65,3 +68,5 @@ futurewater ansible_host=149.165.171.92 ansible_user=centos
 # Delta Jetstream server
 delta ansible_host=149.165.169.250 ansible_user=centos
 
+# simccs server
+simccs ansible_host=scigap11.sciencegateways.iu.edu ansible_user=root

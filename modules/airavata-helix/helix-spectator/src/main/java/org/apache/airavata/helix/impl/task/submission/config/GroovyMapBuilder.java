@@ -251,6 +251,13 @@ public class GroovyMapBuilder {
                 if (commandLineOnly && !inputDataObjectType.isRequiredToAddedToCommandLine()) {
                     continue;
                 }
+
+                if (!inputDataObjectType.isIsRequired() &&
+                        (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
+                    // For URI/ Collection non required inputs, if the value is empty, ignore it. Fix for airavata-3276
+                    continue;
+                }
+
                 if (inputDataObjectType.getApplicationArgument() != null
                         && !inputDataObjectType.getApplicationArgument().equals("")) {
                     inputValues.add(inputDataObjectType.getApplicationArgument());
@@ -259,10 +266,14 @@ public class GroovyMapBuilder {
                 if (inputDataObjectType.getValue() != null
                         && !inputDataObjectType.getValue().equals("")) {
                     if (inputDataObjectType.getType() == DataType.URI) {
-                        // set only the relative path
-                        String filePath = inputDataObjectType.getValue();
-                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                        inputValues.add(filePath);
+                        if (inputDataObjectType.getOverrideFilename() != null) {
+                            inputValues.add(inputDataObjectType.getOverrideFilename());
+                        } else {
+                            // set only the relative path
+                            String filePath = inputDataObjectType.getValue();
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                            inputValues.add(filePath);
+                        }
                     } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
                         String filePaths = inputDataObjectType.getValue();
                         String[] paths = filePaths.split(MULTIPLE_INPUTS_SPLITTER);
