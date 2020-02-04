@@ -5,6 +5,8 @@
   become: yes
   when: ansible_os_family == "RedHat"
 
+- include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+
 - name: allow httpd to connect out to the network
   seboolean:
     name: httpd_can_network_connect

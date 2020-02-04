@@ -77,6 +77,7 @@ public class PostWorkflowManager extends WorkflowManager {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 20);
         // Create the consumer using props.
         final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.

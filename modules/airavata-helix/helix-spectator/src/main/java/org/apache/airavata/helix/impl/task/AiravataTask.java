@@ -39,9 +39,7 @@ import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.*;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
@@ -53,6 +51,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -63,7 +63,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public abstract class AiravataTask extends AbstractTask {
@@ -267,7 +266,7 @@ public abstract class AiravataTask extends AbstractTask {
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 for (OutputDataObjectType expOutput : experimentOutputs) {
                     if (expOutput.getName().equals(outputName)) {
-                        String productUri = saveDataProduct(outputName, outputVal);
+                        String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData());
                         expOutput.setValue(productUri);
                         getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
                                 Collections.singletonList(expOutput), experimentId);
@@ -289,7 +288,7 @@ public abstract class AiravataTask extends AbstractTask {
                     if (expOutput.getName().equals(outputName)) {
                         List<String> productUris = new ArrayList<String>();
                         for (String outputVal : outputVals) {
-                            String productUri = saveDataProduct(outputName, outputVal);
+                            String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData());
                             productUris.add(productUri);
                         }
                         expOutput.setValue(String.join(",", productUris));
@@ -305,13 +304,28 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    private String saveDataProduct(String outputName, String outputVal) throws TException {
+    private String saveDataProduct(String outputName, String outputVal, String outputMetadata) throws TException {
 
         DataProductModel dataProductModel = new DataProductModel();
         dataProductModel.setGatewayId(getGatewayId());
         dataProductModel.setOwnerName(getProcessModel().getUserName());
         dataProductModel.setProductName(outputName);
         dataProductModel.setDataProductType(DataProductType.FILE);
+        // Copy experiment output's file-metadata to data product's metadata
+        if (outputMetadata != null) {
+            try {
+                JSONObject outputMetadataJSON = new JSONObject(outputMetadata);
+                if (outputMetadataJSON.has("file-metadata")) {
+                    JSONObject fileMetadata = outputMetadataJSON.getJSONObject("file-metadata");
+                    for (Object key : fileMetadata.keySet()) {
+                        String k = key.toString();
+                        dataProductModel.putToProductMetadata(k, fileMetadata.getString(k));
+                    }
+                }
+            } catch (JSONException e) {
+                logger.warn("Failed to parse output metadata: [" + outputMetadata + "]", e);
+            }
+        }
 
         DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
         replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResourceDescription().getStorageResourceId());

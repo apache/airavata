@@ -19,3 +19,22 @@
 --
 
 use app_catalog;
+
+-- AIRAVATA-3276 Replace JSON configuration: "toggle": ["isRequired"] ->
+-- "isRequired": true. Toggling requiredToAddedToCommandLine no longer needed.
+
+-- replace toggle with is isRequired
+update APPLICATION_INPUT
+set METADATA = REGEXP_REPLACE(METADATA, '"toggle": \\[[^}]+\\]', CONCAT('"isRequired": ', IF(IS_REQUIRED=1, 'true', 'false')))
+-- showOptions has "toggle" but not "isRequired"
+where METADATA rlike '"showOptions": {"toggle": \\[[^}]+\\]'
+  and NOT METADATA rlike '"showOptions": {.*"isRequired": (true|false)'
+;
+
+-- remove toggle since isRequired is already there
+update APPLICATION_INPUT
+set METADATA = REGEXP_REPLACE(METADATA, '(, )?"toggle": \\[[^}]+\\](, )?', '')
+-- showOptions has BOTH "toggle" and "isRequired"
+where METADATA rlike '"showOptions": {"toggle": \\[[^}]+\\]'
+  and METADATA rlike '"showOptions": {.*"isRequired": (true|false)'
+;
