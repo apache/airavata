@@ -41,11 +41,11 @@ django_extra_settings:
     CPLEX_APPLICATION_ID: "cplex-solver_99721933-c9e4-4285-9ef1-d035ca82b541"
     DATASETS_DIR: "/data/gateway-user-data/simccs-datasets"
 
-vhost_servername: "simccs.scigap.org"
+vhost_servername: "simccs.org"
 vhost_ssl: true
-ssl_certificate_file: "/etc/letsencrypt/live/simccs.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/simccs.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/simccs.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/simccs.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/simccs.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/simccs.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "iu-geology-survey"
