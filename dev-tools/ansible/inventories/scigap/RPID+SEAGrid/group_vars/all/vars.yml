@@ -60,7 +60,7 @@ django_db_password: "{{ vault_db_password }}"
 mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
 
 # Rabbitmq related vareables
-rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
+rabbitmq_server: "{{ hostvars[groups['rabbitmq'][0]]['ansible_default_ipv4']['address'] }}"
 rabbitmq_vhost: "master"
 rabbitmq_user: "airavata"
 rabbitmq_password: "{{ vault_rabbitmq_password }}"
@@ -123,9 +123,9 @@ monitor_email_password: "{{ vault_monitor_email_password }}"
 # PGA variables
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user_data_dir: "/data/gateway-user-data"
-airavata_server: "tls://{{ groups['api-orch'][0] }}"
+airavata_server: "tls://localhost"
 airavata_port: "9930"
-airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
+airavata_profile_service_server: "localhost"
 auth_verify_peer: "false"
 oauth_service_url: "{{ iam_server_url }}"
 # pga_default_http_port: 8008
