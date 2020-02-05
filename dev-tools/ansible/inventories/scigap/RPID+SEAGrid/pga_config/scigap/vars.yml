@@ -24,11 +24,11 @@ pga_git_branch: "develop"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/dev-scigap"
-vhost_servername: "dev.scigap.org"
+vhost_servername: "rpid.scigap.seagrid.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/dev.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/dev.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/rpid.scigap.seagrid.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/rpid.scigap.seagrid.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/rpid.scigap.seagrid.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "scigap"
