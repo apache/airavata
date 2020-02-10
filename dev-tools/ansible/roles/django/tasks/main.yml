@@ -52,7 +52,7 @@
     mode: o+rx
   run_once: true
 
-- name: git clone django repo
+- name: git clone {{ airavata_django_git_branch }} branch of {{ airavata_django_repo }}
   local_action:
     module: git
     repo: "{{ airavata_django_repo }}"
@@ -98,8 +98,9 @@
   run_once: true
 
 - name: copy built JS files from Docker container
-  local_action: command docker cp ansible-airavata-django-portal:/code/. {{ airavata_django_portal_tempdir.path }}
+  local_action: command docker cp ansible-airavata-django-portal:/code/{{ item }}/. {{ airavata_django_portal_tempdir.path }}/{{ item }}
   run_once: true
+  with_items: "{{ django_portal_js_build_dirs }}"
 
 - name: remove Docker container
   local_action:
@@ -108,7 +109,7 @@
     name: ansible-airavata-django-portal
   run_once: true
 
-- name: rsync build Django code to {{ airavata_django_checkout }}
+- name: rsync built Django code to {{ airavata_django_checkout }}
   synchronize:
     src: "{{ airavata_django_portal_tempdir.path }}/"
     dest: "{{ airavata_django_checkout }}"
@@ -123,6 +124,23 @@
   # become_user: "{{user}}"
   notify:
     - restart uwsgi
+    - delete older files
+
+- name: rsync built Django code to {{ airavata_django_checkout }}, deleting older built files
+  synchronize:
+    src: "{{ airavata_django_portal_tempdir.path }}/{{ item }}/"
+    dest: "{{ airavata_django_checkout }}/{{ item }}"
+    delete: yes
+    rsync_opts:
+      - "--exclude=node_modules"
+    # Bug: become_user doesn't work with synchronize: https://github.com/ansible/ansible/issues/29698
+    rsync_path: "sudo -u {{ user }} rsync"
+  # become: yes
+  # become_user: "{{user}}"
+  notify:
+    - restart uwsgi
+    - delete older files
+  with_items: "{{ django_portal_js_build_dirs }}"
 
 - name: Create virtual environment for Django portal and install dependencies
   pip:
@@ -167,6 +185,7 @@
   become_user: "{{user}}"
   notify:
     - restart uwsgi
+    - delete older files
 
 # TODO: this is really slow with lots of files
 - name: Create experiment data dir
