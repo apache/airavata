@@ -67,16 +67,15 @@ properties:
 - _nav_ - **optional** provide navigation into sections of the app. The _nav_ is
   optional but is necessary to provide users with a link from the left hand side
   navigation bar to a url in your app.
-  - _label_ - textual label, displayed on hover in the side navigation bar
-  - _icon_ - FontAwesome icon, see _fa_icon_class_ above
-  - _url_ - named or namespaced url
-  - _active_prefixes_ - list of strings that come after this app's base url for
-    all urls that are considered "active" for this nav item. This is used to
-    highlight the currently active nav item in the left side navigation bar. For
-    example, let's say the app's base url is "/myapp" and urls belonging to the
-    "projects" nav item are of the form "/myapp/projects/`<project_id>`" and
-    "/myapp/new-project". Then you would set _active_prefixes_ to `["projects",
-    "new-project"].
+    - _label_ - textual label, displayed on hover in the side navigation bar
+    - _icon_ - FontAwesome icon, see _fa_icon_class_ above
+    - _url_ - named or namespaced url
+    - _active_prefixes_ - list of strings that come after this app's base url for
+        all urls that are considered "active" for this nav item. This is used to
+        highlight the currently active nav item in the left side navigation bar. For
+        example, let's say the app's base url is "/myapp" and urls belonging to the
+        "projects" nav item are of the form "/myapp/projects/`<project_id>`" and
+        "/myapp/new-project". Then you would set _active_prefixes_ to `["projects", "new-project"]`.
 
 ### Add AppConfig to INSTALLED_APPS
 

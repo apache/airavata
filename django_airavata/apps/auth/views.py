@@ -115,11 +115,14 @@ def callback(request):
     try:
         login_desktop = request.GET.get('login_desktop', "false") == "true"
         user = authenticate(request=request)
-        login(request, user)
-        if login_desktop:
-            return _create_login_desktop_success_response(request)
-        next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
-        return redirect(next_url)
+        if user is not None:
+            login(request, user)
+            if login_desktop:
+                return _create_login_desktop_success_response(request)
+            next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
+            return redirect(next_url)
+        else:
+            raise Exception("Failed to authenticate user")
     except Exception as err:
         logger.exception("An error occurred while processing OAuth2 "
                          "callback: {}".format(request.build_absolute_uri()))

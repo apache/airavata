@@ -26,8 +26,29 @@ export default {
   },
   data() {
     return {
-      rawOutput: null
+      rawOutput: null,
+      isLoading: true,
+      rawJSFile : null,
     };
+  },
+  methods : {
+    //Attaches the script to the head, the name of the script can be passed from
+    //output view provider
+    loadScripts() {
+      return new Promise(resolve => {
+
+        let scriptEl = document.createElement("script");
+        scriptEl.src = this.rawJSFile;
+        scriptEl.type = "text/javascript";
+
+        // Attach script to head
+        document.getElementsByTagName("head")[0].appendChild(scriptEl);
+        // Wait for tag to load before promise is resolved
+        scriptEl.addEventListener('load',() => {
+          resolve();
+        });
+      });
+    },
   },
   created() {
     utils.FetchUtils.get("/api/html-output", {
@@ -35,11 +56,17 @@ export default {
       "experiment-output-name": this.experimentOutput.name,
       "provider-id": this.providerId
     }).then(data => {
-      this.rawOutput = data.output;
-      if (data.js) {
-        eval(data.js);
+      this.rawOutput = data.output
+      this.rawJSFile = data.js
+      this.isLoading = false
+    });
+  },
+  watch: {
+    isLoading() {
+      if(!this.isLoading) {
+        this.loadScripts();
       }
-    })
+    }
   }
 };
 </script>
