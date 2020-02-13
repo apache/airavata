@@ -34,6 +34,7 @@ public class Authenticator {
         AuthzClient keycloakClient = AuthzClient.create(configuration);
         AccessTokenResponse accessToken = keycloakClient.obtainAccessToken(userName, password);
 
+
         AuthzToken authzToken = new AuthzToken();
         Map<String, String> claims = new HashMap<>();
         claims.put("gatewayID", gateway);

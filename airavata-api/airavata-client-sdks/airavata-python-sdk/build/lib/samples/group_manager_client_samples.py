@@ -17,7 +17,7 @@
 import logging
 from clients.group_manager_client import GroupManagerClient
 
-from clients.keycloak_token_fetcher import get_token_and_user_info_password_flow
+from clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
 
@@ -27,7 +27,8 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-token = get_token_and_user_info_password_flow("default-admin", "123456", "default")
+authenticator = Authenticator();
+token = authenticator.get_token_and_user_info_password_flow("default-admin", "123456", "default")
 
 # load GroupManagerClient with default configuration
 client = GroupManagerClient()
