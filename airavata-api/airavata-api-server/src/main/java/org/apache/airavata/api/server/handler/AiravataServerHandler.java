@@ -4494,6 +4494,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         SSHCredential sshCredential = null;
         try {
             sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
+            csClientPool.returnResource(csClient);
         }catch (Exception e){
             logger.error("Error occurred while retrieving SSH Credential", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -4523,6 +4524,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         SSHCredential sshCredential = null;
         try {
             sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
+            csClientPool.returnResource(csClient);
         }catch (Exception e){
             logger.error("Error occurred while retrieving SSH Credential", e);
             AiravataSystemException exception = new AiravataSystemException();

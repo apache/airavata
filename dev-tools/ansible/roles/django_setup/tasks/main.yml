@@ -18,36 +18,92 @@
 # under the License.
 #
 ---
-# TODO: install python36
-# sudo yum -y install python36
-# sudo yum -y install httpd-devel
-# sudo yum -y install python36-devel
-# sudo yum -y install mysql-devel
-# sudo yum -y install gcc
 
-# TODO: fetch and build mod_wsgi
-# mkdir mod_wsgi
-# cd mod_wsgi/
-# curl -LO https://github.com/GrahamDumpleton/mod_wsgi/archive/4.5.17.tar.gz
-# tar zxf 4.5.17.tar.gz
-# cd mod_wsgi-4.5.17/
-# ./configure --with-python=/usr/bin/python3
-# make
-# sudo make install
+- name: Install Airavata Django Portal prerequisites
+  yum: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - python36
+    - httpd-devel
+    - python36-devel
+    - mysql-devel
+    - gcc
+    - zlib-devel
+    - openssl-devel
+  become: yes
 
-# TODO: configure apache to load mod_wsgi
-# * configure Apache to load mod_wsgi
-# ```
-# sudo vim /etc/httpd/conf.modules.d/00-wsgi.conf
-# ```
-# * 00-wsgi.conf file contains
-# ```
-# LoadModule wsgi_module modules/mod_wsgi.so
-# ```
+- name: Create mod_wsgi directory
+  file: path={{ mod_wsgi_dir }} state=directory
+  become: yes
 
-# TODO: install Node.js EPEL repository and then install nodejs
-# sudo curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
-# sudo yum install nodejs
+- name: Fetch mod_wsgi
+  get_url:
+    url: "{{ mod_wsgi_url }}"
+    dest: "{{ mod_wsgi_tarball_dest }}"
+  become: yes
 
-# TODO: disable package-lock.json creation for the pga user
-# npm config set package-lock false
+- name: Untar mod_wsgi
+  unarchive:
+    src: "{{ mod_wsgi_tarball_dest }}"
+    remote_src: yes
+    dest: "{{ mod_wsgi_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}"
+  become: yes
+
+- name: Configure mod_wsgi
+  command: ./configure --with-python=/usr/bin/python3
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}/Makefile"
+  become: yes
+
+- name: make mod_wsgi
+  command: make
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}/src/server/mod_wsgi.la"
+  become: yes
+
+- name: make install mod_wsgi
+  command: make install
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+  become: yes
+
+- name: Copy mod_wsgi config file
+  copy:
+    src: 00-wsgi.conf
+    dest: "{{ httpd_conf_modules_dir }}/00-wsgi.conf"
+  become: yes
+
+# Allow httpd to copy file attributes when handling uploaded files and moving
+# them from temporary to final destination (which may cross partitions)
+- name: double check policycoreutils installed
+  yum: name=policycoreutils-python state=installed
+  become: yes
+
+- name: Copy SELinux type enforcement file
+  copy: src=django-httpd.te dest=/tmp/
+
+- name: Compile SELinux module file
+  command: checkmodule -M -m -o /tmp/django-httpd.mod /tmp/django-httpd.te
+
+- name: Build SELinux policy package
+  command: semodule_package -o /tmp/django-httpd.pp -m /tmp/django-httpd.mod
+
+- name: unLoad SELinux policy package
+  command: semodule -r django-httpd
+  become: yes
+  ignore_errors: True
+
+- name: Load SELinux policy package
+  command: semodule -i /tmp/django-httpd.pp
+  become: yes
+
+- name: Remove temporary files
+  file: path={{ item }} state=absent
+  with_items:
+    - /tmp/django-httpd.mod
+    - /tmp/django-httpd.pp
+    - /tmp/django-httpd.te
+
+...

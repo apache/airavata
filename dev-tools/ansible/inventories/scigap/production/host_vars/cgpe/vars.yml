@@ -1,0 +1,50 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+
+vhost_servername: "cgpexplorer.net"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/cgpexplorer.net/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/cgpexplorer.net/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/cgpexplorer.net/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "cgpe"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "CGPExplorer Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "cgpe"
+experiment_data_dir: "{{ user_data_dir }}/cgpe"
+#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCNOy82E44c+/64s1Gd/VeQ4CpcGuTHwodXd1sLKu9sUDVO3pH4oBIQi0SLAns7W9qG63mZWO7lh2lSpqVyVzPY8eN+s/9JcvdLpJaTD35mxIXFTzPjbaVczpSB7DVpwPeQkHysrFe4U3TDgZemmVtFEe0TwU6wmVA42XFZi9+Z+q+jEJuG6t4O4v25jqkX6pQPkfDzMWh8Wxu2jXoBVLYIkpl1hXVGx+xLZFsgPkpjI9/+e29TEfcHBocE2a0/rtRUEFZjYApg2zb8Zglq37c6y8NepT5YyznA0QJV/hr7BogVHqrLy1HL5MCTt83Yn8e5/srNq27yjow1Jy8UHlB3"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Liu Jiannan' 'johliu@iu.edu')]"
+portal_title: "CGPExplorer Gateway"
+
+...

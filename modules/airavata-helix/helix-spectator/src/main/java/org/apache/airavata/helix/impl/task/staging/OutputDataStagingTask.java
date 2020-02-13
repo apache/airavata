@@ -137,11 +137,11 @@ public class OutputDataStagingTask extends DataStagingTask {
                         logger.warn("Ignoring file transfer as filename is empty or null");
                         continue;
                     }
-                    sourceFileName = new File(subFilePath).getName();
+                    sourceFileName = subFilePath;
                     if (destParentPath.endsWith(File.separator)) {
-                        destinationURI = new URI(destParentPath + sourceFileName);
+                        destinationURI = new URI(destParentPath + subFilePath);
                     } else {
-                        destinationURI = new URI(destParentPath + File.separator + sourceFileName);
+                        destinationURI = new URI(destParentPath + File.separator + subFilePath);
                     }
 
                     URI newSourceURI = new URI((sourceParentPath.endsWith(File.separator) ?

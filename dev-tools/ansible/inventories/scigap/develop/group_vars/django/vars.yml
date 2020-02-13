@@ -30,3 +30,5 @@ django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysingh
 django_database_name: "django_{{ gateway_id }}"
 django_hidden_airavata_apps: "['django_airavata_dataparsers']"
 django_tus_endpoint: "https://tus.dev.scigap.org/files/"
+airavata_django_git_branch: "develop"
+django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
