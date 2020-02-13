@@ -13,18 +13,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import time
+
 import logging
 
 from clients.keycloak_token_fetcher import Authenticator
 
 from clients.api_server_client import APIServerClient
-from clients.file_handling_client import FileHandler
-
 
 from airavata.model.workspace.ttypes import Gateway, Notification, Project
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
+from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, \
+    ReplicaLocationCategory, ReplicaPersistentType
 
 from airavata.model.application.io.ttypes import InputDataObjectType
 
@@ -44,17 +44,15 @@ token = authenticator.get_token_and_user_info_password_flow("username", "passwor
 
 api_server_client = APIServerClient(configFile)
 
-file_handler = FileHandler("pgadev.scigap.org", 22, "pga", "XXXXXXX")
-
 # create Experiment data Model
 experiment = ExperimentModel()
-experiment.experimentName = "Testing_ECHO_SDK 10"
+experiment.experimentName = "Gaussian experiment testing 4"
 experiment.gatewayId = "cyberwater"
 experiment.userName = "isuru_janith"
 experiment.description = "SDK testing"
 experiment.projectId = "Default_Project_6b6f1a82-2db8-4f57-ac4d-15c3ec8cafa9"
 experiment.experimentType = ExperimentType.SINGLE_APPLICATION
-experiment.executionId = "Echo_a2081a37-fbe2-4aec-8657-b1d8f7f66bef"
+experiment.executionId = "Gaussian_2cf3d51a-d9e7-4c3d-a326-dfcc4364b1d9"
 
 computRes = ComputationalResourceSchedulingModel()
 computRes.resourceHostId = "karst.uits.iu.edu_a9a65e7d-d104-4c11-829b-412168bed7a8"
@@ -72,11 +70,39 @@ userConfigData.experimentDataDir = "/var/www/portals/gateway-user-data/django-cy
 
 experiment.userConfigurationData = userConfigData
 
-inputs = api_server_client.get_application_inputs(token, "Echo_a2081a37-fbe2-4aec-8657-b1d8f7f66bef")
+dataProductModel = DataProductModel()
+dataProductModel.gatewayId = "cyberwater"
+dataProductModel.ownerName = "isuru_janith"
+dataProductModel.productName = "gaussian_file"
+dataProductModel.dataProductType = DataProductType.FILE
+
+replicaLocation = DataReplicaLocationModel()
+replicaLocation.storageResourceId = "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+replicaLocation.replicaName = "{} gateway data store copy".format("npentane12diol.inp")
+replicaLocation.replicaLocationCategory = ReplicaLocationCategory.GATEWAY_DATA_STORE
+replicaLocation.filePath = "file://{}:{}".format("pgadev.scigap.org",
+                                                 "/home/pga/portals/django-cyberwater/npentane12diol.inp")
+
+print(replicaLocation.filePath)
+dataProductModel.replicaLocations = [replicaLocation]
+
+dataURI = api_server_client.register_data_product(token, dataProductModel)
+print(dataURI)
+inputs = api_server_client.get_application_inputs(token, "Gaussian_2cf3d51a-d9e7-4c3d-a326-dfcc4364b1d9")
+print(inputs)
+if isinstance(inputs[0], InputDataObjectType):
+    inputs[0].value = dataURI
+    print(inputs)
+
+# gEXP = api_server_client.get_experiment(token, "Gaussian_on_Jan_30,_2020_2:11_PM_da332f49-35dc-4586-916c-06a04254d0c9 ")
+
+# api_server_client.register_data_product()
+
+# print(gEXP)
 
 experiment.experimentInputs = inputs
 
-outputs = api_server_client.get_application_outputs(token, "Echo_a2081a37-fbe2-4aec-8657-b1d8f7f66bef")
+outputs = api_server_client.get_application_outputs(token, "Gaussian_2cf3d51a-d9e7-4c3d-a326-dfcc4364b1d9")
 
 experiment.experimentOutputs = outputs
 
@@ -84,21 +110,4 @@ experiment.experimentOutputs = outputs
 ex_id = api_server_client.create_experiment(token, "cyberwater", experiment)
 
 # launch experiment
-api_server_client.launch_experiment(token, ex_id,
-                                    "cyberwater")
-status = api_server_client.get_experiment_status(token, ex_id);
-
-if status is not None:
-    print("Initial state " + str(status.state))
-    while status.state <= 6:
-        status = api_server_client.get_experiment_status(token,
-                                                         ex_id);
-        time.sleep(30)
-        print("State " + str(status.state))
-
-    print("Completed")
-
-    file_handler.download_file(
-        "/var/www/portals/gateway-user-data/django-cyberwater/isuru_janith/Default_Project/TestingData/Echo.stdout", ".",
-         False, False)
-
+api_server_client.launch_experiment(token, ex_id, "cyberwater")
