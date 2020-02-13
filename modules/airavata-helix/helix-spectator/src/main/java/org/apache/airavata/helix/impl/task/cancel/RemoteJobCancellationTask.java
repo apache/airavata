@@ -80,7 +80,8 @@ public class RemoteJobCancellationTask extends AiravataTask {
                                 // if the job already is in above states, there is no use of trying cancellation
                                 // setting context variable to be used in the Cancel Completing Task
                                 setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
-                                return onSuccess("Job already is in a saturated state according to monitoring");
+                                logger.warn("Job " + job.getJobId() + " already is in a saturated state according to monitoring");
+                                continue;
                         }
                     }
 
@@ -100,7 +101,8 @@ public class RemoteJobCancellationTask extends AiravataTask {
                                     // if the job already is in above states, there is no use of trying cancellation
                                     // setting context variable to be used in the Cancel Completing Task
                                     setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
-                                    return onSuccess("Job already is in a saturated state according to cluster");
+                                    logger.warn("Job " + job.getJobId() + " already is in a saturated state according to cluster");
+                                    continue;
                             }
                         } else {
                             logger.warn("Job status for job " + job.getJobId() + " is null. Std out " + jobMonitorOutput.getStdOut() +

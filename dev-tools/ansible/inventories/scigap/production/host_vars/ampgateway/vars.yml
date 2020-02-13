@@ -19,6 +19,9 @@
 #
 
 ---
+airavata_django_extra_dependencies:
+  - git+https://github.com/SciGaP/amp-gateway-django-app.git#egg=amp_gateway_django_app
+
 vhost_servername: "ampgateway.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/ampgateway.org/cert.pem"

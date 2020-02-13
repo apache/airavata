@@ -33,10 +33,12 @@ public class SCPFileTransferWrapper implements FileTransfer, Closeable {
 
     private SCPFileTransfer scpFileTransfer;
     private Consumer<Integer> onCloseFunction;
+    private SSHClientWrapper originalSSHClient;
 
-    public SCPFileTransferWrapper(SCPFileTransfer scpFileTransfer, Consumer<Integer> onCloseFunction) {
+    public SCPFileTransferWrapper(SCPFileTransfer scpFileTransfer, Consumer<Integer> onCloseFunction, SSHClientWrapper originalSSHClient) {
         this.scpFileTransfer = scpFileTransfer;
         this.onCloseFunction = onCloseFunction;
+        this.originalSSHClient = originalSSHClient;
     }
 
     @Override
@@ -72,5 +74,13 @@ public class SCPFileTransferWrapper implements FileTransfer, Closeable {
     @Override
     public void close() throws IOException {
         onCloseFunction.accept(-1);
+    }
+
+    public boolean isErrored() {
+        return originalSSHClient.isErrored();
+    }
+
+    public void setErrored(boolean errored) {
+        this.originalSSHClient.setErrored(errored);
     }
 }

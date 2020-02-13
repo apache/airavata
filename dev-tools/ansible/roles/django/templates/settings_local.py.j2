@@ -75,7 +75,9 @@ KEYCLOAK_AUTHORIZE_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/pro
 KEYCLOAK_TOKEN_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/token'
 KEYCLOAK_USERINFO_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/userinfo'
 KEYCLOAK_LOGOUT_URL = '{{ oauth_service_url }}/realms/{{ tenant_domain }}/protocol/openid-connect/logout'
-KEYCLOAK_CA_CERTFILE = os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")
+{% if django_keycloak_ca_certfile_path %}
+KEYCLOAK_CA_CERTFILE = {{ django_keycloak_ca_certfile_path }}
+{% endif %}
 KEYCLOAK_VERIFY_SSL = True
 
 AUTHENTICATION_OPTIONS = {
@@ -88,7 +90,7 @@ AUTHENTICATION_OPTIONS = {
         {% endif %}
     },
     {% endif %}
-    {% if auth_options.external is defined %}
+    {% if auth_options.external is defined and auth_options.external %}
     'external': [
         {% for external in auth_options.external %}
         {
@@ -134,15 +136,15 @@ PORTAL_TITLE = '{{ portal_title }}'
 # Hidden Airavata apps (not all gateways need all functionality)
 HIDDEN_AIRAVATA_APPS = {{ django_hidden_airavata_apps }}
 
+{% if django_tus_endpoint is defined and django_tus_endpoint %}
 # Tus uploads
-{% if django_tus_endpoint is defined %}
 TUS_ENDPOINT = "{{ django_tus_endpoint }}"
 TUS_DATA_DIR = "{{ django_tus_data_dir }}"
 {% endif %}
 
 FILE_UPLOAD_MAX_FILE_SIZE = {{ django_file_upload_max_file_size_mb }} * 1024 * 1024
 
-{% if django_pga_url is defined %}
+{% if django_pga_url is defined and django_pga_url %}
 PGA_URL = "{{ django_pga_url }}"
 {% endif %}
 
