@@ -37,7 +37,7 @@ logger.addHandler(handler)
 class SharingRegistryClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.sharing_registry_client_settings = SharingAPIClientSettings()
+        self.sharing_registry_client_settings = SharingAPIClientSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.sharing_registry_client_pool = utils.initialize_sharing_registry_client(
             self.sharing_registry_client_settings.SHARING_API_HOST,
