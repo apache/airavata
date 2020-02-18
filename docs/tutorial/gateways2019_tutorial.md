@@ -1040,7 +1040,7 @@ app is also deployed in the hosted tutorial Django instance so you can run it
 there to verify it works.
 
 6. Try this out in the production deployment at
-   <https://gateways19.scigap.org/gateways19_tutorial/hello/>.
+   <https://testdrive.airavata.org/gateways19_tutorial/hello/>.
 
 ### Displaying the experiment output
 
@@ -1168,7 +1168,7 @@ function loadExperiments() {
 ```
 
 4. You can try out this custom Django app in the production deployed instance at
-   <https://gateways19.scigap.org/gateways19_tutorial/hello/> where it really
+   <https://testdrive.airavata.org/gateways19_tutorial/hello/> where it really
    does download and parse the standard out.
 
 ## Resources
