@@ -11,19 +11,18 @@ through various plugins to add more domain specific functionality as needed.
 
 ## Getting Started
 
-The following steps will help you quickly get started with running the
-Airavata Django Portal locally. This will allow you to try it out and can
-also be used as a development environment. If you just want to run the
-Airavata Django Portal locally, see the Docker instructions below for a more
-simplified approach.
+The following steps will help you quickly get started with running the Airavata
+Django Portal locally. This will allow you to try it out and can also be used as
+a development environment. If you just want to run the Airavata Django Portal
+locally, see the Docker instructions below for a more simplified approach.
 
 The Airavata Django Portal is developed with Python 3.6 but should also work
 with 3.4 and 3.5. You'll need one of these versions installed locally.
 
 You'll also need Node.js and yarn to build the JavaScript frontend code. Please
 install
-[the most recent LTS version of Node.js](https://nodejs.org/en/download/)
-and [the Yarn package manager](https://yarnpkg.com).
+[the most recent LTS version of Node.js](https://nodejs.org/en/download/) and
+[the Yarn package manager](https://yarnpkg.com).
 
 1.  Checkout this project and create a virtual environment.
 
@@ -88,9 +87,9 @@ and [the Yarn package manager](https://yarnpkg.com).
 
 ## Docker instructions
 
-To run the Django Portal as a Docker container, you need a
-`settings_local.py` file which you can create from the
-`settings_local.py.sample` file. Then run the following:
+To run the Django Portal as a Docker container, you need a `settings_local.py`
+file which you can create from the `settings_local.py.sample` file. Then run the
+following:
 
 1. Build the Docker image.
 
@@ -102,15 +101,18 @@ To run the Django Portal as a Docker container, you need a
 
    ```
    docker run -d \
-     -v $PWD/django_airavata/settings_local.py.sample:/code/django_airavata/settings_local.py \
+     -v /path/to/my/settings_local.py:/code/django_airavata/settings_local.py \
      -p 8000:8000 airavata-django-portal
    ```
 
-   But instead of `$PWD/django_airavata/settings_local.py.sample` you can
-   substitute your own settings_local.py file.
+3. Load an initial set of Wagtail pages (theme). You only need to do this when
+   starting the container for the first time.
 
-3.  Point your browser to http://localhost:8000.
+   ```
+   docker exec CONTAINER_ID python manage.py load_cms_data default
+   ```
 
+4. Point your browser to http://localhost:8000.
 
 ## Documentation
 

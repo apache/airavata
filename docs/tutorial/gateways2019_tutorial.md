@@ -7,10 +7,7 @@ Prerequisites: tutorial attendees should have:
 
 -   a laptop on which to write Python code
 -   Git client
-
-We'll install Python as part of the tutorial. If you opt to run the Django
-portal in a Docker container you can also install Docker as part of the
-tutorial.
+-   Docker desktop
 
 ## Outline
 
@@ -335,84 +332,41 @@ use as a development environment.
 
 ### Setup local Django portal development environment
 
-#### Option #1: Run the portal directly
-
-1. Make sure you have Python 3.6 installed (latest 3.6 release at time of
-   writing is 3.6.9). See <https://www.python.org/downloads/> for downloadable
-   packages or use your system's package manager.
-2. Now we'll clone a repository that has some supporting files for this
-   tutorial. Change to a directory on your system where you will keep the
-   tutorial files and clone <https://github.com/machristie/gateways19-tutorial>
-
-```bash
-cd $HOME
-git clone https://github.com/machristie/gateways19-tutorial.git
-```
-
-3. For the sake of convenience, a zip file of the airavata-django-portal code
-   was created for this tutorial. Unzip the airavata-django-portal code into the
-   parent directory.
-
-```bash
-unzip gateways19-tutorial/airavata-django-portal.zip
-```
-
-!!! note "Windows"
-
-    On Windows run `tar -xf gateways19-tutorial/airavata-django-portal.zip`
-
-4. Create a virtual environment.
-
-```bash
-cd $HOME/airavata-django-portal
-python3 -m venv venv
-```
-
-!!! note "Windows"
-
-    On Windows run `python -m venv venv`
-
-5. Activate the virtual environment.
-
-```
-source venv/bin/activate
-```
-
-!!! note "Windows"
-
-    On Windows run `venv\Scripts\activate`
-
-6. Install the airavata-django-portal dependencies in the virtual environment.
-
-```
-pip install -r requirements.txt
-```
-
-7. We can now start the Django server and log in and see our experiments.
-
-```bash
-export OAUTHLIB_INSECURE_TRANSPORT=1
-python manage.py runserver
-```
-
-!!! note "Windows"
-
-    On Windows run
-
-        set OAUTHLIB_INSECURE_TRANSPORT=1
-        python manage.py runserver
-
-#### Option #2: Run the portal in a Docker container
+To run the Django portal locally we'll start it as a Docker container. Another
+option, which we won't cover in this tutorial, is to check out the code and run
+the portal locally as a Python process (see the airavata-django-portal
+[README](https://github.com/apache/airavata-django-portal/blob/master/README.md)
+if you are interested).
 
 1. Make sure you have
    [Docker installed](https://www.docker.com/products/docker-desktop).
-2. Run
+2. Run the following to create a Docker container called
+   **gateways19-tutorial**.
 
 ```
 cd $HOME
 git clone https://github.com/machristie/gateways19-tutorial.git
 cd gateways19-tutorial
-docker run --name gateways19-tutorial -p 8000:8000 -v $PWD:/code machristie/gateways19-tutorial
+docker run -d --name gateways19-tutorial -p 8000:8000 -v $PWD:/extensions -v $PWD/settings_local.py:/code/django_airavata/settings_local.py machristie/airavata-django-portal
+```
+
+!!! note
+
+    You can also build the Docker image from scratch, which you might want to
+    do if the Docker image is out-dated. To do that run the following:
+
+        cd /tmp/
+        git clone https://github.com/apache/airavata-django-portal.git
+        cd airavata-django-portal
+        docker build -t airavata-django-portal
+
+    Now you can `airavata-django-portal` instead of
+    `machristie/airavata-django-portal` in the `docker run` command above.
+
+3. Run the following to load the default set of CMS pages:
+
+```
+docker exec gateways19-tutorial python manage.py load_cms_data default
 ```
 
 ---
@@ -420,9 +374,6 @@ docker run --name gateways19-tutorial -p 8000:8000 -v $PWD:/code machristie/gate
 Go to [http://localhost:8000](http://localhost:8000), click on **Login in**,
 enter your username and password. On the dashboard you should see the your
 experiments listed on the right hand side.
-
-After confirming you can log in, go ahead and shutdown the local Django server
-for now by typing `Control-C` in the console.
 
 ### Setup the custom output viewer package
 
@@ -613,28 +564,17 @@ gaussian-eigenvalues-plot = gateways19_tutorial.output_views:GaussianEigenvalues
 7. Now we need to install the _gateways19-tutorial_ package into the Django
    portal's virtual environment.
 
-**Running Django locally** Make sure you still have the Django portal's virtual
-environment activated; your terminal prompt should start with `(venv)`. If the
-Django portal virtual environment isn't activated, see step 5 in the previous
-section. We'll also use pip to install the output viewer's dependencies.
-
 ```bash
-cd $HOME/gateways19-tutorial
-pip install -r requirements.txt
-python setup.py develop
+docker exec -w /extensions gateways19-tutorial pip install -r requirements.txt
+docker exec -w /extensions gateways19-tutorial python setup.py develop
+docker exec gateways19-tutorial touch /code/django_airavata/wsgi.py
 ```
 
-**Running Docker container**
+These commands:
 
-```bash
-docker start gateways19-tutorial
-docker exec -it gateways19-tutorial /bin/bash -l
-$ cd /code
-$ pip install -r requirements.txt
-$ python setup.py develop
-$ exit
-docker stop gateways19-tutorial
-```
+1. install our package's dependencies,
+2. install the package into the container's Python environment, and
+3. touches the wsgi.py to trigger a reload of the Django portal dev server.
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
 
@@ -642,27 +582,12 @@ Back in the Django Portal, we'll make sure the application interface for
 Gaussian is configured to add the GaussianEigenvaluesViewProvider as an
 additional output view of the file.
 
-1. Start the local Django server again.
-
-**Running Django locally**
-
-```
-cd $HOME/airavata-django-portal/
-python manage.py runserver
-```
-
-**Running Docker container**
-
-```
-docker start -a gateways19-tutorial
-```
-
-2. Log into your local Django Portal instance at <http://localhost:8000>.
-3. In the menu at the top, select **Settings**.
-4. Click on the **Gaussian16** application.
-5. Click on the **Interface** tab.
-6. Scroll down to the _Output Field: Gaussian-Application-Output_.
-7. Verify that the following is in the _Metadata_ section:
+1. Log into your local Django Portal instance at <http://localhost:8000>.
+2. In the menu at the top, select **Settings**.
+3. Click on the **Gaussian16** application.
+4. Click on the **Interface** tab.
+5. Scroll down to the _Output Field: Gaussian-Application-Output_.
+6. Verify that the following is in the _Metadata_ section:
 
 ```json
 {
@@ -674,15 +599,13 @@ It should look something like this:
 
 ![Screenshot of Gaussian log output-view-providers json](./screenshots/gateways19/gaussian-output-view-providers-json.png)
 
-8. Go back to the **Workspace** using the menu at the top.
-9. Select your Gaussian16 experiment from the right sidebar.
-10. For the .log output file there should be a dropdown menu allowing you to
-    select an alternate view. Select **Gaussian Eigenvalues**. Now you should
-    see the image generated by the custom output view provider.
+7. Go back to the **Workspace** using the menu at the top.
+8. Select your Gaussian16 experiment from the right sidebar.
+9. For the .log output file there should be a dropdown menu allowing you to
+   select an alternate view. Select **Gaussian Eigenvalues**. Now you should see
+   the image generated by the custom output view provider.
 
 ![Screenshot of generated Gaussian eigenvalues plot](./screenshots/gateways19/gaussian-eigenvalues.png)
-
-11. Go ahead and shutdown the Django server again.
 
 ## Tutorial exercise: Create a custom Django app
 
@@ -798,21 +721,7 @@ gateways19_tutorial = gateways19_tutorial.apps:Gateways19TutorialAppConfig
 )
 ```
 
-6. Start the Django Portal server again:
-
-**Running Django locally**
-
-```bash
-cd $HOME/airavata-django-portal
-export OAUTHLIB_INSECURE_TRANSPORT=1
-python manage.py runserver
-```
-
-**Running Docker container**
-
-```bash
-docker start -a gateways19-tutorial
-```
+---
 
 Now you should be able to [log into the portal locally](http://localhost:8000)
 and see **Gateways 19 Tutorial** in the drop down menu in the header (click on
@@ -1259,8 +1168,8 @@ function loadExperiments() {
 ```
 
 4. You can try out this custom Django app in the production deployed instance at
-<https://gateways19.scigap.org/gateways19_tutorial/hello/> where it really does
-download and parse the standard out.
+   <https://gateways19.scigap.org/gateways19_tutorial/hello/> where it really
+   does download and parse the standard out.
 
 ## Resources
 
