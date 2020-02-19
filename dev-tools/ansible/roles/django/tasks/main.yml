@@ -93,8 +93,6 @@
     state: present
     name: ansible-airavata-django-portal
     image: airavata-django-portal
-    volumes:
-      - "{{ airavata_django_portal_tempdir.path }}/django_airavata/settings_local.py.sample:/code/django_airavata/settings_local.py"
   run_once: true
 
 - name: copy built JS files from Docker container
@@ -175,6 +173,17 @@
     virtualenv: "{{ django_venv_dir }}"
   become: yes
   become_user: "{{user}}"
+
+- name: Run Django's manage.py set_wagtail_site based on hostname
+  django_manage:
+    command: set_wagtail_site
+    app_path: "{{ airavata_django_checkout }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+  # if there are no Django Portal pages in Wagtail, then this command fails,
+  # but we can ignore it until Wagtail pages are created
+  ignore_errors: yes
 
 - name: Run Django's manage.py collectstatic
   django_manage:
