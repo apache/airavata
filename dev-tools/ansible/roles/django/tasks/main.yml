@@ -174,6 +174,17 @@
   become: yes
   become_user: "{{user}}"
 
+- name: Run Django's manage.py set_wagtail_site based on hostname
+  django_manage:
+    command: set_wagtail_site
+    app_path: "{{ airavata_django_checkout }}"
+    virtualenv: "{{ django_venv_dir }}"
+  become: yes
+  become_user: "{{user}}"
+  # if there are no Django Portal pages in Wagtail, then this command fails,
+  # but we can ignore it until Wagtail pages are created
+  ignore_errors: yes
+
 - name: Run Django's manage.py collectstatic
   django_manage:
     command: "collectstatic -i node_modules --noinput"
