@@ -894,7 +894,7 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
 ```javascript
 // ...
-    const appInterfaceId = "Echo_4be0e1b0-24c5-417d-8d57-a695c2890a05";
+    const appInterfaceId = "Echo_23d67491-1bef-47bd-a0f5-faf069e09773";
 
     function loadExperiments() {
 
@@ -965,7 +965,7 @@ const loadAppInterface = services.ApplicationInterfaceService.retrieve({
 
 ```javascript
 const appDeploymentId =
-    "pearc19-sgrc-cluster.jetstream-cloud.org_Echo_b0e05d53-cace-420b-b280-3626e5e1c94b";
+    "js-156-93.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
 const loadQueues = services.ApplicationDeploymentService.getQueues({
     lookup: appDeploymentId
 });
@@ -978,9 +978,9 @@ const loadQueues = services.ApplicationDeploymentService.getQueues({
 
 ```javascript
 const resourceHostId =
-    "pearc19-sgrc-cluster.jetstream-cloud.org_cf5b3c5d-f524-4c66-883a-03662caa8178";
+    "js-156-93.jetstream-cloud.org_33019860-54c2-449b-96d3-988d4f5a501e";
 const queueName = "cloud";
-const groupResourceProfileId = "573573a8-8084-459f-9a4a-138ab835b7b3";
+const groupResourceProfileId = "5d4ef270-057c-410b-a2bb-36b5262ce265";
 const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
 ```
 
@@ -994,14 +994,14 @@ $("#run-button").click(e => {
         lookup: appInterfaceId
     });
     const appDeploymentId =
-        "pearc19-sgrc-cluster.jetstream-cloud.org_Echo_b0e05d53-cace-420b-b280-3626e5e1c94b";
+        "js-156-93.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
     const loadQueues = services.ApplicationDeploymentService.getQueues({
         lookup: appDeploymentId
     });
     const resourceHostId =
-        "pearc19-sgrc-cluster.jetstream-cloud.org_cf5b3c5d-f524-4c66-883a-03662caa8178";
+        "js-156-93.jetstream-cloud.org_33019860-54c2-449b-96d3-988d4f5a501e";
     const queueName = "cloud";
-    const groupResourceProfileId = "573573a8-8084-459f-9a4a-138ab835b7b3";
+    const groupResourceProfileId = "5d4ef270-057c-410b-a2bb-36b5262ce265";
     const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
     Promise.all([loadAppInterface, loadWorkspacePrefs, loadQueues])
         .then(([appInterface, workspacePrefs, queues]) => {
@@ -1065,7 +1065,7 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId }).then(
         fullDetails => {
             const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                o => o.name === "Echo-Standard-Out"
+                o => o.name === "Echo-STDOUT"
             ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
                 dp => dp.productUri === stdoutDataProductId
@@ -1087,7 +1087,7 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId })
         .then(fullDetails => {
             const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                o => o.name === "Echo-Standard-Out"
+                o => o.name === "Echo-STDOUT"
             ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
                 dp => dp.productUri === stdoutDataProductId
@@ -1141,7 +1141,7 @@ function loadExperiments() {
                 })
                     .then(fullDetails => {
                         const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                            o => o.name === "Echo-Standard-Out"
+                            o => o.name === "Echo-STDOUT"
                         ).value;
                         const stdoutDataProduct = fullDetails.outputDataProducts.find(
                             dp => dp.productUri === stdoutDataProductId
