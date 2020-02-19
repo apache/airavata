@@ -70,9 +70,10 @@ COPY README.md .
 RUN pip install -r requirements.txt
 RUN pip install -r requirements-mysql.txt
 
-COPY ./ .
+# Copy in a default settings_local.py file
+COPY ./django_airavata/settings_local.py.sample ./django_airavata/settings_local.py
 
-VOLUME /code/django_airavata/settings_local.py
+COPY ./ .
 
 # Copy javascript builds from build-stage
 WORKDIR /code/django_airavata/apps/api/static/django_airavata_api
