@@ -34,5 +34,6 @@ class Command(BaseCommand):
                 title='Welcome to your new Wagtail site!').delete()
 
         call_command('loaddata', fixture_file, verbosity=0)
+        call_command('set_wagtail_site')
 
         print(f"{options['filename']} is loaded successfully....!")
