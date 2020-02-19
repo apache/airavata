@@ -21,32 +21,30 @@
 ---
 
 
-vhost_servername: "toppic.sciencegateways.iu.edu"
+vhost_servername: "clades.microbial-genomes.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/privkey.pem"
-
-django_file_upload_max_file_size_mb: 2500
+ssl_certificate_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "toppic"
+tenant_domain: "microbial-genomes"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "TopPIC Gateway"
+    name: "Microbial Genomes Gateway"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "toppic"
-experiment_data_dir: "{{ user_data_dir }}/toppic"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfQ9gNhK9Sbs/0uUL1i4xuIXqw+zW+cnKc6O7t1VC8jyGL/awc4tWoTDCyXhloKmxcfHw+ci769AXp8FxC74JE12HqmZ7gmujRrsLMhHpdA1GlptSMjdiQ9jUHp4z5UYEczATBL8EHKVHCFbWp48vZ8hsPaKUy9dWKuvFJ/Q7h0j2h40DtAfkJLLMhRiuShautRA3pwEXEyKwrQDNNi64am7bX7W8AczxWwijE1atXHdyC1CUm2Ni5b9DWAx2+Dc3COvEnEYFsh1Oov0JMf/KnAeNlJaq9cTR+YD///wHNlHJyzuSqfAW457u0teoACvmcBZgizjX8KweATXTVyANh"
+gateway_id: "microbial-genomes"
+experiment_data_dir: "{{ user_data_dir }}/microbial-genomes"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCG/syNtrxrgfdHpxln172epFN36uztXhblac4uqNYW9Qlp8K5YI1MICxCW+HJu1mOkIvOLseYaZm1m8Vt7KwTvp/RP6iyZ8M/fWMPO+v9ZLjGupi/iDLA8JNfD0trpwXzW4PCFaqPG2+LtpzsfsI8Bx6UwFXbHKdEo5eC548Cc5EVkZ9xFEChCQHdUcxWI7zs7+S9wsAOY3Qbsrg/UtLAe4P8ZFxABSgBdirKusxdbw/0LgVhkj1aTKIE7n+7b7b11m4A1bzvsvhNLBlN+hRXG9ZiOOYExO1T5p3rX+HHIeUNAi1AMlc6KTa833ni0FWK3EYbGEwC1og6hSfl2ZGRp"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Liu Xiaowen' 'xwliu@iupui.edu'),('In Kwon Choi','inkwchoi@iu.edu')]"
-portal_title: "TopPIC Gateway"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Luis Rodriguez Rojas', 'lrr@gatech.edu')]"
+portal_title: "Microbial Genomes Gateway"
 
 ...
