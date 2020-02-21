@@ -273,17 +273,12 @@ public class GroovyMapBuilder {
                     } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
                         String filePaths = inputDataObjectType.getValue();
                         String[] paths = filePaths.split(MULTIPLE_INPUTS_SPLITTER);
-                        String filePath;
-                        String inputs = "";
-                        int i = 0;
-                        for (; i < paths.length - 1; i++) {
-                            filePath = paths[i];
-                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                            // File names separate by a space
-                            inputs += filePath + " ";
+
+                        for (int i = 0; i < paths.length; i++) {
+                            paths[i] = paths[i].substring(paths[i].lastIndexOf(File.separatorChar) + 1);
                         }
-                        inputs += paths[i];
-                        inputValues.add(inputs);
+
+                        inputValues.add(String.join(" ", paths));
                     } else {
                         inputValues.add(inputDataObjectType.getValue());
                     }
