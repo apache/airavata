@@ -36,13 +36,13 @@ auth_options:
   password:
     name: "V4I Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "v4i"
 experiment_data_dir: "{{ user_data_dir }}/v4i"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCG/syNtrxrgfdHpxln172epFN36uztXhblac4uqNYW9Qlp8K5YI1MICxCW+HJu1mOkIvOLseYaZm1m8Vt7KwTvp/RP6iyZ8M/fWMPO+v9ZLjGupi/iDLA8JNfD0trpwXzW4PCFaqPG2+LtpzsfsI8Bx6UwFXbHKdEo5eC548Cc5EVkZ9xFEChCQHdUcxWI7zs7+S9wsAOY3Qbsrg/UtLAe4P8ZFxABSgBdirKusxdbw/0LgVhkj1aTKIE7n+7b7b11m4A1bzvsvhNLBlN+hRXG9ZiOOYExO1T5p3rX+HHIeUNAi1AMlc6KTa833ni0FWK3EYbGEwC1og6hSfl2ZGRp"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFUUsTVpp2eKER5bghuY+4cNYVuJnOpm0Cs01tpnCBve3ajADcLAogd33lytAk44v4Dk40dLpMeK08p0mNJSpdXFNnbuwB06iK22ygHoCF0zxdI8Dght9FVwbEq38BBFlk+9nxk30MpqDyUIKWwTpZFCwwyPSEjlIvX/ecRWmCIljgXBGs50bZeV7JVyRDoFnNOVAasjfXRdA70MxbbcZoZ9vTp4UUjIZv7PuPoVFsV0OCMcwz0Yp/6Pv24Y5j2PMIRSHFKkjz99mKu/6VTxpdmN8coSIYiU7AGUimi0L/RiOe4VLDdk/eOtTIezQlRBrDbWwUWe7l9tcHh3KwY0vx"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "V4I Gateway"
