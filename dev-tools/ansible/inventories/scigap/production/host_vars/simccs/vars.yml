@@ -41,12 +41,12 @@ django_extra_settings:
   MAPTOOL_SETTINGS:
     CPLEX_APPLICATION_ID: "cplex-solver_99721933-c9e4-4285-9ef1-d035ca82b541"
     DATASETS_DIR: "/data/gateway-user-data/simccs-datasets"
-    JAVA_OPTIONS: "-Xmx12g"
+    JAVA_OPTIONS: "-Xmx4g"
 
 vhost_servername: "simccs.org"
 vhost_ssl: true
 # Some of the maptool views call into Java code and can take 2-3 minutes to execute
-vhost_timeout: 300
+vhost_timeout: 600
 ssl_certificate_file: "/etc/letsencrypt/live/simccs.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/simccs.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/simccs.org/privkey.pem"
