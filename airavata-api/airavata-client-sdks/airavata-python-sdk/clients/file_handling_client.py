@@ -37,15 +37,16 @@ logger.addHandler(handler)
 
 class FileHandler(object):
 
-    def __init__(self, host, port, username, password):
+    def __init__(self, host, port, username, passphrase, privateKeyFilePath):
         self.host = host
         self.port = port
         self.username = username
-        self.password = password
+        self.password = passphrase
+        self.filePath = privateKeyFilePath
 
     def upload_file(self, files, remote_path, recursive, preserve_item):
         try:
-            ssh.connect(self.host, self.port, self.username, self.password)
+            ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.filePath)
             with SCPClient(ssh.get_transport()) as scp:
                 scp.put(files, remote_path, recursive, preserve_item)
         finally:
@@ -53,8 +54,9 @@ class FileHandler(object):
 
     def download_file(self, remote_path, local_path, recursive, preserve_item):
         try:
-            ssh.connect(self.host, self.port, self.username, self.password)
+            ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.filePath)
             with SCPClient(ssh.get_transport()) as scp:
                 scp.get(remote_path, local_path, recursive, preserve_item)
+                scp.putfo()
         finally:
             scp.close()

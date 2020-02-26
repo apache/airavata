@@ -7,6 +7,14 @@ airavata/api/Airavata.py
 airavata/api/__init__.py
 airavata/api/constants.py
 airavata/api/ttypes.py
+airavata/api/credential/__init__.py
+airavata/api/credential/store/CredentialStoreService.py
+airavata/api/credential/store/__init__.py
+airavata/api/credential/store/constants.py
+airavata/api/credential/store/ttypes.py
+airavata/api/credential/store/error/__init__.py
+airavata/api/credential/store/error/constants.py
+airavata/api/credential/store/error/ttypes.py
 airavata/api/error/__init__.py
 airavata/api/error/constants.py
 airavata/api/error/ttypes.py
@@ -164,6 +172,7 @@ airavata_python_sdk.egg-info/dependency_links.txt
 airavata_python_sdk.egg-info/top_level.txt
 clients/__init__.py
 clients/api_server_client.py
+clients/credential_store_client.py
 clients/file_handling_client.py
 clients/group_manager_client.py
 clients/iam_admin_client.py
@@ -177,6 +186,7 @@ samples/create_launch_echo_experiment.py
 samples/create_launch_gaussian_experiment.py
 samples/group_manager_client_samples.py
 samples/iam_admin_client_samples.py
+samples/metadata_fetcher.py
 samples/sharing_registry_client_samples.py
 samples/tenant_profile_client_samples.py
 samples/user_profile_client_samples.py

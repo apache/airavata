@@ -23,6 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 defaultSettings = os.path.join(BASE_DIR, "transport", "settings.ini")
 config.read(defaultSettings)
 
+
 class APIServerClientSettings(object):
 
     def __init__(self, configFileLocation=None):
@@ -67,6 +68,15 @@ class SharingAPIClientSettings(object):
         self.SHARING_API_HOST = config.get('SharingServer', 'SHARING_API_HOST')
         self.SHARING_API_PORT = config.getint('SharingServer', 'SHARING_API_PORT')
         self.SHARING_API_SECURE = config.getboolean('SharingServer', 'SHARING_API_SECURE')
+
+
+class CredentialStoreAPIClientSettings(object):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
+        self.CREDENTIAL_STORE_API_HOST = config.get('CredentialStoreServer', 'CREDENTIAL_STORE_API_HOST')
+        self.CREDENTIAL_STORE_API_PORT = config.getint('CredentialStoreServer', 'CREDENTIAL_STORE_API_PORT')
+        self.CREDENTIAL_STORE_API_SECURE = config.getboolean('CredentialStoreServer', 'CREDENTIAL_STORE_API_SECURE')
 
 
 class UserProfileClientSettings(object):
