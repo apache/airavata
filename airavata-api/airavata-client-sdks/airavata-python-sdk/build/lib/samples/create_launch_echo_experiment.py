@@ -13,13 +13,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
+import time
 import logging
 
 from clients.keycloak_token_fetcher import Authenticator
 
 from clients.api_server_client import APIServerClient
-
+from clients.file_handling_client import FileHandler
 
 
 from airavata.model.workspace.ttypes import Gateway, Notification, Project
@@ -43,6 +43,8 @@ authenticator = Authenticator(configFile)
 token = authenticator.get_token_and_user_info_password_flow("username", "password", "cyberwater")
 
 api_server_client = APIServerClient(configFile)
+
+file_handler = FileHandler("pgadev.scigap.org", 22, "pga", "XXXXXXX")
 
 # create Experiment data Model
 experiment = ExperimentModel()
@@ -84,3 +86,19 @@ ex_id = api_server_client.create_experiment(token, "cyberwater", experiment)
 # launch experiment
 api_server_client.launch_experiment(token, ex_id,
                                     "cyberwater")
+status = api_server_client.get_experiment_status(token, ex_id);
+
+if status is not None:
+    print("Initial state " + str(status.state))
+    while status.state <= 6:
+        status = api_server_client.get_experiment_status(token,
+                                                         ex_id);
+        time.sleep(30)
+        print("State " + str(status.state))
+
+    print("Completed")
+
+    file_handler.download_file(
+        "/var/www/portals/gateway-user-data/django-cyberwater/isuru_janith/Default_Project/TestingData/Echo.stdout", ".",
+         False, False)
+
