@@ -37,9 +37,11 @@ from airavata.service.profile.tenant.cpi.constants import (
 )
 from airavata.service.profile.user.cpi import UserProfileService
 from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
+from airavata.api.credential.store import CredentialStoreService
 
 from transport.settings import APIServerClientSettings, UserProfileClientSettings, TenantProfileServerClientSettings, \
-    IAMAdminClientSettings, GroupManagerClientSettings, SharingAPIClientSettings, ThriftSettings
+    IAMAdminClientSettings, GroupManagerClientSettings, SharingAPIClientSettings, CredentialStoreAPIClientSettings, \
+    ThriftSettings
 
 log = logging.getLogger(__name__)
 
@@ -49,6 +51,7 @@ default_tenant_profile_client_settings = TenantProfileServerClientSettings()
 default_iam_client_settings = IAMAdminClientSettings()
 default_group_manager_client_settings = GroupManagerClientSettings()
 default_sharing_API_client_settings = SharingAPIClientSettings()
+default_credential_store_client_settings = CredentialStoreAPIClientSettings()
 thrift_settings = ThriftSettings()
 
 
@@ -121,6 +124,10 @@ class UserProfileServiceThriftClient(MultiplexThriftClientMixin,
                                      CustomThriftClient):
     service_name = USER_PROFILE_CPI_NAME
     secure = default_user_profile_server_settings.PROFILE_SERVICE_SECURE
+
+
+class CredentialStoreServiceThriftClient(CustomThriftClient):
+    secure = default_credential_store_client_settings.CREDENTIAL_STORE_API_SECURE
 
 
 class SharingAPIThriftClient(CustomThriftClient):
@@ -211,3 +218,17 @@ def initialize_sharing_registry_client(host=default_sharing_API_client_settings.
         keepalive=thrift_settings.THRIFT_CLIENT_POOL_KEEPALIVE
     )
     return sharing_api_client_pool
+
+def initialize_credential_store_client(host=default_credential_store_client_settings.CREDENTIAL_STORE_API_HOST,
+                                       port=default_credential_store_client_settings.CREDENTIAL_STORE_API_PORT,
+                                       is_secure=default_credential_store_client_settings.CREDENTIAL_STORE_API_SECURE):
+    CredentialStoreService.secure = is_secure
+
+    credential_store_api_client_pool = connection_pool.ClientPool(
+        CredentialStoreService,
+        host,
+        port,
+        connection_class=CredentialStoreServiceThriftClient,
+        keepalive=thrift_settings.THRIFT_CLIENT_POOL_KEEPALIVE
+    )
+    return credential_store_api_client_pool
