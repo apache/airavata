@@ -29,14 +29,16 @@ airavata_django_extra_dependencies:
   - cython
   - "git+https://github.com/SciGaP/simccs-maptool.git@{{ simccs_maptool_branch }}#egg=simccs-maptool"
   - pyjnius
-vhost_servername: "beta.simccs.org"
+# vhost_servername: "beta.simccs.org"
+# Temporary use a *.scigap.org domain name
+vhost_servername: "beta.simccs.scigap.org"
 vhost_ssl: True
 # Some of the maptool views call into Java code and can take 2-3 minutes to execute
 vhost_timeout: 300
 # sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/beta.simccs.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.simccs.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/beta.simccs.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 # Custom vhost config file to specify the geoserver reverse proxy
 django_ssl_vhost_template: "{{ inventory_dir }}/host_vars/simccs/files/django-ssl-vhost.conf.j2"
 
