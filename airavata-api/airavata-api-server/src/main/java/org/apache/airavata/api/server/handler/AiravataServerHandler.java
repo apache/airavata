@@ -313,6 +313,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @return true/false
      */
     @Override
+    @SecurityCheck
     public boolean isUserExists(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client client = registryClientPool.getResource();
@@ -426,6 +427,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * list of usernames of the users in the gateway
      */
     @Override
+    @SecurityCheck
     public List<String> getAllUsersInGateway(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
@@ -1141,6 +1143,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *
      */
     @Override
+    @SecurityCheck
     public List<Project> searchProjects(AuthzToken authzToken, String gatewayId, String userName, Map<ProjectSearchFields,
             String> filters, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
@@ -4931,6 +4934,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public List<QueueStatusModel> getLatestQueueStatuses(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
@@ -5913,6 +5917,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public Parser getParser(AuthzToken authzToken, String parserId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
@@ -5930,6 +5935,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public String saveParser(AuthzToken authzToken, Parser parser) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
@@ -5947,6 +5953,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public List<Parser> listAllParsers(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
@@ -5964,6 +5971,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean removeParser(AuthzToken authzToken, String parserId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
@@ -5981,6 +5989,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public ParsingTemplate getParsingTemplate(AuthzToken authzToken, String templateId, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
@@ -5999,6 +6008,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public List<ParsingTemplate> getParsingTemplatesForExperiment(AuthzToken authzToken, String experimentId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
@@ -6016,6 +6026,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public String saveParsingTemplate(AuthzToken authzToken, ParsingTemplate parsingTemplate) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
@@ -6033,6 +6044,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean removeParsingTemplate(AuthzToken authzToken, String templateId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
@@ -6050,6 +6062,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    @SecurityCheck
     public List<ParsingTemplate> listAllParsingTemplates(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
