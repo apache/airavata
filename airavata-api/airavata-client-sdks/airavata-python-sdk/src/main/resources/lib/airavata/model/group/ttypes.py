@@ -48,17 +48,20 @@ class ResourcePermissionType(object):
     WRITE = 0
     READ = 1
     OWNER = 2
+    MANAGE_SHARING = 3
 
     _VALUES_TO_NAMES = {
         0: "WRITE",
         1: "READ",
         2: "OWNER",
+        3: "MANAGE_SHARING",
     }
 
     _NAMES_TO_VALUES = {
         "WRITE": 0,
         "READ": 1,
         "OWNER": 2,
+        "MANAGE_SHARING": 3,
     }
 
 

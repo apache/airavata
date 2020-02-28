@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.*;
@@ -30,7 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -45,6 +48,11 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
     private GroupResourceProfileRepository groupResourceProfileRepository;
     private String gatewayId = "TEST_GATEWAY";
     private String groupResourceProfileId = null;
+    private String resourceId1 = null;
+    private String resourceId2 = null;
+
+    private final String QUEUE1_NAME = "queue1";
+    private final String QUEUE2_NAME = "queue2";
 
     public GroupResourceProfileRepositoryTest() {
         super(Database.APP_CATALOG);
@@ -52,8 +60,10 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfileRepository = new GroupResourceProfileRepository();
     }
 
-    @Test
-    public void GroupResourceProfileRepositoryTest() throws AppCatalogException {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
         ComputeResourceDescription description = new ComputeResourceDescription();
 
         description.setHostName("localhost");
@@ -64,14 +74,14 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         description.setIpAddresses(ipdaresses);
 
         BatchQueue batchQueue1 = new BatchQueue();
-        batchQueue1.setQueueName("queue1");
+        batchQueue1.setQueueName(QUEUE1_NAME);
         batchQueue1.setQueueDescription("que1Desc1");
         batchQueue1.setMaxRunTime(10);
         batchQueue1.setMaxNodes(4);
         batchQueue1.setMaxJobsInQueue(1);
 
         BatchQueue batchQueue2 = new BatchQueue();
-        batchQueue2.setQueueName("queue2");
+        batchQueue2.setQueueName(QUEUE2_NAME);
         batchQueue2.setQueueDescription("que1Desc2");
         batchQueue2.setMaxRunTime(10);
         batchQueue2.setMaxNodes(4);
@@ -82,7 +92,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         batchQueueList.add(batchQueue2);
         description.setBatchQueues(batchQueueList);
 
-        String resourceId1 = computeResourceRepository.addComputeResource(description);
+        this.resourceId1 = computeResourceRepository.addComputeResource(description);
 
         ComputeResourceDescription cm2 = new ComputeResourceDescription();
         cm2.setHostName("localhost2");
@@ -107,9 +117,11 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         cmbatchQueueList.add(cm_batchQueue2);
         cm2.setBatchQueues(cmbatchQueueList);
 
-        String resourceId2 = computeResourceRepository.addComputeResource(cm2);
+        this.resourceId2 = computeResourceRepository.addComputeResource(cm2);
+    }
 
-        ComputeResourceDescription computeResourceDescription = computeResourceRepository.getComputeResource(resourceId2);
+    @Test
+    public void GroupResourceProfileRepositoryTest() throws AppCatalogException {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
@@ -121,9 +133,24 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupAccountSSHProvisionerConfig.setConfigName("configName");
         groupAccountSSHProvisionerConfig.setConfigValue("configvalue");
 
+        ComputeResourceReservation reservation1 = new ComputeResourceReservation();
+        reservation1.setReservationName("test-reservation1");
+        reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
+        reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.addToQueueNames(QUEUE1_NAME);
+        reservation1.addToQueueNames(QUEUE2_NAME);
+
+        ComputeResourceReservation reservation2 = new ComputeResourceReservation();
+        reservation2.setReservationName("test-reservation2");
+        reservation2.setStartTime(AiravataUtils.getCurrentTimestamp().getTime() + 200000);
+        reservation2.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 300000);
+        reservation2.addToQueueNames(QUEUE1_NAME);
+
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
         groupComputeResourcePreference1.setComputeResourceId(resourceId1);
         groupComputeResourcePreference1.addToGroupSSHAccountProvisionerConfigs(groupAccountSSHProvisionerConfig);
+        groupComputeResourcePreference1.addToReservations(reservation1);
+        groupComputeResourcePreference1.addToReservations(reservation2);
 
         GroupComputeResourcePreference groupComputeResourcePreference2 = new GroupComputeResourcePreference();
         groupComputeResourcePreference2.setComputeResourceId(resourceId2);
@@ -196,6 +223,12 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId) != null);
         assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId).getGroupSSHAccountProvisionerConfigs().size() == 1);
+        // verify reservation1
+        assertEquals(2, groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId).getReservations().size());
+        ComputeResourceReservation retrievedReservation1 = groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1, groupResourceProfileId).getReservations().get(0);
+        assertEquals(reservation1.getReservationName(), retrievedReservation1.getReservationName());
+        assertEquals(reservation1.getStartTime(), retrievedReservation1.getStartTime());
+        assertEquals(reservation1.getEndTime(), retrievedReservation1.getEndTime());
 
         ComputeResourcePolicy getComputeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy(computeResourcePolicyId1);
         assertTrue(getComputeResourcePolicy.getAllowedBatchQueues().get(0).equals("queue1"));
@@ -246,8 +279,6 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         assertEquals(1, retrievedGroupResourceProfile4.getComputePreferencesSize());
 
         groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
-        computeResourceRepository.removeComputeResource(resourceId1);
-        computeResourceRepository.removeComputeResource(resourceId2);
 
     }
 
@@ -268,5 +299,213 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfileRepository.updateGroupResourceProfile(cloneGroupResourceProfile);
         long creationTimeAfterUpdate = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId).getCreationTime();
         Assert.assertEquals("creationTime should be the same after update", creationTime, creationTimeAfterUpdate);
+    }
+
+    @Test
+    public void testRemovingReservation() throws AppCatalogException {
+
+        GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
+        groupResourceProfile.setGatewayId(gatewayId);
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+
+        ComputeResourceReservation reservation1 = new ComputeResourceReservation();
+        reservation1.setReservationName("test-reservation1");
+        reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
+        reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.addToQueueNames(QUEUE1_NAME);
+        reservation1.addToQueueNames(QUEUE2_NAME);
+
+        ComputeResourceReservation reservation2 = new ComputeResourceReservation();
+        reservation2.setReservationName("test-reservation2");
+        reservation2.setStartTime(AiravataUtils.getCurrentTimestamp().getTime() + 200000);
+        reservation2.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 300000);
+        reservation2.addToQueueNames(QUEUE1_NAME);
+
+        GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
+        groupComputeResourcePreference1.setComputeResourceId(resourceId1);
+        groupComputeResourcePreference1.addToReservations(reservation1);
+        groupComputeResourcePreference1.addToReservations(reservation2);
+
+        groupResourceProfile.addToComputePreferences(groupComputeResourcePreference1);
+
+        String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+
+        // Remove one of the reservations
+        {
+            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
+                    .getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
+                    .getComputePreferences().get(0).getReservations();
+            assertEquals(2, retrievedReservations.size());
+            retrievedReservations.remove(1);
+
+            groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile);
+        }
+
+        {
+            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
+                    .getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
+                    .getComputePreferences().get(0).getReservations();
+            assertEquals(1, retrievedReservations.size());
+            assertEquals(reservation1.getReservationName(), retrievedReservations.get(0).getReservationName());
+        }
+
+    }
+
+    @Test
+    public void testUpdatingReservation() throws AppCatalogException {
+
+        GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
+        groupResourceProfile.setGatewayId(gatewayId);
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+
+        ComputeResourceReservation reservation1 = new ComputeResourceReservation();
+        reservation1.setReservationName("test-reservation1");
+        reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
+        reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.addToQueueNames(QUEUE1_NAME);
+        reservation1.addToQueueNames(QUEUE2_NAME);
+
+        ComputeResourceReservation reservation2 = new ComputeResourceReservation();
+        reservation2.setReservationName("test-reservation2");
+        reservation2.setStartTime(AiravataUtils.getCurrentTimestamp().getTime() + 200000);
+        reservation2.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 300000);
+        reservation2.addToQueueNames(QUEUE1_NAME);
+
+        GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
+        groupComputeResourcePreference1.setComputeResourceId(resourceId1);
+        groupComputeResourcePreference1.addToReservations(reservation1);
+        groupComputeResourcePreference1.addToReservations(reservation2);
+
+        groupResourceProfile.addToComputePreferences(groupComputeResourcePreference1);
+
+        String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+
+        // Update one of the reservations
+        long newStartTime = AiravataUtils.getCurrentTimestamp().getTime() + 1000*1000;
+        long newEndTime = AiravataUtils.getCurrentTimestamp().getTime() + 2*1000*1000;
+        {
+            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
+                    .getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
+                    .getComputePreferences().get(0).getReservations();
+            assertEquals(2, retrievedReservations.size());
+            // push into future, should sort second on next retrieval
+            retrievedReservations.get(0).setStartTime(newStartTime);
+            retrievedReservations.get(0).setEndTime(newEndTime);
+
+            groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile);
+        }
+
+        {
+            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
+                    .getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
+                    .getComputePreferences().get(0).getReservations();
+            assertEquals(2, retrievedReservations.size());
+            // first reservation should now sort second
+            ComputeResourceReservation reservation = retrievedReservations.get(1);
+            assertEquals(reservation1.getReservationName(), reservation.getReservationName());
+            assertEquals(newStartTime, reservation.getStartTime());
+            assertEquals(newEndTime, reservation.getEndTime());
+        }
+
+    }
+
+    @Test
+    public void testAddingQueueToReservation() throws AppCatalogException {
+
+        GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
+        groupResourceProfile.setGatewayId(gatewayId);
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+
+        ComputeResourceReservation reservation1 = new ComputeResourceReservation();
+        reservation1.setReservationName("test-reservation1");
+        reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
+        reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.addToQueueNames(QUEUE1_NAME);
+
+        GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
+        groupComputeResourcePreference1.setComputeResourceId(resourceId1);
+        groupComputeResourcePreference1.addToReservations(reservation1);
+
+        groupResourceProfile.addToComputePreferences(groupComputeResourcePreference1);
+
+        String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+
+        // add queue to the reservation
+        {
+            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
+                    .getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
+                    .getComputePreferences().get(0).getReservations();
+            assertEquals(1, retrievedReservations.size());
+            ComputeResourceReservation reservation = retrievedReservations.get(0);
+            assertEquals(1, reservation.getQueueNamesSize());
+            reservation.addToQueueNames(QUEUE2_NAME);
+
+            groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile);
+        }
+
+        {
+            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
+                    .getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
+                    .getComputePreferences().get(0).getReservations();
+            assertEquals(1, retrievedReservations.size());
+            ComputeResourceReservation reservation = retrievedReservations.get(0);
+            assertEquals(new HashSet<>(Arrays.asList(QUEUE1_NAME, QUEUE2_NAME)), new HashSet<>(reservation.getQueueNames()));
+        }
+
+    }
+
+    @Test
+    public void testRemovingQueueFromReservation() throws AppCatalogException {
+
+        GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
+        groupResourceProfile.setGatewayId(gatewayId);
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+
+        ComputeResourceReservation reservation1 = new ComputeResourceReservation();
+        reservation1.setReservationName("test-reservation1");
+        reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
+        reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.addToQueueNames(QUEUE1_NAME);
+        reservation1.addToQueueNames(QUEUE2_NAME);
+
+        GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
+        groupComputeResourcePreference1.setComputeResourceId(resourceId1);
+        groupComputeResourcePreference1.addToReservations(reservation1);
+
+        groupResourceProfile.addToComputePreferences(groupComputeResourcePreference1);
+
+        String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+
+        // add queue to the reservation
+        {
+            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
+                    .getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
+                    .getComputePreferences().get(0).getReservations();
+            assertEquals(1, retrievedReservations.size());
+            ComputeResourceReservation reservation = retrievedReservations.get(0);
+            assertEquals(new HashSet<>(Arrays.asList(QUEUE1_NAME, QUEUE2_NAME)), new HashSet<>(reservation.getQueueNames()));
+            reservation.unsetQueueNames();
+            reservation.addToQueueNames(QUEUE1_NAME);
+
+            groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile);
+        }
+
+        {
+            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
+                    .getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
+                    .getComputePreferences().get(0).getReservations();
+            assertEquals(1, retrievedReservations.size());
+            ComputeResourceReservation reservation = retrievedReservations.get(0);
+            assertEquals(new HashSet<>(Arrays.asList(QUEUE1_NAME)), new HashSet<>(reservation.getQueueNames()));
+        }
+
     }
 }
