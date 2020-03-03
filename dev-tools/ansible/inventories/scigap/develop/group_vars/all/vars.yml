@@ -176,3 +176,5 @@ parser_broker_publisher_id: "ParserProducer"
 
 thrift_client_pool_abandoned_removal_enabled: true
 thrift_client_pool_abandoned_removal_logged: true
+
+usage_reporting_key: "{{ vault_usage_reporting_key }}"
