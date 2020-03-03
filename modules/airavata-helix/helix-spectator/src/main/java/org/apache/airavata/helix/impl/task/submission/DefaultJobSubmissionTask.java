@@ -36,8 +36,9 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -187,28 +188,38 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     try {
                         ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
                         String usageReportingKey = ServerSettings.getSetting("usage.reporting.key");
-                        String username = experiment.getUserName() + "@" + getTaskContext().getGroupComputeResourcePreference().getUsageReportingGatewayId();
+                        String username = URLEncoder.encode(
+                                experiment.getUserName(),
+                                StandardCharsets.UTF_8.toString()) + ":" +
+                                URLEncoder.encode(
+                                        getTaskContext().getGroupComputeResourcePreference().getUsageReportingGatewayId(),
+                                        StandardCharsets.UTF_8.toString());
 
-                        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm z");
-                        gmtDateFormat.setTimeZone(TimeZone.getTimeZone("PST"));
+                        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd+HH:mmZ");
+                        gmtDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
+
+                        String hostName = getComputeResourceDescription().getHostName();
+                        List<String> hostAliases = getComputeResourceDescription().getHostAliases();
+                        if (hostAliases != null && hostAliases.size() > 0) {
+                            // TODO this is a temporary fix. Properly add entries to API to fetch host specific xsederesourcename.
+                            hostName = hostAliases.get(0);
+                        }
 
                         String command = String.format("curl -XPOST --data-urlencode apikey=%s " +
-                                        "--data-urlencode \"gatewayuser=%s\" " +
-                                        "--data-urlencode \"xsederesourcename=%s\"  " +
-                                        "--data-urlencode \"jobid=%s\" " +
-                                        "--data-urlencode \"submittime=%s\" " +
-                                        "https://xsede-xdcdb-api.xsede.org/gateway/v2/job_attributes",
+                                        "--data-urlencode gatewayuser=%s " +
+                                        "--data-urlencode xsederesourcename=%s  " +
+                                        "--data-urlencode jobid=%s " +
+                                        "--data-urlencode submittime='%s' " +
+                                        "%s",
                                 usageReportingKey,
                                 username,
-                                getComputeResourceDescription().getHostName(),
+                                hostName,
                                 jobId,
-                                gmtDateFormat.format(new Date()));
-
+                                gmtDateFormat.format(new Date()),
+                                ServerSettings.getSetting("usage.reporting.endpoint"));
 
                         logger.info("Usage reporting CURL command " + command);
-                        ProcessBuilder pb = new ProcessBuilder(command);
-                        pb.redirectErrorStream(true);
-                        Process curlSubmit = pb.start();
+                        Process curlSubmit = Runtime.getRuntime().exec(command);
 
                         BufferedReader reader = new BufferedReader(new InputStreamReader(curlSubmit.getInputStream()));
                         StringBuffer output = new StringBuffer();
