@@ -20,9 +20,16 @@ logger = logging.getLogger(__name__)
 
 
 def start_login(request):
+    next_url = request.GET.get('next', None)
+    if next_url is not None:
+        create_account_url = (reverse('django_airavata_auth:create_account') +
+                              "?" + urlencode({'next': next_url}))
+    else:
+        create_account_url = reverse('django_airavata_auth:create_account')
     return render(request, 'django_airavata_auth/login.html', {
         'next': request.GET.get('next', None),
         'options': settings.AUTHENTICATION_OPTIONS,
+        'create_account_url': create_account_url
     })
 
 
@@ -166,8 +173,9 @@ def create_account(request):
                     form.add_error(None, ValidationError(
                         "Failed to register user with IAM service"))
                 else:
+                    next = form.cleaned_data['next']
                     _create_and_send_email_verification_link(
-                        request, username, email, first_name, last_name)
+                        request, username, email, first_name, last_name, next)
                     messages.success(
                         request,
                         "Account request processed successfully. Before you "
@@ -181,7 +189,7 @@ def create_account(request):
                     "Failed to create account for user", exc_info=e)
                 form.add_error(None, ValidationError(e.message))
     else:
-        form = forms.CreateAccountForm()
+        form = forms.CreateAccountForm(initial=request.GET)
     return render(request, 'django_airavata_auth/create_account.html', {
         'options': settings.AUTHENTICATION_OPTIONS,
         'form': form
@@ -198,13 +206,16 @@ def verify_email(request, code):
         # Check if user is enabled, if so redirect to login page
         username = email_verification.username
         logger.debug("Email address verified for {}".format(username))
+        login_url = reverse('django_airavata_auth:login')
+        if email_verification.next:
+            login_url += "?" + urlencode({'next': email_verification.next})
         if iam_admin_client.is_user_enabled(username):
             logger.debug("User {} is already enabled".format(username))
             messages.success(
                 request,
                 "Your account has already been successfully created. "
                 "Please log in now.")
-            return redirect(reverse('django_airavata_auth:login'))
+            return redirect(login_url)
         else:
             logger.debug("Enabling user {}".format(username))
             # enable user and inform admins
@@ -222,7 +233,7 @@ def verify_email(request, code):
                 request,
                 "Your account has been successfully created. "
                 "Please log in now.")
-            return redirect(reverse('django_airavata_auth:login'))
+            return redirect(login_url)
     except ObjectDoesNotExist as e:
         # if doesn't exist, give user a form where they can enter their
         # username to resend verification code
@@ -283,10 +294,10 @@ def resend_email_link(request):
 
 
 def _create_and_send_email_verification_link(
-        request, username, email, first_name, last_name):
+        request, username, email, first_name, last_name, next):
 
     email_verification = models.EmailVerification(
-        username=username)
+        username=username, next=next)
     email_verification.save()
 
     verification_uri = request.build_absolute_uri(

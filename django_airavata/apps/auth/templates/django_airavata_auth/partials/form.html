@@ -4,7 +4,11 @@
   {% csrf_token %}
 
   {% for field in form %}
-  {% include './form_field.html' %}
+  {% if field.is_hidden %}
+    {{ field }}
+  {% else %}
+    {% include './form_field.html' %}
+  {% endif %}
   {% endfor %}
 
   <button type="submit" class="btn btn-primary btn-block">

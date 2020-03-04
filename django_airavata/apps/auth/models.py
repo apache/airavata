@@ -14,6 +14,7 @@ class EmailVerification(models.Model):
         max_length=36, unique=True, default=uuid.uuid4)
     created_date = models.DateTimeField(auto_now_add=True)
     verified = models.BooleanField(default=False)
+    next = models.CharField(max_length=255, blank=True)
 
 
 class EmailTemplate(models.Model):

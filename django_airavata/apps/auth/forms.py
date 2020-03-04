@@ -60,6 +60,8 @@ class CreateAccountForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control',
                                       'placeholder': 'Last Name'}))
 
+    next = forms.CharField(widget=forms.HiddenInput(), required=False)
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
