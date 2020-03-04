@@ -19,13 +19,21 @@
 #
 
 ---
+
+# NOTE: simccs is deployed on scigap11
+gateway_data_store_hostname: "scigap11.sciencegateways.iu.edu"
+gateway_data_store_resource_id: "scigap11.sciencegateways.iu.edu_96b8dcec-ac84-438a-9927-91baaf87758b"
+
+django_tus_endpoint: "https://tus.simccs.scigap.org/files/"
+# simccs_maptool_branch: "master"
+simccs_maptool_branch: "dev"
 airavata_django_extra_dependencies:
   # Need to separately install cython in the VM or do two deploys, one with
   # just cython, then a second with the other dependencies. Reason: pyjnius
   # requires that cython already be installed and they can't both be installed
   # at the same time.
   - cython
-  - git+https://github.com/SciGaP/simccs-maptool.git#egg=simccs-maptool
+  - "git+https://github.com/SciGaP/simccs-maptool.git@{{ simccs_maptool_branch }}#egg=simccs-maptool"
   - pyjnius
 
 django_extra_settings:
@@ -33,12 +41,17 @@ django_extra_settings:
   MAPTOOL_SETTINGS:
     CPLEX_APPLICATION_ID: "cplex-solver_99721933-c9e4-4285-9ef1-d035ca82b541"
     DATASETS_DIR: "/data/gateway-user-data/simccs-datasets"
+    JAVA_OPTIONS: "-Xmx4g"
 
 vhost_servername: "simccs.org"
 vhost_ssl: true
+# Some of the maptool views call into Java code and can take 2-3 minutes to execute
+vhost_timeout: 600
 ssl_certificate_file: "/etc/letsencrypt/live/simccs.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/simccs.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/simccs.org/privkey.pem"
+# Custom vhost config file to specify the geoserver reverse proxy
+django_ssl_vhost_template: "{{ inventory_dir }}/host_vars/simccs/files/django-ssl-vhost.conf.j2"
 
 ## Keycloak related variables
 tenant_domain: "iu-geology-survey"

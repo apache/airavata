@@ -30,6 +30,9 @@ httpd_ssl_conf_file_location:
  RedHat: "/etc/httpd/conf.d/ssl.conf"
  # TODO: Debian file layout is different, so we really need a different ssl.conf for Debian
  Debian: "/etc/apache2/mods-available/ssl.conf"
+httpd_name:
+ Debian: apache2
+ RedHat: httpd
 
 httpd_default_conf_template: "default.conf.j2"
 httpd_ssl_conf_template: "ssl.conf.j2"

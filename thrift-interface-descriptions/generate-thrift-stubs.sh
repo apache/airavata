@@ -80,8 +80,10 @@ setup() {
     # Thrift files
     AIRAVATA_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/airavata-apis/airavata_api.thrift"
     SHARING_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/component-cpis/sharing_cpi.thrift"
+    CREDENTIAL_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/component-cpis/credential-store-cpi.thrift"
     DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/airavata_data_models.thrift"
     SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/sharing-models/sharing_models.thrift"
+    CREDENTIAL_DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/credential-store-models/credential_store_data_models.thrift"
     APP_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/app-catalog-models/app_catalog_models.thrift"
     RESOURCE_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/resource-catalog-models/resource_catalog_models.thrift"
     WORKFLOW_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/workflow-models/workflow_data_model.thrift"
@@ -306,6 +308,8 @@ generate_python_stubs() {
     # Using thrift Python generator, generate the python classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
     $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${AIRAVATA_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${CREDENTIAL_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
     $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${SHARING_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 

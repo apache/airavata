@@ -133,5 +133,8 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationDataEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="openjpa.DynamicEnhancementAgent" value="false"/>
+        </properties>
     </persistence-unit>
 </persistence>
