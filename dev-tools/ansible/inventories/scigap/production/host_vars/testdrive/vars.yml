@@ -47,4 +47,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUF51b
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "Airavata Test Drive Gateway"
 
+django_google_analytics_tracking_id: "UA-111528347-2"
 ...
