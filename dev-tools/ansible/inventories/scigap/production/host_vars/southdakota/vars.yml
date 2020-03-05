@@ -45,4 +45,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIUqpK
 admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Adison Kleinsasser','Adison.Kleinsasser@usd.edu'),('Bill James','CBill.Conn@usd.edu'),('Luke Gassman','luke.gassman@sdstate.edu')]"
 portal_title: "University of South Dakota Gateway"
 
+django_google_analytics_tracking_id: "UA-117517811-1"
 ...

@@ -48,4 +48,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCNdivl
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Alison Marsden', 'amarsden@stanford.edu'), ('Nathan Wilson', 'nwilson@osmsc.com'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "SimVascular Gateway Portal"
 
+django_google_analytics_tracking_id: "UA-111528347-7"
 ...
