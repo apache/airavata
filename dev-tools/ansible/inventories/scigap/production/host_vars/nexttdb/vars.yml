@@ -46,4 +46,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9jXb9
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Chen Zhu','chenzhu@indiana.edu'),('Lei Gong','lgong@indiana.edu'),('Kevin Tu','tuk@iu.edu')]"
 portal_title: "NextGen Thermodynamics Gateway"
 
+django_google_analytics_tracking_id: "UA-130014168-1"
 ...
