@@ -55,4 +55,6 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTs6k2
 admin_emails: "[('Zhong Wang', 'zw355@cornell.edu'), ('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "dREG Portal"
 
+django_google_analytics_tracking_id: "UA-111528347-3"
+
 ...

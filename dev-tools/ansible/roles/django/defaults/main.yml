@@ -93,4 +93,8 @@ portal_title: "Django Airavata Gateway"
 
 httpd_default_http_port: 80
 httpd_default_https_port: 443
+
+# Google Analytics tracking id
+django_google_analytics_tracking_id:
+
 ...

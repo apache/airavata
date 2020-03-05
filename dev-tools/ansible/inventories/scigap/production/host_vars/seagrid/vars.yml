@@ -50,4 +50,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCApfdu
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "SEAGrid Portal"
 
+django_google_analytics_tracking_id: "UA-110457476-1"
 ...
