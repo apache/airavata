@@ -158,3 +158,9 @@ def _get_app_nav(request, current_app):
 def resolver_match(request):
     """Put resolver_match (ResolverMatch instance) into the context."""
     return {'resolver_match': request.resolver_match}
+
+
+def google_analytics_tracking_id(request):
+    """Put the Google Analytics tracking id into context."""
+    return {'ga_tracking_id':
+            getattr(settings, 'GOOGLE_ANALYTICS_TRACKING_ID', None)}

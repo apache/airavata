@@ -4,6 +4,8 @@
 <!DOCTYPE html>
 
 <head>
+  {% include "./django_airavata/google_analytics.html" %}
+
   {% render_bundle 'chunk-vendors' 'css' 'COMMON' %}
   {% render_bundle 'app' 'css' 'COMMON' %}
   {% block css %}
