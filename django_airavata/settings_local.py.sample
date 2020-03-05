@@ -106,6 +106,10 @@ PORTAL_TITLE = 'Django Airavata Gateway'
 # Legacy (PGA) Portal link - uncomment to provide a link to the legacy portal
 # PGA_URL = '...'
 
+# Google Analytics Tracking ID ("UA-XXXXXXXX-X"). If this setting is set, then
+# Google Analytics tracking will be added to all pages.
+# GOOGLE_ANALYTICS_TRACKING_ID = '...'
+
 # Logging configuration. Uncomment following to override default log configuration
 # LOGGING = {
 #     'version': 1,

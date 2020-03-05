@@ -144,6 +144,7 @@ TEMPLATES = [
                 'django_airavata.context_processors.custom_app_registry',
                 'django_airavata.context_processors.get_notifications',
                 'django_airavata.context_processors.user_session_data',
+                'django_airavata.context_processors.google_analytics_tracking_id',
                 # 'django_airavata.context_processors.resolver_match',
             ],
         },
