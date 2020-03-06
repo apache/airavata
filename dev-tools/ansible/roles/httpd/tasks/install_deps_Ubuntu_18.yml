@@ -17,8 +17,24 @@
 # specific language governing permissions and limitations
 # under the License.
 #
+
 ---
 
-- include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+- name: Install prerequisites
+  apt: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - git
+    - apache2
+    - python-selinux
+    - python-apt
+    - unzip
+    - openssl
+    - curl
+  become: yes
 
-...
+- name: enable apache rewrite
+  command: a2enmod {{ item }}
+  with_items:
+    - rewrite
+    - ssl
+  become: yes

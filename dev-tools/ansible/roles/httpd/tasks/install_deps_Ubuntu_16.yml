@@ -55,10 +55,3 @@
     owner: www-data
     group: www-data
     mode: 0775
-   
-- name: set DocumentRoot in default site-enabled
-  lineinfile: 
-    dest: /etc/apache2/sites-enabled/000-default.conf
-    line: '	DocumentRoot "/var/www/html/php-gateway/public"'
-    regexp: '^\s+DocumentRoot'
-    state: present
