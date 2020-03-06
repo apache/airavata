@@ -30,7 +30,7 @@
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
     # Oracle JDK is needed by Django apps that call Java code (e.g., SimCCS Maptool)
     # - role: java
-    #   when: inventory_hostname == groups['django_' +  ansible_hostname][0]
+    #   when: inventory_hostname == groups['django_' +  ansible_hostname][0] and ansible_os_family == "RedHat"
     - role: httpd
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
     - role: letsencrypt

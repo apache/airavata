@@ -57,4 +57,17 @@
   firewalld: port="22/tcp"
              zone=public permanent=true state=enabled immediate=yes
   become: yes
+  when: ansible_os_family == "RedHat"
+
+# Issues with firewalld module on Ubuntu https://github.com/ansible/ansible/issues/24855
+# So as workaround, just calling firewall-cmd directly for now
+- name: open firewall port 22 for SSH connections (Debian)
+  command: firewall-cmd --zone=public --add-port=22/tcp
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: open firewall port 22 for SSH connections permanently (Debian)
+  command: firewall-cmd --zone=public --permanent --add-port=22/tcp
+  become: yes
+  when: ansible_os_family == "Debian"
 ...

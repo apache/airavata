@@ -270,6 +270,13 @@
     - restart httpd
   when: vhost_ssl
 
+- name: Enable site in Apache (Debian)
+  command: a2ensite django-{{ gateway_id }}
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "Debian"
+
 - name: copy user's SSH key for the gateway data store
   authorized_key:
     user: "{{user}}"
