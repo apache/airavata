@@ -1,5 +1,5 @@
 <template>
-  <span :title="date.toString()">{{ fromNow }}</span>
+  <abbr :title="date.toString()">{{ fromNow }}</abbr>
 </template>
 <script>
 import moment from "moment";

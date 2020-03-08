@@ -1,4 +1,5 @@
 import BaseModel from "./BaseModel";
+import ComputeResourceReservation from "./ComputeResourceReservation";
 
 const FIELDS = [
   "computeResourceId",
@@ -22,7 +23,12 @@ const FIELDS = [
   "reservationEndTime",
   "sshAccountProvisioner",
   "groupSSHAccountProvisionerConfigs",
-  "sshAccountProvisionerAdditionalInfo"
+  "sshAccountProvisionerAdditionalInfo",
+  {
+    name: "reservations",
+    type: ComputeResourceReservation,
+    list: true
+  }
 ];
 
 export default class GroupComputeResourcePreference extends BaseModel {

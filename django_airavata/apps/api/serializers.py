@@ -27,6 +27,7 @@ from airavata.model.appcatalog.gatewayprofile.ttypes import (
     StoragePreference
 )
 from airavata.model.appcatalog.groupresourceprofile.ttypes import (
+    ComputeResourceReservation,
     GroupComputeResourcePreference,
     GroupResourceProfile
 )
@@ -567,9 +568,15 @@ class UserProfileSerializer(
     lastAccessTime = UTCPosixTimestampDateTimeField()
 
 
+class ComputeResourceReservationSerializer(
+        thrift_utils.create_serializer_class(ComputeResourceReservation)):
+    startTime = UTCPosixTimestampDateTimeField(allow_null=True)
+    endTime = UTCPosixTimestampDateTimeField(allow_null=True)
+
+
 class GroupComputeResourcePreferenceSerializer(
         thrift_utils.create_serializer_class(GroupComputeResourcePreference)):
-    pass
+    reservations = ComputeResourceReservationSerializer(many=True)
 
 
 class GroupResourceProfileSerializer(
