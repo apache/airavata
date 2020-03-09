@@ -1,0 +1,155 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+- name: Install Airavata pre-requireties
+  yum: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - git
+  become_user: root
+
+- name: download {{ apache_maven_version }}
+  get_url: url="{{ apache_maven_url }}" dest="/opt/{{ apache_maven_version }}-bin.tar.gz"
+  become: yes
+  become_user: root
+
+- name: unzip maven
+  unarchive:
+    src: /opt/{{ apache_maven_version }}-bin.tar.gz
+    dest: /opt
+    remote_src: yes
+  become: yes
+  become_user: root
+
+# Create the directory for MFT source
+- name: Create mft source directory
+  file: path="{{ mft_source_dir }}" state=directory owner={{ user }} group={{ group }} recurse=yes
+
+# Create the directory for MFT deployment
+- name: Create mft deployment directory
+  file: path="{{ mft_distribution_dir }}" state=directory owner={{ user }} group={{ group }} recurse=yes
+
+- name: git checkout from airavata-mft github repo {{ mft_repo }} branch {{ mft_branch }}
+  git: repo="{{ mft_repo }}"
+    dest="{{ mft_source_dir }}"
+    version="{{ mft_branch }}"
+  register: checkout
+  tags: update
+  become: yes
+  become_user: airavata
+
+- name: Run maven build
+  command: /opt/{{apache_maven_version}}/bin/mvn clean install -Dmaven.test.skip=true chdir="{{ mft_source_dir }}/"
+  environment:
+    MAVEN_OPTS: "-Xmx2048m"
+  register: build
+  tags: update
+  become: yes
+  become_user: airavata
+
+- name: Stop daemons if running
+  command: "{{ item.command }} chdir={{ mft_distribution_dir }}/{{ item.dir }}/"
+  with_items:
+    - { command: ./bin/controller-daemon.sh stop, dir: "{{ mft_controller_version }}" }
+    - { command: ./bin/api-service-daemon.sh stop, dir: "{{ mft_api_server_version }}" }
+    - { command: ./bin/resource-service-daemon.sh stop, dir: "{{ mft_resource_server_version }}" }
+    - { command: ./bin/secret-service-daemon.sh stop, dir: "{{ mft_secret_server_version }}" }
+  ignore_errors: yes
+
+- name: Delete lib, conf, bin directories of the distributions
+  file:
+    state: absent
+    path: "{{ mft_distribution_dir }}/{{ item }}"
+  with_items:
+    - "{{ mft_controller_version }}/lib"
+    - "{{ mft_controller_version }}/bin"
+    - "{{ mft_controller_version }}/conf"
+    - "{{ mft_api_server_version }}/lib"
+    - "{{ mft_api_server_version }}/bin"
+    - "{{ mft_api_server_version }}/conf"
+    - "{{ mft_resource_server_version }}/lib"
+    - "{{ mft_resource_server_version }}/bin"
+    - "{{ mft_resource_server_version }}/conf"
+    - "{{ mft_secret_server_version }}/lib"
+    - "{{ mft_secret_server_version }}/bin"
+    - "{{ mft_secret_server_version }}/conf"
+  ignore_errors: yes
+
+# Copy controller distribution to the deployment directory
+- name: Copy controller distribution to MFT deployment directory
+  unarchive: "src={{ mft_source_dir }}/controller/target/{{ item }}
+              dest={{ mft_distribution_dir }}/ copy=no"
+  with_items:
+    - "{{ mft_controller_dist_name }}"
+  become: yes
+  become_user: airavata
+
+# Copy resource service distribution to the deployment directory
+- name: Copy resource server distribution to MFT deployment directory
+  unarchive: "src={{ mft_source_dir }}/services/resource-service/server/target/{{ item }}
+              dest={{ mft_distribution_dir }}/ copy=no"
+  with_items:
+    - "{{ mft_resource_server_dist_name }}"
+  become: yes
+  become_user: airavata
+
+# Copy secret service distribution to the deployment directory
+- name: Copy secret server distribution to MFT deployment directory
+  unarchive: "src={{ mft_source_dir }}/services/secret-service/server/target/{{ item }}
+              dest={{ mft_distribution_dir }}/ copy=no"
+  with_items:
+    - "{{ mft_secret_server_dist_name }}"
+  become: yes
+  become_user: airavata
+
+# Copy api server distribution to the deployment directory
+- name: Copy api sever distribution to MFT deployment directory
+  unarchive: "src={{ mft_source_dir }}/api/service/target/{{ item }}
+              dest={{ mft_distribution_dir }}/ copy=no"
+  with_items:
+    - "{{ mft_api_server_dist_name }}"
+  become: yes
+  become_user: airavata
+
+# Copying properties files
+- name: Copy properties files
+  template: "src={{ item.name }}/application.properties.j2
+            dest={{ mft_distribution_dir }}/{{ item.dir }}/conf/application.properties
+            owner={{ user }}
+            group={{ group }}
+            mode=\"u=rw,g=r,o=r\""
+  with_items:
+    - { name: controller, dir: "{{ mft_controller_version }}" }
+    - { name: api-service, dir: "{{ mft_api_server_version }}" }
+    - { name: resource-service, dir: "{{ mft_resource_server_version }}" }
+    - { name: secret-service, dir: "{{ mft_secret_server_version }}" }
+  become: yes
+  become_user: airavata
+
+- name: Start daemons running
+  command: "{{ item.command }} chdir={{ mft_distribution_dir }}/{{ item.dir }}/"
+  with_items:
+    - { command: ./bin/controller-daemon.sh start, dir: "{{ mft_controller_version }}" }
+    - { command: ./bin/api-service-daemon.sh start, dir: "{{ mft_api_server_version }}" }
+    - { command: ./bin/resource-service-daemon.sh start, dir: "{{ mft_resource_server_version }}" }
+    - { command: ./bin/secret-service-daemon.sh start, dir: "{{ mft_secret_server_version }}" }
+  become: yes
+  become_user: airavata

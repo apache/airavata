@@ -1,0 +1,27 @@
+apache_maven_version: "apache-maven-3.6.3"
+apache_maven_url: "https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz"
+
+mft_source_dir: "{{ user_home }}/mft-source"
+mft_distribution_dir: "{{ user_home }}/mft-distribution"
+mft_repo: "https://github.com/apache/airavata-mft.git"
+mft_branch: "master"
+
+mft_controller_dist_name: "MFT-Controller-0.01-bin.tar.gz"
+mft_resource_server_dist_name: "Resource-Service-0.01-bin.tar.gz"
+mft_secret_server_dist_name: "Secret-Service-0.01-bin.tar.gz"
+mft_api_server_dist_name: "API-Service-0.01-bin.tar.gz"
+
+mft_controller_version: "MFT-Controller-0.01"
+mft_resource_server_version: "Resource-Service-0.01"
+mft_secret_server_version: "Secret-Service-0.01"
+mft_api_server_version: "API-Service-0.01"
+
+secret_service_grpc_port: 7003
+secret_service_http_port: 8081
+
+resource_service_grpc_port: 7002
+resource_service_http_port: 8080
+
+mft_api_service_http_port: 8088
+mft_api_service_grpc_port: 7004
+

@@ -1,7 +1,7 @@
 # inventory file : scigap staging deployment
 
 [zookeeper]
-149.165.170.103
+149.165.156.124
 #helix.staging.scigap.org
 #pga.staging.scigap.org
 
@@ -24,4 +24,11 @@
 149.165.156.125 ansible_user=root
 
 # Using the same keycloak as development
-#[keycloak]
+[keycloak]
+149.165.156.151
+
+[django]
+seagrid ansible_host=149.165.170.103
+
+[mft]
+149.165.156.124 ansible_user=root
