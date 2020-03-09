@@ -279,6 +279,7 @@ public class PostWorkflowManager extends WorkflowManager {
         }
         allTasks.add(completingTask);
 
+        /*
         ParsingTriggeringTask parsingTriggeringTask = new ParsingTriggeringTask();
         parsingTriggeringTask.setGatewayId(experimentModel.getGatewayId());
         parsingTriggeringTask.setExperimentId(experimentModel.getExperimentId());
@@ -289,6 +290,7 @@ public class PostWorkflowManager extends WorkflowManager {
             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(parsingTriggeringTask.getTaskId(), parsingTriggeringTask));
         }
         allTasks.add(parsingTriggeringTask);
+        */
 
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
