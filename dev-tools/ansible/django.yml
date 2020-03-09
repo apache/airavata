@@ -35,6 +35,7 @@
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
     - role: letsencrypt
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
+      become: yes
     - role: django_setup
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
 
