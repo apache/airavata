@@ -21,6 +21,7 @@ package org.apache.airavata.helix.impl.task.staging;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -87,7 +88,13 @@ public class InputDataStagingTask extends DataStagingTask {
                     URI destinationURI = new URI(dataStagingTaskModel.getDestination());
 
                     logger.info("Source file " + sourceURI.getPath() + ", destination uri " + destinationURI.getPath() + " for task " + getTaskId());
-                    transferFileToComputeResource(sourceURI.getPath(), destinationURI.getPath(), adaptor, storageResourceAdaptor);
+                    if (ServerSettings.isAgentTransferEnabled()) {
+                        logger.info("Transferring through MFT");
+                        transferFileToComputeResourceThroughMFT(sourceURI.getPath(), destinationURI.getPath());
+                    } else {
+                        transferFileToComputeResource(sourceURI.getPath(), destinationURI.getPath(), adaptor, storageResourceAdaptor);
+                    }
+
                 }
 
             } catch (URISyntaxException e) {

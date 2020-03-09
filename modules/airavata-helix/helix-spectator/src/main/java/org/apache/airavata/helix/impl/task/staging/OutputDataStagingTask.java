@@ -153,7 +153,14 @@ public class OutputDataStagingTask extends DataStagingTask {
                     //Wildcard support is only enabled for output data staging
                     assert processOutput != null;
                     logger.info("Transferring file " + sourceFileName);
-                    boolean transferred = transferFileToStorage(newSourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                    boolean transferred;
+
+                    if (ServerSettings.isAgentTransferEnabled()) {
+                        transferred = transferFileToStorageThroughMFT(newSourceURI.getPath(), destinationURI.getPath());
+                    } else {
+                        transferred = transferFileToStorage(newSourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                    }
+
                     if (transferred) {
                         destinationURIs.add(destinationURI);
                     } else {
@@ -181,51 +188,11 @@ public class OutputDataStagingTask extends DataStagingTask {
                 assert processOutput != null;
                 boolean transferred = false;
                 if (ServerSettings.isAgentTransferEnabled()) {
-                    String sourceId = "CLUSTER:" + sourceURI.getPath() + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId();
-                    String sourceToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getTaskContext().getComputeResourceLoginUserName() + ":" + getGatewayId();
-
-                    String destId = "STORAGE:" + destinationURI.getPath() + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId();
-                    String destToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getTaskContext().getStorageResourceLoginUserName() + ":" + getGatewayId();
-
-                    TransferApiRequest request = TransferApiRequest.newBuilder()
-                            .setSourceId(sourceId)
-                            .setSourceToken(sourceToken)
-                            .setSourceType("SCP")
-                            .setDestinationId(destId)
-                            .setDestinationToken(destToken)
-                            .setDestinationType("SCP")
-                            .setSourceResourceBackend("AIRAVATA")
-                            .setSourceCredentialBackend("AIRAVATA")
-                            .setDestResourceBackend("AIRAVATA")
-                            .setDestCredentialBackend("AIRAVATA")
-                            .setAffinityTransfer(false).build();
-
-                    MFTApiServiceGrpc.MFTApiServiceBlockingStub mftClient = MFTApiClient.buildClient(
-                            ServerSettings.getSetting("mft.server.host"),
-                            Integer.parseInt(ServerSettings.getSetting("mft.server.port")));
-
-                    TransferApiResponse response = mftClient.submitTransfer(request);
-                    logger.info("Submitted file transfer with id " + response.getTransferId());
-
-                    while (true) {
-                        try {
-                            TransferStateApiResponse transferState = mftClient.getTransferState(
-                                    TransferStateApiRequest.newBuilder().setTransferId(response.getTransferId()).build());
-                            logger.info("Transfer status of " + response.getTransferId() + " is " + transferState.getState());
-                            if ("COMPLETED".equals(transferState.getState())) {
-                                transferred = true;
-                                break;
-                            } else if ("FAILED".equals(transferState.getState())) {
-                                throw new TaskOnFailException("Transfer " + response.getTransferId() + " failed", false, null);
-                            }
-                        } catch (StatusRuntimeException e) {
-                            logger.info("No status for transfer " + response.getTransferId());
-                        }
-                        Thread.sleep(1000);
-                    }
+                    transferred = transferFileToStorageThroughMFT(sourceURI.getPath(), destinationURI.getPath());
 
                 } else {
-                    transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                    transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName,
+                                adaptor, storageResourceAdaptor);
                 }
 
                 if (transferred) {

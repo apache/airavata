@@ -98,7 +98,13 @@ public class ArchiveTask extends DataStagingTask {
                 long maxArchiveSize = Long.parseLong(ServerSettings.getSetting("max.archive.size", MAX_ARCHIVE_SIZE + ""));
 
                 if (fileMetadata.getSize() < maxArchiveSize) {
-                    boolean fileTransferred = transferFileToStorage(tarCreationAbsPath, destFilePath, archiveFileName, adaptor, storageResourceAdaptor);
+
+                    boolean fileTransferred = false;
+                    if (ServerSettings.isAgentTransferEnabled()) {
+                        fileTransferred = transferFileToStorageThroughMFT(tarCreationAbsPath, destFilePath);
+                    } else {
+                        fileTransferred = transferFileToStorage(tarCreationAbsPath, destFilePath, archiveFileName, adaptor, storageResourceAdaptor);
+                    }
                     if (!fileTransferred) {
                         logger.error("Failed to transfer created archive file " + tarCreationAbsPath);
                         throw new TaskOnFailException("Failed to transfer created archive file " + tarCreationAbsPath, false, null);
@@ -106,7 +112,7 @@ public class ArchiveTask extends DataStagingTask {
 
                     String destParent = destFilePath.substring(0, destFilePath.lastIndexOf("/"));
                     final String storageArchiveDir = "ARCHIVE";
-                    String unArchiveTarCommand = "mkdir " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
+                    String unArchiveTarCommand = "rm -rf " + storageArchiveDir + " && mkdir " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
                             + storageArchiveDir + " && rm " + archiveFileName + " && chmod 755 -f -R " + storageArchiveDir + "/*";
                     logger.info("Running Un archiving command on storage resource " + unArchiveTarCommand);
 

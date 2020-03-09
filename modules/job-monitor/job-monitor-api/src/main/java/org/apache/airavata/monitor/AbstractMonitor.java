@@ -96,6 +96,7 @@ public class AbstractMonitor {
         try {
             if (validateJobStatus(jobStatusResult)) {
                 messageProducer.submitMessageToQueue(jobStatusResult);
+                log.info("Submitted " + jobStatusResult.getJobName() + " with status " + jobStatusResult.getState().name() + " to broker");
             } else {
                 throw new MonitoringException("Failed to validate job status for job id " + jobStatusResult.getJobId());
             }

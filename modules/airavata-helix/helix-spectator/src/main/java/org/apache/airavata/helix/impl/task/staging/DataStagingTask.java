@@ -19,16 +19,20 @@
  */
 package org.apache.airavata.helix.impl.task.staging;
 
+import io.grpc.StatusRuntimeException;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.agents.streaming.TransferResult;
 import org.apache.airavata.agents.streaming.VirtualStreamProducer;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.mft.api.client.MFTApiClient;
+import org.apache.airavata.mft.api.service.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.commons.io.FileUtils;
@@ -310,6 +314,88 @@ public abstract class DataStagingTask extends AiravataTask {
             naiveTransfer(storageAdaptor, sourcePath, computeAdaptor, destPath, tempPath);
         }
 
+    }
+
+    protected boolean transferFileToComputeResourceThroughMFT(String sourcePath, String destPath) throws ApplicationSettingsException,
+                                                                                            TaskOnFailException {
+
+        destPath = destPath + new File(sourcePath).getName();
+        String sourceId = "STORAGE:" + sourcePath + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId();
+        String sourceToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getTaskContext().getStorageResourceLoginUserName() + ":" + getGatewayId();
+
+        String destId = "CLUSTER:" + destPath + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId();
+        String destToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getTaskContext().getComputeResourceLoginUserName() + ":" + getGatewayId();
+
+        return transferThroughMFT(sourceId, sourceToken, destId, destToken);
+    }
+
+    protected boolean transferFileToStorageThroughMFT(String sourcePath, String destPath) throws TaskOnFailException,
+                                                                                            ApplicationSettingsException {
+
+        String sourceId = "CLUSTER:" + sourcePath + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId();
+        String sourceToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getTaskContext().getComputeResourceLoginUserName() + ":" + getGatewayId();
+
+        String destId = "STORAGE:" + destPath + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId();
+        String destToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getTaskContext().getStorageResourceLoginUserName() + ":" + getGatewayId();
+
+        return transferThroughMFT(sourceId, sourceToken, destId, destToken);
+    }
+
+    private boolean transferThroughMFT(String sourceId, String sourceToken, String destId, String destToken) throws ApplicationSettingsException, TaskOnFailException {
+        MFTApiServiceGrpc.MFTApiServiceBlockingStub mftClient = MFTApiClient.buildClient(
+                ServerSettings.getSetting("mft.server.host"),
+                Integer.parseInt(ServerSettings.getSetting("mft.server.port")));
+
+        ResourceAvailabilityResponse resourceAvailability = mftClient.getResourceAvailability(ResourceAvailabilityRequest.newBuilder()
+                .setResourceId(sourceId)
+                .setResourceToken(sourceToken)
+                .setResourceType("SCP")
+                .setResourceBackend("AIRAVATA")
+                .setResourceCredentialBackend("AIRAVATA").build());
+
+        if (resourceAvailability.getAvailable()) {
+            TransferApiRequest request = TransferApiRequest.newBuilder()
+                    .setSourceId(sourceId)
+                    .setSourceToken(sourceToken)
+                    .setSourceType("SCP")
+                    .setDestinationId(destId)
+                    .setDestinationToken(destToken)
+                    .setDestinationType("SCP")
+                    .setSourceResourceBackend("AIRAVATA")
+                    .setSourceCredentialBackend("AIRAVATA")
+                    .setDestResourceBackend("AIRAVATA")
+                    .setDestCredentialBackend("AIRAVATA")
+                    .setAffinityTransfer(false).build();
+
+            TransferApiResponse response = mftClient.submitTransfer(request);
+            logger.info("Submitted file transfer with id " + response.getTransferId());
+
+            while (true) {
+                try {
+                    TransferStateApiResponse transferState = mftClient.getTransferState(
+                            TransferStateApiRequest.newBuilder().setTransferId(response.getTransferId()).build());
+                    logger.info("Transfer status of " + response.getTransferId() + " is " + transferState.getState());
+                    if ("COMPLETED".equals(transferState.getState())) {
+                        return true;
+                    } else if ("FAILED".equals(transferState.getState())) {
+                        logger.error("Transfer failed due to " + transferState.getDescription());
+                        throw new TaskOnFailException("Transfer " + response.getTransferId() + " failed", false, null);
+                    }
+                } catch (StatusRuntimeException e) {
+                    logger.error("Error in monitoring transfer {}", response.getTransferId(), e);
+                    throw new TaskOnFailException("Error in monitoring trnasfer " + response.getTransferId(), false, e);
+                }
+                logger.info("Waiting for transfer {} status", response.getTransferId());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // Ignore
+                }
+            }
+        } else {
+            logger.warn("Resource " + sourceId + " is not available. So ignoring");
+            return false;
+        }
     }
 
     protected boolean transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
