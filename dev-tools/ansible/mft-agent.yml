@@ -18,7 +18,9 @@
 # under the License.
 #
 
-mft_source_dir: "{{ user_home }}/mft-source"
-mft_distribution_dir: "{{ user_home }}/mft-distribution"
-mft_repo: "https://github.com/apache/airavata-mft.git"
-mft_branch: "master"
+---
+- hosts: mft-agent
+  roles:
+    - env_setup
+    - java
+    - mft-agent

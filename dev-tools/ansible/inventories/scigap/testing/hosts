@@ -33,5 +33,9 @@ seagrid ansible_host=149.165.170.103
 [mft]
 149.165.156.124 ansible_user=root
 
+[mft-agent]
+testing-helix ansible_host=149.165.156.124 ansible_user=root mft_agent_id=testing-helix-agent
+testing-django ansible_host=149.165.170.103 mft_agent_id=testing-django-agent
+
 [consul]
 149.165.156.124 ansible_user=root
