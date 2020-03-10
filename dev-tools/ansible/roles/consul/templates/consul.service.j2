@@ -1,0 +1,10 @@
+[Unit]
+Description=solo consul server example
+
+[Service]
+WorkingDirectory={{ consul_config_dir }}
+User=root
+ExecStart={{ consul_install_dir }}/consul agent -config-dir={{ consul_config_dir }}
+
+[Install]
+WantedBy=multi-user.target

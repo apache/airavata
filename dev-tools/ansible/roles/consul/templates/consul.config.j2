@@ -1,0 +1,14 @@
+{
+    "node_name": "consul-mft",
+    "addresses": {
+        "http": "{{ hostvars[groups['consul'][0]]['ansible_default_ipv4']['address'] }} 127.0.0.1"
+    },
+    "server": true,
+    "advertise_addr": "{{ hostvars[groups['consul'][0]]['ansible_default_ipv4']['address'] }}",
+    "client_addr": "127.0.0.1 {{ hostvars[groups['consul'][0]]['ansible_default_ipv4']['address'] }}",
+    "connect": {
+        "enabled": true
+    },
+    "data_dir": "{{ consul_data_dir }}",
+    "bootstrap": true
+}

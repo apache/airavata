@@ -144,6 +144,14 @@
   become: yes
   become_user: airavata
 
+- name: Open firwall ports
+  firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
+  with_items:
+    - "{{ secret_service_grpc_port }}/tcp"
+    - "{{ resource_service_grpc_port }}/tcp"
+    - "{{ mft_api_service_grpc_port }}/tcp"
+  become_user: root
+
 - name: Start daemons running
   command: "{{ item.command }} chdir={{ mft_distribution_dir }}/{{ item.dir }}/"
   with_items:

@@ -1,0 +1,75 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# Create the directory for Consul deployment
+- name: Create consul deployment directory
+  file: path="{{ consul_install_dir }}" state=directory owner={{ user }} group={{ group }} recurse=yes
+
+- name: Create consul config directory
+  file: path="{{ consul_config_dir }}" state=directory owner={{ user }} group={{ group }} recurse=yes
+
+- name: Create consul data directory
+  file: path="{{ consul_data_dir }}" state=directory owner={{ user }} group={{ group }} recurse=yes
+
+# tasks file for consul-server
+- name: get consul zip
+  get_url:
+    dest: "/tmp/{{ consul_zip_file }}"
+    url: "https://releases.hashicorp.com/consul/{{ consul_version }}/{{ consul_zip_file }}"
+  become: yes
+
+- name: place unzipped consul on path
+  unarchive:
+    src: "/tmp/{{ consul_zip_file }}"
+    dest: "{{ consul_install_dir }}"
+    remote_src: yes
+  become: yes
+
+- name: ensure directories for data and config exists
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ consul_config_dir }}"
+    - "{{ consul_data_dir }}"
+  become: yes
+
+- name: send consul configuration file
+  template:
+    dest: "{{ consul_config_dir }}/config.json"
+    src: consul.config.j2
+  notify: restart consul
+  become: yes
+
+- name: Open firwall ports
+  firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
+  with_items:
+    - "{{ consul_http_port }}/tcp"
+  become_user: root
+
+- name: ensure consul service file exists
+  template:
+    dest: /etc/systemd/system/consul.service
+    src: consul.service.j2
+    force: yes
+    mode: 0644
+  notify: restart consul
+  become: yes
