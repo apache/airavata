@@ -209,6 +209,24 @@
 
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
+
+                <!-- MFT dependencies -->
+
+                <include>org.apache.airavata:mft-api-client</include>
+                <include>org.apache.airavata:mft-api-stub</include>
+                <include>com.google.protobuf:protobuf-java</include>
+                <include>io.grpc:grpc-api</include>
+                <include>io.grpc:grpc-core</include>
+                <include>io.grpc:grpc-netty</include>
+                <include>io.netty:netty-codec-http2</include>
+                <include>io.opencensus:opencensus-api</include>
+                <include>io.opencensus:opencensus-contrib-grpc-metrics</include>
+                <include>io.grpc:grpc-protobuf</include>
+                <include>io.grpc:grpc-protobuf-lite</include>
+                <include>io.grpc:grpc-stub</include>
+                <include>io.grpc:grpc-context</include>
+                <include>io.perfmark:perfmark-api</include>
+                <include>com.google.api.grpc:proto-google-common-protos</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>

@@ -164,6 +164,8 @@
                 <include>org.apache.airavata:airavata-security:jar</include>
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
+
+                <include>io.grpc:grpc-api</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
