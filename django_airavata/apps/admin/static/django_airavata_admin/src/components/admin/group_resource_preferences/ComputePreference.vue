@@ -154,6 +154,8 @@
               @added="addReservation"
               @deleted="deleteReservation"
               @updated="updateReservation"
+              @valid="reservationsInvalid = false"
+              @invalid="reservationsInvalid = true"
             />
           </div>
         </div>
@@ -264,7 +266,8 @@ export default {
         jobSubmissionInterfaces: []
       },
       validationErrors: null,
-      invalidBatchQueueResourcePolicies: []
+      invalidBatchQueueResourcePolicies: [],
+      reservationsInvalid: false
     };
   },
   computed: {
@@ -280,7 +283,8 @@ export default {
     valid() {
       return (
         this.allowedInvalidBatchQueueResourcePolicies.length === 0 &&
-        Object.keys(this.groupComputeResourceValidation).length === 0
+        Object.keys(this.groupComputeResourceValidation).length === 0 &&
+        !this.reservationsInvalid
       );
     },
     allowedInvalidBatchQueueResourcePolicies() {

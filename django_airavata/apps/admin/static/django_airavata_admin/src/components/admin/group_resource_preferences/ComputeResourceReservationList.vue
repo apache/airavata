@@ -11,8 +11,14 @@
         <compute-resource-reservation-editor
           v-model="newReservation"
           :queues="queues"
-          @valid="newReservationValid = true"
-          @invalid="newReservationValid = false"
+          @valid="
+            newReservationValid = true;
+            validate();
+          "
+          @invalid="
+            newReservationValid = false;
+            validate();
+          "
         />
         <div class="row">
           <div class="col">
@@ -48,6 +54,7 @@
             v-if="!readonly"
             class="action-link"
             @click="toggleDetails(data)"
+              :disabled="isReservationInvalid(data.item.key)"
           >
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
@@ -67,8 +74,15 @@
               :value="row.item"
               @input="updatedReservation"
               :queues="queues"
+              @valid="removeInvalidReservation(row.item.key)"
+              @invalid="recordInvalidReservation(row.item.key)"
             />
-            <b-button size="sm" @click="toggleDetails(row)">Close</b-button>
+            <b-button
+              size="sm"
+              @click="toggleDetails(row)"
+              :disabled="isReservationInvalid(row.item.key)"
+              >Close</b-button
+            >
           </b-card>
         </template>
       </b-table>
@@ -108,7 +122,8 @@ export default {
       showingDetails: {},
       showNewItemEditor: false,
       newReservation: null,
-      newReservationValid: false
+      newReservationValid: false,
+      invalidReservations: [] // list of ComputeResourceReservation.key
     };
   },
   computed: {
@@ -153,22 +168,31 @@ export default {
     },
     isSaveDisabled() {
       return !this.newReservationValid;
+    },
+    valid() {
+      return (
+        (!this.showNewItemEditor || this.newReservationValid) &&
+        this.invalidReservations.length === 0
+      );
     }
   },
   created() {},
   methods: {
     updatedReservation(newValue) {
-      const reservationIndex = this.reservations.findIndex(r => r.key === newValue.key);
+      const reservationIndex = this.reservations.findIndex(
+        r => r.key === newValue.key
+      );
       this.$emit("updated", newValue, reservationIndex);
     },
     toggleDetails(row) {
       row.toggleDetails();
-      this.showingDetails[row.item.key] = !this.showingDetails[
-        row.item.key
-      ];
+      this.showingDetails[row.item.key] = !this.showingDetails[row.item.key];
     },
     deleteReservation(reservation) {
-      const reservationIndex = this.reservations.findIndex(r => r.key === reservation.key);
+      const reservationIndex = this.reservations.findIndex(
+        r => r.key === reservation.key
+      );
+      this.removeInvalidReservation(reservation.key);
       this.$emit("deleted", reservationIndex);
     },
     addNewReservation() {
@@ -183,6 +207,29 @@ export default {
     },
     cancelNewReservation() {
       this.showNewItemEditor = false;
+    },
+    recordInvalidReservation(reservationKey) {
+      if (this.invalidReservations.indexOf(reservationKey) < 0) {
+        this.invalidReservations.push(reservationKey);
+      }
+      this.validate();
+    },
+    removeInvalidReservation(reservationKey) {
+      const index = this.invalidReservations.indexOf(reservationKey);
+      if (index >= 0) {
+        this.invalidReservations.splice(index, 1);
+      }
+      this.validate();
+    },
+    isReservationInvalid(reservationKey) {
+      return this.invalidReservations.indexOf(reservationKey) >= 0;
+    },
+    validate() {
+      if (this.valid) {
+        this.$emit("valid");
+      } else {
+        this.$emit("invalid");
+      }
     }
   }
 };

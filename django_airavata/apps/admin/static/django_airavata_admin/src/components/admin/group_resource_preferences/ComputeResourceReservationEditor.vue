@@ -1,5 +1,5 @@
 <template>
-  <b-form @input="valuesChanged">
+  <b-form>
     <b-form-group
       label="Reservation name"
       label-for="reservation-name"
@@ -14,7 +14,12 @@
         :state="nameValidationState"
       />
     </b-form-group>
-    <b-form-group label="Start Time" label-for="start-time">
+    <b-form-group
+      label="Start Time"
+      label-for="start-time"
+      :invalid-feedback="getValidationFeedback('startTime')"
+      :state="getValidationState('startTime')"
+    >
       <datetime
         id="start-time"
         type="datetime"
@@ -37,12 +42,20 @@
         @input="data.startTime = stringToDate($event)"
       ></datetime>
     </b-form-group>
-    <b-form-group label="End Time" label-for="end-time">
+    <b-form-group
+      label="End Time"
+      label-for="end-time"
+      :invalid-feedback="getValidationFeedback('endTime')"
+      :state="getValidationState('endTime')"
+    >
       <datetime
         id="end-time"
         type="datetime"
         :value="endTimeAsString"
-        input-class="form-control"
+        :input-class="{
+          'form-control': true,
+          'is-invalid': getValidationState('endTime')
+        }"
         :format="{
           year: 'numeric',
           month: '2-digit',
@@ -60,15 +73,17 @@
         @input="data.endTime = stringToDate($event)"
       ></datetime>
     </b-form-group>
-    <b-form-group label="Queues" label-for="queues"
+    <b-form-group
+      label="Queues"
+      label-for="queues"
       :invalid-feedback="getValidationFeedback('queueNames')"
       :state="getValidationState('queueNames')"
     >
       <b-form-checkbox-group
-      id="queues"
-      v-model="data.queueNames"
-      :options="queueNameOptions"
-      :state="getValidationState('queueNames')"
+        id="queues"
+        v-model="data.queueNames"
+        :options="queueNameOptions"
+        :state="getValidationState('queueNames')"
       />
     </b-form-group>
   </b-form>
@@ -96,6 +111,9 @@ export default {
       nameInputBegins: false
     };
   },
+  created() {
+    this.$on("input", this.valuesChanged);
+  },
   computed: {
     startTimeAsString() {
       return this.data.startTime.toISOString();
@@ -104,13 +122,13 @@ export default {
       return this.data.endTime.toISOString();
     },
     nameValidationFeedback() {
-      return this.getValidationFeedback('reservationName');
+      return this.getValidationFeedback("reservationName");
     },
     nameValidationState() {
       if (this.nameInputBegins === false) {
         return null;
       }
-      return this.getValidationState('reservationName');
+      return this.getValidationState("reservationName");
     },
     queueNameOptions() {
       return this.queues.slice().sort();
@@ -129,9 +147,9 @@ export default {
     valuesChanged() {
       const validationResults = this.data.validate();
       if (Object.keys(validationResults).length === 0) {
-        this.$emit('valid');
+        this.$emit("valid");
       } else {
-        this.$emit('invalid');
+        this.$emit("invalid");
       }
     }
   }

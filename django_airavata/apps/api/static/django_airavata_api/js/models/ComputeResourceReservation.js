@@ -12,13 +12,12 @@ const FIELDS = [
   {
     name: "startTime",
     type: Date,
-    default: () => new Date(),
-
+    default: () => new Date()
   },
   {
     name: "endTime",
     type: Date,
-    default: () => new Date(),
+    default: () => new Date()
   }
 ];
 
@@ -35,6 +34,12 @@ export default class ComputeResourceReservation extends BaseModel {
     if (this.isEmpty(this.reservationName)) {
       validationResults["reservationName"] =
         "Please provide the name of this reservation.";
+    }
+    if (this.startTime > this.endTime) {
+      validationResults["endTime"] = "End time must be later than start time.";
+    }
+    if (this.isEmpty(this.queueNames)) {
+      validationResults["queueNames"] = "Please select at least one queue.";
     }
     return validationResults;
   }
