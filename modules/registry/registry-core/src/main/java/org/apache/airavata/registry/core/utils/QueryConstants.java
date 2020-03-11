@@ -178,4 +178,10 @@ public interface QueryConstants {
 
     String FIND_ALL_PARSERS_FOR_GATEWAY_ID = "SELECT P FROM " + ParserEntity.class.getSimpleName() + " P " +
             "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
+
+    String GET_TRANSFERS_FOR_TASK_ID = "SELECT T FROM " + TransferEntity.class.getSimpleName() + " T " +
+            "WHERE T.taskId = :" + DBConstants.Transfer.TASK_ID;
+
+    String GET_TRANSFERS_FOR_TRANSFER_ID = "SELECT T FROM " + TransferEntity.class.getSimpleName() + " T " +
+            "WHERE T.transferId = :" + DBConstants.Transfer.TRANSFER_ID;
 }

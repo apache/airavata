@@ -80,6 +80,7 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.transfer.TransferModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
@@ -148,6 +149,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
     private UserRepository userRepository = new UserRepository();
     private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+    private TransferRepository transferRepository = new TransferRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -5057,5 +5059,35 @@ public class RegistryServerHandler implements RegistryService.Iface {
             rse.setMessage(message + " More info: " + e.getMessage());
             throw rse;
         }
+    }
+
+    @Override
+    public void saveTransfer(TransferModel transferModel) throws RegistryServiceException, TException {
+        try {
+            transferRepository.saveTransfer(transferModel);
+        } catch (Exception e) {
+            logger.error("Error while saving transfer details for task {} and transfer {}",
+                transferModel.getTaskId(), transferModel.getTransferId(), e);
+            throw new RegistryServiceException("Failed to store transfer detail. " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<TransferModel> getTransfersForTask(String taskId) throws RegistryServiceException, TException {
+        try {
+            return transferRepository.getTransfersForTask(taskId);
+        } catch (Exception e) {
+            logger.error("Error while fetching transfer details for task id {}", taskId, e);
+            throw new RegistryServiceException("Failed to fetch transfers for task id " + taskId + " " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<TransferModel> getTransfersForTransferId(String transferId) throws RegistryServiceException, TException {
+        try {
+            return transferRepository.getTransfersForTransferId(transferId);
+        } catch (Exception e) {
+            logger.error("Error while fetching transfer details for transfer id {}", transferId, e);
+            throw new RegistryServiceException("Failed to fetch transfers for transfer id " + transferId + " " + e.getMessage());        }
     }
 }

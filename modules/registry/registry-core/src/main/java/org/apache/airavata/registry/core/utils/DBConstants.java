@@ -180,5 +180,10 @@ public class DBConstants {
         public static final String GATEWAY_ID = "gatewayId";
     }
 
+    public static class Transfer {
+        public static final String TASK_ID = "taskId";
+        public static final String TRANSFER_ID = "transferId";
+    }
+
 
 }

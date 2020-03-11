@@ -32,6 +32,7 @@ include "../data-models/experiment-catalog-models/task_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"
 include "../data-models/experiment-catalog-models/workspace_model.thrift"
 include "../data-models/experiment-catalog-models/scheduling_model.thrift"
+include "../data-models/experiment-catalog-models/transfer_model.thrift"
 include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
@@ -2677,4 +2678,12 @@ service RegistryService extends base_api.BaseAPI {
             throws (1: registry_api_errors.RegistryServiceException rse);
     void removeParsingTemplate(1: required string templateId, 2: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse);
+
+    void saveTransfer(1: required transfer_model.TransferModel transferModel)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    list<transfer_model.TransferModel> getTransfersForTask(1: required string taskId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    list<transfer_model.TransferModel> getTransfersForTransferId(1: required string transferId)
+                throws (1: registry_api_errors.RegistryServiceException rse);
+
 }
