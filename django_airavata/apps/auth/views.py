@@ -14,6 +14,7 @@ from django.shortcuts import redirect, render, resolve_url
 from django.template import Context, Template
 from django.urls import reverse
 from requests_oauthlib import OAuth2Session
+from django.views.decorators.debug import sensitive_variables
 
 from . import forms, iam_admin_client, models, utils
 
@@ -69,6 +70,7 @@ def _validate_idp_alias(idp_alias):
         raise Exception("idp_alias is not valid")
 
 
+@sensitive_variables('password')
 def handle_login(request):
     username = request.POST['username']
     password = request.POST['password']
@@ -151,6 +153,7 @@ def callback_error(request, idp_alias):
     })
 
 
+@sensitive_variables('password')
 def create_account(request):
     if request.method == 'POST':
         form = forms.CreateAccountForm(request.POST)
@@ -374,6 +377,7 @@ def _create_and_send_password_reset_request_link(request, username):
     _send_email_to_user(models.PASSWORD_RESET_EMAIL_TEMPLATE, context)
 
 
+@sensitive_variables('password')
 def reset_password(request, code):
     try:
         password_reset_request = models.PasswordResetRequest.objects.get(
