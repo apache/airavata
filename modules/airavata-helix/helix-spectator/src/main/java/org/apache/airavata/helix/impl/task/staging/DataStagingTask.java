@@ -35,7 +35,9 @@ import org.apache.airavata.mft.api.client.MFTApiClient;
 import org.apache.airavata.mft.api.service.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.model.transfer.TransferModel;
 import org.apache.commons.io.FileUtils;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -369,6 +371,17 @@ public abstract class DataStagingTask extends AiravataTask {
 
             TransferApiResponse response = mftClient.submitTransfer(request);
             logger.info("Submitted file transfer with id " + response.getTransferId());
+
+            TransferModel transferModel = new TransferModel();
+            transferModel.setTaskId(getTaskId());
+            transferModel.setTransferId(response.getTransferId());
+            transferModel.setFilePath(sourceId);
+
+            try {
+                getRegistryServiceClient().saveTransfer(transferModel);
+            } catch (TException e) {
+                throw new TaskOnFailException("Failed to store transfer status in registry", false, e);
+            }
 
             while (true) {
                 try {
