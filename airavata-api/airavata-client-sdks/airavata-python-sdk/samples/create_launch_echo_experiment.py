@@ -27,6 +27,8 @@ from airavata.model.workspace.ttypes import Gateway, Notification, Project
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 
+from clients.utils.api_server_client_util import APIServerClientUtil
+
 from airavata.model.application.io.ttypes import InputDataObjectType
 
 from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile
@@ -49,18 +51,30 @@ credential_store_client = CredentialStoreClient(configFile)
 
 file_handler = FileHandler("pgadev.scigap.org", 22, "pga", "XXXXXXX")
 
+utils_client = APIServerClientUtil(configFile, username="username", password="password", gateway_id="gatewayId")
+
+executionId = utils_client.get_execution_id("Echo")
+projectId = utils_client.get_project_id("Default Project")
+
+resourceHostId = utils_client.get_resource_host_id("karst.uits.iu.edu")
+
+groupResourceProfileId = utils_client.get_group_resource_profile_id("XXXX")
+
+storageId = utils_client.get_storage_resource_id("pgadev.scigap.org")
+
+
 # create Experiment data Model
 experiment = ExperimentModel()
 experiment.experimentName = "Testing_ECHO_SDK 10"
 experiment.gatewayId = "cyberwater"
 experiment.userName = "isuru_janith"
 experiment.description = "SDK testing"
-experiment.projectId = "Default_Project_6b6f1a82-2db8-4f57-ac4d-15c3ec8cafa9"
+experiment.projectId = projectId
 experiment.experimentType = ExperimentType.SINGLE_APPLICATION
-experiment.executionId = "Echo_a2081a37-fbe2-4aec-8657-b1d8f7f66bef"
+experiment.executionId = executionId
 
 computRes = ComputationalResourceSchedulingModel()
-computRes.resourceHostId = "karst.uits.iu.edu_a9a65e7d-d104-4c11-829b-412168bed7a8"
+computRes.resourceHostId = resourceHostId
 computRes.nodeCount = 1
 computRes.totalCPUCount = 16
 computRes.queueName = "batch"
@@ -69,11 +83,11 @@ computRes.wallTimeLimit = 15
 userConfigData = UserConfigurationDataModel()
 userConfigData.computationalResourceScheduling = computRes
 
-userConfigData.groupResourceProfileId = "9f27b6b2-70e2-4508-9229-7b5394e2a522"
-userConfigData.storageId = "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+userConfigData.groupResourceProfileId = groupResourceProfileId
+userConfigData.storageId = storageId
 
 path = fb.upload_files(api_server_client, credential_store_client, token, "cyberwater",
-                       "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e",
+                       storageId,
                        "pgadev.scigap.org", "isuru_janith", "Default_Project", experiment.experimentName,
                        "/Users/isururanawaka/Documents/Cyberwater/poc/resources/storage")
 
@@ -81,11 +95,13 @@ userConfigData.experimentDataDir = path;
 
 experiment.userConfigurationData = userConfigData
 
-inputs = api_server_client.get_application_inputs(token, "Echo_a2081a37-fbe2-4aec-8657-b1d8f7f66bef")
+inputs = api_server_client.get_application_inputs(token, executionId)
+
+api_server_client.get_all
 
 experiment.experimentInputs = inputs
 
-outputs = api_server_client.get_application_outputs(token, "Echo_a2081a37-fbe2-4aec-8657-b1d8f7f66bef")
+outputs = api_server_client.get_application_outputs(token, executionId)
 
 experiment.experimentOutputs = outputs
 
@@ -109,6 +125,5 @@ while status.state <= 6:
 print("Completed")
 
 fb.download_files(api_server_client, credential_store_client, token, "cyberwater",
-                  "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e",
+                  storageId,
                   "pgadev.scigap.org", "isuru_janith", "Default_Project", experiment.experimentName, ".")
-
