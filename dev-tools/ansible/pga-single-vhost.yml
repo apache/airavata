@@ -32,6 +32,7 @@
     - "{{ vars_dir }}/vault.yml"
   roles:
     - env_setup
+    - httpd
     - letsencrypt
     - pga
 

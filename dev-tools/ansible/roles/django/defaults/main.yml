@@ -28,9 +28,10 @@ vhost_servername: "{{ groups['django'][0] }}"
 vhost_ssl: False
 vhost_aliases: []
 vhost_timeout: 60
+django_vhost_conf_name: "django-{{ gateway_id }}"
 httpd_confd_file_location:
- RedHat: "/etc/httpd/conf.d/django-{{ gateway_id }}.conf"
- Debian: "/etc/apache2/sites-available/django-{{ gateway_id }}.conf"
+ RedHat: "/etc/httpd/conf.d/{{ django_vhost_conf_name }}.conf"
+ Debian: "/etc/apache2/sites-available/{{ django_vhost_conf_name }}.conf"
 httpd_name:
  Debian: apache2
  RedHat: httpd
