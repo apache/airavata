@@ -322,11 +322,11 @@ public abstract class DataStagingTask extends AiravataTask {
                                                                                             TaskOnFailException {
 
         destPath = destPath + new File(sourcePath).getName();
-        String sourceId = "STORAGE:" + sourcePath + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId();
-        String sourceToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getTaskContext().getStorageResourceLoginUserName() + ":" + getGatewayId();
+        String sourceId = "STORAGE:" + sourcePath + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId() + ":" + getTaskContext().getStorageResourceLoginUserName();
+        String sourceToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getGatewayId();
 
-        String destId = "CLUSTER:" + destPath + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId();
-        String destToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getTaskContext().getComputeResourceLoginUserName() + ":" + getGatewayId();
+        String destId = "CLUSTER:" + destPath + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId() + ":" + getTaskContext().getComputeResourceLoginUserName();
+        String destToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getGatewayId();
 
         return transferThroughMFT(sourceId, sourceToken, destId, destToken);
     }
@@ -334,11 +334,11 @@ public abstract class DataStagingTask extends AiravataTask {
     protected boolean transferFileToStorageThroughMFT(String sourcePath, String destPath) throws TaskOnFailException,
                                                                                             ApplicationSettingsException {
 
-        String sourceId = "CLUSTER:" + sourcePath + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId();
-        String sourceToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getTaskContext().getComputeResourceLoginUserName() + ":" + getGatewayId();
+        String sourceId = "CLUSTER:" + sourcePath + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId() + ":" + getTaskContext().getComputeResourceLoginUserName();
+        String sourceToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getGatewayId();
 
-        String destId = "STORAGE:" + destPath + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId();
-        String destToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getTaskContext().getStorageResourceLoginUserName() + ":" + getGatewayId();
+        String destId = "STORAGE:" + destPath + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId() + ":" + getTaskContext().getStorageResourceLoginUserName();
+        String destToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getGatewayId();
 
         return transferThroughMFT(sourceId, sourceToken, destId, destToken);
     }
