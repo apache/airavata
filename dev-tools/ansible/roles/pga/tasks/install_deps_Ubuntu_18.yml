@@ -43,6 +43,12 @@
     path: /usr/bin/php5.6
   become: yes
 
+- name: enable apache rewrite
+  command: a2enmod {{ item }}
+  with_items:
+    - php5.6
+  become: yes
+
 # this just creates symlinks in /etc/php5/{apache2,cli}/conf.d/20-mcryp.ini to /etc/php5/modules-avail/mcrypt.ini
 - name: enable mcrypt
   command: phpenmod mcrypt
