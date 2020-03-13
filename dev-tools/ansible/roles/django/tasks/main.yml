@@ -271,7 +271,7 @@
   when: vhost_ssl
 
 - name: Enable site in Apache (Debian)
-  command: a2ensite django-{{ gateway_id }}
+  command: a2ensite {{ django_vhost_conf_name }}
   become: yes
   notify:
     - restart httpd

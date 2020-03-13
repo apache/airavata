@@ -19,12 +19,31 @@
 #
 
 ---
-- hosts: pga
-  tags: pga
-  roles:
-    - env_setup
-    - httpd
-    - letsencrypt
-    - pga
 
-...
+- name: Add the PHP PPA Ubuntu archive
+  apt_repository:
+    repo: ppa:ondrej/php
+  become: yes
+
+- name: Install prerequisites
+  apt: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - libapache2-mod-php5.6
+    - php5.6
+    - php5.6-curl
+    - php5.6-soap
+    - php5.6-mysql
+    - php5.6-mcrypt
+    - composer
+  become: yes
+
+- name: Set php version
+  alternatives:
+    name: php
+    path: /usr/bin/php5.6
+  become: yes
+
+# this just creates symlinks in /etc/php5/{apache2,cli}/conf.d/20-mcryp.ini to /etc/php5/modules-avail/mcrypt.ini
+- name: enable mcrypt
+  command: phpenmod mcrypt
+  become: yes
