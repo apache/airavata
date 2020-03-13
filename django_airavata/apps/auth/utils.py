@@ -97,7 +97,9 @@ def send_new_user_email(request, username, email, first_name, last_name):
                        from_email="{} <{}>".format(
                            settings.PORTAL_TITLE,
                            settings.SERVER_EMAIL),
-                       to=[a[1] for a in settings.PORTAL_ADMINS])
+                       to=[a[1] for a in getattr(settings,
+                                                 'PORTAL_ADMINS',
+                                                 settings.ADMINS)])
     msg.content_subtype = 'html'
     msg.send()
 
@@ -114,7 +116,9 @@ def send_email_to_user(template_id, context):
         to=["\"{} {}\" <{}>".format(context['first_name'],
                                     context['last_name'],
                                     context['email'])],
-        reply_to=[f"\"{a[0]}\" <{a[1]}>" for a in settings.PORTAL_ADMINS]
+        reply_to=[f"\"{a[0]}\" <{a[1]}>" for a in getattr(settings,
+                                                          'PORTAL_ADMINS',
+                                                          settings.ADMINS)]
     )
     msg.content_subtype = 'html'
     msg.send()
