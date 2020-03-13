@@ -97,7 +97,6 @@ experiment.userConfigurationData = userConfigData
 
 inputs = api_server_client.get_application_inputs(token, executionId)
 
-api_server_client.get_all
 
 experiment.experimentInputs = inputs
 
