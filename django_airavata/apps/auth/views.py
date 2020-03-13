@@ -13,8 +13,8 @@ from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render, resolve_url
 from django.template import Context, Template
 from django.urls import reverse
-from requests_oauthlib import OAuth2Session
 from django.views.decorators.debug import sensitive_variables
+from requests_oauthlib import OAuth2Session
 
 from . import forms, iam_admin_client, models, utils
 
