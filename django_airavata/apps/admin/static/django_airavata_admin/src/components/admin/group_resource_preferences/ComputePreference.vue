@@ -479,10 +479,16 @@ export default {
     addReservation(reservation) {
       this.data.reservations.push(reservation);
     },
-    deleteReservation(reservationIndex) {
+    deleteReservation(reservation) {
+      const reservationIndex = this.data.reservations.findIndex(
+        r => r.key === reservation.key
+      );
       this.data.reservations.splice(reservationIndex, 1);
     },
-    updateReservation(reservation, reservationIndex) {
+    updateReservation(reservation) {
+      const reservationIndex = this.data.reservations.findIndex(
+        r => r.key === reservation.key
+      );
       this.data.reservations.splice(reservationIndex, 1, reservation);
     }
   },

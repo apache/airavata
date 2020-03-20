@@ -6,6 +6,16 @@
     new-item-button-text="New Reservation"
     :new-button-disabled="readonly"
   >
+    <template slot="additional-buttons">
+      <delete-button
+        class="mr-2"
+        @delete="deleteAllExpiredReservations"
+        label="Delete All Expired"
+        :disabled="expiredReservations.length === 0"
+      >
+        Are you sure you want to delete all expired reservations?
+      </delete-button>
+    </template>
     <template slot="new-item-editor">
       <b-card v-if="showNewItemEditor" title="New Reservation">
         <compute-resource-reservation-editor
@@ -38,12 +48,15 @@
     </template>
     <template slot="item-list" slot-scope="slotProps">
       <b-table
-        striped
         hover
         :fields="fields"
         :items="slotProps.items"
         sort-by="startTime"
       >
+        <template slot="reservationName" slot-scope="data">
+          {{ data.value }}
+          <b-badge v-if="data.item.isExpired">Expired</b-badge>
+        </template>
         <template slot="queueNames" slot-scope="data">
           <ul v-for="queueName in data.item.queueNames" :key="queueName">
             <li>{{ queueName }}</li>
@@ -54,7 +67,7 @@
             v-if="!readonly"
             class="action-link"
             @click="toggleDetails(data)"
-              :disabled="isReservationInvalid(data.item.key)"
+            :disabled="isReservationInvalid(data.item.key)"
           >
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
@@ -101,7 +114,8 @@ export default {
     "delete-link": components.DeleteLink,
     "human-date": components.HumanDate,
     "list-layout": layouts.ListLayout,
-    ComputeResourceReservationEditor
+    ComputeResourceReservationEditor,
+    "delete-button": components.DeleteButton
   },
   props: {
     reservations: {
@@ -174,26 +188,25 @@ export default {
         (!this.showNewItemEditor || this.newReservationValid) &&
         this.invalidReservations.length === 0
       );
+    },
+    expiredReservations() {
+      return this.reservations
+        ? this.reservations.filter(r => r.isExpired)
+        : [];
     }
   },
   created() {},
   methods: {
     updatedReservation(newValue) {
-      const reservationIndex = this.reservations.findIndex(
-        r => r.key === newValue.key
-      );
-      this.$emit("updated", newValue, reservationIndex);
+      this.$emit("updated", newValue);
     },
     toggleDetails(row) {
       row.toggleDetails();
       this.showingDetails[row.item.key] = !this.showingDetails[row.item.key];
     },
     deleteReservation(reservation) {
-      const reservationIndex = this.reservations.findIndex(
-        r => r.key === reservation.key
-      );
       this.removeInvalidReservation(reservation.key);
-      this.$emit("deleted", reservationIndex);
+      this.$emit("deleted", reservation);
     },
     addNewReservation() {
       this.newReservation = new models.ComputeResourceReservation();
@@ -230,6 +243,9 @@ export default {
       } else {
         this.$emit("invalid");
       }
+    },
+    deleteAllExpiredReservations() {
+      this.expiredReservations.forEach(this.deleteReservation);
     }
   }
 };

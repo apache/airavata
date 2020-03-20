@@ -1,7 +1,7 @@
 <template>
   <div class="delete-button">
     <b-button variant="danger" @click="$refs.modal.show()" :disabled="disabled">
-      Delete
+      {{ label }}
     </b-button>
     <confirmation-dialog ref="modal" :title="dialogTitle" @ok="$emit('delete')">
       <slot></slot>
@@ -21,6 +21,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    label: {
+      type: String,
+      default: "Delete"
     }
   },
   components: {

@@ -43,4 +43,8 @@ export default class ComputeResourceReservation extends BaseModel {
     }
     return validationResults;
   }
+  get isExpired() {
+    const now = new Date();
+    return now > this.endTime;
+  }
 }
