@@ -48,7 +48,6 @@ saverx ansible_host=156.56.104.84
 sdstate ansible_host=156.56.104.84
 seagrid ansible_host=156.56.104.84
 searchsra ansible_host=156.56.104.84
-simvascular_old ansible_host=156.56.104.84
 snowvision ansible_host=156.56.104.84
 southdakota ansible_host=156.56.104.84
 testdrive ansible_host=156.56.104.84
@@ -79,3 +78,8 @@ tutorial ansible_host=149.165.168.166 ansible_user=centos
 
 # simccs server
 simccs ansible_host=scigap11.sciencegateways.iu.edu ansible_user=root
+
+# simvascular server
+simvascular ansible_host=simvascular.stanford.edu ansible_user=gateway
+# we can remove this once the migration is complete
+simvascular_old ansible_host=156.56.104.84
