@@ -19,16 +19,18 @@
 #
 
 ---
+# Simvascular is deployed on its own server at simvascular.stanford.edu
+
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/simvascular"
-vhost_servername: "gateway.simvascular.org"
+vhost_servername: "pga.simvascular.scigap.org"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/gateway.simvascular.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.simvascular.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.simvascular.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 php_upload_max_filesize: "300M"
 php_post_max_size: "2000M"
@@ -56,8 +58,8 @@ oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 gateway_id: "simvascular"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/simvascular"
-gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: ""
+gateway_data_store_resource_id: "simvascular.stanford.edu_758fc879-e037-4a10-980f-3566ac7cab1b"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCNdivlUyLh11poF2vufwa8pCjVY0/fkvym9qdpEeu6nS55CVZe5VXqA1NZ+IwVDabAFwoLrUvaWt7eE8POEZNiBgtonZ21x6KIK5/HilSM6jHds1u6NY436AiHqmcybO/u+NkUI8gUjWTbs4S/i/2WfvAHZc3dbcCHls3QgG55TqOdNnh2pjFLSA1wu0d1qRnrPwnje/yC4GD+3XU1HPLHb9FXLHO4umswKq8sDk2lOIN7u08pCF8Y+BPYfmEdvY8oFwdVsj3OoA3fWEE42xTjb3g65X2oCbhco1g1ya0cfJMgSUbHCcOc2D//rXD+L4/z0/A2VCiEFJtTllrws609"
 group_resource_profile_id: "6359d7f5-be13-4548-9762-943c1cc1a6f2"
 
 ## Portal related variables
