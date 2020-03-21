@@ -55,6 +55,8 @@
         <template slot="reservationName" slot-scope="data">
           {{ data.value }}
           <b-badge v-if="data.item.isExpired">Expired</b-badge>
+          <b-badge v-if="data.item.isActive" variant="success">Active</b-badge>
+          <b-badge v-if="data.item.isUpcoming" variant="info">Upcoming</b-badge>
         </template>
         <template slot="queueNames" slot-scope="data">
           <ul v-for="queueName in data.item.queueNames" :key="queueName">
