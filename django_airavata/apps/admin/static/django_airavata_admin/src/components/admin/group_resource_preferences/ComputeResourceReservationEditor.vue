@@ -68,6 +68,7 @@
         :hour-step="1"
         :minute-step="30"
         :week-start="7"
+        :min-datetime="startTimeAsString"
         use12-hour
         auto
         @input="data.endTime = stringToDate($event)"
