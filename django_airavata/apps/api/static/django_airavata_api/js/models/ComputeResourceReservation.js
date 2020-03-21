@@ -1,6 +1,13 @@
 import BaseModel from "./BaseModel";
 import uuidv4 from "uuid/v4";
 
+function currentTimeTopOfHour() {
+  const d = new Date();
+  d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);
+  return d;
+}
 const FIELDS = [
   "reservationId",
   "reservationName",
@@ -12,12 +19,12 @@ const FIELDS = [
   {
     name: "startTime",
     type: Date,
-    default: () => new Date()
+    default: () => currentTimeTopOfHour()
   },
   {
     name: "endTime",
     type: Date,
-    default: () => new Date()
+    default: () => currentTimeTopOfHour()
   }
 ];
 
