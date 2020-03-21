@@ -54,4 +54,12 @@ export default class ComputeResourceReservation extends BaseModel {
     const now = new Date();
     return now > this.endTime;
   }
+  get isActive() {
+    const now = new Date();
+    return this.startTime < now && now < this.endTime;
+  }
+  get isUpcoming() {
+    const now = new Date();
+    return now < this.startTime;
+  }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="has-fixed-footer">
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">
@@ -161,8 +161,7 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col d-flex justify-content-end">
+    <div class="fixed-footer">
         <b-button variant="primary" @click="save" :disabled="!valid"
           >Save</b-button
         >
@@ -172,7 +171,6 @@
         <b-button class="ml-2" variant="secondary" @click="cancel"
           >Cancel</b-button
         >
-      </div>
     </div>
   </div>
 </template>
