@@ -478,6 +478,7 @@ export default {
     },
     addReservation(reservation) {
       this.data.reservations.push(reservation);
+      this.data.reservations.sort((a, b) => a.startTime < b.startTime ? -1 : 1);
     },
     deleteReservation(reservation) {
       const reservationIndex = this.data.reservations.findIndex(

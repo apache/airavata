@@ -51,7 +51,6 @@
         hover
         :fields="fields"
         :items="slotProps.items"
-        sort-by="startTime"
       >
         <template slot="reservationName" slot-scope="data">
           {{ data.value }}
@@ -154,14 +153,12 @@ export default {
         {
           label: "Start Time",
           key: "startTime",
-          sortable: true,
           formatter: value =>
             utils.dateFormatters.dateTimeInMinutesWithTimeZone.format(value)
         },
         {
           label: "End Time",
           key: "endTime",
-          sortable: true,
           formatter: value =>
             utils.dateFormatters.dateTimeInMinutesWithTimeZone.format(value)
         },
