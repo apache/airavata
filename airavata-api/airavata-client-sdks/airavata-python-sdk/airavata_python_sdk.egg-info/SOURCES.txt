@@ -180,10 +180,13 @@ clients/keycloak_token_fetcher.py
 clients/sharing_registry_client.py
 clients/tenant_profile_client.py
 clients/user_profile_client.py
+clients/utils/__init__.py
+clients/utils/api_server_client_util.py
 samples/__init__.py
 samples/api_server_client_samples.py
 samples/create_launch_echo_experiment.py
 samples/create_launch_gaussian_experiment.py
+samples/file_utils.py
 samples/group_manager_client_samples.py
 samples/iam_admin_client_samples.py
 samples/metadata_fetcher.py

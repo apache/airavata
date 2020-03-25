@@ -59,7 +59,7 @@ django_extra_settings:
   MAPTOOL_SETTINGS:
     CPLEX_APPLICATION_ID: "Cplex_a7eaf483-ab92-4441-baeb-2f302ccb2919"
     DATASETS_DIR: "/data/gateway-user-data/simccs-datasets"
-    JAVA_OPTIONS: "-Xmx12g"
+    JAVA_OPTIONS: "-Xmx13g"
 
 gateway_id: "simccs"
 experiment_data_dir: "{{ user_data_dir }}/django-simccs"

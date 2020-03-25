@@ -43,4 +43,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCNmVTN
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Abhinav Thota','athota@iu.edu')]"
 portal_title: "IU Gateway"
 
+django_google_analytics_tracking_id: "UA-111528347-9"
 ...

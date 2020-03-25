@@ -79,6 +79,7 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParsingTemplateInputEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParserConnectorInputEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParserConnectorEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="replicacatalog_data_new">
