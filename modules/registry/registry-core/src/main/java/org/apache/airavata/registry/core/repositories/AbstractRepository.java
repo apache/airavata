@@ -48,8 +48,16 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T update(T t) {
+        return mergeEntity(mapToEntity(t));
+    }
+
+    protected E mapToEntity(T t) {
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        E entity = mapper.map(t, dbEntityGenericClass);
+        return mapper.map(t, dbEntityGenericClass);
+    }
+
+    protected T mergeEntity(E entity) {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
         E persistedCopy = execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, thriftGenericClass);
     }

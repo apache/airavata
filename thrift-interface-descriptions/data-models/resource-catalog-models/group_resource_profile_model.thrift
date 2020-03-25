@@ -34,6 +34,14 @@ struct GroupAccountSSHProvisionerConfig {
     4: optional string configValue
 }
 
+struct ComputeResourceReservation {
+    1: required string reservationId = airavata_commons.DEFAULT_ID,
+    2: required string reservationName,
+    3: required list<string> queueNames,
+    4: required i64 startTime,
+    5: required i64 endTime,
+}
+
 struct GroupComputeResourcePreference {
     1: required string computeResourceId,
     2: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
@@ -52,7 +60,8 @@ struct GroupComputeResourcePreference {
     15: optional i64 reservationEndTime,
     16: optional string sshAccountProvisioner,
     17: optional list<GroupAccountSSHProvisionerConfig> groupSSHAccountProvisionerConfigs,
-    18: optional string sshAccountProvisionerAdditionalInfo
+    18: optional string sshAccountProvisionerAdditionalInfo,
+    19: optional list<ComputeResourceReservation> reservations,
 }
 
 struct ComputeResourcePolicy {
