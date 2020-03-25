@@ -33,6 +33,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -53,6 +54,7 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.security.AiravataSecurityManager;
@@ -646,6 +648,7 @@ public class TaskContext {
             start = userComputeResourcePreference.getReservationStartTime();
             end = userComputeResourcePreference.getReservationEndTime();
         } else {
+            // TODO: remove this once we've migrated to groupComputeResourcePreference.getReservations()
             reservation = groupComputeResourcePreference.getReservation();
             start = groupComputeResourcePreference.getReservationStartTime();
             end = groupComputeResourcePreference.getReservationEndTime();
@@ -655,6 +658,12 @@ public class TaskContext {
             if (now > start && now < end) {
                 return reservation;
             }
+        }
+        String queueName = getQueueName();
+        ComputeResourceReservation computeResourceReservation = GroupComputeResourcePreferenceUtil
+                .getActiveReservationForQueue(groupComputeResourcePreference, queueName);
+        if (computeResourceReservation != null) {
+            return computeResourceReservation.getReservationName();
         }
         return null;
     }
