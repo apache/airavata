@@ -22,8 +22,7 @@
 
 # Simvascular is deployed on its own server at simvascular.stanford.edu
 
-# TODO: install and enable tus endpoint
-django_tus_endpoint:
+django_tus_endpoint: "https://tus.simvascular.scigap.org/files/"
 # configure user_data_dir and real_user_data_dir
 user_data_dir: "/var/www/portals/gateway-user-data"
 real_user_data_dir: "/home/www-shared/gateway-user-data"
