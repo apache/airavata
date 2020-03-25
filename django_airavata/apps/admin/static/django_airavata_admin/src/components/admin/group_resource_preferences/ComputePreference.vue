@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="has-fixed-footer">
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">
@@ -7,10 +7,9 @@
             v-if="localGroupResourceProfile"
             class="group-resource-profile-name text-muted text-uppercase"
           >
-            <i
-              class="fa fa-server"
-              aria-hidden="true"
-            ></i> {{ localGroupResourceProfile.groupResourceProfileName }}</div>
+            <i class="fa fa-server" aria-hidden="true"></i>
+            {{ localGroupResourceProfile.groupResourceProfileName }}
+          </div>
           {{ computeResource.hostName }}
         </h1>
       </div>
@@ -22,7 +21,9 @@
             <b-form-group
               label="Login Username"
               label-for="login-username"
-              :invalid-feedback="validationFeedback.loginUserName.invalidFeedback"
+              :invalid-feedback="
+                validationFeedback.loginUserName.invalidFeedback
+              "
               :state="validationFeedback.loginUserName.state"
             >
               <b-form-input
@@ -42,16 +43,22 @@
               <ssh-credential-selector
                 v-model="data.resourceSpecificCredentialStoreToken"
                 v-if="localGroupResourceProfile"
-                :null-option-default-credential-token="localGroupResourceProfile.defaultCredentialStoreToken"
-                :null-option-disabled="!localGroupResourceProfile.defaultCredentialStoreToken"
+                :null-option-default-credential-token="
+                  localGroupResourceProfile.defaultCredentialStoreToken
+                "
+                :null-option-disabled="
+                  !localGroupResourceProfile.defaultCredentialStoreToken
+                "
               >
                 <template
                   slot="null-option-label"
                   slot-scope="nullOptionLabelScope"
                 >
                   <span v-if="nullOptionLabelScope.defaultCredentialSummary">
-                    Use the default SSH credential for {{ localGroupResourceProfile.groupResourceProfileName }} ({{
-                    nullOptionLabelScope.defaultCredentialSummary.description }})
+                    Use the default SSH credential for
+                    {{ localGroupResourceProfile.groupResourceProfileName }} ({{
+                      nullOptionLabelScope.defaultCredentialSummary.description
+                    }})
                   </span>
                   <span v-else>
                     Select a SSH credential
@@ -73,7 +80,9 @@
             <b-form-group
               label="Scratch Location"
               label-for="scratch-location"
-              :invalid-feedback="validationFeedback.scratchLocation.invalidFeedback"
+              :invalid-feedback="
+                validationFeedback.scratchLocation.invalidFeedback
+              "
               :state="validationFeedback.scratchLocation.state"
             >
               <b-form-input
@@ -104,15 +113,27 @@
                 :key="batchQueue.queueName"
               >
                 <b-form-checkbox
-                  :checked="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
+                  :checked="
+                    localComputeResourcePolicy.allowedBatchQueues.includes(
+                      batchQueue.queueName
+                    )
+                  "
                   @input="batchQueueChecked(batchQueue, $event)"
                 >
                   {{ batchQueue.queueName }}
                 </b-form-checkbox>
                 <batch-queue-resource-policy
-                  v-if="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
+                  v-if="
+                    localComputeResourcePolicy.allowedBatchQueues.includes(
+                      batchQueue.queueName
+                    )
+                  "
                   :batch-queue="batchQueue"
-                  :value="localBatchQueueResourcePolicies.find(pol => pol.queuename === batchQueue.queueName)"
+                  :value="
+                    localBatchQueueResourcePolicies.find(
+                      pol => pol.queuename === batchQueue.queueName
+                    )
+                  "
                   @input="updatedBatchQueueResourcePolicy(batchQueue, $event)"
                   @valid="recordValidBatchQueueResourcePolicy(batchQueue)"
                   @invalid="recordInvalidBatchQueueResourcePolicy(batchQueue)"
@@ -124,23 +145,32 @@
       </div>
     </div>
     <div class="row">
-      <div class="col d-flex justify-content-end">
-        <b-button
-          variant="primary"
-          @click="save"
-          :disabled="!valid"
-        >Save</b-button>
-        <b-button
-          class="ml-2"
-          variant="danger"
-          @click="remove"
-        >Delete</b-button>
-        <b-button
-          class="ml-2"
-          variant="secondary"
-          @click="cancel"
-        >Cancel</b-button>
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <compute-resource-reservation-list
+              :reservations="data.reservations"
+              :queues="queueNames"
+              @added="addReservation"
+              @deleted="deleteReservation"
+              @updated="updateReservation"
+              @valid="reservationsInvalid = false"
+              @invalid="reservationsInvalid = true"
+            />
+          </div>
+        </div>
       </div>
+    </div>
+    <div class="fixed-footer">
+        <b-button variant="primary" @click="save" :disabled="!valid"
+          >Save</b-button
+        >
+        <b-button class="ml-2" variant="danger" @click="remove"
+          >Delete</b-button
+        >
+        <b-button class="ml-2" variant="secondary" @click="cancel"
+          >Cancel</b-button
+        >
     </div>
   </div>
 </template>
@@ -149,6 +179,7 @@
 import DjangoAiravataAPI from "django-airavata-api";
 import BatchQueueResourcePolicy from "./BatchQueueResourcePolicy.vue";
 import SSHCredentialSelector from "../../credentials/SSHCredentialSelector.vue";
+import ComputeResourceReservationList from "./ComputeResourceReservationList";
 
 import { models, services, errors } from "django-airavata-api";
 import {
@@ -161,7 +192,8 @@ export default {
   name: "compute-preference",
   components: {
     BatchQueueResourcePolicy,
-    "ssh-credential-selector": SSHCredentialSelector
+    "ssh-credential-selector": SSHCredentialSelector,
+    ComputeResourceReservationList
   },
   props: {
     id: {
@@ -232,7 +264,8 @@ export default {
         jobSubmissionInterfaces: []
       },
       validationErrors: null,
-      invalidBatchQueueResourcePolicies: []
+      invalidBatchQueueResourcePolicies: [],
+      reservationsInvalid: false
     };
   },
   computed: {
@@ -248,13 +281,17 @@ export default {
     valid() {
       return (
         this.allowedInvalidBatchQueueResourcePolicies.length === 0 &&
-        Object.keys(this.groupComputeResourceValidation).length === 0
+        Object.keys(this.groupComputeResourceValidation).length === 0 &&
+        !this.reservationsInvalid
       );
     },
     allowedInvalidBatchQueueResourcePolicies() {
       return this.invalidBatchQueueResourcePolicies.filter(queueName =>
         this.localComputeResourcePolicy.allowedBatchQueues.includes(queueName)
       );
+    },
+    queueNames() {
+      return this.computeResource.batchQueues.map(bq => bq.queueName);
     }
   },
   mixins: [mixins.VModelMixin],
@@ -436,6 +473,22 @@ export default {
       } else {
         this.$emit("invalid");
       }
+    },
+    addReservation(reservation) {
+      this.data.reservations.push(reservation);
+      this.data.reservations.sort((a, b) => a.startTime < b.startTime ? -1 : 1);
+    },
+    deleteReservation(reservation) {
+      const reservationIndex = this.data.reservations.findIndex(
+        r => r.key === reservation.key
+      );
+      this.data.reservations.splice(reservationIndex, 1);
+    },
+    updateReservation(reservation) {
+      const reservationIndex = this.data.reservations.findIndex(
+        r => r.key === reservation.key
+      );
+      this.data.reservations.splice(reservationIndex, 1, reservation);
     }
   },
   beforeRouteEnter: function(to, from, next) {

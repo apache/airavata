@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="has-fixed-footer">
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">{{ title }}</h1>
@@ -10,11 +10,23 @@
         <div class="card">
           <div class="card-body">
             <b-form-group label="Name" label-for="profile-name">
-              <b-form-input id="profile-name" type="text" v-model="data.groupResourceProfileName" required placeholder="Name of this Group Resource Profile">
+              <b-form-input
+                id="profile-name"
+                type="text"
+                v-model="data.groupResourceProfileName"
+                required
+                placeholder="Name of this Group Resource Profile"
+              >
               </b-form-input>
             </b-form-group>
-            <b-form-group label="Default SSH Credential" label-for="default-credential-store-token">
-              <ssh-credential-selector id="default-credential-store-token" v-model="data.defaultCredentialStoreToken">
+            <b-form-group
+              label="Default SSH Credential"
+              label-for="default-credential-store-token"
+            >
+              <ssh-credential-selector
+                id="default-credential-store-token"
+                v-model="data.defaultCredentialStoreToken"
+              >
               </ssh-credential-selector>
             </b-form-group>
             <share-button ref="shareButton" :entity-id="id" />
@@ -22,30 +34,57 @@
         </div>
       </div>
     </div>
-    <list-layout :items="data.computePreferences" title="Compute Preferences" new-item-button-text="New Compute Preference"
-      @add-new-item="createComputePreference">
+    <list-layout
+      :items="data.computePreferences"
+      title="Compute Preferences"
+      new-item-button-text="New Compute Preference"
+      @add-new-item="createComputePreference"
+    >
       <template slot="item-list" slot-scope="slotProps">
-
-        <b-table hover :fields="computePreferencesFields" :items="slotProps.items" sort-by="computeResourceId">
+        <b-table
+          hover
+          :fields="computePreferencesFields"
+          :items="slotProps.items"
+          sort-by="computeResourceId"
+        >
           <template slot="policy" slot-scope="row">
-            <compute-resource-policy-summary :compute-resource-id="row.item.computeResourceId" :group-resource-profile="data" />
+            <compute-resource-policy-summary
+              :compute-resource-id="row.item.computeResourceId"
+              :group-resource-profile="data"
+            />
+          </template>
+          <template slot="reservations" slot-scope="row">
+            <compute-resource-reservations-summary :reservations="row.value" />
           </template>
           <template slot="action" slot-scope="row">
-            <router-link class="action-link" :to="{
+            <router-link
+              class="action-link"
+              :to="{
                 name: 'compute_preference',
                 params: {
                   value: row.item,
                   id: id,
                   host_id: row.item.computeResourceId,
                   groupResourceProfile: data,
-                  computeResourcePolicy: data.getComputeResourcePolicy(row.item.computeResourceId),
-                  batchQueueResourcePolicies: data.getBatchQueueResourcePolicies(row.item.computeResourceId)
+                  computeResourcePolicy: data.getComputeResourcePolicy(
+                    row.item.computeResourceId
+                  ),
+                  batchQueueResourcePolicies: data.getBatchQueueResourcePolicies(
+                    row.item.computeResourceId
+                  )
                 }
-              }">
+              }"
+            >
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            <a href="#" class="action-link text-danger" @click.prevent="removeComputePreference(row.item.computeResourceId)">
+            <a
+              href="#"
+              class="action-link text-danger"
+              @click.prevent="
+                removeComputePreference(row.item.computeResourceId)
+              "
+            >
               Delete
               <i class="fa fa-trash" aria-hidden="true"></i>
             </a>
@@ -53,15 +92,26 @@
         </b-table>
       </template>
     </list-layout>
-    <div class="row">
-      <div class="col d-flex justify-content-end">
-        <b-button variant="primary" @click="saveGroupResourceProfile">Save</b-button>
-        <b-button v-if="id" class="ml-2" variant="danger" @click="removeGroupResourceProfile">Delete</b-button>
-        <b-button class="ml-2" variant="secondary" @click="cancel">Cancel</b-button>
-      </div>
+    <div class="fixed-footer">
+      <b-button variant="primary" @click="saveGroupResourceProfile"
+        >Save</b-button
+      >
+      <b-button
+        v-if="id"
+        class="ml-2"
+        variant="danger"
+        @click="removeGroupResourceProfile"
+        >Delete</b-button
+      >
+      <b-button class="ml-2" variant="secondary" @click="cancel"
+        >Cancel</b-button
+      >
     </div>
-    <compute-resources-modal ref="modalSelectComputeResource" @selected="onSelectComputeResource"
-      :excluded-resource-ids="excludedComputeResourceIds" />
+    <compute-resources-modal
+      ref="modalSelectComputeResource"
+      @selected="onSelectComputeResource"
+      :excluded-resource-ids="excludedComputeResourceIds"
+    />
   </div>
 </template>
 
@@ -69,6 +119,7 @@
 import { components as comps, layouts } from "django-airavata-common-ui";
 import { models, services } from "django-airavata-api";
 import ComputeResourcePolicySummary from "./ComputeResourcePolicySummary.vue";
+import ComputeResourceReservationsSummary from "./ComputeResourceReservationsSummary.vue";
 import ComputeResourcesModal from "../ComputeResourcesModal.vue";
 import SSHCredentialSelector from "../../credentials/SSHCredentialSelector.vue";
 
@@ -88,9 +139,9 @@ export default {
   mounted: function() {
     if (this.id) {
       if (!this.value.groupResourceProfileId) {
-        services.GroupResourceProfileService
-          .retrieve({ lookup: this.id })
-          .then(grp => (this.data = grp));
+        services.GroupResourceProfileService.retrieve({ lookup: this.id }).then(
+          grp => (this.data = grp)
+        );
       }
     }
   },
@@ -119,6 +170,10 @@ export default {
           key: "policy" // custom rendering
         },
         {
+          label: "Reservations",
+          key: "reservations" // custom rendering
+        },
+        {
           label: "Action",
           key: "action"
         }
@@ -131,7 +186,8 @@ export default {
     "list-layout": layouts.ListLayout,
     ComputeResourcePolicySummary,
     ComputeResourcesModal,
-    "ssh-credential-selector": SSHCredentialSelector
+    "ssh-credential-selector": SSHCredentialSelector,
+    ComputeResourceReservationsSummary
   },
   computed: {
     excludedComputeResourceIds() {

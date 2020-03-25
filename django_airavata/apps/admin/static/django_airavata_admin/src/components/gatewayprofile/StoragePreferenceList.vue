@@ -33,7 +33,7 @@
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </b-link>
-          <delete-link v-if="!readonly" @delete="deleteStoragePreference(data.item.storageResourceId)">
+          <delete-link v-if="!readonly" class="action-link" @delete="deleteStoragePreference(data.item.storageResourceId)">
             Are you sure you want to delete the storage preference for {{ getStorageResourceName(data.item.storageResourceId) }}?
           </delete-link>
         </template>
