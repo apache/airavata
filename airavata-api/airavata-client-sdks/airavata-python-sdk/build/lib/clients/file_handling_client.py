@@ -57,6 +57,5 @@ class FileHandler(object):
             ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.filePath)
             with SCPClient(ssh.get_transport()) as scp:
                 scp.get(remote_path, local_path, recursive, preserve_item)
-                scp.putfo()
         finally:
             scp.close()

@@ -182,6 +182,7 @@ clients/tenant_profile_client.py
 clients/user_profile_client.py
 clients/utils/__init__.py
 clients/utils/api_server_client_util.py
+clients/utils/data_model_creation_util.py
 samples/__init__.py
 samples/api_server_client_samples.py
 samples/create_launch_echo_experiment.py
