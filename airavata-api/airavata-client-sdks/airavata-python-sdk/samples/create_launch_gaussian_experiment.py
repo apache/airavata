@@ -15,10 +15,19 @@
 #
 
 import logging
+import time
+import json
+import samples.file_utils as fb
 
 from clients.keycloak_token_fetcher import Authenticator
 
 from clients.api_server_client import APIServerClient
+
+from clients.utils.api_server_client_util import APIServerClientUtil
+
+from clients.credential_store_client import CredentialStoreClient
+
+from clients.utils.data_model_creation_util import DataModelCreationUtil
 
 from airavata.model.workspace.ttypes import Gateway, Notification, Project
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
@@ -37,77 +46,89 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-configFile = "transport/settings.ini"
+configFile = "/Users/isururanawaka/Documents/Cyberwater/poc/resources/settings.ini"
 
 authenticator = Authenticator(configFile)
-token = authenticator.get_token_and_user_info_password_flow("username", "password", "cyberwater")
+
+user_name = "username"
+password = "password"
+gateway_id = "cyberwater"
+
+token = authenticator.get_token_and_user_info_password_flow(username=user_name, password=password,
+                                                            gateway_id=gateway_id)
 
 api_server_client = APIServerClient(configFile)
 
+airavata_util = APIServerClientUtil(configFile, username=user_name, password=password, gateway_id=gateway_id)
+data_model_client = DataModelCreationUtil(configFile,
+                                          username=user_name,
+                                          password=password,
+                                          gateway_id=gateway_id)
+
+credential_store_client = CredentialStoreClient(configFile)
+
+executionId = airavata_util.get_execution_id("Gaussian")
+projectId = airavata_util.get_project_id("Default Project")
+
+resourceHostId = airavata_util.get_resource_host_id("karst.uits.iu.edu")
+
+groupResourceProfileId = airavata_util.get_group_resource_profile_id("Default Gateway Profile")
+
+storageId = airavata_util.get_storage_resource_id("pgadev.scigap.org")
+
 # create Experiment data Model
-experiment = ExperimentModel()
-experiment.experimentName = "Gaussian experiment testing 4"
-experiment.gatewayId = "cyberwater"
-experiment.userName = "isuru_janith"
-experiment.description = "SDK testing"
-experiment.projectId = "Default_Project_6b6f1a82-2db8-4f57-ac4d-15c3ec8cafa9"
-experiment.experimentType = ExperimentType.SINGLE_APPLICATION
-experiment.executionId = "Gaussian_2cf3d51a-d9e7-4c3d-a326-dfcc4364b1d9"
 
-computRes = ComputationalResourceSchedulingModel()
-computRes.resourceHostId = "karst.uits.iu.edu_a9a65e7d-d104-4c11-829b-412168bed7a8"
-computRes.nodeCount = 1
-computRes.totalCPUCount = 16
-computRes.queueName = "batch"
-computRes.wallTimeLimit = 15
+experiment = data_model_client.get_experiment_data_model_for_single_application(
+    project_name="Default Project",
+    application_name="Gaussian",
+    experiment_name="Gaussian_16",
+    description="Testing")
 
-userConfigData = UserConfigurationDataModel()
-userConfigData.computationalResourceScheduling = computRes
+folder_name = "storage"
 
-userConfigData.groupResourceProfileId = "9f27b6b2-70e2-4508-9229-7b5394e2a522"
-userConfigData.storageId = "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
-userConfigData.experimentDataDir = "/var/www/portals/gateway-user-data/django-cyberwater/isuru_janith/Default_Project/TestingData"
+path = fb.upload_files(api_server_client, credential_store_client, token, gateway_id,
+                       storageId,
+                       "pgadev.scigap.org", user_name, "Default_Project", executionId,
+                       "/Users/isururanawaka/Documents/Cyberwater/poc/resources/storage/")
 
-experiment.userConfigurationData = userConfigData
+experiment = data_model_client.configure_computation_resource_scheduling(experiment_model=experiment,
+                                                                         computation_resource_name="karst.uits.iu.edu",
+                                                                         group_resource_profile_name="Default Gateway Profile",
+                                                                         storage_name="pgadev.scigap.org",
+                                                                         node_count=1,
+                                                                         total_cpu_count=16,
+                                                                         wall_time_limit=15,
+                                                                         queue_name="batch",
+                                                                         experiment_dir_path=path)
 
-dataProductModel = DataProductModel()
-dataProductModel.gatewayId = "cyberwater"
-dataProductModel.ownerName = "isuru_janith"
-dataProductModel.productName = "gaussian_file"
-dataProductModel.dataProductType = DataProductType.FILE
+data_uri = data_model_client.register_input_file(file_identifier="npentane12diol.inp",
+                                                 storage_name='pgadev.scigap.org',
+                                                 input_file_name="npentane12diol.inp",
+                                                 uploaded_storage_path=path)
 
-replicaLocation = DataReplicaLocationModel()
-replicaLocation.storageResourceId = "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
-replicaLocation.replicaName = "{} gateway data store copy".format("npentane12diol.inp")
-replicaLocation.replicaLocationCategory = ReplicaLocationCategory.GATEWAY_DATA_STORE
-replicaLocation.filePath = "file://{}:{}".format("pgadev.scigap.org",
-                                                 "/home/pga/portals/django-cyberwater/npentane12diol.inp")
+input_files = [data_uri]
 
-print(replicaLocation.filePath)
-dataProductModel.replicaLocations = [replicaLocation]
-
-dataURI = api_server_client.register_data_product(token, dataProductModel)
-print(dataURI)
-inputs = api_server_client.get_application_inputs(token, "Gaussian_2cf3d51a-d9e7-4c3d-a326-dfcc4364b1d9")
-print(inputs)
-if isinstance(inputs[0], InputDataObjectType):
-    inputs[0].value = dataURI
-    print(inputs)
-
-# gEXP = api_server_client.get_experiment(token, "Gaussian_on_Jan_30,_2020_2:11_PM_da332f49-35dc-4586-916c-06a04254d0c9 ")
-
-# api_server_client.register_data_product()
-
-# print(gEXP)
-
-experiment.experimentInputs = inputs
-
-outputs = api_server_client.get_application_outputs(token, "Gaussian_2cf3d51a-d9e7-4c3d-a326-dfcc4364b1d9")
-
-experiment.experimentOutputs = outputs
+experiment = data_model_client.configure_input_and_outputs(experiment, input_files=input_files,
+                                                           application_name="Gaussian")
 
 # create experiment
 ex_id = api_server_client.create_experiment(token, "cyberwater", experiment)
 
 # launch experiment
 api_server_client.launch_experiment(token, ex_id, "cyberwater")
+
+status = api_server_client.get_experiment_status(token, ex_id);
+
+if status is not None:
+    print("Initial state " + str(status.state))
+while status.state <= 6:
+    status = api_server_client.get_experiment_status(token,
+                                                     ex_id);
+    time.sleep(30)
+    print("State " + str(status.state))
+
+print("Completed")
+
+fb.download_files(api_server_client, credential_store_client, token, "cyberwater",
+                  storageId,
+                  "pgadev.scigap.org", user_name, "Default_Project", executionId, ".")
