@@ -118,8 +118,8 @@
   file: path="{{ doc_root_dir }}/app/storage" state=directory mode=0777 owner="{{user}}" group="{{group}}" recurse=yes
   become: yes
 
-- name: Run composer update
-  composer: command=update working_dir="{{ doc_root_dir }}"
+- name: Run composer install
+  composer: command=install working_dir="{{ doc_root_dir }}"
   become: yes
   become_user: "{{user}}"
 
