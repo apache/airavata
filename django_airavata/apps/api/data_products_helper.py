@@ -129,11 +129,15 @@ def delete_dir(request, path):
     return datastore.delete_dir(request.user.username, path)
 
 
+def delete_user_file(request, path):
+    datastore.delete(request.user.username, path)
+
+
 def delete(request, data_product):
     "Delete replica for data product in this data store."
     path = _get_replica_filepath(data_product)
     try:
-        datastore.delete(data_product.ownerName, path)
+        delete_user_file(request, path)
         _delete_data_product(data_product.ownerName, path)
     except Exception as e:
         logger.exception("Unable to delete file {} for data product uri {}"

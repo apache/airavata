@@ -1499,7 +1499,7 @@ class UserStoragePathView(APIView):
     def get(self, request, path="/", format=None):
         return self._create_response(request, path)
 
-    def post(self, request, path="/", format=None):
+    def post(self, request, path="/", format=None, file_name=None):
         if not data_products_helper.dir_exists(request, path):
             data_products_helper.create_user_dir(request, path)
 
@@ -1508,7 +1508,7 @@ class UserStoragePathView(APIView):
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = data_products_helper.save(
-                request, path, user_file, content_type=user_file.content_type)
+                request, path, user_file, content_type=user_file.content_type, name=file_name)
         # Handle a tus upload
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
@@ -1520,8 +1520,14 @@ class UserStoragePathView(APIView):
             data_product = tus.move_tus_upload(uploadURL, move_file)
         return self._create_response(request, path, uploaded=data_product)
 
+    def put(self, request, path="/", format=None):
+        self.delete(request=request, path=path, format=format)
+        dir_path, file_name = self._split_dir_path_and_file_name(path=path)
+
+        return self.post(request=request, path=dir_path, format=format, file_name=file_name)
+
     def delete(self, request, path="/", format=None):
-        data_products_helper.delete_dir(request, path)
+        data_products_helper.delete_user_file(request, path)
         return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
@@ -1535,6 +1541,14 @@ class UserStoragePathView(APIView):
         data['parts'] = self._split_path(path)
         serializer = self.serializer_class(data, context={'request': request})
         return Response(serializer.data)
+
+    def _split_dir_path_and_file_name(self, path):
+        path_chunks = path.split("/")
+        path_chunks_last_index = len(path_chunks) - 1
+        file_name = path_chunks[path_chunks_last_index]
+        dir_path = '/'.join([path_chunks[i] for i in range(path_chunks_last_index)])
+
+        return dir_path, file_name
 
     def _split_path(self, path):
         head, tail = os.path.split(path)
