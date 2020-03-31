@@ -25,6 +25,8 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -63,6 +65,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
 
         GatewayResourceProfile gf = new GatewayResourceProfile();
         ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+        StorageResourceRepository storageResourceRepository = new StorageResourceRepository();
         ComputeResourceDescription cm1 = new ComputeResourceDescription();
         cm1.setHostName("localhost");
         cm1.setResourceDescription("test compute host");
@@ -72,6 +75,10 @@ public class GatewayProfileRepositoryTest extends TestBase {
         cm2.setHostName("localhost");
         cm2.setResourceDescription("test compute host");
         String hostId2 = computeResourceRepository.addComputeResource(cm2);
+
+        StorageResourceDescription sr1 = new StorageResourceDescription();
+        sr1.setHostName("localhost");;
+        String storageResourceId = storageResourceRepository.addStorageResource(sr1);
 
         ComputeResourcePreference preference1 = new ComputeResourcePreference();
         preference1.setComputeResourceId(hostId1);
@@ -98,6 +105,14 @@ public class GatewayProfileRepositoryTest extends TestBase {
         List<ComputeResourcePreference> list = new ArrayList<ComputeResourcePreference>();
         list.add(preference1);
         list.add(preference2);
+
+        StoragePreference storagePreference = new StoragePreference();
+        storagePreference.setStorageResourceId(storageResourceId);
+        storagePreference.setFileSystemRootLocation("/scratch/data");
+        storagePreference.setLoginUserName("loginUserName");
+        storagePreference.setManagedFileTransferEnabled(true);
+
+        gf.addToStoragePreferences(storagePreference);
 
         gf.setGatewayID("testGateway");
         gf.setCredentialStoreToken("testCredential");
@@ -142,6 +157,13 @@ public class GatewayProfileRepositoryTest extends TestBase {
                 System.out.println(cm.getPreferredJobSubmissionProtocol());
             }
         }
+        List<StoragePreference> storagePreferences = gwyResourceProfileRepository.getAllStoragePreferences(gwId);
+        assertEquals(1, storagePreferences.size());
+        StoragePreference sp1 = storagePreferences.get(0);
+        assertEquals("/scratch/data", sp1.getFileSystemRootLocation());
+        assertEquals("loginUserName", sp1.getLoginUserName());
+        assertTrue(sp1.isManagedFileTransferEnabled());
+
         computeResourceRepository.removeComputeResource(hostId1);
         computeResourceRepository.removeComputeResource(hostId2);
         gwyResourceProfileRepository.delete("testGateway");

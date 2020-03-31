@@ -32,6 +32,7 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
   private static final org.apache.thrift.protocol.TField LOGIN_USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("loginUserName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField FILE_SYSTEM_ROOT_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSystemRootLocation", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSpecificCredentialStoreToken", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField MANAGED_FILE_TRANSFER_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("managedFileTransferEnabled", org.apache.thrift.protocol.TType.BOOL, (short)5);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new StoragePreferenceStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new StoragePreferenceTupleSchemeFactory();
@@ -40,13 +41,15 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
   private java.lang.String loginUserName; // optional
   private java.lang.String fileSystemRootLocation; // optional
   private java.lang.String resourceSpecificCredentialStoreToken; // optional
+  private boolean managedFileTransferEnabled; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     STORAGE_RESOURCE_ID((short)1, "storageResourceId"),
     LOGIN_USER_NAME((short)2, "loginUserName"),
     FILE_SYSTEM_ROOT_LOCATION((short)3, "fileSystemRootLocation"),
-    RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN((short)4, "resourceSpecificCredentialStoreToken");
+    RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN((short)4, "resourceSpecificCredentialStoreToken"),
+    MANAGED_FILE_TRANSFER_ENABLED((short)5, "managedFileTransferEnabled");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -69,6 +72,8 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
           return FILE_SYSTEM_ROOT_LOCATION;
         case 4: // RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN
           return RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN;
+        case 5: // MANAGED_FILE_TRANSFER_ENABLED
+          return MANAGED_FILE_TRANSFER_ENABLED;
         default:
           return null;
       }
@@ -109,7 +114,9 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.FILE_SYSTEM_ROOT_LOCATION,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN};
+  private static final int __MANAGEDFILETRANSFERENABLED_ISSET_ID = 0;
+  private byte __isset_bitfield = 0;
+  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.FILE_SYSTEM_ROOT_LOCATION,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.MANAGED_FILE_TRANSFER_ENABLED};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -121,6 +128,8 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("resourceSpecificCredentialStoreToken", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.MANAGED_FILE_TRANSFER_ENABLED, new org.apache.thrift.meta_data.FieldMetaData("managedFileTransferEnabled", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(StoragePreference.class, metaDataMap);
   }
@@ -139,6 +148,7 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
    * Performs a deep copy on <i>other</i>.
    */
   public StoragePreference(StoragePreference other) {
+    __isset_bitfield = other.__isset_bitfield;
     if (other.isSetStorageResourceId()) {
       this.storageResourceId = other.storageResourceId;
     }
@@ -151,6 +161,7 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
     if (other.isSetResourceSpecificCredentialStoreToken()) {
       this.resourceSpecificCredentialStoreToken = other.resourceSpecificCredentialStoreToken;
     }
+    this.managedFileTransferEnabled = other.managedFileTransferEnabled;
   }
 
   public StoragePreference deepCopy() {
@@ -163,6 +174,8 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
     this.loginUserName = null;
     this.fileSystemRootLocation = null;
     this.resourceSpecificCredentialStoreToken = null;
+    setManagedFileTransferEnabledIsSet(false);
+    this.managedFileTransferEnabled = false;
   }
 
   public java.lang.String getStorageResourceId() {
@@ -257,6 +270,28 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
     }
   }
 
+  public boolean isManagedFileTransferEnabled() {
+    return this.managedFileTransferEnabled;
+  }
+
+  public void setManagedFileTransferEnabled(boolean managedFileTransferEnabled) {
+    this.managedFileTransferEnabled = managedFileTransferEnabled;
+    setManagedFileTransferEnabledIsSet(true);
+  }
+
+  public void unsetManagedFileTransferEnabled() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __MANAGEDFILETRANSFERENABLED_ISSET_ID);
+  }
+
+  /** Returns true if field managedFileTransferEnabled is set (has been assigned a value) and false otherwise */
+  public boolean isSetManagedFileTransferEnabled() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __MANAGEDFILETRANSFERENABLED_ISSET_ID);
+  }
+
+  public void setManagedFileTransferEnabledIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __MANAGEDFILETRANSFERENABLED_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case STORAGE_RESOURCE_ID:
@@ -291,6 +326,14 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
       }
       break;
 
+    case MANAGED_FILE_TRANSFER_ENABLED:
+      if (value == null) {
+        unsetManagedFileTransferEnabled();
+      } else {
+        setManagedFileTransferEnabled((java.lang.Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -307,6 +350,9 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
 
     case RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN:
       return getResourceSpecificCredentialStoreToken();
+
+    case MANAGED_FILE_TRANSFER_ENABLED:
+      return isManagedFileTransferEnabled();
 
     }
     throw new java.lang.IllegalStateException();
@@ -327,6 +373,8 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
       return isSetFileSystemRootLocation();
     case RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN:
       return isSetResourceSpecificCredentialStoreToken();
+    case MANAGED_FILE_TRANSFER_ENABLED:
+      return isSetManagedFileTransferEnabled();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -382,6 +430,15 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
         return false;
     }
 
+    boolean this_present_managedFileTransferEnabled = true && this.isSetManagedFileTransferEnabled();
+    boolean that_present_managedFileTransferEnabled = true && that.isSetManagedFileTransferEnabled();
+    if (this_present_managedFileTransferEnabled || that_present_managedFileTransferEnabled) {
+      if (!(this_present_managedFileTransferEnabled && that_present_managedFileTransferEnabled))
+        return false;
+      if (this.managedFileTransferEnabled != that.managedFileTransferEnabled)
+        return false;
+    }
+
     return true;
   }
 
@@ -404,6 +461,10 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
     hashCode = hashCode * 8191 + ((isSetResourceSpecificCredentialStoreToken()) ? 131071 : 524287);
     if (isSetResourceSpecificCredentialStoreToken())
       hashCode = hashCode * 8191 + resourceSpecificCredentialStoreToken.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetManagedFileTransferEnabled()) ? 131071 : 524287);
+    if (isSetManagedFileTransferEnabled())
+      hashCode = hashCode * 8191 + ((managedFileTransferEnabled) ? 131071 : 524287);
 
     return hashCode;
   }
@@ -452,6 +513,16 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
     }
     if (isSetResourceSpecificCredentialStoreToken()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceSpecificCredentialStoreToken, other.resourceSpecificCredentialStoreToken);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetManagedFileTransferEnabled()).compareTo(other.isSetManagedFileTransferEnabled());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetManagedFileTransferEnabled()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.managedFileTransferEnabled, other.managedFileTransferEnabled);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -513,6 +584,12 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
       }
       first = false;
     }
+    if (isSetManagedFileTransferEnabled()) {
+      if (!first) sb.append(", ");
+      sb.append("managedFileTransferEnabled:");
+      sb.append(this.managedFileTransferEnabled);
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -536,6 +613,8 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
     try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -592,6 +671,14 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 5: // MANAGED_FILE_TRANSFER_ENABLED
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.managedFileTransferEnabled = iprot.readBool();
+              struct.setManagedFileTransferEnabledIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -631,6 +718,11 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetManagedFileTransferEnabled()) {
+        oprot.writeFieldBegin(MANAGED_FILE_TRANSFER_ENABLED_FIELD_DESC);
+        oprot.writeBool(struct.managedFileTransferEnabled);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -659,7 +751,10 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
       if (struct.isSetResourceSpecificCredentialStoreToken()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetManagedFileTransferEnabled()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetLoginUserName()) {
         oprot.writeString(struct.loginUserName);
       }
@@ -669,6 +764,9 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
       if (struct.isSetResourceSpecificCredentialStoreToken()) {
         oprot.writeString(struct.resourceSpecificCredentialStoreToken);
       }
+      if (struct.isSetManagedFileTransferEnabled()) {
+        oprot.writeBool(struct.managedFileTransferEnabled);
+      }
     }
 
     @Override
@@ -676,7 +774,7 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.storageResourceId = iprot.readString();
       struct.setStorageResourceIdIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(3);
+      java.util.BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.loginUserName = iprot.readString();
         struct.setLoginUserNameIsSet(true);
@@ -688,6 +786,10 @@ public class StoragePreference implements org.apache.thrift.TBase<StoragePrefere
       if (incoming.get(2)) {
         struct.resourceSpecificCredentialStoreToken = iprot.readString();
         struct.setResourceSpecificCredentialStoreTokenIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.managedFileTransferEnabled = iprot.readBool();
+        struct.setManagedFileTransferEnabledIsSet(true);
       }
     }
   }

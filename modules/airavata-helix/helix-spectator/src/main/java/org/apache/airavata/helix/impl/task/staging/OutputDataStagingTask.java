@@ -155,7 +155,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                     logger.info("Transferring file " + sourceFileName);
                     boolean transferred;
 
-                    if (ServerSettings.isAgentTransferEnabled()) {
+                    if (ServerSettings.isAgentTransferEnabled() && taskContext.isStorageResourceManagedFileTransferEnabled()) {
                         transferred = transferFileToStorageThroughMFT(newSourceURI.getPath(), destinationURI.getPath());
                     } else {
                         transferred = transferFileToStorage(newSourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
@@ -187,7 +187,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                 // Uploading output file to the storage resource
                 assert processOutput != null;
                 boolean transferred = false;
-                if (ServerSettings.isAgentTransferEnabled()) {
+                if (ServerSettings.isAgentTransferEnabled() && taskContext.isStorageResourceManagedFileTransferEnabled()) {
                     transferred = transferFileToStorageThroughMFT(sourceURI.getPath(), destinationURI.getPath());
 
                 } else {

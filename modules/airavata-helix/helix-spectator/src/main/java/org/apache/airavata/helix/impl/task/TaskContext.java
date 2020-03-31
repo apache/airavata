@@ -579,6 +579,10 @@ public class TaskContext {
         return gatewayStorageResourcePreference.getStorageResourceId();
     }
 
+    public boolean isStorageResourceManagedFileTransferEnabled() {
+        return gatewayStorageResourcePreference.isManagedFileTransferEnabled();
+    }
+
     private ComputationalResourceSchedulingModel getProcessCRSchedule() {
         if (getProcessModel() != null) {
             return getProcessModel().getProcessResourceSchedule();

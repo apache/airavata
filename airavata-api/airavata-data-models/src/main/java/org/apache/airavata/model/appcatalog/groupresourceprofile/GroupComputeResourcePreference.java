@@ -239,7 +239,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESERVATIONS, new org.apache.thrift.meta_data.FieldMetaData("reservations", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "ComputeResourceReservation"))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ComputeResourceReservation.class))));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GroupComputeResourcePreference.class, metaDataMap);
   }
@@ -323,7 +323,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     if (other.isSetReservations()) {
       java.util.List<ComputeResourceReservation> __this__reservations = new java.util.ArrayList<ComputeResourceReservation>(other.reservations.size());
       for (ComputeResourceReservation other_element : other.reservations) {
-        __this__reservations.add(other_element);
+        __this__reservations.add(new ComputeResourceReservation(other_element));
       }
       this.reservations = __this__reservations;
     }
@@ -1956,14 +1956,14 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
           case 17: // GROUP_SSHACCOUNT_PROVISIONER_CONFIGS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.groupSSHAccountProvisionerConfigs = new java.util.ArrayList<GroupAccountSSHProvisionerConfig>(_list0.size);
-                GroupAccountSSHProvisionerConfig _elem1;
-                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
+                struct.groupSSHAccountProvisionerConfigs = new java.util.ArrayList<GroupAccountSSHProvisionerConfig>(_list8.size);
+                GroupAccountSSHProvisionerConfig _elem9;
+                for (int _i10 = 0; _i10 < _list8.size; ++_i10)
                 {
-                  _elem1 = new GroupAccountSSHProvisionerConfig();
-                  _elem1.read(iprot);
-                  struct.groupSSHAccountProvisionerConfigs.add(_elem1);
+                  _elem9 = new GroupAccountSSHProvisionerConfig();
+                  _elem9.read(iprot);
+                  struct.groupSSHAccountProvisionerConfigs.add(_elem9);
                 }
                 iprot.readListEnd();
               }
@@ -1983,14 +1983,14 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
           case 19: // RESERVATIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.reservations = new java.util.ArrayList<ComputeResourceReservation>(_list3.size);
-                ComputeResourceReservation _elem4;
-                for (int _i5 = 0; _i5 < _list3.size; ++_i5)
+                org.apache.thrift.protocol.TList _list11 = iprot.readListBegin();
+                struct.reservations = new java.util.ArrayList<ComputeResourceReservation>(_list11.size);
+                ComputeResourceReservation _elem12;
+                for (int _i13 = 0; _i13 < _list11.size; ++_i13)
                 {
-                  _elem4 = new ComputeResourceReservation();
-                  _elem4.read(iprot);
-                  struct.reservations.add(_elem4);
+                  _elem12 = new ComputeResourceReservation();
+                  _elem12.read(iprot);
+                  struct.reservations.add(_elem12);
                 }
                 iprot.readListEnd();
               }
@@ -2117,9 +2117,9 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
           oprot.writeFieldBegin(GROUP_SSHACCOUNT_PROVISIONER_CONFIGS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.groupSSHAccountProvisionerConfigs.size()));
-            for (GroupAccountSSHProvisionerConfig _iter6 : struct.groupSSHAccountProvisionerConfigs)
+            for (GroupAccountSSHProvisionerConfig _iter14 : struct.groupSSHAccountProvisionerConfigs)
             {
-              _iter6.write(oprot);
+              _iter14.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2138,9 +2138,9 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
           oprot.writeFieldBegin(RESERVATIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.reservations.size()));
-            for (ComputeResourceReservation _iter7 : struct.reservations)
+            for (ComputeResourceReservation _iter15 : struct.reservations)
             {
-              _iter7.write(oprot);
+              _iter15.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2259,9 +2259,9 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       if (struct.isSetGroupSSHAccountProvisionerConfigs()) {
         {
           oprot.writeI32(struct.groupSSHAccountProvisionerConfigs.size());
-          for (GroupAccountSSHProvisionerConfig _iter8 : struct.groupSSHAccountProvisionerConfigs)
+          for (GroupAccountSSHProvisionerConfig _iter16 : struct.groupSSHAccountProvisionerConfigs)
           {
-            _iter8.write(oprot);
+            _iter16.write(oprot);
           }
         }
       }
@@ -2271,9 +2271,9 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       if (struct.isSetReservations()) {
         {
           oprot.writeI32(struct.reservations.size());
-          for (ComputeResourceReservation _iter9 : struct.reservations)
+          for (ComputeResourceReservation _iter17 : struct.reservations)
           {
-            _iter9.write(oprot);
+            _iter17.write(oprot);
           }
         }
       }
@@ -2343,14 +2343,14 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       }
       if (incoming.get(13)) {
         {
-          org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.groupSSHAccountProvisionerConfigs = new java.util.ArrayList<GroupAccountSSHProvisionerConfig>(_list10.size);
-          GroupAccountSSHProvisionerConfig _elem11;
-          for (int _i12 = 0; _i12 < _list10.size; ++_i12)
+          org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.groupSSHAccountProvisionerConfigs = new java.util.ArrayList<GroupAccountSSHProvisionerConfig>(_list18.size);
+          GroupAccountSSHProvisionerConfig _elem19;
+          for (int _i20 = 0; _i20 < _list18.size; ++_i20)
           {
-            _elem11 = new GroupAccountSSHProvisionerConfig();
-            _elem11.read(iprot);
-            struct.groupSSHAccountProvisionerConfigs.add(_elem11);
+            _elem19 = new GroupAccountSSHProvisionerConfig();
+            _elem19.read(iprot);
+            struct.groupSSHAccountProvisionerConfigs.add(_elem19);
           }
         }
         struct.setGroupSSHAccountProvisionerConfigsIsSet(true);
@@ -2361,14 +2361,14 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       }
       if (incoming.get(15)) {
         {
-          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.reservations = new java.util.ArrayList<ComputeResourceReservation>(_list13.size);
-          ComputeResourceReservation _elem14;
-          for (int _i15 = 0; _i15 < _list13.size; ++_i15)
+          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.reservations = new java.util.ArrayList<ComputeResourceReservation>(_list21.size);
+          ComputeResourceReservation _elem22;
+          for (int _i23 = 0; _i23 < _list21.size; ++_i23)
           {
-            _elem14 = new ComputeResourceReservation();
-            _elem14.read(iprot);
-            struct.reservations.add(_elem14);
+            _elem22 = new ComputeResourceReservation();
+            _elem22.read(iprot);
+            struct.reservations.add(_elem22);
           }
         }
         struct.setReservationsIsSet(true);

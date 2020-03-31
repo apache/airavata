@@ -85,7 +85,8 @@ struct StoragePreference {
     1: required string storageResourceId,
     2: optional string loginUserName,
     3: optional string fileSystemRootLocation,
-    4: optional string resourceSpecificCredentialStoreToken
+    4: optional string resourceSpecificCredentialStoreToken,
+    5: optional bool managedFileTransferEnabled,
 }
 
 /**

@@ -88,7 +88,7 @@ public class InputDataStagingTask extends DataStagingTask {
                     URI destinationURI = new URI(dataStagingTaskModel.getDestination());
 
                     logger.info("Source file " + sourceURI.getPath() + ", destination uri " + destinationURI.getPath() + " for task " + getTaskId());
-                    if (ServerSettings.isAgentTransferEnabled()) {
+                    if (ServerSettings.isAgentTransferEnabled() && taskContext.isStorageResourceManagedFileTransferEnabled()) {
                         logger.info("Transferring through MFT");
                         transferFileToComputeResourceThroughMFT(sourceURI.getPath(), destinationURI.getPath());
                     } else {

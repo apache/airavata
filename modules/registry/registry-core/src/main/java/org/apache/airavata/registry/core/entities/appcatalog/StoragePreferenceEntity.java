@@ -49,6 +49,9 @@ public class StoragePreferenceEntity implements Serializable {
     @Column(name = "RESOURCE_CS_TOKEN")
     private String resourceSpecificCredentialStoreToken;
 
+    @Column(name = "MANAGED_FILE_TRANSFER_ENABLED", nullable = false)
+    private boolean managedFileTransferEnabled = false;
+
     @ManyToOne(targetEntity = GatewayProfileEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "GATEWAY_ID")
     private GatewayProfileEntity gatewayProfileResource;
@@ -94,6 +97,14 @@ public class StoragePreferenceEntity implements Serializable {
 
     public void setResourceSpecificCredentialStoreToken(String resourceSpecificCredentialStoreToken) {
         this.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken;
+    }
+
+    public boolean isManagedFileTransferEnabled() {
+        return managedFileTransferEnabled;
+    }
+
+    public void setManagedFileTransferEnabled(boolean managedFileTransferEnabled) {
+        this.managedFileTransferEnabled = managedFileTransferEnabled;
     }
 
     public GatewayProfileEntity getGatewayProfileResource() {

@@ -100,7 +100,7 @@ public class ArchiveTask extends DataStagingTask {
                 if (fileMetadata.getSize() < maxArchiveSize) {
 
                     boolean fileTransferred = false;
-                    if (ServerSettings.isAgentTransferEnabled()) {
+                    if (ServerSettings.isAgentTransferEnabled() && taskContext.isStorageResourceManagedFileTransferEnabled()) {
                         fileTransferred = transferFileToStorageThroughMFT(tarCreationAbsPath, destFilePath);
                     } else {
                         fileTransferred = transferFileToStorage(tarCreationAbsPath, destFilePath, archiveFileName, adaptor, storageResourceAdaptor);

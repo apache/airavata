@@ -21,6 +21,7 @@ import airavata.model.task.ttypes
 import airavata.model.process.ttypes
 import airavata.model.scheduling.ttypes
 import airavata.model.status.ttypes
+import airavata.model.transfer.ttypes
 import airavata.model.data.movement.ttypes
 import airavata.model.data.replica.ttypes
 import airavata.model.user.ttypes
