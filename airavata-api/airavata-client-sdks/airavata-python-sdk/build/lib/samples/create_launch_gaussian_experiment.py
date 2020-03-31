@@ -40,7 +40,7 @@ logger.setLevel(logging.DEBUG)
 configFile = "transport/settings.ini"
 
 authenticator = Authenticator(configFile)
-token = authenticator.get_token_and_user_info_password_flow("username", "password", "cyberwater")
+token = authenticator.get_token_and_user_info_password_flow("isuru_janith", "Isuru@1Isuru@1", "cyberwater")
 
 api_server_client = APIServerClient(configFile)
 
