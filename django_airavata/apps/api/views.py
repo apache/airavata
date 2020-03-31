@@ -1535,16 +1535,28 @@ class UserStoragePathView(APIView):
         return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
-        directories, files = data_products_helper.listdir(request, path)
-        data = {
-            'directories': directories,
-            'files': files
-        }
-        if uploaded is not None:
-            data['uploaded'] = uploaded
-        data['parts'] = self._split_path(path)
-        serializer = self.serializer_class(data, context={'request': request})
-        return Response(serializer.data)
+        if data_products_helper.dir_exists(request, path):
+            directories, files = data_products_helper.listdir(request, path)
+            data = {
+                'directories': directories,
+                'files': files
+            }
+            if uploaded is not None:
+                data['uploaded'] = uploaded
+            data['parts'] = self._split_path(path)
+            serializer = self.serializer_class(data, context={'request': request})
+            return Response(serializer.data)
+        else:
+            data = {
+                'directories': [],
+                'files': []
+            }
+            if uploaded is not None:
+                data['uploaded'] = uploaded
+            data['parts'] = self._split_path(path)
+            serializer = self.serializer_class(data, context={'request': request})
+            return Response(serializer.data)
+
 
     def _split_dir_path_and_file_name(self, path):
         path_chunks = path.split("/")
