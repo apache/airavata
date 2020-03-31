@@ -1,5 +1,12 @@
 <template>
   <div>
+    <user-storage-create-view
+      :user-storage-path="userStoragePath"
+      :storage-path="storagePath"
+      :username="username"
+      @upload-success="$emit('upload-success')"
+      @add-directory="(dirName) => $emit('add-directory', dirName)"
+    />
     <user-storage-path-breadcrumb
       v-if="userStoragePath"
       :parts="userStoragePath.parts"
@@ -20,8 +27,7 @@
         > <i class="fa fa-folder-open"></i> {{ data.item.name }}</b-link>
         <b-link
           v-else
-          :href="data.item.downloadURL"
-          :target="downloadTarget"
+          :href="storageFileViewRouteUrl(data.item)"
         > {{ data.item.name }}</b-link>
       </template>
       <template
@@ -55,11 +61,18 @@
 <script>
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
+import UserStorageCreateView from "./UserStorageCreateView";
 
 export default {
   name: "user-storage-path-viewer",
   props: {
     userStoragePath: {
+      required: true
+    },
+    username: {
+      required: true
+    },
+    storagePath: {
       required: true
     },
     includeDeleteAction: {
@@ -82,7 +95,8 @@ export default {
   components: {
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
-    UserStoragePathBreadcrumb
+    UserStoragePathBreadcrumb,
+    UserStorageCreateView: UserStorageCreateView
   },
   computed: {
     fields() {
@@ -171,6 +185,10 @@ export default {
           uri => item.type === "file" && uri === item.dataProductURI
         ) !== undefined
       );
+    },
+    storageFileViewRouteUrl(item) {
+      // This endpoint can handle XHR upload or a TUS uploadURL
+      return `/workspace/storage/file/~/${item.name}`;
     }
   }
 };
