@@ -94,7 +94,7 @@ setup() {
     JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
     PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
     CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
-    PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/src/main/resources/lib/'
+    PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/airavata/'
 
     BASE_API_SRC_DIR='../airavata-api/airavata-base-api/src/main/java'
 
@@ -300,7 +300,7 @@ generate_cpp_stubs() {
 generate_python_stubs() {
 
     #Python generation directory
-    PYTHON_GEN_DIR=${BASE_TARGET_DIR}/gen-py
+    PYTHON_GEN_DIR=${BASE_TARGET_DIR}/gen-py/airavata
 
     # As a precaution  remove and previously generated files if exists
     rm -rf ${PYTHON_GEN_DIR}
