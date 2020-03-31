@@ -27,7 +27,8 @@ const FIELDS = [
   {
     name: "reservations",
     type: ComputeResourceReservation,
-    list: true
+    list: true,
+    default: BaseModel.defaultNewInstance(Array)
   }
 ];
 
