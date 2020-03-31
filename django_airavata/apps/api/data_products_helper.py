@@ -145,6 +145,36 @@ def delete(request, data_product):
         raise
 
 
+def split_dir_path_and_file_name(path):
+    path_chunks = path.split("/")
+    path_chunks_last_index = len(path_chunks) - 1
+    file_name = path_chunks[path_chunks_last_index]
+    dir_path = '/'.join([path_chunks[i] for i in range(path_chunks_last_index)])
+
+    return dir_path, file_name
+
+
+def get_file(request, path):
+    if datastore.exists(request.user.username, path):
+        created_time = datastore.get_created_time(
+            request.user.username, path)
+        size = datastore.size(request.user.username, path)
+        full_path = datastore.path(request.user.username, path)
+        data_product_uri = _get_data_product_uri(request, full_path)
+        dir_path, file_name = split_dir_path_and_file_name(path)
+
+        return {
+           'name': file_name,
+           'path': dir_path,
+           'data-product-uri': data_product_uri,
+           'created_time': created_time,
+           'size': size,
+           'hidden': False
+        }
+    else:
+        raise ObjectDoesNotExist("User storage file path does not exist")
+
+
 def listdir(request, path):
     if datastore.dir_exists(request.user.username, path):
         directories, files = datastore.list_user_dir(

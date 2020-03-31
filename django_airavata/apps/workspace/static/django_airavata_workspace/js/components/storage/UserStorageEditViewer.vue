@@ -1,6 +1,8 @@
 <template>
   <div>
     User storage edit {{storagePath}}
+    <br/>
+    User storage edit {{userStoragePath}}
   </div>
 </template>
 <script>

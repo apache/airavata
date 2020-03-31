@@ -20,14 +20,23 @@ import { notifications } from "django-airavata-common-ui";
 export default {
   name: "user-storage-container",
   computed: {
+    /**
+     * @returns {string} user storage path with an ending slash.
+     */
     storagePath() {
-      // TODO
-      var result = /~.*$/.exec(this.$route.fullPath);
-      if (result && result.length > 0) {
-        return result[0]
+      let _storagePath = /~.*$/.exec(this.$route.fullPath);
+      if (_storagePath && _storagePath.length > 0) {
+        _storagePath = _storagePath[0];
       } else {
-        return this.$route.path;
+        _storagePath = this.$route.path;
       }
+
+      // Validate to have the ending slash.
+      if (!_storagePath.endsWith("/")) {
+        _storagePath += "/";
+      }
+
+      return _storagePath;
     }
   },
   data() {

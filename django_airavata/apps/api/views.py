@@ -55,6 +55,7 @@ from . import (
     tus,
     view_utils
 )
+from .data_products_helper import split_dir_path_and_file_name, get_file
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -1522,7 +1523,7 @@ class UserStoragePathView(APIView):
 
     def put(self, request, path="/", format=None):
         self.delete(request=request, path=path, format=format)
-        dir_path, file_name = self._split_dir_path_and_file_name(path=path)
+        dir_path, file_name = split_dir_path_and_file_name(path=path)
 
         return self.post(request=request, path=dir_path, format=format, file_name=file_name)
 
@@ -1547,24 +1548,16 @@ class UserStoragePathView(APIView):
             serializer = self.serializer_class(data, context={'request': request})
             return Response(serializer.data)
         else:
+            file = get_file(request, path)
             data = {
                 'directories': [],
-                'files': []
+                'files': [file]
             }
             if uploaded is not None:
                 data['uploaded'] = uploaded
             data['parts'] = self._split_path(path)
             serializer = self.serializer_class(data, context={'request': request})
             return Response(serializer.data)
-
-
-    def _split_dir_path_and_file_name(self, path):
-        path_chunks = path.split("/")
-        path_chunks_last_index = len(path_chunks) - 1
-        file_name = path_chunks[path_chunks_last_index]
-        dir_path = '/'.join([path_chunks[i] for i in range(path_chunks_last_index)])
-
-        return dir_path, file_name
 
     def _split_path(self, path):
         head, tail = os.path.split(path)
