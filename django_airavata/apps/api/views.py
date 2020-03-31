@@ -1527,7 +1527,11 @@ class UserStoragePathView(APIView):
         return self.post(request=request, path=dir_path, format=format, file_name=file_name)
 
     def delete(self, request, path="/", format=None):
-        data_products_helper.delete_user_file(request, path)
+        if data_products_helper.dir_exists(request, path):
+            data_products_helper.delete_dir(request, path)
+        else:
+            data_products_helper.delete_user_file(request, path)
+
         return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
