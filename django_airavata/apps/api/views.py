@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import traceback
 from datetime import datetime, timedelta
 
 from django.conf import settings
@@ -13,6 +14,7 @@ from rest_framework.decorators import action, detail_route, list_route
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.status import HTTP_403_FORBIDDEN
 from rest_framework.views import APIView
 
 from airavata.model.appcatalog.computeresource.ttypes import (
@@ -1521,11 +1523,22 @@ class UserStoragePathView(APIView):
             data_product = tus.move_tus_upload(uploadURL, move_file)
         return self._create_response(request, path, uploaded=data_product)
 
+    # Accept wither to replace file or to replace file content text.
     def put(self, request, path="/", format=None):
-        self.delete(request=request, path=path, format=format)
-        dir_path, file_name = split_dir_path_and_file_name(path=path)
+        # Replace the file if the request has a file upload.
+        if 'file' in request.FILES:
+            self.delete(request=request, path=path, format=format)
+            dir_path, file_name = split_dir_path_and_file_name(path=path)
+            self.post(request=request, path=dir_path, format=format, file_name=file_name)
+        # Replace only the file content if the request body has the `fileContentText`
+        elif request.data and "fileContentText" in request.data:
+            data_products_helper.update_file_content(request=request, path=path,
+                                                     fileContentText=request.data["fileContentText"])
+        else:
+            return Response(status=HTTP_403_FORBIDDEN)
 
-        return self.post(request=request, path=dir_path, format=format, file_name=file_name)
+        return self._create_response(request=request, path=path)
+
 
     def delete(self, request, path="/", format=None):
         if data_products_helper.dir_exists(request, path):

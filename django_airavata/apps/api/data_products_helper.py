@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
 
 from airavata.model.data.replica.ttypes import (
     DataProductModel,
@@ -152,6 +153,13 @@ def split_dir_path_and_file_name(path):
     dir_path = '/'.join([path_chunks[i] for i in range(path_chunks_last_index)])
 
     return dir_path, file_name
+
+
+def update_file_content(request, path, fileContentText):
+    full_path = datastore.path(request.user.username, path)
+    with open(full_path, 'w') as f:
+        myfile = File(f)
+        myfile.write(fileContentText)
 
 
 def get_file(request, path):
