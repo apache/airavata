@@ -1,6 +1,7 @@
 <template>
   <div>
     <user-storage-create-view
+      v-if="userStoragePath.isDir"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
       :username="username"
@@ -12,7 +13,13 @@
       :parts="userStoragePath.parts"
       @directory-selected="$emit('directory-selected', $event)"
     />
+    <user-storage-edit-viewer
+      v-if="!userStoragePath.isDir"
+      :user-storage-path="userStoragePath"
+      :storage-path="storagePath"
+    />
     <b-table
+      v-if="userStoragePath.isDir"
       :fields="fields"
       :items="items"
       sort-by="name"
@@ -62,6 +69,7 @@
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
 import UserStorageCreateView from "./UserStorageCreateView";
+import UserStorageEditViewer from "./UserStorageEditViewer";
 
 export default {
   name: "user-storage-path-viewer",
@@ -96,7 +104,8 @@ export default {
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
-    UserStorageCreateView: UserStorageCreateView
+    UserStorageCreateView: UserStorageCreateView,
+    UserStorageEditViewer: UserStorageEditViewer
   },
   computed: {
     fields() {
@@ -188,7 +197,7 @@ export default {
     },
     storageFileViewRouteUrl(item) {
       // This endpoint can handle XHR upload or a TUS uploadURL
-      return `/workspace/storage/file/${this.storagePath}${item.name}`;
+      return `/workspace/storage/${this.storagePath}${item.name}`;
     }
   }
 };

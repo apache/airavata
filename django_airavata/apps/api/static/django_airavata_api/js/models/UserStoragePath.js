@@ -17,6 +17,11 @@ const FIELDS = [
     name: "parts",
     type: "string",
     list: true
+  },
+  {
+    name: "isDir",
+    type: "boolean",
+    list: false
   }
 ];
 
