@@ -163,11 +163,17 @@ def get_file(request, path):
         data_product_uri = _get_data_product_uri(request, full_path)
         dir_path, file_name = split_dir_path_and_file_name(path)
 
+        data_product = request.airavata_client.getDataProduct(request.authz_token, data_product_uri)
+        mime_type = None
+        if 'mime-type' in data_product.productMetadata:
+            mime_type = data_product.productMetadata['mime-type']
+
         return {
-           'name': file_name,
+           'name': full_path,
            'path': dir_path,
            'data-product-uri': data_product_uri,
            'created_time': created_time,
+           'mime_type': mime_type,
            'size': size,
            'hidden': False
         }
@@ -199,10 +205,17 @@ def listdir(request, path):
             size = datastore.size(request.user.username, user_rel_path)
             full_path = datastore.path(request.user.username, user_rel_path)
             data_product_uri = _get_data_product_uri(request, full_path)
+
+            data_product = request.airavata_client.getDataProduct(request.authz_token, data_product_uri)
+            mime_type = None
+            if 'mime-type' in data_product.productMetadata:
+                mime_type = data_product.productMetadata['mime-type']
+
             files_data.append({'name': f,
                                'path': user_rel_path,
                                'data-product-uri': data_product_uri,
                                'created_time': created_time,
+                               'mime_type': mime_type,
                                'size': size,
                                'hidden': False})
         return directories_data, files_data

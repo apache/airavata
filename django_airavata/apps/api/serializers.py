@@ -839,6 +839,7 @@ class UserStorageFileSerializer(serializers.Serializer):
     downloadURL = serializers.SerializerMethodField()
     dataProductURI = serializers.CharField(source='data-product-uri')
     createdTime = serializers.DateTimeField(source='created_time')
+    mimeType = serializers.CharField(source='mime_type')
     size = serializers.IntegerField()
     hidden = serializers.BooleanField()
 
