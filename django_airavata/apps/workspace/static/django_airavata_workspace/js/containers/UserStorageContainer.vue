@@ -10,6 +10,7 @@
       @delete-dir="deleteDir"
       @delete-file="deleteFile"
       @directory-selected="directorySelected"
+      @file-content-changed="fileContentChanged"
     ></router-view>
   </div>
 </template>
@@ -83,6 +84,16 @@ export default {
         ).then(() => {
           // this.file = null;
           this.$refs["file-input"].reset();
+          this.loadUserStoragePath(this.storagePath);
+        });
+      }
+    },
+    fileContentChanged(fileContent) {
+      if (fileContent) {
+        utils.FetchUtils.put(
+          "/api/user-storage/" + this.storagePath,
+          {fileContentText: fileContent}
+        ).then(() => {
           this.loadUserStoragePath(this.storagePath);
         });
       }

@@ -1,5 +1,18 @@
 <template>
-  <div style="width: 100%;" id="code">
+  <div>
+    <div class="user-storage-file-edit-viewer-status">
+      <div class="user-storage-file-edit-viewer-status-message">
+        <span v-if="saved">All the changes are saved.</span>
+        <span v-if="!saved">Changes are not saved.</span>
+      </div>
+      <b-button
+        :disabled="saved"
+        @click="fileContentChanged"
+      >Save
+      </b-button>
+    </div>
+    <div style="width: 100%;" id="code">
+    </div>
   </div>
 </template>
 
@@ -9,40 +22,39 @@
   import 'codemirror/lib/codemirror.css'
   import 'codemirror/theme/abcdef.css'
   import './UserStorageEditViewer.css'
-  import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb";
   import {utils} from "django-airavata-api";
 
   export default {
     name: "user-storage-file-edit-viewer",
     props: {
-      userStoragePath: {
-        required: true
-      },
-      storagePath: {
+      file: {
         required: true
       }
     },
     data() {
       return {
         fileContent: "",
+        saved: true,
         editor: null
       };
     },
     mounted() {
-      this.setFileContentEditor();
       this.setFileContent();
     },
     methods: {
+      fileContentChanged() {
+        const changedFileContent = this.editor.getDoc().getValue();
+        this.$emit('file-content-changed', changedFileContent);
+        this.saved = true;
+      },
       setFileContent() {
-        if (this.userStoragePath && this.userStoragePath.files && this.userStoragePath.files.length > 0) {
-          utils.FetchUtils.get(this.userStoragePath.files[0].downloadURL, "", {
-            ignoreErrors: false,
-            showSpinner: true
-          }, "text").then((res) => {
-            this.fileContent = res;
-            this.editor.getDoc().setValue(this.fileContent);
-          });
-        }
+        utils.FetchUtils.get(this.file.downloadURL, "", {
+          ignoreErrors: false,
+          showSpinner: true
+        }, "text").then((res) => {
+          this.fileContent = res;
+          this.setFileContentEditor(this.fileContent);
+        });
       },
       setFileContentEditor(value = "") {
         this.editor = CodeMirror(document.getElementById("code"), {
@@ -53,6 +65,9 @@
           scrollbarStyle: "native",
           extraKeys: {"Ctrl-Space": "autocomplete"},
           value: value
+        });
+        this.editor.on("change", () => {
+          this.saved = false;
         });
       }
     }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <user-storage-create-view
-      v-if="userStoragePath.isDir"
+      v-if="isDir"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
       :username="username"
@@ -14,12 +14,13 @@
       @directory-selected="$emit('directory-selected', $event)"
     />
     <user-storage-edit-viewer
-      v-if="!userStoragePath.isDir"
-      :user-storage-path="userStoragePath"
-      :storage-path="storagePath"
+      v-if="isFile && isText"
+      :file="file"
+      @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+    />
     />
     <b-table
-      v-if="userStoragePath.isDir"
+      v-if="isDir"
       :fields="fields"
       :items="items"
       sort-by="name"
@@ -108,6 +109,25 @@ export default {
     UserStorageEditViewer: UserStorageEditViewer
   },
   computed: {
+    isDir() {
+      return this.userStoragePath.isDir;
+    },
+    isFile() {
+      return !this.userStoragePath.isDir;
+    },
+
+    // Return the first file available. This is assuming the path is a file.
+    file() {
+      return this.userStoragePath.files[0]
+    },
+
+    isText() {
+      return /text\/.*/.test(this.file.mimeType);
+    },
+    isImage() {
+      return /image\/.*/.test(this.file.mimeType);
+    },
+
     fields() {
       return [
         {
