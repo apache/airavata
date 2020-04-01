@@ -18,6 +18,10 @@
       :file="file"
       @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
     />
+    <user-storage-image-edit-viewer
+      v-if="isFile && isImage"
+      :file="file"
+      @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
     />
     <b-table
       v-if="isDir"
@@ -71,6 +75,7 @@ import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
 import UserStorageCreateView from "./UserStorageCreateView";
 import UserStorageEditViewer from "./UserStorageEditViewer";
+import UserStorageImageEditViewer from "./UserStorageImageEditViewer";
 
 export default {
   name: "user-storage-path-viewer",
@@ -106,7 +111,8 @@ export default {
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
     UserStorageCreateView: UserStorageCreateView,
-    UserStorageEditViewer: UserStorageEditViewer
+    UserStorageEditViewer: UserStorageEditViewer,
+    UserStorageImageEditViewer: UserStorageImageEditViewer
   },
   computed: {
     isDir() {
