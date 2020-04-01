@@ -864,6 +864,7 @@ class UserStorageDirectorySerializer(serializers.Serializer):
 
 
 class UserStoragePathSerializer(serializers.Serializer):
+    isDir = serializers.BooleanField()
     directories = UserStorageDirectorySerializer(many=True)
     files = UserStorageFileSerializer(many=True)
     parts = serializers.ListField(child=serializers.CharField())

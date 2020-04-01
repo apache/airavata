@@ -1539,6 +1539,7 @@ class UserStoragePathView(APIView):
         if data_products_helper.dir_exists(request, path):
             directories, files = data_products_helper.listdir(request, path)
             data = {
+                'isDir': True,
                 'directories': directories,
                 'files': files
             }
@@ -1550,6 +1551,7 @@ class UserStoragePathView(APIView):
         else:
             file = get_file(request, path)
             data = {
+                'isDir': False,
                 'directories': [],
                 'files': [file]
             }
