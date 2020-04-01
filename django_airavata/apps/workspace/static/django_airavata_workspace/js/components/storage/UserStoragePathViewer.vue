@@ -13,7 +13,7 @@
       :parts="userStoragePath.parts"
       @directory-selected="$emit('directory-selected', $event)"
     />
-    <user-storage-edit-viewer
+    <user-storage-text-edit-viewer
       v-if="isFile && isText"
       :file="file"
       @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
@@ -74,8 +74,8 @@
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
 import UserStorageCreateView from "./UserStorageCreateView";
-import UserStorageEditViewer from "./UserStorageEditViewer";
-import UserStorageImageEditViewer from "./UserStorageImageEditViewer";
+import UserStorageTextEditViewer from "./storage-edit/UserStorageTextEditViewer";
+import UserStorageImageEditViewer from "./storage-edit/UserStorageImageEditViewer";
 
 export default {
   name: "user-storage-path-viewer",
@@ -110,9 +110,9 @@ export default {
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
-    UserStorageCreateView: UserStorageCreateView,
-    UserStorageEditViewer: UserStorageEditViewer,
-    UserStorageImageEditViewer: UserStorageImageEditViewer
+    UserStorageCreateView,
+    UserStorageTextEditViewer,
+    UserStorageImageEditViewer
   },
   computed: {
     isDir() {

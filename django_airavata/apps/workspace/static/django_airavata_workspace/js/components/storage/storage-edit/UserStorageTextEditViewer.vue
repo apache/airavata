@@ -21,7 +21,7 @@
   import CodeMirror from 'codemirror'
   import 'codemirror/lib/codemirror.css'
   import 'codemirror/theme/abcdef.css'
-  import './UserStorageEditViewer.css'
+  import './UserStorageTextEditViewer.css'
   import {utils} from "django-airavata-api";
 
   export default {
