@@ -6,7 +6,9 @@
         <user-storage-download-button :file="file"/>
       </div>
     </div>
-    <img style="width: 100%;" :src="file.downloadURL"/>
+    <div class="user-storage-file-edit-viewer-no-preview">
+      No preview available.
+    </div>
   </div>
 </template>
 
@@ -16,7 +18,7 @@
   import './UserStorageEditViewer.css'
 
   export default {
-    name: "user-storage-image-file-edit-viewer",
+    name: "user-storage-default-file-edit-viewer",
     props: {
       file: {
         required: true

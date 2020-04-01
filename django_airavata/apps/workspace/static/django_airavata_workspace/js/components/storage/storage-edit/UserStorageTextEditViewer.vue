@@ -5,11 +5,14 @@
         <span v-if="saved">All the changes are saved.</span>
         <span v-if="!saved">Changes are not saved.</span>
       </div>
-      <b-button
-        :disabled="saved"
-        @click="fileContentChanged"
-      >Save
-      </b-button>
+      <div class="user-storage-file-edit-viewer-status-actions">
+        <user-storage-download-button :file="file"/>
+        <b-button
+          :disabled="saved"
+          @click="fileContentChanged"
+        >Save
+        </b-button>
+      </div>
     </div>
     <div style="width: 100%;" id="code">
     </div>
@@ -21,8 +24,9 @@
   import CodeMirror from 'codemirror'
   import 'codemirror/lib/codemirror.css'
   import 'codemirror/theme/abcdef.css'
-  import './UserStorageTextEditViewer.css'
+  import './UserStorageEditViewer.css'
   import {utils} from "django-airavata-api";
+  import UserStorageDownloadButton from "./UserStorageDownloadButton";
 
   export default {
     name: "user-storage-file-edit-viewer",
@@ -30,6 +34,9 @@
       file: {
         required: true
       }
+    },
+    components: {
+      UserStorageDownloadButton: UserStorageDownloadButton
     },
     data() {
       return {

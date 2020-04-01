@@ -13,16 +13,25 @@
       :parts="userStoragePath.parts"
       @directory-selected="$emit('directory-selected', $event)"
     />
-    <user-storage-text-edit-viewer
-      v-if="isFile && isText"
-      :file="file"
-      @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
-    />
-    <user-storage-image-edit-viewer
-      v-if="isFile && isImage"
-      :file="file"
-      @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
-    />
+
+    <template>
+      <user-storage-text-edit-viewer
+        v-if="isFile && isText"
+        :file="file"
+        @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+      />
+      <user-storage-image-edit-viewer
+        v-else-if="isFile && isImage"
+        :file="file"
+        @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+      />
+      <user-storage-default-edit-viewer
+        v-else-if="isFile"
+        :file="file"
+        @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+      />
+    </template>
+
     <b-table
       v-if="isDir"
       :fields="fields"
@@ -76,6 +85,7 @@ import { components } from "django-airavata-common-ui";
 import UserStorageCreateView from "./UserStorageCreateView";
 import UserStorageTextEditViewer from "./storage-edit/UserStorageTextEditViewer";
 import UserStorageImageEditViewer from "./storage-edit/UserStorageImageEditViewer";
+import UserStorageDefaultEditViewer from "./storage-edit/UserStorageDefaultEditViewer";
 
 export default {
   name: "user-storage-path-viewer",
@@ -112,7 +122,8 @@ export default {
     UserStoragePathBreadcrumb,
     UserStorageCreateView,
     UserStorageTextEditViewer,
-    UserStorageImageEditViewer
+    UserStorageImageEditViewer,
+    UserStorageDefaultEditViewer
   },
   computed: {
     isDir() {
