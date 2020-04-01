@@ -43,7 +43,6 @@
 
 <script>
   import {components} from "django-airavata-common-ui";
-  import {utils} from "django-airavata-api";
 
   export default {
     name: "user-storage-create-view",
