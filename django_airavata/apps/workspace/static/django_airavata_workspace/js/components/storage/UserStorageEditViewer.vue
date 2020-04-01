@@ -24,24 +24,37 @@
         required: true
       }
     },
+    data() {
+      return {
+        fileContent: ""
+      };
+    },
     mounted() {
-      const value = this.getFileContent();
-      CodeMirror(document.getElementById("code"), {
-        theme: "abcdef",
-        mode: "text/plain",
-        lineNumbers: true,
-        lineWrapping: true,
-        scrollbarStyle: "native",
-        extraKeys: {"Ctrl-Space": "autocomplete"},
-        value: value
-      });
+      this.setFileContent();
     },
     components: {},
     computed: {},
     methods: {
-      getFileContent() {
-        // TODO
-        return "aaa bbb ccc dd ee"
+      setFileContent() {
+        if (this.userStoragePath && this.userStoragePath.files && this.userStoragePath.files.length > 0) {
+          fetch(this.userStoragePath.files[0].downloadURL).then((res) => {
+            res.text().then((text) => {
+              this.fileContent = text;
+              this.setFileContentEditor(this.fileContent);
+            });
+          });
+        }
+      },
+      setFileContentEditor(value) {
+        CodeMirror(document.getElementById("code"), {
+          theme: "abcdef",
+          mode: "text/plain",
+          lineNumbers: true,
+          lineWrapping: true,
+          scrollbarStyle: "native",
+          extraKeys: {"Ctrl-Space": "autocomplete"},
+          value: value
+        });
       }
     }
   };

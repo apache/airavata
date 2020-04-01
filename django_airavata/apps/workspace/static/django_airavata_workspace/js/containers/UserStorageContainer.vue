@@ -1,6 +1,7 @@
 <template>
   <div>
     <router-view
+      v-if="userStoragePath"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
       :username="username"
