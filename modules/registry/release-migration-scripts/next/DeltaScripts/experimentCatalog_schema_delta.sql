@@ -19,3 +19,16 @@
 --
 
 use experiment_catalog;
+
+-- AIRAVATA-3303 Slashes in experiment id
+set FOREIGN_KEY_CHECKS=0;
+
+update EXPERIMENT set EXPERIMENT_ID = REPLACE(EXPERIMENT_ID, "/", "_") where EXPERIMENT_ID like '%/%';
+update EXPERIMENT_INPUT set EXPERIMENT_ID = REPLACE(EXPERIMENT_ID, "/", "_") where EXPERIMENT_ID like '%/%';
+update EXPERIMENT_OUTPUT set EXPERIMENT_ID = REPLACE(EXPERIMENT_ID, "/", "_") where EXPERIMENT_ID like '%/%';
+update EXPERIMENT_STATUS set EXPERIMENT_ID = REPLACE(EXPERIMENT_ID, "/", "_") where EXPERIMENT_ID like '%/%';
+update EXPERIMENT_ERROR set EXPERIMENT_ID = REPLACE(EXPERIMENT_ID, "/", "_") where EXPERIMENT_ID like '%/%';
+update USER_CONFIGURATION_DATA set EXPERIMENT_ID = REPLACE(EXPERIMENT_ID, "/", "_") where EXPERIMENT_ID like '%/%';
+update PROCESS set EXPERIMENT_ID = REPLACE(EXPERIMENT_ID, "/", "_") where EXPERIMENT_ID like '%/%';
+
+set FOREIGN_KEY_CHECKS=1;
