@@ -357,9 +357,18 @@ LOGGING = {
         },
     },
     'handlers': {
-        'console': {
+        # Log everything to the console when DEBUG=True
+        'console_debug': {
+            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
+        },
+        # Only log INFO and higher levels to console when DEBUG=False
+        'console': {
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+            'level': 'INFO'
         },
         'mail_admins': {
             'filters': ['require_debug_false'],
@@ -371,7 +380,7 @@ LOGGING = {
     'loggers': {
         'django_airavata': {
             'handlers': ['console', 'mail_admins'],
-            'level': 'DEBUG' if DEBUG else 'INFO'
+            'level': 'DEBUG'
         },
         'root': {
             'handlers': ['console'],
