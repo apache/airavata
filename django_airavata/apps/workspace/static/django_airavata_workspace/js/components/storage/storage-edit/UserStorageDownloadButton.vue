@@ -3,7 +3,6 @@
 </template>
 
 <script>
-
   export default {
     name: "user-storage-download-button",
     props: {
@@ -12,5 +11,4 @@
       }
     }
   };
-
 </script>

@@ -11,9 +11,7 @@
 </template>
 
 <script>
-
   import UserStorageDownloadButton from "./UserStorageDownloadButton";
-  import './UserStorageEditViewer.css'
 
   export default {
     name: "user-storage-image-file-edit-viewer",
@@ -26,6 +24,5 @@
       UserStorageDownloadButton: UserStorageDownloadButton
     }
   };
-
 </script>
 

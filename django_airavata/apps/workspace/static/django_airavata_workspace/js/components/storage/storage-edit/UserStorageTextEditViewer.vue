@@ -20,11 +20,9 @@
 </template>
 
 <script>
-
   import CodeMirror from 'codemirror'
   import 'codemirror/lib/codemirror.css'
   import 'codemirror/theme/abcdef.css'
-  import './UserStorageEditViewer.css'
   import {utils} from "django-airavata-api";
   import UserStorageDownloadButton from "./UserStorageDownloadButton";
 
@@ -79,6 +77,11 @@
       }
     }
   };
-
 </script>
 
+<style>
+  .CodeMirror {
+    height: auto;
+    min-height: 600px;
+  }
+</style>

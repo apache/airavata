@@ -14,23 +14,11 @@
       @directory-selected="$emit('directory-selected', $event)"
     />
 
-    <template>
-      <user-storage-text-edit-viewer
-        v-if="isFile && isText"
-        :file="file"
-        @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
-      />
-      <user-storage-image-edit-viewer
-        v-else-if="isFile && isImage"
-        :file="file"
-        @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
-      />
-      <user-storage-default-edit-viewer
-        v-else-if="isFile"
-        :file="file"
-        @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
-      />
-    </template>
+    <user-storage-edit-viewer
+      v-if="isFile"
+      :file="file"
+      @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+    />
 
     <b-table
       v-if="isDir"
@@ -83,9 +71,7 @@
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
 import UserStorageCreateView from "./UserStorageCreateView";
-import UserStorageTextEditViewer from "./storage-edit/UserStorageTextEditViewer";
-import UserStorageImageEditViewer from "./storage-edit/UserStorageImageEditViewer";
-import UserStorageDefaultEditViewer from "./storage-edit/UserStorageDefaultEditViewer";
+import UserStorageEditViewer from "./storage-edit/UserStorageEditViewer";
 
 export default {
   name: "user-storage-path-viewer",
@@ -121,9 +107,7 @@ export default {
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
     UserStorageCreateView,
-    UserStorageTextEditViewer,
-    UserStorageImageEditViewer,
-    UserStorageDefaultEditViewer
+    UserStorageEditViewer
   },
   computed: {
     isDir() {
@@ -136,13 +120,6 @@ export default {
     // Return the first file available. This is assuming the path is a file.
     file() {
       return this.userStoragePath.files[0]
-    },
-
-    isText() {
-      return /text\/.*/.test(this.file.mimeType);
-    },
-    isImage() {
-      return /image\/.*/.test(this.file.mimeType);
     },
 
     fields() {
