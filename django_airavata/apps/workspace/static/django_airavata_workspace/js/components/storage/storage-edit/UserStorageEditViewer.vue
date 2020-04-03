@@ -9,6 +9,21 @@
     :file="file"
     @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
   />
+  <user-storage-audio-edit-viewer
+    v-else-if="isAudio"
+    :file="file"
+    @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+  />
+  <user-storage-video-edit-viewer
+    v-else-if="isVideo"
+    :file="file"
+    @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+  />
+  <user-storage-pdf-edit-viewer
+    v-else-if="isPdf"
+    :file="file"
+    @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+  />
   <user-storage-default-edit-viewer
     v-else
     :file="file"
@@ -20,6 +35,9 @@
   import UserStorageTextEditViewer from "./UserStorageTextEditViewer";
   import UserStorageImageEditViewer from "./UserStorageImageEditViewer";
   import UserStorageDefaultEditViewer from "./UserStorageDefaultEditViewer";
+  import UserStorageAudioEditViewer from "./UserStorageAudioEditViewer";
+  import UserStorageVideoEditViewer from "./UserStorageVideoEditViewer";
+  import UserStoragePdfEditViewer from "./UserStoragePdfEditViewer";
 
   export default {
     name: "user-storage-file-edit-viewer",
@@ -48,7 +66,10 @@
     components: {
       UserStorageTextEditViewer,
       UserStorageImageEditViewer,
-      UserStorageDefaultEditViewer
+      UserStorageDefaultEditViewer,
+      UserStorageAudioEditViewer,
+      UserStorageVideoEditViewer,
+      UserStoragePdfEditViewer
     },
   }
 </script>
