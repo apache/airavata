@@ -177,7 +177,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/createProject|/airavata/updateProject|/airavata/getProject|/airavata/deleteProject|/airavata/getUserProjects|" +
                 "/airavata/searchProjectsByProjectName|/airavata/searchProjectsByProjectDesc|/airavata/searchExperimentsByName|" +
                 "/airavata/searchExperimentsByDesc|/airavata/searchExperimentsByApplication|/airavata/searchExperimentsByStatus|" +
-                "/airavata/searchExperimentsByCreationTime|/airavata/searchExperiments|/airavata/getExperimentStatistics|" +
+                "/airavata/searchExperimentsByCreationTime|/airavata/searchExperiments|" +
                 "/airavata/getExperimentsInProject|/airavata/getUserExperiments|/airavata/createExperiment|/airavata/deleteExperiment|" +
                 "/airavata/getExperiment|/airavata/getDetailedExperimentTree|/airavata/updateExperiment|/airavata/updateExperimentConfiguration|" +
                 "/airavata/updateResourceScheduleing|/airavata/validateExperiment|/airavata/launchExperiment|/airavata/getExperimentStatus|" +
