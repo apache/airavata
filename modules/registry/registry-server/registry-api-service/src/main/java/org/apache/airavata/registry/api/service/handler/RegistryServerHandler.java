@@ -439,10 +439,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
-        if (accessibleExpIds == null) {
-            logger.debug("accessibleExpIds is null, defaulting to an empty list");
-            accessibleExpIds = Collections.emptyList();
-        }
+        // FIXME: for now allowing to pass null accessibleExpIds (only admin users should call this method)
+        // if (accessibleExpIds == null) {
+            // logger.debug("accessibleExpIds is null, defaulting to an empty list");
+            // accessibleExpIds = Collections.emptyList();
+        // }
         try {
             Map<String, String> filters = new HashMap<>();
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
