@@ -1276,7 +1276,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             // String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
             // sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
             //         userId + "@" + gatewayId, sharingFilters, 0, Integer.MAX_VALUE).forEach(e -> accessibleExpIds.add(e.getEntityId()));
-            List<String> accessessibleExpIds = null;
+            List<String> accessibleExpIds = null;
 
             ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds);
             registryClientPool.returnResource(regClient);
