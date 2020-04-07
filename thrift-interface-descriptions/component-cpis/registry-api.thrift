@@ -372,7 +372,7 @@ service RegistryService extends base_api.BaseAPI {
                                     4: string userName,
                                     5: string applicationName,
                                     6: string resourceHostName,
-                                    7: required list<string> accessibleExpIds)
+                                    7: list<string> accessibleExpIds)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 
