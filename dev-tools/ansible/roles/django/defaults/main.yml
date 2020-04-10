@@ -27,6 +27,7 @@ real_user_data_dir: "{{ user_data_dir }}"
 vhost_servername: "{{ groups['django'][0] }}"
 vhost_ssl: False
 vhost_aliases: []
+vhost_timeout: 60
 httpd_confd_file_location:
  RedHat: "/etc/httpd/conf.d/django-{{ gateway_id }}.conf"
  Debian: "/etc/apache2/sites-available/django-{{ gateway_id }}.conf"
