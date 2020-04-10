@@ -6,7 +6,7 @@ import VueRouter from "vue-router";
 
 const routes = [
   {
-    path: "/*",
+    path: "*",
     component: UserStoragePathViewer
   }
 ];

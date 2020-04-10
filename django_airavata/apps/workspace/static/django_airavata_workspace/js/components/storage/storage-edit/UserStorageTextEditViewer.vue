@@ -14,7 +14,7 @@
         </b-button>
       </div>
     </div>
-    <div style="width: 100%;" id="code">
+    <div style="width: 100%;" ref="editor">
     </div>
   </div>
 </template>
@@ -46,6 +46,9 @@
     mounted() {
       this.setFileContent();
     },
+    destroyed() {
+      this.editor.getWrapperElement().remove();
+    },
     methods: {
       fileContentChanged() {
         const changedFileContent = this.editor.getDoc().getValue();
@@ -62,7 +65,7 @@
         });
       },
       setFileContentEditor(value = "") {
-        this.editor = CodeMirror(document.getElementById("code"), {
+        this.editor = CodeMirror(this.$refs.editor, {
           theme: "abcdef",
           mode: "text/plain",
           lineNumbers: true,
