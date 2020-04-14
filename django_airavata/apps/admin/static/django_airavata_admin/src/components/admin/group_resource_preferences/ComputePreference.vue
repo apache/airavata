@@ -57,6 +57,10 @@
                   <span v-if="nullOptionLabelScope.defaultCredentialSummary">
                     Use the default SSH credential for
                     {{ localGroupResourceProfile.groupResourceProfileName }} ({{
+                      nullOptionLabelScope.defaultCredentialSummary.username
+                    }}
+                    -
+                    {{
                       nullOptionLabelScope.defaultCredentialSummary.description
                     }})
                   </span>
