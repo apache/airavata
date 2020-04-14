@@ -11,7 +11,7 @@
         :null-option-default-credential-token="defaultCredentialStoreToken" :null-option-disabled="!defaultCredentialStoreToken">
         <template slot="null-option-label" slot-scope="nullOptionLabelScope">
           <span v-if="nullOptionLabelScope.defaultCredentialSummary">
-            Use the gateway's default SSH credential ({{ nullOptionLabelScope.defaultCredentialSummary.description }})
+            Use the gateway's default SSH credential ({{nullOptionLabelScope.defaultCredentialSummary.username}} - {{ nullOptionLabelScope.defaultCredentialSummary.description }})
           </span>
           <span v-else>
             Select a SSH credential

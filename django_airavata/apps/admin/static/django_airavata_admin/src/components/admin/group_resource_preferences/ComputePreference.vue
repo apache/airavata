@@ -7,10 +7,9 @@
             v-if="localGroupResourceProfile"
             class="group-resource-profile-name text-muted text-uppercase"
           >
-            <i
-              class="fa fa-server"
-              aria-hidden="true"
-            ></i> {{ localGroupResourceProfile.groupResourceProfileName }}</div>
+            <i class="fa fa-server" aria-hidden="true"></i>
+            {{ localGroupResourceProfile.groupResourceProfileName }}
+          </div>
           {{ computeResource.hostName }}
         </h1>
       </div>
@@ -22,7 +21,9 @@
             <b-form-group
               label="Login Username"
               label-for="login-username"
-              :invalid-feedback="validationFeedback.loginUserName.invalidFeedback"
+              :invalid-feedback="
+                validationFeedback.loginUserName.invalidFeedback
+              "
               :state="validationFeedback.loginUserName.state"
             >
               <b-form-input
@@ -42,16 +43,26 @@
               <ssh-credential-selector
                 v-model="data.resourceSpecificCredentialStoreToken"
                 v-if="localGroupResourceProfile"
-                :null-option-default-credential-token="localGroupResourceProfile.defaultCredentialStoreToken"
-                :null-option-disabled="!localGroupResourceProfile.defaultCredentialStoreToken"
+                :null-option-default-credential-token="
+                  localGroupResourceProfile.defaultCredentialStoreToken
+                "
+                :null-option-disabled="
+                  !localGroupResourceProfile.defaultCredentialStoreToken
+                "
               >
                 <template
                   slot="null-option-label"
                   slot-scope="nullOptionLabelScope"
                 >
                   <span v-if="nullOptionLabelScope.defaultCredentialSummary">
-                    Use the default SSH credential for {{ localGroupResourceProfile.groupResourceProfileName }} ({{
-                    nullOptionLabelScope.defaultCredentialSummary.description }})
+                    Use the default SSH credential for
+                    {{ localGroupResourceProfile.groupResourceProfileName }} ({{
+                      nullOptionLabelScope.defaultCredentialSummary.username
+                    }}
+                    -
+                    {{
+                      nullOptionLabelScope.defaultCredentialSummary.description
+                    }})
                   </span>
                   <span v-else>
                     Select a SSH credential
@@ -73,7 +84,9 @@
             <b-form-group
               label="Scratch Location"
               label-for="scratch-location"
-              :invalid-feedback="validationFeedback.scratchLocation.invalidFeedback"
+              :invalid-feedback="
+                validationFeedback.scratchLocation.invalidFeedback
+              "
               :state="validationFeedback.scratchLocation.state"
             >
               <b-form-input
@@ -104,15 +117,27 @@
                 :key="batchQueue.queueName"
               >
                 <b-form-checkbox
-                  :checked="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
+                  :checked="
+                    localComputeResourcePolicy.allowedBatchQueues.includes(
+                      batchQueue.queueName
+                    )
+                  "
                   @input="batchQueueChecked(batchQueue, $event)"
                 >
                   {{ batchQueue.queueName }}
                 </b-form-checkbox>
                 <batch-queue-resource-policy
-                  v-if="localComputeResourcePolicy.allowedBatchQueues.includes(batchQueue.queueName)"
+                  v-if="
+                    localComputeResourcePolicy.allowedBatchQueues.includes(
+                      batchQueue.queueName
+                    )
+                  "
                   :batch-queue="batchQueue"
-                  :value="localBatchQueueResourcePolicies.find(pol => pol.queuename === batchQueue.queueName)"
+                  :value="
+                    localBatchQueueResourcePolicies.find(
+                      pol => pol.queuename === batchQueue.queueName
+                    )
+                  "
                   @input="updatedBatchQueueResourcePolicy(batchQueue, $event)"
                   @valid="recordValidBatchQueueResourcePolicy(batchQueue)"
                   @invalid="recordInvalidBatchQueueResourcePolicy(batchQueue)"
@@ -125,21 +150,15 @@
     </div>
     <div class="row">
       <div class="col d-flex justify-content-end">
-        <b-button
-          variant="primary"
-          @click="save"
-          :disabled="!valid"
-        >Save</b-button>
-        <b-button
-          class="ml-2"
-          variant="danger"
-          @click="remove"
-        >Delete</b-button>
-        <b-button
-          class="ml-2"
-          variant="secondary"
-          @click="cancel"
-        >Cancel</b-button>
+        <b-button variant="primary" @click="save" :disabled="!valid"
+          >Save</b-button
+        >
+        <b-button class="ml-2" variant="danger" @click="remove"
+          >Delete</b-button
+        >
+        <b-button class="ml-2" variant="secondary" @click="cancel"
+          >Cancel</b-button
+        >
       </div>
     </div>
   </div>
