@@ -25,12 +25,6 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.airavata.registry.core.utils.AppCatalogJDBCConfig;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.meta.MappingTool;
-import org.apache.openjpa.lib.util.Options;
-import org.apache.openjpa.persistence.ArgumentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AppCatalogJPAUtils {
 
@@ -40,29 +34,8 @@ public class AppCatalogJPAUtils {
     private static final JDBCConfig JDBC_CONFIG = new AppCatalogJDBCConfig();
     private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME,
             JDBC_CONFIG);
-    private static final Logger logger = LoggerFactory.getLogger(AppCatalogJPAUtils.class);
 
     public static EntityManager getEntityManager() {
-        try {
-            return factory.createEntityManager();
-        } catch (ArgumentException e) {
-            // TODO: refactor this
-            JDBCConfiguration jdbcConfiguration = JPAUtils.getJDBCConfiguration(JDBC_CONFIG);
-            Options options = new Options();
-            options.put("sqlFile", "migration.sql");
-            // If you want to generate the entire schema instead of just what is
-            // needed to bring the database up to date, use schemaAction=build
-            // options.put("schemaAction", "build");
-            options.put("foreignKeys", "true");
-            options.put("indexes", "true");
-            options.put("primaryKeys", "true");
-            try {
-                MappingTool.run(jdbcConfiguration, new String[] {}, options, null);
-            } catch (Exception mappingToolEx) {
-                logger.error("Failed to run MappingTool", mappingToolEx);
-                throw new RuntimeException("Failed to get EntityManager, then failed to run MappingTool to generate migration script", e);
-            }
-            throw new RuntimeException("Failed to get EntityManager, but successfully executed MappingTool to generate migration script (to file named migration.sql) in case the error was caused by the database schema being out of date with the mappings", e);
-        }
+        return factory.createEntityManager();
     }
 }
