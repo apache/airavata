@@ -54,7 +54,7 @@ django_file_upload_max_file_size_mb: 64
 # By default it has no value meaning system default CA certs will be used for validation.
 django_keycloak_ca_certfile_path:
 
-django_wsgi_processes: 2
+django_wsgi_processes: 1
 
 django_debug: false
 django_error_emails: "{{ admin_emails }}"
@@ -101,4 +101,8 @@ portal_title: "Django Airavata Gateway"
 
 httpd_default_http_port: 80
 httpd_default_https_port: 443
+
+# Google Analytics tracking id
+django_google_analytics_tracking_id:
+
 ...

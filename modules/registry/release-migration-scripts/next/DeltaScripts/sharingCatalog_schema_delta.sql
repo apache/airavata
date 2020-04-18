@@ -19,3 +19,11 @@
 --
 
 use sharing_catalog;
+
+-- AIRAVATA-3303 Slashes in experiment id
+set FOREIGN_KEY_CHECKS=0;
+
+update SHARING set ENTITY_ID = REPLACE(ENTITY_ID, "/", "_") where ENTITY_ID in (select ENTITY_ID from ENTITY where ENTITY_ID like '%/%' and ENTITY_TYPE_ID like '%:EXPERIMENT');
+update ENTITY set ENTITY_ID = REPLACE(ENTITY_ID, "/", "_") where ENTITY_ID like '%/%' and ENTITY_TYPE_ID like '%:EXPERIMENT';
+
+set FOREIGN_KEY_CHECKS=1;

@@ -27,7 +27,7 @@
     <parent>
         <artifactId>airavata-api</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.19-SNAPSHOT</version>
+        <version>0.20-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -42,6 +42,12 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-data-models</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
