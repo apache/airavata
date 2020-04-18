@@ -21,11 +21,11 @@
 ---
 
 
-vhost_servername: "pace.scigap.org"
+vhost_servername: "gateway.hive.pace.gatech.edu"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/pace.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/pace.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/pace.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.hive.pace.gatech.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.hive.pace.gatech.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.hive.pace.gatech.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "pace-gatech"

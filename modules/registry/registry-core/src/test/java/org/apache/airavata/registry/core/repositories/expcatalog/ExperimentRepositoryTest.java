@@ -45,6 +45,10 @@ public class ExperimentRepositoryTest extends TestBase {
     ProjectRepository projectRepository;
     ExperimentRepository experimentRepository;
 
+    private String gatewayId;
+
+    private String projectId;
+
     public ExperimentRepositoryTest() {
         super(Database.EXP_CATALOG);
         gatewayRepository = new GatewayRepository();
@@ -52,20 +56,26 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentRepository = new ExperimentRepository();
     }
 
-    @Test
-    public void ExperimentRepositoryTest() throws RegistryException {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        gatewayId = gatewayRepository.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        projectId = projectRepository.addProject(project, gatewayId);
+    }
+
+    @Test
+    public void ExperimentRepositoryTest() throws RegistryException {
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -133,26 +143,10 @@ public class ExperimentRepositoryTest extends TestBase {
 
         experimentRepository.removeExperiment(experimentId);
         assertFalse(experimentRepository.isExperimentExist(experimentId));
-
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
     }
 
     @Test
     public void testExperimentInputs() throws RegistryException {
-
-        Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
-
-        Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
-        project.setGatewayId(gatewayId);
-
-        String projectId = projectRepository.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -236,9 +230,34 @@ public class ExperimentRepositoryTest extends TestBase {
 
         experimentRepository.removeExperiment(experimentId);
         assertFalse(experimentRepository.isExperimentExist(experimentId));
-
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
     }
 
+    /**
+     * Verify that slashes (forward and backward) are replaced with underscores.
+     */
+    @Test
+    public void testSlashesInExperimentName() throws RegistryException {
+
+        // Forward slashes
+        ExperimentModel experimentModel = new ExperimentModel();
+        experimentModel.setProjectId(projectId);
+        experimentModel.setGatewayId(gatewayId);
+        experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
+        experimentModel.setUserName("user");
+        experimentModel.setExperimentName("name/forward-slash//a");
+
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        assertTrue(experimentId.startsWith("name_forward-slash__a"));
+
+        // Backward slashes
+        experimentModel = new ExperimentModel();
+        experimentModel.setProjectId(projectId);
+        experimentModel.setGatewayId(gatewayId);
+        experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
+        experimentModel.setUserName("user");
+        experimentModel.setExperimentName("name\\backward-slash\\\\a");
+
+        experimentId = experimentRepository.addExperiment(experimentModel);
+        assertTrue(experimentId.startsWith("name_backward-slash__a"));
+    }
 }

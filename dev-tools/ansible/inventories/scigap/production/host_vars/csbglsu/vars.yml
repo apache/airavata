@@ -46,4 +46,6 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDc/WQn
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Michal Brylinski', 'mbrylinski@lsu.edu')]"
 portal_title: "LSU Computational Sys Biology"
 
+django_google_analytics_tracking_id: "UA-117484529-1"
+
 ...

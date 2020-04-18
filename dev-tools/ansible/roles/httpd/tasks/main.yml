@@ -17,6 +17,29 @@
     - restart httpd
   when: ansible_os_family == "RedHat"
 
+- name: Create directory for default ssl vhost certificate public cert
+  file: path="{{ httpd_default_ssl_vhost_certificate_dir[ansible_os_family] }}" state=directory owner="root" group="root" mode="755"
+  become: yes
+
+- name: Create directory for default ssl vhost certificate private key
+  file: path="{{ httpd_default_ssl_vhost_certificate_key_dir[ansible_os_family] }}" state=directory owner="root" group="root" mode="700"
+  become: yes
+
+- name: check default ssl vhost certificate for expiration in next 90 days (7776000s = 90d)
+  command: openssl x509 -checkend 7776000 -noout -in {{ httpd_default_ssl_vhost_certificate_location[ansible_os_family]}}
+  become: yes
+  register: default_vhost_ssl_cert_check
+  ignore_errors: yes
+
+- name: create default ssl vhost certificate
+  command: openssl req -x509 -sha256 -newkey rsa:2048 -keyout {{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family]}} -out {{ httpd_default_ssl_vhost_certificate_location[ansible_os_family]}} -days 1024 -nodes -subj '/CN={{ ansible_host }}'
+  become: yes
+  when: default_vhost_ssl_cert_check|failed
+
+- name: Change permissions for default ssl vhost certificate private key
+  file: path="{{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family] }}" state=file owner="root" group="root" mode="600"
+  become: yes
+
 - name: copy default virtual host file
   template: src={{ httpd_default_conf_template }} dest={{ httpd_default_conf_file_location[ansible_os_family] }} backup=yes
   become: yes

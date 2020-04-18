@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,8 @@ public class JPAUtils {
         properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
         properties.put("openjpa.RemoteCommitProvider", "sjvm");
         properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
+        // use the following to enable logging of all SQL statements
+        // properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=TRACE");
         properties.put("openjpa.jdbc.SynchronizeMappings", "validate");
         properties.put("openjpa.jdbc.QuerySQLCache", "false");
         properties.put("openjpa.DetachState", "all");
@@ -56,6 +60,15 @@ public class JPAUtils {
         finalProperties.putAll(createConnectionProperties(jdbcConfig));
         finalProperties.putAll(properties);
         return Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties);
+    }
+
+    public static JDBCConfiguration getJDBCConfiguration(JDBCConfig jdbcConfig) {
+
+        Map<String, String> finalProperties = new HashMap<>(DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
+        finalProperties.putAll(createConnectionProperties(jdbcConfig));
+        JDBCConfiguration jdbcConfiguration = new JDBCConfigurationImpl();
+        jdbcConfiguration.fromProperties(finalProperties);
+        return jdbcConfiguration;
     }
 
     private static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
