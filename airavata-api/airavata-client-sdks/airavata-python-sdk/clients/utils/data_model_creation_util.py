@@ -114,10 +114,10 @@ class DataModelCreationUtil(object):
         inputs = self.api_server_client.get_application_inputs(self.token, execution_id)
 
         count = 0
-        for file in input_files:
+        for obj in inputs:
             if isinstance(inputs[count], InputDataObjectType):
-                inputs[count].value = file
-                ++count
+                inputs[count].value = input_files[count]
+            count = count + 1
 
         experiment_model.experimentInputs = inputs
 
