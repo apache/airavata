@@ -22,7 +22,7 @@ def upload_files(api_server_client, credential_store_client, token, gateway_id, 
     remotePath = gateway_storage_preferance.fileSystemRootLocation + "/" + username + "/" + project_name + "/" + experiment_id + "/"
     file_handler.upload_file(local_folder_path,
                              remotePath,
-                             True, False)
+                             True, True)
     return remotePath
 
 
@@ -43,4 +43,4 @@ def download_files(api_server_client, credential_store_client, token, gateway_id
     file_handler = FileHandler(storage_host, 22, gateway_storage_preferance.loginUserName, credential.passphrase,
                                private_key)
     remotePath = gateway_storage_preferance.fileSystemRootLocation + "/" + username + "/" + project_name + "/" + experiment_id + "/"
-    file_handler.download_file(remotePath, local_folder_path, True, False)
+    file_handler.download_file(remotePath, local_folder_path, True, True)
