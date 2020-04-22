@@ -66,8 +66,14 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         }
 
         try {
-            saveAndPublishProcessStatus(ProcessState.EXECUTING);
+            List<JobModel> jobsOfTask = getTaskContext().getRegistryClient().getJobs("taskId", getTaskId());
 
+            if (jobsOfTask.size() > 0) {
+                logger.warn("A job is already available for task " + getTaskId());
+                return onSuccess("A job is already available for task " + getTaskId());
+            }
+
+            saveAndPublishProcessStatus(ProcessState.EXECUTING);
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
 
             JobModel jobModel = new JobModel();
