@@ -80,6 +80,9 @@ public class ExperimentInputEntity implements Serializable {
     @Column(name = "IS_READ_ONLY")
     private boolean isReadOnly;
 
+	@Column(name = "OVERRIDE_FILENAME")
+	private String overrideFilename;
+
     @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     private ExperimentEntity experiment;
@@ -204,4 +207,12 @@ public class ExperimentInputEntity implements Serializable {
     public void setIsReadOnly(boolean isReadOnly) {
         this.isReadOnly = isReadOnly;
     }
+
+	public String getOverrideFilename() {
+		return overrideFilename;
+	}
+
+	public void setOverrideFilename(String overrideFilename) {
+		this.overrideFilename = overrideFilename;
+	}
 }
