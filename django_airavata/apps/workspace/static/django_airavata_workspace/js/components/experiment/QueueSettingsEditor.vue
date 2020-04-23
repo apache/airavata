@@ -1,35 +1,29 @@
 <template>
+
   <div>
     <div class="row">
       <div class="col">
-        <div class="card border-default" :class="{ 'border-danger': !valid }">
+        <div
+          class="card border-default"
+          :class="{ 'border-danger': !valid }"
+        >
           <b-link
             @click="showConfiguration = !showConfiguration"
             class="card-link text-dark"
           >
             <div class="card-body">
-              <h5 class="card-title mb-4">
-                Settings for queue
-                {{ localComputationalResourceScheduling.queueName }}
-              </h5>
+              <h5 class="card-title mb-4">Settings for queue {{ localComputationalResourceScheduling.queueName }}</h5>
               <div class="row">
                 <div class="col">
-                  <h3 class="h5 mb-0">
-                    {{ localComputationalResourceScheduling.nodeCount }}
-                  </h3>
+                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.nodeCount }}</h3>
                   <span class="text-muted text-uppercase">NODE COUNT</span>
                 </div>
                 <div class="col">
-                  <h3 class="h5 mb-0">
-                    {{ localComputationalResourceScheduling.totalCPUCount }}
-                  </h3>
+                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.totalCPUCount }}</h3>
                   <span class="text-muted text-uppercase">CORE COUNT</span>
                 </div>
                 <div class="col">
-                  <h3 class="h5 mb-0">
-                    {{ localComputationalResourceScheduling.wallTimeLimit }}
-                    minutes
-                  </h3>
+                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.wallTimeLimit }} minutes</h3>
                   <span class="text-muted text-uppercase">TIME LIMIT</span>
                 </div>
               </div>
@@ -57,7 +51,7 @@
             >
             </b-form-select>
             <div slot="description">
-              {{ queueDescription }}
+              {{ selectedQueueDefault.queueDescription }}
             </div>
           </b-form-group>
           <b-form-group
@@ -77,7 +71,10 @@
             >
             </b-form-input>
             <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              <i
+                class="fa fa-info-circle"
+                aria-hidden="true"
+              ></i>
               Max Allowed Nodes = {{ maxNodes }}
             </div>
           </b-form-group>
@@ -98,7 +95,10 @@
             >
             </b-form-input>
             <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              <i
+                class="fa fa-info-circle"
+                aria-hidden="true"
+              ></i>
               Max Allowed Cores = {{ maxCPUCount }}
             </div>
           </b-form-group>
@@ -121,7 +121,10 @@
               </b-form-input>
             </b-input-group>
             <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              <i
+                class="fa fa-info-circle"
+                aria-hidden="true"
+              ></i>
               Max Allowed Wall Time = {{ maxWalltime }} minutes
             </div>
           </b-form-group>
@@ -131,9 +134,11 @@
               href="#"
               @click.prevent="showConfiguration = false"
             >
-              <i class="fa fa-times text-secondary" aria-hidden="true"></i>
-              Hide Settings</a
-            >
+              <i
+                class="fa fa-times text-secondary"
+                aria-hidden="true"
+              ></i>
+              Hide Settings</a>
           </div>
         </div>
       </div>
@@ -167,8 +172,8 @@ export default {
   },
   data() {
     return {
-      showConfiguration: false,
-      appDeploymentQueues: null
+      queueDefaults: [],
+      showConfiguration: false
     };
   },
   computed: {
@@ -192,9 +197,6 @@ export default {
       );
     },
     maxCPUCount: function() {
-      if (!this.selectedQueueDefault) {
-        return 0;
-      }
       const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
         this.selectedQueueDefault.queueName
       );
@@ -207,9 +209,6 @@ export default {
       return this.selectedQueueDefault.maxProcessors;
     },
     maxNodes: function() {
-      if (!this.selectedQueueDefault) {
-        return 0;
-      }
       const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
         this.selectedQueueDefault.queueName
       );
@@ -222,9 +221,6 @@ export default {
       return this.selectedQueueDefault.maxNodes;
     },
     maxWalltime: function() {
-      if (!this.selectedQueueDefault) {
-        return 0;
-      }
       const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
         this.selectedQueueDefault.queueName
       );
@@ -235,27 +231,6 @@ export default {
         );
       }
       return this.selectedQueueDefault.maxRunTime;
-    },
-    queueDefaults() {
-      return this.appDeploymentQueues
-        ? this.appDeploymentQueues
-            .filter(q => this.isQueueInComputeResourcePolicy(q.queueName))
-            .sort((a, b) => {
-              // Sort default first, then by alphabetically by name
-              if (a.isDefaultQueue) {
-                return -1;
-              } else if (b.isDefaultQueue) {
-                return 1;
-              } else {
-                return a.queueName.localeCompare(b.queueName);
-              }
-            })
-        : [];
-    },
-    queueDescription() {
-      return this.selectedQueueDefault
-        ? this.selectedQueueDefault.queueDescription
-        : null;
     },
     validation() {
       // Don't run validation if we don't have selectedQueueDefault
@@ -287,28 +262,41 @@ export default {
         this.$emit("valid");
       }
     },
-    loadAppDeploymentQueues() {
+    loadQueueDefaults: function(updateQueueSettings) {
       return services.ApplicationDeploymentService.getQueues({
         lookup: this.appDeploymentId
-      }).then(queueDefaults => (this.appDeploymentQueues = queueDefaults));
-    },
-    setDefaultQueue() {
-      if (this.queueDefaults.length === 0) {
-        return;
-      }
-      const defaultQueue = this.queueDefaults[0];
+      }).then(queueDefaults => {
+        // Sort queue defaults
+        this.queueDefaults = queueDefaults
+          .filter(q => this.isQueueInComputeResourcePolicy(q.queueName))
+          .sort((a, b) => {
+            // Sort default first, then by alphabetically by name
+            if (a.isDefaultQueue) {
+              return -1;
+            } else if (b.isDefaultQueue) {
+              return 1;
+            } else {
+              return a.queueName.localeCompare(b.queueName);
+            }
+          });
 
-      this.localComputationalResourceScheduling.queueName =
-        defaultQueue.queueName;
-      this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(
-        defaultQueue
-      );
-      this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(
-        defaultQueue
-      );
-      this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(
-        defaultQueue
-      );
+        if (updateQueueSettings) {
+          // Find the default queue and apply it's settings
+          const defaultQueue = this.queueDefaults[0];
+
+          this.localComputationalResourceScheduling.queueName =
+            defaultQueue.queueName;
+          this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(
+            defaultQueue
+          );
+          this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(
+            defaultQueue
+          );
+          this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(
+            defaultQueue
+          );
+        }
+      });
     },
     isQueueInComputeResourcePolicy: function(queueName) {
       if (!this.computeResourcePolicy) {
@@ -375,27 +363,19 @@ export default {
     }
   },
   watch: {
-    appDeploymentId() {
-      this.loadAppDeploymentQueues().then(() => this.setDefaultQueue());
-    },
-    computeResourcePolicy() {
-      this.setDefaultQueue();
-    },
-    batchQueueResourcePolicies() {
-      this.setDefaultQueue();
+    appDeploymentId: function() {
+      this.loadQueueDefaults(true);
     }
   },
   mounted: function() {
-    this.loadAppDeploymentQueues().then(() => {
-      // For brand new queue settings (no queueName specified) load the default
-      // queue and its default values and apply them
-      if (!this.value.queueName) {
-        this.setDefaultQueue();
-      }
-    });
+    // For brand new queue settings (no queueName specified) load the default
+    // queue and its default values and apply them
+    const updateQueueSettings = !this.value.queueName;
+    this.loadQueueDefaults(updateQueueSettings).then(() => this.validate());
     this.$on("input", () => this.validate());
   }
 };
 </script>
 
-<style></style>
+<style>
+</style>
