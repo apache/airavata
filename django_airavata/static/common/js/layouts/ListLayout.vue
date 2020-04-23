@@ -7,6 +7,8 @@
         </slot>
       </div>
       <div class="col-auto">
+        <slot name="additional-buttons">
+        </slot>
         <slot name="new-item-button">
           <b-btn variant="primary" @click="addNewItem" :disabled="newButtonDisabled">
             {{ newItemButtonText }}
