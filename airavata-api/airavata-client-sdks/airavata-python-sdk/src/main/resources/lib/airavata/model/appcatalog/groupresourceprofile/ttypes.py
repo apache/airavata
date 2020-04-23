@@ -118,6 +118,132 @@ class GroupAccountSSHProvisionerConfig(object):
         return not (self == other)
 
 
+class ComputeResourceReservation(object):
+    """
+    Attributes:
+     - reservationId
+     - reservationName
+     - queueNames
+     - startTime
+     - endTime
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'reservationId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
+        (2, TType.STRING, 'reservationName', 'UTF8', None, ),  # 2
+        (3, TType.LIST, 'queueNames', (TType.STRING, 'UTF8', False), None, ),  # 3
+        (4, TType.I64, 'startTime', None, None, ),  # 4
+        (5, TType.I64, 'endTime', None, None, ),  # 5
+    )
+
+    def __init__(self, reservationId=thrift_spec[1][4], reservationName=None, queueNames=None, startTime=None, endTime=None,):
+        self.reservationId = reservationId
+        self.reservationName = reservationName
+        self.queueNames = queueNames
+        self.startTime = startTime
+        self.endTime = endTime
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.reservationId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.reservationName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.LIST:
+                    self.queueNames = []
+                    (_etype3, _size0) = iprot.readListBegin()
+                    for _i4 in range(_size0):
+                        _elem5 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.queueNames.append(_elem5)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I64:
+                    self.startTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I64:
+                    self.endTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('ComputeResourceReservation')
+        if self.reservationId is not None:
+            oprot.writeFieldBegin('reservationId', TType.STRING, 1)
+            oprot.writeString(self.reservationId.encode('utf-8') if sys.version_info[0] == 2 else self.reservationId)
+            oprot.writeFieldEnd()
+        if self.reservationName is not None:
+            oprot.writeFieldBegin('reservationName', TType.STRING, 2)
+            oprot.writeString(self.reservationName.encode('utf-8') if sys.version_info[0] == 2 else self.reservationName)
+            oprot.writeFieldEnd()
+        if self.queueNames is not None:
+            oprot.writeFieldBegin('queueNames', TType.LIST, 3)
+            oprot.writeListBegin(TType.STRING, len(self.queueNames))
+            for iter6 in self.queueNames:
+                oprot.writeString(iter6.encode('utf-8') if sys.version_info[0] == 2 else iter6)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.startTime is not None:
+            oprot.writeFieldBegin('startTime', TType.I64, 4)
+            oprot.writeI64(self.startTime)
+            oprot.writeFieldEnd()
+        if self.endTime is not None:
+            oprot.writeFieldBegin('endTime', TType.I64, 5)
+            oprot.writeI64(self.endTime)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.reservationId is None:
+            raise TProtocolException(message='Required field reservationId is unset!')
+        if self.reservationName is None:
+            raise TProtocolException(message='Required field reservationName is unset!')
+        if self.queueNames is None:
+            raise TProtocolException(message='Required field queueNames is unset!')
+        if self.startTime is None:
+            raise TProtocolException(message='Required field startTime is unset!')
+        if self.endTime is None:
+            raise TProtocolException(message='Required field endTime is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 class GroupComputeResourcePreference(object):
     """
     Attributes:
@@ -139,6 +265,7 @@ class GroupComputeResourcePreference(object):
      - sshAccountProvisioner
      - groupSSHAccountProvisionerConfigs
      - sshAccountProvisionerAdditionalInfo
+     - reservations
     """
 
     thrift_spec = (
@@ -161,9 +288,10 @@ class GroupComputeResourcePreference(object):
         (16, TType.STRING, 'sshAccountProvisioner', 'UTF8', None, ),  # 16
         (17, TType.LIST, 'groupSSHAccountProvisionerConfigs', (TType.STRUCT, (GroupAccountSSHProvisionerConfig, GroupAccountSSHProvisionerConfig.thrift_spec), False), None, ),  # 17
         (18, TType.STRING, 'sshAccountProvisionerAdditionalInfo', 'UTF8', None, ),  # 18
+        (19, TType.LIST, 'reservations', (TType.STRUCT, (ComputeResourceReservation, ComputeResourceReservation.thrift_spec), False), None, ),  # 19
     )
 
-    def __init__(self, computeResourceId=None, groupResourceProfileId=thrift_spec[2][4], overridebyAiravata=thrift_spec[3][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None, qualityOfService=None, reservation=None, reservationStartTime=None, reservationEndTime=None, sshAccountProvisioner=None, groupSSHAccountProvisionerConfigs=None, sshAccountProvisionerAdditionalInfo=None,):
+    def __init__(self, computeResourceId=None, groupResourceProfileId=thrift_spec[2][4], overridebyAiravata=thrift_spec[3][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None, qualityOfService=None, reservation=None, reservationStartTime=None, reservationEndTime=None, sshAccountProvisioner=None, groupSSHAccountProvisionerConfigs=None, sshAccountProvisionerAdditionalInfo=None, reservations=None,):
         self.computeResourceId = computeResourceId
         self.groupResourceProfileId = groupResourceProfileId
         self.overridebyAiravata = overridebyAiravata
@@ -182,6 +310,7 @@ class GroupComputeResourcePreference(object):
         self.sshAccountProvisioner = sshAccountProvisioner
         self.groupSSHAccountProvisionerConfigs = groupSSHAccountProvisionerConfigs
         self.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo
+        self.reservations = reservations
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -275,17 +404,28 @@ class GroupComputeResourcePreference(object):
             elif fid == 17:
                 if ftype == TType.LIST:
                     self.groupSSHAccountProvisionerConfigs = []
-                    (_etype3, _size0) = iprot.readListBegin()
-                    for _i4 in range(_size0):
-                        _elem5 = GroupAccountSSHProvisionerConfig()
-                        _elem5.read(iprot)
-                        self.groupSSHAccountProvisionerConfigs.append(_elem5)
+                    (_etype10, _size7) = iprot.readListBegin()
+                    for _i11 in range(_size7):
+                        _elem12 = GroupAccountSSHProvisionerConfig()
+                        _elem12.read(iprot)
+                        self.groupSSHAccountProvisionerConfigs.append(_elem12)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 18:
                 if ftype == TType.STRING:
                     self.sshAccountProvisionerAdditionalInfo = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 19:
+                if ftype == TType.LIST:
+                    self.reservations = []
+                    (_etype16, _size13) = iprot.readListBegin()
+                    for _i17 in range(_size13):
+                        _elem18 = ComputeResourceReservation()
+                        _elem18.read(iprot)
+                        self.reservations.append(_elem18)
+                    iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             else:
@@ -365,13 +505,20 @@ class GroupComputeResourcePreference(object):
         if self.groupSSHAccountProvisionerConfigs is not None:
             oprot.writeFieldBegin('groupSSHAccountProvisionerConfigs', TType.LIST, 17)
             oprot.writeListBegin(TType.STRUCT, len(self.groupSSHAccountProvisionerConfigs))
-            for iter6 in self.groupSSHAccountProvisionerConfigs:
-                iter6.write(oprot)
+            for iter19 in self.groupSSHAccountProvisionerConfigs:
+                iter19.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sshAccountProvisionerAdditionalInfo is not None:
             oprot.writeFieldBegin('sshAccountProvisionerAdditionalInfo', TType.STRING, 18)
             oprot.writeString(self.sshAccountProvisionerAdditionalInfo.encode('utf-8') if sys.version_info[0] == 2 else self.sshAccountProvisionerAdditionalInfo)
+            oprot.writeFieldEnd()
+        if self.reservations is not None:
+            oprot.writeFieldBegin('reservations', TType.LIST, 19)
+            oprot.writeListBegin(TType.STRUCT, len(self.reservations))
+            for iter20 in self.reservations:
+                iter20.write(oprot)
+            oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -447,10 +594,10 @@ class ComputeResourcePolicy(object):
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.allowedBatchQueues = []
-                    (_etype10, _size7) = iprot.readListBegin()
-                    for _i11 in range(_size7):
-                        _elem12 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.allowedBatchQueues.append(_elem12)
+                    (_etype24, _size21) = iprot.readListBegin()
+                    for _i25 in range(_size21):
+                        _elem26 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.allowedBatchQueues.append(_elem26)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -479,8 +626,8 @@ class ComputeResourcePolicy(object):
         if self.allowedBatchQueues is not None:
             oprot.writeFieldBegin('allowedBatchQueues', TType.LIST, 4)
             oprot.writeListBegin(TType.STRING, len(self.allowedBatchQueues))
-            for iter13 in self.allowedBatchQueues:
-                oprot.writeString(iter13.encode('utf-8') if sys.version_info[0] == 2 else iter13)
+            for iter27 in self.allowedBatchQueues:
+                oprot.writeString(iter27.encode('utf-8') if sys.version_info[0] == 2 else iter27)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -730,33 +877,33 @@ class GroupResourceProfile(object):
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.computePreferences = []
-                    (_etype17, _size14) = iprot.readListBegin()
-                    for _i18 in range(_size14):
-                        _elem19 = GroupComputeResourcePreference()
-                        _elem19.read(iprot)
-                        self.computePreferences.append(_elem19)
+                    (_etype31, _size28) = iprot.readListBegin()
+                    for _i32 in range(_size28):
+                        _elem33 = GroupComputeResourcePreference()
+                        _elem33.read(iprot)
+                        self.computePreferences.append(_elem33)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 5:
                 if ftype == TType.LIST:
                     self.computeResourcePolicies = []
-                    (_etype23, _size20) = iprot.readListBegin()
-                    for _i24 in range(_size20):
-                        _elem25 = ComputeResourcePolicy()
-                        _elem25.read(iprot)
-                        self.computeResourcePolicies.append(_elem25)
+                    (_etype37, _size34) = iprot.readListBegin()
+                    for _i38 in range(_size34):
+                        _elem39 = ComputeResourcePolicy()
+                        _elem39.read(iprot)
+                        self.computeResourcePolicies.append(_elem39)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 6:
                 if ftype == TType.LIST:
                     self.batchQueueResourcePolicies = []
-                    (_etype29, _size26) = iprot.readListBegin()
-                    for _i30 in range(_size26):
-                        _elem31 = BatchQueueResourcePolicy()
-                        _elem31.read(iprot)
-                        self.batchQueueResourcePolicies.append(_elem31)
+                    (_etype43, _size40) = iprot.readListBegin()
+                    for _i44 in range(_size40):
+                        _elem45 = BatchQueueResourcePolicy()
+                        _elem45.read(iprot)
+                        self.batchQueueResourcePolicies.append(_elem45)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -800,22 +947,22 @@ class GroupResourceProfile(object):
         if self.computePreferences is not None:
             oprot.writeFieldBegin('computePreferences', TType.LIST, 4)
             oprot.writeListBegin(TType.STRUCT, len(self.computePreferences))
-            for iter32 in self.computePreferences:
-                iter32.write(oprot)
+            for iter46 in self.computePreferences:
+                iter46.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.computeResourcePolicies is not None:
             oprot.writeFieldBegin('computeResourcePolicies', TType.LIST, 5)
             oprot.writeListBegin(TType.STRUCT, len(self.computeResourcePolicies))
-            for iter33 in self.computeResourcePolicies:
-                iter33.write(oprot)
+            for iter47 in self.computeResourcePolicies:
+                iter47.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.batchQueueResourcePolicies is not None:
             oprot.writeFieldBegin('batchQueueResourcePolicies', TType.LIST, 6)
             oprot.writeListBegin(TType.STRUCT, len(self.batchQueueResourcePolicies))
-            for iter34 in self.batchQueueResourcePolicies:
-                iter34.write(oprot)
+            for iter48 in self.batchQueueResourcePolicies:
+                iter48.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.creationTime is not None:
