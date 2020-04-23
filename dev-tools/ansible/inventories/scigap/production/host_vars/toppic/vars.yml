@@ -46,7 +46,7 @@ gateway_id: "toppic"
 experiment_data_dir: "{{ user_data_dir }}/toppic"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfQ9gNhK9Sbs/0uUL1i4xuIXqw+zW+cnKc6O7t1VC8jyGL/awc4tWoTDCyXhloKmxcfHw+ci769AXp8FxC74JE12HqmZ7gmujRrsLMhHpdA1GlptSMjdiQ9jUHp4z5UYEczATBL8EHKVHCFbWp48vZ8hsPaKUy9dWKuvFJ/Q7h0j2h40DtAfkJLLMhRiuShautRA3pwEXEyKwrQDNNi64am7bX7W8AczxWwijE1atXHdyC1CUm2Ni5b9DWAx2+Dc3COvEnEYFsh1Oov0JMf/KnAeNlJaq9cTR+YD///wHNlHJyzuSqfAW457u0teoACvmcBZgizjX8KweATXTVyANh"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Liu Xiaowen' 'xwliu@iupui.edu'),('In Kwon Choi','inkwchoi@iu.edu')]"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Liu Xiaowen' 'xwliu@iupui.edu'),('In Kwon Choi','inkwchoi@iu.edu'),('Liu Xiaowen','xwliu@iu.edu')]"
 portal_title: "TopPIC Gateway"
 
 ...
