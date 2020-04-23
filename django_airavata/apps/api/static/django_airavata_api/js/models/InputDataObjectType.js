@@ -41,7 +41,8 @@ const FIELDS = [
     name: "isReadOnly",
     type: "boolean",
     default: false
-  }
+  },
+  "overrideFilename"
 ];
 
 const IS_REQUIRED_DEFAULT = "This field is required.";

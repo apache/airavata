@@ -8,7 +8,6 @@ export default {
   props: {
     value: {
       type: Object,
-      required: true
     },
     id: String,
     rows: Number,
