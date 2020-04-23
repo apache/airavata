@@ -36,9 +36,9 @@ auth_options:
   password:
     name: "Physicell Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "physicell"
 experiment_data_dir: "{{ user_data_dir }}/physicell"
