@@ -314,7 +314,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         }
 
         query += "ORDER BY ES.creationTime DESC";
-        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, -1, 0, queryParameters);
+        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, Integer.MAX_VALUE, 0, queryParameters);
         return experimentSummaryModelList;
     }
 
