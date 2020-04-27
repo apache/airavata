@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import javax.persistence.Cache;
-// import javax.persistence.EntityGraph;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnitUtil;
-// import javax.persistence.Query;
-// import javax.persistence.SynchronizationType;
+import javax.persistence.Query;
+import javax.persistence.SynchronizationType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
@@ -49,15 +49,15 @@ public class JPAUtils {
             return wrapCreateEntityManager(() -> this.factory.createEntityManager(map));
         }
 
-        // @Override
-        // public EntityManager createEntityManager(SynchronizationType synchronizationType) {
-        //     return wrapCreateEntityManager(() -> this.factory.createEntityManager(synchronizationType));
-        // }
+        @Override
+        public EntityManager createEntityManager(SynchronizationType synchronizationType) {
+            return wrapCreateEntityManager(() -> this.factory.createEntityManager(synchronizationType));
+        }
 
-        // @Override
-        // public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        //     return wrapCreateEntityManager(() -> this.factory.createEntityManager(synchronizationType, map));
-        // }
+        @Override
+        public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
+            return wrapCreateEntityManager(() -> this.factory.createEntityManager(synchronizationType, map));
+        }
 
         private EntityManager wrapCreateEntityManager(Supplier<EntityManager> entityManagerSupplier) {
 
@@ -128,20 +128,20 @@ public class JPAUtils {
             return this.factory.getPersistenceUnitUtil();
         }
 
-        // @Override
-        // public void addNamedQuery(String name, Query query) {
-        //     this.factory.addNamedQuery(name, query);
-        // }
+        @Override
+        public void addNamedQuery(String name, Query query) {
+            this.factory.addNamedQuery(name, query);
+        }
 
-        // @Override
-        // public <T> T unwrap(Class<T> cls) {
-        //     return this.factory.unwrap(cls);
-        // }
+        @Override
+        public <T> T unwrap(Class<T> cls) {
+            return this.factory.unwrap(cls);
+        }
 
-        // @Override
-        // public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        //     this.factory.addNamedEntityGraph(graphName, entityGraph);
-        // }
+        @Override
+        public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
+            this.factory.addNamedEntityGraph(graphName, entityGraph);
+        }
 
     }
 
