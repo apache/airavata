@@ -21,32 +21,30 @@
 ---
 
 
-vhost_servername: "toppic.sciencegateways.iu.edu"
+vhost_servername: "physicell.scigap.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/toppic.sciencegateways.iu.edu/privkey.pem"
-
-django_file_upload_max_file_size_mb: 2500
+ssl_certificate_file: "/etc/letsencrypt/live/physicell.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/physicell.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/physicell.scigap.org/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "toppic"
+tenant_domain: "physicell"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "TopPIC Gateway"
+    name: "Physicell Gateway"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "toppic"
-experiment_data_dir: "{{ user_data_dir }}/toppic"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfQ9gNhK9Sbs/0uUL1i4xuIXqw+zW+cnKc6O7t1VC8jyGL/awc4tWoTDCyXhloKmxcfHw+ci769AXp8FxC74JE12HqmZ7gmujRrsLMhHpdA1GlptSMjdiQ9jUHp4z5UYEczATBL8EHKVHCFbWp48vZ8hsPaKUy9dWKuvFJ/Q7h0j2h40DtAfkJLLMhRiuShautRA3pwEXEyKwrQDNNi64am7bX7W8AczxWwijE1atXHdyC1CUm2Ni5b9DWAx2+Dc3COvEnEYFsh1Oov0JMf/KnAeNlJaq9cTR+YD///wHNlHJyzuSqfAW457u0teoACvmcBZgizjX8KweATXTVyANh"
+gateway_id: "physicell"
+experiment_data_dir: "{{ user_data_dir }}/physicell"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCagNzgz6E90G5LPsVNGvV45AOR5mtO9JN3ZAqEGp3a8k36IjFTOL5vF44cw0xLdWWDIZNLEd2ufJyTpdyrMPZrblh+z45U3YTiMcDvbtyxVypF84df00AnzvC5Vv2Hzc4v8cTXJyP9hsMQ/phnkbDGFSLEA5WveFkIH5CXMePQ4MjmmTi6eq8xPyjI3R1l4xG9MJQmFOdHT/IRvtUhT35qZDTnZA5LvYwynuyjdRUxNojZuhJAJVgMFEPdMSwB83T+sO/V7IZL8CF9L0179KTGk87gtis+NAhM4tn2CvSh1jvftoG7c67vOnRny5x3SI+pxDvulVEiUVw/xAMyMmyn"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Liu Xiaowen' 'xwliu@iupui.edu'),('In Kwon Choi','inkwchoi@iu.edu'),('Liu Xiaowen','xwliu@iu.edu')]"
-portal_title: "TopPIC Gateway"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Suresh Marru','smarru@iu.edu')]"
+portal_title: "Physicell Gateway"
 
 ...

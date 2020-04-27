@@ -21,9 +21,9 @@
 ---
 vhost_servername: "sciencegateway.usd.edu"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.usd.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.usd.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.usd.edu/privkey.pem"
+ssl_certificate_file: "/etc/pki/tls/certs/sciencegateway_usd_edu_cert.cer"
+ssl_certificate_chain_file: "/etc/pki/tls/certs/sciencegateway_usd_edu_interm.cer"
+ssl_certificate_key_file: "/etc/pki/tls/private/sciencegateway.usd.edu.key"
 
 ## Keycloak related variables
 tenant_domain: "southdakota"
@@ -45,5 +45,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIUqpK
 admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Adison Kleinsasser','Adison.Kleinsasser@usd.edu'),('Bill James','CBill.Conn@usd.edu'),('Luke Gassman','luke.gassman@sdstate.edu')]"
 portal_title: "University of South Dakota Gateway"
 
-django_google_analytics_tracking_id: "UA-117517811-1"
+django_google_analytics_tracking_id: "UA-111528347-1"
 ...

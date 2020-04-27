@@ -218,7 +218,6 @@ public class PreWorkflowManager extends WorkflowManager {
     public static void main(String[] args) throws Exception {
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
         preWorkflowManager.startServer();
-        preWorkflowManager.createAndLaunchCancelWorkflow("PROCESS_7e19c779-e326-43d2-b025-aaa3a4b44c95","ultrascan");
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {
