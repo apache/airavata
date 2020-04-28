@@ -1,30 +1,27 @@
 <template>
   <b-card>
-    <div
-      slot="header"
-      class="d-flex align-items-baseline"
-    >
+    <div slot="header" class="d-flex align-items-baseline">
       <h6>{{ experimentOutput.name }}</h6>
-      <b-dropdown
-        v-if="showMenu"
-        :text="currentView['name']"
-        class="ml-auto"
-      >
+      <b-dropdown v-if="showMenu" :text="currentView['name']" class="ml-auto">
         <b-dropdown-item
           v-for="view in outputViews"
           :key="view['provider-id']"
           :active="view['provider-id'] === currentView['provider-id']"
           @click="selectView(view)"
-        >{{ view['name']}}</b-dropdown-item>
+          >{{ view["name"] }}</b-dropdown-item
+        >
       </b-dropdown>
     </div>
     <component
       :is="outputDisplayComponentName"
-      :experiment-output="experimentOutput"
+      :view-data="viewData"
       :data-products="dataProducts"
-      :experiment-id="experimentId"
-      :provider-id="currentView['provider-id']"
-      :data="outputViewData"
+      :experiment-output="experimentOutput"
+    />
+    <interactive-parameters-panel
+      v-if="viewData && viewData.interactive"
+      :parameters="viewData.interactive"
+      @input="parametersUpdated"
     />
   </b-card>
 </template>
@@ -35,8 +32,10 @@ import { components } from "django-airavata-common-ui";
 import DefaultOutputDisplay from "./DefaultOutputDisplay";
 import HtmlOutputDisplay from "./HtmlOutputDisplay";
 import ImageOutputDisplay from "./ImageOutputDisplay";
-import LinkDisplay from "./LinkDisplay";
+import LinkOutputDisplay from "./LinkOutputDisplay";
 import NotebookOutputDisplay from "./NotebookOutputDisplay";
+import InteractiveParametersPanel from "./interactive-parameters/InteractiveParametersPanel";
+import OutputViewDataLoader from "./OutputViewDataLoader";
 
 export default {
   name: "output-viewer-container",
@@ -64,42 +63,100 @@ export default {
     DefaultOutputDisplay,
     HtmlOutputDisplay,
     ImageOutputDisplay,
-    LinkDisplay,
-    NotebookOutputDisplay
+    LinkOutputDisplay,
+    NotebookOutputDisplay,
+    InteractiveParametersPanel
+  },
+  created() {
+    if (this.providerId !== "default") {
+      this.loader = this.createLoader();
+      this.loader.load();
+    }
   },
   data() {
     return {
-      currentView: this.outputViews[0]
+      currentView: this.outputViews[0],
+      loader: null
     };
   },
   computed: {
+    viewData() {
+      return this.loader && this.loader.data
+        ? this.loader.data
+        : this.outputViewData;
+    },
     outputViewData() {
       return this.currentView.data ? this.currentView.data : {};
     },
+    displayTypeData() {
+      return {
+        default: {
+          component: "default-output-display",
+          url: null
+        },
+        link: {
+          component: "link-output-display",
+          url: "/api/link-output/"
+        },
+        notebook: {
+          component: "notebook-output-display",
+          url: "/api/notebook-output/"
+        },
+        html: {
+          component: "html-output-display",
+          url: "/api/html-output/"
+        },
+        image: {
+          component: "image-output-display",
+          url: "/api/image-output/"
+        }
+      };
+    },
+    displayType() {
+      return this.currentView["display-type"];
+    },
     outputDisplayComponentName() {
-      if (this.currentView["display-type"] === "default") {
-        return "default-output-display";
-      } else if (this.currentView["display-type"] === "link") {
-        return "link-display";
-      } else if (this.currentView["display-type"] === "notebook") {
-        return "notebook-output-display";
-      } else if (this.currentView["display-type"] === "html") {
-        return "html-output-display";
-      } else if (this.currentView["display-type"] === "image") {
-        return "image-output-display";
+      if (this.displayType in this.displayTypeData) {
+        return this.displayTypeData[this.displayType].component;
+      } else {
+        return null;
+      }
+    },
+    outputDataURL() {
+      if (this.displayType in this.displayTypeData) {
+        return this.displayTypeData[this.displayType].url;
       } else {
         return null;
       }
     },
     showMenu() {
       return this.outputViews.length > 1;
+    },
+    providerId() {
+      return this.currentView["provider-id"];
     }
   },
   methods: {
     selectView(outputView) {
       this.currentView = outputView;
+      if (this.outputDataURL === null) {
+        this.loader = null;
+      } else {
+        this.loader = this.createLoader();
+        this.loader.load();
+      }
+    },
+    parametersUpdated(newParams) {
+      this.loader.load(newParams);
+    },
+    createLoader() {
+      return new OutputViewDataLoader({
+        url: this.outputDataURL,
+        experimentId: this.experimentId,
+        experimentOutputName: this.experimentOutput.name,
+        providerId: this.providerId
+      });
     }
   }
 };
 </script>
-

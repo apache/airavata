@@ -101,6 +101,8 @@ urlpatterns = [
         views.html_output_view, name="html-output"),
     url(r'^image-output',
         views.image_output_view, name="image-output"),
+    url(r'^link-output',
+        views.link_output_view, name="link-output"),
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

@@ -1,7 +1,11 @@
 <template>
   <div>
     <div v-for="dp in dataProducts" :key="dp.productUri">
-      <img v-if="dp.isImage && dp.downloadURL" class="image-preview rounded" :src="dp.downloadURL" />
+      <img
+        v-if="dp.isImage && dp.downloadURL"
+        class="image-preview rounded"
+        :src="dp.downloadURL"
+      />
       <data-product-viewer :data-product="dp" :mime-type="fileMimeType" />
     </div>
   </div>
@@ -21,9 +25,6 @@ export default {
     dataProducts: {
       type: Array,
       required: true
-    },
-    data: {
-      type: Object
     }
   },
   components: {

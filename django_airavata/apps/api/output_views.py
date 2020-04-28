@@ -1,3 +1,4 @@
+import inspect
 import json
 import logging
 import os
@@ -158,7 +159,8 @@ def _get_application_output_view_providers(application_interface, output_name):
 def generate_data(request,
                   output_view_provider_id,
                   experiment_output_name,
-                  experiment_id):
+                  experiment_id,
+                  **kwargs):
     output_view_provider = _get_output_view_provider(output_view_provider_id)
     # TODO if output_view_provider is None, return 404
     experiment = request.airavata_client.getExperiment(
@@ -169,16 +171,20 @@ def generate_data(request,
     # TODO: handle experiment_output not found by name
     experiment_output = experiment_output[0]
     # TODO: add experiment_output_dir
+    # convert the extra/interactive arguments to appropriate types
+    kwargs = _convert_params_to_type(output_view_provider, kwargs)
     return _generate_data(request,
                           output_view_provider,
                           experiment_output,
-                          experiment)
+                          experiment,
+                          **kwargs)
 
 
 def _generate_data(request,
                    output_view_provider,
                    experiment_output,
-                   experiment):
+                   experiment,
+                   **kwargs):
     # TODO: handle URI_COLLECTION also
     logger.debug("getting data product for {}".format(experiment_output.value))
     output_file = None
@@ -198,6 +204,23 @@ def _generate_data(request,
             output_file = open(test_output_file, 'rb')
     # TODO: change interface to provide output_file as a path
     # TODO: convert experiment and experiment_output to dict/JSON
-    data = output_view_provider.generate_data(
-        request, experiment_output, experiment, output_file=output_file)
+    data = output_view_provider.generate_data(request,
+                                              experiment_output,
+                                              experiment,
+                                              output_file=output_file,
+                                              **kwargs)
     return data
+
+
+def _convert_params_to_type(output_view_provider, params):
+    method_sig = inspect.signature(output_view_provider.generate_data)
+    method_params = method_sig.parameters
+    for k, v in params.items():
+        if (k in method_params and
+            method_params[k].default is not inspect.Parameter.empty and
+                method_params[k].default is not None):
+            # TODO: handle lists?
+            # Handle boolean and numeric values, converting from string
+            if type(method_params[k]) is not str:
+                params[k] = json.loads(v)
+    return params

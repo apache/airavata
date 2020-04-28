@@ -1,45 +1,23 @@
 <template>
-  <img :src="url" />
+  <img :src="dataUrl" />
 </template>
 
 <script>
-import { models } from "django-airavata-api";
 export default {
   name: "image-output-display",
   props: {
-    experimentOutput: {
-      type: models.OutputDataObjectType,
-      required: true
-    },
-    dataProducts: {
-      type: Array,
-      required: true
-    },
-    experimentId: {
-      type: String,
-      required: true
-    },
-    providerId: {
-      type: String,
+    viewData: {
+      type: Object,
       required: true
     }
   },
-  data() {
-    return {
-      rawOutput: null
-    };
-  },
   computed: {
-    url() {
-      return (
-        "/api/image-output?" +
-        "experiment-id=" +
-        encodeURIComponent(this.experimentId) +
-        "&experiment-output-name=" +
-        encodeURIComponent(this.experimentOutput.name) +
-        "&provider-id=" +
-        encodeURIComponent(this.providerId)
-      );
+    dataUrl() {
+      if (this.viewData) {
+        return `data:${this.viewData["mime-type"]};base64,${this.viewData["image"]}`;
+      } else {
+        return null;
+      }
     }
   }
 };
