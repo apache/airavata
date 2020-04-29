@@ -20,6 +20,7 @@
 import { utils } from "django-airavata-api";
 import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
 import { components } from "django-airavata-common-ui";
+import _ from "lodash";
 
 export default {
   name: "autocomplete-input-editor",
@@ -99,7 +100,8 @@ export default {
       this.text = suggestion.name;
       this.valueChanged();
     },
-    searchChanged(newValue) {
+    searchChanged: _.debounce(function(newValue) {
+      // TODO: don't query when search value is empty string
       this.searchString = newValue;
       const currentTime = Date.now();
       if (this.autocompleteUrl) {
@@ -117,7 +119,7 @@ export default {
           }
         });
       }
-    }
+    }, 200),
   },
   created() {
     if (this.value) {
