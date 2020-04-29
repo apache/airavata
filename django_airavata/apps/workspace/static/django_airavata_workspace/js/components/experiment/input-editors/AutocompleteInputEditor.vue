@@ -1,8 +1,10 @@
 <template>
-  <!-- TODO: replace with better display and x to clear out selected value -->
-  <div v-if="value">
+  <div v-if="value" class="d-flex pl-3">
     {{ text }}
-    <b-link @click="cancel">Cancel</b-link>
+    <b-link @click="cancel" class="ml-auto text-danger"
+      >Cancel
+      <i class="fa fa-times" aria-hidden="true"></i>
+    </b-link>
   </div>
   <div v-else>
     <autocomplete-text-input
