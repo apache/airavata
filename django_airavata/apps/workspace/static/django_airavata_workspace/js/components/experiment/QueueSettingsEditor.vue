@@ -9,27 +9,23 @@
           >
             <div class="card-body">
               <h5 class="card-title mb-4">
-                Settings for queue
-                {{ localComputationalResourceScheduling.queueName }}
+                Settings for queue {{ data.queueName }}
               </h5>
               <div class="row">
                 <div class="col">
                   <h3 class="h5 mb-0">
-                    {{ localComputationalResourceScheduling.nodeCount }}
+                    {{ data.nodeCount }}
                   </h3>
                   <span class="text-muted text-uppercase">NODE COUNT</span>
                 </div>
                 <div class="col">
                   <h3 class="h5 mb-0">
-                    {{ localComputationalResourceScheduling.totalCPUCount }}
+                    {{ data.totalCPUCount }}
                   </h3>
                   <span class="text-muted text-uppercase">CORE COUNT</span>
                 </div>
                 <div class="col">
-                  <h3 class="h5 mb-0">
-                    {{ localComputationalResourceScheduling.wallTimeLimit }}
-                    minutes
-                  </h3>
+                  <h3 class="h5 mb-0">{{ data.wallTimeLimit }} minutes</h3>
                   <span class="text-muted text-uppercase">TIME LIMIT</span>
                 </div>
               </div>
@@ -181,14 +177,9 @@ export default {
       });
       return queueOptions;
     },
-    localComputationalResourceScheduling() {
-      return this.data;
-    },
     selectedQueueDefault: function() {
       return this.queueDefaults.find(
-        queue =>
-          queue.queueName ===
-          this.localComputationalResourceScheduling.queueName
+        queue => queue.queueName === this.data.queueName
       );
     },
     maxCPUCount: function() {
@@ -252,6 +243,19 @@ export default {
             })
         : [];
     },
+    defaultQueue() {
+      if (this.queueDefaults.length === 0) {
+        return null;
+      }
+      return this.queueDefaults[0];
+    },
+    defaultQueueBatchQueueResourcePolicy() {
+      if (this.defaultQueue) {
+        return this.getBatchQueueResourcePolicy(this.defaultQueue.queueName);
+      } else {
+        return null;
+      }
+    },
     queueDescription() {
       return this.selectedQueueDefault
         ? this.selectedQueueDefault.queueDescription
@@ -262,7 +266,7 @@ export default {
       if (!this.selectedQueueDefault) {
         return {};
       }
-      return this.localComputationalResourceScheduling.validate(
+      return this.data.validate(
         this.selectedQueueDefault,
         this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)
       );
@@ -298,17 +302,10 @@ export default {
       }
       const defaultQueue = this.queueDefaults[0];
 
-      this.localComputationalResourceScheduling.queueName =
-        defaultQueue.queueName;
-      this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(
-        defaultQueue
-      );
-      this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(
-        defaultQueue
-      );
-      this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(
-        defaultQueue
-      );
+      this.data.queueName = defaultQueue.queueName;
+      this.data.totalCPUCount = this.getDefaultCPUCount(defaultQueue);
+      this.data.nodeCount = this.getDefaultNodeCount(defaultQueue);
+      this.data.wallTimeLimit = this.getDefaultWalltime(defaultQueue);
     },
     isQueueInComputeResourcePolicy: function(queueName) {
       if (!this.computeResourcePolicy) {
@@ -378,11 +375,15 @@ export default {
     appDeploymentId() {
       this.loadAppDeploymentQueues().then(() => this.setDefaultQueue());
     },
-    computeResourcePolicy() {
+    // If the default queue changes, re-set queue defaults
+    defaultQueue() {
       this.setDefaultQueue();
     },
-    batchQueueResourcePolicies() {
-      this.setDefaultQueue();
+    // If batch queue resource policy for the default queue changes, re-set queue defaults
+    defaultQueueBatchQueueResourcePolicy(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.setDefaultQueue();
+      }
     }
   },
   mounted: function() {
