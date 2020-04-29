@@ -1835,6 +1835,7 @@ class APIServerStatusCheckView(APIView):
         return Response(data)
 
 
+@login_required
 def notebook_output_view(request):
     provider_id = request.GET['provider-id']
     experiment_id = request.GET['experiment-id']
@@ -1846,6 +1847,7 @@ def notebook_output_view(request):
     return HttpResponse(data['output'])
 
 
+@login_required
 def html_output_view(request):
     provider_id = request.GET['provider-id']
     experiment_id = request.GET['experiment-id']
@@ -1857,6 +1859,7 @@ def html_output_view(request):
     return JsonResponse(data)
 
 
+@login_required
 def image_output_view(request):
     provider_id = request.GET['provider-id']
     experiment_id = request.GET['experiment-id']
