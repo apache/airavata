@@ -1,6 +1,4 @@
 
-# CMS
-
 ## USING CMS
 
 #### Logging in to CMS Dashboard
@@ -43,9 +41,9 @@
 7. To create a new page as a child of "Home". you need to click on "Home" Link.
 8. Then Click on "**ADD CHILD PAGE**" link.
 9. Choose a page template type. Currently, three of them are available.
-  * Blank Page -> (Build a page from scratch (Best Way))
-  * Cybergateway Home Page -> (Build an IU Themed Home Page)
-  * Home Page -> (Build a seagrid website based Home page)
+    * Blank Page -> (Build a page from scratch (Best Way))
+    * Cybergateway Home Page -> (Build an IU Themed Home Page)
+    * Home Page -> (Build a seagrid website based Home page)
 10. You can explore other page templates. But Blank Page is the best way to go as it enables you to build your website from scratch without mocking any other website theme.
 11. Click on "Blank Page".
 12. Each page has four tabs namely:
@@ -252,4 +250,28 @@
     * **Footer** -> ( You can design a Footer using this item. It will remain consistent and will appear on every page on website. If you don't want it to appear on a particular page, you can visit that particular page and go to "**Customization**" Tab and set "**Show Footer**" to No. `Do not add additional footers by clicking Add Footer. Only the first one will take effet` )
     * **Nav Extra** -> ( You can make a secondary navbar just below the main navbar if you want to. You can also add a brand logo and links to this navbar. You can customize its color and other properties by giving a custom class selector and specifying styles in "**Custom CSS**". If you don't want it to appear on a particular page, you can visit that particular page and go to "**Customization**" Tab and set "**Show Nav Extra**" to No. `Do not add additional nav extra by clicking Add Nav Extra. Only the first one will take effet` )
     * **Navbar** -> ( This is the main navbar which exists across every page. When you click on Navbar you can add Logo image and text. If you don't want it to appear on a particular page, you can visit that particular page and go to "**Customization**" Tab and set "**Show Navbar**" to No. It has a pre-defined class selector named '**main-nav**'. you can visit "**Custom Css** and write a css block with the '.main-nav' and give it some styles. When you click on Navbar you can add Logo image and text. If you don't want it to appear on a particular page, you can visit that particular page and go to "**Customization**" Tab and set "**Show Navbar**" to No.`Do not add additional navbars by clicking Add Navbar. Only the first one will take effet`)
+
+## RECIPES
+
+### Banner background image
+
+Add a background banner image that spans the entire width of the browser.
+
+![Background banner image](./images/banner_image.png)
+
+1. Add a new row.
+2. Add a **Full width container**.
+3. Set the **inline styles** to:
+
+```
+background-size: cover;
+background-repeat: no-repeat;
+background-position: center;
+```
+
+4. Select or upload the **Background image**.
+5. Add *Row Content* as usual. However, if you just want the background
+   banner image without foreground content, then add a **Placeholder** block to
+   the row content and then add to the container **inline styles**
+   `height: 200px;` or whatever height you want for the banner image.
 
