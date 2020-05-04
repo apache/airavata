@@ -1,0 +1,13 @@
+{% load wagtailimages_tags %}
+
+<!-- close previous container -->
+</div>
+<!-- close previous container wrapper -->
+</div>
+<div class="container-wrapper {{ value.custom_classes }}" style="{{ value.inline_styles }}
+{% if value.background_image %}
+{% image self.background_image original as background_image_orig %}
+background-image: url({{ background_image_orig.url }});
+{% endif %}
+">
+<div class="{{ container_class }}">

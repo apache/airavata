@@ -24,14 +24,21 @@
   {% get_announcements %}
 {% endif %}
 
-<div class="container-fluid">
-  {% for item in page.row.all %}
-  <div class="row">
-    {% for block in item.body %}
-      {% include_block block.value %}
+<div class="container-fluid-wrapper">
+  <div class="container-fluid">
+    {% for item in page.row.all %}
+      {% if item.container %}
+        {% comment %} There can only be one container. This will close the previous
+        container and start a new one. {% endcomment %}
+        {% include_block item.container|first %}
+      {% endif %}
+    <div class="row">
+      {% for block in item.body %}
+        {% include_block block.value %}
+      {% endfor %}
+    </div>
     {% endfor %}
   </div>
-  {% endfor %}
 </div>
 
 {% if page.show_footer == "yes" %}
