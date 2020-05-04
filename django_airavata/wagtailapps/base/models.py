@@ -19,7 +19,7 @@ from wagtail.core.models import Orderable, Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.models import register_snippet
 
-from .blocks import BaseStreamBlock, CssStreamBlock, Nav
+from .blocks import BaseStreamBlock, ContainerChoiceBlock, CssStreamBlock, Nav
 
 
 @register_snippet
@@ -685,7 +685,27 @@ class Row(models.Model):
         abstract = True
 
 
-class RowBlankPageRelation(Orderable, Row):
+class BootstrapRow(Row):
+    container = StreamField(
+        ContainerChoiceBlock(),
+        null=True,
+        blank=True,
+        help_text="(Optional) Create a new Bootstrap container for this "
+                  "and following rows.")
+    body = StreamField(
+        BaseStreamBlock(), verbose_name="Row Content", blank=True, null=True
+    )
+
+    panels = [
+        StreamFieldPanel('container'),
+        StreamFieldPanel('body'),
+    ]
+
+    class Meta:
+        abstract = True
+
+
+class RowBlankPageRelation(Orderable, BootstrapRow):
     page = ParentalKey('django_airavata_wagtail_base.BlankPage',
                        on_delete=models.CASCADE, related_name='row')
 
