@@ -84,9 +84,30 @@ export default {
   methods: {
     loadTextForValue(value) {
       if (this.autocompleteUrl) {
-        return utils.FetchUtils.get(this.autocompleteUrl, {
-          id: value
-        }).then(resp => resp.text);
+        return utils.FetchUtils.get(
+          this.autocompleteUrl,
+          {
+            exact: value
+          },
+          {
+            ignoreErrors: true // don't automatically report errors to user - code will handle 404s
+          }
+        )
+          .then(resp => {
+            if (resp.results && resp.results.length > 0) {
+              return resp.results[0].text;
+            } else {
+              return `value: ${value}`;
+            }
+          })
+          .catch(error => {
+            if (error.details.status === 404) {
+              // if we can't fine an exact match, just return the value as the text
+              return `value: ${value}`;
+            } else {
+              throw error;
+            }
+          });
       } else {
         return Promise.resolve(null);
       }
@@ -119,7 +140,7 @@ export default {
           }
         });
       }
-    }, 200),
+    }, 200)
   },
   created() {
     if (this.value) {
