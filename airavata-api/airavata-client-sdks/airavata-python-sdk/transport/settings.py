@@ -105,3 +105,14 @@ class KeycloakConfiguration(object):
         self.TOKEN_URL = config.get('KeycloakServer', 'TOKEN_URL')
         self.USER_INFO_URL = config.get('KeycloakServer', 'USER_INFO_URL')
         self.VERIFY_SSL = config.getboolean('KeycloakServer', 'VERIFY_SSL')
+
+
+class GatewaySettings(object):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
+        self.GATEWAY_ID = config.get('Gateway', 'GATEWAY_ID')
+        self.GATEWAY_DATA_STORE_RESOURCE_ID = config.get('Gateway', 'GATEWAY_DATA_STORE_RESOURCE_ID')
+        self.GATEWAY_DATA_STORE_DIR = config.get('Gateway', 'GATEWAY_DATA_STORE_DIR')
+        self.GATEWAY_DATA_STORE_HOSTNAME = config.get('Gateway', 'GATEWAY_DATA_STORE_HOSTNAME')
+        self.FILE_UPLOAD_TEMP_DIR = config.get('Gateway', 'FILE_UPLOAD_TEMP_DIR')

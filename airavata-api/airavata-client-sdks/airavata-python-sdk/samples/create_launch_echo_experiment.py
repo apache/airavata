@@ -56,7 +56,7 @@ storageId = airavata_util.get_storage_resource_id("pgadev.scigap.org")
 experiment = data_model_client.get_experiment_data_model_for_single_application(
     project_name="Default Project",
     application_name="Echo",
-    experiment_name="Testing_ECHO_SDK 25",
+    experiment_name="Testing_ECHO_SDK 2",
     description="Testing")
 
 path = fb.upload_files(api_server_client, credential_store_client, token, "cyberwater",
