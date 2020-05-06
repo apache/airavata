@@ -1,8 +1,7 @@
-[![Build Status](https://travis-ci.org/apache/airavata.svg?branch=master)](https://travis-ci.org/apache/airavata)
-
+[![License](http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat)](https://apache.org/licenses/LICENSE-2.0)
+[![Build Status](https://travis-ci.org/apache/airavata.png?branch=develop)](https://travis-ci.org/github/apache/airavata)
 
 Apache Airavata Source - README.txt
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
 About
