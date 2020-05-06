@@ -16,6 +16,10 @@ from clients.utils.data_model_creation_util import DataModelCreationUtil
 
 from clients.utils.api_server_client_util import APIServerClientUtil
 
+from clients.sftp_file_handling_client import SFTPConnector
+
+from transport.settings import GatewaySettings
+
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
@@ -59,10 +63,20 @@ experiment = data_model_client.get_experiment_data_model_for_single_application(
     experiment_name="Testing_ECHO_SDK 2",
     description="Testing")
 
-path = fb.upload_files(api_server_client, credential_store_client, token, "cyberwater",
-                       storageId,
-                       "pgadev.scigap.org", username, "Default_Project", experiment.experimentName,
-                       "/Users/isururanawaka/Documents/Cyberwater/poc/resources/storage")
+sftp_connector = SFTPConnector(host="cyberwater.scigap.org", port=9000, username="isuru_janith",
+                               password=token.accessToken)
+path_suffix = sftp_connector.upload_files("/Users/isururanawaka/Documents/Cyberwater/poc2/resources/storage",
+                                          "Default_Project",
+                                          experiment.experimentName)
+
+sftp_connector = SFTPConnector(host="cyberwater.scigap.org", port=9000, username="isuru_janith",
+                               password=token.accessToken)
+path_suffix = sftp_connector.upload_files("/Users/isururanawaka/Documents/Cyberwater/poc2/resources/storage",
+                                          "Default_Project",
+                                          experiment.experimentName)
+
+gateway_settings = GatewaySettings(configFile)
+path = gateway_settings.GATEWAY_DATA_STORE_DIR + path_suffix
 
 # configure computational resources
 experiment = data_model_client.configure_computation_resource_scheduling(experiment_model=experiment,
@@ -102,6 +116,4 @@ while status.state <= 6:
 
 print("Completed")
 
-fb.download_files(api_server_client, credential_store_client, token, gateway_id,
-                  storageId,
-                  "pgadev.scigap.org", username, "Default_Project", experiment.experimentName, ".")
+sftp_connector.download_files(".", "Default_Project", experiment.experimentName)
