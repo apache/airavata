@@ -5,21 +5,20 @@
       :key="param.name"
       :label="param.name"
     >
-      <!-- TODO: use dynamic components to pick the right widget for the type of parameter -->
-      <interactive-parameter-checkbox-widget
-        :value="param.value"
-        @input="updated(param, $event)"
-      />
+      <interactive-parameter-widget-container
+        :parameter="param"
+        @input="updated(param, $event)"/>
     </b-form-group>
   </b-card>
 </template>
 
 <script>
-import InteractiveParameterCheckboxWidget from "./InteractiveParameterCheckboxWidget";
+import InteractiveParameterWidgetContainer from "./InteractiveParameterWidgetContainer";
+
 export default {
   name: "interactive-parameters-panel",
   components: {
-    InteractiveParameterCheckboxWidget
+    InteractiveParameterWidgetContainer
   },
   props: {
     parameters: {

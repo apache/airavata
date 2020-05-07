@@ -1,3 +1,4 @@
+import collections
 import inspect
 import json
 import logging
@@ -209,7 +210,27 @@ def _generate_data(request,
                                               experiment,
                                               output_file=output_file,
                                               **kwargs)
+    _convert_options(data)
     return data
+
+
+def _convert_options(data):
+    """Convert interactive options to explicit text/value dicts."""
+    if 'interactive' in data:
+        for param in data['interactive']:
+            if 'options' in param and isinstance(param['options'][0], str):
+                param['options'] = _convert_options_strings(param['options'])
+            elif 'options' in param and isinstance(
+                    param['options'][0], collections.Sequence):
+                param['options'] = _convert_options_sequences(param['options'])
+
+
+def _convert_options_strings(options):
+    return [{"text": o, "value": o} for o in options]
+
+
+def _convert_options_sequences(options):
+    return [{"text": o[0], "value": o[1]} for o in options]
 
 
 def _convert_params_to_type(output_view_provider, params):
@@ -221,6 +242,8 @@ def _convert_params_to_type(output_view_provider, params):
                 method_params[k].default is not None):
             # TODO: handle lists?
             # Handle boolean and numeric values, converting from string
-            if type(method_params[k]) is not str:
+            if type(method_params[k].default) is not str:
                 params[k] = json.loads(v)
+            else:
+                params[k] = v
     return params
