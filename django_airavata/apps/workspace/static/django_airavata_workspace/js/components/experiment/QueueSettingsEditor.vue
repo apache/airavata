@@ -40,7 +40,7 @@
           <b-form-group
             label="Select a Queue"
             label-for="queue"
-            :feedback="getValidationFeedback('queueName')"
+            :invalid-feedback="getValidationFeedback('queueName')"
             :state="getValidationState('queueName')"
           >
             <b-form-select
@@ -59,7 +59,7 @@
           <b-form-group
             label="Node Count"
             label-for="node-count"
-            :feedback="getValidationFeedback('nodeCount')"
+            :invalid-feedback="getValidationFeedback('nodeCount')"
             :state="getValidationState('nodeCount', true)"
           >
             <b-form-input
@@ -80,7 +80,7 @@
           <b-form-group
             label="Total Core Count"
             label-for="core-count"
-            :feedback="getValidationFeedback('totalCPUCount')"
+            :invalid-feedback="getValidationFeedback('totalCPUCount')"
             :state="getValidationState('totalCPUCount', true)"
           >
             <b-form-input
@@ -101,7 +101,7 @@
           <b-form-group
             label="Wall Time Limit (in minutes)"
             label-for="walltime-limit"
-            :feedback="getValidationFeedback('wallTimeLimit')"
+            :invalid-feedback="getValidationFeedback('wallTimeLimit')"
             :state="getValidationState('wallTimeLimit', true)"
           >
             <b-input-group right="minutes">
@@ -264,7 +264,7 @@ export default {
     validation() {
       // Don't run validation if we don't have selectedQueueDefault
       if (!this.selectedQueueDefault) {
-        return {};
+        return this.data.validate();
       }
       return this.data.validate(
         this.selectedQueueDefault,
@@ -298,6 +298,7 @@ export default {
     },
     setDefaultQueue() {
       if (this.queueDefaults.length === 0) {
+        this.data.queueName = null;
         return;
       }
       const defaultQueue = this.queueDefaults[0];
