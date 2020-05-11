@@ -151,4 +151,7 @@ export default {
 .custom-Uppy >>> .uppy-DragDrop-label {
   margin-bottom: 0px;
 }
+.custom-Uppy >>> .uppy-StatusBar {
+  background-color: inherit;
+}
 </style>
