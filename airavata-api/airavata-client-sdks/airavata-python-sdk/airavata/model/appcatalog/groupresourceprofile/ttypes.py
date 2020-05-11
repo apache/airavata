@@ -259,9 +259,6 @@ class GroupComputeResourcePreference(object):
      - resourceSpecificCredentialStoreToken
      - usageReportingGatewayId
      - qualityOfService
-     - reservation
-     - reservationStartTime
-     - reservationEndTime
      - sshAccountProvisioner
      - groupSSHAccountProvisionerConfigs
      - sshAccountProvisionerAdditionalInfo
@@ -282,16 +279,16 @@ class GroupComputeResourcePreference(object):
         (10, TType.STRING, 'resourceSpecificCredentialStoreToken', 'UTF8', None, ),  # 10
         (11, TType.STRING, 'usageReportingGatewayId', 'UTF8', None, ),  # 11
         (12, TType.STRING, 'qualityOfService', 'UTF8', None, ),  # 12
-        (13, TType.STRING, 'reservation', 'UTF8', None, ),  # 13
-        (14, TType.I64, 'reservationStartTime', None, None, ),  # 14
-        (15, TType.I64, 'reservationEndTime', None, None, ),  # 15
+        None,  # 13
+        None,  # 14
+        None,  # 15
         (16, TType.STRING, 'sshAccountProvisioner', 'UTF8', None, ),  # 16
         (17, TType.LIST, 'groupSSHAccountProvisionerConfigs', (TType.STRUCT, (GroupAccountSSHProvisionerConfig, GroupAccountSSHProvisionerConfig.thrift_spec), False), None, ),  # 17
         (18, TType.STRING, 'sshAccountProvisionerAdditionalInfo', 'UTF8', None, ),  # 18
         (19, TType.LIST, 'reservations', (TType.STRUCT, (ComputeResourceReservation, ComputeResourceReservation.thrift_spec), False), None, ),  # 19
     )
 
-    def __init__(self, computeResourceId=None, groupResourceProfileId=thrift_spec[2][4], overridebyAiravata=thrift_spec[3][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None, qualityOfService=None, reservation=None, reservationStartTime=None, reservationEndTime=None, sshAccountProvisioner=None, groupSSHAccountProvisionerConfigs=None, sshAccountProvisionerAdditionalInfo=None, reservations=None,):
+    def __init__(self, computeResourceId=None, groupResourceProfileId=thrift_spec[2][4], overridebyAiravata=thrift_spec[3][4], loginUserName=None, preferredJobSubmissionProtocol=None, preferredDataMovementProtocol=None, preferredBatchQueue=None, scratchLocation=None, allocationProjectNumber=None, resourceSpecificCredentialStoreToken=None, usageReportingGatewayId=None, qualityOfService=None, sshAccountProvisioner=None, groupSSHAccountProvisionerConfigs=None, sshAccountProvisionerAdditionalInfo=None, reservations=None,):
         self.computeResourceId = computeResourceId
         self.groupResourceProfileId = groupResourceProfileId
         self.overridebyAiravata = overridebyAiravata
@@ -304,9 +301,6 @@ class GroupComputeResourcePreference(object):
         self.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken
         self.usageReportingGatewayId = usageReportingGatewayId
         self.qualityOfService = qualityOfService
-        self.reservation = reservation
-        self.reservationStartTime = reservationStartTime
-        self.reservationEndTime = reservationEndTime
         self.sshAccountProvisioner = sshAccountProvisioner
         self.groupSSHAccountProvisionerConfigs = groupSSHAccountProvisionerConfigs
         self.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo
@@ -379,21 +373,6 @@ class GroupComputeResourcePreference(object):
             elif fid == 12:
                 if ftype == TType.STRING:
                     self.qualityOfService = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 13:
-                if ftype == TType.STRING:
-                    self.reservation = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 14:
-                if ftype == TType.I64:
-                    self.reservationStartTime = iprot.readI64()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 15:
-                if ftype == TType.I64:
-                    self.reservationEndTime = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             elif fid == 16:
@@ -485,18 +464,6 @@ class GroupComputeResourcePreference(object):
         if self.qualityOfService is not None:
             oprot.writeFieldBegin('qualityOfService', TType.STRING, 12)
             oprot.writeString(self.qualityOfService.encode('utf-8') if sys.version_info[0] == 2 else self.qualityOfService)
-            oprot.writeFieldEnd()
-        if self.reservation is not None:
-            oprot.writeFieldBegin('reservation', TType.STRING, 13)
-            oprot.writeString(self.reservation.encode('utf-8') if sys.version_info[0] == 2 else self.reservation)
-            oprot.writeFieldEnd()
-        if self.reservationStartTime is not None:
-            oprot.writeFieldBegin('reservationStartTime', TType.I64, 14)
-            oprot.writeI64(self.reservationStartTime)
-            oprot.writeFieldEnd()
-        if self.reservationEndTime is not None:
-            oprot.writeFieldBegin('reservationEndTime', TType.I64, 15)
-            oprot.writeI64(self.reservationEndTime)
             oprot.writeFieldEnd()
         if self.sshAccountProvisioner is not None:
             oprot.writeFieldBegin('sshAccountProvisioner', TType.STRING, 16)
