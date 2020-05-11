@@ -82,15 +82,6 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @Column(name = "QUALITY_OF_SERVICE")
     private String qualityOfService;
 
-    @Column(name = "RESERVATION")
-    private String reservation;
-
-    @Column(name = "RESERVATION_END_TIME")
-    private Timestamp reservationEndTime;
-
-    @Column(name = "RESERVATION_START_TIME")
-    private Timestamp reservationStartTime;
-
     @Column(name = "RESOURCE_CS_TOKEN")
     private String resourceSpecificCredentialStoreToken;
 
@@ -191,30 +182,6 @@ public class GroupComputeResourcePrefEntity implements Serializable {
 
     public void setQualityOfService(String qualityOfService) {
         this.qualityOfService = qualityOfService;
-    }
-
-    public String getReservation() {
-        return reservation;
-    }
-
-    public void setReservation(String reservation) {
-        this.reservation = reservation;
-    }
-
-    public Timestamp getReservationEndTime() {
-        return reservationEndTime;
-    }
-
-    public void setReservationEndTime(Timestamp reservationEndTime) {
-        this.reservationEndTime = reservationEndTime;
-    }
-
-    public Timestamp getReservationStartTime() {
-        return reservationStartTime;
-    }
-
-    public void setReservationStartTime(Timestamp reservationStartTime) {
-        this.reservationStartTime = reservationStartTime;
     }
 
     public String getResourceSpecificCredentialStoreToken() {
