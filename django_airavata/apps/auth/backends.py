@@ -59,6 +59,7 @@ class KeycloakBackend(object):
         except User.DoesNotExist:
             return None
 
+    @sensitive_variables('client_secret')
     def _get_token_and_userinfo_password_flow(self, username, password):
         client_id = settings.KEYCLOAK_CLIENT_ID
         client_secret = settings.KEYCLOAK_CLIENT_SECRET
@@ -78,6 +79,7 @@ class KeycloakBackend(object):
         userinfo = oauth2_session.get(userinfo_url).json()
         return token, userinfo
 
+    @sensitive_variables('client_secret')
     def _get_token_and_userinfo_redirect_flow(self, request):
         authorization_code_url = request.build_absolute_uri()
         client_id = settings.KEYCLOAK_CLIENT_ID
@@ -100,6 +102,7 @@ class KeycloakBackend(object):
         userinfo = oauth2_session.get(userinfo_url).json()
         return token, userinfo
 
+    @sensitive_variables('client_secret', 'auth')
     def _get_token_and_userinfo_from_refresh_token(self,
                                                    request,
                                                    refresh_token=None):
