@@ -17,7 +17,11 @@ logger = logging.getLogger(__name__)
 class KeycloakBackend(object):
     """Django authentication backend for Keycloak."""
 
-    @sensitive_variables('password')
+    # mask all local variables from error emails since they contain the user's
+    # password and/or client_secret. Note, we could selectively just hide
+    # variables that are sensitive, but this decorator doesn't apply explicitly
+    # listed variable masking to library function calls
+    @sensitive_variables()
     def authenticate(self,
                      request=None,
                      username=None,
