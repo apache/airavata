@@ -9,6 +9,7 @@
 <script>
 import InteractiveParameterCheckboxWidget from "./InteractiveParameterCheckboxWidget";
 import InteractiveParameterSelectWidget from "./InteractiveParameterSelectWidget";
+import InteractiveParameterTextInputWidget from "./InteractiveParameterTextInputWidget";
 
 export default {
   name: "interactive-parameter-widget-container",
@@ -26,8 +27,10 @@ export default {
     widgetComponent() {
       if (this.parameter.options) {
         return InteractiveParameterSelectWidget;
-      } else if (typeof this.parameter.value === "boolean") {
+      } else if (typeof this.parameter.value === "boolean" || (this.parameter.widget && this.parameter.widget === 'checkbox')) {
         return InteractiveParameterCheckboxWidget;
+      } else if (typeof this.parameter.value === "string" || (this.parameter.widget && this.parameter.widget === 'textinput')) {
+        return InteractiveParameterTextInputWidget;
       } else {
         return null;
       }
