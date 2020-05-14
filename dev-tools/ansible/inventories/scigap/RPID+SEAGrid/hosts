@@ -1,0 +1,30 @@
+---
+# inventory file
+# NOTE: update the CHANGEMEs to the actual ip address or hostname.
+
+[zookeeper]
+149.165.157.21 ansible_connection=ssh ansible_user=root
+
+[rabbitmq]
+149.165.157.21 ansible_connection=ssh ansible_user=root
+
+[database]
+149.165.157.21 ansible_connection=ssh ansible_user=root
+
+[api-orch]
+149.165.157.21 ansible_connection=ssh ansible_user=root
+
+[pga]
+149.165.157.21 ansible_user=root
+
+[django]
+seagrid ansible_host=149.165.157.21 ansible_user=root
+
+[keycloak]
+iamdev.rpid.seagrid.org ansible_connection=ssh ansible_user=root
+
+[kafka]
+149.165.157.21 ansible_connection=ssh ansible_user=root
+
+[helix]
+149.165.157.21 ansible_connection=ssh ansible_user=root
