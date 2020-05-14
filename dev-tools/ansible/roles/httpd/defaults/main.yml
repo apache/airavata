@@ -51,4 +51,11 @@ httpd_ssl_conf_template: "ssl.conf.j2"
 
 httpd_default_http_port: 80
 httpd_default_https_port: 443
+
+# httpd_selinux_mode allowed values:
+# - disabled
+# - enforcing
+# - permissive
+# https://docs.ansible.com/ansible/latest/modules/selinux_module.html#parameter-state
+httpd_selinux_mode: "enforcing"
 ...
