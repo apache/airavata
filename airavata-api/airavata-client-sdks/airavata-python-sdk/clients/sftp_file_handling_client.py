@@ -48,7 +48,7 @@ class SFTPConnector(object):
                 base = os.path.join('', project_name)
                 sftp.mkdir(base)
                 sftp.mkdir(remote_path)
-            except OSError:
+            except (OSError, IOError) as e:
                 pass
             sftp.put_r(localpath=local_path, remotepath=remote_path, confirm=True, preserve_mtime=False)
         sftp.close()
