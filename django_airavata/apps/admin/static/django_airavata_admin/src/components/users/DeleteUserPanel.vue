@@ -4,7 +4,7 @@
       This will remove {{ username }} from the identity service.
     </p>
     <delete-button @delete="deleteUser">
-      Are you sure you want to delete {{ username }}?
+      Are you sure you want to delete <strong>{{ username }}</strong>?
     </delete-button>
   </b-card>
 </template>

@@ -17,8 +17,8 @@
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            <delete-link v-if="data.item.userHasWriteAccess" @delete="removeApplicationDeployment(data.item)">
-              Are you sure you want to remove the {{ getComputeResourceName(data.item.computeHostId) }} deployment?
+            <delete-link v-if="data.item.userHasWriteAccess" @delete="removeApplicationDeployment(data.item)" class="action-link">
+              Are you sure you want to remove the <strong>{{ getComputeResourceName(data.item.computeHostId) }}</strong> deployment?
             </delete-link>
           </template>
         </b-table>
