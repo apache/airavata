@@ -21,7 +21,7 @@
 149.165.156.124 ansible_user=root
 
 [pga]
-149.165.156.125 ansible_user=root
+149.165.170.103 ansible_user=root
 
 # Using the same keycloak as development
 [keycloak]
