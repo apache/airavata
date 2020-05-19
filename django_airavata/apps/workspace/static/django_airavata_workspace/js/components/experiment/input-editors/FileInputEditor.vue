@@ -27,7 +27,7 @@
         class="ml-2"
         @delete="deleteDataProduct"
       >
-        Are you sure you want to delete input file {{ dataProduct.productName }}?
+        Are you sure you want to delete input file <strong>{{ dataProduct.productName }}</strong>?
       </delete-link>
       <b-link
         v-else

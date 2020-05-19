@@ -166,15 +166,17 @@
       </div>
     </div>
     <div class="fixed-footer">
-        <b-button variant="primary" @click="save" :disabled="!valid"
-          >Save</b-button
-        >
-        <b-button class="ml-2" variant="danger" @click="remove"
-          >Delete</b-button
-        >
-        <b-button class="ml-2" variant="secondary" @click="cancel"
-          >Cancel</b-button
-        >
+      <b-button variant="primary" @click="save" :disabled="!valid"
+        >Save</b-button
+      >
+      <delete-button class="ml-2" @delete="remove">
+        Are you sure you want to remove the preferences for compute resource
+        <strong>{{ computeResource.hostName }}</strong
+        >?
+      </delete-button>
+      <b-button class="ml-2" variant="secondary" @click="cancel"
+        >Cancel</b-button
+      >
     </div>
   </div>
 </template>
@@ -189,13 +191,15 @@ import { models, services, errors } from "django-airavata-api";
 import {
   mixins,
   notifications,
-  errors as uiErrors
+  errors as uiErrors,
+  components
 } from "django-airavata-common-ui";
 
 export default {
   name: "compute-preference",
   components: {
     BatchQueueResourcePolicy,
+    "delete-button": components.DeleteButton,
     "ssh-credential-selector": SSHCredentialSelector,
     ComputeResourceReservationList
   },
@@ -480,7 +484,9 @@ export default {
     },
     addReservation(reservation) {
       this.data.reservations.push(reservation);
-      this.data.reservations.sort((a, b) => a.startTime < b.startTime ? -1 : 1);
+      this.data.reservations.sort((a, b) =>
+        a.startTime < b.startTime ? -1 : 1
+      );
     },
     deleteReservation(reservation) {
       const reservationIndex = this.data.reservations.findIndex(
