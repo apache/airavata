@@ -41,10 +41,10 @@ pga_vhost_template: "{{ inventory_dir }}/templates/pga-vhost.conf.j2"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
-admin_username: "default-admin"
+admin_username: "admin"
 admin_password: "123456"
 oauth_client_key: "pga"
-oauth_client_secret: "6dd5c5ea-50ce-4a52-8c7c-b11ea80799ac"
+oauth_client_secret: "df408bc7-39cd-4a9a-8638-256c681115f0"
 oidc_discovery_url: "https://{{ groups['keycloak'][0] }}/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
@@ -54,7 +54,7 @@ oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
 # or if SSL then:
 #oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "default"
+gateway_id: "airavata-custos-integration"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/exp-dir"
 gateway_data_store_resource_id: "CHANGEME"
@@ -62,10 +62,10 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClwPzT
 
 ## Portal related variables
 super_admin_portal: "true"
-admin_emails: "['CHANGEME']"
+admin_emails: "['isjarana@iu.edu']"
 #example: admin_emails: "['emailaddress1@example.com', 'emailaddress2@example.com']"
-portal_email_username: ""
-portal_email_password: ""
+portal_email_username: "airavatatest123@gmail.com"
+portal_email_password: "airavatatest12345678"
 portal_theme: "base"
 portal_title: "Airavata"
 ...
