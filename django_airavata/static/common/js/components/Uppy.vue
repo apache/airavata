@@ -30,11 +30,6 @@ export default {
       type: String,
       required: true
     },
-    xhrUploadMethod: {
-      type: String,
-      required: false,
-      default: "post"
-    },
     // endpoint should accept POST request. Request will include form data with
     // the key uploadURL.
     tusUploadFinishEndpoint: {
@@ -118,7 +113,6 @@ export default {
       } else {
         this.uppy.use(XHRUpload, {
           endpoint: this.xhrUploadEndpoint,
-          method: this.xhrUploadMethod,
           withCredentials: true,
           headers: {
             "X-CSRFToken": utils.FetchUtils.getCSRFToken()
