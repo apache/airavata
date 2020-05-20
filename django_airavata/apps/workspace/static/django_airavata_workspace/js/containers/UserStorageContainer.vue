@@ -4,7 +4,6 @@
       v-if="userStoragePath"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
-      :username="username"
       @upload-success="uploadSuccess"
       @add-directory="addDirectory"
       @delete-dir="deleteDir"

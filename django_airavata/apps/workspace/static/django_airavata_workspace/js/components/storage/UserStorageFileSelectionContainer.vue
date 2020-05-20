@@ -2,6 +2,7 @@
   <b-card header="Select a file">
     <user-storage-path-viewer
       :user-storage-path="userStoragePath"
+      :storage-path="storagePath"
       @directory-selected="directorySelected"
       @file-selected="fileSelected"
       :include-delete-action="false"
@@ -31,6 +32,26 @@ let mostRecentPath = "~";
 
 export default {
   name: "user-storage-file-selection-container",
+  computed: {
+    /**
+     * @returns {string} user storage path with an ending slash.
+     */
+    storagePath() {
+      let _storagePath = /~.*$/.exec(this.$route.fullPath);
+      if (_storagePath && _storagePath.length > 0) {
+        _storagePath = _storagePath[0];
+      } else {
+        _storagePath = this.$route.path;
+      }
+
+      // Validate to have the ending slash.
+      if (!_storagePath.endsWith("/")) {
+        _storagePath += "/";
+      }
+
+      return _storagePath;
+    }
+  },
   props: {
     selectedDataProductUris: {
       type: Array,

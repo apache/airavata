@@ -4,7 +4,6 @@
       v-if="isDir"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
-      :username="username"
       @upload-success="$emit('upload-success')"
       @add-directory="(dirName) => $emit('add-directory', dirName)"
     />
@@ -77,9 +76,6 @@ export default {
   name: "user-storage-path-viewer",
   props: {
     userStoragePath: {
-      required: true
-    },
-    username: {
       required: true
     },
     storagePath: {

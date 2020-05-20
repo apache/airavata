@@ -43,6 +43,7 @@
 
 <script>
   import {components} from "django-airavata-common-ui";
+  import {session} from "django-airavata-api";
 
   export default {
     name: "user-storage-create-view",
@@ -53,6 +54,9 @@
       uploadEndpoint() {
         // This endpoint can handle XHR upload or a TUS uploadURL
         return "/api/user-storage/" + this.storagePath;
+      },
+      username() {
+        return session.Session.username;
       }
     },
     data() {
@@ -62,9 +66,6 @@
     },
     props: {
       userStoragePath: {
-        required: true
-      },
-      username: {
         required: true
       },
       storagePath: {
