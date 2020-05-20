@@ -13,7 +13,7 @@ from rest_framework.decorators import action, detail_route, list_route
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework.status import HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from airavata.model.appcatalog.computeresource.ttypes import (
@@ -1534,7 +1534,7 @@ class UserStoragePathView(APIView):
             data_products_helper.update_file_content(request=request, path=path,
                                                      fileContentText=request.data["fileContentText"])
         else:
-            return Response(status=HTTP_404_NOT_FOUND)
+            return Response(status=HTTP_400_BAD_REQUEST)
 
         return self._create_response(request=request, path=path)
 
