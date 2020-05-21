@@ -1,6 +1,7 @@
 
 import json
 import logging
+from urllib.parse import urlparse
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -74,6 +75,8 @@ def create_experiment(request, app_module_id):
 
     # User input files can be passed as query parameters
     # <input name>=<path/to/user_file>
+    # and also as data product URIs
+    # <input name>=<data product URI>
     app_interface = ApplicationModuleViewSet.as_view(
         {'get': 'application_interface'})(request, app_module_id=app_module_id)
     if app_interface.status_code != 200:
@@ -83,11 +86,26 @@ def create_experiment(request, app_module_id):
     for app_input in app_interface.data['applicationInputs']:
         if (app_input['type'] ==
                 DataType.URI and app_input['name'] in request.GET):
-            user_file_path = request.GET[app_input['name']]
-            data_product_uri = data_products_helper.user_file_exists(
-                request, user_file_path)
-            if data_product_uri is not None:
-                user_input_files[app_input['name']] = data_product_uri
+            user_file_value = request.GET[app_input['name']]
+            try:
+                user_file_url = urlparse(user_file_value)
+                if user_file_url.scheme == 'airavata-dp':
+                    dp_uri = user_file_value
+                    try:
+                        data_product = request.airavata_client.getDataProduct(
+                            request.authz_token, dp_uri)
+                        if data_products_helper.exists(request, data_product):
+                            user_input_files[app_input['name']] = dp_uri
+                    except Exception as e:
+                        logger.exception(
+                            "Failed checking data product uri: {dp_uri}")
+                else:
+                    data_product_uri = data_products_helper.user_file_exists(
+                        request, user_file_url.path)
+                    if data_product_uri is not None:
+                        user_input_files[app_input['name']] = data_product_uri
+            except ValueError as e:
+                logger.exception(f"Invalid user file value: {user_file_value}")
     context = {
         'bundle_name': 'create-experiment',
         'app_module_id': app_module_id,
