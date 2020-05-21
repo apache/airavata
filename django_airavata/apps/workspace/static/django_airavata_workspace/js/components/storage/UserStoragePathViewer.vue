@@ -60,7 +60,7 @@
           v-if="includeDeleteAction"
           @delete="deleteItem(data.item)"
         >
-          Are you sure you want to delete {{ data.item.name }}?
+          Are you sure you want to delete <strong>{{ data.item.name }}</strong>?
         </delete-button>
       </template>
     </b-table>

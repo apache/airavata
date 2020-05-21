@@ -33,7 +33,7 @@
           Save
         </b-button>
         <delete-button class="editor-button" v-if="id" :disabled="readonly" @delete="deleteApplication">
-          Are you sure you want to delete the {{ appModule ? appModule.appModuleName : "" }} application?
+          Are you sure you want to delete the <strong>{{ appModule ? appModule.appModuleName : "" }}</strong> application?
         </delete-button>
         <b-button class="editor-button" variant="secondary" @click="cancel">
           Cancel

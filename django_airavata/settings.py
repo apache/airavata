@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'wagtail.search',
     'wagtail.admin',
     'wagtail.core',
+    'wagtail.contrib.styleguide',
 
     # wagtail third party dependencies
     'modelcluster',

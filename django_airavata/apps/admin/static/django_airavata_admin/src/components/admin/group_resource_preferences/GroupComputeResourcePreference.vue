@@ -78,16 +78,13 @@
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            <a
-              href="#"
-              class="action-link text-danger"
-              @click.prevent="
-                removeComputePreference(row.item.computeResourceId)
-              "
+            <delete-link
+              class="action-link"
+              @delete="removeComputePreference(row.item.computeResourceId)"
             >
-              Delete
-              <i class="fa fa-trash" aria-hidden="true"></i>
-            </a>
+              Are you sure you want to remove the preferences for compute resource
+              <strong>{{ getComputeResourceName(row.item.computeResourceId) }}</strong>?
+            </delete-link>
           </template>
         </b-table>
       </template>
@@ -96,13 +93,14 @@
       <b-button variant="primary" @click="saveGroupResourceProfile"
         >Save</b-button
       >
-      <b-button
+      <delete-button
         v-if="id"
         class="ml-2"
-        variant="danger"
-        @click="removeGroupResourceProfile"
-        >Delete</b-button
+        @delete="removeGroupResourceProfile"
       >
+        Are you sure you want to remove Group Resource Profile
+        <strong>{{ data.groupResourceProfileName }}</strong>?
+      </delete-button>
       <b-button class="ml-2" variant="secondary" @click="cancel"
         >Cancel</b-button
       >
@@ -182,6 +180,8 @@ export default {
   },
 
   components: {
+    "delete-button": comps.DeleteButton,
+    "delete-link": comps.DeleteLink,
     "share-button": comps.ShareButton,
     "list-layout": layouts.ListLayout,
     ComputeResourcePolicySummary,

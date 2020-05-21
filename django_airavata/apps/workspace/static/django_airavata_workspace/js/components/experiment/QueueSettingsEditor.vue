@@ -1,29 +1,31 @@
 <template>
-
   <div>
     <div class="row">
       <div class="col">
-        <div
-          class="card border-default"
-          :class="{ 'border-danger': !valid }"
-        >
+        <div class="card border-default" :class="{ 'border-danger': !valid }">
           <b-link
             @click="showConfiguration = !showConfiguration"
             class="card-link text-dark"
           >
             <div class="card-body">
-              <h5 class="card-title mb-4">Settings for queue {{ localComputationalResourceScheduling.queueName }}</h5>
+              <h5 class="card-title mb-4">
+                Settings for queue {{ data.queueName }}
+              </h5>
               <div class="row">
                 <div class="col">
-                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.nodeCount }}</h3>
+                  <h3 class="h5 mb-0">
+                    {{ data.nodeCount }}
+                  </h3>
                   <span class="text-muted text-uppercase">NODE COUNT</span>
                 </div>
                 <div class="col">
-                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.totalCPUCount }}</h3>
+                  <h3 class="h5 mb-0">
+                    {{ data.totalCPUCount }}
+                  </h3>
                   <span class="text-muted text-uppercase">CORE COUNT</span>
                 </div>
                 <div class="col">
-                  <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.wallTimeLimit }} minutes</h3>
+                  <h3 class="h5 mb-0">{{ data.wallTimeLimit }} minutes</h3>
                   <span class="text-muted text-uppercase">TIME LIMIT</span>
                 </div>
               </div>
@@ -38,7 +40,7 @@
           <b-form-group
             label="Select a Queue"
             label-for="queue"
-            :feedback="getValidationFeedback('queueName')"
+            :invalid-feedback="getValidationFeedback('queueName')"
             :state="getValidationState('queueName')"
           >
             <b-form-select
@@ -51,13 +53,13 @@
             >
             </b-form-select>
             <div slot="description">
-              {{ selectedQueueDefault.queueDescription }}
+              {{ queueDescription }}
             </div>
           </b-form-group>
           <b-form-group
             label="Node Count"
             label-for="node-count"
-            :feedback="getValidationFeedback('nodeCount')"
+            :invalid-feedback="getValidationFeedback('nodeCount')"
             :state="getValidationState('nodeCount', true)"
           >
             <b-form-input
@@ -71,17 +73,14 @@
             >
             </b-form-input>
             <div slot="description">
-              <i
-                class="fa fa-info-circle"
-                aria-hidden="true"
-              ></i>
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
               Max Allowed Nodes = {{ maxNodes }}
             </div>
           </b-form-group>
           <b-form-group
             label="Total Core Count"
             label-for="core-count"
-            :feedback="getValidationFeedback('totalCPUCount')"
+            :invalid-feedback="getValidationFeedback('totalCPUCount')"
             :state="getValidationState('totalCPUCount', true)"
           >
             <b-form-input
@@ -95,17 +94,14 @@
             >
             </b-form-input>
             <div slot="description">
-              <i
-                class="fa fa-info-circle"
-                aria-hidden="true"
-              ></i>
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
               Max Allowed Cores = {{ maxCPUCount }}
             </div>
           </b-form-group>
           <b-form-group
             label="Wall Time Limit (in minutes)"
             label-for="walltime-limit"
-            :feedback="getValidationFeedback('wallTimeLimit')"
+            :invalid-feedback="getValidationFeedback('wallTimeLimit')"
             :state="getValidationState('wallTimeLimit', true)"
           >
             <b-input-group right="minutes">
@@ -121,10 +117,7 @@
               </b-form-input>
             </b-input-group>
             <div slot="description">
-              <i
-                class="fa fa-info-circle"
-                aria-hidden="true"
-              ></i>
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
               Max Allowed Wall Time = {{ maxWalltime }} minutes
             </div>
           </b-form-group>
@@ -134,11 +127,9 @@
               href="#"
               @click.prevent="showConfiguration = false"
             >
-              <i
-                class="fa fa-times text-secondary"
-                aria-hidden="true"
-              ></i>
-              Hide Settings</a>
+              <i class="fa fa-times text-secondary" aria-hidden="true"></i>
+              Hide Settings</a
+            >
           </div>
         </div>
       </div>
@@ -172,8 +163,8 @@ export default {
   },
   data() {
     return {
-      queueDefaults: [],
-      showConfiguration: false
+      showConfiguration: false,
+      appDeploymentQueues: null
     };
   },
   computed: {
@@ -186,17 +177,15 @@ export default {
       });
       return queueOptions;
     },
-    localComputationalResourceScheduling() {
-      return this.data;
-    },
     selectedQueueDefault: function() {
       return this.queueDefaults.find(
-        queue =>
-          queue.queueName ===
-          this.localComputationalResourceScheduling.queueName
+        queue => queue.queueName === this.data.queueName
       );
     },
     maxCPUCount: function() {
+      if (!this.selectedQueueDefault) {
+        return 0;
+      }
       const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
         this.selectedQueueDefault.queueName
       );
@@ -209,6 +198,9 @@ export default {
       return this.selectedQueueDefault.maxProcessors;
     },
     maxNodes: function() {
+      if (!this.selectedQueueDefault) {
+        return 0;
+      }
       const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
         this.selectedQueueDefault.queueName
       );
@@ -221,6 +213,9 @@ export default {
       return this.selectedQueueDefault.maxNodes;
     },
     maxWalltime: function() {
+      if (!this.selectedQueueDefault) {
+        return 0;
+      }
       const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
         this.selectedQueueDefault.queueName
       );
@@ -232,12 +227,46 @@ export default {
       }
       return this.selectedQueueDefault.maxRunTime;
     },
+    queueDefaults() {
+      return this.appDeploymentQueues
+        ? this.appDeploymentQueues
+            .filter(q => this.isQueueInComputeResourcePolicy(q.queueName))
+            .sort((a, b) => {
+              // Sort default first, then by alphabetically by name
+              if (a.isDefaultQueue) {
+                return -1;
+              } else if (b.isDefaultQueue) {
+                return 1;
+              } else {
+                return a.queueName.localeCompare(b.queueName);
+              }
+            })
+        : [];
+    },
+    defaultQueue() {
+      if (this.queueDefaults.length === 0) {
+        return null;
+      }
+      return this.queueDefaults[0];
+    },
+    defaultQueueBatchQueueResourcePolicy() {
+      if (this.defaultQueue) {
+        return this.getBatchQueueResourcePolicy(this.defaultQueue.queueName);
+      } else {
+        return null;
+      }
+    },
+    queueDescription() {
+      return this.selectedQueueDefault
+        ? this.selectedQueueDefault.queueDescription
+        : null;
+    },
     validation() {
       // Don't run validation if we don't have selectedQueueDefault
       if (!this.selectedQueueDefault) {
-        return {};
+        return this.data.validate();
       }
-      return this.localComputationalResourceScheduling.validate(
+      return this.data.validate(
         this.selectedQueueDefault,
         this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)
       );
@@ -262,41 +291,22 @@ export default {
         this.$emit("valid");
       }
     },
-    loadQueueDefaults: function(updateQueueSettings) {
+    loadAppDeploymentQueues() {
       return services.ApplicationDeploymentService.getQueues({
         lookup: this.appDeploymentId
-      }).then(queueDefaults => {
-        // Sort queue defaults
-        this.queueDefaults = queueDefaults
-          .filter(q => this.isQueueInComputeResourcePolicy(q.queueName))
-          .sort((a, b) => {
-            // Sort default first, then by alphabetically by name
-            if (a.isDefaultQueue) {
-              return -1;
-            } else if (b.isDefaultQueue) {
-              return 1;
-            } else {
-              return a.queueName.localeCompare(b.queueName);
-            }
-          });
+      }).then(queueDefaults => (this.appDeploymentQueues = queueDefaults));
+    },
+    setDefaultQueue() {
+      if (this.queueDefaults.length === 0) {
+        this.data.queueName = null;
+        return;
+      }
+      const defaultQueue = this.queueDefaults[0];
 
-        if (updateQueueSettings) {
-          // Find the default queue and apply it's settings
-          const defaultQueue = this.queueDefaults[0];
-
-          this.localComputationalResourceScheduling.queueName =
-            defaultQueue.queueName;
-          this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(
-            defaultQueue
-          );
-          this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(
-            defaultQueue
-          );
-          this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(
-            defaultQueue
-          );
-        }
-      });
+      this.data.queueName = defaultQueue.queueName;
+      this.data.totalCPUCount = this.getDefaultCPUCount(defaultQueue);
+      this.data.nodeCount = this.getDefaultNodeCount(defaultQueue);
+      this.data.wallTimeLimit = this.getDefaultWalltime(defaultQueue);
     },
     isQueueInComputeResourcePolicy: function(queueName) {
       if (!this.computeResourcePolicy) {
@@ -363,19 +373,31 @@ export default {
     }
   },
   watch: {
-    appDeploymentId: function() {
-      this.loadQueueDefaults(true);
+    appDeploymentId() {
+      this.loadAppDeploymentQueues().then(() => this.setDefaultQueue());
+    },
+    // If the default queue changes, re-set queue defaults
+    defaultQueue() {
+      this.setDefaultQueue();
+    },
+    // If batch queue resource policy for the default queue changes, re-set queue defaults
+    defaultQueueBatchQueueResourcePolicy(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.setDefaultQueue();
+      }
     }
   },
   mounted: function() {
-    // For brand new queue settings (no queueName specified) load the default
-    // queue and its default values and apply them
-    const updateQueueSettings = !this.value.queueName;
-    this.loadQueueDefaults(updateQueueSettings).then(() => this.validate());
+    this.loadAppDeploymentQueues().then(() => {
+      // For brand new queue settings (no queueName specified) load the default
+      // queue and its default values and apply them
+      if (!this.value.queueName) {
+        this.setDefaultQueue();
+      }
+    });
     this.$on("input", () => this.validate());
   }
 };
 </script>
 
-<style>
-</style>
+<style></style>

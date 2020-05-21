@@ -6,7 +6,7 @@ import requests
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.views.decorators.debug import sensitive_variables
-from oauthlib.oauth2 import LegacyApplicationClient
+from oauthlib.oauth2 import LegacyApplicationClient, InvalidGrantError
 from requests_oauthlib import OAuth2Session
 
 from . import utils
@@ -17,7 +17,11 @@ logger = logging.getLogger(__name__)
 class KeycloakBackend(object):
     """Django authentication backend for Keycloak."""
 
-    @sensitive_variables('password')
+    # mask all local variables from error emails since they contain the user's
+    # password and/or client_secret. Note, we could selectively just hide
+    # variables that are sensitive, but this decorator doesn't apply explicitly
+    # listed variable masking to library function calls
+    @sensitive_variables()
     def authenticate(self,
                      request=None,
                      username=None,
@@ -27,6 +31,8 @@ class KeycloakBackend(object):
             if username and password:
                 token, userinfo = self._get_token_and_userinfo_password_flow(
                     username, password)
+                if token is None:  # login failed
+                    return None
                 self._process_token(request, token)
                 return self._process_userinfo(request, userinfo)
             # user is already logged in and can use refresh token
@@ -60,23 +66,29 @@ class KeycloakBackend(object):
             return None
 
     def _get_token_and_userinfo_password_flow(self, username, password):
-        client_id = settings.KEYCLOAK_CLIENT_ID
-        client_secret = settings.KEYCLOAK_CLIENT_SECRET
-        token_url = settings.KEYCLOAK_TOKEN_URL
-        userinfo_url = settings.KEYCLOAK_USERINFO_URL
-        verify_ssl = settings.KEYCLOAK_VERIFY_SSL
-        oauth2_session = OAuth2Session(client=LegacyApplicationClient(
-            client_id=client_id))
-        if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-            oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
-        token = oauth2_session.fetch_token(token_url=token_url,
-                                           username=username,
-                                           password=password,
-                                           client_id=client_id,
-                                           client_secret=client_secret,
-                                           verify=verify_ssl)
-        userinfo = oauth2_session.get(userinfo_url).json()
-        return token, userinfo
+        try:
+            client_id = settings.KEYCLOAK_CLIENT_ID
+            client_secret = settings.KEYCLOAK_CLIENT_SECRET
+            token_url = settings.KEYCLOAK_TOKEN_URL
+            userinfo_url = settings.KEYCLOAK_USERINFO_URL
+            verify_ssl = settings.KEYCLOAK_VERIFY_SSL
+            oauth2_session = OAuth2Session(client=LegacyApplicationClient(
+                client_id=client_id))
+            if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
+                oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
+            token = oauth2_session.fetch_token(token_url=token_url,
+                                               username=username,
+                                               password=password,
+                                               client_id=client_id,
+                                               client_secret=client_secret,
+                                               verify=verify_ssl)
+            userinfo = oauth2_session.get(userinfo_url).json()
+            return token, userinfo
+        except InvalidGrantError as e:
+            # password wasn't valid, just log as a warning
+            logger.warning(f"Failed to log in user {username} with "
+                           f"password: {e}")
+            return None, None
 
     def _get_token_and_userinfo_redirect_flow(self, request):
         authorization_code_url = request.build_absolute_uri()

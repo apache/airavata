@@ -47,11 +47,7 @@
       </b-card>
     </template>
     <template slot="item-list" slot-scope="slotProps">
-      <b-table
-        hover
-        :fields="fields"
-        :items="slotProps.items"
-      >
+      <b-table hover :fields="fields" :items="slotProps.items">
         <template slot="reservationName" slot-scope="data">
           {{ data.value }}
           <b-badge v-if="data.item.isExpired">Expired</b-badge>
@@ -79,7 +75,8 @@
             @delete="deleteReservation(data.item)"
           >
             Are you sure you want to delete reservation
-            {{ data.item.reservationName }}?
+            <strong>{{ data.item.reservationName }}</strong
+            >?
           </delete-link>
         </template>
         <template slot="row-details" slot-scope="row">

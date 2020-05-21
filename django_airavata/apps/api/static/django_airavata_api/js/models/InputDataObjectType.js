@@ -239,13 +239,6 @@ export default class InputDataObjectType extends BaseModel {
           this.editorDependencies.show
         );
         if ("showOptions" in this.editorDependencies) {
-          // AIRAVATA-3276 For backwards compatibility, can be removed after
-          // data migration
-          if ("toggle" in this.editorDependencies.showOptions) {
-            this.editorDependencies.showOptions.toggle.forEach(prop => {
-              this[prop] = this.show;
-            });
-          }
           if (
             "isRequired" in this.editorDependencies.showOptions &&
             this.editorDependencies.showOptions.isRequired
