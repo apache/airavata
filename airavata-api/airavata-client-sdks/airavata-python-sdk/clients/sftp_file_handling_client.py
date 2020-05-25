@@ -16,6 +16,7 @@
 
 import logging
 import pysftp
+import os
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -38,22 +39,27 @@ class SFTPConnector(object):
         self.password = password
 
     def upload_files(self, local_path, project_name, exprement_id):
-        remote_path = "/" + project_name + "/" + exprement_id + "/"
+        remote_path = os.path.join('', project_name, exprement_id, '')
+        # remote_path = "/" + project_name + "/" + exprement_id + "/"
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
         with  pysftp.Connection(host=self.host, port=self.port, username=self.username,
                                 password=self.password, cnopts=cnopts) as sftp:
             try:
+                base = os.path.join('', project_name)
+                sftp.mkdir(base)
                 sftp.mkdir(remote_path)
             except OSError:
                 pass
             sftp.put_r(localpath=local_path, remotepath=remote_path, confirm=True, preserve_mtime=False)
         sftp.close()
-        pathsuffix = "/" + self.username + remote_path
+        # pathsuffix = "/" + self.username + remote_path
+        pathsuffix = os.path.join('', self.username + remote_path)
         return pathsuffix
 
     def download_files(self, local_path, project_name, exprement_id):
-        remote_path = "/" + project_name + "/" + exprement_id + "/"
+        remote_path = os.path.join('', project_name, exprement_id, '')
+        # remote_path = "/" + project_name + "/" + exprement_id + "/"
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
         with  pysftp.Connection(host=self.host, port=self.port, username=self.username,
