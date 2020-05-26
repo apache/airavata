@@ -20,7 +20,7 @@ import moment from "moment";
 
 export default {
   name: "create-experiment-container",
-  props: ["app-module-id", "user-input-files", "experiment-data-dir"],
+  props: ["app-module-id", "user-input-values", "experiment-data-dir"],
   data() {
     return {
       experiment: null,
@@ -56,13 +56,13 @@ export default {
         experiment.experimentName =
           appModule.appModuleName + " on " + moment().format("lll");
         this.appModule = appModule;
-        if (this.userInputFiles) {
-          Object.keys(this.userInputFiles).forEach(k => {
+        if (this.userInputValues) {
+          Object.keys(this.userInputValues).forEach(k => {
             const experimentInput = experiment.experimentInputs.find(
               inp => inp.name === k
             );
             if (experimentInput) {
-              experimentInput.value = this.userInputFiles[k];
+              experimentInput.value = this.userInputValues[k];
             }
           });
         }
