@@ -82,7 +82,7 @@ def create_experiment(request, app_module_id):
     if app_interface.status_code != 200:
         raise Exception("Failed to load application module data: {}".format(
             app_interface.data['detail']))
-    user_input_files = {}
+    user_input_values = {}
     for app_input in app_interface.data['applicationInputs']:
         if (app_input['type'] ==
                 DataType.URI and app_input['name'] in request.GET):
@@ -95,7 +95,7 @@ def create_experiment(request, app_module_id):
                         data_product = request.airavata_client.getDataProduct(
                             request.authz_token, dp_uri)
                         if data_products_helper.exists(request, data_product):
-                            user_input_files[app_input['name']] = dp_uri
+                            user_input_values[app_input['name']] = dp_uri
                     except Exception as e:
                         logger.exception(
                             "Failed checking data product uri: {dp_uri}")
@@ -103,13 +103,17 @@ def create_experiment(request, app_module_id):
                     data_product_uri = data_products_helper.user_file_exists(
                         request, user_file_url.path)
                     if data_product_uri is not None:
-                        user_input_files[app_input['name']] = data_product_uri
+                        user_input_values[app_input['name']] = data_product_uri
             except ValueError as e:
                 logger.exception(f"Invalid user file value: {user_file_value}")
+        elif (app_input['type'] == DataType.STRING and
+              app_input['name'] in request.GET):
+            name = app_input['name']
+            user_input_values[name] = request.GET[name]
     context = {
         'bundle_name': 'create-experiment',
         'app_module_id': app_module_id,
-        'user_input_files': json.dumps(user_input_files)
+        'user_input_values': json.dumps(user_input_values)
     }
     if 'experiment-data-dir' in request.GET:
         context['experiment_data_dir'] = request.GET['experiment-data-dir']
