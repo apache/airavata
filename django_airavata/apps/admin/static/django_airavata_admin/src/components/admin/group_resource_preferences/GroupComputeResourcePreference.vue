@@ -2,7 +2,10 @@
   <div class="has-fixed-footer">
     <div class="row">
       <div class="col">
-        <h1 class="h4 mb-4">{{ title }}</h1>
+        <h1 class="h4">{{ title }}</h1>
+        <div v-if="owner" class="text-muted mb-2">
+          Created by <span :title="ownerTitle">{{ ownerUserId }}</span>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -82,8 +85,12 @@
               class="action-link"
               @delete="removeComputePreference(row.item.computeResourceId)"
             >
-              Are you sure you want to remove the preferences for compute resource
-              <strong>{{ getComputeResourceName(row.item.computeResourceId) }}</strong>?
+              Are you sure you want to remove the preferences for compute
+              resource
+              <strong>{{
+                getComputeResourceName(row.item.computeResourceId)
+              }}</strong
+              >?
             </delete-link>
           </template>
         </b-table>
@@ -99,7 +106,8 @@
         @delete="removeGroupResourceProfile"
       >
         Are you sure you want to remove Group Resource Profile
-        <strong>{{ data.groupResourceProfileName }}</strong>?
+        <strong>{{ data.groupResourceProfileName }}</strong
+        >?
       </delete-button>
       <b-button class="ml-2" variant="secondary" @click="cancel"
         >Cancel</b-button
@@ -141,6 +149,12 @@ export default {
           grp => (this.data = grp)
         );
       }
+      // Load information about the owner of this GroupResourceProfile
+      services.SharedEntityService.retrieve({
+        lookup: this.id
+      }).then(sharedEntity => {
+        this.sharedEntity = sharedEntity;
+      });
     }
   },
   data: function() {
@@ -148,6 +162,7 @@ export default {
     return {
       data: data,
       service: services.GroupResourceProfileService,
+      sharedEntity: null,
       computePreferencesFields: [
         {
           label: "Name",
@@ -202,6 +217,24 @@ export default {
       return this.id
         ? this.data.groupResourceProfileName
         : "New Group Resource Profile";
+    },
+    owner() {
+      return this.sharedEntity && this.sharedEntity.owner
+        ? this.sharedEntity.owner
+        : null;
+    },
+    ownerUserId() {
+      return this.owner ? this.owner.userId : null;
+    },
+    ownerTitle() {
+      return this.owner
+        ? this.owner.firstName +
+            " " +
+            this.owner.lastName +
+            " (" +
+            this.owner.email +
+            ")"
+        : null;
     }
   },
   methods: {
