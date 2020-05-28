@@ -1,5 +1,6 @@
 <template>
-  <compoment :is="widgetComponent"
+  <compoment
+    :is="widgetComponent"
     :value="parameter.value"
     :parameter="parameter"
     @input="$emit('input', $event)"
@@ -8,7 +9,9 @@
 
 <script>
 import InteractiveParameterCheckboxWidget from "./InteractiveParameterCheckboxWidget";
+import InteractiveParameterRangeWidget from "./InteractiveParameterRangeWidget.vue";
 import InteractiveParameterSelectWidget from "./InteractiveParameterSelectWidget";
+import InteractiveParameterStepperWidget from "./InteractiveParameterStepperWidget.vue";
 import InteractiveParameterTextInputWidget from "./InteractiveParameterTextInputWidget";
 
 export default {
@@ -21,16 +24,36 @@ export default {
   },
   components: {
     InteractiveParameterCheckboxWidget,
-    InteractiveParameterSelectWidget
+    InteractiveParameterRangeWidget,
+    InteractiveParameterSelectWidget,
+    InteractiveParameterStepperWidget,
+    InteractiveParameterTextInputWidget
   },
   computed: {
     widgetComponent() {
       if (this.parameter.options) {
         return InteractiveParameterSelectWidget;
-      } else if (typeof this.parameter.value === "boolean" || (this.parameter.widget && this.parameter.widget === 'checkbox')) {
+      } else if (
+        this.parameter.type === "boolean" ||
+        (this.parameter.widget && this.parameter.widget === "checkbox")
+      ) {
         return InteractiveParameterCheckboxWidget;
-      } else if (typeof this.parameter.value === "string" || (this.parameter.widget && this.parameter.widget === 'textinput')) {
+      } else if (
+        this.parameter.type === "string" ||
+        (this.parameter.widget && this.parameter.widget === "textinput")
+      ) {
         return InteractiveParameterTextInputWidget;
+      } else if (
+        this.parameter.type === "float" &&
+        "min" in this.parameter &&
+        "max" in this.parameter
+      ) {
+        return InteractiveParameterRangeWidget;
+      } else if (
+        this.parameter.type === "float" ||
+        (this.parameter.widget && this.parameter.widget === "stepper")
+      ) {
+        return InteractiveParameterStepperWidget;
       } else {
         return null;
       }
@@ -38,4 +61,3 @@ export default {
   }
 };
 </script>
-

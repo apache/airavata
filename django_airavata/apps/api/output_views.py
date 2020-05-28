@@ -210,19 +210,26 @@ def _generate_data(request,
                                               experiment,
                                               output_file=output_file,
                                               **kwargs)
-    _convert_options(data)
+    _process_interactive_params(data)
     return data
+
+
+def _process_interactive_params(data):
+    if 'interactive' in data:
+        _convert_options(data)
+        for param in data['interactive']:
+            if 'type' not in param:
+                param['type'] = _infer_interactive_param_type(param)
 
 
 def _convert_options(data):
     """Convert interactive options to explicit text/value dicts."""
-    if 'interactive' in data:
-        for param in data['interactive']:
-            if 'options' in param and isinstance(param['options'][0], str):
-                param['options'] = _convert_options_strings(param['options'])
-            elif 'options' in param and isinstance(
-                    param['options'][0], collections.Sequence):
-                param['options'] = _convert_options_sequences(param['options'])
+    for param in data['interactive']:
+        if 'options' in param and isinstance(param['options'][0], str):
+            param['options'] = _convert_options_strings(param['options'])
+        elif 'options' in param and isinstance(
+                param['options'][0], collections.Sequence):
+            param['options'] = _convert_options_sequences(param['options'])
 
 
 def _convert_options_strings(options):
@@ -231,6 +238,18 @@ def _convert_options_strings(options):
 
 def _convert_options_sequences(options):
     return [{"text": o[0], "value": o[1]} for o in options]
+
+
+def _infer_interactive_param_type(param):
+    v = param['value']
+    if isinstance(v, float):
+        return "float"
+    elif isinstance(v, int):
+        return "integer"
+    elif isinstance(v, str):
+        return "string"
+    elif isinstance(v, bool):
+        return "boolean"
 
 
 def _convert_params_to_type(output_view_provider, params):
@@ -242,8 +261,12 @@ def _convert_params_to_type(output_view_provider, params):
                 method_params[k].default is not None):
             # TODO: handle lists?
             # Handle boolean and numeric values, converting from string
-            if type(method_params[k].default) is not str:
-                params[k] = json.loads(v)
+            if isinstance(method_params[k].default, bool):
+                params[k] = v == "true"
+            elif isinstance(method_params[k].default, float):
+                params[k] = float(v)
+            elif isinstance(method_params[k].default, int):
+                params[k] = int(v)
             else:
                 params[k] = v
     return params
