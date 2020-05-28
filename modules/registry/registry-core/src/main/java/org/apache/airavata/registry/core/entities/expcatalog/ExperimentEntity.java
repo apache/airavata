@@ -73,6 +73,12 @@ public class ExperimentEntity implements Serializable {
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     public boolean enableEmailNotification;
 
+    @Column(name = "EXECUTION_TYPE")
+    public String executionType;
+
+    @Column(name = "SWEEP_COUNT")
+    public int sweepCount;
+
     @Lob
     @Column(name = "EMAIL_ADDRESSES")
     public String emailAddresses;
@@ -255,5 +261,21 @@ public class ExperimentEntity implements Serializable {
 
     public void setProcesses(List<ProcessEntity> processes) {
         this.processes = processes;
+    }
+
+    public String getExecutionType() {
+        return executionType;
+    }
+
+    public void setExecutionType(String executionType) {
+        this.executionType = executionType;
+    }
+
+    public int getSweepCount() {
+        return sweepCount;
+    }
+
+    public void setSweepCount(int sweepCount) {
+        this.sweepCount = sweepCount;
     }
 }

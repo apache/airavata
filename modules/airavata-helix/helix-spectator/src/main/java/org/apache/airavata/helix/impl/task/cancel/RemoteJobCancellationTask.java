@@ -54,7 +54,7 @@ public class RemoteJobCancellationTask extends AiravataTask {
                     JobFactory.getResourceJobManager(
                             getRegistryServiceClient(),
                             getTaskContext().getJobSubmissionProtocol(),
-                            getTaskContext().getPreferredJobSubmissionInterface()));
+                            getTaskContext().getPreferredJobSubmissionInterface()), "param_sweep".equals(getTaskContext().getExecutionType()));
 
             AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
                     getTaskContext().getGatewayId(),

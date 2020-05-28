@@ -11,8 +11,8 @@
    out.print '#BSUB -N\n'
    if (accountString != null && accountString != "") out.print '#BSUB -P  ' + accountString + '\n'
    if (maxWallTime != null && maxWallTime != "") out.print '#BSUB -W ' + maxWallTime + '\n'
-   if (standardOutFile != null && standardOutFile != "") out.print '#BSUB -o ' + standardOutFile + '\n'
-   if (standardErrorFile != null && standardErrorFile != "") out.print '#BSUB -e ' + standardErrorFile + '\n'
+   if (standardOutFile != null && standardOutFile != "") out.print '#BSUB -o ' + workingDirectory  + '/' + standardOutFile + '\n'
+   if (standardErrorFile != null && standardErrorFile != "") out.print '#BSUB -e ' + workingDirectory  + '/' + standardErrorFile + '\n'
    if (chassisName != null && chassisName != "") out.print '#BSUB -m c' + chassisName + '\n'
    if (usedMem != null && usedMem != "") out.print '#BSUB -R rusage[mem=' + usedMem + ']\n'
 %>

@@ -9,8 +9,8 @@
    if (maxWallTime != null && maxWallTime != "") out.print '#PBS -l walltime=' + maxWallTime + '\n'
    if (jobSubmitterCommand != null && jobSubmitterCommand != "" && jobSubmitterCommand == "ccmrun")
         out.print '#PBS -l gres=ccm \n'
-   if (standardOutFile != null && standardOutFile != "") out.print '#PBS -o ' + standardOutFile + '\n'
-   if (standardErrorFile != null && standardErrorFile != "") out.print '#PBS -e ' + standardErrorFile + '\n'
+   if (standardOutFile != null && standardOutFile != "") out.print '#PBS -o ' + workingDirectory  + '/' + standardOutFile + '\n'
+   if (standardErrorFile != null && standardErrorFile != "") out.print '#PBS -e ' + workingDirectory  + '/' + standardErrorFile + '\n'
    if (usedMem != null && usedMem != "") out.print '#PBS -l vmem=' + usedMem + 'M\n'
    if (nodes != null && nodes != "" && processPerNode != null && processPerNode != "")
         out.print '#PBS -l nodes=' + nodes + ':ppn=' + processPerNode + '\n'

@@ -21,6 +21,8 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataValueObjectType;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -40,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentModel, ExperimentEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentRepository.class);
@@ -123,7 +126,19 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
     }
 
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
-        return get(experimentId);
+        ExperimentModel experimentModel = get(experimentId);
+        ExperimentOutputValueRepository outputValueRepository = new ExperimentOutputValueRepository();
+        List<OutputDataObjectType> experimentOutputs = experimentModel.getExperimentOutputs();
+        if (experimentOutputs != null) {
+            for (OutputDataObjectType out: experimentOutputs) {
+                List<OutputDataValueObjectType> experimentOutputValues = outputValueRepository.getExperimentOutputValues(experimentId, out.getName());
+                if (experimentOutputValues != null && experimentOutputValues.size() > 0) {
+                    List<String> values = experimentOutputValues.stream().map(OutputDataValueObjectType::getValue).collect(Collectors.toList());
+                    out.setValue(String.join(",", values));
+                }
+            }
+        }
+        return experimentModel;
     }
 
     public String addUserConfigurationData(UserConfigurationDataModel userConfigurationDataModel, String experimentId) throws RegistryException {

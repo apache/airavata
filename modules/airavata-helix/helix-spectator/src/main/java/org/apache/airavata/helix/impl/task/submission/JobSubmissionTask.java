@@ -56,8 +56,12 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
+                    JobFactory.getResourceJobManager(
+                        getRegistryServiceClient(),
+                        getTaskContext().getJobSubmissionProtocol(),
+                        getTaskContext().getPreferredJobSubmissionInterface()),
+                    "param_sweep".equals(getTaskContext().getExecutionType()));
 
         addMonitoringCommands(groovyMapData);
 
@@ -155,8 +159,12 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
+                JobFactory.getResourceJobManager(
+                    getRegistryServiceClient(),
+                    getTaskContext().getJobSubmissionProtocol(),
+                    getTaskContext().getPreferredJobSubmissionInterface()), "param_sweep".equals(getTaskContext().getExecutionType()));
+
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getCancelCommand(jobId).getRawCommand(), null);
         return commandOutput.getExitCode() == 0;
     }
@@ -171,7 +179,9 @@ public abstract class JobSubmissionTask extends AiravataTask {
             throw new Exception("Resource job manager can not be null for protocol " + getTaskContext().getJobSubmissionProtocol() + " and job id " + jobId);
         }
 
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
+                resourceJobManager,
+                "param_sweep".equals(getTaskContext().getExecutionType()));
 
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobId).getRawCommand(), null);
 
@@ -190,7 +200,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
                     + " and job name " + jobName + " and user " + userName);
         }
 
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
+                resourceJobManager, "param_sweep".equals(getTaskContext().getExecutionType()));
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);

@@ -141,6 +141,9 @@ public class GroovyMapData {
     @ScriptTag(name = "experimentDataDir")
     private String experimentDataDir;
 
+    @ScriptTag(name = "sweepCount")
+    private int sweepCount;
+
     public Map<String, Object> getMap() {
 
         Map<String, Object> map = new HashMap<>();
@@ -471,6 +474,14 @@ public class GroovyMapData {
 
     public void setExperimentDataDir(String experimentDataDir) {
         this.experimentDataDir = experimentDataDir;
+    }
+
+    public int getSweepCount() {
+        return sweepCount;
+    }
+
+    public void setSweepCount(int sweepCount) {
+        this.sweepCount = sweepCount;
     }
 
     public Map toImmutableMap() {

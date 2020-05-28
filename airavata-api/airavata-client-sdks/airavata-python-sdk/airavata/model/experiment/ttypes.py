@@ -312,6 +312,8 @@ class ExperimentModel(object):
      - errors
      - processes
      - workflow
+     - executionType
+     - sweepCount
     """
 
     thrift_spec = (
@@ -336,9 +338,11 @@ class ExperimentModel(object):
         (18, TType.LIST, 'errors', (TType.STRUCT, (airavata.model.commons.ttypes.ErrorModel, airavata.model.commons.ttypes.ErrorModel.thrift_spec), False), None, ),  # 18
         (19, TType.LIST, 'processes', (TType.STRUCT, (airavata.model.process.ttypes.ProcessModel, airavata.model.process.ttypes.ProcessModel.thrift_spec), False), None, ),  # 19
         (20, TType.STRUCT, 'workflow', (airavata.model.workflow.ttypes.AiravataWorkflow, airavata.model.workflow.ttypes.AiravataWorkflow.thrift_spec), None, ),  # 20
+        (21, TType.STRING, 'executionType', 'UTF8', None, ),  # 21
+        (22, TType.I32, 'sweepCount', None, None, ),  # 22
     )
 
-    def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, gatewayInstanceId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None, workflow=None,):
+    def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, gatewayInstanceId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None, workflow=None, executionType=None, sweepCount=None,):
         self.experimentId = experimentId
         self.projectId = projectId
         self.gatewayId = gatewayId
@@ -359,6 +363,8 @@ class ExperimentModel(object):
         self.errors = errors
         self.processes = processes
         self.workflow = workflow
+        self.executionType = executionType
+        self.sweepCount = sweepCount
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -506,6 +512,16 @@ class ExperimentModel(object):
                     self.workflow.read(iprot)
                 else:
                     iprot.skip(ftype)
+            elif fid == 21:
+                if ftype == TType.STRING:
+                    self.executionType = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 22:
+                if ftype == TType.I32:
+                    self.sweepCount = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -613,6 +629,14 @@ class ExperimentModel(object):
         if self.workflow is not None:
             oprot.writeFieldBegin('workflow', TType.STRUCT, 20)
             self.workflow.write(oprot)
+            oprot.writeFieldEnd()
+        if self.executionType is not None:
+            oprot.writeFieldBegin('executionType', TType.STRING, 21)
+            oprot.writeString(self.executionType.encode('utf-8') if sys.version_info[0] == 2 else self.executionType)
+            oprot.writeFieldEnd()
+        if self.sweepCount is not None:
+            oprot.writeFieldBegin('sweepCount', TType.I32, 22)
+            oprot.writeI32(self.sweepCount)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

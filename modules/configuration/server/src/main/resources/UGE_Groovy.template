@@ -8,8 +8,8 @@
    if (mailAddress != null && mailAddress != "") out.print '#$ -M ' + mailAddress + '\n'
    if (accountString != null && accountString != "") out.print '#$ -A ' + accountString + '\n'
    if (maxWallTime != null && maxWallTime != "") out.print '#$ -l h_rt=' + maxWallTime + '\n'
-   if (standardOutFile != null && standardOutFile != "") out.print '#$ -o ' + standardOutFile + '\n'
-   if (standardErrorFile != null && standardErrorFile != "") out.print '#$ -e ' + standardErrorFile + '\n'
+   if (standardOutFile != null && standardOutFile != "") out.print '#$ -o ' + workingDirectory + '/' + standardOutFile + '\n'
+   if (standardErrorFile != null && standardErrorFile != "") out.print '#$ -e ' + workingDirectory + '/' + standardErrorFile + '\n'
    if (nodes != null && nodes != "" && processPerNode != null && processPerNode != "")
         out.print '#$ -pe orte ' + processPerNode
 %>

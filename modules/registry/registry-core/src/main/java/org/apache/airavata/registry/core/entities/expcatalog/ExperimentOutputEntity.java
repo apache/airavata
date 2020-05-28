@@ -24,6 +24,7 @@ import org.apache.airavata.model.application.io.DataType;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * The persistent class for the experiment_output database table.
@@ -80,6 +81,10 @@ public class ExperimentOutputEntity implements Serializable {
     @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     private ExperimentEntity experiment;
+
+    @OneToMany(targetEntity = ExperimentOutputValueEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "experimentOutput", fetch = FetchType.EAGER)
+    private List<ExperimentOutputValueEntity> experimentOutputValues;
 
     public ExperimentOutputEntity() {
     }
@@ -195,5 +200,13 @@ public class ExperimentOutputEntity implements Serializable {
 
     public void setExperiment(ExperimentEntity experiment) {
         this.experiment = experiment;
+    }
+
+    public List<ExperimentOutputValueEntity> getExperimentOutputValues() {
+        return experimentOutputValues;
+    }
+
+    public void setExperimentOutputValues(List<ExperimentOutputValueEntity> experimentOutputValues) {
+        this.experimentOutputValues = experimentOutputValues;
     }
 }

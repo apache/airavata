@@ -31,6 +31,7 @@ import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
 import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
 import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
 import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;
+import org.apache.airavata.helix.impl.task.staging.SweepingInputDataStagingTask;
 import org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask;
 import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -116,8 +117,14 @@ public class PreWorkflowManager extends WorkflowManager {
                     jobSubmissionFound = true;
                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                     if (!jobSubmissionFound) {
-                        airavataTask = new InputDataStagingTask();
-                        airavataTask.setForceRunTask(true);
+                        if ("one_pass".equals(experimentModel.getExecutionType())) {
+                            airavataTask = new InputDataStagingTask();
+                            airavataTask.setForceRunTask(true);
+                        } else if ("param_sweep".equals(experimentModel.getExecutionType())) {
+                            airavataTask = new SweepingInputDataStagingTask();
+                            airavataTask.setForceRunTask(true);
+                        }
+
                     }
                 }
 

@@ -50,6 +50,7 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProf
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataValueObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
@@ -125,6 +126,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ExperimentSummaryRepository experimentSummaryRepository = new ExperimentSummaryRepository();
     private ExperimentRepository experimentRepository = new ExperimentRepository();
     private ExperimentOutputRepository experimentOutputRepository = new ExperimentOutputRepository();
+    private ExperimentOutputValueRepository experimentOutputValueRepository = new ExperimentOutputValueRepository();
     private ExperimentStatusRepository experimentStatusRepository = new ExperimentStatusRepository();
     private ExperimentErrorRepository experimentErrorRepository = new ExperimentErrorRepository();
     private ProcessRepository processRepository = new ProcessRepository();
@@ -803,6 +805,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             else if(ExpCatChildDataType.EXPERIMENT_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
                 experimentOutputRepository.addExperimentOutputs(outputs, id);
+                List<OutputDataValueObjectType> outValues = new ArrayList<>();
+                for (OutputDataObjectType out: outputs) {
+                    String[] values = out.getValue().split(",");
+                    for (String value: values) {
+                        OutputDataValueObjectType outVal = new OutputDataValueObjectType();
+                        outVal.setName(out.getName());
+                        outVal.setValue(value);
+                        outValues.add(outVal);
+                    }
+                }
+                experimentOutputValueRepository.addExperimentOutputValues(outValues, id);
             }
         } catch (Exception e) {
             logger.error(id, "Error while adding outputs", e);

@@ -111,6 +111,7 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentErrorEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentInputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentOutputEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentOutputValueEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentStatusEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentSummaryEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.GatewayEntity</class>

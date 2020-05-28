@@ -31,22 +31,32 @@ public class JobFactory {
 
     private final static Logger logger = LoggerFactory.getLogger(JobFactory.class);
 
-    public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
-        switch (resourceJobManagerType) {
-            case FORK:
-                return "FORK_Groovy.template";
-            case PBS:
-                return "PBS_Groovy.template";
-            case SLURM:
-                return "SLURM_Groovy.template";
-            case UGE:
-                return "UGE_Groovy.template";
-            case LSF:
-                return "LSF_Groovy.template";
-            case CLOUD:
-                return "CLOUD_Groovy.template";
-            default:
-                return null;
+    public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType, boolean isSweepType) {
+
+        if (isSweepType) {
+            switch (resourceJobManagerType) {
+                case SLURM:
+                    return "SLURM_Arr_Groovy.template";
+                default:
+                    return null;
+            }
+        } else {
+            switch (resourceJobManagerType) {
+                case FORK:
+                    return "FORK_Groovy.template";
+                case PBS:
+                    return "PBS_Groovy.template";
+                case SLURM:
+                    return "SLURM_Groovy.template";
+                case UGE:
+                    return "UGE_Groovy.template";
+                case LSF:
+                    return "LSF_Groovy.template";
+                case CLOUD:
+                    return "CLOUD_Groovy.template";
+                default:
+                    return null;
+            }
         }
     }
 
@@ -97,12 +107,12 @@ public class JobFactory {
         }
     }
 
-    public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws Exception {
+    public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager, boolean isSweepType) throws Exception {
         if(resourceJobManager == null) {
             throw new Exception("Resource job manager can not be null");
         }
 
-        String templateFileName = getTemplateFileName(resourceJobManager.getResourceJobManagerType());
+        String templateFileName = getTemplateFileName(resourceJobManager.getResourceJobManagerType(), isSweepType);
         switch (resourceJobManager.getResourceJobManagerType()) {
             case PBS:
                 return new PBSJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),

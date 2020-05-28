@@ -178,4 +178,7 @@ public interface QueryConstants {
 
     String FIND_ALL_PARSERS_FOR_GATEWAY_ID = "SELECT P FROM " + ParserEntity.class.getSimpleName() + " P " +
             "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
+
+    String FIND_EXPERIMENT_OUTPUT_VALUES = "SELECT O FROM " + ExperimentOutputValueEntity.class.getSimpleName() + " O " +
+            "WHERE O.experimentId = :" + DBConstants.ExperimentOutputValue.EXPERIMENT_ID + " AND O.name = :" + DBConstants.ExperimentOutputValue.NAME;
 }

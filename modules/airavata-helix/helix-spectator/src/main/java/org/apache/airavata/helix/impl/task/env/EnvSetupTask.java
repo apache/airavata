@@ -29,6 +29,8 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Paths;
+
 @TaskDef(name = "Environment Setup Task")
 public class EnvSetupTask extends AiravataTask {
 
@@ -48,7 +50,19 @@ public class EnvSetupTask extends AiravataTask {
             logger.info("Creating directory " + getTaskContext().getWorkingDir() + " on compute resource " +
                     getTaskContext().getComputeResourceId() + " by user " + getTaskContext().getComputeResourceLoginUserName()
                     + " using token " + getTaskContext().getComputeResourceCredentialToken());
-            adaptor.createDirectory(getTaskContext().getWorkingDir(), true);
+
+            if ("one_pass".equals(taskContext.getExecutionType())) {
+                adaptor.createDirectory(getTaskContext().getWorkingDir(), true);
+            }
+
+            if ("param_sweep".equals(taskContext.getExecutionType())) {
+                for (int i = 0; i < taskContext.getSweepCount(); i++) {
+                    String sweepDir = Paths.get(getTaskContext().getWorkingDir(), i + "").toString();
+                    logger.info("Creating sweep directory {}", sweepDir);
+                    adaptor.createDirectory(sweepDir, true);
+                }
+            }
+
             return onSuccess("Envi setup task successfully completed " + getTaskId());
 
         } catch (Exception e) {

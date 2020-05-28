@@ -124,3 +124,8 @@ struct OutputDataObjectType {
     11: optional string storageResourceId,
     12: optional string metaData,
 }
+
+struct OutputDataValueObjectType {
+    1: required string name,
+    2: optional string value
+}

@@ -27,9 +27,7 @@ import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
-import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
-import org.apache.airavata.helix.impl.task.staging.JobVerificationTask;
-import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
+import org.apache.airavata.helix.impl.task.staging.*;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
@@ -172,7 +170,13 @@ public class PostWorkflowManager extends WorkflowManager {
 
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
-                        executePostWorkflow(processId, gateway, false);
+                        if (experimentModel.getSweepCount() == 0) {
+                            executePostWorkflow(processId, gateway, false, 0);
+                        } else {
+                            for (int i = 0; i < experimentModel.getSweepCount(); i ++) {
+                                executePostWorkflow(processId, gateway, false, i);
+                            }
+                        }
 
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled but process is not marked as cancelled yet");
@@ -196,7 +200,7 @@ public class PostWorkflowManager extends WorkflowManager {
         }
     }
 
-    private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
+    private void executePostWorkflow(String processId, String gateway, boolean forceRun, int jobIndex) throws Exception {
 
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
@@ -245,8 +249,16 @@ public class PostWorkflowManager extends WorkflowManager {
                         assert subTaskModel != null;
                         switch (subTaskModel.getType()) {
                             case OUPUT:
-                                airavataTask = new OutputDataStagingTask();
-                                airavataTask.setForceRunTask(true);
+                                if ("one_pass".equals(experimentModel.getExecutionType())) {
+                                    airavataTask = new OutputDataStagingTask();
+                                    airavataTask.setForceRunTask(true);
+                                }
+                                if ("param_sweep".equals(experimentModel.getExecutionType())) {
+                                    SweepingOutputDataStagingTask sweepTask = new SweepingOutputDataStagingTask();
+                                    sweepTask.setJobIndex(jobIndex);
+                                    sweepTask.setForceRunTask(true);
+                                    airavataTask = sweepTask;
+                                }
                                 break;
                             case ARCHIVE_OUTPUT:
                                 airavataTask = new ArchiveTask();

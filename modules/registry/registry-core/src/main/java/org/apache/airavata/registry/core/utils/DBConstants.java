@@ -180,5 +180,8 @@ public class DBConstants {
         public static final String GATEWAY_ID = "gatewayId";
     }
 
-
+    public static class ExperimentOutputValue {
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String NAME = "name";
+    }
 }

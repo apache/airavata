@@ -44,6 +44,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
@@ -91,6 +92,7 @@ public class TaskContext {
     private String taskId;
 
     private ProcessModel processModel;
+    private ExperimentModel experimentModel;
     private JobModel jobModel;
     private Object subTaskModel = null;
 
@@ -98,8 +100,6 @@ public class TaskContext {
     private String scratchLocation;
     private String inputDir;
     private String outputDir;
-    private String stdoutLocation;
-    private String stderrLocation;
 
     private GatewayResourceProfile gatewayResourceProfile;
     private UserResourceProfile userResourceProfile;
@@ -172,6 +172,14 @@ public class TaskContext {
 
     public void setProcessModel(ProcessModel processModel) {
         this.processModel = processModel;
+    }
+
+    public ExperimentModel getExperimentModel() {
+        return experimentModel;
+    }
+
+    public void setExperimentModel(ExperimentModel experimentModel) {
+        this.experimentModel = experimentModel;
     }
 
     public String getWorkingDir() {
@@ -292,19 +300,11 @@ public class TaskContext {
     }
 
     public String getStdoutLocation() {
-        return stdoutLocation;
-    }
-
-    public void setStdoutLocation(String stdoutLocation) {
-        this.stdoutLocation = stdoutLocation;
+        return getApplicationInterfaceDescription().getApplicationName() + ".stdout";
     }
 
     public String getStderrLocation() {
-        return stderrLocation;
-    }
-
-    public void setStderrLocation(String stderrLocation) {
-        this.stderrLocation = stderrLocation;
+        return getApplicationInterfaceDescription().getApplicationName() + ".stderr";
     }
 
     public void setOutputDir(String outputDir) {
@@ -746,6 +746,14 @@ public class TaskContext {
         return subTaskModel;
     }
 
+    public String getExecutionType() {
+        return this.experimentModel.getExecutionType();
+    }
+
+    public int getSweepCount() {
+        return this.experimentModel.getSweepCount();
+    }
+
     public static class TaskContextBuilder {
         private final String processId;
         private final String gatewayId;
@@ -788,9 +796,12 @@ public class TaskContext {
                 throwError("Invalid Registry Client");
             }
 
+            ExperimentModel experimentModel = registryClient.getExperiment(processModel.getExperimentId());
+
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
             ctx.setRegistryClient(registryClient);
             ctx.setProcessModel(processModel);
+            ctx.setExperimentModel(experimentModel);
             ctx.setProfileClient(profileClient);
 
             ctx.setGroupComputeResourcePreference(registryClient.getGroupComputeResourcePreference(processModel.getComputeResourceId(),
@@ -841,35 +852,9 @@ public class TaskContext {
                                 processModel.getComputeResourceId()));
             }
 
-            List<OutputDataObjectType> applicationOutputs = ctx.getApplicationInterfaceDescription().getApplicationOutputs();
-            if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
-                for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
-                    if (outputDataObjectType.getType().equals(DataType.STDOUT)) {
-                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            String stdOut = (ctx.getWorkingDir().endsWith(File.separator) ? ctx.getWorkingDir() : ctx.getWorkingDir() + File.separator)
-                                    + ctx.getApplicationInterfaceDescription().getApplicationName() + ".stdout";
-                            outputDataObjectType.setValue(stdOut);
-                            ctx.setStdoutLocation(stdOut);
-                        } else {
-                            ctx.setStdoutLocation(outputDataObjectType.getValue());
-                        }
-                    }
-                    if (outputDataObjectType.getType().equals(DataType.STDERR)) {
-                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            String stderrLocation = (ctx.getWorkingDir().endsWith(File.separator) ? ctx.getWorkingDir() : ctx.getWorkingDir() + File.separator)
-                                    + ctx.getApplicationInterfaceDescription().getApplicationName() + ".stderr";
-                            outputDataObjectType.setValue(stderrLocation);
-                            ctx.setStderrLocation(stderrLocation);
-                        } else {
-                            ctx.setStderrLocation(outputDataObjectType.getValue());
-                        }
-                    }
-                }
-            }
-
             // TODO move this to some where else as this is not the correct place to do so
-            registryClient.updateProcess(processModel, processId);
-            processModel.setProcessOutputs(applicationOutputs);
+            //registryClient.updateProcess(processModel, processId);
+            //processModel.setProcessOutputs(applicationOutputs);
             return ctx;
         }
 
