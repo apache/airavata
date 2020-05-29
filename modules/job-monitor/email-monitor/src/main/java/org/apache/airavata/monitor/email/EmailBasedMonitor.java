@@ -286,8 +286,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     public void startServer() throws InterruptedException {
         Thread t = new Thread(this);
         t.start();
-        t.join();
     }
+
     public static void main(String args[]) throws Exception {
         EmailBasedMonitor monitor = new EmailBasedMonitor();
         monitor.startServer();

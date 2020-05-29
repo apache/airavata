@@ -28,6 +28,8 @@ public class JobStatusResult {
     private String jobName;
     private boolean authoritative = true;
     private String publisherName;
+    private boolean isChildJob = false;
+    private int jobIndex = 0;
 
     public String getJobName() {
         return jobName;
@@ -67,6 +69,22 @@ public class JobStatusResult {
 
     public void setPublisherName(String publisherName) {
         this.publisherName = publisherName;
+    }
+
+    public boolean isChildJob() {
+        return isChildJob;
+    }
+
+    public void setChildJob(boolean childJob) {
+        isChildJob = childJob;
+    }
+
+    public int getJobIndex() {
+        return jobIndex;
+    }
+
+    public void setJobIndex(int jobIndex) {
+        this.jobIndex = jobIndex;
     }
 }
 

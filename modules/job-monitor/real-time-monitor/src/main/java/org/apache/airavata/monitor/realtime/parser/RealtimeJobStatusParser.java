@@ -66,6 +66,7 @@ public class RealtimeJobStatusParser {
                 String jobName = (String) asMap.get("jobName");
                 String status = (String) asMap.get("status");
                 String taskId = (String) asMap.get("task");
+                String jobIndex = (String) asMap.get("jobIndex");
 
                 if (jobName != null && status != null && taskId != null) {
 
@@ -118,6 +119,11 @@ public class RealtimeJobStatusParser {
                         jobStatusResult.setJobName(jobName);
                         jobStatusResult.setState(jobState);
                         jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.broker.publisher.id"));
+
+                        if (jobIndex != null) {
+                            jobStatusResult.setChildJob(true);
+                            jobStatusResult.setJobIndex(Integer.parseInt(jobIndex));
+                        }
                         return jobStatusResult;
                     } catch (Exception e) {
                         logger.error("Failed to fetch job id for job name " + jobName);

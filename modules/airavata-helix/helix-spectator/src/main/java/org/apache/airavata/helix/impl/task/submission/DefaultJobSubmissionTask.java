@@ -32,9 +32,12 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.job.ChildJobModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.helix.task.TaskResult;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,6 +149,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 jobModel.setJobStatuses(Collections.singletonList(jobStatus));
                 saveAndPublishJobStatus(jobModel);
+                saveChildJobModels(jobModel, taskContext.getSweepCount());
 
                 if (verifyJobSubmissionByJobId(adaptor, jobId)) {
                     jobStatus.setJobState(JobState.QUEUED);
@@ -171,6 +175,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                         jobModel.setJobStatuses(Collections.singletonList(jobStatus));
                         saveAndPublishJobStatus(jobModel);
+                        saveChildJobModels(jobModel, taskContext.getSweepCount());
                         logger.info("Job id " + verifyJobId + " verification succeeded");
                         break;
                     }
@@ -270,6 +275,31 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             }
 
             return onFail("Task failed due to unexpected issue", false, e);
+        }
+    }
+
+    // This is for parameter sweeping jobs
+    private void saveChildJobModels(JobModel jobModel, int childCount) throws TException {
+        if (childCount <= 1) {
+            return;
+        }
+
+        RegistryService.Client registryServiceClient = getRegistryServiceClient();
+
+        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+            ChildJobModel childJobModel = new ChildJobModel();
+            childJobModel.setChildJobId(jobModel.getTaskId() + "_" + jobModel.getJobId() + "_" + childIndex);
+            childJobModel.setJobIndex(childIndex);
+            childJobModel.setParentJobId(jobModel.getJobId());
+            childJobModel.setParentTaskId(jobModel.getTaskId());
+
+            ChildJobStatus status = new ChildJobStatus();
+            status.setJobState(JobState.SUBMITTED);
+            status.setReason("Submitted");
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            childJobModel.addToJobStatuses(status);
+
+            registryServiceClient.addChildJob(childJobModel);
         }
     }
 

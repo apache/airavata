@@ -113,6 +113,13 @@ struct JobStatus {
     4: optional string statusId
 }
 
+struct ChildJobStatus {
+    1: required JobState jobState,
+    2: optional i64 timeOfStateChange,
+    3: optional string reason,
+    4: optional string statusId
+}
+
 struct QueueStatusModel {
     1: required string hostName;
     2: required string queueName;

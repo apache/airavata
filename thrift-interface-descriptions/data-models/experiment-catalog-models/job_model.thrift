@@ -40,3 +40,11 @@ struct JobModel {
     12: optional i32 exitCode
 }
 
+
+struct ChildJobModel {
+    1: required string childJobId,
+    2: required string parentJobId,
+    3: required string parentTaskId,
+    4: required i32 jobIndex,
+    5: optional list<status_models.ChildJobStatus> jobStatuses,
+}

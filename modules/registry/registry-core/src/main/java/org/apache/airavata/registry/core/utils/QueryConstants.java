@@ -181,4 +181,7 @@ public interface QueryConstants {
 
     String FIND_EXPERIMENT_OUTPUT_VALUES = "SELECT O FROM " + ExperimentOutputValueEntity.class.getSimpleName() + " O " +
             "WHERE O.experimentId = :" + DBConstants.ExperimentOutputValue.EXPERIMENT_ID + " AND O.name = :" + DBConstants.ExperimentOutputValue.NAME;
+
+    String GET_CHILD_JOB_FOR_PARENT = "SELECT CJ FROM " + ChildJobEntity.class.getSimpleName() + " CJ " +
+            "WHERE CJ.parentJobId LIKE :" + DBConstants.ChildJob.PARENT_JOB_ID + " and CJ.parentTaskId LIKE :" + DBConstants.ChildJob.PARENT_TASK_ID;
 }

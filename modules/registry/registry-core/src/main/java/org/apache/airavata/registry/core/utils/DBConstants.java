@@ -139,6 +139,11 @@ public class DBConstants {
         public static final String JOB_ID = "jobId";
     }
 
+    public static class ChildJob {
+        public static final String PARENT_JOB_ID = "parentJobId";
+        public static final String PARENT_TASK_ID = "parentTaskId";
+    }
+
     public static class ExperimentSummary {
         public static final String FROM_DATE = "fromDate";
         public static final String TO_DATE = "toDate";

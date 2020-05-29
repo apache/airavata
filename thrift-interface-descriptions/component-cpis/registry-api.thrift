@@ -728,6 +728,15 @@ service RegistryService extends base_api.BaseAPI {
            void addJob (1: required job_model.JobModel jobModel, 2: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
+           void addChildJob (1: required job_model.ChildJobModel jobModel)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
+
+           list<job_model.ChildJobModel> getChildJobsOfJob(1: required string parentJobId, 2: required string parentTaskId)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
+
+           void addChildJobStatus (1: required status_models.ChildJobStatus jobStatus, 2: required string childJobId)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
+
            string addProcess (1: required process_model.ProcessModel processModel, 2: required string experimentId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 

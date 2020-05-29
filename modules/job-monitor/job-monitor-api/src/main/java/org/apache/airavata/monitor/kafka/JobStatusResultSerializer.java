@@ -36,7 +36,9 @@ public class JobStatusResultSerializer implements Serializer<JobStatusResult> {
         String serializedData = jobStatusResult.getJobId() + "," +
                 jobStatusResult.getJobName() + "," +
                 jobStatusResult.getState().name() + "," +
-                jobStatusResult.getPublisherName();
+                jobStatusResult.getPublisherName() + "," +
+                jobStatusResult.isChildJob() + "," +
+                jobStatusResult.getJobIndex();
         return serializedData.getBytes();
     }
 

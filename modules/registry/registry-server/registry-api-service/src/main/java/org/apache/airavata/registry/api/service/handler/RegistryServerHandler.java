@@ -70,16 +70,12 @@ import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.error.ProjectNotFoundException;
 import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.job.ChildJobModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
@@ -138,6 +134,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private TaskStatusRepository taskStatusRepository = new TaskStatusRepository();
     private TaskErrorRepository taskErrorRepository = new TaskErrorRepository();
     private JobRepository jobRepository = new JobRepository();
+    private ChildJobRepository childJobRepository = new ChildJobRepository();
     private JobStatusRepository jobStatusRepository = new JobStatusRepository();
     private QueueStatusRepository queueStatusRepository = new QueueStatusRepository();
     private DataProductRepository dataProductRepository = new DataProductRepository();
@@ -927,6 +924,37 @@ public class RegistryServerHandler implements RegistryService.Iface {
             exception.setMessage("Error while adding job. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    @Override
+    public void addChildJob(ChildJobModel jobModel) throws RegistryServiceException, TException {
+        try {
+            childJobRepository.addChildJob(jobModel);
+        } catch (Exception e) {
+            logger.error("Error while adding child job {} for parent job {}", jobModel.getChildJobId(), jobModel.getParentJobId(), e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding child job. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<ChildJobModel> getChildJobsOfJob(String parentJobId, String parentTaskId) throws RegistryServiceException, TException {
+        try {
+            return childJobRepository.getChildJobsForParent(parentJobId, parentTaskId);
+        } catch (Exception e) {
+            logger.error("Error while fetching child jobs {} for parent job {} and task {}", parentJobId, parentTaskId, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while fetching child jobs. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void addChildJobStatus(ChildJobStatus jobStatus, String childJobId) throws RegistryServiceException, TException {
+
     }
 
     @Override

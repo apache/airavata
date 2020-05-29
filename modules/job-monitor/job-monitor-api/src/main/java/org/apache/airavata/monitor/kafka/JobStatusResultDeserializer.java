@@ -40,6 +40,8 @@ public class JobStatusResultDeserializer implements Deserializer<JobStatusResult
         jobStatusResult.setJobName(parts[1]);
         jobStatusResult.setState(JobState.valueOf(parts[2]));
         jobStatusResult.setPublisherName(parts[3]);
+        jobStatusResult.setChildJob(Boolean.parseBoolean(parts[4]));
+        jobStatusResult.setJobIndex(Integer.parseInt(parts[5]));
         return jobStatusResult;
     }
 

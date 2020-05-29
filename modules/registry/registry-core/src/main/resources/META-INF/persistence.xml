@@ -118,6 +118,8 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.GatewayWorkerEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.JobEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ChildJobEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ChildJobStatusEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.NotificationEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorEntity</class>

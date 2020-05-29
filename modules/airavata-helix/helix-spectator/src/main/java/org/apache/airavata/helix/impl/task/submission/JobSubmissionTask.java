@@ -264,9 +264,11 @@ public abstract class JobSubmissionTask extends AiravataTask {
             if (mapData.getPostJobCommands() == null) {
                 mapData.setPostJobCommands(new ArrayList<>());
             }
+            String jobIndex = mapData.getSweepCount() > 1 ? ",\"jobIndex\":\"'\"${SLURM_ARRAY_TASK_ID}\"'\"" : ""; // TODO generalize this
+
             mapData.getPostJobCommands().add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
                     "-H \"Accept: application/vnd.kafka.v2+json\" " +
-                    "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId() + "\"}}]}' \"" +
+                    "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId() + "\"" + jobIndex + "}}]}' \"" +
                     ServerSettings.getSetting("job.status.publish.endpoint") + "\" > /dev/null || true");
         }
     }

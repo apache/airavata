@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Properties;
 
-public class RealtimeMonitor extends AbstractMonitor {
+public class RealtimeMonitor extends AbstractMonitor implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
 
@@ -61,27 +61,6 @@ public class RealtimeMonitor extends AbstractMonitor {
         return consumer;
     }
 
-    private void runConsumer() throws ApplicationSettingsException {
-        final Consumer<String, String> consumer = createConsumer();
-
-        while (true) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(1000);
-            consumerRecords.forEach(record -> {
-                RegistryService.Client registryClient = getRegistryClientPool().getResource();
-                try {
-                    process(record.value(), registryClient);
-                    getRegistryClientPool().returnResource(registryClient);
-                } catch (Exception e) {
-                    logger.error("Error while processing message " + record.value(), e);
-                    getRegistryClientPool().returnBrokenResource(registryClient);
-                    // ignore this error
-                }
-            });
-
-            consumer.commitAsync();
-        }
-    }
-
     private void process(String value, RegistryService.Client registryClient) throws MonitoringException {
         logger.info("Received data " + value);
         JobStatusResult statusResult = parser.parse(value, registryClient);
@@ -94,8 +73,39 @@ public class RealtimeMonitor extends AbstractMonitor {
 
     }
 
-    public static void main(String args[]) throws ApplicationSettingsException {
-        new RealtimeMonitor().runConsumer();
+    @Override
+    public void run() {
+
+        try {
+            final Consumer<String, String> consumer = createConsumer();
+
+            while (true) {
+                final ConsumerRecords<String, String> consumerRecords = consumer.poll(1000);
+                consumerRecords.forEach(record -> {
+                    RegistryService.Client registryClient = getRegistryClientPool().getResource();
+                    try {
+                        process(record.value(), registryClient);
+                        getRegistryClientPool().returnResource(registryClient);
+                    } catch (Exception e) {
+                        logger.error("Error while processing message " + record.value(), e);
+                        getRegistryClientPool().returnBrokenResource(registryClient);
+                        // ignore this error
+                    }
+                });
+
+                consumer.commitAsync();
+            }
+        } catch (Exception e) {
+            logger.error("Realtime monitor exited with error ", e);
+        }
     }
 
+    public void startServer() throws InterruptedException {
+        Thread t = new Thread(this);
+        t.start();
+    }
+
+    public static void main(String args[]) throws Exception {
+        new RealtimeMonitor().startServer();
+    }
 }
