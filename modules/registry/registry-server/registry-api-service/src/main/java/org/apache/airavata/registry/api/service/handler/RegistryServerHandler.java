@@ -91,12 +91,7 @@ import org.apache.airavata.registry.core.repositories.replicacatalog.DataProduct
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
 import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ComputeResource;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalogException;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -730,6 +725,28 @@ public class RegistryServerHandler implements RegistryService.Iface {
             exception.setMessage("Error while retrieving the experiment outputs. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    @Override
+    public List<OutputDataObjectType> getExperimentOutputsForJob(String airavataExperimentId, int jobIndex) throws RegistryServiceException, ExperimentNotFoundException, TException {
+        List<OutputDataObjectType> experimentOutputs = getExperimentOutputs(airavataExperimentId);
+        for (OutputDataObjectType out: experimentOutputs) {
+            String[] outValues = out.getValue().split(",");
+            List<String> filteredValues = new ArrayList<>();
+            for (String outDP : outValues) {
+                try {
+                    DataProductModel dataProduct = dataProductRepository.getDataProduct(outDP);
+                    Map<String, String> productMetadata = dataProduct.getProductMetadata();
+                    if (productMetadata.containsKey("version") && Integer.parseInt(productMetadata.get("version")) == jobIndex) {
+                        filteredValues.add(outDP);
+                    }
+                } catch (ReplicaCatalogException e) {
+                    throw new RegistryServiceException("Failed to fetch data product with uri " + outDP);
+                }
+            }
+            out.setValue(String.join(",", filteredValues));
+        }
+        return experimentOutputs;
     }
 
     /**

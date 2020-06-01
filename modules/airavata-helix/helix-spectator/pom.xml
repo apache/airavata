@@ -120,9 +120,9 @@
             <version>5.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java</artifactId>
-            <version>3.0.14</version>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-client</artifactId>
+            <version>8.16.0</version>
         </dependency>
     </dependencies>
 </project>

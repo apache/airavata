@@ -127,12 +127,14 @@ public class PostWorkflowManager extends WorkflowManager {
 
                 logger.info("Last known state of job " + jobModel.getJobId() + " is " + currentJobStatus.name());
 
+                /*
                 if (!JobStateValidator.isValid(currentJobStatus, jobStatusResult.getState())) {
                     logger.warn("Job state of " + jobStatusResult.getJobId() + " is not valid. Previous state " +
                             currentJobStatus + ", new state " + jobStatusResult.getState());
                     return true;
                 }
 
+                 */
                 String gateway = experimentModel.getGatewayId();
                 String processId = processModel.getProcessId();
                 String experimentId = experimentModel.getExperimentId();
@@ -173,7 +175,7 @@ public class PostWorkflowManager extends WorkflowManager {
 
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
-                        if (experimentModel.getSweepCount() == 0) {
+                        if (experimentModel.getSweepCount() == 1) {
                             executePostWorkflow(processId, gateway, false, 0, false, false);
                         } else {
 
@@ -325,6 +327,8 @@ public class PostWorkflowManager extends WorkflowManager {
         parsingTriggeringTask.setProcessId(processModel.getProcessId());
         parsingTriggeringTask.setTaskId("Parsing-Triggering-Task");
         parsingTriggeringTask.setSkipTaskStatusPublish(true);
+        parsingTriggeringTask.setOutputVersion(jobIndex);
+
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(parsingTriggeringTask.getTaskId(), parsingTriggeringTask));
         }

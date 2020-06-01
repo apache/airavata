@@ -19,6 +19,7 @@ public class ProcessCompletionMessageDeserializer implements Deserializer<Proces
         message.setProcessId(parts[0]);
         message.setExperimentId(parts[1]);
         message.setGatewayId(parts[2]);
+        message.setOutputVersion(Integer.parseInt(parts[3]));
         return message;
     }
 

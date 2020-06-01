@@ -5,6 +5,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
+import org.apache.airavata.helix.impl.workflow.ParserWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
 import org.apache.airavata.monitor.email.EmailBasedMonitor;
@@ -40,6 +41,10 @@ public class JobEngineStarter {
         // Starting helix participant
         GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
         participant.startServer();
+
+        System.out.println("Starting Parser Workflow Manager .......");
+        ParserWorkflowManager parserWorkflowManager = new ParserWorkflowManager();
+        parserWorkflowManager.startServer();
 
         System.out.println("Starting Pre Workflow Manager .......");
 

@@ -70,4 +70,10 @@ public class ExperimentOutputRepository extends ExpCatAbstractRepository<OutputD
         return experimentModel.getExperimentOutputs();
     }
 
+    public List<OutputDataObjectType> getExperimentOutputsForJob(String experimentId, int jobIndex) throws RegistryException {
+        ExperimentRepository experimentRepository = new ExperimentRepository();
+        ExperimentModel experimentModel = experimentRepository.getExperiment(experimentId);
+        return experimentModel.getExperimentOutputs();
+    }
+
 }

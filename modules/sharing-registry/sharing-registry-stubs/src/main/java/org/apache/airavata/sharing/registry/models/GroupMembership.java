@@ -42,16 +42,12 @@ public class GroupMembership implements org.apache.thrift.TBase<GroupMembership,
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GroupMembershipStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GroupMembershipTupleSchemeFactory();
 
-  public java.lang.String parentId; // optional
-  public java.lang.String childId; // optional
-  public java.lang.String domainId; // optional
-  /**
-   * 
-   * @see GroupChildType
-   */
-  public GroupChildType childType; // optional
-  public long createdTime; // optional
-  public long updatedTime; // optional
+  private java.lang.String parentId; // optional
+  private java.lang.String childId; // optional
+  private java.lang.String domainId; // optional
+  private GroupChildType childType; // optional
+  private long createdTime; // optional
+  private long updatedTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -198,9 +194,8 @@ public class GroupMembership implements org.apache.thrift.TBase<GroupMembership,
     return this.parentId;
   }
 
-  public GroupMembership setParentId(java.lang.String parentId) {
+  public void setParentId(java.lang.String parentId) {
     this.parentId = parentId;
-    return this;
   }
 
   public void unsetParentId() {
@@ -222,9 +217,8 @@ public class GroupMembership implements org.apache.thrift.TBase<GroupMembership,
     return this.childId;
   }
 
-  public GroupMembership setChildId(java.lang.String childId) {
+  public void setChildId(java.lang.String childId) {
     this.childId = childId;
-    return this;
   }
 
   public void unsetChildId() {
@@ -246,9 +240,8 @@ public class GroupMembership implements org.apache.thrift.TBase<GroupMembership,
     return this.domainId;
   }
 
-  public GroupMembership setDomainId(java.lang.String domainId) {
+  public void setDomainId(java.lang.String domainId) {
     this.domainId = domainId;
-    return this;
   }
 
   public void unsetDomainId() {
@@ -278,9 +271,8 @@ public class GroupMembership implements org.apache.thrift.TBase<GroupMembership,
    * 
    * @see GroupChildType
    */
-  public GroupMembership setChildType(GroupChildType childType) {
+  public void setChildType(GroupChildType childType) {
     this.childType = childType;
-    return this;
   }
 
   public void unsetChildType() {
@@ -302,10 +294,9 @@ public class GroupMembership implements org.apache.thrift.TBase<GroupMembership,
     return this.createdTime;
   }
 
-  public GroupMembership setCreatedTime(long createdTime) {
+  public void setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
     setCreatedTimeIsSet(true);
-    return this;
   }
 
   public void unsetCreatedTime() {
@@ -325,10 +316,9 @@ public class GroupMembership implements org.apache.thrift.TBase<GroupMembership,
     return this.updatedTime;
   }
 
-  public GroupMembership setUpdatedTime(long updatedTime) {
+  public void setUpdatedTime(long updatedTime) {
     this.updatedTime = updatedTime;
     setUpdatedTimeIsSet(true);
-    return this;
   }
 
   public void unsetUpdatedTime() {
@@ -785,8 +775,6 @@ public class GroupMembership implements org.apache.thrift.TBase<GroupMembership,
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

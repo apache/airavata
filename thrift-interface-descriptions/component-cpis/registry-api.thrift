@@ -657,6 +657,27 @@ service RegistryService extends base_api.BaseAPI {
                throws (1: registry_api_errors.RegistryServiceException rse,
                        2: airavata_errors.ExperimentNotFoundException enf)
 
+          /**
+          *
+          * Get Experiment Outputs for a specific job index
+          * This method to be used when need to obtain final outputs of a certain job index of an experiment
+          *
+          * @param authzToken
+          *
+          * @param airavataExperimentId
+          *     Experiment ID of the experimnet you need the outputs.
+          *
+          * @param jobIndex
+          *     Index of the required job
+          *
+          * @return list
+          *     List of experiment outputs will be returned. They will be returned as a list of OutputDataObjectType for the experiment.
+          *
+          **/
+           list<application_io_models.OutputDataObjectType> getExperimentOutputsForJob (1: required string airavataExperimentId, 2: required i32 jobIndex)
+                          throws (1: registry_api_errors.RegistryServiceException rse,
+                                  2: airavata_errors.ExperimentNotFoundException enf)
+
            /**
            *
            * Get Intermediate Experiment Outputs

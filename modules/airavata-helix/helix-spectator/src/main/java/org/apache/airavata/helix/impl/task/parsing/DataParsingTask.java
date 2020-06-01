@@ -19,16 +19,11 @@
  */
 package org.apache.airavata.helix.impl.task.parsing;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.command.LogContainerCmd;
-import com.github.dockerjava.api.model.Bind;
-import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.command.LogContainerResultCallback;
-import com.github.dockerjava.core.command.PullImageResultCallback;
-import com.github.dockerjava.core.command.WaitContainerResultCallback;
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.LogStream;
+import com.spotify.docker.client.exceptions.DockerCertificateException;
+import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.*;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -58,6 +53,7 @@ import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
@@ -70,10 +66,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -104,6 +98,12 @@ public class DataParsingTask extends AbstractTask {
     @TaskParam(name = "Local data dir")
     private String localDataDir;
 
+    @TaskParam(name = "Process Id")
+    private String processId;
+
+    @TaskParam(name = "DP Output Version")
+    private Integer outputVersion;
+
     @Override
     public TaskResult onRun(TaskHelper helper) {
         logger.info("Starting data parsing task " + getTaskId());
@@ -115,7 +115,7 @@ public class DataParsingTask extends AbstractTask {
             containerId = containerId.replace(" ", "-");
 
             String localInputDir = createLocalInputDir(containerId);
-            String localOutDir= createLocalOutputDir(containerId);
+            String localOutDir = createLocalOutputDir(containerId);
             logger.info("Created local input and ouput directories : " + localInputDir + ", " + localOutDir);
 
             logger.info("Downloading input files to local input directory");
@@ -175,8 +175,8 @@ public class DataParsingTask extends AbstractTask {
                 }
             }
 
-            logger.info("Running container with id " + containerId + " local input dir " + localInputDir + " local output dir " + localOutDir);
-            runContainer(parser, containerId, localInputDir, localOutDir, properties);
+            logger.info("Running container with local input dir " + localInputDir + " local output dir " + localOutDir);
+            runContainer(parser, localInputDir, localOutDir, properties);
 
             for (ParserOutput parserOutput : parser.getOutputFiles()) {
 
@@ -186,8 +186,8 @@ public class DataParsingTask extends AbstractTask {
                 if (filteredOutputOptional.isPresent()) {
 
                     ParsingTaskOutput parsingTaskOutput = filteredOutputOptional.get();
-                    String localFilePath = localOutDir + (localOutDir.endsWith(File.separator) ? "" : File.separator) + parserOutput.getName();
-                    String remoteFilePath = "parsers" + File.separator + getTaskId() + File.separator + "outputs" + File.separator + parserOutput.getName();
+                    String localFilePath = Paths.get(localOutDir, parserOutput.getName()).toString();
+                    String remoteFilePath = Paths.get("parseout", parserId, outputVersion + "", parserOutput.getName()).toString();
 
                     if (new File(localFilePath).exists()) {
                         uploadFileToStorageResource(parsingTaskOutput, remoteFilePath, localFilePath, helper.getAdaptorSupport());
@@ -229,71 +229,97 @@ public class DataParsingTask extends AbstractTask {
 
     }
 
-    private void runContainer(Parser parser, String containerId, String localInputDir, String localOutputDir, Map<String, String> properties) throws ApplicationSettingsException {
-        DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
+    public static void main(String args[]) throws DockerCertificateException, DockerException, InterruptedException {
+        final com.spotify.docker.client.DockerClient docker = DefaultDockerClient.fromEnv().build();
+        docker.pull("dimuthuupe/gamess-rna-parser:1.0");
+        HostConfig hostConfig = HostConfig.builder().build();
 
-        DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
+        ContainerConfig containerConfig = ContainerConfig.builder()
+                .hostConfig(hostConfig)
+                .image("dimuthuupe/gamess-rna-parser:1.0")
+                .cmd("sh", "-c", "while :; do sleep 1; done")
+                .build();
 
+        ContainerCreation creation = docker.createContainer(containerConfig);
+        String id = creation.id();
+
+        ContainerInfo info = docker.inspectContainer(id);
+
+        docker.startContainer(id);
+
+        String[] command = {"sh", "-c", "l"};
+        ExecCreation execCreation = docker.execCreate(
+                id, command, com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
+                com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+        LogStream output = docker.execStart(execCreation.id());
+        String execOutput = output.readFully();
+
+        docker.killContainer(id);
+
+        docker.removeContainer(id);
+        docker.close();
+
+        System.out.println(execOutput);
+    }
+
+    private void runContainer(Parser parser, String localInputDir, String localOutputDir, Map<String, String> properties)
+            throws ApplicationSettingsException, DockerCertificateException, DockerException, InterruptedException {
+
+        final com.spotify.docker.client.DockerClient docker = DefaultDockerClient.fromEnv().build();
         logger.info("Pulling image " + parser.getImageName());
-        dockerClient.pullImageCmd(parser.getImageName().split(":")[0])
-                .withTag(parser.getImageName().split(":")[1])
-                .exec(new PullImageResultCallback()).awaitSuccess();
-
+        docker.pull(parser.getImageName());
         logger.info("Successfully pulled image " + parser.getImageName());
 
-        String commands[] = parser.getExecutionCommand().split(" ");
-        CreateContainerResponse containerResponse = dockerClient.createContainerCmd(parser.getImageName()).withCmd(commands).withName(containerId)
-                .withBinds(Bind.parse(localInputDir + ":" + parser.getInputDirPath()),
-                        Bind.parse(localOutputDir + ":" + parser.getOutputDirPath()))
-                .withTty(true)
-                .withAttachStdin(true)
-                .withAttachStdout(true).withEnv(properties.entrySet()
+        HostConfig hostConfig = HostConfig.builder().binds(
+                HostConfig.Bind.builder().from(localInputDir).to(parser.getInputDirPath()).build(),
+                HostConfig.Bind.builder().from(localOutputDir).to(parser.getOutputDirPath()).build()
+                ).build();
+
+        ContainerConfig containerConfig = ContainerConfig.builder()
+                .hostConfig(hostConfig)
+                .cmd("sh", "-c", "while :; do sleep 1; done")
+                .image(parser.getImageName())
+                .env(properties.entrySet()
                         .stream()
                         .map(entry -> entry.getKey() + "=" + entry.getValue())
                         .collect(Collectors.toList()))
-                .exec();
+                .build();
 
-        logger.info("Created the container with id " + containerResponse.getId());
+        ContainerCreation creation = docker.createContainer(containerConfig);
+        String id = creation.id();
 
-        final StringBuilder dockerLogs = new StringBuilder();
+        logger.info("Created the container with id " + id);
 
-        if (containerResponse.getWarnings() != null && containerResponse.getWarnings().length > 0) {
-            StringBuilder warningStr = new StringBuilder();
-            for (String w : containerResponse.getWarnings()) {
-                warningStr.append(w).append(",");
-            }
-            logger.warn("Container " + containerResponse.getId() + " warnings : " + warningStr);
-        } else {
-            logger.info("Starting container with id " + containerResponse.getId());
-            dockerClient.startContainerCmd(containerResponse.getId()).exec();
-            LogContainerCmd logContainerCmd = dockerClient.logContainerCmd(containerResponse.getId()).withStdOut(true).withStdErr(true);
+        ContainerInfo info = docker.inspectContainer(id);
 
+        docker.startContainer(id);
 
-            try {
-                logContainerCmd.exec(new LogContainerResultCallback() {
-                    @Override
-                    public void onNext(Frame item) {
-                        dockerLogs.append(item.toString());
-                        dockerLogs.append("\n");
-                    }
-                }).awaitCompletion();
-            } catch (InterruptedException e) {
-                logger.error("Interrupted while reading container log" + e.getMessage());
-            }
+        String command[] = parser.getExecutionCommand().split(" ");
 
-            logger.info("Waiting for the container to stop");
-            Integer statusCode = dockerClient.waitContainerCmd(containerResponse.getId()).exec(new WaitContainerResultCallback()).awaitStatusCode();
-            logger.info("Container " + containerResponse.getId() + " exited with status code " + statusCode);
+        logger.info("Starting container with id " + id);
 
-            logger.info("Container logs " + dockerLogs.toString());
-        }
+        ExecCreation execCreation = docker.execCreate(
+                id, command, com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
+                com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+        LogStream output = docker.execStart(execCreation.id());
+        String execOutput = output.readFully();
 
-        if (ServerSettings.isSettingDefined("data.parser.delete.container") &&
-                Boolean.parseBoolean(ServerSettings.getSetting("data.parser.delete.container"))) {
-            dockerClient.removeContainerCmd(containerResponse.getId()).exec();
-            logger.info("Successfully removed container with id " + containerResponse.getId());
-        }
+        logger.info("Container output " + execOutput);
 
+        String commandVerif[] = {"sh", "-c", "ls /opt/outputs"};
+        execCreation = docker.execCreate(
+                id, commandVerif, com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
+                com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+        output = docker.execStart(execCreation.id());
+        execOutput = output.readFully();
+
+        logger.info("Verification output " + execOutput);
+
+        logger.info("Waiting for the container to stop");
+        docker.killContainer(id);
+        docker.removeContainer(id);
+        docker.close();
+        logger.info("Container {} successfully removed", id);
     }
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport) throws TaskOnFailException, TException, AgentException {
@@ -336,8 +362,11 @@ public class DataParsingTask extends AbstractTask {
             StoragePreference gatewayStoragePreference = getRegistryServiceClient().getGatewayStoragePreference(gatewayId, parsingTaskOutput.getStorageResourceId());
             StorageResourceDescription storageResource = getRegistryServiceClient().getStorageResource(parsingTaskOutput.getStorageResourceId());
 
-            String remoteFileRoot = gatewayStoragePreference.getFileSystemRootLocation();
-            remoteFilePath = remoteFileRoot + (remoteFileRoot.endsWith(File.separator) ? "" : File.separator) + remoteFilePath;
+            ProcessModel processModel = getRegistryServiceClient().getProcess(processId);
+
+            String remoteFileRoot = processModel.getExperimentDataDir();
+            remoteFilePath = Paths.get(remoteFileRoot, remoteFilePath).toString();
+
             StorageResourceAdaptor storageResourceAdaptor = getStorageResourceAdaptor(parsingTaskOutput.getStorageResourceId(), adaptorSupport);
             storageResourceAdaptor.createDirectory(new File(remoteFilePath).getParent(), true);
             storageResourceAdaptor.uploadFile(localFilePath, remoteFilePath);
@@ -466,5 +495,21 @@ public class DataParsingTask extends AbstractTask {
 
     public void setLocalDataDir(String localDataDir) {
         this.localDataDir = localDataDir;
+    }
+
+    public String getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(String processId) {
+        this.processId = processId;
+    }
+
+    public Integer getOutputVersion() {
+        return outputVersion;
+    }
+
+    public void setOutputVersion(Integer outputVersion) {
+        this.outputVersion = outputVersion;
     }
 }

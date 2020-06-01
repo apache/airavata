@@ -60,10 +60,7 @@ import org.slf4j.MDC;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class AiravataTask extends AbstractTask {
 
@@ -259,14 +256,14 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public void saveExperimentOutput(String outputName, String outputVal) throws TaskOnFailException {
+    public void saveExperimentOutput(String outputName, String outputVal, int outputVersion) throws TaskOnFailException {
         try {
             ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 for (OutputDataObjectType expOutput : experimentOutputs) {
                     if (expOutput.getName().equals(outputName)) {
-                        String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData());
+                        String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData(), outputVersion);
                         expOutput.setValue(productUri);
                         getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
                                 Collections.singletonList(expOutput), experimentId);
@@ -279,7 +276,7 @@ public abstract class AiravataTask extends AbstractTask {
             throw new TaskOnFailException(msg, true, e);
         }
     }
-    public void saveExperimentOutputCollection(String outputName, List<String> outputVals) throws TaskOnFailException {
+    public void saveExperimentOutputCollection(String outputName, List<String> outputVals, int outputVersion) throws TaskOnFailException {
         try {
             ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
@@ -288,7 +285,7 @@ public abstract class AiravataTask extends AbstractTask {
                     if (expOutput.getName().equals(outputName)) {
                         List<String> productUris = new ArrayList<String>();
                         for (String outputVal : outputVals) {
-                            String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData());
+                            String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData(), outputVersion);
                             productUris.add(productUri);
                         }
                         expOutput.setValue(String.join(",", productUris));
@@ -304,13 +301,16 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    private String saveDataProduct(String outputName, String outputVal, String outputMetadata) throws TException {
+    private String saveDataProduct(String outputName, String outputVal, String outputMetadata, int productVersion) throws TException {
 
         DataProductModel dataProductModel = new DataProductModel();
         dataProductModel.setGatewayId(getGatewayId());
         dataProductModel.setOwnerName(getProcessModel().getUserName());
         dataProductModel.setProductName(outputName);
         dataProductModel.setDataProductType(DataProductType.FILE);
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("version", productVersion + "");
+        dataProductModel.setProductMetadata(metadata);
         // Copy experiment output's file-metadata to data product's metadata
         if (outputMetadata != null) {
             try {

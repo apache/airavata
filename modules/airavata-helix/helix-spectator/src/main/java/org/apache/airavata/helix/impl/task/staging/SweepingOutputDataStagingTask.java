@@ -71,7 +71,7 @@ public class SweepingOutputDataStagingTask extends DataStagingTask {
             URI destinationURI = new URI("file", getTaskContext().getStorageResourceLoginUserName(),
                     storageResource.getHostName(), 22, destPath, null, null);
             if (transferred) {
-                saveExperimentOutput(processOutput.getName(), destinationURI.toString());
+                saveExperimentOutput(processOutput.getName(), destinationURI.toString(), getJobIndex());
             } else {
                 logger.warn("File " + sourcePath + " did not transfer");
             }

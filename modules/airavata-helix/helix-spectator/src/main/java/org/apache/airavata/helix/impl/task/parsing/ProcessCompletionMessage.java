@@ -4,6 +4,7 @@ public class ProcessCompletionMessage {
     private String processId;
     private String experimentId;
     private String gatewayId;
+    private int outputVersion; // This is for multiple outs in sweeping jobs
 
     public String getProcessId() {
         return processId;
@@ -27,5 +28,13 @@ public class ProcessCompletionMessage {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    public int getOutputVersion() {
+        return outputVersion;
+    }
+
+    public void setOutputVersion(int outputVersion) {
+        this.outputVersion = outputVersion;
     }
 }

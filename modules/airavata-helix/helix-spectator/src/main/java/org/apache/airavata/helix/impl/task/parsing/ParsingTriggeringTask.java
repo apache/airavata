@@ -6,6 +6,7 @@ import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.helix.task.TaskResult;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -22,6 +23,9 @@ public class ParsingTriggeringTask extends AiravataTask {
     private final static Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
 
     private static Producer<String, ProcessCompletionMessage> producer;
+
+    @TaskParam(name = "Output Version")
+    private Integer outputVersion;
 
     private void createProducer() throws ApplicationSettingsException {
 
@@ -55,6 +59,7 @@ public class ParsingTriggeringTask extends AiravataTask {
         completionMessage.setExperimentId(getExperimentId());
         completionMessage.setProcessId(getProcessId());
         completionMessage.setGatewayId(getGatewayId());
+        completionMessage.setOutputVersion(outputVersion);
 
         try {
             createProducer();
@@ -68,5 +73,13 @@ public class ParsingTriggeringTask extends AiravataTask {
     @Override
     public void onCancel(TaskContext taskContext) {
 
+    }
+
+    public Integer getOutputVersion() {
+        return outputVersion;
+    }
+
+    public void setOutputVersion(Integer outputVersion) {
+        this.outputVersion = outputVersion;
     }
 }

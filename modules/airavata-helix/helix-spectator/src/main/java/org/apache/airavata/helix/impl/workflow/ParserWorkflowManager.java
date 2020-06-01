@@ -64,8 +64,18 @@ public class ParserWorkflowManager extends WorkflowManager {
 
     public static void main(String[] args) throws Exception {
         ParserWorkflowManager manager = new ParserWorkflowManager();
-        manager.init();
-        manager.runConsumer();
+        manager.startServer();
+    }
+
+    public void startServer() throws Exception {
+        init();
+        new Thread(() -> {
+            try {
+                runConsumer();
+            } catch (Exception e) {
+                logger.error("Server exited with error ", e);
+            }
+        }).start();
     }
 
     private void init() throws Exception {
@@ -184,6 +194,8 @@ public class ParserWorkflowManager extends WorkflowManager {
         parsingTask.setGatewayId(completionMessage.getGatewayId());
         parsingTask.setParserId(parserInfo.getId());
         parsingTask.setLocalDataDir("/tmp");
+        parsingTask.setProcessId(completionMessage.getProcessId());
+        parsingTask.setOutputVersion(completionMessage.getOutputVersion());
         try {
             parsingTask.setGroupResourceProfileId(registryClient.getProcess(completionMessage.getProcessId()).getGroupResourceProfileId());
         } catch (TException e) {
@@ -212,12 +224,13 @@ public class ParserWorkflowManager extends WorkflowManager {
                 String applicationOutputName = templateInput.getApplicationOutputName();
                 try {
                     ExperimentModel experiment = registryClient.getExperiment(completionMessage.getExperimentId());
+                    List<OutputDataObjectType> experimentOutputsForJob = registryClient.getExperimentOutputsForJob(completionMessage.getExperimentId(), completionMessage.getOutputVersion());
                     Optional<OutputDataObjectType> expOutputData;
                     if (applicationOutputName.contains("*")) {
-                        expOutputData = experiment.getExperimentOutputs().stream()
+                        expOutputData = experimentOutputsForJob.stream()
                                 .filter(outputDataObjectType -> isWildcardMatch(outputDataObjectType.getName(),applicationOutputName)).findFirst();
                     } else {
-                        expOutputData = experiment.getExperimentOutputs().stream()
+                        expOutputData = experimentOutputsForJob.stream()
                                 .filter(outputDataObjectType -> outputDataObjectType.getName().equals(applicationOutputName)).findFirst();
                     }
                     if (expOutputData.isPresent()) {
@@ -318,6 +331,8 @@ public class ParserWorkflowManager extends WorkflowManager {
                 parsingTask.setGatewayId(completionMessage.getGatewayId());
                 parsingTask.setParserId(childParserInfo.getId());
                 parsingTask.setLocalDataDir("/tmp");
+                parentTask.setProcessId(completionMessage.getProcessId());
+                parentTask.setOutputVersion(completionMessage.getOutputVersion());
                 try {
                     parsingTask.setGroupResourceProfileId(registryClient.getProcess(completionMessage.getProcessId()).getGroupResourceProfileId());
                 } catch (TException e) {
