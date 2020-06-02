@@ -45,9 +45,7 @@ class SFTPConnector(object):
         with  pysftp.Connection(host=self.host, port=self.port, username=self.username,
                                 password=self.password, cnopts=cnopts) as sftp:
             try:
-                base = os.path.join('', project_name)
-                sftp.mkdir(base)
-                sftp.mkdir(remote_path)
+                sftp.makedirs(remote_path)
             except (OSError, IOError) as e:
                 pass
             sftp.put_r(localpath=local_path, remotepath=remote_path, confirm=True, preserve_mtime=False)
