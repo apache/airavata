@@ -154,3 +154,42 @@ python manage.py load_cms_data myexport.json
 
 where `myexport.json` should match the name that you gave the file when
 exporting it.
+
+## Replacing a Wagtail import with a different export
+
+Use this when you have already loaded a Wagtail export into a Django instance
+and you need to load a different one to overwrite the first one. The following
+steps will first remove the Wagtail tables and then load the export like normal.
+
+1. Make sure your virtual environment is activated if not already.
+
+```bash
+source venv/bin/activate
+```
+
+2. Run the following to delete all wagtail tables
+
+```bash
+python manage.py migrate wagtailimages 0001
+python manage.py migrate wagtailimages zero
+python manage.py migrate taggit zero
+python manage.py migrate wagtailadmin zero
+python manage.py migrate wagtailcore zero
+python manage.py migrate wagtailusers zero
+python manage.py migrate wagtailembeds zero
+```
+
+3. Migrate the database:
+
+```bash
+python manage.py migrate
+```
+
+4. Run
+
+```bash
+python manage.py load_cms_data myexport.json
+```
+
+where `myexport.json` should match the name that you gave the file when
+exporting it.
