@@ -21,11 +21,11 @@
 ---
 
 
-vhost_servername: "bcbportal.scigap.org"
+vhost_servername: "bcbportal.medicine.iu.edu"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/bcbportal.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/bcbportal.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/bcbportal.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/bcbportal.medicine.iu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/bcbportal.medicine.iu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/bcbportal.medicine.iu.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "bcbportal"
