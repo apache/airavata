@@ -192,8 +192,9 @@ public class JPAUtils {
         Map<String, String> finalProperties = new HashMap<>(DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
         finalProperties.putAll(createConnectionProperties(jdbcConfig));
         finalProperties.putAll(properties);
-        return new EntityManagerFactoryWrapper(
-                Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties), jdbcConfig);
+        return Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties);
+        // return new EntityManagerFactoryWrapper(
+        //         Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties), jdbcConfig);
     }
 
     private static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {

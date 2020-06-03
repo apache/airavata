@@ -24,8 +24,21 @@
             <pattern>[%p] %m%n</pattern>
         </encoder>
     </appender>
+    <appender name="LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>airavata.log</File>
+        <Append>true</Append>
+        <encoder>
+            <pattern>%d [%t] %-5p %c{30} %m [%X]%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>airavata.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
     <logger name="org.apache.airavata.registry" level="INFO"/>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOGFILE"/>
     </root>
 </configuration>
