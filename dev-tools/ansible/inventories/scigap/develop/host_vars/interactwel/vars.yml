@@ -27,8 +27,12 @@ ssl_certificate_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/cert.
 ssl_certificate_chain_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/privkey.pem"
 
+interactwel_django_app_branch: "api-integration"
 airavata_django_extra_dependencies:
-  - git+https://github.com/InterACTWEL/interactactwel-django-app.git@dev#egg=interactwel-django-app
+  - git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
+
+django_extra_settings:
+  LOGIN_REDIRECT_URL: "/interactwel/"
 
 ## Keycloak related variables
 tenant_domain: "interactwel"
