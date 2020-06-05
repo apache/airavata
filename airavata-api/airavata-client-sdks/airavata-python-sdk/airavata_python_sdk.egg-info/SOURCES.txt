@@ -177,6 +177,7 @@ clients/file_handling_client.py
 clients/group_manager_client.py
 clients/iam_admin_client.py
 clients/keycloak_token_fetcher.py
+clients/sftp_file_handling_client.py
 clients/sharing_registry_client.py
 clients/tenant_profile_client.py
 clients/user_profile_client.py
