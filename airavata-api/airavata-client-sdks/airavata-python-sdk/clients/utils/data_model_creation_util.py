@@ -65,13 +65,11 @@ class DataModelCreationUtil(object):
     def configure_computation_resource_scheduling(self,
                                                   experiment_model, computation_resource_name,
                                                   group_resource_profile_name,
-                                                  storage_name,
+                                                  storageId,
                                                   node_count, total_cpu_count, queue_name, wall_time_limit,
                                                   experiment_dir_path):
         resource_host_id = self.airavata_util.get_resource_host_id(computation_resource_name)
         groupResourceProfileId = self.airavata_util.get_group_resource_profile_id(group_resource_profile_name)
-        # storageId = self.airavata_util.get_storage_resource_id(storage_name)
-        storageId = 'pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e'
         computRes = ComputationalResourceSchedulingModel()
         computRes.resourceHostId = resource_host_id
         computRes.nodeCount = node_count
@@ -91,9 +89,7 @@ class DataModelCreationUtil(object):
 
         return experiment_model
 
-    def register_input_file(self, file_identifier, storage_name, input_file_name, uploaded_storage_path):
-        #storageId = self.airavata_util.get_storage_resource_id(storage_name)
-        storageId = 'pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e'
+    def register_input_file(self, file_identifier, storage_name, storageId, input_file_name, uploaded_storage_path):
         dataProductModel = DataProductModel()
         dataProductModel.gatewayId = self.gateway_id
         dataProductModel.ownerName = self.username
