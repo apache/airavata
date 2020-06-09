@@ -98,7 +98,7 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -146,14 +146,14 @@
                 <version>1.6.0</version>
                 <configuration>
                     <executable>java</executable>
-                    <classpathScope>test</classpathScope>
+                    <classpathScope>runtime</classpathScope>
                     <workingDirectory>${project.build.directory}</workingDirectory>
                 </configuration>
                 <executions>
                     <execution>
-                        <!-- mvn process-classes exec:exec@generate-migrations -->
-                        <!-- TODO: remove the dependency on test classpath, etc. -->
-                        <!-- mvn clean test-compile docker-compose:up@mysql-up exec:exec@generate-migrations-mysql docker-compose:down@mysql-down -->
+                        <!-- Run with:
+                            mvn process-classes docker-compose:up@mysql-up exec:exec@generate-migrations-mysql docker-compose:down@mysql-down
+                        -->
                         <id>generate-migrations-mysql</id>
                         <goals>
                             <goal>exec</goal>
@@ -168,9 +168,9 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <!-- mvn process-classes exec:exec@generate-migrations -->
-                        <!-- TODO: remove the dependency on test classpath, etc. -->
-                        <!-- mvn test-compile exec:exec@generate-migrations-derby -->
+                        <!-- Run with:
+                            mvn process-classes exec:exec@generate-migrations-derby
+                        -->
                         <id>generate-migrations-derby</id>
                         <goals>
                             <goal>exec</goal>
