@@ -37,6 +37,7 @@ config:
        - slurm@js-169-158.jetstream-cloud.org
        - slurm@joker.nmsu.edu
        - root@ls5.tacc.utexas.edu
+       - SLURM resource manager <slurm@afrank-gamess-vc.novalocal>
 
    - jobManagerType: UGE
      emailParser: org.apache.airavata.monitor.email.parser.UGEEmailParser

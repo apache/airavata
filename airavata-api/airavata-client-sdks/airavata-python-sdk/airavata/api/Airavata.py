@@ -3558,6 +3558,24 @@ class Iface(airavata.base.api.BaseAPI.Iface):
         """
         pass
 
+    def getParsingTemplatesForApplication(self, authzToken, appInterfaceId, gatewayId):
+        """
+        Parameters:
+         - authzToken
+         - appInterfaceId
+         - gatewayId
+        """
+        pass
+
+    def addParsingTemplatesForExperiment(self, authzToken, templateIds, experimentId):
+        """
+        Parameters:
+         - authzToken
+         - templateIds
+         - experimentId
+        """
+        pass
+
     def getParsingTemplatesForExperiment(self, authzToken, experimentId, gatewayId):
         """
         Parameters:
@@ -13455,6 +13473,90 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getParsingTemplate failed: unknown result")
 
+    def getParsingTemplatesForApplication(self, authzToken, appInterfaceId, gatewayId):
+        """
+        Parameters:
+         - authzToken
+         - appInterfaceId
+         - gatewayId
+        """
+        self.send_getParsingTemplatesForApplication(authzToken, appInterfaceId, gatewayId)
+        return self.recv_getParsingTemplatesForApplication()
+
+    def send_getParsingTemplatesForApplication(self, authzToken, appInterfaceId, gatewayId):
+        self._oprot.writeMessageBegin('getParsingTemplatesForApplication', TMessageType.CALL, self._seqid)
+        args = getParsingTemplatesForApplication_args()
+        args.authzToken = authzToken
+        args.appInterfaceId = appInterfaceId
+        args.gatewayId = gatewayId
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getParsingTemplatesForApplication(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getParsingTemplatesForApplication_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.ire is not None:
+            raise result.ire
+        if result.ace is not None:
+            raise result.ace
+        if result.ase is not None:
+            raise result.ase
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getParsingTemplatesForApplication failed: unknown result")
+
+    def addParsingTemplatesForExperiment(self, authzToken, templateIds, experimentId):
+        """
+        Parameters:
+         - authzToken
+         - templateIds
+         - experimentId
+        """
+        self.send_addParsingTemplatesForExperiment(authzToken, templateIds, experimentId)
+        self.recv_addParsingTemplatesForExperiment()
+
+    def send_addParsingTemplatesForExperiment(self, authzToken, templateIds, experimentId):
+        self._oprot.writeMessageBegin('addParsingTemplatesForExperiment', TMessageType.CALL, self._seqid)
+        args = addParsingTemplatesForExperiment_args()
+        args.authzToken = authzToken
+        args.templateIds = templateIds
+        args.experimentId = experimentId
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_addParsingTemplatesForExperiment(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = addParsingTemplatesForExperiment_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.ire is not None:
+            raise result.ire
+        if result.ace is not None:
+            raise result.ace
+        if result.ase is not None:
+            raise result.ase
+        if result.ae is not None:
+            raise result.ae
+        return
+
     def getParsingTemplatesForExperiment(self, authzToken, experimentId, gatewayId):
         """
         Parameters:
@@ -13814,6 +13916,8 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
         self._processMap["listAllParsers"] = Processor.process_listAllParsers
         self._processMap["removeParser"] = Processor.process_removeParser
         self._processMap["getParsingTemplate"] = Processor.process_getParsingTemplate
+        self._processMap["getParsingTemplatesForApplication"] = Processor.process_getParsingTemplatesForApplication
+        self._processMap["addParsingTemplatesForExperiment"] = Processor.process_addParsingTemplatesForExperiment
         self._processMap["getParsingTemplatesForExperiment"] = Processor.process_getParsingTemplatesForExperiment
         self._processMap["saveParsingTemplate"] = Processor.process_saveParsingTemplate
         self._processMap["removeParsingTemplate"] = Processor.process_removeParsingTemplate
@@ -19660,6 +19764,68 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("getParsingTemplate", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_getParsingTemplatesForApplication(self, seqid, iprot, oprot):
+        args = getParsingTemplatesForApplication_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getParsingTemplatesForApplication_result()
+        try:
+            result.success = self._handler.getParsingTemplatesForApplication(args.authzToken, args.appInterfaceId, args.gatewayId)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.api.error.ttypes.InvalidRequestException as ire:
+            msg_type = TMessageType.REPLY
+            result.ire = ire
+        except airavata.api.error.ttypes.AiravataClientException as ace:
+            msg_type = TMessageType.REPLY
+            result.ace = ace
+        except airavata.api.error.ttypes.AiravataSystemException as ase:
+            msg_type = TMessageType.REPLY
+            result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getParsingTemplatesForApplication", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_addParsingTemplatesForExperiment(self, seqid, iprot, oprot):
+        args = addParsingTemplatesForExperiment_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = addParsingTemplatesForExperiment_result()
+        try:
+            self._handler.addParsingTemplatesForExperiment(args.authzToken, args.templateIds, args.experimentId)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.api.error.ttypes.InvalidRequestException as ire:
+            msg_type = TMessageType.REPLY
+            result.ire = ire
+        except airavata.api.error.ttypes.AiravataClientException as ace:
+            msg_type = TMessageType.REPLY
+            result.ace = ace
+        except airavata.api.error.ttypes.AiravataSystemException as ase:
+            msg_type = TMessageType.REPLY
+            result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("addParsingTemplatesForExperiment", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -57486,6 +57652,416 @@ class getParsingTemplate_result(object):
         return not (self == other)
 
 
+class getParsingTemplatesForApplication_args(object):
+    """
+    Attributes:
+     - authzToken
+     - appInterfaceId
+     - gatewayId
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.STRING, 'appInterfaceId', 'UTF8', None, ),  # 2
+        (3, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 3
+    )
+
+    def __init__(self, authzToken=None, appInterfaceId=None, gatewayId=None,):
+        self.authzToken = authzToken
+        self.appInterfaceId = appInterfaceId
+        self.gatewayId = gatewayId
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.appInterfaceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getParsingTemplatesForApplication_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.appInterfaceId is not None:
+            oprot.writeFieldBegin('appInterfaceId', TType.STRING, 2)
+            oprot.writeString(self.appInterfaceId.encode('utf-8') if sys.version_info[0] == 2 else self.appInterfaceId)
+            oprot.writeFieldEnd()
+        if self.gatewayId is not None:
+            oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.appInterfaceId is None:
+            raise TProtocolException(message='Required field appInterfaceId is unset!')
+        if self.gatewayId is None:
+            raise TProtocolException(message='Required field gatewayId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class getParsingTemplatesForApplication_result(object):
+    """
+    Attributes:
+     - success
+     - ire
+     - ace
+     - ase
+     - ae
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.STRUCT, (airavata.model.appcatalog.parser.ttypes.ParsingTemplate, airavata.model.appcatalog.parser.ttypes.ParsingTemplate.thrift_spec), False), None, ),  # 0
+        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
+        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
+    )
+
+    def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+        self.success = success
+        self.ire = ire
+        self.ace = ace
+        self.ase = ase
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype393, _size390) = iprot.readListBegin()
+                    for _i394 in range(_size390):
+                        _elem395 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
+                        _elem395.read(iprot)
+                        self.success.append(_elem395)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
+                    self.ire.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ace = airavata.api.error.ttypes.AiravataClientException()
+                    self.ace.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
+                    self.ase.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('getParsingTemplatesForApplication_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.STRUCT, len(self.success))
+            for iter396 in self.success:
+                iter396.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.ire is not None:
+            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+            self.ire.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ace is not None:
+            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+            self.ace.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ase is not None:
+            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+            self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class addParsingTemplatesForExperiment_args(object):
+    """
+    Attributes:
+     - authzToken
+     - templateIds
+     - experimentId
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.LIST, 'templateIds', (TType.STRING, 'UTF8', False), None, ),  # 2
+        (3, TType.STRING, 'experimentId', 'UTF8', None, ),  # 3
+    )
+
+    def __init__(self, authzToken=None, templateIds=None, experimentId=None,):
+        self.authzToken = authzToken
+        self.templateIds = templateIds
+        self.experimentId = experimentId
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.LIST:
+                    self.templateIds = []
+                    (_etype400, _size397) = iprot.readListBegin()
+                    for _i401 in range(_size397):
+                        _elem402 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.templateIds.append(_elem402)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.experimentId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('addParsingTemplatesForExperiment_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.templateIds is not None:
+            oprot.writeFieldBegin('templateIds', TType.LIST, 2)
+            oprot.writeListBegin(TType.STRING, len(self.templateIds))
+            for iter403 in self.templateIds:
+                oprot.writeString(iter403.encode('utf-8') if sys.version_info[0] == 2 else iter403)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.experimentId is not None:
+            oprot.writeFieldBegin('experimentId', TType.STRING, 3)
+            oprot.writeString(self.experimentId.encode('utf-8') if sys.version_info[0] == 2 else self.experimentId)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.templateIds is None:
+            raise TProtocolException(message='Required field templateIds is unset!')
+        if self.experimentId is None:
+            raise TProtocolException(message='Required field experimentId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class addParsingTemplatesForExperiment_result(object):
+    """
+    Attributes:
+     - ire
+     - ace
+     - ase
+     - ae
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
+        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+        (4, TType.STRUCT, 'ae', (airavata.api.error.ttypes.AuthorizationException, airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ),  # 4
+    )
+
+    def __init__(self, ire=None, ace=None, ase=None, ae=None,):
+        self.ire = ire
+        self.ace = ace
+        self.ase = ase
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
+                    self.ire.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ace = airavata.api.error.ttypes.AiravataClientException()
+                    self.ace.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
+                    self.ase.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException()
+                    self.ae.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('addParsingTemplatesForExperiment_result')
+        if self.ire is not None:
+            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+            self.ire.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ace is not None:
+            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+            self.ace.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ase is not None:
+            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+            self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 class getParsingTemplatesForExperiment_args(object):
     """
     Attributes:
@@ -57614,11 +58190,11 @@ class getParsingTemplatesForExperiment_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype393, _size390) = iprot.readListBegin()
-                    for _i394 in range(_size390):
-                        _elem395 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
-                        _elem395.read(iprot)
-                        self.success.append(_elem395)
+                    (_etype407, _size404) = iprot.readListBegin()
+                    for _i408 in range(_size404):
+                        _elem409 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
+                        _elem409.read(iprot)
+                        self.success.append(_elem409)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -57659,8 +58235,8 @@ class getParsingTemplatesForExperiment_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter396 in self.success:
-                iter396.write(oprot)
+            for iter410 in self.success:
+                iter410.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:
@@ -58202,11 +58778,11 @@ class listAllParsingTemplates_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype400, _size397) = iprot.readListBegin()
-                    for _i401 in range(_size397):
-                        _elem402 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
-                        _elem402.read(iprot)
-                        self.success.append(_elem402)
+                    (_etype414, _size411) = iprot.readListBegin()
+                    for _i415 in range(_size411):
+                        _elem416 = airavata.model.appcatalog.parser.ttypes.ParsingTemplate()
+                        _elem416.read(iprot)
+                        self.success.append(_elem416)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -58247,8 +58823,8 @@ class listAllParsingTemplates_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter403 in self.success:
-                iter403.write(oprot)
+            for iter417 in self.success:
+                iter417.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.ire is not None:

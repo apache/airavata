@@ -184,4 +184,10 @@ public interface QueryConstants {
 
     String GET_CHILD_JOB_FOR_PARENT = "SELECT CJ FROM " + ChildJobEntity.class.getSimpleName() + " CJ " +
             "WHERE CJ.parentJobId LIKE :" + DBConstants.ChildJob.PARENT_JOB_ID + " and CJ.parentTaskId LIKE :" + DBConstants.ChildJob.PARENT_TASK_ID;
+
+    String DELETE_ALL_TEMPLATES_FOR_EXPERIMENT = "DELETE FROM " + ExperimentParsingTemplateEntity.class.getSimpleName() + " EPT " +
+            "WHERE EPT.experimentId LIKE : " + DBConstants.ExperimentParsingTemplate.EXPERIMENT_ID;
+
+    String GET_ALL_PARSING_TEMPLATES_FOR_EXPERIMENT = "SELECT EPT FROM " + ExperimentParsingTemplateEntity.class.getSimpleName() +
+            " EPT WHERE EPT.experimentId LIKE : " + DBConstants.ExperimentParsingTemplate.EXPERIMENT_ID;
 }

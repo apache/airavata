@@ -140,6 +140,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ParserInputRepository parserInputRepository = new ParserInputRepository();
     private ParserOutputRepository parserOutputRepository = new ParserOutputRepository();
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
+    private ExperimentParsingTemplateRepository experimentParsingTemplateRepository = new ExperimentParsingTemplateRepository();
     private UserRepository userRepository = new UserRepository();
     private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
 
@@ -5044,14 +5045,30 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
+    public List<ParsingTemplate> getParsingTemplatesForApplication(String appInterfaceId, String gatewayId) throws RegistryServiceException, TException {
+        try {
+            return parsingTemplateRepository.getParsingTemplatesForApplication(appInterfaceId);
+        } catch (Exception e) {
+            final String message = "Error while retrieving parsing templates for application interface id " + appInterfaceId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
     public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId, String gatewayId) throws RegistryServiceException, TException {
 
         try {
-            List<ProcessModel> processes = getExperiment(experimentId).getProcesses();
-            if (processes.size() > 0) {
-                return parsingTemplateRepository.getParsingTemplatesForApplication(processes.get(processes.size() - 1).getApplicationInterfaceId());
+            List<ExperimentParsingTemplate> allParsingTemplatesForExperiment = experimentParsingTemplateRepository.getAllParsingTemplatesForExperiment(experimentId);
+            List<ParsingTemplate> templates = new ArrayList<>();
+            if (allParsingTemplatesForExperiment != null) {
+                for (ExperimentParsingTemplate pt : allParsingTemplatesForExperiment) {
+                    templates.add(getParsingTemplate(pt.getParsingTemplateId(), gatewayId));
+                }
             }
-            return Collections.emptyList();
+            return templates;
 
         } catch (Exception e) {
             final String message = "Error while retrieving parsing templates for experiment id " + experimentId;
@@ -5060,7 +5077,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
             rse.setMessage(message + " More info: " + e.getMessage());
             throw rse;
         }
+    }
 
+    @Override
+    public void addParsingTemplatesForExperiment(List<String> templateIds, String experimentId) throws RegistryServiceException, TException {
+        experimentParsingTemplateRepository.addParsingTemplatesForExperiment(templateIds, experimentId);
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.impl.SpecUtils;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
@@ -175,7 +176,7 @@ public class PostWorkflowManager extends WorkflowManager {
 
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
-                        if (experimentModel.getSweepCount() == 1) {
+                        if ("one_pass".equals(experimentModel.getExecutionType())) {
                             executePostWorkflow(processId, gateway, false, 0, false, false);
                         } else {
 
@@ -188,7 +189,8 @@ public class PostWorkflowManager extends WorkflowManager {
                                 List<ChildJobModel> childJobsOfJob = registryClient.getChildJobsOfJob(jobStatusResult.getJobId(), task);
                                 Map<Integer, ChildJobModel> childMap = new HashMap<>();
                                 childJobsOfJob.forEach(child -> childMap.put(child.getJobIndex(), child));
-                                for (int i = 0; i < experimentModel.getSweepCount(); i++) {
+                                List<Integer> rangeInts = SpecUtils.decodeRange(experimentModel.getSweepRange());
+                                for (int i : rangeInts) {
                                     ChildJobModel child = childMap.get(i);
                                     if (child != null &&
                                             child.getJobStatuses().stream()

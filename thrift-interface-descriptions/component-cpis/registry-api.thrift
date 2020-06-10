@@ -2699,8 +2699,13 @@ service RegistryService extends base_api.BaseAPI {
 
     parser_model.ParsingTemplate getParsingTemplate(1: required string templateId, 2: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse);
+    list<parser_model.ParsingTemplate> getParsingTemplatesForApplication(1: required string appInterfaceId, 2: required string gatewayId)
+                throws (1: registry_api_errors.RegistryServiceException rse);
     list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required string experimentId, 2: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse);
+    void addParsingTemplatesForExperiment(1: required list<string> templateIds, 2: required string experimentId)
+                throws (1: registry_api_errors.RegistryServiceException rse);
+
     string saveParsingTemplate(1: required parser_model.ParsingTemplate parsingTemplate)
             throws (1: registry_api_errors.RegistryServiceException rse);
     list<parser_model.ParsingTemplate> listAllParsingTemplates(1: required string gatewayId)

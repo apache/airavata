@@ -313,7 +313,7 @@ class ExperimentModel(object):
      - processes
      - workflow
      - executionType
-     - sweepCount
+     - sweepRange
     """
 
     thrift_spec = (
@@ -339,10 +339,10 @@ class ExperimentModel(object):
         (19, TType.LIST, 'processes', (TType.STRUCT, (airavata.model.process.ttypes.ProcessModel, airavata.model.process.ttypes.ProcessModel.thrift_spec), False), None, ),  # 19
         (20, TType.STRUCT, 'workflow', (airavata.model.workflow.ttypes.AiravataWorkflow, airavata.model.workflow.ttypes.AiravataWorkflow.thrift_spec), None, ),  # 20
         (21, TType.STRING, 'executionType', 'UTF8', None, ),  # 21
-        (22, TType.I32, 'sweepCount', None, None, ),  # 22
+        (22, TType.STRING, 'sweepRange', 'UTF8', None, ),  # 22
     )
 
-    def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, gatewayInstanceId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None, workflow=None, executionType=None, sweepCount=None,):
+    def __init__(self, experimentId=thrift_spec[1][4], projectId=None, gatewayId=None, experimentType=thrift_spec[4][4], userName=None, experimentName=None, creationTime=None, description=None, executionId=None, gatewayExecutionId=None, gatewayInstanceId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, errors=None, processes=None, workflow=None, executionType=None, sweepRange=None,):
         self.experimentId = experimentId
         self.projectId = projectId
         self.gatewayId = gatewayId
@@ -364,7 +364,7 @@ class ExperimentModel(object):
         self.processes = processes
         self.workflow = workflow
         self.executionType = executionType
-        self.sweepCount = sweepCount
+        self.sweepRange = sweepRange
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -518,8 +518,8 @@ class ExperimentModel(object):
                 else:
                     iprot.skip(ftype)
             elif fid == 22:
-                if ftype == TType.I32:
-                    self.sweepCount = iprot.readI32()
+                if ftype == TType.STRING:
+                    self.sweepRange = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -634,9 +634,9 @@ class ExperimentModel(object):
             oprot.writeFieldBegin('executionType', TType.STRING, 21)
             oprot.writeString(self.executionType.encode('utf-8') if sys.version_info[0] == 2 else self.executionType)
             oprot.writeFieldEnd()
-        if self.sweepCount is not None:
-            oprot.writeFieldBegin('sweepCount', TType.I32, 22)
-            oprot.writeI32(self.sweepCount)
+        if self.sweepRange is not None:
+            oprot.writeFieldBegin('sweepRange', TType.STRING, 22)
+            oprot.writeString(self.sweepRange.encode('utf-8') if sys.version_info[0] == 2 else self.sweepRange)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -1103,6 +1103,82 @@ class ExperimentStatistics(object):
             raise TProtocolException(message='Required field runningExperimentCount is unset!')
         if self.allExperiments is None:
             raise TProtocolException(message='Required field allExperiments is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class ExperimentParsingTemplate(object):
+    """
+    Attributes:
+     - experimentId
+     - parsingTemplateId
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'experimentId', 'UTF8', None, ),  # 1
+        (2, TType.STRING, 'parsingTemplateId', 'UTF8', None, ),  # 2
+    )
+
+    def __init__(self, experimentId=None, parsingTemplateId=None,):
+        self.experimentId = experimentId
+        self.parsingTemplateId = parsingTemplateId
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.experimentId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.parsingTemplateId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('ExperimentParsingTemplate')
+        if self.experimentId is not None:
+            oprot.writeFieldBegin('experimentId', TType.STRING, 1)
+            oprot.writeString(self.experimentId.encode('utf-8') if sys.version_info[0] == 2 else self.experimentId)
+            oprot.writeFieldEnd()
+        if self.parsingTemplateId is not None:
+            oprot.writeFieldBegin('parsingTemplateId', TType.STRING, 2)
+            oprot.writeString(self.parsingTemplateId.encode('utf-8') if sys.version_info[0] == 2 else self.parsingTemplateId)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.experimentId is None:
+            raise TProtocolException(message='Required field experimentId is unset!')
+        if self.parsingTemplateId is None:
+            raise TProtocolException(message='Required field parsingTemplateId is unset!')
         return
 
     def __repr__(self):

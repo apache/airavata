@@ -141,8 +141,8 @@ public class GroovyMapData {
     @ScriptTag(name = "experimentDataDir")
     private String experimentDataDir;
 
-    @ScriptTag(name = "sweepCount")
-    private int sweepCount;
+    @ScriptTag(name = "sweepRange")
+    private List<Integer> sweepRange;
 
     public Map<String, Object> getMap() {
 
@@ -476,12 +476,12 @@ public class GroovyMapData {
         this.experimentDataDir = experimentDataDir;
     }
 
-    public int getSweepCount() {
-        return sweepCount;
+    public List<Integer> getSweepRange() {
+        return sweepRange;
     }
 
-    public void setSweepCount(int sweepCount) {
-        this.sweepCount = sweepCount;
+    public void setSweepRange(List<Integer> sweepRange) {
+        this.sweepRange = sweepRange;
     }
 
     public Map toImmutableMap() {

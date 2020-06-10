@@ -3537,6 +3537,19 @@ service Airavata extends base_api.BaseAPI {
                                                                                          3: airavata_errors.AiravataSystemException ase,
                                                                                          4: airavata_errors.AuthorizationException ae);
 
+
+ list<parser_model.ParsingTemplate> getParsingTemplatesForApplication(1: required security_model.AuthzToken authzToken, 2: required string appInterfaceId, 3: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae);
+
+ void addParsingTemplatesForExperiment(1: required security_model.AuthzToken authzToken, 2: required list<string> templateIds, 3: required string experimentId)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
+
  list<parser_model.ParsingTemplate> getParsingTemplatesForExperiment(1: required security_model.AuthzToken authzToken, 2: required string experimentId, 3: required string gatewayId)
                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
                                                                                          2: airavata_errors.AiravataClientException ace,

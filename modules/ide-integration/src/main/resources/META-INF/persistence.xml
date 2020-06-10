@@ -136,6 +136,8 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.TaskStatusEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationDataEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentOutputValueEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentParsingTemplateEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="openjpa.DynamicEnhancementAgent" value="false"/>

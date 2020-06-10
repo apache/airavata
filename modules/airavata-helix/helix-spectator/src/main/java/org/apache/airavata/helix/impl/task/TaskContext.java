@@ -21,6 +21,7 @@ package org.apache.airavata.helix.impl.task;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.helix.impl.SpecUtils;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -750,8 +751,8 @@ public class TaskContext {
         return this.experimentModel.getExecutionType();
     }
 
-    public int getSweepCount() {
-        return this.experimentModel.getSweepCount();
+    public List<Integer> getSweepRange() {
+        return SpecUtils.decodeRange(this.experimentModel.getSweepRange());
     }
 
     public static class TaskContextBuilder {

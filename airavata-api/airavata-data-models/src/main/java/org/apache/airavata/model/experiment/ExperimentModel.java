@@ -65,7 +65,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   private static final org.apache.thrift.protocol.TField PROCESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("processes", org.apache.thrift.protocol.TType.LIST, (short)19);
   private static final org.apache.thrift.protocol.TField WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("workflow", org.apache.thrift.protocol.TType.STRUCT, (short)20);
   private static final org.apache.thrift.protocol.TField EXECUTION_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("executionType", org.apache.thrift.protocol.TType.STRING, (short)21);
-  private static final org.apache.thrift.protocol.TField SWEEP_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("sweepCount", org.apache.thrift.protocol.TType.I32, (short)22);
+  private static final org.apache.thrift.protocol.TField SWEEP_RANGE_FIELD_DESC = new org.apache.thrift.protocol.TField("sweepRange", org.apache.thrift.protocol.TType.STRING, (short)22);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ExperimentModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ExperimentModelTupleSchemeFactory();
@@ -91,7 +91,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   private java.util.List<org.apache.airavata.model.process.ProcessModel> processes; // optional
   private org.apache.airavata.model.workflow.AiravataWorkflow workflow; // optional
   private java.lang.String executionType; // optional
-  private int sweepCount; // optional
+  private java.lang.String sweepRange; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -120,7 +120,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     PROCESSES((short)19, "processes"),
     WORKFLOW((short)20, "workflow"),
     EXECUTION_TYPE((short)21, "executionType"),
-    SWEEP_COUNT((short)22, "sweepCount");
+    SWEEP_RANGE((short)22, "sweepRange");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -177,8 +177,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           return WORKFLOW;
         case 21: // EXECUTION_TYPE
           return EXECUTION_TYPE;
-        case 22: // SWEEP_COUNT
-          return SWEEP_COUNT;
+        case 22: // SWEEP_RANGE
+          return SWEEP_RANGE;
         default:
           return null;
       }
@@ -221,9 +221,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private static final int __ENABLEEMAILNOTIFICATION_ISSET_ID = 1;
-  private static final int __SWEEPCOUNT_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.EXECUTION_ID,_Fields.GATEWAY_EXECUTION_ID,_Fields.GATEWAY_INSTANCE_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.USER_CONFIGURATION_DATA,_Fields.EXPERIMENT_INPUTS,_Fields.EXPERIMENT_OUTPUTS,_Fields.EXPERIMENT_STATUS,_Fields.ERRORS,_Fields.PROCESSES,_Fields.WORKFLOW,_Fields.EXECUTION_TYPE,_Fields.SWEEP_COUNT};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.EXECUTION_ID,_Fields.GATEWAY_EXECUTION_ID,_Fields.GATEWAY_INSTANCE_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.USER_CONFIGURATION_DATA,_Fields.EXPERIMENT_INPUTS,_Fields.EXPERIMENT_OUTPUTS,_Fields.EXPERIMENT_STATUS,_Fields.ERRORS,_Fields.PROCESSES,_Fields.WORKFLOW,_Fields.EXECUTION_TYPE,_Fields.SWEEP_RANGE};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -275,8 +274,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workflow.AiravataWorkflow.class)));
     tmpMap.put(_Fields.EXECUTION_TYPE, new org.apache.thrift.meta_data.FieldMetaData("executionType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.SWEEP_COUNT, new org.apache.thrift.meta_data.FieldMetaData("sweepCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.SWEEP_RANGE, new org.apache.thrift.meta_data.FieldMetaData("sweepRange", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExperimentModel.class, metaDataMap);
   }
@@ -390,7 +389,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     if (other.isSetExecutionType()) {
       this.executionType = other.executionType;
     }
-    this.sweepCount = other.sweepCount;
+    if (other.isSetSweepRange()) {
+      this.sweepRange = other.sweepRange;
+    }
   }
 
   public ExperimentModel deepCopy() {
@@ -424,8 +425,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     this.processes = null;
     this.workflow = null;
     this.executionType = null;
-    setSweepCountIsSet(false);
-    this.sweepCount = 0;
+    this.sweepRange = null;
   }
 
   public java.lang.String getExperimentId() {
@@ -1007,26 +1007,27 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     }
   }
 
-  public int getSweepCount() {
-    return this.sweepCount;
+  public java.lang.String getSweepRange() {
+    return this.sweepRange;
   }
 
-  public void setSweepCount(int sweepCount) {
-    this.sweepCount = sweepCount;
-    setSweepCountIsSet(true);
+  public void setSweepRange(java.lang.String sweepRange) {
+    this.sweepRange = sweepRange;
   }
 
-  public void unsetSweepCount() {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __SWEEPCOUNT_ISSET_ID);
+  public void unsetSweepRange() {
+    this.sweepRange = null;
   }
 
-  /** Returns true if field sweepCount is set (has been assigned a value) and false otherwise */
-  public boolean isSetSweepCount() {
-    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __SWEEPCOUNT_ISSET_ID);
+  /** Returns true if field sweepRange is set (has been assigned a value) and false otherwise */
+  public boolean isSetSweepRange() {
+    return this.sweepRange != null;
   }
 
-  public void setSweepCountIsSet(boolean value) {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __SWEEPCOUNT_ISSET_ID, value);
+  public void setSweepRangeIsSet(boolean value) {
+    if (!value) {
+      this.sweepRange = null;
+    }
   }
 
   public void setFieldValue(_Fields field, java.lang.Object value) {
@@ -1199,11 +1200,11 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       }
       break;
 
-    case SWEEP_COUNT:
+    case SWEEP_RANGE:
       if (value == null) {
-        unsetSweepCount();
+        unsetSweepRange();
       } else {
-        setSweepCount((java.lang.Integer)value);
+        setSweepRange((java.lang.String)value);
       }
       break;
 
@@ -1275,8 +1276,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     case EXECUTION_TYPE:
       return getExecutionType();
 
-    case SWEEP_COUNT:
-      return getSweepCount();
+    case SWEEP_RANGE:
+      return getSweepRange();
 
     }
     throw new java.lang.IllegalStateException();
@@ -1331,8 +1332,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       return isSetWorkflow();
     case EXECUTION_TYPE:
       return isSetExecutionType();
-    case SWEEP_COUNT:
-      return isSetSweepCount();
+    case SWEEP_RANGE:
+      return isSetSweepRange();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1541,12 +1542,12 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         return false;
     }
 
-    boolean this_present_sweepCount = true && this.isSetSweepCount();
-    boolean that_present_sweepCount = true && that.isSetSweepCount();
-    if (this_present_sweepCount || that_present_sweepCount) {
-      if (!(this_present_sweepCount && that_present_sweepCount))
+    boolean this_present_sweepRange = true && this.isSetSweepRange();
+    boolean that_present_sweepRange = true && that.isSetSweepRange();
+    if (this_present_sweepRange || that_present_sweepRange) {
+      if (!(this_present_sweepRange && that_present_sweepRange))
         return false;
-      if (this.sweepCount != that.sweepCount)
+      if (!this.sweepRange.equals(that.sweepRange))
         return false;
     }
 
@@ -1641,9 +1642,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     if (isSetExecutionType())
       hashCode = hashCode * 8191 + executionType.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetSweepCount()) ? 131071 : 524287);
-    if (isSetSweepCount())
-      hashCode = hashCode * 8191 + sweepCount;
+    hashCode = hashCode * 8191 + ((isSetSweepRange()) ? 131071 : 524287);
+    if (isSetSweepRange())
+      hashCode = hashCode * 8191 + sweepRange.hashCode();
 
     return hashCode;
   }
@@ -1866,12 +1867,12 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetSweepCount()).compareTo(other.isSetSweepCount());
+    lastComparison = java.lang.Boolean.valueOf(isSetSweepRange()).compareTo(other.isSetSweepRange());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetSweepCount()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sweepCount, other.sweepCount);
+    if (isSetSweepRange()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sweepRange, other.sweepRange);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -2085,10 +2086,14 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       }
       first = false;
     }
-    if (isSetSweepCount()) {
+    if (isSetSweepRange()) {
       if (!first) sb.append(", ");
-      sb.append("sweepCount:");
-      sb.append(this.sweepCount);
+      sb.append("sweepRange:");
+      if (this.sweepRange == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sweepRange);
+      }
       first = false;
     }
     sb.append(")");
@@ -2401,10 +2406,10 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 22: // SWEEP_COUNT
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.sweepCount = iprot.readI32();
-              struct.setSweepCountIsSet(true);
+          case 22: // SWEEP_RANGE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.sweepRange = iprot.readString();
+              struct.setSweepRangeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -2595,10 +2600,12 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           oprot.writeFieldEnd();
         }
       }
-      if (struct.isSetSweepCount()) {
-        oprot.writeFieldBegin(SWEEP_COUNT_FIELD_DESC);
-        oprot.writeI32(struct.sweepCount);
-        oprot.writeFieldEnd();
+      if (struct.sweepRange != null) {
+        if (struct.isSetSweepRange()) {
+          oprot.writeFieldBegin(SWEEP_RANGE_FIELD_DESC);
+          oprot.writeString(struct.sweepRange);
+          oprot.writeFieldEnd();
+        }
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -2669,7 +2676,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (struct.isSetExecutionType()) {
         optionals.set(14);
       }
-      if (struct.isSetSweepCount()) {
+      if (struct.isSetSweepRange()) {
         optionals.set(15);
       }
       oprot.writeBitSet(optionals, 16);
@@ -2754,8 +2761,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (struct.isSetExecutionType()) {
         oprot.writeString(struct.executionType);
       }
-      if (struct.isSetSweepCount()) {
-        oprot.writeI32(struct.sweepCount);
+      if (struct.isSetSweepRange()) {
+        oprot.writeString(struct.sweepRange);
       }
     }
 
@@ -2897,8 +2904,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         struct.setExecutionTypeIsSet(true);
       }
       if (incoming.get(15)) {
-        struct.sweepCount = iprot.readI32();
-        struct.setSweepCountIsSet(true);
+        struct.sweepRange = iprot.readString();
+        struct.setSweepRangeIsSet(true);
       }
     }
   }

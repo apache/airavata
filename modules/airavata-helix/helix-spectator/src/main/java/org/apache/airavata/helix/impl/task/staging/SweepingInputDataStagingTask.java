@@ -21,6 +21,7 @@
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.helix.impl.SpecUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -100,6 +101,8 @@ public class SweepingInputDataStagingTask extends DataStagingTask {
                     *                         /<sweepCount -1>/input.txt
                      */
 
+                    List<Integer> rangeInts = taskContext.getSweepRange();
+
                     if (sourceFileName.endsWith(".zip")) {
                         String tempZipDir = Paths.get(workingDir, UUID.randomUUID().toString()).toString();
                         logger.info("Copying sweep input zip {} to temp directory {}", sourceFileName, tempZipDir);
@@ -110,7 +113,7 @@ public class SweepingInputDataStagingTask extends DataStagingTask {
                         adaptor.executeCommand("unzip " + sourceFileName, tempZipDir);
                         String tempDataPath = Paths.get(tempZipDir, sourceFileName.substring(0, sourceFileName.length() - ".zip".length())).toString();
 
-                        for (int i = 0; i < taskContext.getSweepCount(); i++) {
+                        for (int i : rangeInts) {
                             String sweepSourceDir = Paths.get(tempDataPath, i +"").toString();
                             List<String> sweepFiles = adaptor.listDirectory(sweepSourceDir);
                             for (String sweepFile: sweepFiles) {
@@ -127,7 +130,7 @@ public class SweepingInputDataStagingTask extends DataStagingTask {
 
                     } else {
                         // TODO: Optimize here to copy locally
-                        for (int i = 0; i < taskContext.getSweepCount(); i++) {
+                        for (int i : rangeInts) {
                             String overrideFileName = dataStagingTaskModel.getProcessInput().getOverrideFilename();
                             String destFileName = (overrideFileName != null && !"".equals(overrideFileName)) ? overrideFileName : sourceFileName;
                             String destPath = Paths.get(workingDir, i + "", destFileName).toString();

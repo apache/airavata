@@ -23,6 +23,7 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.helix.impl.SpecUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
@@ -99,6 +100,8 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
             jobId = submissionOutput.getJobId();
 
+            List<Integer> rangeInts = taskContext.getSweepRange();
+
             if (submissionOutput.getExitCode() != 0 || submissionOutput.isJobSubmissionFailed()) {
 
                 jobModel.setJobId(DEFAULT_JOB_ID);
@@ -149,7 +152,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 jobModel.setJobStatuses(Collections.singletonList(jobStatus));
                 saveAndPublishJobStatus(jobModel);
-                saveChildJobModels(jobModel, taskContext.getSweepCount());
+                saveChildJobModels(jobModel, rangeInts);
 
                 if (verifyJobSubmissionByJobId(adaptor, jobId)) {
                     jobStatus.setJobState(JobState.QUEUED);
@@ -175,7 +178,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                         jobModel.setJobStatuses(Collections.singletonList(jobStatus));
                         saveAndPublishJobStatus(jobModel);
-                        saveChildJobModels(jobModel, taskContext.getSweepCount());
+                        saveChildJobModels(jobModel, rangeInts);
                         logger.info("Job id " + verifyJobId + " verification succeeded");
                         break;
                     }
@@ -279,14 +282,14 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     }
 
     // This is for parameter sweeping jobs
-    private void saveChildJobModels(JobModel jobModel, int childCount) throws TException {
-        if (childCount <= 1) {
+    private void saveChildJobModels(JobModel jobModel, List<Integer> childRanges) throws TException {
+        if (childRanges.size() <= 1) {
             return;
         }
 
         RegistryService.Client registryServiceClient = getRegistryServiceClient();
 
-        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+        for (int childIndex : childRanges) {
             ChildJobModel childJobModel = new ChildJobModel();
             childJobModel.setChildJobId(jobModel.getTaskId() + "_" + jobModel.getJobId() + "_" + childIndex);
             childJobModel.setJobIndex(childIndex);

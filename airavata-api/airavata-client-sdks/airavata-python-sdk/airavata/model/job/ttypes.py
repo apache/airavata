@@ -221,3 +221,128 @@ class JobModel(object):
 
     def __ne__(self, other):
         return not (self == other)
+
+
+class ChildJobModel(object):
+    """
+    Attributes:
+     - childJobId
+     - parentJobId
+     - parentTaskId
+     - jobIndex
+     - jobStatuses
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'childJobId', 'UTF8', None, ),  # 1
+        (2, TType.STRING, 'parentJobId', 'UTF8', None, ),  # 2
+        (3, TType.STRING, 'parentTaskId', 'UTF8', None, ),  # 3
+        (4, TType.I32, 'jobIndex', None, None, ),  # 4
+        (5, TType.LIST, 'jobStatuses', (TType.STRUCT, (airavata.model.status.ttypes.ChildJobStatus, airavata.model.status.ttypes.ChildJobStatus.thrift_spec), False), None, ),  # 5
+    )
+
+    def __init__(self, childJobId=None, parentJobId=None, parentTaskId=None, jobIndex=None, jobStatuses=None,):
+        self.childJobId = childJobId
+        self.parentJobId = parentJobId
+        self.parentTaskId = parentTaskId
+        self.jobIndex = jobIndex
+        self.jobStatuses = jobStatuses
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.childJobId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.parentJobId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.parentTaskId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I32:
+                    self.jobIndex = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.LIST:
+                    self.jobStatuses = []
+                    (_etype10, _size7) = iprot.readListBegin()
+                    for _i11 in range(_size7):
+                        _elem12 = airavata.model.status.ttypes.ChildJobStatus()
+                        _elem12.read(iprot)
+                        self.jobStatuses.append(_elem12)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('ChildJobModel')
+        if self.childJobId is not None:
+            oprot.writeFieldBegin('childJobId', TType.STRING, 1)
+            oprot.writeString(self.childJobId.encode('utf-8') if sys.version_info[0] == 2 else self.childJobId)
+            oprot.writeFieldEnd()
+        if self.parentJobId is not None:
+            oprot.writeFieldBegin('parentJobId', TType.STRING, 2)
+            oprot.writeString(self.parentJobId.encode('utf-8') if sys.version_info[0] == 2 else self.parentJobId)
+            oprot.writeFieldEnd()
+        if self.parentTaskId is not None:
+            oprot.writeFieldBegin('parentTaskId', TType.STRING, 3)
+            oprot.writeString(self.parentTaskId.encode('utf-8') if sys.version_info[0] == 2 else self.parentTaskId)
+            oprot.writeFieldEnd()
+        if self.jobIndex is not None:
+            oprot.writeFieldBegin('jobIndex', TType.I32, 4)
+            oprot.writeI32(self.jobIndex)
+            oprot.writeFieldEnd()
+        if self.jobStatuses is not None:
+            oprot.writeFieldBegin('jobStatuses', TType.LIST, 5)
+            oprot.writeListBegin(TType.STRUCT, len(self.jobStatuses))
+            for iter13 in self.jobStatuses:
+                iter13.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.childJobId is None:
+            raise TProtocolException(message='Required field childJobId is unset!')
+        if self.parentJobId is None:
+            raise TProtocolException(message='Required field parentJobId is unset!')
+        if self.parentTaskId is None:
+            raise TProtocolException(message='Required field parentTaskId is unset!')
+        if self.jobIndex is None:
+            raise TProtocolException(message='Required field jobIndex is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)

@@ -110,7 +110,7 @@ struct ExperimentModel {
     19: optional list<process_model.ProcessModel> processes,
     20: optional airavata_workflow_model.AiravataWorkflow workflow,
     21: optional string executionType,
-    22: optional i32 sweepCount
+    22: optional string sweepRange
     }
 
 struct ExperimentSummaryModel {
@@ -140,4 +140,9 @@ struct ExperimentStatistics {
     10: optional list<ExperimentSummaryModel> cancelledExperiments,
     11: optional list<ExperimentSummaryModel> createdExperiments,
     12: optional list<ExperimentSummaryModel> runningExperiments,
+}
+
+struct ExperimentParsingTemplate {
+    1: required string experimentId,
+    2: required string parsingTemplateId,
 }

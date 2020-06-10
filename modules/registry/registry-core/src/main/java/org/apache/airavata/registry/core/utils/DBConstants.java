@@ -189,4 +189,9 @@ public class DBConstants {
         public static final String EXPERIMENT_ID = "experimentId";
         public static final String NAME = "name";
     }
+
+    public static class ExperimentParsingTemplate {
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String PARSING_TEMPLATE_ID = "parsingTemplateId";
+    }
 }

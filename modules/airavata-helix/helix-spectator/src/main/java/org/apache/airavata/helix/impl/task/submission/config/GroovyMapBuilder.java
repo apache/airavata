@@ -79,7 +79,7 @@ public class GroovyMapBuilder {
         mapData.setWorkingDirectory(taskContext.getWorkingDir());
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
-        mapData.setSweepCount(taskContext.getSweepCount());
+        mapData.setSweepRange(taskContext.getSweepRange());
 
         //List<String> emails = taskContext.getUserProfile().getEmails();
         //if (emails != null && emails.size() > 0) {

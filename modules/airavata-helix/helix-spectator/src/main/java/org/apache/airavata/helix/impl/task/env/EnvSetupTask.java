@@ -20,6 +20,7 @@
 package org.apache.airavata.helix.impl.task.env;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.helix.impl.SpecUtils;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
+import java.util.List;
 
 @TaskDef(name = "Environment Setup Task")
 public class EnvSetupTask extends AiravataTask {
@@ -56,7 +58,10 @@ public class EnvSetupTask extends AiravataTask {
             }
 
             if ("param_sweep".equals(taskContext.getExecutionType())) {
-                for (int i = 0; i < taskContext.getSweepCount(); i++) {
+
+                List<Integer> rangeInts = taskContext.getSweepRange();
+
+                for (int i : rangeInts) {
                     String sweepDir = Paths.get(getTaskContext().getWorkingDir(), i + "").toString();
                     logger.info("Creating sweep directory {}", sweepDir);
                     adaptor.createDirectory(sweepDir, true);

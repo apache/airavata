@@ -76,8 +76,8 @@ public class ExperimentEntity implements Serializable {
     @Column(name = "EXECUTION_TYPE")
     public String executionType;
 
-    @Column(name = "SWEEP_COUNT")
-    public int sweepCount;
+    @Column(name = "SWEEP_RANGE")
+    public String sweepRange;
 
     @Lob
     @Column(name = "EMAIL_ADDRESSES")
@@ -271,11 +271,11 @@ public class ExperimentEntity implements Serializable {
         this.executionType = executionType;
     }
 
-    public int getSweepCount() {
-        return sweepCount;
+    public String getSweepRange() {
+        return sweepRange;
     }
 
-    public void setSweepCount(int sweepCount) {
-        this.sweepCount = sweepCount;
+    public void setSweepRange(String sweepRange) {
+        this.sweepRange = sweepRange;
     }
 }
