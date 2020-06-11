@@ -19,17 +19,16 @@
 #
 
 ---
-# Gather facts on the following
-- hosts: api-orch
-- hosts: helix
-- hosts: django
-
-- hosts: database
-  tags: mysql , airavata
-  roles:
-    # - env_setup
-    - role: database
-      become: yes
-      become_user: "{{user}}"
-
-...
+user: "pga"
+group: "pga"
+gateway_data_store_hostname: "pgadev.scigap.org"
+gateway_data_store_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+django_wsgi_processes: 2
+doc_root_dir: "/var/www/portals/django-{{gateway_id}}"
+admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"
+django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
+django_database_name: "django_{{ gateway_id }}"
+django_hidden_airavata_apps: "['django_airavata_dataparsers']"
+airavata_django_git_branch: "mft-integration"
+django_tus_endpoint: "https://tus.testing.seagrid.org/files/"
+django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
