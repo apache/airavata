@@ -13,7 +13,8 @@ from django_airavata.wagtailapps.base.models import (
 class Command(BaseCommand):
 
     def handle(self, **options):
-        hostname = settings.ALLOWED_HOSTS[0]
+        hostname = settings.ALLOWED_HOSTS[0] if len(
+            settings.ALLOWED_HOSTS) > 0 else "localhost"
         if not Site.objects.filter(hostname=hostname,
                                    is_default_site=True).exists():
             with transaction.atomic():

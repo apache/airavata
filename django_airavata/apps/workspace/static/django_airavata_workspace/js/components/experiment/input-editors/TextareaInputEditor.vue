@@ -1,6 +1,7 @@
 <template>
     <b-form-textarea :id="id" v-model="data"
         :rows="rows"
+        :disabled="readOnly"
         :state="componentValidState"
         @input="valueChanged"/>
 </template>
