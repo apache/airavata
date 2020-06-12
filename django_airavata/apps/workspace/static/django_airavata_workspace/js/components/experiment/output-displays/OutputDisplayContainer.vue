@@ -19,6 +19,7 @@
       :experiment-output="experimentOutput"
     />
     <interactive-parameters-panel
+      ref="interactiveParametersPanel"
       v-if="viewData && viewData.interactive"
       :parameters="viewData.interactive"
       @input="parametersUpdated"
@@ -134,6 +135,9 @@ export default {
     },
     providerId() {
       return this.currentView["provider-id"];
+    },
+    hasInteractiveParameters() {
+      return this.viewData && this.viewData.interactive;
     }
   },
   methods: {
@@ -147,6 +151,13 @@ export default {
       }
     },
     parametersUpdated(newParams) {
+      if (
+        this.hasInteractiveParameters &&
+        !this.$refs.interactiveParametersPanel.valid
+      ) {
+        // Don't update if we have invalid interactive parameters
+        return;
+      }
       this.loader.load(newParams);
     },
     createLoader() {

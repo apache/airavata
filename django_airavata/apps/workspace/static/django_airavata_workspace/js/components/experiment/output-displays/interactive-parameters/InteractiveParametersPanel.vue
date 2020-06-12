@@ -1,24 +1,26 @@
 <template>
   <b-card title="Parameters">
-    <b-form-group
-      v-for="param in parameters"
-      :key="param.name"
-      :label="param.name"
-    >
+    <validated-form ref="validatedForm" :items="formItems">
       <interactive-parameter-widget-container
-        :parameter="param"
-        @input="updated(param, $event)"/>
-    </b-form-group>
+        slot-scope="form"
+        :parameter="form.item"
+        @valid="form.valid"
+        @invalid="form.invalid"
+        @input="updated(form.item, $event)"
+      />
+    </validated-form>
   </b-card>
 </template>
 
 <script>
 import InteractiveParameterWidgetContainer from "./InteractiveParameterWidgetContainer";
+import { components } from "django-airavata-common-ui";
 
 export default {
   name: "interactive-parameters-panel",
   components: {
-    InteractiveParameterWidgetContainer
+    InteractiveParameterWidgetContainer,
+    "validated-form": components.ValidatedForm
   },
   props: {
     parameters: {
@@ -26,15 +28,38 @@ export default {
       required: true
     }
   },
+  computed: {
+    formItems() {
+      return this.localParameters.map(p => {
+        return {
+          key: p.name,
+          label: p.name,
+          item: p
+        };
+      });
+    },
+    valid() {
+      return this.$refs.validatedForm.valid;
+    }
+  },
+  data() {
+    return {
+      localParameters: this.parametersCopy()
+    }
+  },
   methods: {
     updated(param, value) {
-      const params = this.parametersCopy();
-      const i = params.findIndex(x => x.name === param.name);
-      params[i].value = value;
-      this.$emit("input", params);
+      const i = this.localParameters.findIndex(x => x.name === param.name);
+      this.localParameters[i].value = value;
+      this.$emit("input", this.localParameters);
     },
     parametersCopy() {
       return JSON.parse(JSON.stringify(this.parameters));
+    }
+  },
+  watch: {
+    parameters() {
+      this.localParameters = this.parametersCopy();
     }
   }
 };

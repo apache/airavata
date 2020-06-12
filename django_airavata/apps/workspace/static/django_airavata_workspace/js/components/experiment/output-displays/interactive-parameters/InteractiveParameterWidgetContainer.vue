@@ -4,6 +4,8 @@
     :value="parameter.value"
     :parameter="parameter"
     @input="$emit('input', $event)"
+    @valid="$emit('valid')"
+    @invalid="$emit('invalid', $event)"
   />
 </template>
 

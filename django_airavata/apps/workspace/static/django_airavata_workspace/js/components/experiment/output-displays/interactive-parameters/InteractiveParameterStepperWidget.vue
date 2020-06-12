@@ -32,20 +32,36 @@ export default {
   },
   data() {
     return {
-      currentValue: parseFloat(this.value)
+      currentValue: parseFloat(this.value),
+      valid: false
     };
   },
   computed: {
     disabled() {
-      return this.currentValue === parseFloat(this.value);
+      return !this.valid || this.currentValue === parseFloat(this.value);
     }
   },
   methods: {
     updateValue(newValue) {
+      if ("max" in this.parameter) {
+        newValue = Math.min(this.parameter.max, newValue);
+      }
+      if ("min" in this.parameter) {
+        newValue = Math.max(this.parameter.min, newValue);
+      }
       this.currentValue = parseFloat(newValue);
+      if (this.$refs.textInput.validity.valid) {
+        this.valid = true;
+        this.$emit("valid");
+      } else {
+        this.valid = false;
+        this.$emit("invalid", this.$refs.textInput.validationMessage);
+      }
     },
     submit() {
-      this.$emit("input", this.currentValue);
+      if (!this.disabled) {
+        this.$emit("input", this.currentValue);
+      }
     },
     enterKeyPressed() {
       if (!this.disabled) {
