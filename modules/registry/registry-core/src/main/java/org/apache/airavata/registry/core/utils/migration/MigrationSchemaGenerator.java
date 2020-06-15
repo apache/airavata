@@ -1,17 +1,18 @@
 package org.apache.airavata.registry.core.utils.migration;
 
-import org.apache.airavata.common.utils.DBInitializer;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.DerbyUtil;
+import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
+import org.apache.airavata.registry.core.utils.JPAUtil.AppCatalogJPAUtils;
+import org.apache.airavata.registry.core.utils.JPAUtil.ExpCatalogJPAUtils;
+import org.apache.airavata.registry.core.utils.JPAUtil.RepCatalogJPAUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +20,13 @@ public class MigrationSchemaGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(MigrationSchemaGenerator.class);
 
-    // sharing catalog?
     private enum Database {
-        app_catalog(new AppCatalogDBInitConfig().setDbInitScriptPrefix("appcatalog"), "appcatalog_data_new"),
-        experiment_catalog(new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog"), "experiment_data_new"),
+        app_catalog(new AppCatalogDBInitConfig().setDbInitScriptPrefix("appcatalog"),
+                AppCatalogJPAUtils.PERSISTENCE_UNIT_NAME),
+        experiment_catalog(new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog"),
+                ExpCatalogJPAUtils.PERSISTENCE_UNIT_NAME),
         replica_catalog(new ReplicaCatalogDBInitConfig().setDbInitScriptPrefix("replicacatalog"),
-                "replicacatalog_data_new");
+                RepCatalogJPAUtils.PERSISTENCE_UNIT_NAME);
 
         private final DBInitConfig dbInitConfig;
         private final String persistenceUnitName;
