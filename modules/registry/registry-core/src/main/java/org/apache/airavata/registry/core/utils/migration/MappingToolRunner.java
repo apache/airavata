@@ -1,9 +1,7 @@
 package org.apache.airavata.registry.core.utils.migration;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.MappingTool;
@@ -22,7 +20,7 @@ public class MappingToolRunner {
     public static void run(JDBCConfig jdbcConfig, String outputFile, String persistenceUnitName, String schemaAction) {
 
         JDBCConfiguration jdbcConfiguration = new JDBCConfigurationImpl();
-        jdbcConfiguration.fromProperties(createConnectionProperties(jdbcConfig));
+        jdbcConfiguration.fromProperties(JPAUtils.createConnectionProperties(jdbcConfig));
         jdbcConfiguration.setConnectionDriverName("org.apache.commons.dbcp.BasicDataSource");
 
         Options options = new Options();
@@ -43,14 +41,5 @@ public class MappingToolRunner {
             throw new RuntimeException(
                     "Failed to run MappingTool to generate migration script", mappingToolEx);
         }
-    }
-
-    // TODO: copied from JPAUtils
-    private static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
-        String connectionProperties = "DriverClassName=" + jdbcConfig.getDriver() + "," + "Url=" + jdbcConfig.getURL()
-                + "?autoReconnect=true," + "Username=" + jdbcConfig.getUser() + "," + "Password="
-                + jdbcConfig.getPassword() + ",validationQuery=" + jdbcConfig.getValidationQuery();
-        logger.debug("Connection properties={}", connectionProperties);
-        return Collections.singletonMap("openjpa.ConnectionProperties", connectionProperties);
     }
 }

@@ -29,7 +29,7 @@ import org.apache.airavata.registry.core.utils.ReplicaCatalogJDBCConfig;
 public class RepCatalogJPAUtils {
 
     // TODO: we can rename this back to replicacatalog_data once we completely replace the other replicacatalog_data persistence context in airavata-registry-core
-    private static final String PERSISTENCE_UNIT_NAME = "replicacatalog_data_new";
+    public static final String PERSISTENCE_UNIT_NAME = "replicacatalog_data_new";
     private static final JDBCConfig JDBC_CONFIG = new ReplicaCatalogJDBCConfig();
     private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
 
