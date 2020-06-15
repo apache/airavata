@@ -24,3 +24,6 @@ use app_catalog;
 alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column IF EXISTS RESERVATION;
 alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column IF EXISTS RESERVATION_START_TIME;
 alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column IF EXISTS RESERVATION_END_TIME;
+
+-- TODO: Create a new UserStory or Task and add it here for tracking purposes
+alter table STORAGE_PREFERENCE add column IF NOT EXISTS USER_STORAGE_QUOTA BIGINT;
