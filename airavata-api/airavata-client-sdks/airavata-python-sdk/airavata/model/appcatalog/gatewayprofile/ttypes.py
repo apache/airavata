@@ -322,6 +322,7 @@ class StoragePreference(object):
      - loginUserName
      - fileSystemRootLocation
      - resourceSpecificCredentialStoreToken
+     - userStorageQuota
     """
 
     thrift_spec = (
@@ -330,13 +331,15 @@ class StoragePreference(object):
         (2, TType.STRING, 'loginUserName', 'UTF8', None, ),  # 2
         (3, TType.STRING, 'fileSystemRootLocation', 'UTF8', None, ),  # 3
         (4, TType.STRING, 'resourceSpecificCredentialStoreToken', 'UTF8', None, ),  # 4
+        (5, TType.I64, 'userStorageQuota', None, None, ),  # 5
     )
 
-    def __init__(self, storageResourceId=None, loginUserName=None, fileSystemRootLocation=None, resourceSpecificCredentialStoreToken=None,):
+    def __init__(self, storageResourceId=None, loginUserName=None, fileSystemRootLocation=None, resourceSpecificCredentialStoreToken=None, userStorageQuota=None,):
         self.storageResourceId = storageResourceId
         self.loginUserName = loginUserName
         self.fileSystemRootLocation = fileSystemRootLocation
         self.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken
+        self.userStorageQuota = userStorageQuota
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -367,6 +370,11 @@ class StoragePreference(object):
                     self.resourceSpecificCredentialStoreToken = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I64:
+                    self.userStorageQuota = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -392,6 +400,10 @@ class StoragePreference(object):
         if self.resourceSpecificCredentialStoreToken is not None:
             oprot.writeFieldBegin('resourceSpecificCredentialStoreToken', TType.STRING, 4)
             oprot.writeString(self.resourceSpecificCredentialStoreToken.encode('utf-8') if sys.version_info[0] == 2 else self.resourceSpecificCredentialStoreToken)
+            oprot.writeFieldEnd()
+        if self.userStorageQuota is not None:
+            oprot.writeFieldBegin('userStorageQuota', TType.I64, 5)
+            oprot.writeI64(self.userStorageQuota)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
