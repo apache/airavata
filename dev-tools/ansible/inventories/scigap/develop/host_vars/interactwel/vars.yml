@@ -33,7 +33,7 @@ airavata_django_extra_dependencies:
   - git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
 
 django_extra_settings:
-  LOGIN_REDIRECT_URL: "/interactwel/"
+  LOGIN_REDIRECT_URL: "/interactwel/#/dashboard"
 
 ## Keycloak related variables
 tenant_domain: "interactwel"
