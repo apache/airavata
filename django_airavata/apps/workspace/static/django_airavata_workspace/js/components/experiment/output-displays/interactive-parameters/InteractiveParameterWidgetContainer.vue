@@ -10,11 +10,11 @@
 </template>
 
 <script>
-import InteractiveParameterCheckboxWidget from "./InteractiveParameterCheckboxWidget";
+import InteractiveParameterCheckboxWidget from "./InteractiveParameterCheckboxWidget.vue";
 import InteractiveParameterRangeWidget from "./InteractiveParameterRangeWidget.vue";
-import InteractiveParameterSelectWidget from "./InteractiveParameterSelectWidget";
+import InteractiveParameterSelectWidget from "./InteractiveParameterSelectWidget.vue";
 import InteractiveParameterStepperWidget from "./InteractiveParameterStepperWidget.vue";
-import InteractiveParameterTextInputWidget from "./InteractiveParameterTextInputWidget";
+import InteractiveParameterTextInputWidget from "./InteractiveParameterTextInputWidget.vue";
 
 export default {
   name: "interactive-parameter-widget-container",
@@ -46,13 +46,15 @@ export default {
       ) {
         return InteractiveParameterTextInputWidget;
       } else if (
-        this.parameter.type === "float" &&
+        (this.parameter.type === "float" ||
+          this.parameter.type === "integer") &&
         "min" in this.parameter &&
         "max" in this.parameter
       ) {
         return InteractiveParameterRangeWidget;
       } else if (
         this.parameter.type === "float" ||
+        this.parameter.type === "integer" ||
         (this.parameter.widget && this.parameter.widget === "stepper")
       ) {
         return InteractiveParameterStepperWidget;

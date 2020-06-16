@@ -220,6 +220,9 @@ def _process_interactive_params(data):
         for param in data['interactive']:
             if 'type' not in param:
                 param['type'] = _infer_interactive_param_type(param)
+            # integer type implicitly has a step size of 1
+            if param['type'] == "integer" and 'step' not in param:
+                param['step'] = 1
 
 
 def _convert_options(data):
