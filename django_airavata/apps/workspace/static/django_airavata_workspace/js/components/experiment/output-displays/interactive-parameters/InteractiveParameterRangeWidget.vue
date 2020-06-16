@@ -11,7 +11,7 @@
       @mouseup="mouseUp"
       @keyup="keyUp"
     />
-    <div>Value: {{ currentValue }}</div>
+    <small>Value: {{ roundedValue }}</small>
   </div>
 </template>
 
@@ -38,6 +38,9 @@ export default {
     },
     initialValue() {
       return parseFloat(this.value);
+    },
+    roundedValue() {
+      return this.currentValue ? this.currentValue.toFixed(2) : null;
     }
   },
   methods: {
