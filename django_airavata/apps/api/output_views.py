@@ -258,18 +258,28 @@ def _infer_interactive_param_type(param):
 def _convert_params_to_type(output_view_provider, params):
     method_sig = inspect.signature(output_view_provider.generate_data)
     method_params = method_sig.parameters
+    # Special query parameter _meta holds type information for interactive
+    # parameters (will only be present if there are interactive parameters)
+    meta = json.loads(params.pop("_meta", "{}"))
     for k, v in params.items():
+        meta_type = meta[k]['type'] if k in meta else None
+        default_value = None
         if (k in method_params and
             method_params[k].default is not inspect.Parameter.empty and
                 method_params[k].default is not None):
-            # TODO: handle lists?
-            # Handle boolean and numeric values, converting from string
-            if isinstance(method_params[k].default, bool):
-                params[k] = v == "true"
-            elif isinstance(method_params[k].default, float):
-                params[k] = float(v)
-            elif isinstance(method_params[k].default, int):
-                params[k] = int(v)
-            else:
-                params[k] = v
+            default_value = method_params[k].default
+        # TODO: handle lists?
+        # Handle boolean and numeric values, converting from string
+        if meta_type == 'boolean' or isinstance(default_value, bool):
+            params[k] = v == "true"
+        elif meta_type == 'float' or isinstance(default_value, float):
+            params[k] = float(v)
+        elif meta_type == 'integer' or isinstance(default_value, int):
+            params[k] = int(v)
+        elif meta_type == 'string' or isinstance(default_value, str):
+            params[k] = v
+        else:
+            logger.warning(
+                f"Unrecognized type for parameter {k}: "
+                f"meta_type={meta_type}, default_value={default_value}")
     return params

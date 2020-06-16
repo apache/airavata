@@ -26,10 +26,20 @@ export default class OutputViewDataLoader {
 
   createInteractiveParams() {
     const params = {};
+    const meta = {};
     if (this.data && this.data.interactive) {
       this.data.interactive.forEach(p => {
         params[p.name] = p.value;
+        meta[p.name] = {
+          type: p.type
+        };
       });
+    }
+    if (Object.keys(meta).length > 0) {
+      // Special _meta query parameter holds type information, which is needed
+      // when the type of a parameter can't be inferred when it is missing a
+      // default value
+      params._meta = JSON.stringify(meta);
     }
     return params;
   }
