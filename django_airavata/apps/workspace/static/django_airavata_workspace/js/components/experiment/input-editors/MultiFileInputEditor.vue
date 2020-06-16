@@ -10,10 +10,12 @@
         :id="dataProductURI"
         :experiment="experiment"
         :experiment-input="experimentInput"
+        :read-only="readOnly"
         @input="updatedFile($event, dataProductURI)"
       />
     </div>
     <input-file-selector
+      v-if="!readOnly"
       :selectedDataProductURIs="selectedDataProductURIs"
       @selected="fileSelected"
       @uploadstart="$emit('uploadstart')"
