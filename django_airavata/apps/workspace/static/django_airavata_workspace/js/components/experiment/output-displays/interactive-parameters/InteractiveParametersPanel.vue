@@ -33,8 +33,9 @@ export default {
       return this.localParameters.map(p => {
         return {
           key: p.name,
-          label: p.name,
-          item: p
+          label: p.label || p.name,
+          item: p,
+          description: p.help
         };
       });
     },
@@ -45,7 +46,7 @@ export default {
   data() {
     return {
       localParameters: this.parametersCopy()
-    }
+    };
   },
   methods: {
     updated(param, value) {

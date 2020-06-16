@@ -6,6 +6,7 @@
         :key="item.key"
         :valid="isValid(item.key)"
         :feedback-messages="getFeedbackMessages(item.key)"
+        :description="item.description"
       >
         <slot
           :item="item.item"
