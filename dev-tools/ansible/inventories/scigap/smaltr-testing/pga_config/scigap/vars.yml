@@ -24,7 +24,7 @@ pga_git_branch: "develop"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/scigap"
-vhost_servername: "pga.smaltr.scigap.org"
+vhost_servername: "pga.smltr.scigap.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/pga.smltr.scigap.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/pga.smltr.scigap.org/fullchain.pem"
@@ -53,7 +53,7 @@ oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 gateway_id: "scigap"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/scigap"
-gateway_data_store_resource_id: "pga.staging.scigap.org_aa63ffa0-a99f-4885-8f4b-81e3c4c4d737"
+gateway_data_store_resource_id: "testing.smaltr.scigap.org_d78cdf46-1773-451e-9d9e-fba459a156de"
 
 ## Portal related variables
 super_admin_portal: "true"
