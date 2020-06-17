@@ -167,7 +167,7 @@
 
                 <!-- Docker Java dependencies -->
 
-                <include>com.github.docker-java:docker-java:jar</include>
+                <include>com.spotify:docker-client:jar</include>
                 <include>com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:jar</include>
                 <include>com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar</include>
                 <include>com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar</include>
