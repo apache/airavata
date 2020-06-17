@@ -26,4 +26,16 @@ alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column IF EXISTS RESERVATION_
 alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column IF EXISTS RESERVATION_END_TIME;
 
 -- TODO: Create a new UserStory or Task and add it here for tracking purposes
-alter table STORAGE_PREFERENCE add column IF NOT EXISTS USER_STORAGE_QUOTA BIGINT;
+SET @AddUserStorageQuota = (SELECT IF(
+    (SELECT COUNT(*)
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = 'STORAGE_PREFERENCE'
+        AND column_name = 'USER_STORAGE_QUOTA'
+    ) > 0,
+    "SELECT 1",
+    "ALTER TABLE STORAGE_PREFERENCE ADD USER_STORAGE_QUOTA BIGINT DEFAULT 0"
+));
+
+PREPARE stmt FROM @AddUserStorageQuota;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
