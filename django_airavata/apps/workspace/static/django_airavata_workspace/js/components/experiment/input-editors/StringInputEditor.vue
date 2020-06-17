@@ -1,6 +1,7 @@
 <template>
     <b-form-input :id="id" type="text" v-model="data"
         :state="componentValidState"
+        :disabled="readOnly"
         @input="valueChanged"/>
 </template>
 

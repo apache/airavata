@@ -23,14 +23,14 @@
         <pre>{{ fileContent }}</pre>
       </b-modal>
       <delete-link
-        v-if="dataProduct.isInputFileUpload"
+        v-if="!readOnly && dataProduct.isInputFileUpload"
         class="ml-2"
         @delete="deleteDataProduct"
       >
         Are you sure you want to delete input file <strong>{{ dataProduct.productName }}</strong>?
       </delete-link>
       <b-link
-        v-else
+        v-else-if="!readOnly"
         @click="unselect"
         class="ml-2 text-secondary"
       >
@@ -42,7 +42,7 @@
       </b-link>
     </div>
     <input-file-selector
-      v-if="!isDataProductURI || uploading"
+      v-if="!readOnly && (!isDataProductURI || uploading)"
       :selectedDataProductURIs="selectedDataProductURIs"
       @uploadstart="uploadStart"
       @uploadend="uploadEnd"

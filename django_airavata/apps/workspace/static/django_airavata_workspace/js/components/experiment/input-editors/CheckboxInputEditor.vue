@@ -3,6 +3,7 @@
         :options="options"
         stacked
         :state="componentValidState"
+        :disabled="readOnly"
         @input="selectionsChanged"/>
 </template>
 

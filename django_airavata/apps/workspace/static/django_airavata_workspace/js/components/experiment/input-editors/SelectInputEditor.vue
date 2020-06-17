@@ -4,6 +4,7 @@
     v-model="data"
     :options="options"
     stacked
+    :disabled="readOnly"
     :state="componentValidState"
     @input="valueChanged"
   />

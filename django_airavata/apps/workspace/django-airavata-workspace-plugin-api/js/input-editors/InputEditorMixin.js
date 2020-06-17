@@ -19,6 +19,10 @@ export default {
             type: String,
             required: true,
         },
+        readOnly: {
+          type: Boolean,
+          default: false
+        }
     },
     data () {
         return {

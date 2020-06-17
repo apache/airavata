@@ -5,6 +5,7 @@
             :id="inputEditorComponentId"
             :experiment-input="experimentInput"
             :experiment="experiment"
+            :read-only="experimentInput.isReadOnly"
             v-model="data"
             @invalid="recordInvalidInputEditorValue"
             @valid="recordValidInputEditorValue"
