@@ -85,3 +85,8 @@ struct ParsingTemplate {
     4: required list<ParserConnector> parserConnections;
     5: required string gatewayId;
 }
+
+struct ExperimentParsingTemplateRegistration {
+    1: required string experimentId;
+    2: required list<string> templateIds
+}

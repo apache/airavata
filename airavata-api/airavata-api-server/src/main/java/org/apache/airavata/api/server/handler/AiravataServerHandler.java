@@ -25,6 +25,7 @@ import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
+import org.apache.airavata.model.appcatalog.parser.ExperimentParsingTemplateRegistration;
 import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
@@ -6027,12 +6028,12 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public void addParsingTemplatesForExperiment(AuthzToken authzToken, List<String> templateIds, String experimentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public void addParsingTemplatesForExperiment(AuthzToken authzToken, ExperimentParsingTemplateRegistration registration) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            regClient.addParsingTemplatesForExperiment(templateIds, experimentId);
+            regClient.addParsingTemplatesForExperiment(registration.getTemplateIds(), registration.getExperimentId());
         } catch (Exception e) {
-            String msg = "Error adding parsing templates for experiment: " + experimentId;
+            String msg = "Error adding parsing templates for experiment: " + registration.getExperimentId();
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());

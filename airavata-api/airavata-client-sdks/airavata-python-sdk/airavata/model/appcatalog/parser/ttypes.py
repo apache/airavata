@@ -931,3 +931,87 @@ class ParsingTemplate(object):
 
     def __ne__(self, other):
         return not (self == other)
+
+
+class ExperimentParsingTemplateRegistration(object):
+    """
+    Attributes:
+     - experimentId
+     - templateIds
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'experimentId', 'UTF8', None, ),  # 1
+        (2, TType.LIST, 'templateIds', (TType.STRING, 'UTF8', False), None, ),  # 2
+    )
+
+    def __init__(self, experimentId=None, templateIds=None,):
+        self.experimentId = experimentId
+        self.templateIds = templateIds
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.experimentId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.LIST:
+                    self.templateIds = []
+                    (_etype38, _size35) = iprot.readListBegin()
+                    for _i39 in range(_size35):
+                        _elem40 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.templateIds.append(_elem40)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('ExperimentParsingTemplateRegistration')
+        if self.experimentId is not None:
+            oprot.writeFieldBegin('experimentId', TType.STRING, 1)
+            oprot.writeString(self.experimentId.encode('utf-8') if sys.version_info[0] == 2 else self.experimentId)
+            oprot.writeFieldEnd()
+        if self.templateIds is not None:
+            oprot.writeFieldBegin('templateIds', TType.LIST, 2)
+            oprot.writeListBegin(TType.STRING, len(self.templateIds))
+            for iter41 in self.templateIds:
+                oprot.writeString(iter41.encode('utf-8') if sys.version_info[0] == 2 else iter41)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.experimentId is None:
+            raise TProtocolException(message='Required field experimentId is unset!')
+        if self.templateIds is None:
+            raise TProtocolException(message='Required field templateIds is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
