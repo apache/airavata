@@ -16,7 +16,7 @@ alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column RESERVATION;
 alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column RESERVATION_START_TIME;
 alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column RESERVATION_END_TIME;
 
--- TODO: Create a new UserStory or Task and add it here for tracking purposes
+-- AIRAVATA-3343: Add UserStorageQuota entry to StoragePreferences table
 SET @AddUserStorageQuota = (SELECT IF(
     (SELECT COUNT(*)
         FROM INFORMATION_SCHEMA.COLUMNS
