@@ -19,31 +19,32 @@
 #
 
 ---
-vhost_servername: "qusp.mines.edu"
+
+
+vhost_servername: "bcbportal.medicine.iu.edu"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/qusp.mines.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/qusp.mines.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/qusp.mines.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/bcbportal.medicine.iu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/bcbportal.medicine.iu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/bcbportal.medicine.iu.edu/privkey.pem"
 
 ## Keycloak related variables
-tenant_domain: "mines"
+tenant_domain: "bcbportal"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "Mines Quantum Simulation Gateway"
+    name: "BCB Gateway"
   external:
-    - name: "existing institution credentials"
+    - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "mines"
-experiment_data_dir: "{{ user_data_dir }}/mines"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUEBwfmgyxXs1Yg3VOnBG7j/lTzwhQmc40PaWchTNM5xfWL1RnGQkVrSDIdSHZTIJ29DOfJxoLGlhdoK1vpGgBSbcdNEE/dVo/jpZbsKi5CNSOhMdYHmR4L3AjqS8sWxHu9kzkGuWhhmD2zDxA2lf3Aqs3rJvdvKJ97ZGToCbaQ0LamEy19B+Lj5ZF2ooyUWIx9kiqAZ7JmYllxCbWNnbdtnVl6TcHkVpF7PcXk92WUEB/0csAhcJ/ZxnQcWVglD4tNWjPLwEy8dAPPWkms+N8Ce/o+pPu58BBb9mDxDFkk4wAwjV17Lq3TpC+usxGItLvyUkttB2xPs6PoAxzwluL"
+gateway_id: "bcbportal"
+experiment_data_dir: "{{ user_data_dir }}/bcbportal"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1WOyu47oKrRhIBUGI5aJsFk4wxCEgf3DzFdlYrWbGacfEETbE1Cxe8Tdj5TevIflui+HWJq5quHkMiZtHhGZbC4JMDKlzJaBn5vHpEAWtyvCXglkpu+Q+/XGLOwqy4XGa4rdf/CXvuWgc5+XCBb++A/eBswQVPt4C631Xsym7LA1NQXK3XxJApP/2IHnWtJI2d9g5TnzH8Oa99d146KmAKMl73lsCZtC1saBtGRsggJ7dRal7ush3XqiNCMgWPM8QU0ogbOBXDUZKRGAoY+frDaJdA3eQISiRRknpFyZwWcXU0CGnqaBiJdJEGYKLMvP9qBz/juN8jKMBkEJLGU1/"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Matthew Jones','matjones@mymail.mines.edu')]"
-portal_title: "Mines Quantum Simulation Gateway"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
+portal_title: "BCB Gateway"
 
-django_google_analytics_tracking_id: "UA-166738649-1"
 ...
