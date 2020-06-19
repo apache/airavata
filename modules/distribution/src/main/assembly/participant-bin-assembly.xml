@@ -168,45 +168,36 @@
                 <!-- Docker Java dependencies -->
 
                 <include>com.spotify:docker-client:jar</include>
+                <include>com.google.guava:guava:jar</include>
                 <include>com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:jar</include>
                 <include>com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar</include>
-                <include>com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar</include>
-                <include>org.glassfish.jersey.connectors:jersey-apache-connector:jar</include>
-                <include>org.glassfish.jersey.core:jersey-common:jar</include>
-                <include>javax.annotation:javax.annotation-api:jar</include>
-                <include>org.glassfish.jersey.bundles.repackaged:jersey-guava:jar</include>
-                <include>org.glassfish.hk2:osgi-resource-locator:jar</include>
-                <include>javax.ws.rs:javax.ws.rs-api:jar</include>
-                <include>org.apache.httpcomponents:httpcore:jar</include>
+                <include>com.fasterxml.jackson.datatype:jackson-datatype-guava:jar</include>
                 <include>org.glassfish.jersey.core:jersey-client:jar</include>
+                <include>javax.ws.rs:javax.ws.rs-api:jar</include>
+                <include>org.glassfish.jersey.core:jersey-common:jar</include>
+                <include>org.glassfish.jersey.bundles.repackaged:jersey-guava:jar</include>
                 <include>org.glassfish.hk2:hk2-api:jar</include>
                 <include>org.glassfish.hk2:hk2-utils:jar</include>
-                <include>org.glassfish.hk2.external:aopalliance-repackaged:jar</include>
                 <include>org.glassfish.hk2.external:javax.inject:jar</include>
-                <include>org.glassfish.hk2:hk2-locator:jar</include>
-                <include>org.javassist:javassist:jar</include>
-                <include>com.kohlschutter.junixsocket:junixsocket-common:jar</include>
-                <include>com.kohlschutter.junixsocket:junixsocket-native-common:jar</include>
-                <include>org.scijava:native-lib-loader:jar</include>
-                <include>org.apache.commons:commons-compress:jar</include>
-                <include>commons-lang:commons-lang:jar</include>
-                <include>commons-io:commons-io:jar</include>
+                <include>org.glassfish.jersey.connectors:jersey-apache-connector:jar</include>
+                <include>org.glassfish.jersey.media:jersey-media-json-jackson:jar</include>
+                <include>javax.activation:activation:jar</include>
                 <include>org.slf4j:jcl-over-slf4j:jar</include>
-                <include>com.google.guava:guava:jar</include>
-                <include>org.bouncycastle:bcpkix-jdk15on:jar</include>
-                <include>org.bouncycastle:bcprov-jdk15on:jar</include>
-                <include>io.netty:netty-codec-http:jar</include>
-                <include>io.netty:netty-codec:jar</include>
-                <include>io.netty:netty-handler:jar</include>
-                <include>io.netty:netty-buffer:jar</include>
-                <include>io.netty:netty-transport:jar</include>
-                <include>io.netty:netty-resolver:jar</include>
-                <include>io.netty:netty-handler-proxy:jar</include>
-                <include>io.netty:netty-codec-socks:jar</include>
-                <include>io.netty:netty-transport-native-epoll:jar</include>
-                <include>io.netty:netty-common:jar</include>
-                <include>io.netty:netty-transport-native-unix-common:jar</include>
-                <include>io.netty:netty-transport-native-kqueue:jar</include>
+                <include>org.apache.commons:commons-compress:jar</include>
+                <include>commons-io:commons-io:jar</include>
+                <include>org.apache.httpcomponents:httpcore:jar</include>
+                <include>com.github.jnr:jnr-unixsocket:jar</include>
+                <include>com.github.jnr:jnr-ffi:jar</include>
+                <include>com.github.jnr:jffi:jar</include>
+                <include>com.github.jnr:jffi:jar:native</include>
+                <include>org.ow2.asm:asm:jar</include>
+                <include>org.ow2.asm:asm-commons:jar</include>
+                <include>org.ow2.asm:asm-analysis:jar</include>
+                <include>org.ow2.asm:asm-tree:jar</include>
+                <include>org.ow2.asm:asm-util:jar</include>
+                <include>com.github.jnr:jnr-constants:jar</include>
+                <include>com.github.jnr:jnr-enxio:jar</include>
+                <include>commons-lang:commons-lang:jar</include>
 
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
