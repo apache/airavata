@@ -20,8 +20,6 @@
 
 ---
 
-# TODO: remove next line once branch is merged to master
-airavata_django_git_branch: "AIRAVATA-3324-custom-input-editor-autocomplete-input-editor"
 airavata_django_extra_dependencies:
   - "git+https://github.com/bio-miga/miga-autocomplete.git#egg=miga_djangoapp"
 
