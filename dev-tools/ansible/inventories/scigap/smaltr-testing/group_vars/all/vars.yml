@@ -171,7 +171,7 @@ platform_monitor_target_email_addresses: "dimuthu.upeksha2@gmail.com,dwannipu@iu
 parser_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
 parser_broker_topic: "completed-messages"
 parser_broker_consumer_group: "ParsingConsumer"
-parser_storage_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+parser_storage_resource_id: "testing.smaltr.scigap.org_d78cdf46-1773-451e-9d9e-fba459a156de"
 parser_broker_publisher_id: "ParserProducer"
 
 thrift_client_pool_abandoned_removal_enabled: true

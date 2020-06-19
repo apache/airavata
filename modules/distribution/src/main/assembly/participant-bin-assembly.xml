@@ -191,6 +191,7 @@
                 <include>org.apache.httpcomponents:httpcore:jar</include>
                 <include>com.github.jnr:jnr-unixsocket:jar</include>
                 <include>com.github.jnr:jnr-ffi:jar</include>
+                <include>com.github.jnr:jnr-posix:jar</include>
                 <include>com.github.jnr:jffi:jar</include>
                 <include>com.github.jnr:jffi:jar:native</include>
                 <include>org.ow2.asm:asm:jar</include>
@@ -201,6 +202,7 @@
                 <include>com.github.jnr:jnr-constants:jar</include>
                 <include>com.github.jnr:jnr-enxio:jar</include>
                 <include>commons-lang:commons-lang:jar</include>
+                <include>org.glassfish.jersey.ext:jersey-entity-filtering</include>
 
                 <include>javax.annotation:javax.annotation-api:jar</include>
                 <include>org.apache.commons:commons-pool2:jar</include>
