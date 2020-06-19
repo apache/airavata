@@ -169,6 +169,24 @@
                     </execution>
                     <execution>
                         <!-- Run with:
+                            mvn process-classes docker-compose:up@mysql-up exec:exec@generate-schema-mysql docker-compose:down@mysql-down
+                        -->
+                        <id>generate-schema-mysql</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-Dairavata.config.dir=${project.basedir}/src/main/resources/migrations-util/mysql</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>org.apache.airavata.registry.core.utils.migration.MigrationSchemaGenerator</argument>
+                                <argument>build</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Run with:
                             mvn process-classes exec:exec@generate-migrations-derby
                         -->
                         <id>generate-migrations-derby</id>
@@ -181,6 +199,24 @@
                                 <argument>-classpath</argument>
                                 <classpath/>
                                 <argument>org.apache.airavata.registry.core.utils.migration.MigrationSchemaGenerator</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Run with:
+                            mvn process-classes exec:exec@generate-schema-derby
+                        -->
+                        <id>generate-schema-derby</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-Dairavata.config.dir=${project.basedir}/src/main/resources/migrations-util/derby</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>org.apache.airavata.registry.core.utils.migration.MigrationSchemaGenerator</argument>
+                                <argument>build</argument>
                             </arguments>
                         </configuration>
                     </execution>
