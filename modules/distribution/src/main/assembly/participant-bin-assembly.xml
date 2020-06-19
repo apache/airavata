@@ -179,6 +179,9 @@
                 <include>org.glassfish.hk2:hk2-api:jar</include>
                 <include>org.glassfish.hk2:hk2-utils:jar</include>
                 <include>org.glassfish.hk2.external:javax.inject:jar</include>
+                <include>org.glassfish.hk2.external:aopalliance-repackaged:jar</include>
+                <include>org.glassfish.hk2:hk2-locator:jar</include>
+                <include>org.javassist:javassist:jar</include>
                 <include>org.glassfish.jersey.connectors:jersey-apache-connector:jar</include>
                 <include>org.glassfish.jersey.media:jersey-media-json-jackson:jar</include>
                 <include>javax.activation:activation:jar</include>
@@ -199,6 +202,7 @@
                 <include>com.github.jnr:jnr-enxio:jar</include>
                 <include>commons-lang:commons-lang:jar</include>
 
+                <include>javax.annotation:javax.annotation-api:jar</include>
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
             </includes>
