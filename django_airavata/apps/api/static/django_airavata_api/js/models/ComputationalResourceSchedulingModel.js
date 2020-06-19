@@ -49,6 +49,11 @@ export default class ComputationalResourceSchedulingModel extends BaseModel {
         } else if (queueInfo && queueInfo.maxRunTime && this.wallTimeLimit > queueInfo.maxRunTime) {
             validationResults['wallTimeLimit'] = `Enter a wall time limit no greater than ${queueInfo.maxRunTime}.`;
         }
+        if (!(this.totalPhysicalMemory >= 0)) {
+            validationResults['totalPhysicalMemory'] = "Enter a total physical memory greater than or equal to 0.";
+        } else if (queueInfo && queueInfo.maxMemory && this.totalPhysicalMemory > queueInfo.maxMemory) {
+            validationResults['totalPhysicalMemory'] = `Enter a total physical memory no greater than ${queueInfo.maxMemory}.`;
+        }
         return validationResults;
     }
 }

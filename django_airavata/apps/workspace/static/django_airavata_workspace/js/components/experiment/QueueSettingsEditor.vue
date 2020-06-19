@@ -28,6 +28,10 @@
                   <h3 class="h5 mb-0">{{ data.wallTimeLimit }} minutes</h3>
                   <span class="text-muted text-uppercase">TIME LIMIT</span>
                 </div>
+                <div class="col">
+                  <h3 class="h5 mb-0">{{ data.totalPhysicalMemory }} MB</h3>
+                  <span class="text-muted text-uppercase">PHYSICAL MEMORY</span>
+                </div>
               </div>
             </div>
           </b-link>
@@ -99,12 +103,12 @@
             </div>
           </b-form-group>
           <b-form-group
-            label="Wall Time Limit (in minutes)"
+            label="Wall Time Limit"
             label-for="walltime-limit"
             :invalid-feedback="getValidationFeedback('wallTimeLimit')"
             :state="getValidationState('wallTimeLimit', true)"
           >
-            <b-input-group right="minutes">
+            <b-input-group append="minutes">
               <b-form-input
                 id="walltime-limit"
                 type="number"
@@ -119,6 +123,28 @@
             <div slot="description">
               <i class="fa fa-info-circle" aria-hidden="true"></i>
               Max Allowed Wall Time = {{ maxWalltime }} minutes
+            </div>
+          </b-form-group>
+          <b-form-group
+            label="Total Physical Memory"
+            label-for="total-physical-memory"
+            :invalid-feedback="getValidationFeedback('totalPhysicalMemory')"
+            :state="getValidationState('totalPhysicalMemory', true)"
+          >
+            <b-input-group append="MB">
+              <b-form-input
+                id="total-physical-memory"
+                type="number"
+                min="0"
+                :max="maxPhysicalMemory"
+                v-model="data.totalPhysicalMemory"
+                :state="getValidationState('totalPhysicalMemory', true)"
+              >
+              </b-form-input>
+            </b-input-group>
+            <div slot="description">
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              Max Physical Memory = {{ maxPhysicalMemory }} MB
             </div>
           </b-form-group>
           <div>
@@ -226,6 +252,12 @@ export default {
         );
       }
       return this.selectedQueueDefault.maxRunTime;
+    },
+    maxPhysicalMemory: function() {
+      if (!this.selectedQueueDefault) {
+        return 0;
+      }
+      return this.selectedQueueDefault.maxMemory;
     },
     queueDefaults() {
       return this.appDeploymentQueues
