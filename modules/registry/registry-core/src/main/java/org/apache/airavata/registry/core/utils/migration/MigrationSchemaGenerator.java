@@ -39,6 +39,7 @@ public class MigrationSchemaGenerator {
 
     public static void main(String[] args) throws Exception {
 
+        String schemaAction = args.length > 0 ? args[0] : "add";
         try {
             for (Database database : Database.values()) {
 
@@ -50,9 +51,11 @@ public class MigrationSchemaGenerator {
 
                     logger.error("Failed to initialize database " + database.name(), e);
                 } finally {
-                    logger.info("creating schema migration script");
-                    MappingToolRunner.run(database.dbInitConfig.getJDBCConfig(), database.name() + "-migration.sql",
-                            database.persistenceUnitName);
+                    String outputFile = "add".equals(schemaAction) ? database.name() + "-migration.sql"
+                            : database.name() + "-schema.sql";
+                    logger.info("creating database script: " + outputFile);
+                    MappingToolRunner.run(database.dbInitConfig.getJDBCConfig(), outputFile,
+                            database.persistenceUnitName, schemaAction);
                 }
             }
         } catch (Exception e) {

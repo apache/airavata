@@ -17,6 +17,7 @@ public class MappingToolRunner {
         run(jdbcConfig, outputFile, persistenceUnitName, MappingTool.ACTION_ADD);
     }
 
+    // schemaAction is one of MappingTool's supported actions: http://openjpa.apache.org/builds/2.4.3/apache-openjpa/docs/ref_guide_mapping.html#ref_guide_mapping_mappingtool
     public static void run(JDBCConfig jdbcConfig, String outputFile, String persistenceUnitName, String schemaAction) {
 
         JDBCConfiguration jdbcConfiguration = new JDBCConfigurationImpl();
@@ -26,7 +27,7 @@ public class MappingToolRunner {
         Options options = new Options();
         options.put("sqlFile", outputFile);
         // schemaAction "add" brings the schema up to date by adding missing schema elements
-        // schemaAction "createDB" creates the entire schema as if the database is empty
+        // schemaAction "build" creates the entire schema as if the database is empty
         options.put("schemaAction", schemaAction);
         options.put("foreignKeys", "true");
         options.put("indexes", "true");
