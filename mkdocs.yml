@@ -13,6 +13,7 @@ nav:
     - Developing the Backend: dev/developing_backend.md
     - Developing a Wagtail Export (theme): dev/wagtail_export.md
   - Administrator Guide:
+    - Application Input Customization: admin/app_inputs.md
     - Tusd Installation: admin/tusd.md
   - Tutorials:
     - Gateways 2019: tutorial/gateways2019_tutorial.md
