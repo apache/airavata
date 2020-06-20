@@ -60,7 +60,8 @@ public enum JobManagerCommand implements org.apache.thrift.TEnum {
   CHECK_JOB(3),
   SHOW_QUEUE(4),
   SHOW_RESERVATION(5),
-  SHOW_START(6);
+  SHOW_START(6),
+  SWEEPING_SUBMISSION_TYPE(7);
 
   private final int value;
 
@@ -95,6 +96,8 @@ public enum JobManagerCommand implements org.apache.thrift.TEnum {
         return SHOW_RESERVATION;
       case 6:
         return SHOW_START;
+      case 7:
+        return SWEEPING_SUBMISSION_TYPE;
       default:
         return null;
     }

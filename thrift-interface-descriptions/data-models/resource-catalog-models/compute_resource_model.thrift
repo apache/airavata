@@ -89,7 +89,8 @@ enum JobManagerCommand {
     CHECK_JOB,
     SHOW_QUEUE,
     SHOW_RESERVATION,
-    SHOW_START
+    SHOW_START,
+    SWEEPING_SUBMISSION_TYPE
 }
 
 

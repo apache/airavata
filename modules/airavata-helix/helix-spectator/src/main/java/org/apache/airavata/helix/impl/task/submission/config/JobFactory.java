@@ -27,35 +27,52 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 public class JobFactory {
 
     private final static Logger logger = LoggerFactory.getLogger(JobFactory.class);
 
-    public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType, boolean isSweepType) {
+    private static final class SweepingType {
+        static final String JOB_ARRAY_TYPE = "array";
+        static final String FORK_TYPE = "fork";
+    }
 
+    public static Optional<String> getTemplateFileName(ResourceJobManager resourceJobManager, boolean isSweepType) {
+
+        ResourceJobManagerType resourceJobManagerType = resourceJobManager.getResourceJobManagerType();
         if (isSweepType) {
             switch (resourceJobManagerType) {
                 case SLURM:
-                    return "SLURM_Arr_Groovy.template";
+
+                    switch (resourceJobManager.getJobManagerCommands().get(JobManagerCommand.SWEEPING_SUBMISSION_TYPE)) {
+                        case SweepingType.JOB_ARRAY_TYPE:
+                            return Optional.of("SLURM_Arr_Groovy.template");
+                        case SweepingType.FORK_TYPE:
+                            return Optional.of("SLURM_Fork_Sweep_Groovy.template");
+                        default:
+                            return Optional.empty();
+                    }
+
                 default:
-                    return null;
+                    return Optional.empty();
             }
         } else {
             switch (resourceJobManagerType) {
                 case FORK:
-                    return "FORK_Groovy.template";
+                    return Optional.of("FORK_Groovy.template");
                 case PBS:
-                    return "PBS_Groovy.template";
+                    return Optional.of("PBS_Groovy.template");
                 case SLURM:
-                    return "SLURM_Groovy.template";
+                    return Optional.of("SLURM_Groovy.template");
                 case UGE:
-                    return "UGE_Groovy.template";
+                    return Optional.of("UGE_Groovy.template");
                 case LSF:
-                    return "LSF_Groovy.template";
+                    return Optional.of("LSF_Groovy.template");
                 case CLOUD:
-                    return "CLOUD_Groovy.template";
+                    return Optional.of("CLOUD_Groovy.template");
                 default:
-                    return null;
+                    return Optional.empty();
             }
         }
     }
@@ -112,7 +129,9 @@ public class JobFactory {
             throw new Exception("Resource job manager can not be null");
         }
 
-        String templateFileName = getTemplateFileName(resourceJobManager.getResourceJobManagerType(), isSweepType);
+        String templateFileName = getTemplateFileName(resourceJobManager, isSweepType)
+                                .orElseThrow(() -> new Exception("Template file name can not be null"));
+
         switch (resourceJobManager.getResourceJobManagerType()) {
             case PBS:
                 return new PBSJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
