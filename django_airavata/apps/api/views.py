@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -1849,25 +1850,31 @@ def notebook_output_view(request):
 
 @login_required
 def html_output_view(request):
-    provider_id = request.GET['provider-id']
-    experiment_id = request.GET['experiment-id']
-    experiment_output_name = request.GET['experiment-output-name']
-    data = output_views.generate_data(request,
-                                      provider_id,
-                                      experiment_output_name,
-                                      experiment_id)
+    data = _generate_output_view_data(request)
     return JsonResponse(data)
 
 
 @login_required
 def image_output_view(request):
-    provider_id = request.GET['provider-id']
-    experiment_id = request.GET['experiment-id']
-    experiment_output_name = request.GET['experiment-output-name']
-    data = output_views.generate_data(request,
-                                      provider_id,
-                                      experiment_output_name,
-                                      experiment_id)
+    data = _generate_output_view_data(request)
     # data should contain 'image' as a file-like object or raw bytes with the
     # file data and 'mime-type' with the images mimetype
-    return HttpResponse(data['image'], content_type=data['mime-type'])
+    data['image'] = base64.b64encode(data['image']).decode('utf-8')
+    return JsonResponse(data)
+
+
+def link_output_view(request):
+    data = _generate_output_view_data(request)
+    return JsonResponse(data)
+
+
+def _generate_output_view_data(request):
+    params = request.GET.copy()
+    provider_id = params.pop('provider-id')[0]
+    experiment_id = params.pop('experiment-id')[0]
+    experiment_output_name = params.pop('experiment-output-name')[0]
+    return output_views.generate_data(request,
+                                      provider_id,
+                                      experiment_output_name,
+                                      experiment_id,
+                                      **params.dict())
