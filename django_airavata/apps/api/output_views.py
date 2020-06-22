@@ -245,14 +245,15 @@ def _convert_options_sequences(options):
 
 def _infer_interactive_param_type(param):
     v = param['value']
-    if isinstance(v, float):
+    # Boolean test must come first since bools are also integers
+    if isinstance(v, bool):
+        return "boolean"
+    elif isinstance(v, float):
         return "float"
     elif isinstance(v, int):
         return "integer"
     elif isinstance(v, str):
         return "string"
-    elif isinstance(v, bool):
-        return "boolean"
 
 
 def _convert_params_to_type(output_view_provider, params):
