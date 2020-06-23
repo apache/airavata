@@ -409,12 +409,18 @@ export default {
       this.loadAppDeploymentQueues().then(() => this.setDefaultQueue());
     },
     // If the default queue changes, re-set queue defaults
-    defaultQueue() {
-      this.setDefaultQueue();
+    defaultQueue(value, oldValue) {
+      // Only set defaultQueue if it changes from a non-null value to some
+      // different non-null value (initially it is null when data is loading)
+      if (oldValue && value !== oldValue) {
+        this.setDefaultQueue();
+      }
     },
     // If batch queue resource policy for the default queue changes, re-set queue defaults
     defaultQueueBatchQueueResourcePolicy(newValue, oldValue) {
-      if (newValue !== oldValue) {
+      // Only set defaultQueue if it changes from a non-null value to some
+      // different non-null value (initially it is null when data is loading)
+      if (oldValue && newValue !== oldValue) {
         this.setDefaultQueue();
       }
     }
