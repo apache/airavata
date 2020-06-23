@@ -6,6 +6,9 @@ scripts, both the scripts that define the entire schema for brand new databases
 older schema to the new schema (referred to from here on as the _migration
 script_). These instructions show you how to create these scripts.
 
+Before using these steps, be sure to review the **Known Issues** section later
+on. Notably, any removals from the schema will have to be manually managed.
+
 1. First, start by adding or updating the Entity class, for example, by adding a
    new field.
 
