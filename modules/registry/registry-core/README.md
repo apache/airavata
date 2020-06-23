@@ -8,6 +8,12 @@ script_). These instructions show you how to create these scripts.
 
 1. First, start by adding or updating the Entity class, for example, by adding a
    new field.
+
+   Additional notes:
+
+   - To have OpenJPA generate FOREIGN KEY schema statements, you need to
+     annotate the foreign key reference with `@ForeignKey`.
+
 2. If you added an Entity class, make sure to add an entry for it in
    `persistence.xml`. You'll need to also add the same entry to
    `../../ide-integration/src/main/resources/META-INF/persistence.xml`.
@@ -42,8 +48,15 @@ script_). These instructions show you how to create these scripts.
 
    Some additional notes:
 
-   - Make sure to add `DEFAULT CHARSET latin1` to all MySQL `CREATE TABLE`
+   - Make sure to add `DEFAULT CHARSET=latin1` to all MySQL `CREATE TABLE`
      statements.
+   - It is recommended that you name all constraints and indexes. This makes it
+     easier to change or drop them in the future. The naming convention is to
+     use a prefix of `FK_` or `UNIQ_` or `IDX_` that indicates the type of
+     constraint, then the table name, then the names of the columns or related
+     entity or some short description of the constraint. For example, if you
+     create a FOREIGN KEY on table CHILD of column PARENT_ID you would name it
+     `FK_CHILD_PARENT_ID`.
 
 5. Next, you'll create a MariaDB migration script. The migration script should
    have been created in the previous step, but if necessary you can run
@@ -55,8 +68,9 @@ script_). These instructions show you how to create these scripts.
    Copy the contents of the migration script that are relevant to the Entity
    classes changes that you made into the respective migration schema scripts in
    `../release-migration-scripts/next/DeltaScripts/`. All statements should have
-   `IF NOT EXISTS` added so that they can be reapplied and only change the
-   schema when it hasn't already been updated. For example:
+   `IF NOT EXISTS` (if adding) or `IF EXISTS` (if dropping) added so that they
+   can be reapplied and only change the schema when it hasn't already been
+   updated. For example:
 
    - `CREATE TABLE IF NOT EXISTS ...`
    - `DROP TABLE IF EXISTS ...`
@@ -66,6 +80,8 @@ script_). These instructions show you how to create these scripts.
    - `ALTER TABLE <table name> DROP FOREIGN KEY IF EXISTS <foreign key name>`
    - `ALTER TABLE <table name> ADD KEY IF NOT EXISTS <key definition>`
    - `ALTER TABLE <table name> DROP KEY IF EXISTS <index name>`
+
+   See also the **additional notes** under the previous step.
 
 6. Next, you'll also copy this MariaDB migration script to the corresponding
    `0*-migrations.sql` file in ide-integration. Here it should also have
