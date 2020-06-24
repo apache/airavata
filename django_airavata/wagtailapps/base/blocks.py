@@ -486,6 +486,52 @@ class CssStreamBlock(StreamBlock):
     css_comment = CssCommentBlock()
 
 
+class ContainerBlock(StructBlock):
+    inline_styles = TextBlock(
+        required=False,
+        blank=True,
+        help_text="Apply inline CSS styles to container wrapper.")
+    custom_classes = CharBlock(
+        required=False,
+        help_text="Apply custom CSS classes to container wrapper. You can "
+                  "define CSS classes in a Custom CSS snippet.")
+    background_image = ImageChooserBlock(
+        required=False,
+        help_text="Apply background image to container wrapper.")
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context['container_class'] = self.container_class
+        return context
+
+    class Meta:
+        abstract = True
+        template = "blocks/bootstrap/container.html"
+
+
+class FullWidthContainer(ContainerBlock):
+    container_class = "container-fluid"
+
+    class Meta:
+        icon = "fa-arrows-h"
+
+
+class MaxWidthContainer(ContainerBlock):
+    container_class = "container"
+
+    class Meta:
+        icon = "fa-square-o"
+
+
+class ContainerChoiceBlock(StreamBlock):
+    full_width_container = FullWidthContainer()
+    max_width_container = MaxWidthContainer()
+
+    class Meta:
+        max_num = 1
+        required = False
+
+
 class NavItem(StructBlock):
     link = CharBlock(help_text="Full URL or relative path (e.g., /auth/login)")
     link_text = CharBlock(required=False)
