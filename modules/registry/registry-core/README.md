@@ -103,7 +103,6 @@ on. Notably, any removals from the schema will have to be manually managed.
 - can automatically create schema migrations that add columns/tables, but not
   ones that remove them. **Creating schema migrations that drop columns/tables
   will have to be done manually.**
-- ide-integration has a separate persistence.xml file. Why?
 - schema generation generates a PRIMARY KEY for VIEWs that are mapped to an
   Entity, for example ExperimentSummary.
 - when unique constraints are added to an entity, the generated migration
