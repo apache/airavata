@@ -26,9 +26,9 @@ airavata_django_extra_dependencies:
 #vhost_servername: "clades.microbial-genomes.org" #Changed on Miguel's request on 06/25/2020
 vhost_servername: "xsede.microbial-genomes.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "microbial-genomes"
