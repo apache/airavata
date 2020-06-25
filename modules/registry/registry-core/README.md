@@ -15,7 +15,10 @@ on. Notably, any removals from the schema will have to be manually managed.
    Additional notes:
 
    - To have OpenJPA generate FOREIGN KEY schema statements, you need to
-     annotate the foreign key reference with `@ForeignKey`.
+     annotate the foreign key reference with
+     `@org.apache.openjpa.persistence.jdbc.ForeignKey`.
+   - To have OpenJPA generate INDEX schema statements, you need to annotate the
+     indexed columns with `@org.apache.openjpa.persistence.jdbc.Index`.
 
 2. If you added an Entity class, make sure to add an entry for it in
    `persistence.xml`. You'll need to also add the same entry to
@@ -31,14 +34,17 @@ on. Notably, any removals from the schema will have to be manually managed.
    corresponding database script in `src/main/resources/`. For example, if you
    changed an app catalog Entity then you would copy the `CREATE TABLE`, etc.
    statements related to that Entity from the `target/app_catalog-schema.sql`
-   script to `src/main/resources/appcatalog-derby.sql`. Note that the generate
+   script to `src/main/resources/appcatalog-derby.sql`, replace any existing
+   `CREATE TABLE`, etc. statements for the table. Note that the generate
    database script may have several statements related to your Entity class
    changes throughout it, for example, the `CREATE TABLE` statements tend to
    come first and the `FOREIGN KEY` statements come later.
 4. Next, you'll update the MariaDB (or MySQL) database script. To do this, run
 
    ```
-   mvn clean process-classes docker-compose:up@mysql-up exec:exec@generate-schema-mysql exec:exec@generate-migrations-mysql docker-compose:down@mysql-down
+   mvn clean process-classes docker-compose:up@mysql-up \
+      exec:exec@generate-schema-mysql exec:exec@generate-migrations-mysql \
+      docker-compose:down@mysql-down
    ```
 
    This will generate a database and a migration script for each database in
@@ -94,9 +100,17 @@ on. Notably, any removals from the schema will have to be manually managed.
 
 ## Known Issues
 
-- can create schema migrations that add columns/tables, but not ones that remove
-  them. **Creating schema migrations that drop columns/tables will have to be
-  done manually.**
+- can automatically create schema migrations that add columns/tables, but not
+  ones that remove them. **Creating schema migrations that drop columns/tables
+  will have to be done manually.**
 - ide-integration has a separate persistence.xml file. Why?
 - schema generation generates a PRIMARY KEY for VIEWs that are mapped to an
   Entity, for example ExperimentSummary.
+- when unique constraints are added to an entity, the generated migration
+  scripts do not include an ALTER TABLE statement to add it. However, the
+  database script does include the unique constraint so it can be copied from
+  that into an `ALTER TABLE ADD UNIQUE ...` statement in the migation script.
+- when the definition of a column is chaged, the generated migrations do not
+  include an ALTER STATEMENT to update it. However, the database script does
+  reflect the updated column definition so it can be copied from that into an
+  `ALTER TABLE MODIFY COLUMN col_name ...`.
