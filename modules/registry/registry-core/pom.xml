@@ -279,7 +279,6 @@
                     </execution>
                     <execution>
                         <id>mysql-down</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>down</goal>
                         </goals>
