@@ -200,6 +200,10 @@
               <th scope="row">Node Count</th>
               <td>{{ experiment.userConfigurationData.computationalResourceScheduling.nodeCount }}</td>
             </tr>
+            <tr v-if="experiment.userConfigurationData.computationalResourceScheduling.totalPhysicalMemory">
+              <th scope="row">Total Physical Memory</th>
+              <td>{{ experiment.userConfigurationData.computationalResourceScheduling.totalPhysicalMemory.toLocaleString() }} MB</td>
+            </tr>
             <tr>
               <th scope="row">Queue</th>
               <td>{{ experiment.userConfigurationData.computationalResourceScheduling.queueName }}</td>
