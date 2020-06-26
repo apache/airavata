@@ -212,9 +212,7 @@ export default {
       if (!this.selectedQueueDefault) {
         return 0;
       }
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        this.selectedQueueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedCores,
@@ -227,9 +225,7 @@ export default {
       if (!this.selectedQueueDefault) {
         return 0;
       }
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        this.selectedQueueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedNodes,
@@ -242,9 +238,7 @@ export default {
       if (!this.selectedQueueDefault) {
         return 0;
       }
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        this.selectedQueueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedWalltime,
@@ -281,12 +275,13 @@ export default {
       }
       return this.queueDefaults[0];
     },
-    defaultQueueBatchQueueResourcePolicy() {
-      if (this.defaultQueue) {
-        return this.getBatchQueueResourcePolicy(this.defaultQueue.queueName);
-      } else {
+    batchQueueResourcePolicy() {
+      if (!this.selectedQueueDefault) {
         return null;
       }
+      return this.getBatchQueueResourcePolicy(
+        this.selectedQueueDefault.queueName
+      );
     },
     queueDescription() {
       return this.selectedQueueDefault
@@ -300,7 +295,7 @@ export default {
       }
       return this.data.validate(
         this.selectedQueueDefault,
-        this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)
+        this.batchQueueResourcePolicy
       );
     },
     valid() {
@@ -358,9 +353,7 @@ export default {
       );
     },
     getDefaultCPUCount: function(queueDefault) {
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        queueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedCores,
@@ -370,9 +363,7 @@ export default {
       return queueDefault.defaultCPUCount;
     },
     getDefaultNodeCount: function(queueDefault) {
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        queueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedNodes,
@@ -382,9 +373,7 @@ export default {
       return queueDefault.defaultNodeCount;
     },
     getDefaultWalltime: function(queueDefault) {
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        queueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedWalltime,
@@ -402,25 +391,28 @@ export default {
         : showValidState
         ? "valid"
         : null;
+    },
+    applyBatchQueueResourcePolicy() {
+      // Apply batchQueueResourcePolicy maximums
+      if (this.selectedQueueDefault) {
+        this.data.totalCPUCount = Math.min(this.data.totalCPUCount, this.maxCPUCount);
+        this.data.nodeCount = Math.min(this.data.nodeCount, this.maxNodes);
+        this.data.wallTimeLimit = Math.min(this.data.wallTimeLimit, this.maxWalltime);
+      }
     }
   },
   watch: {
     appDeploymentId() {
       this.loadAppDeploymentQueues().then(() => this.setDefaultQueue());
     },
-    // If the default queue changes, re-set queue defaults
-    defaultQueue(value, oldValue) {
-      // Only set defaultQueue if it changes from a non-null value to some
-      // different non-null value (initially it is null when data is loading)
-      if (oldValue && value !== oldValue) {
-        this.setDefaultQueue();
+    // If batch queue policy changes, apply any maximum values to current values
+    batchQueueResourcePolicy(value, oldValue) {
+      if (value && (!oldValue || value.resourcePolicyId !== oldValue.resourcePolicyId)) {
+        this.applyBatchQueueResourcePolicy();
       }
     },
-    // If batch queue resource policy for the default queue changes, re-set queue defaults
-    defaultQueueBatchQueueResourcePolicy(newValue, oldValue) {
-      // Only set defaultQueue if it changes from a non-null value to some
-      // different non-null value (initially it is null when data is loading)
-      if (oldValue && newValue !== oldValue) {
+    computeResourcePolicy() {
+      if (!this.isQueueInComputeResourcePolicy(this.data.queueName)) {
         this.setDefaultQueue();
       }
     }
