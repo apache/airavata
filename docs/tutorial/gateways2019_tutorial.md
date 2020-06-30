@@ -607,6 +607,62 @@ It should look something like this:
 
 ![Screenshot of generated Gaussian eigenvalues plot](./screenshots/gateways19/gaussian-eigenvalues.png)
 
+### (Optional) Interactive parameter
+
+In additional to producing static visualizations, output view providers can
+declare interactive parameters that can be manipulated by the user. We can add a
+simple boolean interactive parameter to toggle the display of the matplotlib
+grid as an example.
+
+1. Change the `generate_data` function so that it has an additional `show_grid`
+   parameter with a default value of `False`:
+
+```python
+    def generate_data(self, request, experiment_output, experiment, output_file=None, show_grid=False):
+```
+
+2. Add the following `.show_grid()` lines to the matplotlib code:
+
+```python
+...
+            fig.suptitle("Eigenvalues")
+            ax = fig.subplots(2, 1)
+            ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
+            ax[0].set_ylabel('eV')
+            ax[0].legend()
+            ax[0].show_grid(show_grid)
+            ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
+            ax[1].set_ylabel('eV')
+            ax[1].legend()
+            ax[1].show_grid(show_grid)
+...
+```
+
+3. Change the resulting dictionary to have the special `interactive` property
+   and declare the `show_grid` parameter:
+
+```python
+...
+        # return dictionary with image data
+        return {
+            'image': image_bytes,
+            'mime-type': 'image/png'
+            'interactive': [
+                {'name': 'show_grid', 'value': show_grid}
+            ]
+        }
+```
+
+This will provider the user with a checkbox for manipulating the show_grid
+parameter. Every time the user changes it, the GaussianEigenvaluesViewProvider
+will be again invoked. It should look something like the following:
+
+![Gaussian Eigenvalues View Provider with interactive parameter](./screenshots/gateways19/gaussian-eigenvalues-show_grid.png)
+
+There are several more interactive parameter types and additional options. You
+can learn more about them in the
+[custom output view provider documentation](../dev/custom_output_view_provider.md#interactive-parameters).
+
 ## Tutorial exercise: Create a custom Django app
 
 In this tutorial exercise we'll create a fully custom user interface that lives
@@ -940,7 +996,7 @@ Now we'll use `AiravataAPI` to submit an Echo job.
    value:
 
 ```javascript
-$("#run-button").click(e => {
+$("#run-button").click((e) => {
     const greeting = $("#greeting-select").val();
 });
 ```
@@ -952,7 +1008,7 @@ $("#run-button").click(e => {
 
 ```javascript
 const loadAppInterface = services.ApplicationInterfaceService.retrieve({
-    lookup: appInterfaceId
+    lookup: appInterfaceId,
 });
 ```
 
@@ -967,7 +1023,7 @@ const loadAppInterface = services.ApplicationInterfaceService.retrieve({
 const appDeploymentId =
     "js-156-93.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
 const loadQueues = services.ApplicationDeploymentService.getQueues({
-    lookup: appDeploymentId
+    lookup: appDeploymentId,
 });
 ```
 
@@ -988,15 +1044,15 @@ const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
    object then _save_ and _launch_ it. Here's the complete click handler:
 
 ```javascript
-$("#run-button").click(e => {
+$("#run-button").click((e) => {
     const greeting = $("#greeting-select").val();
     const loadAppInterface = services.ApplicationInterfaceService.retrieve({
-        lookup: appInterfaceId
+        lookup: appInterfaceId,
     });
     const appDeploymentId =
         "js-156-93.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
     const loadQueues = services.ApplicationDeploymentService.getQueues({
-        lookup: appDeploymentId
+        lookup: appDeploymentId,
     });
     const resourceHostId =
         "js-156-93.jetstream-cloud.org_33019860-54c2-449b-96d3-988d4f5a501e";
@@ -1008,7 +1064,7 @@ $("#run-button").click(e => {
             const experiment = appInterface.createExperiment();
             experiment.experimentName = "Echo " + greeting;
             experiment.projectId = workspacePrefs.most_recent_project_id;
-            const cloudQueue = queues.find(q => q.queueName === queueName);
+            const cloudQueue = queues.find((q) => q.queueName === queueName);
             experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
             experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
             experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount =
@@ -1023,9 +1079,9 @@ $("#run-button").click(e => {
 
             return services.ExperimentService.create({ data: experiment });
         })
-        .then(exp => {
+        .then((exp) => {
             return services.ExperimentService.launch({
-                lookup: exp.experimentId
+                lookup: exp.experimentId,
             });
         });
 });
@@ -1063,17 +1119,17 @@ We'll read the STDOUT file and display that in our experiment listing table.
 ```javascript
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId }).then(
-        fullDetails => {
+        (fullDetails) => {
             const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                o => o.name === "Echo-STDOUT"
+                (o) => o.name === "Echo-STDOUT"
             ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                dp => dp.productUri === stdoutDataProductId
+                (dp) => dp.productUri === stdoutDataProductId
             );
             if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
                 return fetch(stdoutDataProduct.downloadURL, {
-                    credentials: "same-origin"
-                }).then(result => result.text());
+                    credentials: "same-origin",
+                }).then((result) => result.text());
             }
         }
     );
@@ -1085,20 +1141,20 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
 ```javascript
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId })
-        .then(fullDetails => {
+        .then((fullDetails) => {
             const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                o => o.name === "Echo-STDOUT"
+                (o) => o.name === "Echo-STDOUT"
             ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                dp => dp.productUri === stdoutDataProductId
+                (dp) => dp.productUri === stdoutDataProductId
             );
             if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
                 return fetch(stdoutDataProduct.downloadURL, {
-                    credentials: "same-origin"
-                }).then(result => result.text());
+                    credentials: "same-origin",
+                }).then((result) => result.text());
             }
         })
-        .then(text => {
+        .then((text) => {
             $(`#output_${index}`).text(text);
         });
 }
@@ -1121,8 +1177,8 @@ function loadExperiments() {
         limit: 5,
         [models.ExperimentSearchFields.USER_NAME.name]:
             session.Session.username,
-        [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId
-    }).then(data => {
+        [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId,
+    }).then((data) => {
         $("#experiment-list").empty();
         data.results.forEach((exp, index) => {
             $("#experiment-list").append(
@@ -1137,28 +1193,28 @@ function loadExperiments() {
             // If experiment has finished, load full details, then parse the stdout file
             if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
                 services.FullExperimentService.retrieve({
-                    lookup: exp.experimentId
+                    lookup: exp.experimentId,
                 })
-                    .then(fullDetails => {
+                    .then((fullDetails) => {
                         const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                            o => o.name === "Echo-STDOUT"
+                            (o) => o.name === "Echo-STDOUT"
                         ).value;
                         const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                            dp => dp.productUri === stdoutDataProductId
+                            (dp) => dp.productUri === stdoutDataProductId
                         );
                         if (
                             stdoutDataProduct &&
                             stdoutDataProduct.downloadURL
                         ) {
                             return fetch(stdoutDataProduct.downloadURL, {
-                                credentials: "same-origin"
-                            }).then(result => result.text());
+                                credentials: "same-origin",
+                            }).then((result) => result.text());
                         } else {
                             // If we can't download it, fake it
                             return FAKE_STDOUT;
                         }
                     })
-                    .then(text => {
+                    .then((text) => {
                         $(`#output_${index}`).text(text);
                     });
             }

@@ -1,3 +1,5 @@
+import collections
+import inspect
 import json
 import logging
 import os
@@ -158,7 +160,8 @@ def _get_application_output_view_providers(application_interface, output_name):
 def generate_data(request,
                   output_view_provider_id,
                   experiment_output_name,
-                  experiment_id):
+                  experiment_id,
+                  **kwargs):
     output_view_provider = _get_output_view_provider(output_view_provider_id)
     # TODO if output_view_provider is None, return 404
     experiment = request.airavata_client.getExperiment(
@@ -169,16 +172,20 @@ def generate_data(request,
     # TODO: handle experiment_output not found by name
     experiment_output = experiment_output[0]
     # TODO: add experiment_output_dir
+    # convert the extra/interactive arguments to appropriate types
+    kwargs = _convert_params_to_type(output_view_provider, kwargs)
     return _generate_data(request,
                           output_view_provider,
                           experiment_output,
-                          experiment)
+                          experiment,
+                          **kwargs)
 
 
 def _generate_data(request,
                    output_view_provider,
                    experiment_output,
-                   experiment):
+                   experiment,
+                   **kwargs):
     # TODO: handle URI_COLLECTION also
     logger.debug("getting data product for {}".format(experiment_output.value))
     output_file = None
@@ -198,6 +205,82 @@ def _generate_data(request,
             output_file = open(test_output_file, 'rb')
     # TODO: change interface to provide output_file as a path
     # TODO: convert experiment and experiment_output to dict/JSON
-    data = output_view_provider.generate_data(
-        request, experiment_output, experiment, output_file=output_file)
+    data = output_view_provider.generate_data(request,
+                                              experiment_output,
+                                              experiment,
+                                              output_file=output_file,
+                                              **kwargs)
+    _process_interactive_params(data)
     return data
+
+
+def _process_interactive_params(data):
+    if 'interactive' in data:
+        _convert_options(data)
+        for param in data['interactive']:
+            if 'type' not in param:
+                param['type'] = _infer_interactive_param_type(param)
+            # integer type implicitly has a step size of 1
+            if param['type'] == "integer" and 'step' not in param:
+                param['step'] = 1
+
+
+def _convert_options(data):
+    """Convert interactive options to explicit text/value dicts."""
+    for param in data['interactive']:
+        if 'options' in param and isinstance(param['options'][0], str):
+            param['options'] = _convert_options_strings(param['options'])
+        elif 'options' in param and isinstance(
+                param['options'][0], collections.Sequence):
+            param['options'] = _convert_options_sequences(param['options'])
+
+
+def _convert_options_strings(options):
+    return [{"text": o, "value": o} for o in options]
+
+
+def _convert_options_sequences(options):
+    return [{"text": o[0], "value": o[1]} for o in options]
+
+
+def _infer_interactive_param_type(param):
+    v = param['value']
+    # Boolean test must come first since bools are also integers
+    if isinstance(v, bool):
+        return "boolean"
+    elif isinstance(v, float):
+        return "float"
+    elif isinstance(v, int):
+        return "integer"
+    elif isinstance(v, str):
+        return "string"
+
+
+def _convert_params_to_type(output_view_provider, params):
+    method_sig = inspect.signature(output_view_provider.generate_data)
+    method_params = method_sig.parameters
+    # Special query parameter _meta holds type information for interactive
+    # parameters (will only be present if there are interactive parameters)
+    meta = json.loads(params.pop("_meta", "{}"))
+    for k, v in params.items():
+        meta_type = meta[k]['type'] if k in meta else None
+        default_value = None
+        if (k in method_params and
+            method_params[k].default is not inspect.Parameter.empty and
+                method_params[k].default is not None):
+            default_value = method_params[k].default
+        # TODO: handle lists?
+        # Handle boolean and numeric values, converting from string
+        if meta_type == 'boolean' or isinstance(default_value, bool):
+            params[k] = v == "true"
+        elif meta_type == 'float' or isinstance(default_value, float):
+            params[k] = float(v)
+        elif meta_type == 'integer' or isinstance(default_value, int):
+            params[k] = int(v)
+        elif meta_type == 'string' or isinstance(default_value, str):
+            params[k] = v
+        else:
+            logger.warning(
+                f"Unrecognized type for parameter {k}: "
+                f"meta_type={meta_type}, default_value={default_value}")
+    return params

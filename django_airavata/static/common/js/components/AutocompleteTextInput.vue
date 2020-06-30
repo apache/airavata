@@ -8,7 +8,7 @@
         @keydown.native.down='down' @keydown.native.up='up'></b-form-input>
     </b-input-group>
     <b-list-group class="autocomplete-suggestion-list" v-if="open">
-      <b-list-group-item v-for="(suggestion, index) in filtered.slice(0,5)" v-bind:class="{'active': isActive(index)}" href="#"
+      <b-list-group-item v-for="(suggestion, index) in filtered" v-bind:class="{'active': isActive(index)}" href="#"
         @click="suggestionClick(index)" v-bind:key="suggestion.id">
         <slot name="suggestion" :suggestion="suggestion">
           {{ suggestion.name }}
@@ -29,6 +29,10 @@ export default {
     placeholder: {
       type: String,
       default: "Type to get suggestions..."
+    },
+    maxMatches: {
+      type: Number,
+      default: 5
     }
   },
   data() {
@@ -46,7 +50,7 @@ export default {
         return (
           data.name.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0
         );
-      }).slice(0,5);
+      }).slice(0,this.maxMatches);
     }
   },
   methods: {
@@ -59,6 +63,7 @@ export default {
         this.open = false;
       }
       this.searchValue = value;
+      this.$emit('search-changed', value);
     },
     enter() {
       if (this.filtered.length === 0) {

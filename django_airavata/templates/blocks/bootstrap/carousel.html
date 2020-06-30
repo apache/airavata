@@ -1,7 +1,7 @@
 
 {% load wagtailimages_tags %}
 
-<div id="carouselExampleIndicators" class="carousel slide {%if self.custom_class %}{{self.custom_class}}{% endif %}" data-ride="carousel">
+<div id="carouselExampleIndicators" class="carousel slide {%if self.custom_class %}{{self.custom_class}}{% endif %}" data-ride="carousel" data-interval="{{self.interval}}">
   <ol class="carousel-indicators">
     <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
     {% if self.c_image2 %}<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>{% endif %}

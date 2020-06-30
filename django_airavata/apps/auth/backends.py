@@ -6,7 +6,7 @@ import requests
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.views.decorators.debug import sensitive_variables
-from oauthlib.oauth2 import LegacyApplicationClient, InvalidGrantError
+from oauthlib.oauth2 import InvalidGrantError, LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
 from . import utils

@@ -18,6 +18,7 @@
 <script>
 
 import UserFileInputEditor from "./UserFileInputEditor.vue";
+import AutocompleteInputEditor from "./AutocompleteInputEditor";
 import CheckboxInputEditor from "./CheckboxInputEditor.vue";
 import FileInputEditor from './FileInputEditor.vue'
 import InputEditorFormGroup from './InputEditorFormGroup.vue'
@@ -44,8 +45,8 @@ export default {
         }
     },
     components: {
+        AutocompleteInputEditor,
         CheckboxInputEditor,
-        UserFileInputEditor,
         FileInputEditor,
         InputEditorFormGroup,
         MultiFileInputEditor,
@@ -53,6 +54,7 @@ export default {
         SelectInputEditor,
         StringInputEditor,
         TextareaInputEditor,
+        UserFileInputEditor,
     },
     created() {
       if (!this.show) {

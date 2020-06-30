@@ -28,6 +28,10 @@
                   <h3 class="h5 mb-0">{{ data.wallTimeLimit }} minutes</h3>
                   <span class="text-muted text-uppercase">TIME LIMIT</span>
                 </div>
+                <div class="col">
+                  <h3 class="h5 mb-0">{{ data.totalPhysicalMemory }} MB</h3>
+                  <span class="text-muted text-uppercase">PHYSICAL MEMORY</span>
+                </div>
               </div>
             </div>
           </b-link>
@@ -99,12 +103,12 @@
             </div>
           </b-form-group>
           <b-form-group
-            label="Wall Time Limit (in minutes)"
+            label="Wall Time Limit"
             label-for="walltime-limit"
             :invalid-feedback="getValidationFeedback('wallTimeLimit')"
             :state="getValidationState('wallTimeLimit', true)"
           >
-            <b-input-group right="minutes">
+            <b-input-group append="minutes">
               <b-form-input
                 id="walltime-limit"
                 type="number"
@@ -119,6 +123,28 @@
             <div slot="description">
               <i class="fa fa-info-circle" aria-hidden="true"></i>
               Max Allowed Wall Time = {{ maxWalltime }} minutes
+            </div>
+          </b-form-group>
+          <b-form-group
+            label="Total Physical Memory"
+            label-for="total-physical-memory"
+            :invalid-feedback="getValidationFeedback('totalPhysicalMemory')"
+            :state="getValidationState('totalPhysicalMemory', true)"
+          >
+            <b-input-group append="MB">
+              <b-form-input
+                id="total-physical-memory"
+                type="number"
+                min="0"
+                :max="maxPhysicalMemory"
+                v-model="data.totalPhysicalMemory"
+                :state="getValidationState('totalPhysicalMemory', true)"
+              >
+              </b-form-input>
+            </b-input-group>
+            <div slot="description">
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              Max Physical Memory = {{ maxPhysicalMemory }} MB
             </div>
           </b-form-group>
           <div>
@@ -186,9 +212,7 @@ export default {
       if (!this.selectedQueueDefault) {
         return 0;
       }
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        this.selectedQueueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedCores,
@@ -201,9 +225,7 @@ export default {
       if (!this.selectedQueueDefault) {
         return 0;
       }
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        this.selectedQueueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedNodes,
@@ -216,9 +238,7 @@ export default {
       if (!this.selectedQueueDefault) {
         return 0;
       }
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        this.selectedQueueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedWalltime,
@@ -226,6 +246,12 @@ export default {
         );
       }
       return this.selectedQueueDefault.maxRunTime;
+    },
+    maxPhysicalMemory: function() {
+      if (!this.selectedQueueDefault) {
+        return 0;
+      }
+      return this.selectedQueueDefault.maxMemory;
     },
     queueDefaults() {
       return this.appDeploymentQueues
@@ -249,12 +275,13 @@ export default {
       }
       return this.queueDefaults[0];
     },
-    defaultQueueBatchQueueResourcePolicy() {
-      if (this.defaultQueue) {
-        return this.getBatchQueueResourcePolicy(this.defaultQueue.queueName);
-      } else {
+    batchQueueResourcePolicy() {
+      if (!this.selectedQueueDefault) {
         return null;
       }
+      return this.getBatchQueueResourcePolicy(
+        this.selectedQueueDefault.queueName
+      );
     },
     queueDescription() {
       return this.selectedQueueDefault
@@ -268,7 +295,7 @@ export default {
       }
       return this.data.validate(
         this.selectedQueueDefault,
-        this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)
+        this.batchQueueResourcePolicy
       );
     },
     valid() {
@@ -326,9 +353,7 @@ export default {
       );
     },
     getDefaultCPUCount: function(queueDefault) {
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        queueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedCores,
@@ -338,9 +363,7 @@ export default {
       return queueDefault.defaultCPUCount;
     },
     getDefaultNodeCount: function(queueDefault) {
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        queueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedNodes,
@@ -350,9 +373,7 @@ export default {
       return queueDefault.defaultNodeCount;
     },
     getDefaultWalltime: function(queueDefault) {
-      const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(
-        queueDefault.queueName
-      );
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
       if (batchQueueResourcePolicy) {
         return Math.min(
           batchQueueResourcePolicy.maxAllowedWalltime,
@@ -370,19 +391,28 @@ export default {
         : showValidState
         ? "valid"
         : null;
+    },
+    applyBatchQueueResourcePolicy() {
+      // Apply batchQueueResourcePolicy maximums
+      if (this.selectedQueueDefault) {
+        this.data.totalCPUCount = Math.min(this.data.totalCPUCount, this.maxCPUCount);
+        this.data.nodeCount = Math.min(this.data.nodeCount, this.maxNodes);
+        this.data.wallTimeLimit = Math.min(this.data.wallTimeLimit, this.maxWalltime);
+      }
     }
   },
   watch: {
     appDeploymentId() {
       this.loadAppDeploymentQueues().then(() => this.setDefaultQueue());
     },
-    // If the default queue changes, re-set queue defaults
-    defaultQueue() {
-      this.setDefaultQueue();
+    // If batch queue policy changes, apply any maximum values to current values
+    batchQueueResourcePolicy(value, oldValue) {
+      if (value && (!oldValue || value.resourcePolicyId !== oldValue.resourcePolicyId)) {
+        this.applyBatchQueueResourcePolicy();
+      }
     },
-    // If batch queue resource policy for the default queue changes, re-set queue defaults
-    defaultQueueBatchQueueResourcePolicy(newValue, oldValue) {
-      if (newValue !== oldValue) {
+    computeResourcePolicy() {
+      if (!this.isQueueInComputeResourcePolicy(this.data.queueName)) {
         this.setDefaultQueue();
       }
     }
