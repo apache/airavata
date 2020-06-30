@@ -36,8 +36,8 @@ oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
-  password:
-    name: "Microbial Genomes Gateway"
+#  password:
+#    name: "Microbial Genomes Gateway"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
