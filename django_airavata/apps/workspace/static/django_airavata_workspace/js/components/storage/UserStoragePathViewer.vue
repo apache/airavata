@@ -1,7 +1,7 @@
 <template>
   <div>
     <user-storage-create-view
-      v-if="isDir"
+      v-if="userStoragePath && isDir"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
       @upload-success="$emit('upload-success')"
@@ -14,13 +14,13 @@
     />
 
     <user-storage-edit-viewer
-      v-if="isFile"
+      v-if="userStoragePath && isFile"
       :file="file"
       @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
     />
 
     <b-table
-      v-if="isDir"
+      v-if="userStoragePath && isDir"
       :fields="fields"
       :items="items"
       sort-by="name"

@@ -17,13 +17,24 @@
 <script>
 import { services, utils } from "django-airavata-api";
 import { notifications } from "django-airavata-common-ui";
-import {getStoragePath} from "../components/storage/util";
 
 export default {
   name: "user-storage-container",
   computed: {
     storagePath() {
-      return getStoragePath(this.$route);
+      let _storagePath = /~.*$/.exec(this.$route.fullPath);
+      if (_storagePath && _storagePath.length > 0) {
+        _storagePath = _storagePath[0];
+      } else {
+        _storagePath = this.$route.path;
+      }
+
+      // Validate to have the ending slash.
+      if (!_storagePath.endsWith("/")) {
+        _storagePath += "/";
+      }
+
+      return _storagePath;
     }
   },
   data() {

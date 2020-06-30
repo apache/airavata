@@ -1,6 +1,7 @@
 <template>
   <b-card header="Select a file">
     <user-storage-path-viewer
+      v-if="userStoragePath"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
       @directory-selected="directorySelected"
@@ -25,7 +26,6 @@
 <script>
 import { services } from "django-airavata-api";
 import UserStoragePathViewer from "./UserStoragePathViewer";
-import {getStoragePath} from "./util";
 
 // Keep track of most recent path so that when user needs to select an
 // additional file they are taken back to the last path
@@ -35,7 +35,7 @@ export default {
   name: "user-storage-file-selection-container",
   computed: {
     storagePath() {
-      return getStoragePath(this.$route);
+      return ["~"].concat(this.userStoragePath.parts).join("/") + "/"
     }
   },
   props: {
