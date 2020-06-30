@@ -752,7 +752,7 @@ public class TaskContext {
     }
 
     public List<Integer> getSweepRange() {
-        return SpecUtils.decodeRange(this.experimentModel.getSweepRange());
+        return SpecUtils.decodeRange(this.experimentModel.getSweepRange(), this.experimentModel.getExecutionType());
     }
 
     public static class TaskContextBuilder {

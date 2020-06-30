@@ -508,6 +508,7 @@ public class GroovyMapData {
             String error = "Template file '" + templateName + "' not found";
             throw new Exception(error);
         }
+        logger.info("Using template {} to generate the job submission script", templateUrl.getPath());
         //File template = new File(templateUrl.getPath());
         TemplateEngine engine = new GStringTemplateEngine();
         Writable make;

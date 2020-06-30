@@ -189,7 +189,7 @@ public class PostWorkflowManager extends WorkflowManager {
                                 List<ChildJobModel> childJobsOfJob = registryClient.getChildJobsOfJob(jobStatusResult.getJobId(), task);
                                 Map<Integer, ChildJobModel> childMap = new HashMap<>();
                                 childJobsOfJob.forEach(child -> childMap.put(child.getJobIndex(), child));
-                                List<Integer> rangeInts = SpecUtils.decodeRange(experimentModel.getSweepRange());
+                                List<Integer> rangeInts = SpecUtils.decodeRange(experimentModel.getSweepRange(), experimentModel.getExecutionType());
                                 for (int i : rangeInts) {
                                     ChildJobModel child = childMap.get(i);
                                     if (child != null &&

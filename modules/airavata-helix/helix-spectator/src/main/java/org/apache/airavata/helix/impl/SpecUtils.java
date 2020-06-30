@@ -28,19 +28,22 @@ public final class SpecUtils {
     /**
      * Range can be defined in the format of 0-20 or 0-20,25-50 or 0,1,2,3 or 0,1,2,4-8
      */
-    public static List<Integer> decodeRange(String rangeStr) {
+    public static List<Integer> decodeRange(String rangeStr, String executionType) {
         List<Integer> rangeVals = new ArrayList<>();
-        String[] rangeParts = rangeStr.split(",");
-        for (String rangePart : rangeParts) {
-            String[] subParts = rangePart.split("-");
-            if (subParts.length == 1) {
-                rangeVals.add(Integer.parseInt(subParts[0]));
-            }
-            if (subParts.length == 2) {
-                int minMargin = Integer.parseInt(subParts[0]);
-                int maxMargin = Integer.parseInt(subParts[1]);
-                for (int i = minMargin; i <= maxMargin; i++) {
-                    rangeVals.add(i);
+
+        if ("param_sweep".equals(executionType)) {
+            String[] rangeParts = rangeStr.split(",");
+            for (String rangePart : rangeParts) {
+                String[] subParts = rangePart.split("-");
+                if (subParts.length == 1) {
+                    rangeVals.add(Integer.parseInt(subParts[0]));
+                }
+                if (subParts.length == 2) {
+                    int minMargin = Integer.parseInt(subParts[0]);
+                    int maxMargin = Integer.parseInt(subParts[1]);
+                    for (int i = minMargin; i <= maxMargin; i++) {
+                        rangeVals.add(i);
+                    }
                 }
             }
         }
