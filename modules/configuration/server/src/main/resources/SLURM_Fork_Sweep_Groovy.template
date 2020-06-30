@@ -23,11 +23,14 @@ if (queueName != null && queueName != "") out.print '#SBATCH -p ' + queueName + 
    if (workingDirectory != null && workingDirectory != "")  out.print 'cd ' + workingDirectory +'\n'
 
    out.print 'array=( ' + sweepRange.join(' ') + ' )\n'
+   out.print 'NODES=( $(scontrol show hostnames) )\n'
    out.print 'for i in "${array[@]}"\n'
    out.print 'do \n'
    out.print 'pushd $i \n'
 
    out.print '(\n'
+   our.print 'export SCRATCH_ID=$node[$1]\n'
+   our.print 'export GMS_HOST=$node[$i]\n'
 
    if (preJobCommands != null) for(pjc in preJobCommands)  out.print pjc +' ;\n'
    if (jobSubmitterCommand != null && jobSubmitterCommand != "")  out.print jobSubmitterCommand + ' '
