@@ -29,8 +29,8 @@ if (queueName != null && queueName != "") out.print '#SBATCH -p ' + queueName + 
    out.print 'pushd $i \n'
 
    out.print '(\n'
-   out.print 'export SCRATCH_ID=$node[$1]\n'
-   out.print 'export GMS_HOST=$node[$i]\n'
+   out.print 'export SCRATCH_ID=$NODES[$1]\n'
+   out.print 'export GMS_HOST=$NODES[$i]\n'
 
    if (preJobCommands != null) for(pjc in preJobCommands)  out.print pjc +' ;\n'
    if (jobSubmitterCommand != null && jobSubmitterCommand != "")  out.print jobSubmitterCommand + ' '
