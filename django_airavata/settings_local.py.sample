@@ -64,6 +64,8 @@ AUTHENTICATION_OPTIONS = {
     # Control whether username/password authentication is allowed
     'password': {
         'name': 'your account',
+        # Uncomment following to hide username/password login except from directly going to /auth/login-password URL
+        # 'hidden': True,
     },
     # Can have multiple external logins
     # 'external': [
