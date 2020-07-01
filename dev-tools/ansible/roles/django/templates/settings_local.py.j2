@@ -88,6 +88,9 @@ AUTHENTICATION_OPTIONS = {
         {% if auth_options.password.logo is defined %}
         'logo': '{{ auth_options.password.logo }}',
         {% endif %}
+        {% if auth_options.password.hidden is defined %}
+        'hidden': {{ auth_options.password.hidden | ternary('True', 'False') }},
+        {% endif %}
     },
     {% endif %}
     {% if auth_options.external is defined and auth_options.external %}
