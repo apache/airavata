@@ -8,7 +8,7 @@
     {% include "./partials/externals_login_form.html" %}
     {% endif %}
 
-    {% if options.password %}
+    {% if options.password and not options.password.hidden %}
     {% include "./partials/username_password_login_form.html" %}
     {% endif %}
 </div>

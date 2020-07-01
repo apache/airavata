@@ -9,7 +9,7 @@
   {% include "./partials/externals_login_form.html" %}
   {% endif %}
 
-  {% if options.password %}
+  {% if options.password and not options.password.hidden %}
   <div class="row">
     <div class="col">
       <div class="card">
