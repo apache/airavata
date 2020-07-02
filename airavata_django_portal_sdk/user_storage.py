@@ -16,7 +16,7 @@ from airavata.model.data.replica.ttypes import (DataProductModel,
                                                 ReplicaLocationCategory,
                                                 ReplicaPersistentType)
 
-from . import base
+from . import models
 import copy
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ TMP_INPUT_FILE_UPLOAD_DIR = "tmp"
 def save(request, path, file, name=None, content_type=None):
     "Save file in path in the user's storage."
     username = request.user.username
-    full_path = _datastore.save(username, path, file, name=name)
+    full_path = _Datastore().save(username, path, file, name=name)
     data_product = _save_data_product(
         request, full_path, name=name, content_type=content_type
     )
@@ -38,7 +38,7 @@ def move_from_filepath(request, source_path, target_path, name=None, content_typ
     "Move a file from filesystem into user's storage."
     username = request.user.username
     file_name = name if name is not None else os.path.basename(source_path)
-    full_path = _datastore.move_external(source_path, username, target_path, file_name)
+    full_path = _Datastore().move_external(source_path, username, target_path, file_name)
     data_product = _save_data_product(
         request, full_path, name=file_name, content_type=content_type
     )
@@ -49,7 +49,7 @@ def save_input_file_upload(request, file, name=None, content_type=None):
     """Save input file in staging area for input file uploads."""
     username = request.user.username
     file_name = name if name is not None else os.path.basename(file.name)
-    full_path = _datastore.save(username, TMP_INPUT_FILE_UPLOAD_DIR, file)
+    full_path = _Datastore().save(username, TMP_INPUT_FILE_UPLOAD_DIR, file)
     data_product = _save_data_product(
         request, full_path, name=file_name, content_type=content_type
     )
@@ -59,7 +59,7 @@ def save_input_file_upload(request, file, name=None, content_type=None):
 def copy_input_file_upload(request, data_product):
     path = _get_replica_filepath(data_product)
     name = data_product.productName
-    full_path = _datastore.copy(
+    full_path = _Datastore().copy(
         data_product.ownerName,
         path,
         request.user.username,
@@ -72,8 +72,8 @@ def copy_input_file_upload(request, data_product):
 def is_input_file_upload(request, data_product):
     # Check if file is one of user's files and in TMP_INPUT_FILE_UPLOAD_DIR
     path = _get_replica_filepath(data_product)
-    if _datastore.exists(request.user.username, path):
-        rel_path = _datastore.rel_path(request.user.username, path)
+    if _Datastore().exists(request.user.username, path):
+        rel_path = _Datastore().rel_path(request.user.username, path)
         return os.path.dirname(rel_path) == TMP_INPUT_FILE_UPLOAD_DIR
     else:
         return False
@@ -82,7 +82,7 @@ def is_input_file_upload(request, data_product):
 def move_input_file_upload(request, data_product, path):
     source_path = _get_replica_filepath(data_product)
     file_name = data_product.productName
-    full_path = _datastore.move(
+    full_path = _Datastore().move(
         data_product.ownerName, source_path, request.user.username, path, file_name
     )
     _delete_data_product(data_product.ownerName, source_path)
@@ -96,7 +96,7 @@ def move_input_file_upload_from_filepath(
     "Move a file from filesystem into user's input file staging area."
     username = request.user.username
     file_name = name if name is not None else os.path.basename(source_path)
-    full_path = _datastore.move_external(
+    full_path = _Datastore().move_external(
         source_path, username, TMP_INPUT_FILE_UPLOAD_DIR, file_name
     )
     data_product = _save_data_product(
@@ -108,23 +108,23 @@ def move_input_file_upload_from_filepath(
 def open_file(request, data_product):
     "Return file object for replica if it exists in user storage."
     path = _get_replica_filepath(data_product)
-    return _datastore.open(data_product.ownerName, path)
+    return _Datastore().open(data_product.ownerName, path)
 
 
 def exists(request, data_product):
     "Return True if replica for data_product exists in user storage."
     path = _get_replica_filepath(data_product)
-    return _datastore.exists(data_product.ownerName, path)
+    return _Datastore().exists(data_product.ownerName, path)
 
 
 def dir_exists(request, path):
-    return _datastore.dir_exists(request.user.username, path)
+    return _Datastore().dir_exists(request.user.username, path)
 
 
 def user_file_exists(request, path):
     """If file exists, return data product URI, else None."""
-    if _datastore.exists(request.user.username, path):
-        full_path = _datastore.path(request.user.username, path)
+    if _Datastore().exists(request.user.username, path):
+        full_path = _Datastore().path(request.user.username, path)
         data_product_uri = _get_data_product_uri(request, full_path)
         return data_product_uri
     else:
@@ -132,14 +132,14 @@ def user_file_exists(request, path):
 
 
 def delete_dir(request, path):
-    return _datastore.delete_dir(request.user.username, path)
+    return _Datastore().delete_dir(request.user.username, path)
 
 
 def delete(request, data_product):
     "Delete replica for data product in this data store."
     path = _get_replica_filepath(data_product)
     try:
-        _datastore.delete(data_product.ownerName, path)
+        _Datastore().delete(data_product.ownerName, path)
         _delete_data_product(data_product.ownerName, path)
     except Exception as e:
         logger.exception(
@@ -151,13 +151,14 @@ def delete(request, data_product):
 
 
 def listdir(request, path):
-    if _datastore.dir_exists(request.user.username, path):
-        directories, files = _datastore.list_user_dir(request.user.username, path)
+    datastore = _Datastore()
+    if datastore.dir_exists(request.user.username, path):
+        directories, files = datastore.list_user_dir(request.user.username, path)
         directories_data = []
         for d in directories:
             dpath = os.path.join(path, d)
-            created_time = _datastore.get_created_time(request.user.username, dpath)
-            size = _datastore.size(request.user.username, dpath)
+            created_time = datastore.get_created_time(request.user.username, dpath)
+            size = datastore.size(request.user.username, dpath)
             directories_data.append(
                 {
                     "name": d,
@@ -170,11 +171,11 @@ def listdir(request, path):
         files_data = []
         for f in files:
             user_rel_path = os.path.join(path, f)
-            created_time = _datastore.get_created_time(
+            created_time = datastore.get_created_time(
                 request.user.username, user_rel_path
             )
-            size = _datastore.size(request.user.username, user_rel_path)
-            full_path = _datastore.path(request.user.username, user_rel_path)
+            size = datastore.size(request.user.username, user_rel_path)
+            full_path = datastore.path(request.user.username, user_rel_path)
             data_product_uri = _get_data_product_uri(request, full_path)
             files_data.append(
                 {
@@ -192,22 +193,21 @@ def listdir(request, path):
 
 
 def get_experiment_dir(request, project_name=None, experiment_name=None, path=None):
-    return _datastore.get_experiment_dir(
+    return _Datastore().get_experiment_dir(
         request.user.username, project_name, experiment_name, path
     )
 
 
 def create_user_dir(request, path):
-    return _datastore.create_user_dir(request.user.username, path)
+    return _Datastore().create_user_dir(request.user.username, path)
 
 
 def get_rel_path(request, path):
-    return _datastore.rel_path(request.user.username, path)
+    return _Datastore().rel_path(request.user.username, path)
 
 def _get_data_product_uri(request, full_path):
 
-    user_files_model = _get_user_files_model()
-    user_file = user_files_model.objects.filter(
+    user_file = models.UserFiles.objects.filter(
         username=request.user.username, file_path=full_path)
     if user_file.exists():
         product_uri = user_file[0].file_dpu
@@ -231,25 +231,11 @@ def _register_data_product(request, full_path, data_product):
     product_uri = request.airavata_client.registerDataProduct(
         request.authz_token, data_product
     )
-    UserFiles = _get_user_files_model()
-    user_file_instance = UserFiles(
+    user_file_instance = models.UserFiles(
         username=request.user.username, file_path=full_path, file_dpu=product_uri
     )
     user_file_instance.save()
     return product_uri
-
-
-def _get_user_files_model():
-    user_files_model = getattr(
-        settings, "USER_FILES_MODEL", "django_airavata_api.User_Files"
-    )
-    UserFiles = apps.get_model(user_files_model)
-    if not issubclass(UserFiles, base.UserFiles):
-        raise Exception(
-            f"Class {UserFiles} ({user_files_model}) is not an "
-            "instance of airavata_django_portal_sdk.base.UserFiles"
-        )
-    return UserFiles
 
 
 def _save_copy_of_data_product(request, full_path, data_product):
@@ -275,8 +261,7 @@ def _copy_data_product(request, data_product, full_path):
 def _delete_data_product(username, full_path):
     # TODO: call API to delete data product from replica catalog when it is
     # available (not currently implemented)
-    user_files_model = _get_user_files_model()
-    user_file = user_files_model.objects.filter(username=username, file_path=full_path)
+    user_file = models.UserFiles.objects.filter(username=username, file_path=full_path)
     if user_file.exists():
         user_file.delete()
 
@@ -344,11 +329,12 @@ def _get_replica_filepath(data_product):
 class _Datastore:
     """Internal datastore abstraction."""
 
-    directory = settings.GATEWAY_DATA_STORE_DIR
 
     def __init__(self, directory=None):
         if directory:
             self.directory = directory
+        else:
+            self.directory = settings.GATEWAY_DATA_STORE_DIR
 
     def exists(self, username, path):
         """Check if file path exists in this data store."""
@@ -528,6 +514,3 @@ class _Datastore:
                 if os.path.exists(fp):
                     total_size += os.path.getsize(fp)
         return total_size
-
-
-_datastore = _Datastore()

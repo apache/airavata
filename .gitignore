@@ -3,3 +3,4 @@ airavata_django_portal_sdk.egg-info
 *.pyc
 __pycache__
 .vscode
+db.sqlite3
