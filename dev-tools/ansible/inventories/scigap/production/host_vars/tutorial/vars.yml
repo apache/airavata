@@ -42,7 +42,7 @@ auth_options:
 
 gateway_id: "tutorial"
 experiment_data_dir: "{{ user_data_dir }}/tutorial"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1WOyu47oKrRhIBUGI5aJsFk4wxCEgf3DzFdlYrWbGacfEETbE1Cxe8Tdj5TevIflui+HWJq5quHkMiZtHhGZbC4JMDKlzJaBn5vHpEAWtyvCXglkpu+Q+/XGLOwqy4XGa4rdf/CXvuWgc5+XCBb++A/eBswQVPt4C631Xsym7LA1NQXK3XxJApP/2IHnWtJI2d9g5TnzH8Oa99d146KmAKMl73lsCZtC1saBtGRsggJ7dRal7ush3XqiNCMgWPM8QU0ogbOBXDUZKRGAoY+frDaJdA3eQISiRRknpFyZwWcXU0CGnqaBiJdJEGYKLMvP9qBz/juN8jKMBkEJLGU1/"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCn7BBwi2ckgu1fNwi8L+LmckMbeualcOit9aHtGM5EIWXgszLq0QbwOLzRWxWiuC6v3z7KQ2IqUJWgTo3UJzLtkX+hAwQZ2CRlcM8U+OPLKQ3WDixg9VlFHdq87+D1sn7hmMQB/Ihq8ul5iRg3zwQTuF294Iqpq7vFeqwYni2BTRP0jiEPCsYpykKe1kA1wl/zw0fkpOn8fUCn+7gO9pPJvJA08K+LtApcVaPfKR8yNRCGTBd7QGwXNpOuHFRjc30DlVN+x+H9pykpoXqVBLJ18Ncrbty3ZAS28FyweE2YiPgcIM3HcRFR/Ct83FHNwwez5ciekJEhPUPDOSMEojkV"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "Container-Tutorial Gateway"
