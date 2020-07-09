@@ -73,5 +73,8 @@ futurewater ansible_host=149.165.171.92 ansible_user=centos
 # Delta Jetstream server
 delta ansible_host=149.165.169.250 ansible_user=centos
 
+# Container-Tutorial Jetstream server
+tutorial ansible_host=149.165.168.166 ansible_user=centos
+
 # simccs server
 simccs ansible_host=scigap11.sciencegateways.iu.edu ansible_user=root
