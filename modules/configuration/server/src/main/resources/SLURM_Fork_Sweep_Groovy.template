@@ -23,14 +23,15 @@ if (queueName != null && queueName != "") out.print '#SBATCH -p ' + queueName + 
    if (workingDirectory != null && workingDirectory != "")  out.print 'cd ' + workingDirectory +'\n'
 
    out.print 'array=( ' + sweepRange.join(' ') + ' )\n'
-   out.print 'NODES=( $(scontrol show hostnames) )\n'
+   out.print 'NODES=( $(scontrol show hostnames $SLURM_JOB_NODELIST) )\n'
+   out.print 'ncnt=0\n'
    out.print 'for i in "${array[@]}"\n'
    out.print 'do \n'
    out.print 'pushd $i \n'
 
    out.print '(\n'
-   out.print 'export SCRATCH_ID=${NODES[$i]}\n'
-   out.print 'export GMS_HOST=${NODES[$i]}\n'
+   out.print 'export SCRATCH_ID=${NODES[$ncnt]}\n'
+   out.print 'export GMS_HOST=${NODES[$ncnt]}\n'
 
    if (preJobCommands != null) for(pjc in preJobCommands)  out.print pjc +' ;\n'
    if (jobSubmitterCommand != null && jobSubmitterCommand != "")  out.print jobSubmitterCommand + ' '
@@ -42,6 +43,7 @@ if (queueName != null && queueName != "") out.print '#SBATCH -p ' + queueName + 
    out.print '\n)&\n'
 
    out.print 'popd\n'
+   out.print 'ncnt=$ncnt+1;\n'
    out.print 'done\n'
    out.print 'wait\n'
 %>
