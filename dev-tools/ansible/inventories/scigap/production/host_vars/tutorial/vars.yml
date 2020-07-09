@@ -19,7 +19,8 @@
 #
 
 ---
-
+gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
+gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 vhost_servername: "container.tutorial.scigap.org"
 vhost_ssl: True
