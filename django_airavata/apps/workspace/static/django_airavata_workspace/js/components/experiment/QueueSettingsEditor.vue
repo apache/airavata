@@ -28,7 +28,7 @@
                   <h3 class="h5 mb-0">{{ data.wallTimeLimit }} minutes</h3>
                   <span class="text-muted text-uppercase">TIME LIMIT</span>
                 </div>
-                <div class="col">
+                <div class="col" v-if="maxPhysicalMemory > 0">
                   <h3 class="h5 mb-0">{{ data.totalPhysicalMemory }} MB</h3>
                   <span class="text-muted text-uppercase">PHYSICAL MEMORY</span>
                 </div>
@@ -126,6 +126,7 @@
             </div>
           </b-form-group>
           <b-form-group
+            v-if="maxPhysicalMemory > 0"
             label="Total Physical Memory"
             label-for="total-physical-memory"
             :invalid-feedback="getValidationFeedback('totalPhysicalMemory')"
@@ -310,6 +311,9 @@ export default {
       this.data.totalCPUCount = this.getDefaultCPUCount(queueDefault);
       this.data.nodeCount = this.getDefaultNodeCount(queueDefault);
       this.data.wallTimeLimit = this.getDefaultWalltime(queueDefault);
+      if (this.maxPhysicalMemory === 0) {
+        this.data.totalPhysicalMemory = 0;
+      }
     },
     validate() {
       if (!this.valid) {
@@ -334,6 +338,9 @@ export default {
       this.data.totalCPUCount = this.getDefaultCPUCount(defaultQueue);
       this.data.nodeCount = this.getDefaultNodeCount(defaultQueue);
       this.data.wallTimeLimit = this.getDefaultWalltime(defaultQueue);
+      if (this.maxPhysicalMemory === 0) {
+        this.data.totalPhysicalMemory = 0;
+      }
     },
     isQueueInComputeResourcePolicy: function(queueName) {
       if (!this.computeResourcePolicy) {
