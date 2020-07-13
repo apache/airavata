@@ -98,7 +98,7 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -120,7 +120,13 @@
             <artifactId>ibatis-sqlmap</artifactId>
             <version>2.3.0</version>
         </dependency>
-
+        <!-- For MariaDB based schema migrations -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>2.0.2</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -135,37 +141,84 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.openjpa</groupId>
-                <artifactId>openjpa-maven-plugin</artifactId>
-                <version>${openjpa.version}</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
                 <configuration>
-                    <includes>**/entities/*.class</includes>
-                    <excludes>**/entities/XML*.class</excludes>
-                    <addDefaultConstructor>true</addDefaultConstructor>
-                    <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+                    <executable>java</executable>
+                    <classpathScope>runtime</classpathScope>
+                    <workingDirectory>${project.build.directory}</workingDirectory>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>enhancer</id>
-                        <phase>process-classes</phase>
+                        <!-- Run with:
+                            mvn process-classes docker-compose:up@mysql-up exec:exec@generate-migrations-mysql docker-compose:down@mysql-down
+                        -->
+                        <id>generate-migrations-mysql</id>
                         <goals>
-                            <goal>enhance</goal>
+                            <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-Dairavata.config.dir=${project.basedir}/src/main/resources/migrations-util/mysql</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>org.apache.airavata.registry.core.utils.migration.MigrationSchemaGenerator</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                     <execution>
-                        <!-- execute with `mvn compile openjpa:sql@generate-sql` or `mvn process-classes` -->
-                        <id>generate-sql</id>
-                        <configuration>
-                            <!-- openjpa:sql doesn't work well with multiple persistence-unit's in persistence.xml, so
-                            use this single persistence-unit persistence.xml to list any classes for which SQL schema
-                            generation is desired -->
-                            <persistenceXmlFile>${basedir}/src/main/resources/META-INF/generate-sql-persistence.xml</persistenceXmlFile>
-                            <sqlAction>build</sqlAction>
-                            <connectionDriverName>org.apache.derby.jdbc.ClientDriver</connectionDriverName>
-                        </configuration>
+                        <!-- Run with:
+                            mvn process-classes docker-compose:up@mysql-up exec:exec@generate-schema-mysql docker-compose:down@mysql-down
+                        -->
+                        <id>generate-schema-mysql</id>
                         <goals>
-                            <goal>sql</goal>
+                            <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-Dairavata.config.dir=${project.basedir}/src/main/resources/migrations-util/mysql</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>org.apache.airavata.registry.core.utils.migration.MigrationSchemaGenerator</argument>
+                                <argument>build</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Run with:
+                            mvn process-classes exec:exec@generate-migrations-derby
+                        -->
+                        <id>generate-migrations-derby</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-Dairavata.config.dir=${project.basedir}/src/main/resources/migrations-util/derby</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>org.apache.airavata.registry.core.utils.migration.MigrationSchemaGenerator</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Run with:
+                            mvn process-classes exec:exec@generate-schema-derby
+                        -->
+                        <id>generate-schema-derby</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-Dairavata.config.dir=${project.basedir}/src/main/resources/migrations-util/derby</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>org.apache.airavata.registry.core.utils.migration.MigrationSchemaGenerator</argument>
+                                <argument>build</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -206,7 +259,33 @@
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                 </configuration>
             </plugin>
-        </plugins>
+            <plugin>
+                <groupId>com.dkanejs.maven.plugins</groupId>
+                <artifactId>docker-compose-maven-plugin</artifactId>
+                <version>4.0.0</version>
+                <executions>
+                    <execution>
+                        <id>mysql-up</id>
+                        <goals>
+                            <goal>up</goal>
+                        </goals>
+                        <configuration>
+                            <composeFile>${project.basedir}/src/main/resources/migrations-util/mysql/docker-compose.yml</composeFile>
+                            <detachedMode>true</detachedMode>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>mysql-down</id>
+                        <goals>
+                            <goal>down</goal>
+                        </goals>
+                        <configuration>
+                            <composeFile>${project.basedir}/src/main/resources/migrations-util/mysql/docker-compose.yml</composeFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            </plugins>
     </build>
 
 </project>
