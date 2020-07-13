@@ -27,7 +27,7 @@ import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.airavata.registry.core.utils.ExpCatalogJDBCConfig;
 
 public class ExpCatalogJPAUtils {
-    private static final String PERSISTENCE_UNIT_NAME = "experiment_data_new";
+    public static final String PERSISTENCE_UNIT_NAME = "experiment_data_new";
     private static final JDBCConfig JDBC_CONFIG = new ExpCatalogJDBCConfig();
     private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
 

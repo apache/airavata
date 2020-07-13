@@ -30,7 +30,7 @@ public class AppCatalogJPAUtils {
 
     // TODO: we can rename this back to appcatalog_data once we completely replace
     // the other appcatalog_data persistence context in airavata-registry-core
-    private static final String PERSISTENCE_UNIT_NAME = "appcatalog_data_new";
+    public static final String PERSISTENCE_UNIT_NAME = "appcatalog_data_new";
     private static final JDBCConfig JDBC_CONFIG = new AppCatalogJDBCConfig();
     private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME,
             JDBC_CONFIG);
