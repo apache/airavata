@@ -338,6 +338,10 @@ class BootstrapCarousel(StructBlock):
     """
     Custom 'StructBlock' that allows the user to make a bootstrap carousel
     """
+    interval = IntegerBlock(default=2000, help_text="""
+    The amount of time to delay between automatically cycling an item. If
+    false, carousel will not automatically cycle.
+    """)
     c_image1 = ImageChooserBlock(required=True)
     c_image1_title = TextBlock(
         required=False, blank=True, help_text="Give a title for image 1")
