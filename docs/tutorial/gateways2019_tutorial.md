@@ -940,19 +940,27 @@ Now we'll use `AiravataAPI` to submit an Echo job.
    value:
 
 ```javascript
-$("#run-button").click(e => {
+$("#run-button").click((e) => {
     const greeting = $("#greeting-select").val();
 });
 ```
 
 2. There are a couple key pieces of information that are needed to submit a
-   computational experiment. First, we need the _Application Interface_ for the
-   application, which defines the inputs and outputs of the application. We'll
-   create an _Experiment_ instance from the _Application Interface_ definition:
+   computational experiment. We can use the REST API to find these. The
+   application we want to use is called Echo and it has id
+   `Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8`. We can browse the API for this
+   application using:
+   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/>.
+   First, we need the _Application Interface_ for the application, which defines
+   the inputs and outputs of the application. We can get its id by following the
+   link to `applicationInterface`:
+   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_interface/>.
+   We'll create an _Experiment_ instance from the _Application Interface_
+   definition:
 
 ```javascript
 const loadAppInterface = services.ApplicationInterfaceService.retrieve({
-    lookup: appInterfaceId
+    lookup: appInterfaceId,
 });
 ```
 
@@ -961,13 +969,15 @@ const loadAppInterface = services.ApplicationInterfaceService.retrieve({
    exercise we're going to hard code the resource and the application deployment
    that will be used for executing the application, but we still need the
    application deployment information so we can get default values for the
-   application that can be used when submitting the job to that scheduler.
+   application that can be used when submitting the job to that scheduler. The
+   application deployment id we get from
+   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_deployments/>.
 
 ```javascript
 const appDeploymentId =
     "js-156-93.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
 const loadQueues = services.ApplicationDeploymentService.getQueues({
-    lookup: appDeploymentId
+    lookup: appDeploymentId,
 });
 ```
 
@@ -988,15 +998,15 @@ const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
    object then _save_ and _launch_ it. Here's the complete click handler:
 
 ```javascript
-$("#run-button").click(e => {
+$("#run-button").click((e) => {
     const greeting = $("#greeting-select").val();
     const loadAppInterface = services.ApplicationInterfaceService.retrieve({
-        lookup: appInterfaceId
+        lookup: appInterfaceId,
     });
     const appDeploymentId =
         "js-156-93.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
     const loadQueues = services.ApplicationDeploymentService.getQueues({
-        lookup: appDeploymentId
+        lookup: appDeploymentId,
     });
     const resourceHostId =
         "js-156-93.jetstream-cloud.org_33019860-54c2-449b-96d3-988d4f5a501e";
@@ -1008,7 +1018,7 @@ $("#run-button").click(e => {
             const experiment = appInterface.createExperiment();
             experiment.experimentName = "Echo " + greeting;
             experiment.projectId = workspacePrefs.most_recent_project_id;
-            const cloudQueue = queues.find(q => q.queueName === queueName);
+            const cloudQueue = queues.find((q) => q.queueName === queueName);
             experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
             experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
             experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount =
@@ -1023,9 +1033,9 @@ $("#run-button").click(e => {
 
             return services.ExperimentService.create({ data: experiment });
         })
-        .then(exp => {
+        .then((exp) => {
             return services.ExperimentService.launch({
-                lookup: exp.experimentId
+                lookup: exp.experimentId,
             });
         });
 });
@@ -1063,17 +1073,17 @@ We'll read the STDOUT file and display that in our experiment listing table.
 ```javascript
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId }).then(
-        fullDetails => {
+        (fullDetails) => {
             const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                o => o.name === "Echo-STDOUT"
+                (o) => o.name === "Echo-STDOUT"
             ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                dp => dp.productUri === stdoutDataProductId
+                (dp) => dp.productUri === stdoutDataProductId
             );
             if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
                 return fetch(stdoutDataProduct.downloadURL, {
-                    credentials: "same-origin"
-                }).then(result => result.text());
+                    credentials: "same-origin",
+                }).then((result) => result.text());
             }
         }
     );
@@ -1085,20 +1095,20 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
 ```javascript
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId })
-        .then(fullDetails => {
+        .then((fullDetails) => {
             const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                o => o.name === "Echo-STDOUT"
+                (o) => o.name === "Echo-STDOUT"
             ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                dp => dp.productUri === stdoutDataProductId
+                (dp) => dp.productUri === stdoutDataProductId
             );
             if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
                 return fetch(stdoutDataProduct.downloadURL, {
-                    credentials: "same-origin"
-                }).then(result => result.text());
+                    credentials: "same-origin",
+                }).then((result) => result.text());
             }
         })
-        .then(text => {
+        .then((text) => {
             $(`#output_${index}`).text(text);
         });
 }
@@ -1121,8 +1131,8 @@ function loadExperiments() {
         limit: 5,
         [models.ExperimentSearchFields.USER_NAME.name]:
             session.Session.username,
-        [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId
-    }).then(data => {
+        [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId,
+    }).then((data) => {
         $("#experiment-list").empty();
         data.results.forEach((exp, index) => {
             $("#experiment-list").append(
@@ -1137,28 +1147,28 @@ function loadExperiments() {
             // If experiment has finished, load full details, then parse the stdout file
             if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
                 services.FullExperimentService.retrieve({
-                    lookup: exp.experimentId
+                    lookup: exp.experimentId,
                 })
-                    .then(fullDetails => {
+                    .then((fullDetails) => {
                         const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                            o => o.name === "Echo-STDOUT"
+                            (o) => o.name === "Echo-STDOUT"
                         ).value;
                         const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                            dp => dp.productUri === stdoutDataProductId
+                            (dp) => dp.productUri === stdoutDataProductId
                         );
                         if (
                             stdoutDataProduct &&
                             stdoutDataProduct.downloadURL
                         ) {
                             return fetch(stdoutDataProduct.downloadURL, {
-                                credentials: "same-origin"
-                            }).then(result => result.text());
+                                credentials: "same-origin",
+                            }).then((result) => result.text());
                         } else {
                             // If we can't download it, fake it
                             return FAKE_STDOUT;
                         }
                     })
-                    .then(text => {
+                    .then((text) => {
                         $(`#output_${index}`).text(text);
                     });
             }
