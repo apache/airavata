@@ -820,7 +820,7 @@ urlpatterns = [
 <script>
     const { models, services, session, utils } = AiravataAPI;
 
-    utils.FetchUtils.get("/gateways19_tutorial/languages").then(data => {
+    utils.FetchUtils.get("/gateways19_tutorial/languages/").then(data => {
         data.languages.forEach(language => {
             $("#greeting-select").append(
                 `<option value="${language.greeting}">
