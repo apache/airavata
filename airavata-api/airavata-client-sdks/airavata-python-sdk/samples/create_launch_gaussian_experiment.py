@@ -103,6 +103,7 @@ experiment = data_model_client.configure_computation_resource_scheduling(experim
 
 data_uri = data_model_client.register_input_file(file_identifier="npentane12diol.inp",
                                                  storage_name='pgadev.scigap.org',
+                                                 storageId='pgadev.scigap.org_asdasdad',
                                                  input_file_name="npentane12diol.inp",
                                                  uploaded_storage_path=path)
 

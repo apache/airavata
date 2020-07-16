@@ -24,6 +24,7 @@
   roles:
     - env_setup
     - java
+    - letsencrypt
     - keycloak
 
 ...
