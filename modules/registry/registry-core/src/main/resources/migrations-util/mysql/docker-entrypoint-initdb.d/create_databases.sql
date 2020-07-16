@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,13 +17,11 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-* -->
-<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
-    <!-- openjpa:sql doesn't work well with multiple persistence-unit's in persistence.xml, so
-    use this single persistence-unit persistence.xml to list any classes for which SQL schema
-    generation is desired -->
-    <persistence-unit name="generate-sql">
-        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerInputEntity</class>
-        <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerOutputEntity</class>
-    </persistence-unit>
-</persistence>
+ */
+
+create database app_catalog;
+grant all privileges on app_catalog.* to 'airavata'@'%' with grant option;
+create database experiment_catalog;
+grant all privileges on experiment_catalog.* to 'airavata'@'%' with grant option;
+create database replica_catalog;
+grant all privileges on replica_catalog.* to 'airavata'@'%' with grant option;
