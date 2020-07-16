@@ -99,7 +99,7 @@ class KeycloakConfiguration(object):
     def __init__(self, configFileLocation=None):
         if configFileLocation is not None:
             config.read(configFileLocation)
-        self.KEYCLOAK_CA_CERTIFICATE = os.path.join(BASE_DIR, "samples", "resources", "incommon_rsa_server_ca.pem")
+        # self.KEYCLOAK_CA_CERTIFICATE = os.path.join(BASE_DIR, "samples", "resources", "incommon_rsa_server_ca.pem")
         self.CLIENT_ID = config.get('KeycloakServer', 'CLIENT_ID')
         self.CLIENT_SECRET = config.get('KeycloakServer', 'CLIENT_SECRET')
         self.TOKEN_URL = config.get('KeycloakServer', 'TOKEN_URL')

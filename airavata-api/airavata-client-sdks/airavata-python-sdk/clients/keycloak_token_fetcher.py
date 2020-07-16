@@ -41,7 +41,6 @@ class Authenticator(object):
         verify_ssl = self.keycloak_settings.VERIFY_SSL
         oauth2_session = OAuth2Session(client=LegacyApplicationClient(
             client_id=client_id))
-        oauth2_session.verify = self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE
         token = oauth2_session.fetch_token(token_url=token_url,
                                            username=username,
                                            password=password,
