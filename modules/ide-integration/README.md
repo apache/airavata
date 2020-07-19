@@ -57,6 +57,12 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
   docker-compose up
   ```
 
+* Apply any database migrations. Go to src/main/resources directory and run
+
+  ```
+  cat ./database_scripts/init/*-migrations.sql | docker exec -i resources_db_1 mysql -p123456
+  ```
+
 * Wait until all the services come up. This will initialize all utilities required to start Airavata server
 
 ### Starting API Server

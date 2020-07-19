@@ -106,7 +106,7 @@ public class ArchiveTask extends DataStagingTask {
 
                     String destParent = destFilePath.substring(0, destFilePath.lastIndexOf("/"));
                     final String storageArchiveDir = "ARCHIVE";
-                    String unArchiveTarCommand = "mkdir " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
+                    String unArchiveTarCommand = "mkdir -p " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
                             + storageArchiveDir + " && rm " + archiveFileName + " && chmod 755 -f -R " + storageArchiveDir + "/*";
                     logger.info("Running Un archiving command on storage resource " + unArchiveTarCommand);
 

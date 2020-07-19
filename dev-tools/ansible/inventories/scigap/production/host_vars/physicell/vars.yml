@@ -21,11 +21,11 @@
 ---
 
 
-vhost_servername: "physicell.scigap.org"
+vhost_servername: "gateway.physicell.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/physicell.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/physicell.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/physicell.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.physicell.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.physicell.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.physicell.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "physicell"
