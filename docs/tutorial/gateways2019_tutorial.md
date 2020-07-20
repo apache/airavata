@@ -876,7 +876,7 @@ urlpatterns = [
 <script>
     const { models, services, session, utils } = AiravataAPI;
 
-    utils.FetchUtils.get("/gateways19_tutorial/languages").then(data => {
+    utils.FetchUtils.get("/gateways19_tutorial/languages/").then(data => {
         data.languages.forEach(language => {
             $("#greeting-select").append(
                 `<option value="${language.greeting}">
@@ -1002,9 +1002,17 @@ $("#run-button").click((e) => {
 ```
 
 2. There are a couple key pieces of information that are needed to submit a
-   computational experiment. First, we need the _Application Interface_ for the
-   application, which defines the inputs and outputs of the application. We'll
-   create an _Experiment_ instance from the _Application Interface_ definition:
+   computational experiment. We can use the REST API to find these. The
+   application we want to use is called Echo and it has id
+   `Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8`. We can browse the API for this
+   application using:
+   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/>.
+   First, we need the _Application Interface_ for the application, which defines
+   the inputs and outputs of the application. We can get its id by following the
+   link to `applicationInterface`:
+   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_interface/>.
+   We'll create an _Experiment_ instance from the _Application Interface_
+   definition:
 
 ```javascript
 const loadAppInterface = services.ApplicationInterfaceService.retrieve({
@@ -1017,7 +1025,9 @@ const loadAppInterface = services.ApplicationInterfaceService.retrieve({
    exercise we're going to hard code the resource and the application deployment
    that will be used for executing the application, but we still need the
    application deployment information so we can get default values for the
-   application that can be used when submitting the job to that scheduler.
+   application that can be used when submitting the job to that scheduler. The
+   application deployment id we get from
+   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_deployments/>.
 
 ```javascript
 const appDeploymentId =
