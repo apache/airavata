@@ -2,11 +2,9 @@
   <div class="custom-Uppy">
     <div ref="dragDrop" />
     <div ref="statusBar" />
-    <b-alert
-      class="mt-1"
-      :show="restrictionFailed"
-      variant="danger"
-    >{{ restrictionFailedMessage }}</b-alert>
+    <b-alert class="mt-1" :show="restrictionFailed" variant="danger">{{
+      restrictionFailedMessage
+    }}</b-alert>
   </div>
 </template>
 
@@ -136,6 +134,16 @@ export default {
     },
     reset() {
       this.uppy.reset();
+    }
+  },
+  watch: {
+    xhrUploadEndpoint(val) {
+      // Update the xhrUploadEndpoint configuration on XHRUpload whenever it changes
+      if (this.uppy && this.settings && !this.settings.tusEndpoint) {
+        this.uppy.getPlugin("XHRUpload").setOptions({
+          endpoint: val
+        });
+      }
     }
   }
 };
