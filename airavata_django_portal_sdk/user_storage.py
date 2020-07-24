@@ -16,7 +16,6 @@ from airavata.model.data.replica.ttypes import (DataProductModel,
                                                 ReplicaLocationCategory,
                                                 ReplicaPersistentType)
 
-from . import models
 import copy
 
 logger = logging.getLogger(__name__)
@@ -210,6 +209,7 @@ def get_rel_path(request, path):
 
 def _get_data_product_uri(request, full_path):
 
+    from airavata_django_portal_sdk import models
     user_file = models.UserFiles.objects.filter(
         username=request.user.username, file_path=full_path)
     if user_file.exists():
@@ -234,6 +234,7 @@ def _register_data_product(request, full_path, data_product):
     product_uri = request.airavata_client.registerDataProduct(
         request.authz_token, data_product
     )
+    from airavata_django_portal_sdk import models
     user_file_instance = models.UserFiles(
         username=request.user.username, file_path=full_path, file_dpu=product_uri
     )
@@ -264,6 +265,7 @@ def _copy_data_product(request, data_product, full_path):
 def _delete_data_product(username, full_path):
     # TODO: call API to delete data product from replica catalog when it is
     # available (not currently implemented)
+    from airavata_django_portal_sdk import models
     user_file = models.UserFiles.objects.filter(username=username, file_path=full_path)
     if user_file.exists():
         user_file.delete()
