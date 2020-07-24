@@ -118,6 +118,7 @@ def exists(request, data_product):
 
 
 def dir_exists(request, path):
+    "Return True if path exists in user's data store."
     return _Datastore().dir_exists(request.user.username, path)
 
 
@@ -132,6 +133,7 @@ def user_file_exists(request, path):
 
 
 def delete_dir(request, path):
+    """Delete path in user's data store, if it exists."""
     return _Datastore().delete_dir(request.user.username, path)
 
 
@@ -151,6 +153,7 @@ def delete(request, data_product):
 
 
 def listdir(request, path):
+    """Return a tuple of two lists, one for directories, the second for files."""
     datastore = _Datastore()
     if datastore.dir_exists(request.user.username, path):
         directories, files = datastore.list_user_dir(request.user.username, path)
