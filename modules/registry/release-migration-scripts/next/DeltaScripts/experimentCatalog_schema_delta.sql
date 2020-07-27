@@ -19,3 +19,6 @@
 --
 
 use experiment_catalog;
+
+-- AIRAVATA-3355: Add EXPERIMENT_DATA_DIR_SIZE entry to the table Experiment
+alter table EXPERIMENT add column IF NOT EXISTS EXPERIMENT_DATA_DIR_SIZE BIGINT(20);

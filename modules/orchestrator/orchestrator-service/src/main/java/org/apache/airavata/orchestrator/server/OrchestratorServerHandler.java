@@ -145,12 +145,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
             experiment = registryClient.getExperiment(experimentId);
+
             if (experiment == null) {
                 log.error("Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
 
 			UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
+//			//New code
+//			long storageQuota = registryClient.getGatewayStoragePreference(gatewayId, userConfigurationData.getStorageId()).getUserStorageQuota();
+//			long currentSize = 0L;
+//			//currentSize = registryClient.getDirSize(userConfigurationData.getUserDir());
+//			//currentSize = registryClient.getUserDir(gatewayId, experiment.getUserName());
+//			//The other approach would be to track the UserDir size in Django and sending it in ExperimentModel. This way, unnecessary RPC calls
+//			// can be mitigated.
+//			if(currentSize >= storageQuota) {
+//				log.error("User Storage quota exceeded. Please check with your gateway provider or delete old experiments");
+//				return false;
+//			}
+//			//Ends here
+
 			String token = null;
 			final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
 			if (groupResourceProfileId == null) {
