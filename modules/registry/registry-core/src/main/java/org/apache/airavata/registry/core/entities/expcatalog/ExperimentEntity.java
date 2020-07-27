@@ -77,9 +77,6 @@ public class ExperimentEntity implements Serializable {
     @Column(name = "EMAIL_ADDRESSES")
     public String emailAddresses;
 
-    @Column(name = "EXPERIMENT_DATA_DIR_SIZE")
-    private Long experimentDataDirSize;
-
     @OneToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL,
             mappedBy = "experiment", fetch = FetchType.EAGER)
     private UserConfigurationDataEntity userConfigurationData;
@@ -260,11 +257,4 @@ public class ExperimentEntity implements Serializable {
         this.processes = processes;
     }
 
-    public Long getExperimentDataDirSize() {
-        return experimentDataDirSize;
-    }
-
-    public void setExperimentDataDirSize(Long experimentDataDirSize) {
-        this.experimentDataDirSize = experimentDataDirSize;
-    }
 }

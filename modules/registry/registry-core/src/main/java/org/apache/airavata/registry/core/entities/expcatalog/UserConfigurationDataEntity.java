@@ -102,6 +102,9 @@ public class UserConfigurationDataEntity implements Serializable {
     @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     private ExperimentEntity experiment;
 
+    @Column(name = "EXPERIMENT_DATA_DIR_SIZE")
+    private Long experimentDataDirSize;
+
     public UserConfigurationDataEntity() {
     }
 
@@ -287,5 +290,13 @@ public class UserConfigurationDataEntity implements Serializable {
 
     public void setExperiment(ExperimentEntity experiment) {
         this.experiment = experiment;
+    }
+
+    public Long getExperimentDataDirSize() {
+        return experimentDataDirSize;
+    }
+
+    public void setExperimentDataDirSize(Long experimentDataDirSize) {
+        this.experimentDataDirSize = experimentDataDirSize;
     }
 }
