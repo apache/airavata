@@ -29,9 +29,9 @@ import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.job.JobModel;
+ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,47 +187,19 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 return onFail("Couldn't find job id in both submitted and verified steps. " + msg, false, null);
 
             } else {
-
                 // usage reporting as the last step of job submission task
-                if (getComputeResourceDescription().isGatewayUsageReporting()){
+                try {
+                    mapData.setJobId(jobId);
+                    boolean reportingAvailable = getRegistryServiceClient().isReportingAvailable(getGatewayId());
 
-                    try {
-                        ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
-                        String usageReportingKey = ServerSettings.getSetting("usage.reporting.key");
-                        String username = URLEncoder.encode(
-                                experiment.getUserName(),
-                                StandardCharsets.UTF_8.toString()) + ":" +
-                                URLEncoder.encode(
-                                        getTaskContext().getGroupComputeResourcePreference().getUsageReportingGatewayId(),
-                                        StandardCharsets.UTF_8.toString());
+                    if (reportingAvailable) {
+                        GatewayUsageReportingCommand reportingCommand = getRegistryServiceClient().getGatewayReportingCommand(getGatewayId());
+                        String parsedCommand = mapData.loadFromString(reportingCommand.getCommand());
+                        logger.debug("Parsed usage reporting command {}", parsedCommand);
 
-                        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd+HH:mmZ");
-                        gmtDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
+                        Process commandSubmit = Runtime.getRuntime().exec(parsedCommand);
 
-                        String hostName = getComputeResourceDescription().getHostName();
-                        List<String> hostAliases = getComputeResourceDescription().getHostAliases();
-                        if (hostAliases != null && hostAliases.size() > 0) {
-                            // TODO this is a temporary fix. Properly add entries to API to fetch host specific xsederesourcename.
-                            hostName = hostAliases.get(0);
-                        }
-
-                        String command = String.format("curl -XPOST --data-urlencode apikey=%s " +
-                                        "--data-urlencode gatewayuser=%s " +
-                                        "--data-urlencode xsederesourcename=%s  " +
-                                        "--data-urlencode jobid=%s " +
-                                        "--data-urlencode submittime='%s' " +
-                                        "%s",
-                                usageReportingKey,
-                                username,
-                                hostName,
-                                jobId,
-                                gmtDateFormat.format(new Date()),
-                                ServerSettings.getSetting("usage.reporting.endpoint"));
-
-                        logger.info("Usage reporting CURL command " + command);
-                        Process curlSubmit = Runtime.getRuntime().exec(command);
-
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(curlSubmit.getInputStream()));
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(commandSubmit.getInputStream()));
                         StringBuffer output = new StringBuffer();
 
                         String line;
@@ -237,14 +209,15 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         }
 
                         logger.info("Usage reporting output " + output.toString());
-                        curlSubmit.waitFor();
+                        commandSubmit.waitFor();
                         logger.info("Usage reporting completed");
 
-                    } catch (Exception e) {
-                        logger.error("Usage reporting failed but continuing. ", e);
+                    } else {
+                        logger.info("No usage reporting found");
                     }
+                } catch (Exception e) {
+                    logger.error("Usage reporting failed but continuing. ", e);
                 }
-
                 return onSuccess("Submitted job to compute resource");
             }
 

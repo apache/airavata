@@ -82,6 +82,7 @@ import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
@@ -148,6 +149,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
     private UserRepository userRepository = new UserRepository();
     private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+    private GatewayUsageReportingCommandRepository usageReportingCommandRepository = new GatewayUsageReportingCommandRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -5056,6 +5058,66 @@ public class RegistryServerHandler implements RegistryService.Iface {
             logger.error(message, e);
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public boolean isReportingAvailable(String gatewayId) throws RegistryServiceException, TException {
+        try {
+            return usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId);
+        } catch (Exception e) {
+            String message = "Failed to check the availability to find the reporting information for the gateway " + gatewayId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public GatewayUsageReportingCommand getGatewayReportingCommand(String gatewayId) throws RegistryServiceException, TException {
+        try {
+            if (usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId)) {
+                return usageReportingCommandRepository.getGatewayUsageReportingCommand(gatewayId);
+            } else {
+                String message = "No usage reporting information for the gateway " + gatewayId;
+                logger.error(message);
+                throw new RegistryServiceException(message);
+            }
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+
+        } catch (Exception e) {
+            String message = "Failed to check the availability to find the reporting information for the gateway " + gatewayId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }    }
+
+    @Override
+    public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryServiceException, TException {
+        try {
+            usageReportingCommandRepository.addGatewayUsageReportingCommand(command);
+        } catch (Exception e) {
+            String message = "Failed to add the reporting information for the gateway " + command.getGatewayId();
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public void removeGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryServiceException, TException {
+        try {
+            usageReportingCommandRepository.removeGatewayUsageReportingCommand(command.getGatewayId());
+        } catch (Exception e) {
+            String message = "Failed to add the reporting information for the gateway " + command.getGatewayId();
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
             throw rse;
         }
     }
