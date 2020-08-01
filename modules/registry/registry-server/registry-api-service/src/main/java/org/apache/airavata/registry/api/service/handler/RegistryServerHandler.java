@@ -5063,33 +5063,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public boolean isReportingAvailable(String gatewayId) throws RegistryServiceException, TException {
+    public boolean isGatewayUsageReportingAvailable(String gatewayId, String computeResourceId) throws RegistryServiceException, TException {
         try {
-            return usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId);
+            return usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId);
         } catch (Exception e) {
-            String message = "Failed to check the availability to find the reporting information for the gateway " + gatewayId;
-            logger.error(message, e);
-            RegistryServiceException rse = new RegistryServiceException();
-            rse.setMessage(message + ". More info " + e.getMessage());
-            throw rse;
-        }
-    }
-
-    @Override
-    public GatewayUsageReportingCommand getGatewayReportingCommand(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            if (usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId)) {
-                return usageReportingCommandRepository.getGatewayUsageReportingCommand(gatewayId);
-            } else {
-                String message = "No usage reporting information for the gateway " + gatewayId;
-                logger.error(message);
-                throw new RegistryServiceException(message);
-            }
-        } catch (RegistryServiceException e) {
-            throw e; // re-throw
-
-        } catch (Exception e) {
-            String message = "Failed to check the availability to find the reporting information for the gateway " + gatewayId;
+            String message = "Failed to check the availability to find the reporting information for the gateway "
+                                                        + gatewayId + " and compute resource " + computeResourceId;
             logger.error(message, e);
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + ". More info " + e.getMessage());
@@ -5097,11 +5076,34 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }    }
 
     @Override
+    public GatewayUsageReportingCommand getGatewayReportingCommand(String gatewayId, String computeResourceId) throws RegistryServiceException, TException {
+        try {
+            if (usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId)) {
+                return usageReportingCommandRepository.getGatewayUsageReportingCommand(gatewayId, computeResourceId);
+            } else {
+                String message = "No usage reporting information for the gateway " + gatewayId + " and compute resource " + computeResourceId;
+                logger.error(message);
+                throw new RegistryServiceException(message);
+            }
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+
+        } catch (Exception e) {
+            String message = "Failed to check the availability to find the reporting information for the gateway " +
+                                gatewayId + " and compute resource " + computeResourceId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }      }
+
+    @Override
     public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryServiceException, TException {
         try {
             usageReportingCommandRepository.addGatewayUsageReportingCommand(command);
         } catch (Exception e) {
-            String message = "Failed to add the reporting information for the gateway " + command.getGatewayId();
+            String message = "Failed to add the reporting information for the gateway " + command.getGatewayId()
+                                + " and compute resource " + command.getComputeResourceId();
             logger.error(message, e);
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + ". More info " + e.getMessage());
@@ -5110,11 +5112,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public void removeGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryServiceException, TException {
+    public void removeGatewayUsageReportingCommand(String gatewayId, String computeResourceId) throws RegistryServiceException, TException {
         try {
-            usageReportingCommandRepository.removeGatewayUsageReportingCommand(command.getGatewayId());
+            usageReportingCommandRepository.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
         } catch (Exception e) {
-            String message = "Failed to add the reporting information for the gateway " + command.getGatewayId();
+            String message = "Failed to add the reporting information for the gateway " + gatewayId +
+                                " and compute resource " + computeResourceId;
             logger.error(message, e);
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + ". More info " + e.getMessage());

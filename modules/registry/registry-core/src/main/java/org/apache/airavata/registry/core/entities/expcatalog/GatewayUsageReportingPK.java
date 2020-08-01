@@ -19,26 +19,16 @@
  */
  package org.apache.airavata.registry.core.entities.expcatalog;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "GATEWAY_USAGE_REPORTING_COMMAND")
-@IdClass(GatewayUsageReportingPK.class)
-public class GatewayUsageReportingCommandEntity implements Serializable {
+public class GatewayUsageReportingPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "GATEWAY_ID")
     private String gatewayId;
-
-    @Id
-    @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
-    @Lob
-    @Column(name = "COMMAND")
-    private String command;
+    public GatewayUsageReportingPK() {
+    }
 
     public String getGatewayId() {
         return gatewayId;
@@ -48,19 +38,33 @@ public class GatewayUsageReportingCommandEntity implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
     public String getComputeResourceId() {
         return computeResourceId;
     }
 
     public void setComputeResourceId(String computeResourceId) {
         this.computeResourceId = computeResourceId;
+    }
+
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof GatewayUsageReportingPK)) {
+            return false;
+        }
+        GatewayUsageReportingPK castOther = (GatewayUsageReportingPK) other;
+        return
+                this.gatewayId.equals(castOther.gatewayId)
+                        && this.computeResourceId.equals(castOther.computeResourceId);
+    }
+
+    public int hashCode() {
+        final int prime = 31;
+        int hash = 17;
+        hash = hash * prime + this.gatewayId.hashCode();
+        hash = hash * prime + this.computeResourceId.hashCode();
+
+        return hash;
     }
 }

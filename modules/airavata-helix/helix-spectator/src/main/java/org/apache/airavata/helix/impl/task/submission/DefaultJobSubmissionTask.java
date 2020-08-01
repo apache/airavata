@@ -190,10 +190,13 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 // usage reporting as the last step of job submission task
                 try {
                     mapData.setJobId(jobId);
-                    boolean reportingAvailable = getRegistryServiceClient().isReportingAvailable(getGatewayId());
+                    boolean reportingAvailable = getRegistryServiceClient()
+                                                .isGatewayUsageReportingAvailable(getGatewayId(), taskContext.getComputeResourceId());
 
                     if (reportingAvailable) {
-                        GatewayUsageReportingCommand reportingCommand = getRegistryServiceClient().getGatewayReportingCommand(getGatewayId());
+                        GatewayUsageReportingCommand reportingCommand = getRegistryServiceClient()
+                                                .getGatewayReportingCommand(getGatewayId(), taskContext.getComputeResourceId());
+
                         String parsedCommand = mapData.loadFromString(reportingCommand.getCommand());
                         logger.debug("Parsed usage reporting command {}", parsedCommand);
 
