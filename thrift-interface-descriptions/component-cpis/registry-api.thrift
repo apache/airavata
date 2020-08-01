@@ -2678,11 +2678,12 @@ service RegistryService extends base_api.BaseAPI {
     void removeParsingTemplate(1: required string templateId, 2: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse);
 
-    bool isReportingAvailable(1: required string gatewayId) throws (1: registry_api_errors.RegistryServiceException rse);
-    workspace_model.GatewayUsageReportingCommand getGatewayReportingCommand(1: required string gatewayId)
+    bool isGatewayUsageReportingAvailable(1: required string gatewayId, 2: required string computeResourceId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    workspace_model.GatewayUsageReportingCommand getGatewayReportingCommand(1: required string gatewayId, 2: required string computeResourceId)
             throws (1: registry_api_errors.RegistryServiceException rse);
     void addGatewayUsageReportingCommand(1: workspace_model.GatewayUsageReportingCommand command)
             throws (1: registry_api_errors.RegistryServiceException rse);
-    void removeGatewayUsageReportingCommand(1: workspace_model.GatewayUsageReportingCommand command)
+    void removeGatewayUsageReportingCommand(1: required string gatewayId, 2: required string computeResourceId)
             throws (1: registry_api_errors.RegistryServiceException rse);
 }

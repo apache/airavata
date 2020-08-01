@@ -21,6 +21,7 @@
 
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.registry.core.entities.expcatalog.GatewayUsageReportingCommandEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.GatewayUsageReportingPK;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.dozer.Mapper;
@@ -28,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GatewayUsageReportingCommandRepository extends
-                    ExpCatAbstractRepository<GatewayUsageReportingCommand, GatewayUsageReportingCommandEntity, String> {
+                    ExpCatAbstractRepository<GatewayUsageReportingCommand, GatewayUsageReportingCommandEntity, GatewayUsageReportingPK> {
 
     private final static Logger logger = LoggerFactory.getLogger(GatewayRepository.class);
 
@@ -42,17 +43,26 @@ public class GatewayUsageReportingCommandRepository extends
         logger.info("Added gateway usage reporting command for gateway {} to the database", command.getGatewayId());
     }
 
-    public GatewayUsageReportingCommand getGatewayUsageReportingCommand(String gatewayId) {
-        return get(gatewayId);
+    public GatewayUsageReportingCommand getGatewayUsageReportingCommand(String gatewayId, String computeResourceId) {
+        GatewayUsageReportingPK pk = new GatewayUsageReportingPK();
+        pk.setGatewayId(gatewayId);
+        pk.setComputeResourceId(computeResourceId);
+        return get(pk);
     }
 
-    public boolean isGatewayUsageReportingCommandExists(String gatewayId) throws RegistryException {
-        return isExists(gatewayId);
+    public boolean isGatewayUsageReportingCommandExists(String gatewayId, String computeResourceId) throws RegistryException {
+        GatewayUsageReportingPK pk = new GatewayUsageReportingPK();
+        pk.setGatewayId(gatewayId);
+        pk.setComputeResourceId(computeResourceId);
+        return isExists(pk);
     }
 
-    public void removeGatewayUsageReportingCommand(String gatewayId) throws RegistryException {
-        if (isExists(gatewayId)) {
-            delete(gatewayId);
+    public void removeGatewayUsageReportingCommand(String gatewayId, String computeResourceId) throws RegistryException {
+        if (isGatewayUsageReportingCommandExists(gatewayId, computeResourceId)) {
+            GatewayUsageReportingPK pk = new GatewayUsageReportingPK();
+            pk.setGatewayId(gatewayId);
+            pk.setComputeResourceId(computeResourceId);
+            delete(pk);
             logger.info("Deleted gateway usage reporting command for gateway {}", gatewayId);
         }
     }

@@ -29,18 +29,21 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GatewayUsageReportingCommand");
 
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField COMMAND_FIELD_DESC = new org.apache.thrift.protocol.TField("command", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField COMMAND_FIELD_DESC = new org.apache.thrift.protocol.TField("command", org.apache.thrift.protocol.TType.STRING, (short)3);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GatewayUsageReportingCommandStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GatewayUsageReportingCommandTupleSchemeFactory();
 
   private java.lang.String gatewayId; // required
+  private java.lang.String computeResourceId; // required
   private java.lang.String command; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     GATEWAY_ID((short)1, "gatewayId"),
-    COMMAND((short)2, "command");
+    COMPUTE_RESOURCE_ID((short)2, "computeResourceId"),
+    COMMAND((short)3, "command");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -57,7 +60,9 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
       switch(fieldId) {
         case 1: // GATEWAY_ID
           return GATEWAY_ID;
-        case 2: // COMMAND
+        case 2: // COMPUTE_RESOURCE_ID
+          return COMPUTE_RESOURCE_ID;
+        case 3: // COMMAND
           return COMMAND;
         default:
           return null;
@@ -104,6 +109,8 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.COMPUTE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("computeResourceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.COMMAND, new org.apache.thrift.meta_data.FieldMetaData("command", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
@@ -115,10 +122,12 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
 
   public GatewayUsageReportingCommand(
     java.lang.String gatewayId,
+    java.lang.String computeResourceId,
     java.lang.String command)
   {
     this();
     this.gatewayId = gatewayId;
+    this.computeResourceId = computeResourceId;
     this.command = command;
   }
 
@@ -128,6 +137,9 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
   public GatewayUsageReportingCommand(GatewayUsageReportingCommand other) {
     if (other.isSetGatewayId()) {
       this.gatewayId = other.gatewayId;
+    }
+    if (other.isSetComputeResourceId()) {
+      this.computeResourceId = other.computeResourceId;
     }
     if (other.isSetCommand()) {
       this.command = other.command;
@@ -141,6 +153,7 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
   @Override
   public void clear() {
     this.gatewayId = null;
+    this.computeResourceId = null;
     this.command = null;
   }
 
@@ -164,6 +177,29 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
   public void setGatewayIdIsSet(boolean value) {
     if (!value) {
       this.gatewayId = null;
+    }
+  }
+
+  public java.lang.String getComputeResourceId() {
+    return this.computeResourceId;
+  }
+
+  public void setComputeResourceId(java.lang.String computeResourceId) {
+    this.computeResourceId = computeResourceId;
+  }
+
+  public void unsetComputeResourceId() {
+    this.computeResourceId = null;
+  }
+
+  /** Returns true if field computeResourceId is set (has been assigned a value) and false otherwise */
+  public boolean isSetComputeResourceId() {
+    return this.computeResourceId != null;
+  }
+
+  public void setComputeResourceIdIsSet(boolean value) {
+    if (!value) {
+      this.computeResourceId = null;
     }
   }
 
@@ -200,6 +236,14 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
       }
       break;
 
+    case COMPUTE_RESOURCE_ID:
+      if (value == null) {
+        unsetComputeResourceId();
+      } else {
+        setComputeResourceId((java.lang.String)value);
+      }
+      break;
+
     case COMMAND:
       if (value == null) {
         unsetCommand();
@@ -215,6 +259,9 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
     switch (field) {
     case GATEWAY_ID:
       return getGatewayId();
+
+    case COMPUTE_RESOURCE_ID:
+      return getComputeResourceId();
 
     case COMMAND:
       return getCommand();
@@ -232,6 +279,8 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
     switch (field) {
     case GATEWAY_ID:
       return isSetGatewayId();
+    case COMPUTE_RESOURCE_ID:
+      return isSetComputeResourceId();
     case COMMAND:
       return isSetCommand();
     }
@@ -262,6 +311,15 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
         return false;
     }
 
+    boolean this_present_computeResourceId = true && this.isSetComputeResourceId();
+    boolean that_present_computeResourceId = true && that.isSetComputeResourceId();
+    if (this_present_computeResourceId || that_present_computeResourceId) {
+      if (!(this_present_computeResourceId && that_present_computeResourceId))
+        return false;
+      if (!this.computeResourceId.equals(that.computeResourceId))
+        return false;
+    }
+
     boolean this_present_command = true && this.isSetCommand();
     boolean that_present_command = true && that.isSetCommand();
     if (this_present_command || that_present_command) {
@@ -281,6 +339,10 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
     hashCode = hashCode * 8191 + ((isSetGatewayId()) ? 131071 : 524287);
     if (isSetGatewayId())
       hashCode = hashCode * 8191 + gatewayId.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetComputeResourceId()) ? 131071 : 524287);
+    if (isSetComputeResourceId())
+      hashCode = hashCode * 8191 + computeResourceId.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetCommand()) ? 131071 : 524287);
     if (isSetCommand())
@@ -303,6 +365,16 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
     }
     if (isSetGatewayId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetComputeResourceId()).compareTo(other.isSetComputeResourceId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetComputeResourceId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.computeResourceId, other.computeResourceId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -345,6 +417,14 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("computeResourceId:");
+    if (this.computeResourceId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.computeResourceId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("command:");
     if (this.command == null) {
       sb.append("null");
@@ -360,6 +440,10 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
     // check for required fields
     if (!isSetGatewayId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
+    }
+
+    if (!isSetComputeResourceId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'computeResourceId' is unset! Struct:" + toString());
     }
 
     if (!isSetCommand()) {
@@ -411,7 +495,15 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // COMMAND
+          case 2: // COMPUTE_RESOURCE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.computeResourceId = iprot.readString();
+              struct.setComputeResourceIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // COMMAND
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.command = iprot.readString();
               struct.setCommandIsSet(true);
@@ -437,6 +529,11 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
         oprot.writeString(struct.gatewayId);
         oprot.writeFieldEnd();
       }
+      if (struct.computeResourceId != null) {
+        oprot.writeFieldBegin(COMPUTE_RESOURCE_ID_FIELD_DESC);
+        oprot.writeString(struct.computeResourceId);
+        oprot.writeFieldEnd();
+      }
       if (struct.command != null) {
         oprot.writeFieldBegin(COMMAND_FIELD_DESC);
         oprot.writeString(struct.command);
@@ -460,6 +557,7 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
     public void write(org.apache.thrift.protocol.TProtocol prot, GatewayUsageReportingCommand struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.gatewayId);
+      oprot.writeString(struct.computeResourceId);
       oprot.writeString(struct.command);
     }
 
@@ -468,6 +566,8 @@ public class GatewayUsageReportingCommand implements org.apache.thrift.TBase<Gat
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.gatewayId = iprot.readString();
       struct.setGatewayIdIsSet(true);
+      struct.computeResourceId = iprot.readString();
+      struct.setComputeResourceIdIsSet(true);
       struct.command = iprot.readString();
       struct.setCommandIsSet(true);
     }
