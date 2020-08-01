@@ -70,7 +70,7 @@ class CustomThriftClient(connection_pool.ThriftClient):
     @classmethod
     def get_socket_factory(cls):
         if not cls.secure:
-            return super().get_socket_factory()
+            return connection_pool.ThriftClient.get_socket_factory()
         else:
             def factory(host, port):
                 return TSSLSocket.TSSLSocket(host, port, validate=cls.validate)

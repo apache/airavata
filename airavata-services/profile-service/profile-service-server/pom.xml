@@ -69,6 +69,11 @@
             <artifactId>airavata-sharing-registry-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.custos</groupId>
+            <artifactId>custos-java-sdk</artifactId>
+            <version>${org.apache.custos.version}</version>
+        </dependency>
     </dependencies>
     
 </project>

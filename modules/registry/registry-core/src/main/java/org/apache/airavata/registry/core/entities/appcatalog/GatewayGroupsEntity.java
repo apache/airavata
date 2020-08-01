@@ -44,7 +44,7 @@ public class GatewayGroupsEntity implements Serializable {
     @Column(name = "DEFAULT_GATEWAY_USERS_GROUP_ID")
     private String defaultGatewayUsersGroupId;
 
-    protected GatewayGroupsEntity() {
+    public GatewayGroupsEntity() {
 
     }
 

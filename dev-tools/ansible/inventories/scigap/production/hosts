@@ -62,6 +62,7 @@ microbial-genomes ansible_host=156.56.104.84
 v4i ansible_host=156.56.104.84
 physicell ansible_host=156.56.104.84
 pathogenomics ansible_host=156.56.104.84
+bcbportal ansible_host=156.56.104.84
 
 # dreg jetstream server
 dreg ansible_host=149.165.156.72 ansible_user=centos

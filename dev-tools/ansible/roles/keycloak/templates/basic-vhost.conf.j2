@@ -1,0 +1,9 @@
+<VirtualHost *:80>
+    ServerName {{ groups['keycloak'][0] }}
+    DocumentRoot "/var/www/html"
+
+    <Directory /var/www/html>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+    </Directory>
+</VirtualHost>

@@ -120,6 +120,7 @@
         <jmockit.version>1.44</jmockit.version>
         <commons.lang.version>2.6</commons.lang.version>
         <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
+        <org.apache.custos.version>1.0-SNAPSHOT</org.apache.custos.version>
     </properties>
 
     <developers>
@@ -539,6 +540,16 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
                 <version>${org.apache.commons.pool2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${org.apache.commons.pool2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.custos</groupId>
+                <artifactId>custos-java-sdk</artifactId>
+                <version>${org.apache.custos.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jmockit</groupId>
