@@ -40,6 +40,9 @@ public class StoragePreferenceEntity implements Serializable {
     @Id
     private String storageResourceId;
 
+    @Column(name = "USER_STORAGE_QUOTA")
+    private Long userStorageQuota;
+
     @Column(name = "FS_ROOT_LOCATION")
     private String fileSystemRootLocation;
 
@@ -102,5 +105,13 @@ public class StoragePreferenceEntity implements Serializable {
 
     public void setGatewayProfileResource(GatewayProfileEntity gatewayProfileResource) {
         this.gatewayProfileResource = gatewayProfileResource;
+    }
+
+    public Long getUserStorageQuota() {
+        return userStorageQuota;
+    }
+
+    public void setUserStorageQuota(Long userStorageQuota) {
+        this.userStorageQuota = userStorageQuota;
     }
 }
