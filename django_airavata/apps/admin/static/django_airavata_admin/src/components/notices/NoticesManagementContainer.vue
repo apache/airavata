@@ -176,7 +176,7 @@ export default {
       this.updatedNotice = new models.Notification(),
       this.updatedNotice = row.item;
       row.toggleDetails();
-      this.showingDetails[row.item.notifiticationId] = !this
+      this.showingDetails[row.item.notificationId] = !this
         .showingDetails[row.item.notificationId];
     }
   }
