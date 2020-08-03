@@ -78,7 +78,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
 
             userManagementClient.updateUserProfile(userRepresentation.getUsername(),
                     userRepresentation.getFirstName(),
-                    userRepresentation.getFirstName(),
+                    userRepresentation.getLastName(),
                     userRepresentation.getEmail(),
                     custosId);
             return userRepresentation.getUsername().toLowerCase();
@@ -209,7 +209,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         try {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            FindUsersResponse response = userManagementClient.findUsers(null, custosId, null, null,
+            FindUsersResponse response = userManagementClient.findUsers(null, userId, null, null,
                     null, 0, -1, custosId);
 
             return !response.getUsersList().isEmpty();

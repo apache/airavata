@@ -1,22 +1,14 @@
 package org.apache.airavata.service.profile.handlers;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.CustosUtils;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
-import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
-import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
-import org.apache.airavata.sharing.registry.models.SharingRegistryException;
-import org.apache.airavata.sharing.registry.models.User;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.custos.group.management.client.GroupManagementClient;
 import org.apache.custos.iam.service.GroupRepresentation;
 import org.apache.custos.iam.service.GroupsResponse;
@@ -35,8 +27,6 @@ import java.util.List;
 public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
-
-    private UserProfileRepository userProfileRepository = new UserProfileRepository();
 
     private GroupManagementClient groupManagementClient;
 
@@ -100,19 +90,21 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
             OperationStatus status = groupManagementClient.hasAccess(custosId, groupModel.getId(), userId,
-                    DefaultGroupMembershipTypes.MEMBER.name());
+                    DefaultGroupMembershipTypes.OWNER.name());
 
             OperationStatus exStatus = groupManagementClient.hasAccess(custosId, groupModel.getId(), userId,
                     DefaultGroupMembershipTypes.ADMIN.name());
 
             if (!(status.getStatus() || exStatus.getStatus())) {
-                throw new GroupManagerServiceException("User does not have access to add users to the group");
+                throw new GroupManagerServiceException("User does not have access to update the group");
             }
 
             GroupRepresentation groupRepresentation = GroupRepresentation
                     .newBuilder()
                     .setName(groupModel.getName())
                     .setDescription(groupModel.getDescription())
+                    .setId(groupModel.getId())
+                    .setOwnerId(groupModel.getOwnerId())
                     .build();
 
             groupManagementClient.updateGroup(custosId, groupRepresentation);
@@ -227,27 +219,18 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean addUsersToGroup(AuthzToken authzToken, List<String> userIds, String groupId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
 
-            logger.info("Calling add users to group");
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
             String userId = getUserId(authzToken);
 
-            logger.info("UserId " + userId);
-
             OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, userId, "OWNER");
 
-            logger.info("Owner access " + status.getStatus());
-
             OperationStatus exStatus = groupManagementClient.hasAccess(custosId, groupId, userId, "ADMIN");
-
-            logger.info("Admin access " + exStatus.getStatus());
 
             if (!(status.getStatus() || exStatus.getStatus())) {
                 throw new GroupManagerServiceException("User does not have access to add users to the group");
             }
 
             for (String usr : userIds) {
-
-                logger.info("Adding user " + usr);
 
                 groupManagementClient.addUserToGroup(custosId, usr, groupId, DefaultGroupMembershipTypes.MEMBER.name());
             }
@@ -433,16 +416,6 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         }
     }
 
-    // TODO: replace these methods with ThriftClientPool (see AIRAVATA-2607)
-    private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
-        final String serverHost = ServerSettings.getSharingRegistryHost();
-        try {
-            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
-        } catch (SharingRegistryException e) {
-            throw new TException("Unable to create sharing registry client...", e);
-        }
-    }
 
     private String getDomainId(AuthzToken authzToken) {
         return authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -482,17 +455,22 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         groupModel.setOwnerId(userGroup.getOwnerId());
 
         GetAllUserProfilesResponse response = groupManagementClient.getAllChildUsers(cutosId, userGroup.getId());
+        List<String> admins = new ArrayList<>();
+        List<String> member = new ArrayList<>();
 
         if (response.getProfilesList() != null && !response.getProfilesList().isEmpty()) {
             for (org.apache.custos.user.profile.service.UserProfile profile : response.getProfilesList()) {
                 if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.ADMIN)) {
-                    groupModel.addToAdmins(profile.getUsername());
+                    admins.add(profile.getUsername());
                 } else if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.MEMBER)) {
-                    groupModel.addToMembers(profile.getUsername());
+                    member.add(profile.getUsername());
                 }
             }
         }
 
+        member.add(userGroup.getOwnerId());
+        groupModel.setAdmins(admins);
+        groupModel.setMembers(member);
 
         return groupModel;
     }
@@ -507,39 +485,23 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
 
         GetAllUserProfilesResponse response = groupManagementClient.getAllChildUsers(custosId, userGroup.getId());
+        List<String> admins = new ArrayList<>();
+        List<String> member = new ArrayList<>();
 
         if (response.getProfilesList() != null && !response.getProfilesList().isEmpty()) {
             for (org.apache.custos.user.profile.service.UserProfile profile : response.getProfilesList()) {
                 if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.ADMIN)) {
-                    groupModel.addToAdmins(profile.getUsername());
+                    admins.add(profile.getUsername());
                 } else if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.MEMBER)) {
-                    groupModel.addToMembers(profile.getUsername());
+                    member.add(profile.getUsername());
                 }
             }
         }
-
+        member.add(userGroup.getOwnerId());
+        groupModel.setAdmins(admins);
+        groupModel.setMembers(member);
         return groupModel;
     }
 
 
-    private boolean internalAddUsersToGroup(SharingRegistryService.Client sharingClient, String domainId, List<String> userIds, String groupId) throws SharingRegistryException, TException {
-
-        // FIXME: workaround for UserProfiles that failed to sync to the sharing
-        // registry: create any missing users in the sharing registry
-        for (String userId : userIds) {
-            if (!sharingClient.isUserExists(domainId, userId)) {
-                User user = new User();
-                user.setDomainId(domainId);
-                user.setUserId(userId);
-                UserProfile userProfile = userProfileRepository.get(userId);
-                user.setUserName(userProfile.getUserId());
-                user.setCreatedTime(userProfile.getCreationTime());
-                user.setEmail(userProfile.getEmailsSize() > 0 ? userProfile.getEmails().get(0) : null);
-                user.setFirstName(userProfile.getFirstName());
-                user.setLastName(userProfile.getLastName());
-                sharingClient.createUser(user);
-            }
-        }
-        return sharingClient.addUsersToGroup(domainId, userIds, groupId);
-    }
 }
