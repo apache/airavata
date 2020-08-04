@@ -149,6 +149,10 @@ libraries.
 Use a code editor that integrates with editorconfig and flake8. I also recommend
 autopep8 for automatically formatting code to follow the PEP8 guidelines.
 
+See the docs for more information on
+[developing the backend](./docs/dev/developing_backend.md) and
+[frontend code](./docs/dev/developing_frontend.md).
+
 ## License
 
 The Apache Airavata Django Portal is licensed under the Apache 2.0 license. For

@@ -41,7 +41,7 @@ KEYCLOAK_TOKEN_URL = 'https://airavata.host:8443/auth/realms/default/protocol/op
 KEYCLOAK_USERINFO_URL = 'https://airavata.host:8443/auth/realms/default/protocol/openid-connect/userinfo'
 KEYCLOAK_LOGOUT_URL = 'https://airavata.host:8443/auth/realms/default/protocol/openid-connect/logout'
 # Optional: specify if using self-signed certificate or certificate from unrecognized CA
-#KEYCLOAK_CA_CERTFILE = os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")
+# KEYCLOAK_CA_CERTFILE = os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")
 KEYCLOAK_VERIFY_SSL = False
 
 AUTHENTICATION_OPTIONS = {

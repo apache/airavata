@@ -744,7 +744,8 @@ class SharedEntitySerializer(serializers.Serializer):
         read_permissions = set((ResourcePermissionType.READ,))
         write_permissions = set((ResourcePermissionType.READ,
                                  ResourcePermissionType.WRITE))
-        manage_share_permissions = set((ResourcePermissionType.READ, ResourcePermissionType.WRITE, ResourcePermissionType.MANAGE_SHARING))
+        manage_share_permissions = set(
+            (ResourcePermissionType.READ, ResourcePermissionType.WRITE, ResourcePermissionType.MANAGE_SHARING))
         current_permissions_set = set()
         new_permissions_set = set()
         if current_permission == ResourcePermissionType.READ:

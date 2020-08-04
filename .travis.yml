@@ -8,8 +8,7 @@ script:
   - python manage.py migrate
   - python manage.py check
   - python manage.py test
-  # For now ignore long line endings
-  - flake8 --ignore=E501 .
+  - flake8 .
   - ./lint_js.sh
   - ./build_js.sh
   - ./test_js.sh
