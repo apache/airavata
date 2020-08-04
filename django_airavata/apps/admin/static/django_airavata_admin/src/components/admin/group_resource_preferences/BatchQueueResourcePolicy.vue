@@ -16,7 +16,7 @@
           :max="batchQueue.maxNodes"
           :formatter="numberFormatter"
           :placeholder="'Max Nodes: ' + batchQueue.maxNodes"
-        :state="validationFeedback.maxAllowedNodes.state"
+          :state="validationFeedback.maxAllowedNodes.state"
         >
         </b-form-input>
       </b-form-group>
@@ -37,7 +37,7 @@
           :max="batchQueue.maxProcessors"
           :formatter="numberFormatter"
           :placeholder="'Max Cores: ' + batchQueue.maxProcessors"
-        :state="validationFeedback.maxAllowedCores.state"
+          :state="validationFeedback.maxAllowedCores.state"
         >
         </b-form-input>
       </b-form-group>
@@ -46,7 +46,9 @@
       <b-form-group
         label="Maximum Allowed Wall Time"
         label-for="max-allowed-walltime"
-        :invalid-feedback="validationFeedback.maxAllowedWalltime.invalidFeedback"
+        :invalid-feedback="
+          validationFeedback.maxAllowedWalltime.invalidFeedback
+        "
         :state="validationFeedback.maxAllowedWalltime.state"
       >
         <b-form-input
@@ -58,7 +60,7 @@
           :max="batchQueue.maxRunTime"
           :formatter="numberFormatter"
           :placeholder="'Max Wall Time: ' + batchQueue.maxRunTime"
-        :state="validationFeedback.maxAllowedWalltime.state"
+          :state="validationFeedback.maxAllowedWalltime.state"
         >
         </b-form-input>
       </b-form-group>
@@ -113,9 +115,9 @@ export default {
     },
     validate() {
       if (this.valid) {
-        this.$emit('valid');
+        this.$emit("valid");
       } else {
-        this.$emit('invalid');
+        this.$emit("invalid");
       }
     }
   },
