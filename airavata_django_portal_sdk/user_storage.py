@@ -44,8 +44,8 @@ def move_from_filepath(request, source_path, target_path, name=None, content_typ
     return data_product
 
 
-def save_input_file_upload(request, file, name=None, content_type=None):
-    """Save input file in staging area for input file uploads."""
+def save_input_file(request, file, name=None, content_type=None):
+    """Save input file in staging area for input files."""
     username = request.user.username
     file_name = name if name is not None else os.path.basename(file.name)
     full_path = _Datastore().save(username, TMP_INPUT_FILE_UPLOAD_DIR, file)
@@ -55,7 +55,7 @@ def save_input_file_upload(request, file, name=None, content_type=None):
     return data_product
 
 
-def copy_input_file_upload(request, data_product):
+def copy_input_file(request, data_product):
     path = _get_replica_filepath(data_product)
     name = data_product.productName
     full_path = _Datastore().copy(
@@ -68,7 +68,7 @@ def copy_input_file_upload(request, data_product):
     return _save_copy_of_data_product(request, full_path, data_product)
 
 
-def is_input_file_upload(request, data_product):
+def is_input_file(request, data_product):
     # Check if file is one of user's files and in TMP_INPUT_FILE_UPLOAD_DIR
     path = _get_replica_filepath(data_product)
     if _Datastore().exists(request.user.username, path):
@@ -78,7 +78,7 @@ def is_input_file_upload(request, data_product):
         return False
 
 
-def move_input_file_upload(request, data_product, path):
+def move_input_file(request, data_product, path):
     source_path = _get_replica_filepath(data_product)
     file_name = data_product.productName
     full_path = _Datastore().move(
@@ -89,7 +89,7 @@ def move_input_file_upload(request, data_product, path):
     return data_product
 
 
-def move_input_file_upload_from_filepath(
+def move_input_file_from_filepath(
     request, source_path, name=None, content_type=None
 ):
     "Move a file from filesystem into user's input file staging area."
