@@ -37,6 +37,14 @@ To build without running tests, use `mvn clean install -Dmaven.test.skip=true`.
 The compressed binary distribution is created at
 PROJECT_DIR/modules/distribution/target.
 
+## Getting Started
+
+The easiest way to get started with running Airavata locally and setting up a
+development environment is to follow the instructions in the
+[ide-integration README](./modules/ide-integration/README.md). Those
+instructions will guide you on setting up a development environment with
+IntelliJ IDEA.
+
 ## Contact
 
 For additional information about Apache Airavata, please contact the user or dev
