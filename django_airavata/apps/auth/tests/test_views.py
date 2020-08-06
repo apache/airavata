@@ -29,6 +29,18 @@ class LoginViewTestCase(TestCase):
         self.assertContains(response, f'<a href="{create_account_url}">')
 
 
+class HandleLoginViewTestCase(TestCase):
+
+    def test_with_get_request(self):
+        """Verify GET request redirects to login page."""
+        response = self.client.get(
+            reverse('django_airavata_auth:handle_login'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response['Location'],
+            reverse('django_airavata_auth:login'))
+
+
 class CreateAccountViewTestCase(TestCase):
 
     def setUp(self):
