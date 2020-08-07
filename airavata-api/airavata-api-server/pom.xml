@@ -143,6 +143,14 @@
             <artifactId>profile-service-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!--  Custos Services  -->
+        <dependency>
+            <groupId>org.apache.custos</groupId>
+            <artifactId>custos-java-sdk</artifactId>
+            <version>${org.apache.custos.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>

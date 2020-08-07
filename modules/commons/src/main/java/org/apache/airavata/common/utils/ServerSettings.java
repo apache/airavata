@@ -34,6 +34,7 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
+    private static final String DEFAULT_GATEWAY_CUSTOS_CLIENT_ID = "default.gateway.custos.id";
     private static final String ENABLE_SHARING = "enable.sharing";
 
     public static final String IP = "ip";
@@ -369,6 +370,10 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getCustosClientSec() throws ApplicationSettingsException {
         return getSetting(ServerSettings.CUSTOS_CLIENT_SEC);
+    }
+
+    public static String getDefaultGatewayCustosClientId() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.DEFAULT_GATEWAY_CUSTOS_CLIENT_ID);
     }
 
 

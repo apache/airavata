@@ -70,6 +70,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             domain.setUpdatedTime(System.currentTimeMillis());
             (new DomainRepository()).create(domain);
 
+
+
             //create the global permission for the domain
             PermissionType permissionType = new PermissionType();
             permissionType.setPermissionTypeId(domain.getDomainId() + ":" + OWNER_PERMISSION_NAME);

@@ -23,6 +23,8 @@ import org.apache.airavata.common.utils.CustosToAiravataDataModelMapper;
 import org.apache.airavata.common.utils.CustosUtils;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
+import org.apache.airavata.model.dbevent.CrudType;
+import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
@@ -30,7 +32,6 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
-import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.custos.iam.service.FindUsersResponse;
 import org.apache.custos.iam.service.OperationStatus;
@@ -47,7 +48,6 @@ import java.util.List;
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
-    private UserProfileRepository userProfileRepository = new UserProfileRepository();
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
 
     private UserManagementClient userManagementClient;
@@ -134,10 +134,15 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @SecurityCheck
     public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException {
         String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             UserRepresentation representation = userManagementClient.enableUser(username, custosId);
             if (representation != null && representation.getUsername() != null && !
                     representation.getUsername().trim().equals("")) {
+
+                UserProfile profile = CustosToAiravataDataModelMapper.transform(representation, gatewayId);
+                profile.setAiravataInternalUserId(profile.getUserId()+"@"+gatewayId);
+                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, profile);
                 return true;
             }
 

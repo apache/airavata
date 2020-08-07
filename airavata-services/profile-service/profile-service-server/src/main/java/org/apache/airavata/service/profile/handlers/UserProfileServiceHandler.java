@@ -23,10 +23,11 @@ import org.apache.airavata.common.utils.CustosToAiravataDataModelMapper;
 import org.apache.airavata.common.utils.CustosUtils;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
+import org.apache.airavata.model.dbevent.CrudType;
+import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
@@ -47,14 +48,12 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(UserProfileServiceHandler.class);
 
-    private UserProfileRepository userProfileRepository;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
     private UserManagementClient userManagementClient;
 
     public UserProfileServiceHandler() {
         try {
-            userProfileRepository = new UserProfileRepository();
             userManagementClient = CustosUtils.getCustosClientProvider().getUserManagementClient();
         } catch (Exception ex) {
             logger.error("Error occurred while initializing Custos client");
@@ -72,6 +71,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     public String initializeUserProfile(AuthzToken authzToken) throws UserProfileServiceException, AuthorizationException, TException {
         String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             org.apache.custos.iam.service.UserRepresentation userRepresentation =
                     userManagementClient.getUser(username, custosId);
@@ -81,6 +81,11 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                     userRepresentation.getLastName(),
                     userRepresentation.getEmail(),
                     custosId);
+
+            UserProfile profile =  CustosToAiravataDataModelMapper.transform(userRepresentation,gatewayId);
+            profile.setAiravataInternalUserId(profile.getUserId()+"@"+gatewayId);
+            dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, profile);
+
             return userRepresentation.getUsername().toLowerCase();
         } catch (Exception e) {
             logger.error("Error while initializing user profile", e);
@@ -95,6 +100,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     public String addUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             // Lowercase user id and internal id
             org.apache.custos.user.profile.service.UserProfile profile = userManagementClient.
                     updateUserProfile(userProfile.getUserId().toLowerCase(),
@@ -102,6 +108,10 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                             userProfile.getLastName(),
                             userProfile.getEmails().get(0),
                             custosId);
+
+            String internalUserId = profile.getUsername() + "@" + gatewayId;
+            userProfile.setAiravataInternalUserId(internalUserId);
+            dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
 
             return profile.getUsername();
         } catch (Exception e) {
@@ -120,6 +130,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             // following will update the user profile in the IAM service also. If the update in the IAM service
             // fails then the transaction will be rolled back.
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             // Lowercase user id and internal id
             userManagementClient.
                     updateUserProfile(userProfile.getUserId().toLowerCase(),
@@ -127,6 +138,10 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                             userProfile.getLastName(),
                             userProfile.getEmails().get(0),
                             custosId);
+
+            String internalUserId = userProfile.getUserId() + "@" + gatewayId;
+            userProfile.setAiravataInternalUserId(internalUserId);
+            dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile);
 
             return true;
 
@@ -163,8 +178,16 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         try {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
+            UserRepresentation userRepresentation = userManagementClient.getUser(userId,custosId);
+
             OperationStatus status = userManagementClient
                     .deleteUser(userId, custosId, authzToken.getAccessToken());
+
+            if (status.getStatus()) {
+                UserProfile userProfile =  CustosToAiravataDataModelMapper.transform(userRepresentation, gatewayId);
+                userProfile.setAiravataInternalUserId(userProfile.getUserId()+"@"+gatewayId);
+                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.DELETE, userProfile);
+            }
 
             return status.getStatus();
         } catch (Exception e) {

@@ -1,8 +1,13 @@
 package org.apache.airavata.common.utils;
 
+import org.apache.airavata.model.credential.store.CredentialSummary;
+import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.custos.iam.service.UserRepresentation;
+import org.apache.custos.resource.secret.service.ResourceSecretType;
+import org.apache.custos.resource.secret.service.SecretMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +64,42 @@ public class CustosToAiravataDataModelMapper {
             userProfile.setState(Status.PENDING_CONFIRMATION);
         }
         return userProfile;
+
+    }
+
+    public static CredentialSummary transform(SecretMetadata secretMetadata, String gatewayId) throws ParseException {
+        CredentialSummary credentialSummary = new CredentialSummary();
+        credentialSummary.setDescription(secretMetadata.getDescription());
+        credentialSummary.setGatewayId(gatewayId);
+        credentialSummary.setToken(secretMetadata.getToken());
+        credentialSummary.setPersistedTime(secretMetadata.getPersistedTime());
+        credentialSummary.setUsername(secretMetadata.getOwnerId());
+
+        if (secretMetadata.getType().equals(ResourceSecretType.PASSWORD)) {
+            credentialSummary.setType(SummaryType.PASSWD);
+
+        } else if (secretMetadata.getType().equals(ResourceSecretType.SSH)) {
+            credentialSummary.setType(SummaryType.SSH);
+        } else {
+            credentialSummary.setType(SummaryType.CERT);
+        }
+        return credentialSummary;
+    }
+
+    public static SSHCredential transform(org.apache.custos.resource.secret.service.SSHCredential sshCredential,
+                                          String gatewayId) {
+
+        SSHCredential sshCredential1 = new SSHCredential();
+        sshCredential1.setGatewayId(gatewayId);
+        sshCredential1.setPrivateKey(sshCredential.getPrivateKey());
+        sshCredential1.setPublicKey(sshCredential.getPublicKey());
+        sshCredential1.setPassphrase(sshCredential.getPassphrase());
+        sshCredential1.setPersistedTime(sshCredential.getMetadata().getPersistedTime());
+        sshCredential1.setUsername(sshCredential.getMetadata().getOwnerId());
+        sshCredential1.setDescription(sshCredential.getMetadata().getDescription());
+        sshCredential1.setToken(sshCredential.getMetadata().getToken());
+
+        return sshCredential1;
 
     }
 }

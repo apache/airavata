@@ -1,5 +1,4 @@
 /**
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,7 +20,7 @@ package org.apache.airavata.sharing.registry.messaging;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.CustosUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
@@ -29,21 +28,19 @@ import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.model.group.ResourceType;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
-import org.apache.airavata.sharing.registry.models.Domain;
-import org.apache.airavata.sharing.registry.models.Entity;
-import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
-import org.apache.airavata.sharing.registry.models.User;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
-import org.apache.airavata.sharing.registry.utils.ThriftDataModelConversion;
+import org.apache.custos.sharing.management.client.SharingManagementClient;
+import org.apache.custos.sharing.service.Entity;
+import org.apache.custos.sharing.service.EntityType;
+import org.apache.custos.sharing.service.PermissionType;
+import org.apache.custos.sharing.service.Status;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Created by Ajinkya on 3/28/17.
@@ -52,11 +49,11 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
     private final static Logger log = LoggerFactory.getLogger(SharingServiceDBEventHandler.class);
 
-    private final SharingRegistryService.Client sharingRegistryClient;
+    private final SharingManagementClient sharingManagementClient;
 
-    SharingServiceDBEventHandler() throws ApplicationSettingsException, SharingRegistryException {
-        log.info("Starting sharing registry client.....");
-        sharingRegistryClient = SharingRegistryServiceClientFactory.createSharingRegistryClient(ServerSettings.getSetting(SharingRegistryServer.SHARING_REG_SERVER_HOST), Integer.parseInt(ServerSettings.getSetting(SharingRegistryServer.SHARING_REG_SERVER_PORT)));
+    SharingServiceDBEventHandler() throws ApplicationSettingsException, SharingRegistryException, IOException {
+        log.info("Connecting to Custos Sharing Service.........");
+        sharingManagementClient = CustosUtils.getCustosClientProvider().getSharingManagementClient();
     }
 
     @Override
@@ -64,7 +61,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
         log.info("New DB Event message to sharing service.");
 
-        try{
+        try {
 
             byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
 
@@ -74,64 +71,23 @@ public class SharingServiceDBEventHandler implements MessageHandler {
             log.info("DB Event message to sharing service from " + dbEventMessage.getPublisherService());
 
             DBEventMessageContext dBEventMessageContext = dbEventMessage.getMessageContext();
-            try{
-                switch (dBEventMessageContext.getPublisher().getPublisherContext().getEntityType()){
+            try {
+                switch (dBEventMessageContext.getPublisher().getPublisherContext().getEntityType()) {
 
-                    case USER_PROFILE :
-
-                        log.info("User profile specific DB Event communicated by " + dbEventMessage.getPublisherService());
-
-                        UserProfile  userProfile = new UserProfile();
-                        ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), userProfile);
-                        User user = ThriftDataModelConversion.getUser(userProfile);
-
-                        switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
-
-                            case CREATE:
-                            case UPDATE:
-
-                                if (!sharingRegistryClient.isUserExists(user.getDomainId(), user.getUserId())) {
-                                    log.info("Creating user. User Id : " + user.getUserId());
-                                    sharingRegistryClient.createUser(user);
-                                    log.debug("User created. User Id : " + user.getUserId());
-                                } else {
-                                    log.info("Updating user. User Id : " + user.getUserId());
-                                    sharingRegistryClient.updatedUser(user);
-                                    log.debug("User updated. User Id : " + user.getUserId());
-                                }
-
-                                break;
-
-                            case READ:
-                                //FIXME: Remove if not required
-                                break;
-
-                            case DELETE:
-                                log.info("Deleting user. User Id : " + user.getUserId());
-
-                                sharingRegistryClient.deleteUser(user.getDomainId(), user.getUserId());
-                                log.debug("User deleted. User Id : " + user.getUserId());
-
-                                break;
-                        }
-                        break;
-
-                    case TENANT :
+                    case TENANT:
 
                         log.info("Tenant specific DB Event communicated by " + dbEventMessage.getPublisherService());
 
                         Gateway gateway = new Gateway();
                         ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), gateway);
 
-                        switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
+                        String custosId = gateway.getOauthClientId();
+
+                        switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()) {
 
                             case CREATE:
                             case UPDATE:
 
-                                // Only create the domain is it doesn't already exist
-                                if (sharingRegistryClient.isDomainExists(gateway.getGatewayId())){
-                                    break;
-                                }
                                 /*
                                 Following set of DB operations should happen in a transaction
                                 As these are thrift calls we cannot enforce this restriction
@@ -140,108 +96,124 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                  log as a warning to handle such scenarios and move ahead.
                                  */
 
-                                log.info("Creating domain. Id : " + gateway.getGatewayId());
-
-                                Domain domain = new Domain();
-                                domain.setDomainId(gateway.getGatewayId());
-                                domain.setName(gateway.getGatewayName());
-                                domain.setDescription("Domain entry for " + domain.getName());
-                                try{
-                                    sharingRegistryClient.createDomain(domain);
-                                    log.debug("Domain created. Id : " + gateway.getGatewayId());
-                                } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Domain Id : " + gateway.getGatewayId(), ex);
-                                }
 
                                 //Creating Entity Types for each domain
-                                log.info("Creating entity type. Id : " + domain.getDomainId()+":PROJECT");
-                                org.apache.airavata.sharing.registry.models.EntityType entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.getDomainId()+":PROJECT");
-                                entityType.setDomainId(domain.getDomainId());
-                                entityType.setName("PROJECT");
-                                entityType.setDescription("Project entity type");
-                                try {
-                                    sharingRegistryClient.createEntityType(entityType);
-                                    log.debug("Entity type created. Id : " + domain.getDomainId()+":PROJECT");
-                                } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.getDomainId()+":PROJECT", ex);
+                                log.info("Creating entity type. Id PROJECT");
+                                if (!isEntityTypeExists(custosId, "PROJECT")) {
+                                    EntityType projectEntityType = EntityType.newBuilder()
+                                            .setName("PROJECT")
+                                            .setDescription("Project entity type")
+                                            .setId("PROJECT")
+                                            .build();
+                                    sharingManagementClient.createEntityType(custosId, projectEntityType);
                                 }
 
-                                log.info("Creating entity type. Id : " + domain.getDomainId()+":EXPERIMENT");
-                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.getDomainId()+":EXPERIMENT");
-                                entityType.setDomainId(domain.getDomainId());
-                                entityType.setName("EXPERIMENT");
-                                entityType.setDescription("Experiment entity type");
-                                try{
-                                    sharingRegistryClient.createEntityType(entityType);
-                                    log.debug("Entity type created. Id : " + domain.getDomainId()+":EXPERIMENT");
-                                } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.getDomainId()+":EXPERIMENT", ex);
+
+                                log.info("Creating entity type. Id EXPERIMENT");
+                                if (!isEntityTypeExists(custosId, "EXPERIMENT")) {
+                                    EntityType experimentEntityType = EntityType.newBuilder()
+                                            .setName("EXPERIMENT")
+                                            .setDescription("Experiment entity type")
+                                            .setId("EXPERIMENT")
+                                            .build();
+
+                                    sharingManagementClient.createEntityType(custosId, experimentEntityType);
                                 }
 
-                                log.info("Creating entity type. Id : " + domain.getDomainId()+":FILE");
-                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.getDomainId()+":FILE");
-                                entityType.setDomainId(domain.getDomainId());
-                                entityType.setName("FILE");
-                                entityType.setDescription("File entity type");
-                                try {
-                                    sharingRegistryClient.createEntityType(entityType);
-                                    log.debug("Entity type created. Id : " + domain.getDomainId() + ":FILE");
-                                } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.getDomainId()+":FILE", ex);
+                                log.info("Creating entity type. Id FILE");
+                                if (!isEntityTypeExists(custosId, "FILE")) {
+                                    EntityType fileEntityType = EntityType.newBuilder()
+                                            .setName("FILE")
+                                            .setDescription("File entity type")
+                                            .setId("FILE")
+                                            .build();
+
+                                    sharingManagementClient.createEntityType(custosId, fileEntityType);
+
                                 }
 
-                                log.info("Creating entity type. Id : " + domain.getDomainId()+":"+ResourceType.APPLICATION_DEPLOYMENT);
-                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.getDomainId()+":"+ ResourceType.APPLICATION_DEPLOYMENT.name());
-                                entityType.setDomainId(domain.getDomainId());
-                                entityType.setName("APPLICATION-DEPLOYMENT");
-                                entityType.setDescription("Application Deployment entity type");
-                                sharingRegistryClient.createEntityType(entityType);
 
-                                log.info("Creating entity type. Id : " + domain.getDomainId()+":"+ResourceType.GROUP_RESOURCE_PROFILE);
-                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
-                                entityType.setDomainId(domain.getDomainId());
-                                entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
-                                entityType.setDescription("Group Resource Profile entity type");
-                                sharingRegistryClient.createEntityType(entityType);
+                                log.info("Creating entity type. Id " + ResourceType.APPLICATION_DEPLOYMENT.name());
+                                if (!isEntityTypeExists(custosId, ResourceType.APPLICATION_DEPLOYMENT.name())) {
+                                    EntityType applicationEntityType = EntityType.newBuilder()
+                                            .setName(ResourceType.APPLICATION_DEPLOYMENT.name())
+                                            .setDescription("Application Deployment entity type")
+                                            .setId(ResourceType.APPLICATION_DEPLOYMENT.name())
+                                            .build();
 
-                                log.info("Creating entity type. Id : " + domain.getDomainId()+":"+ResourceType.CREDENTIAL_TOKEN);
-                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                                entityType.setEntityTypeId(domain.getDomainId()+":"+ResourceType.CREDENTIAL_TOKEN.name());
-                                entityType.setDomainId(domain.getDomainId());
-                                entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
-                                entityType.setDescription("Credential Store Token entity type");
-                                sharingRegistryClient.createEntityType(entityType);
+                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                }
+
+                                log.info("Creating entity type. Id " + ResourceType.GROUP_RESOURCE_PROFILE.name());
+
+                                if (!isEntityTypeExists(custosId, ResourceType.GROUP_RESOURCE_PROFILE.name())) {
+                                    EntityType applicationEntityType = EntityType.newBuilder()
+                                            .setName(ResourceType.GROUP_RESOURCE_PROFILE.name())
+                                            .setDescription("Group Resource Profile entity type")
+                                            .setId(ResourceType.GROUP_RESOURCE_PROFILE.name())
+                                            .build();
+
+                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                }
+
+                                log.info("Creating entity type. Id " + ResourceType.CREDENTIAL_TOKEN.name());
+                                if (!isEntityTypeExists(custosId, ResourceType.CREDENTIAL_TOKEN.name())) {
+                                    EntityType applicationEntityType = EntityType.newBuilder()
+                                            .setName(ResourceType.CREDENTIAL_TOKEN.name())
+                                            .setDescription("Credential Store Token entity type")
+                                            .setId(ResourceType.CREDENTIAL_TOKEN.name())
+                                            .build();
+
+                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                }
 
                                 //Creating Permission Types for each domain
-                                log.info("Creating Permission Type. Id : " + domain.getDomainId()+":READ");
-                                PermissionType permissionType = new PermissionType();
-                                permissionType.setPermissionTypeId(domain.getDomainId()+":READ");
-                                permissionType.setDomainId(domain.getDomainId());
-                                permissionType.setName("READ");
-                                permissionType.setDescription("Read permission type");
-                                try {
-                                    sharingRegistryClient.createPermissionType(permissionType);
-                                    log.debug("Permission Type created. Id : " + domain.getDomainId() + ":READ");
-                                } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.getDomainId()+":READ", ex);
+                                log.info("Creating Permission Type. Id  READ");
+                                if (!isPermissionTypeExists(custosId, "READ")) {
+                                    EntityType applicationEntityType = EntityType.newBuilder()
+                                            .setName("READ")
+                                            .setDescription("Read permission type")
+                                            .setId("READ")
+                                            .build();
+
+                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
                                 }
 
-                                log.info("Creating Permission Type. Id : " + domain.getDomainId()+":WRITE");
-                                permissionType = new PermissionType();
-                                permissionType.setPermissionTypeId(domain.getDomainId()+":WRITE");
-                                permissionType.setDomainId(domain.getDomainId());
-                                permissionType.setName("WRITE");
-                                permissionType.setDescription("Write permission type");
-                                try {
-                                    sharingRegistryClient.createPermissionType(permissionType);
-                                    log.debug("Permission Type created. Id : " + domain.getDomainId() + ":WRITE");
-                                } catch (DuplicateEntryException ex) {
-                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.getDomainId() + ":WRITE", ex);
+
+                                log.info("Creating Permission Type. Id : WRITE");
+
+                                if (!isPermissionTypeExists(custosId, "WRITE")) {
+                                    EntityType applicationEntityType = EntityType.newBuilder()
+                                            .setName("WRITE")
+                                            .setDescription("Write permission type")
+                                            .setId("WRITE")
+                                            .build();
+
+                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                }
+
+                                log.info("Creating Permission Type. Id : OWNER");
+
+                                if (!isPermissionTypeExists(custosId, "OWNER")) {
+                                    EntityType applicationEntityType = EntityType.newBuilder()
+                                            .setName("OWNER")
+                                            .setDescription("Owner permission type")
+                                            .setId("OWNER")
+                                            .build();
+
+                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                }
+
+                                log.info("Creating Permission Type. Id : MANAGE_SHARING");
+
+                                if (!isPermissionTypeExists(custosId, "MANAGE_SHARING")) {
+                                    EntityType applicationEntityType = EntityType.newBuilder()
+                                            .setName("MANAGE_SHARING")
+                                            .setDescription("Manage sharing permission type")
+                                            .setId("MANAGE_SHARING")
+                                            .build();
+
+                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
                                 }
 
                                 break;
@@ -249,35 +221,40 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
 
                         break;
-                    
-                    case PROJECT :
+
+                    case PROJECT:
                         log.info("Project specific DB Event communicated by " + dbEventMessage.getPublisherService());
 
                         Project project = new Project();
                         ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), project);
-                        final String domainId = project.getGatewayId();
+                        final String custos = project.getGatewayId();
                         final String entityId = project.getProjectID();
 
-                        switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
+                        log.info("Custos "+ custos);
+                        log.info("Entity id "+ entityId);
+
+                        Entity entity = Entity.newBuilder()
+                                .setId(entityId)
+                                .setDescription(project.getDescription())
+                                .setName(project.getName())
+                                .setOwnerId(project.getOwner())
+                                .setType(ResourceType.PROJECT.name())
+                                .build();
+
+                        switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()) {
 
                             case CREATE:
                             case UPDATE:
-
-                                Entity entity = new Entity();
-                                entity.setEntityId(entityId);
-                                entity.setDomainId(domainId);
-                                entity.setEntityTypeId(domainId + ":" + ResourceType.PROJECT.name());
-                                entity.setOwnerId(project.getOwner() + "@" + domainId);
-                                entity.setName(project.getName());
-                                entity.setDescription(project.getDescription());
-
-                                if (!sharingRegistryClient.isEntityExists(domainId, entityId)) {
+                                log.info("Checking existence ########");
+                                Status status = sharingManagementClient.isEntityExists(custos, entity);
+                                log.info("Status ############" + status.getStatus());
+                                if (!status.getStatus()) {
                                     log.info("Creating project entity. Entity Id : " + entityId);
-                                    sharingRegistryClient.createEntity(entity);
+                                    sharingManagementClient.createEntity(custos, entity);
                                     log.info("Project entity created. Entity Id : " + entityId);
                                 } else {
                                     log.info("Updating project entity. Entity Id : " + entityId);
-                                    sharingRegistryClient.updateEntity(entity);
+                                    sharingManagementClient.updateEntity(custos, entity);
                                     log.info("Project entity updated. Entity Id : " + entityId);
                                 }
 
@@ -289,14 +266,15 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
                             case DELETE:
                                 log.info("Deleting project entity. Entity Id : " + entityId);
-                                sharingRegistryClient.deleteEntity(domainId, entityId);
+                                sharingManagementClient.deleteEntity(custos, entity);
                                 log.info("Project entity deleted. Entity Id : " + entityId);
 
                                 break;
                         }
                         break;
 
-                    default: log.error("Handler not defined for " + dBEventMessageContext.getPublisher().getPublisherContext().getEntityType());
+                    default:
+                        log.error("Handler not defined for " + dBEventMessageContext.getPublisher().getPublisherContext().getEntityType());
                 }
             } catch (DuplicateEntryException ex) {
                 // log this exception and proceed (do nothing)
@@ -313,6 +291,29 @@ public class SharingServiceDBEventHandler implements MessageHandler {
             log.error("Error fetching application settings.", e);
         } catch (AiravataException e) {
             log.error("Error sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag(), e);
+        } catch (IOException e) {
+            log.error("Error sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag(), e);
+        }
+    }
+
+
+    private boolean isEntityTypeExists(String custosId, String entityType) {
+        EntityType type = EntityType.newBuilder().setId(entityType).build();
+        EntityType request = sharingManagementClient.getEntityType(custosId, type);
+        if (request != null && request.getId() != null && request.getId().trim().equals(entityType)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isPermissionTypeExists(String custosId, String entityType) {
+        PermissionType type = PermissionType.newBuilder().setId(entityType).build();
+        PermissionType request = sharingManagementClient.getPermissionType(custosId, type);
+        if (request != null && request.getId() != null && request.getId().trim().equals(entityType)) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
