@@ -8,6 +8,7 @@
       @file-selected="fileSelected"
       :include-delete-action="false"
       :include-select-file-action="true"
+      :include-create-file-action="false"
       :download-in-new-window="true"
       :selected-data-product-uris="selectedDataProductUris"
     >

@@ -1,7 +1,7 @@
 <template>
   <div>
     <user-storage-create-view
-      v-if="userStoragePath && isDir"
+      v-if="includeCreateFileAction && userStoragePath && isDir"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
       @upload-success="$emit('upload-success')"
@@ -88,6 +88,10 @@ export default {
     includeSelectFileAction: {
       type: Boolean,
       default: false
+    },
+    includeCreateFileAction: {
+      type: Boolean,
+      default: true
     },
     downloadInNewWindow: {
       type: Boolean,
