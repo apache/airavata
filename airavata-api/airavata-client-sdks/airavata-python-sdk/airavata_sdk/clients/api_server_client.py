@@ -17,8 +17,8 @@
 import logging
 import configparser
 
-from transport.settings import APIServerClientSettings
-from transport import utils
+from airavata_sdk.transport.settings import APIServerClientSettings
+from airavata_sdk.transport import utils
 
 from airavata.api.error.ttypes import InvalidRequestException, AiravataClientException, AiravataSystemException, \
     AuthorizationException

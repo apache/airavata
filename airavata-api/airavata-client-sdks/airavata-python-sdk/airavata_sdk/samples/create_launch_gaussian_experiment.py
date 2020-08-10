@@ -17,17 +17,17 @@
 import logging
 import time
 import json
-import samples.file_utils as fb
+import airavata_sdk.samples.file_utils as fb
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
-from clients.api_server_client import APIServerClient
+from airavata_sdk.clients.api_server_client import APIServerClient
 
-from clients.utils.api_server_client_util import APIServerClientUtil
+from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
 
-from clients.credential_store_client import CredentialStoreClient
+from airavata_sdk.clients.credential_store_client import CredentialStoreClient
 
-from clients.utils.data_model_creation_util import DataModelCreationUtil
+from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
 
 from airavata.model.workspace.ttypes import Gateway, Notification, Project
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel

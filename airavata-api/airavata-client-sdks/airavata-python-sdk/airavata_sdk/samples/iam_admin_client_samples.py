@@ -15,9 +15,9 @@
 #
 
 import logging
-from clients.iam_admin_client import IAMAdminClient
+from airavata_sdk.clients.iam_admin_client import IAMAdminClient
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
 

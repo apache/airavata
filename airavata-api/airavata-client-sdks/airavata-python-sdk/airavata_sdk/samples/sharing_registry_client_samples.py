@@ -16,9 +16,9 @@
 
 
 import logging
-from clients.sharing_registry_client import SharingRegistryClient
+from airavata_sdk.clients.sharing_registry_client import SharingRegistryClient
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
 

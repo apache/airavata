@@ -16,9 +16,9 @@
 
 import logging
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
-from clients.api_server_client import APIServerClient
+from airavata_sdk.clients.api_server_client import APIServerClient
 
 from airavata.model.workspace.ttypes import Gateway, Notification, Project
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
