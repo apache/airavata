@@ -17,12 +17,12 @@
 import logging
 import time
 import logging
-import samples.file_utils as fb
+import airavata_sdk.samples.file_utils as fb
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
-from clients.api_server_client import APIServerClient
-from clients.utils.api_server_client_util import APIServerClientUtil
+from airavata_sdk.clients.api_server_client import APIServerClient
+from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
 
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel

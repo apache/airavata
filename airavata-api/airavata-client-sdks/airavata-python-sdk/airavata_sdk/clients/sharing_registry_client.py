@@ -17,8 +17,8 @@
 import logging
 import configparser
 
-from transport.settings import SharingAPIClientSettings
-from transport import utils
+from airavata_sdk.transport.settings import SharingAPIClientSettings
+from airavata_sdk.transport import utils
 
 from airavata.api.error.ttypes import TException
 
