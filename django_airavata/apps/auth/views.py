@@ -78,6 +78,10 @@ def _validate_idp_alias(idp_alias):
 
 @sensitive_variables('password')
 def handle_login(request):
+    # This view handles a POST of the login form. If the request is a GET, just
+    # redirect to the login page.
+    if request.method == 'GET':
+        return redirect(reverse('django_airavata_auth:login'))
     username = request.POST['username']
     password = request.POST['password']
     login_type = request.POST.get('login_type', None)

@@ -108,42 +108,19 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Policy</h5>
-            <b-form-group
-              label="Allowed Queues"
-              v-if="localComputeResourcePolicy"
-            >
-              <div
-                v-for="batchQueue in computeResource.batchQueues"
-                :key="batchQueue.queueName"
-              >
-                <b-form-checkbox
-                  :checked="
-                    localComputeResourcePolicy.allowedBatchQueues.includes(
-                      batchQueue.queueName
-                    )
-                  "
-                  @input="batchQueueChecked(batchQueue, $event)"
-                >
-                  {{ batchQueue.queueName }}
-                </b-form-checkbox>
-                <batch-queue-resource-policy
-                  v-if="
-                    localComputeResourcePolicy.allowedBatchQueues.includes(
-                      batchQueue.queueName
-                    )
-                  "
-                  :batch-queue="batchQueue"
-                  :value="
-                    localBatchQueueResourcePolicies.find(
-                      pol => pol.queuename === batchQueue.queueName
-                    )
-                  "
-                  @input="updatedBatchQueueResourcePolicy(batchQueue, $event)"
-                  @valid="recordValidBatchQueueResourcePolicy(batchQueue)"
-                  @invalid="recordInvalidBatchQueueResourcePolicy(batchQueue)"
-                />
-              </div>
-            </b-form-group>
+            <compute-resource-policy-editor
+              :batch-queues="computeResource.batchQueues"
+              :compute-resource-policy="localComputeResourcePolicy"
+              :batch-queue-resource-policies="localBatchQueueResourcePolicies"
+              @compute-resource-policy-updated="
+                localComputeResourcePolicy = $event
+              "
+              @batch-queue-resource-policies-updated="
+                localBatchQueueResourcePolicies = $event
+              "
+              @valid="computeResourcePolicyInvalid = false"
+              @invalid="computeResourcePolicyInvalid = true"
+            />
           </div>
         </div>
       </div>
@@ -183,9 +160,9 @@
 
 <script>
 import DjangoAiravataAPI from "django-airavata-api";
-import BatchQueueResourcePolicy from "./BatchQueueResourcePolicy.vue";
 import SSHCredentialSelector from "../../credentials/SSHCredentialSelector.vue";
 import ComputeResourceReservationList from "./ComputeResourceReservationList";
+import ComputeResourcePolicyEditor from "./ComputeResourcePolicyEditor";
 
 import { models, services, errors } from "django-airavata-api";
 import {
@@ -198,10 +175,10 @@ import {
 export default {
   name: "compute-preference",
   components: {
-    BatchQueueResourcePolicy,
     "delete-button": components.DeleteButton,
     "ssh-credential-selector": SSHCredentialSelector,
-    ComputeResourceReservationList
+    ComputeResourceReservationList,
+    ComputeResourcePolicyEditor
   },
   props: {
     id: {
@@ -272,8 +249,8 @@ export default {
         jobSubmissionInterfaces: []
       },
       validationErrors: null,
-      invalidBatchQueueResourcePolicies: [],
-      reservationsInvalid: false
+      reservationsInvalid: false,
+      computeResourcePolicyInvalid: false
     };
   },
   computed: {
@@ -288,14 +265,9 @@ export default {
     },
     valid() {
       return (
-        this.allowedInvalidBatchQueueResourcePolicies.length === 0 &&
         Object.keys(this.groupComputeResourceValidation).length === 0 &&
-        !this.reservationsInvalid
-      );
-    },
-    allowedInvalidBatchQueueResourcePolicies() {
-      return this.invalidBatchQueueResourcePolicies.filter(queueName =>
-        this.localComputeResourcePolicy.allowedBatchQueues.includes(queueName)
+        !this.reservationsInvalid &&
+        !this.computeResourcePolicyInvalid
       );
     },
     queueNames() {
@@ -304,54 +276,6 @@ export default {
   },
   mixins: [mixins.VModelMixin],
   methods: {
-    batchQueueChecked: function(batchQueue, checked) {
-      if (checked) {
-        this.localComputeResourcePolicy.allowedBatchQueues.push(
-          batchQueue.queueName
-        );
-      } else {
-        const queueIndex = this.localComputeResourcePolicy.allowedBatchQueues.indexOf(
-          batchQueue.queueName
-        );
-        this.localComputeResourcePolicy.allowedBatchQueues.splice(
-          queueIndex,
-          1
-        );
-        // Remove batchQueueResourcePolicy if it exists
-        const policyIndex = this.localBatchQueueResourcePolicies.findIndex(
-          pol => pol.queuename === batchQueue.queueName
-        );
-        if (policyIndex >= 0) {
-          this.localBatchQueueResourcePolicies.splice(policyIndex, 1);
-        }
-      }
-    },
-    updatedBatchQueueResourcePolicy: function(
-      batchQueue,
-      batchQueueResourcePolicy
-    ) {
-      const queueName = batchQueue.queueName;
-      if (batchQueueResourcePolicy) {
-        const existingPolicy = this.localBatchQueueResourcePolicies.find(
-          pol => pol.queuename === queueName
-        );
-        if (existingPolicy) {
-          Object.assign(existingPolicy, batchQueueResourcePolicy);
-        } else {
-          // For new BatchQueueResourcePolicy instances, set the parent ids
-          batchQueueResourcePolicy.groupResourceProfileId = this.id;
-          batchQueueResourcePolicy.computeResourceId = this.host_id;
-          this.localBatchQueueResourcePolicies.push(batchQueueResourcePolicy);
-        }
-      } else {
-        const existingPolicyIndex = this.localBatchQueueResourcePolicies.findIndex(
-          pol => pol.queuename === queueName
-        );
-        if (existingPolicyIndex >= 0) {
-          this.localBatchQueueResourcePolicies.splice(existingPolicyIndex, 1);
-        }
-      }
-    },
     fetchComputeResource: function(id) {
       return DjangoAiravataAPI.utils.FetchUtils.get(
         "/api/compute-resources/" + encodeURIComponent(id) + "/"
@@ -455,25 +379,6 @@ export default {
         );
         this.localComputeResourcePolicy = defaultComputeResourcePolicy;
       });
-    },
-    recordValidBatchQueueResourcePolicy(batchQueue) {
-      if (
-        this.invalidBatchQueueResourcePolicies.includes(batchQueue.queueName)
-      ) {
-        const index = this.invalidBatchQueueResourcePolicies.indexOf(
-          batchQueue.queueName
-        );
-        this.invalidBatchQueueResourcePolicies.splice(index, 1);
-      }
-      this.validate(); // propagate validation
-    },
-    recordInvalidBatchQueueResourcePolicy(batchQueue) {
-      if (
-        !this.invalidBatchQueueResourcePolicies.includes(batchQueue.queueName)
-      ) {
-        this.invalidBatchQueueResourcePolicies.push(batchQueue.queueName);
-      }
-      this.validate(); // propagate validation
     },
     validate() {
       if (this.valid) {
