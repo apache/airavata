@@ -1,24 +1,24 @@
 import logging
 import time
 import json
-import samples.file_utils as fb
+import airavata_sdk.samples.file_utils as fb
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
-from clients.api_server_client import APIServerClient
+from airavata_sdk.clients.api_server_client import APIServerClient
 
-from clients.credential_store_client import CredentialStoreClient
+from airavata_sdk.clients.credential_store_client import CredentialStoreClient
 
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 
-from clients.utils.data_model_creation_util import DataModelCreationUtil
+from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
 
-from clients.utils.api_server_client_util import APIServerClientUtil
+from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
 
-from clients.sftp_file_handling_client import SFTPConnector
+from airavata_sdk.clients.sftp_file_handling_client import SFTPConnector
 
-from transport.settings import GatewaySettings
+from airavata_sdk.transport.settings import GatewaySettings
 
 logger = logging.getLogger(__name__)
 

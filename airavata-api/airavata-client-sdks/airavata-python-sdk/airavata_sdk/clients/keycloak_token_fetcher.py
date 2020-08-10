@@ -20,7 +20,7 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient
 from airavata.model.security.ttypes import AuthzToken
 
-from transport.settings import KeycloakConfiguration
+from airavata_sdk.transport.settings import KeycloakConfiguration
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
