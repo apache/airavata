@@ -129,7 +129,8 @@ export default {
       ignoreErrors = false,
       showSpinner = true,
       cache = false
-    } = {}
+    } = {},
+    responseType="json"
   ) {
     if (queryParams && typeof queryParams != "string") {
       queryParams = Object.keys(queryParams)
@@ -154,7 +155,7 @@ export default {
       credentials: "same-origin",
       ignoreErrors,
       showSpinner
-    });
+    }, responseType);
     if (cache) {
       responseCache.put({ key: url, value: fetchRequest });
     }
@@ -179,7 +180,8 @@ export default {
       body,
       ignoreErrors = false,
       showSpinner = true
-    }
+    },
+    responseType="json"
   ) {
     const fetchConfig = {
       method,
@@ -203,7 +205,11 @@ export default {
             if (response.status === 204) {
               return Promise.resolve();
             } else {
-              return Promise.resolve(response.json());
+              incrementCount();
+              return Promise.resolve(response[responseType]().then((responseData) => {
+                decrementCount();
+                return responseData;
+              }));
             }
           } else {
             return response.json().then(

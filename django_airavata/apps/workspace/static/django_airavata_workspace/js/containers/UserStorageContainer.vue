@@ -1,86 +1,45 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col">
-        <h1 class="h4">
-          Storage
-        </h1>
-        <p>
-          <small class="text-muted"><i class="fa fa-folder-open"></i> {{ username }}</small>
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <uppy
-          class="mb-1"
-          ref="file-upload"
-          :xhr-upload-endpoint="uploadEndpoint"
-          :tus-upload-finish-endpoint="uploadEndpoint"
-          @upload-success="uploadSuccess"
-          multiple
-        />
-      </div>
-      <div class="col">
-        <b-input-group>
-          <b-form-input
-            v-model="dirName"
-            placeholder="New directory name"
-            @keydown.native.enter="addDirectory"
-          ></b-form-input>
-          <b-input-group-append>
-            <b-button
-              @click="addDirectory"
-              :disabled="!this.dirName"
-            >Add directory</b-button>
-          </b-input-group-append>
-        </b-input-group>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <b-card>
-          <router-view
-            :user-storage-path="userStoragePath"
-            @delete-dir="deleteDir"
-            @directory-selected="directorySelected"
-            @delete-file="deleteFile"
-          ></router-view>
-        </b-card>
-      </div>
-    </div>
+    <router-view
+      v-if="userStoragePath"
+      :user-storage-path="userStoragePath"
+      :storage-path="storagePath"
+      @upload-success="uploadSuccess"
+      @add-directory="addDirectory"
+      @delete-dir="deleteDir"
+      @delete-file="deleteFile"
+      @directory-selected="directorySelected"
+      @file-content-changed="fileContentChanged"
+    ></router-view>
   </div>
 </template>
 
 <script>
-import { services, session, utils } from "django-airavata-api";
-import { components, notifications } from "django-airavata-common-ui";
+import { services, utils } from "django-airavata-api";
+import { notifications } from "django-airavata-common-ui";
 
 export default {
   name: "user-storage-container",
-  components: {
-    uppy: components.Uppy
-  },
   computed: {
     storagePath() {
-      if (this.$route.path.startsWith("/")) {
-        return this.$route.path.substring(1);
+      let _storagePath = /~.*$/.exec(this.$route.fullPath);
+      if (_storagePath && _storagePath.length > 0) {
+        _storagePath = _storagePath[0];
       } else {
-        return this.$route.path;
+        _storagePath = this.$route.path;
       }
-    },
-    username() {
-      return session.Session.username;
-    },
-    uploadEndpoint() {
-      // This endpoint can handle XHR upload or a TUS uploadURL
-      return "/api/user-storage/" + this.storagePath;
+
+      // Validate to have the ending slash.
+      if (!_storagePath.endsWith("/")) {
+        _storagePath += "/";
+      }
+
+      return _storagePath;
     }
   },
   data() {
     return {
-      userStoragePath: null,
-      dirName: null
+      userStoragePath: null
     };
   },
   methods: {
@@ -125,19 +84,27 @@ export default {
         });
       }
     },
+    fileContentChanged(fileContent) {
+      if (fileContent) {
+        utils.FetchUtils.put(
+          "/api/user-storage/" + this.storagePath,
+          {fileContentText: fileContent}
+        ).then(() => {
+          this.loadUserStoragePath(this.storagePath);
+        });
+      }
+    },
     uploadSuccess() {
-      this.$refs["file-upload"].reset();
       this.loadUserStoragePath(this.storagePath);
     },
-    addDirectory() {
-      if (this.dirName) {
+    addDirectory(dirName) {
+      if (dirName) {
         let newDirPath = this.storagePath;
         if (!newDirPath.endsWith("/")) {
           newDirPath = newDirPath + "/";
         }
-        newDirPath = newDirPath + this.dirName;
+        newDirPath = newDirPath + dirName;
         utils.FetchUtils.post("/api/user-storage/" + newDirPath).then(() => {
-          this.dirName = null;
           this.loadUserStoragePath(this.storagePath);
         });
       }

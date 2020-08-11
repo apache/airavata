@@ -1,11 +1,14 @@
 <template>
   <b-card header="Select a file">
     <user-storage-path-viewer
+      v-if="userStoragePath"
       :user-storage-path="userStoragePath"
+      :storage-path="storagePath"
       @directory-selected="directorySelected"
       @file-selected="fileSelected"
       :include-delete-action="false"
       :include-select-file-action="true"
+      :include-create-file-action="false"
       :download-in-new-window="true"
       :selected-data-product-uris="selectedDataProductUris"
     >
@@ -31,6 +34,11 @@ let mostRecentPath = "~";
 
 export default {
   name: "user-storage-file-selection-container",
+  computed: {
+    storagePath() {
+      return ["~"].concat(this.userStoragePath.parts).join("/") + "/"
+    }
+  },
   props: {
     selectedDataProductUris: {
       type: Array,

@@ -14,6 +14,7 @@ from rest_framework.decorators import action, detail_route, list_route
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from airavata.model.appcatalog.computeresource.ttypes import (
@@ -56,6 +57,7 @@ from . import (
     tus,
     view_utils
 )
+from .data_products_helper import split_dir_path_and_file_name, get_file
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -1500,7 +1502,7 @@ class UserStoragePathView(APIView):
     def get(self, request, path="/", format=None):
         return self._create_response(request, path)
 
-    def post(self, request, path="/", format=None):
+    def post(self, request, path="/", format=None, file_name=None):
         if not data_products_helper.dir_exists(request, path):
             data_products_helper.create_user_dir(request, path)
 
@@ -1509,7 +1511,7 @@ class UserStoragePathView(APIView):
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = data_products_helper.save(
-                request, path, user_file, content_type=user_file.content_type)
+                request, path, user_file, content_type=user_file.content_type, name=file_name)
         # Handle a tus upload
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
@@ -1521,21 +1523,56 @@ class UserStoragePathView(APIView):
             data_product = tus.move_tus_upload(uploadURL, move_file)
         return self._create_response(request, path, uploaded=data_product)
 
+    # Accept wither to replace file or to replace file content text.
+    def put(self, request, path="/", format=None):
+        # Replace the file if the request has a file upload.
+        if 'file' in request.FILES:
+            self.delete(request=request, path=path, format=format)
+            dir_path, file_name = split_dir_path_and_file_name(path=path)
+            self.post(request=request, path=dir_path, format=format, file_name=file_name)
+        # Replace only the file content if the request body has the `fileContentText`
+        elif request.data and "fileContentText" in request.data:
+            data_products_helper.update_file_content(request=request, path=path,
+                                                     fileContentText=request.data["fileContentText"])
+        else:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+        return self._create_response(request=request, path=path)
+
+
     def delete(self, request, path="/", format=None):
-        data_products_helper.delete_dir(request, path)
+        if data_products_helper.dir_exists(request, path):
+            data_products_helper.delete_dir(request, path)
+        else:
+            data_products_helper.delete_user_file(request, path)
+
         return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
-        directories, files = data_products_helper.listdir(request, path)
-        data = {
-            'directories': directories,
-            'files': files
-        }
-        if uploaded is not None:
-            data['uploaded'] = uploaded
-        data['parts'] = self._split_path(path)
-        serializer = self.serializer_class(data, context={'request': request})
-        return Response(serializer.data)
+        if data_products_helper.dir_exists(request, path):
+            directories, files = data_products_helper.listdir(request, path)
+            data = {
+                'isDir': True,
+                'directories': directories,
+                'files': files
+            }
+            if uploaded is not None:
+                data['uploaded'] = uploaded
+            data['parts'] = self._split_path(path)
+            serializer = self.serializer_class(data, context={'request': request})
+            return Response(serializer.data)
+        else:
+            file = get_file(request, path)
+            data = {
+                'isDir': False,
+                'directories': [],
+                'files': [file]
+            }
+            if uploaded is not None:
+                data['uploaded'] = uploaded
+            data['parts'] = self._split_path(path)
+            serializer = self.serializer_class(data, context={'request': request})
+            return Response(serializer.data)
 
     def _split_path(self, path):
         head, tail = os.path.split(path)

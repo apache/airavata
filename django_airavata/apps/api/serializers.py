@@ -851,6 +851,7 @@ class UserStorageFileSerializer(serializers.Serializer):
     downloadURL = serializers.SerializerMethodField()
     dataProductURI = serializers.CharField(source='data-product-uri')
     createdTime = serializers.DateTimeField(source='created_time')
+    mimeType = serializers.CharField(source='mime_type')
     size = serializers.IntegerField()
     hidden = serializers.BooleanField()
 
@@ -876,6 +877,7 @@ class UserStorageDirectorySerializer(serializers.Serializer):
 
 
 class UserStoragePathSerializer(serializers.Serializer):
+    isDir = serializers.BooleanField()
     directories = UserStorageDirectorySerializer(many=True)
     files = UserStorageFileSerializer(many=True)
     parts = serializers.ListField(child=serializers.CharField())

@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
 
 from airavata.model.data.replica.ttypes import (
     DataProductModel,
@@ -129,16 +130,63 @@ def delete_dir(request, path):
     return datastore.delete_dir(request.user.username, path)
 
 
+def delete_user_file(request, path):
+    datastore.delete(request.user.username, path)
+
+
 def delete(request, data_product):
     "Delete replica for data product in this data store."
     path = _get_replica_filepath(data_product)
     try:
-        datastore.delete(data_product.ownerName, path)
+        delete_user_file(request, path)
         _delete_data_product(data_product.ownerName, path)
     except Exception as e:
         logger.exception("Unable to delete file {} for data product uri {}"
                          .format(path, data_product.productUri))
         raise
+
+
+def split_dir_path_and_file_name(path):
+    path_chunks = path.split("/")
+    path_chunks_last_index = len(path_chunks) - 1
+    file_name = path_chunks[path_chunks_last_index]
+    dir_path = '/'.join([path_chunks[i] for i in range(path_chunks_last_index)])
+
+    return dir_path, file_name
+
+
+def update_file_content(request, path, fileContentText):
+    full_path = datastore.path(request.user.username, path)
+    with open(full_path, 'w') as f:
+        myfile = File(f)
+        myfile.write(fileContentText)
+
+
+def get_file(request, path):
+    if datastore.exists(request.user.username, path):
+        created_time = datastore.get_created_time(
+            request.user.username, path)
+        size = datastore.size(request.user.username, path)
+        full_path = datastore.path(request.user.username, path)
+        data_product_uri = _get_data_product_uri(request, full_path)
+        dir_path, file_name = split_dir_path_and_file_name(path)
+
+        data_product = request.airavata_client.getDataProduct(request.authz_token, data_product_uri)
+        mime_type = None
+        if 'mime-type' in data_product.productMetadata:
+            mime_type = data_product.productMetadata['mime-type']
+
+        return {
+           'name': full_path,
+           'path': dir_path,
+           'data-product-uri': data_product_uri,
+           'created_time': created_time,
+           'mime_type': mime_type,
+           'size': size,
+           'hidden': False
+        }
+    else:
+        raise ObjectDoesNotExist("User storage file path does not exist")
 
 
 def listdir(request, path):
@@ -165,10 +213,17 @@ def listdir(request, path):
             size = datastore.size(request.user.username, user_rel_path)
             full_path = datastore.path(request.user.username, user_rel_path)
             data_product_uri = _get_data_product_uri(request, full_path)
+
+            data_product = request.airavata_client.getDataProduct(request.authz_token, data_product_uri)
+            mime_type = None
+            if 'mime-type' in data_product.productMetadata:
+                mime_type = data_product.productMetadata['mime-type']
+
             files_data.append({'name': f,
                                'path': user_rel_path,
                                'data-product-uri': data_product_uri,
                                'created_time': created_time,
+                               'mime_type': mime_type,
                                'size': size,
                                'hidden': False})
         return directories_data, files_data
