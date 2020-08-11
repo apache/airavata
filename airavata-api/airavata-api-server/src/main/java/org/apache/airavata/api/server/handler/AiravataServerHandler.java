@@ -933,6 +933,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             logger.debug("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : " + airavataCredStoreToken);
             ResourceCredentialOperationStatus operationStatus = resourceSecretClient.deleteSSHCredential(custosId, airavataCredStoreToken);
+            if (operationStatus.getStatus()) {
+                sharingManagementClient.deleteEntity(custosId, sharedEntity);
+            }
             return operationStatus.getStatus();
 
         } catch (AuthorizationException ae) {
@@ -972,6 +975,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : " + airavataCredStoreToken);
             ResourceCredentialOperationStatus operationStatus = resourceSecretClient.deletePWDCredential(custosId, airavataCredStoreToken);
+            if (operationStatus.getStatus()) {
+                sharingManagementClient.deleteEntity(custosId, sharedEntity);
+            }
             return operationStatus.getStatus();
         } catch (AuthorizationException ae) {
             logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token " + airavataCredStoreToken);
@@ -1093,6 +1099,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteProject(AuthzToken authzToken, String projectId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, ProjectNotFoundException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
         logger.info("Calling #########  deleteProject");
         try {
@@ -1102,7 +1109,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+
                     Entity sharedEntity = Entity.newBuilder().setId(projectId).build();
                     PermissionType permissionType = PermissionType.newBuilder().setId(ResourcePermissionType.WRITE.name()).build();
                     SharingRequest sharingRequest = SharingRequest
@@ -1121,6 +1128,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
             boolean ret = regClient.deleteProject(projectId);
+            Entity sharedEntity = Entity.newBuilder().setId(projectId).build();
+            if (ret) {
+                sharingManagementClient.deleteEntity(custosId, sharedEntity);
+            }
             logger.debug("Airavata deleted project with project Id : " + projectId);
             registryClientPool.returnResource(regClient);
             return ret;
@@ -1637,6 +1648,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean deleteExperiment(AuthzToken authzToken, String experimentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+        Entity sharedEntity = Entity.newBuilder().setId(experimentId).build();
         logger.info("Calling #########  deleteExperiment");
 
         try {
@@ -1646,8 +1659,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     || !authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())) {
                 try {
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
-                    Entity sharedEntity = Entity.newBuilder().setId(experimentId).build();
+
                     PermissionType permissionType = PermissionType.newBuilder().setId(ResourcePermissionType.WRITE.name()).build();
 
                     SharingRequest sharingRequest = SharingRequest
@@ -1671,6 +1683,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new RegistryServiceException("Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
             }
             boolean result = regClient.deleteExperiment(experimentId);
+            if (result) {
+                sharingManagementClient.deleteEntity(custosId, sharedEntity);
+            }
             registryClientPool.returnResource(regClient);
 
             return result;
@@ -2782,7 +2797,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             boolean result = regClient.deleteApplicationDeployment(appDeploymentId);
 
             Entity entity = Entity.newBuilder().setId(appDeploymentId).build();
-            sharingManagementClient.deleteEntity(custosId, entity);
+            if (result) {
+                sharingManagementClient.deleteEntity(custosId, entity);
+            }
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
@@ -6005,15 +6022,16 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean removeGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+
+        Entity sharedEntity = Entity.newBuilder().setId(groupResourceProfileId).build();
         logger.info("Calling #########  removeGroupResourceProfile");
         try {
             if (ServerSettings.isEnableSharing()) {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-                    Entity sharedEntity = Entity.newBuilder().setId(groupResourceProfileId).build();
                     PermissionType permissionType = PermissionType.newBuilder().setId(ResourcePermissionType.WRITE.name()).build();
                     SharingRequest sharingRequest = SharingRequest
                             .newBuilder()
@@ -6032,6 +6050,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
             boolean result = regClient.removeGroupResourceProfile(groupResourceProfileId);
+
+            if (result) {
+                sharingManagementClient.deleteEntity(custosId, sharedEntity);
+            }
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
