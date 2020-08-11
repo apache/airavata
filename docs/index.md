@@ -10,7 +10,7 @@ custom Django app extensions to the
 
 ::: airavata_django_portal_sdk.user_storage.save
     :docstring:
-::: airavata_django_portal_sdk.user_storage.save_input_file_upload
+::: airavata_django_portal_sdk.user_storage.save_input_file
     :docstring:
 ::: airavata_django_portal_sdk.user_storage.open_file
     :docstring:
