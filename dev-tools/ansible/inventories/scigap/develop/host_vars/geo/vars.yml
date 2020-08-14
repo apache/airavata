@@ -19,6 +19,10 @@
 #
 
 ---
+
+airavata_django_extra_dependencies:
+  - "git+https://github.com/GeoGateway/geogateway-django-app.git@master#egg=geogateway_django_app"
+
 # No symlink, user_data_dir is same as real_user_data_dir
 user_data_dir: "{{ real_user_data_dir }}"
 #airavata_django_git_branch: "simccs"
