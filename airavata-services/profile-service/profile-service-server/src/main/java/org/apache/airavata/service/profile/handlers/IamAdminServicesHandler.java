@@ -38,6 +38,7 @@ import org.apache.custos.iam.service.OperationStatus;
 import org.apache.custos.iam.service.RegisterUserResponse;
 import org.apache.custos.iam.service.UserRepresentation;
 import org.apache.custos.user.management.client.UserManagementClient;
+import org.apache.custos.user.profile.service.GetAllUserProfilesResponse;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,7 +142,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
                     representation.getUsername().trim().equals("")) {
 
                 UserProfile profile = CustosToAiravataDataModelMapper.transform(representation, gatewayId);
-                profile.setAiravataInternalUserId(profile.getUserId()+"@"+gatewayId);
+                profile.setAiravataInternalUserId(profile.getUserId() + "@" + gatewayId);
                 dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, profile);
                 return true;
             }
@@ -300,104 +301,81 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-        return false;
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+        try {
+            String[] usernames = {username};
+            String[] roles = {roleName};
+
+
+            OperationStatus status = userManagementClient.addRolesToUsers(roles, usernames, false, custosId, authzToken.getAccessToken());
+
+            return status.getStatus();
+        } catch (Exception ex) {
+            String msg = "Error while deleting user  in Identity Server, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
     }
 
     @Override
     public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-        return false;
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+        try {
+            String[] roles = {roleName};
+            String[] clientRoles = {};
+
+            OperationStatus status = userManagementClient.deleteUserRoles(clientRoles, roles, username, custosId, authzToken.getAccessToken());
+
+            return status.getStatus();
+        } catch (Exception ex) {
+            String msg = "Error while deleting user  in Identity Server, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
     }
 
     @Override
     public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-        return null;
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+
+            GetAllUserProfilesResponse response = userManagementClient.getAllUserProfiles(custosId);
+
+            List<org.apache.custos.user.profile.service.UserProfile> userProfileList = response.getProfilesList();
+
+            List<org.apache.custos.user.profile.service.UserProfile> selectedList = new ArrayList<>();
+
+            List<UserProfile> profiles = new ArrayList<>();
+
+            if (userProfileList != null && !userProfileList.isEmpty()) {
+
+                for (org.apache.custos.user.profile.service.UserProfile profile : userProfileList) {
+                    if (profile.getRealmRolesList() != null && !profile.getRealmRolesList().isEmpty()) {
+                        for (String realmRole : profile.getRealmRolesList()) {
+                            if (realmRole.equals(roleName)) {
+                                selectedList.add(profile);
+                            }
+                        }
+                    }
+
+                }
+
+                for (org.apache.custos.user.profile.service.UserProfile profile : selectedList) {
+                    profiles.add(CustosToAiravataDataModelMapper.transform(profile, gatewayId));
+                }
+
+
+            }
+
+            return profiles;
+        } catch (Exception ex) {
+            String msg = "Error while deleting user  in Identity Server, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
+
+
     }
 
-//    @Override
-//    @SecurityCheck
-//    @Deprecated
-//    public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-//        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-//        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-//        try {
-//            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-//            return keycloakclient.addRoleToUser(isRealmAdminCredentials, gatewayId, username, roleName);
-//        } catch (TException | ApplicationSettingsException ex) {
-//            String msg = "Error while adding role to user, reason: " + ex.getMessage();
-//            logger.error(msg, ex);
-//            throw new IamAdminServicesException(msg);
-//        }
-//    }
-//
-//    @Override
-//    @SecurityCheck
-//    @Deprecated
-//    public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-//        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-//        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-//        try {
-//            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-//            return keycloakclient.removeRoleFromUser(isRealmAdminCredentials, gatewayId, username, roleName);
-//        } catch (TException | ApplicationSettingsException ex) {
-//            String msg = "Error while removing role from user, reason: " + ex.getMessage();
-//            logger.error(msg, ex);
-//            throw new IamAdminServicesException(msg);
-//        }
-//    }
-//
-//    @Override
-//    @SecurityCheck
-//    @Deprecated
-//    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-//
-//        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-//        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-//        try {
-//            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-//            return keycloakclient.getUsersWithRole(isRealmAdminCredentials, gatewayId, roleName);
-//        } catch (Exception ex) {
-//            String msg = "Error while retrieving users with role, reason: " + ex.getMessage();
-//            logger.error(msg, ex);
-//            throw new IamAdminServicesException(msg);
-//        }
-//    }
-
-//    private PasswordCredential getSuperAdminPasswordCredential() {
-//        PasswordCredential isSuperAdminCredentials = new PasswordCredential();
-//        try {
-//            isSuperAdminCredentials.setLoginUserName(ServerSettings.getIamServerSuperAdminUsername());
-//            isSuperAdminCredentials.setPassword(ServerSettings.getIamServerSuperAdminPassword());
-//        } catch (ApplicationSettingsException e) {
-//            throw new RuntimeException("Unable to get settings for IAM super admin username/password", e);
-//        }
-//        return isSuperAdminCredentials;
-//    }
-
-//    private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
-//
-//        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
-//
-//        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-//        return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
-//    }
-//
-//    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-//        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-//        final String serverHost = ServerSettings.getRegistryServerHost();
-//        try {
-//            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-//        } catch (RegistryServiceException e) {
-//            throw new TException("Unable to create registry client...", e);
-//        }
-//    }
-//
-//    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
-//        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-//        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-//        try {
-//            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-//        } catch (CredentialStoreException e) {
-//            throw new TException("Unable to create credential store client...", e);
-//        }
-//    }
 }
