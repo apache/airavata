@@ -1,135 +1,81 @@
+# Apache Airavata
+
 [![Build Status](https://travis-ci.org/apache/airavata.svg?branch=master)](https://travis-ci.org/apache/airavata)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.airavata/airavata/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.airavata%22)
 
+## About
 
-Apache Airavata Source - README.txt
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
+Apache Airavata is a software framework for executing and managing computational
+jobs on distributed computing resources including local clusters,
+supercomputers, national grids, academic and commercial clouds. Airavata builds
+on general concepts of service oriented computing, distributed messaging, and
+workflow composition and orchestration. Airavata bundles a server package with
+an API, client software development Kits and a general purpose reference UI
+implementation -
+[Apache Airavata Django Portal](https://github.com/apache/airavata-django-portal).
 
-About
-=====
-Apache Airavata, a software framework to executing and managing computational jobs on 
-distributed computing resources including local clusters, supercomputers, national grids, 
-academic and commercial clouds. Airavata builds on general concepts of service oriented computing, 
-distributed messaging, and workflow composition and orchestration. Airavata bundles a server package 
-with an API, client software development Kits and a general purpose reference UI implementation - Apache Airavata PHP reference gateway.   
+Learn more about Airavata at
+[https://airavata.apache.org](https://airavata.apache.org).
 
-Contact
-========
-For additional information about Apache Airavata, please contact the user or dev mailing lists:
-https://airavata.apache.org/mailing-list.html
+## Building Apache Airavata
 
-Description of Airavata Directory Structure
-==================================
-    - airavata-api
-      This directory contains Airavata API related data models, api methods, generated server skeletons, client stubs, server implementations and client samples. 
+### Prerequisites
 
-    - modules
-      This contains the source code of all the airavata maven projects organized as libraries, services and distributions
+- Sources compilation requires Java SDK 8.
+- The project is built with Apache Maven 3+.
+- Set or export JAVA_HOME to point to JDK. For example in Ubuntu:
+  `export JAVA_HOME=/usr/lib/jvm/java-6-openjdk`
+- Git
 
-    - samples
-      This contains all the system wide samples provided in Airavata distribution. All the sample are having its README file
-      So users have to refer each readme file before running each sample.
+### Build the distribution
 
-    - tools
-      This contains source code libraries that can enhance Airavata features.
+    git clone https://github.com/apache/airavata.git
+    cd airavata
+    mvn clean install
 
-    - README
-      This document.
-    
-    - RELEASE_NOTES
-      The describe the key features and know issues with the current release. 
+To build without running tests, use `mvn clean install -Dmaven.test.skip=true`.
+The compressed binary distribution is created at
+PROJECT_DIR/modules/distribution/target.
 
-    - INSTALL
-      This document will contain information on installing Apache-Airavata.
+## Getting Started
 
-Airavata Source Distribution Directory Structure
-================================================
+The easiest way to get started with running Airavata locally and setting up a
+development environment is to follow the instructions in the
+[ide-integration README](./modules/ide-integration/README.md). Those
+instructions will guide you on setting up a development environment with
+IntelliJ IDEA.
 
-    AIRAVATA_MASTER
-		├── airavata-api
-		├── modules
-		│   ├── airavata-client
-		│   ├── app-catalog
-		│   ├── commons
-		│   │   ├── gfac-schema
-		│   │   ├── utils
-		│   │   ├── workflow-execution-context
-		│   │   └── workflow-tracking
-		│   ├── credential-store-service
-		│   ├── distribution
-		│   │   ├── api-server
-		│   │   ├── client
-		│   │   ├── gfac-server
-		│   │   ├── orchestrator-server
-		│   │   ├── server
-		│   │   └── release
-		│   ├── gfac
-		│   │   ├── airavata-gfac-service
-		│   │   ├── gfac-bes
-		│   │   ├── gfac-core
-		│   │   ├── gfac-ec2
-		│   │   ├── gfac-gram
-		│   │   ├── gfac-gsissh
-		│   │   ├── gfac-hadoop
-		│   │   ├── gfac-local
-		│   │   ├── gfac-monitor
-		│   │   ├── gfac-ssh
-		│   │   ├── gfac-thrift-descriptions
-		│   ├── integration-tests
-		│   ├── messaging
-		│   ├── orchestrator
-		│   ├── registry
-		│   │   ├── airavata-jpa-registry
-		│   │   ├── registry-cpi
-		│   ├── security
-		│   ├── credential-store
-		│   ├── server
-		│   ├── test-suite
-		│   ├── workflow-model
-		│   │   ├── workflow-engine
-		│   │   ├── workflow-model-component-node
-		│   │   └── workflow-model-core
-		│   └── xbaya-gui
-		├── samples
-		├── tools
-		│   ├── gsissh
-		│   ├── gsissh-cli-tools
-		│   ├── phoebus-integration
-		│   └── registry-migrate
-		├── INSTALL
-		├── LICENSE
-		├── NOTICE
-		├── README
-		└── RELEASE_NOTES
+## Contact
 
-Available Binary Distributions
-==============================
+For additional information about Apache Airavata, please contact the user or dev
+mailing lists: https://airavata.apache.org/mailing-list.html
 
-Server Distributions
---------------------
-* Airavata Server
-  The Airavata Server binary distribution allows you to run a standalone Airavata Server which includes all the airavata services 
-  shipped with a default derby database as the backend registry. For stable purposes, a mysql configuration is recommended. 
+## Contributing
 
-* Airavata API Server
-  This is the server that contains Airavata API Server.
+Want to help contribute to the development of Apache Airavata? Check out our
+[contributing documentation](http://airavata.apache.org/get-involved.html).
 
-* Airavata Orchestrator Server
-  This is the stand-alone orchestrator server
+## Links
 
-* Airavata GFac Server
-  This is the standalone GFac Server
+- [Documentation](https://docs.airavata.org/en/master/)
+- Developer [wiki](https://cwiki.apache.org/confluence/display/AIRAVATA)
+- [Issue Tracker](https://issues.apache.org/jira/projects/AIRAVATA)
 
-Client Distributions
---------------------
+## License
 
-* Airavata Client
-  The Airavata Client distribution is a set of libraries and configurations files that allow a 3rd party application to programatically 
-  access Airavata functionality through Airavata API. 
-  
- How to test and run samples
-===========================
-* If you built Airavata from source, and if you see "BUILD SUCCESS", then the test cases should have passes.
-* The test cases are beyond unit level, they startup embedded services and run through basic workflow use cases.
-* To walk through Airavata features, follow "XBAYA Quick-Start Tutorial" tutorial at https://cwiki.apache.org/confluence/display/AIRAVATA/XBAYA+Quick-Start+Tutorial.
-* For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html
+Licensed to the Apache Software Foundation (ASF) under one or more contributor
+license agreements. See the NOTICE file distributed with this work for
+additional information regarding copyright ownership. The ASF licenses this file
+to you under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+Please see the [LICENSE](LICENSE) file included in the root directory of the
+source tree for extended license details.
