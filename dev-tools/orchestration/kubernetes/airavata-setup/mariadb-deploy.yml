@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: mariadb
+spec:
+  #selector:
+  #  matchLabels:
+  #   name: mariadb
+  #   app: airavata
+  replicas: 1 
+  template: 
+    metadata:    
+      labels:
+        name: mariadb
+        app: airavata
+    spec:
+      containers:
+      - name: mariadb
+        image: satyamsah/mariadb
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root123"
+        ports: 
+        - containerPort: 3306
+#      containers:
+#      - name: adminer
+#        image: adminer
+#        ports:
+#        - containerPort: 8090

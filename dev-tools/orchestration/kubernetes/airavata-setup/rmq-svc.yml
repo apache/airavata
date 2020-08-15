@@ -1,0 +1,40 @@
+apiVersion: v1
+
+kind: Service
+
+metadata:
+
+  name: rmq
+
+  labels:
+
+    name: rmq
+    app: airavata
+
+spec:
+
+  type: NodePort
+
+  ports:
+
+  - port: 15672
+
+    name: port-15672
+
+    nodePort: 30006
+
+    protocol: TCP
+
+  - port: 5672
+
+    name: port-5672
+
+    nodePort: 30007
+
+    protocol: TCP
+
+
+  selector:
+
+    name: rmq
+    app: airavata

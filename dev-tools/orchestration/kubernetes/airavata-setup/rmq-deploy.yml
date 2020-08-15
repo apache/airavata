@@ -1,0 +1,30 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: rmq
+  labels:
+    name: rmq
+    app: airavata
+spec:
+  #selector:
+  #  matchLabels:
+  #  name: rmq
+  #  app: airavata
+  replicas: 1 
+  template: 
+    metadata:    
+      labels:
+        name: rmq
+        app: airavata
+    spec:
+      containers:
+      - name: rmq
+        image: rabbitmq:3-management
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "airavata"
+        - name: RABBITMQ_DEFAULT_PASS
+          value: "airavata"
+        ports: 
+        - containerPort: 5672
+        - containerPort: 15672
