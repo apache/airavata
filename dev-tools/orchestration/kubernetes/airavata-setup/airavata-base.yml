@@ -1,0 +1,35 @@
+apiVersion: v1
+
+kind: ReplicationController
+
+metadata:
+
+  name: base-airavata
+
+spec:
+
+  replicas: 1 
+
+  selector:
+
+    app: base-airavata
+
+  template:
+
+    metadata:
+
+      labels:
+
+        app: base-airavata
+
+    spec:
+
+      containers:
+
+      - name: hello-ctr
+
+        image: satyamsah/airavata-base
+
+        ports:
+
+        - containerPort: 8080
