@@ -96,124 +96,125 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                  log as a warning to handle such scenarios and move ahead.
                                  */
 
-
-                                //Creating Entity Types for each domain
-                                log.info("Creating entity type. Id PROJECT");
-                                if (!isEntityTypeExists(custosId, "PROJECT")) {
-                                    EntityType projectEntityType = EntityType.newBuilder()
-                                            .setName("PROJECT")
-                                            .setDescription("Project entity type")
-                                            .setId("PROJECT")
-                                            .build();
-                                    sharingManagementClient.createEntityType(custosId, projectEntityType);
-                                }
-
-
-                                log.info("Creating entity type. Id EXPERIMENT");
-                                if (!isEntityTypeExists(custosId, "EXPERIMENT")) {
-                                    EntityType experimentEntityType = EntityType.newBuilder()
-                                            .setName("EXPERIMENT")
-                                            .setDescription("Experiment entity type")
-                                            .setId("EXPERIMENT")
-                                            .build();
-
-                                    sharingManagementClient.createEntityType(custosId, experimentEntityType);
-                                }
-
-                                log.info("Creating entity type. Id FILE");
-                                if (!isEntityTypeExists(custosId, "FILE")) {
-                                    EntityType fileEntityType = EntityType.newBuilder()
-                                            .setName("FILE")
-                                            .setDescription("File entity type")
-                                            .setId("FILE")
-                                            .build();
-
-                                    sharingManagementClient.createEntityType(custosId, fileEntityType);
-
-                                }
+                                if (custosId != null && ! custosId.trim().equals("")) {
+                                    //Creating Entity Types for each domain
+                                    log.info("Creating entity type. Id PROJECT");
+                                    if (!isEntityTypeExists(custosId, "PROJECT")) {
+                                        EntityType projectEntityType = EntityType.newBuilder()
+                                                .setName("PROJECT")
+                                                .setDescription("Project entity type")
+                                                .setId("PROJECT")
+                                                .build();
+                                        sharingManagementClient.createEntityType(custosId, projectEntityType);
+                                    }
 
 
-                                log.info("Creating entity type. Id " + ResourceType.APPLICATION_DEPLOYMENT.name());
-                                if (!isEntityTypeExists(custosId, ResourceType.APPLICATION_DEPLOYMENT.name())) {
-                                    EntityType applicationEntityType = EntityType.newBuilder()
-                                            .setName(ResourceType.APPLICATION_DEPLOYMENT.name())
-                                            .setDescription("Application Deployment entity type")
-                                            .setId(ResourceType.APPLICATION_DEPLOYMENT.name())
-                                            .build();
+                                    log.info("Creating entity type. Id EXPERIMENT");
+                                    if (!isEntityTypeExists(custosId, "EXPERIMENT")) {
+                                        EntityType experimentEntityType = EntityType.newBuilder()
+                                                .setName("EXPERIMENT")
+                                                .setDescription("Experiment entity type")
+                                                .setId("EXPERIMENT")
+                                                .build();
 
-                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
-                                }
+                                        sharingManagementClient.createEntityType(custosId, experimentEntityType);
+                                    }
 
-                                log.info("Creating entity type. Id " + ResourceType.GROUP_RESOURCE_PROFILE.name());
+                                    log.info("Creating entity type. Id FILE");
+                                    if (!isEntityTypeExists(custosId, "FILE")) {
+                                        EntityType fileEntityType = EntityType.newBuilder()
+                                                .setName("FILE")
+                                                .setDescription("File entity type")
+                                                .setId("FILE")
+                                                .build();
 
-                                if (!isEntityTypeExists(custosId, ResourceType.GROUP_RESOURCE_PROFILE.name())) {
-                                    EntityType applicationEntityType = EntityType.newBuilder()
-                                            .setName(ResourceType.GROUP_RESOURCE_PROFILE.name())
-                                            .setDescription("Group Resource Profile entity type")
-                                            .setId(ResourceType.GROUP_RESOURCE_PROFILE.name())
-                                            .build();
+                                        sharingManagementClient.createEntityType(custosId, fileEntityType);
 
-                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
-                                }
-
-                                log.info("Creating entity type. Id " + ResourceType.CREDENTIAL_TOKEN.name());
-                                if (!isEntityTypeExists(custosId, ResourceType.CREDENTIAL_TOKEN.name())) {
-                                    EntityType applicationEntityType = EntityType.newBuilder()
-                                            .setName(ResourceType.CREDENTIAL_TOKEN.name())
-                                            .setDescription("Credential Store Token entity type")
-                                            .setId(ResourceType.CREDENTIAL_TOKEN.name())
-                                            .build();
-
-                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
-                                }
-
-                                //Creating Permission Types for each domain
-                                log.info("Creating Permission Type. Id  READ");
-                                if (!isPermissionTypeExists(custosId, "READ")) {
-                                    EntityType applicationEntityType = EntityType.newBuilder()
-                                            .setName("READ")
-                                            .setDescription("Read permission type")
-                                            .setId("READ")
-                                            .build();
-
-                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
-                                }
+                                    }
 
 
-                                log.info("Creating Permission Type. Id : WRITE");
+                                    log.info("Creating entity type. Id " + ResourceType.APPLICATION_DEPLOYMENT.name());
+                                    if (!isEntityTypeExists(custosId, ResourceType.APPLICATION_DEPLOYMENT.name())) {
+                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                                .setName(ResourceType.APPLICATION_DEPLOYMENT.name())
+                                                .setDescription("Application Deployment entity type")
+                                                .setId(ResourceType.APPLICATION_DEPLOYMENT.name())
+                                                .build();
 
-                                if (!isPermissionTypeExists(custosId, "WRITE")) {
-                                    EntityType applicationEntityType = EntityType.newBuilder()
-                                            .setName("WRITE")
-                                            .setDescription("Write permission type")
-                                            .setId("WRITE")
-                                            .build();
+                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                    }
 
-                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
-                                }
+                                    log.info("Creating entity type. Id " + ResourceType.GROUP_RESOURCE_PROFILE.name());
 
-                                log.info("Creating Permission Type. Id : OWNER");
+                                    if (!isEntityTypeExists(custosId, ResourceType.GROUP_RESOURCE_PROFILE.name())) {
+                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                                .setName(ResourceType.GROUP_RESOURCE_PROFILE.name())
+                                                .setDescription("Group Resource Profile entity type")
+                                                .setId(ResourceType.GROUP_RESOURCE_PROFILE.name())
+                                                .build();
 
-                                if (!isPermissionTypeExists(custosId, "OWNER")) {
-                                    EntityType applicationEntityType = EntityType.newBuilder()
-                                            .setName("OWNER")
-                                            .setDescription("Owner permission type")
-                                            .setId("OWNER")
-                                            .build();
+                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                    }
 
-                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
-                                }
+                                    log.info("Creating entity type. Id " + ResourceType.CREDENTIAL_TOKEN.name());
+                                    if (!isEntityTypeExists(custosId, ResourceType.CREDENTIAL_TOKEN.name())) {
+                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                                .setName(ResourceType.CREDENTIAL_TOKEN.name())
+                                                .setDescription("Credential Store Token entity type")
+                                                .setId(ResourceType.CREDENTIAL_TOKEN.name())
+                                                .build();
 
-                                log.info("Creating Permission Type. Id : MANAGE_SHARING");
+                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                    }
 
-                                if (!isPermissionTypeExists(custosId, "MANAGE_SHARING")) {
-                                    EntityType applicationEntityType = EntityType.newBuilder()
-                                            .setName("MANAGE_SHARING")
-                                            .setDescription("Manage sharing permission type")
-                                            .setId("MANAGE_SHARING")
-                                            .build();
+                                    //Creating Permission Types for each domain
+                                    log.info("Creating Permission Type. Id  READ");
+                                    if (!isPermissionTypeExists(custosId, "READ")) {
+                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                                .setName("READ")
+                                                .setDescription("Read permission type")
+                                                .setId("READ")
+                                                .build();
 
-                                    sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                    }
+
+
+                                    log.info("Creating Permission Type. Id : WRITE");
+
+                                    if (!isPermissionTypeExists(custosId, "WRITE")) {
+                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                                .setName("WRITE")
+                                                .setDescription("Write permission type")
+                                                .setId("WRITE")
+                                                .build();
+
+                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                    }
+
+                                    log.info("Creating Permission Type. Id : OWNER");
+
+                                    if (!isPermissionTypeExists(custosId, "OWNER")) {
+                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                                .setName("OWNER")
+                                                .setDescription("Owner permission type")
+                                                .setId("OWNER")
+                                                .build();
+
+                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                    }
+
+                                    log.info("Creating Permission Type. Id : MANAGE_SHARING");
+
+                                    if (!isPermissionTypeExists(custosId, "MANAGE_SHARING")) {
+                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                                .setName("MANAGE_SHARING")
+                                                .setDescription("Manage sharing permission type")
+                                                .setId("MANAGE_SHARING")
+                                                .build();
+
+                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                    }
                                 }
 
                                 break;

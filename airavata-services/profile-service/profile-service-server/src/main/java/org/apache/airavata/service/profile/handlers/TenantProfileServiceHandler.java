@@ -102,14 +102,14 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public String addGateway(AuthzToken authzToken, Gateway gateway) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
+            logger.info("Adding gateway ###########");
+            String adminPassword = getAdminPassword(authzToken, gateway);
+            String[] contacts = {gateway.getEmailAddress()};
+            String comment = "Airavata gateway internal id " + gateway.getGatewayId();
+            gateway.setAiravataInternalGatewayId(gateway.getGatewayId());
 
-            // Assign UUID to gateway
-            if (!registryClient.isGatewayExist(gateway.getGatewayId())) {
-                // If admin password, copy it in the credential store under the requested gateway's gatewayId
-
-                String adminPassword = getAdminPassword(authzToken, gateway);
-                String[] contacts = {gateway.getEmailAddress()};
-                String comment = "Airavata gateway internal id " + gateway.getGatewayId();
+            if (gateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.APPROVED)
+                    && (gateway.getOauthClientId() == null || gateway.getOauthClientId().trim().equals(""))) {
                 CreateTenantResponse response = tenantManagementClient.registerTenant(gateway.getGatewayName(),
                         gateway.getRequesterUsername(),
                         gateway.getGatewayAdminFirstName(),
@@ -126,27 +126,34 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
                         comment);
 
                 copyAdminPasswordToGateway(authzToken, gateway, response.getClientId());
+                gateway.setOauthClientId(response.getClientId());
+                gateway.setOauthClientSecret(response.getClientSecret());
 
-                if (response != null && response.getClientId() != null && !response.getClientId().trim().equals("")) {
-                    logger.info("Added Airavata Gateway with Id: " + gateway.getGatewayId());
-                    // replicate tenant at end-places only if status is APPROVED
-                    if (gateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.APPROVED)) {
-                        logger.info("Gateway with ID: {}, is now APPROVED, replicating to subscribers.", gateway.getGatewayId());
-                        dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.CREATE, gateway);
-                    }
-                    // return internal id
-                    registryClientPool.returnResource(registryClient);
-                    String stringToBereturned =
-                            gateway.getAiravataInternalGatewayId() + ":" + response.getClientId() + ":" + response.getClientSecret();
-                    return stringToBereturned;
-                } else {
-                    registryClientPool.returnResource(registryClient);
-                    throw new Exception("Gateway object is null.");
-                }
-            } else {
-                registryClientPool.returnBrokenResource(registryClient);
-                throw new TenantProfileServiceException("An approved Gateway already exists with the same GatewayId, Name or URL");
             }
+
+            // Assign UUID to gateway
+            if (!registryClient.isGatewayExist(gateway.getGatewayId())) {
+                // If admin password, copy it in the credential store under the requested gateway's gatewayId
+
+                logger.info("Added Airavata Gateway with Id: " + gateway.getGatewayId());
+                // replicate tenant at end-places only if status is APPROVED
+
+                logger.info("Gateway with ID: {}, is now APPROVED, replicating to subscribers.", gateway.getGatewayId());
+                dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.CREATE, gateway);
+
+            } else {
+
+                dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.UPDATE, gateway);
+
+            }
+
+            // return internal id
+            registryClientPool.returnResource(registryClient);
+            String stringToBereturned =
+                    gateway.getAiravataInternalGatewayId();
+            return stringToBereturned;
+
+
         } catch (Exception ex) {
             logger.error("Error adding gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
@@ -163,7 +170,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
         try {
 
             // if admin password token changes then copy the admin password and store under this gateway id and then update the admin password token
-
+            logger.info("Updating  gateway ###########");
             GetTenantResponse response = tenantManagementClient.getTenant(updatedGateway.getOauthClientId());
 
             if (response != null && response.getClientName() != null && !response.getClientName().trim().equals("")) {
@@ -215,6 +222,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public Gateway getGateway(AuthzToken authzToken, String airavataInternalGatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
+            logger.info("get gateway ###########");
             Gateway gateway = registryClient.getGateway(airavataInternalGatewayId);
             if (gateway == null) {
                 throw new Exception("Could not find Gateway with internal ID: " + airavataInternalGatewayId);
@@ -234,7 +242,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public boolean deleteGateway(AuthzToken authzToken, String airavataInternalGatewayId, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
-            logger.debug("Deleting Airavata gateway-profile with ID: " + gatewayId + "Internal ID: " + airavataInternalGatewayId);
+            logger.info("Deleting Airavata gateway-profile with ID: " + gatewayId + "Internal ID: " + airavataInternalGatewayId);
             Gateway gateway = registryClient.getGateway(airavataInternalGatewayId);
 
             tenantManagementClient.deleteTenant(gateway.getOauthClientId());
@@ -260,6 +268,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public List<Gateway> getAllGateways(AuthzToken authzToken) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
+            logger.info("get all gateways ###########");
             return registryClient.getAllGateways();
         } catch (Exception ex) {
             logger.error("Error getting all gateway-profiles, reason: " + ex.getMessage(), ex);
@@ -275,6 +284,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
+            logger.info("is gateway exisit ###########");
             return registryClient.isGatewayExist(gatewayId);
         } catch (Exception ex) {
             logger.error("Error checking if gateway-profile exists, reason: " + ex.getMessage(), ex);
@@ -290,6 +300,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public List<Gateway> getAllGatewaysForUser(AuthzToken authzToken, String requesterUsername) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
+
+            logger.info("getAllGatewaysForUser ###########");
             GetAllTenantsForUserResponse response = tenantManagementClient.getAllTenants(requesterUsername);
 
             List<Gateway> gateways = new ArrayList<>();
@@ -310,7 +322,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
 
     // admin passwords are stored in credential store in the super portal gateway and need to be
-    // copied to a credential that is stored in the requested/newly created gateway
+// copied to a credential that is stored in the requested/newly created gateway
     private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway, String createdGatewayCustosId) throws TException, ApplicationSettingsException {
         try {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
