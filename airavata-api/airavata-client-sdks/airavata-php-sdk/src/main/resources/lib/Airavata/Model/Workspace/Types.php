@@ -708,6 +708,14 @@ class Gateway {
    * @var string
    */
   public $requesterUsername = null;
+  /**
+   * @var string[]
+   */
+  public $redirectURLs = null;
+  /**
+   * @var string
+   */
+  public $scope = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -792,6 +800,18 @@ class Gateway {
           'var' => 'requesterUsername',
           'type' => TType::STRING,
           ),
+        21 => array(
+          'var' => 'redirectURLs',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        22 => array(
+          'var' => 'scope',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -854,6 +874,12 @@ class Gateway {
       }
       if (isset($vals['requesterUsername'])) {
         $this->requesterUsername = $vals['requesterUsername'];
+      }
+      if (isset($vals['redirectURLs'])) {
+        $this->redirectURLs = $vals['redirectURLs'];
+      }
+      if (isset($vals['scope'])) {
+        $this->scope = $vals['scope'];
       }
     }
   }
@@ -1017,6 +1043,30 @@ class Gateway {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 21:
+          if ($ftype == TType::LST) {
+            $this->redirectURLs = array();
+            $_size14 = 0;
+            $_etype17 = 0;
+            $xfer += $input->readListBegin($_etype17, $_size14);
+            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
+            {
+              $elem19 = null;
+              $xfer += $input->readString($elem19);
+              $this->redirectURLs []= $elem19;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 22:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->scope);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1128,6 +1178,28 @@ class Gateway {
     if ($this->requesterUsername !== null) {
       $xfer += $output->writeFieldBegin('requesterUsername', TType::STRING, 20);
       $xfer += $output->writeString($this->requesterUsername);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->redirectURLs !== null) {
+      if (!is_array($this->redirectURLs)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('redirectURLs', TType::LST, 21);
+      {
+        $output->writeListBegin(TType::STRING, count($this->redirectURLs));
+        {
+          foreach ($this->redirectURLs as $iter20)
+          {
+            $xfer += $output->writeString($iter20);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->scope !== null) {
+      $xfer += $output->writeFieldBegin('scope', TType::STRING, 22);
+      $xfer += $output->writeString($this->scope);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -766,7 +766,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
 
             AddResourceCredentialResponse response =
-                    resourceSecretClient.addPasswordCredential(custosId, description, userName, password);
+                    resourceSecretClient.addPasswordCredential(custosId, description, loginUserName, password);
 
             if (response.getToken() == null || response.getToken().trim().equals("")) {
                 String msg = "Password token is empty";
@@ -779,7 +779,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             try {
                 Entity entity = Entity.newBuilder()
-                        .setOwnerId(userName)
+                        .setOwnerId(loginUserName)
                         .setName(response.getToken())
                         .setId(response.getToken())
                         .setDescription(description != null ? description:"")

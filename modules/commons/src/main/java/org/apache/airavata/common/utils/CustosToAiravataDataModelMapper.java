@@ -1,13 +1,17 @@
 package org.apache.airavata.common.utils;
 
+import jdk.dynalink.beans.StaticClass;
 import org.apache.airavata.model.credential.store.CredentialSummary;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.custos.iam.service.UserRepresentation;
 import org.apache.custos.resource.secret.service.ResourceSecretType;
 import org.apache.custos.resource.secret.service.SecretMetadata;
+import org.apache.custos.tenant.profile.service.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +104,25 @@ public class CustosToAiravataDataModelMapper {
         sshCredential1.setToken(sshCredential.getMetadata().getToken());
 
         return sshCredential1;
+
+    }
+
+
+    public static Gateway transform(Tenant tenant, String gatewayId, String internalId) {
+        Gateway gateway = new Gateway();
+        gateway.setOauthClientId(tenant.getClientId());
+        gateway.setEmailAddress(tenant.getAdminEmail());
+        gateway.setDomain(tenant.getDomain());
+        gateway.setGatewayAdminFirstName(tenant.getAdminFirstName());
+        gateway.setGatewayAdminLastName(tenant.getAdminLastName());
+        gateway.setAiravataInternalGatewayId(internalId);
+        gateway.setGatewayId(gatewayId);
+        gateway.setGatewayURL(tenant.getClientUri());
+        gateway.setScope(tenant.getScope());
+        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.valueOf(tenant.getTenantStatus().name()));
+        gateway.setRedirectURLs(tenant.getRedirectUrisList());
+        gateway.setRequesterUsername(tenant.getRequesterEmail());
+        return gateway;
 
     }
 }

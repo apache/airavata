@@ -91,7 +91,9 @@ struct Gateway {
     17: optional string oauthClientId,
     18: optional string oauthClientSecret,
     19: optional i64 requestCreationTime,
-    20: optional string requesterUsername
+    20: optional string requesterUsername,
+    21:  optional list<string> redirectURLs,
+    22: optional  string scope
 }
 
 enum NotificationPriority {
