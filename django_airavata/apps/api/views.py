@@ -35,6 +35,7 @@ from airavata.model.data.movement.ttypes import (
 from airavata.model.experiment.ttypes import ExperimentSearchFields
 from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
+from airavata_django_portal_sdk import user_storage
 from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
@@ -46,7 +47,6 @@ from django_airavata.apps.auth import iam_admin_client
 from django_airavata.apps.auth.models import EmailVerification
 
 from . import (
-    data_products_helper,
     exceptions,
     helpers,
     models,
@@ -57,7 +57,6 @@ from . import (
     tus,
     view_utils
 )
-from .data_products_helper import split_dir_path_and_file_name, get_file
 
 READ_PERMISSION_TYPE = '{}:READ'
 
@@ -229,13 +228,13 @@ class ExperimentViewSet(APIBackedViewSet):
         if not experiment.userConfigurationData.experimentDataDir:
             project = self.request.airavata_client.getProject(
                 self.authz_token, experiment.projectId)
-            exp_dir = data_products_helper.get_experiment_dir(
+            exp_dir = user_storage.get_experiment_dir(
                 self.request, project.name, experiment.experimentName)
             experiment.userConfigurationData.experimentDataDir = exp_dir
         else:
             # get_experiment_dir will also validate that absolute paths are
             # inside the user's storage directory
-            exp_dir = data_products_helper.get_experiment_dir(
+            exp_dir = user_storage.get_experiment_dir(
                 self.request,
                 path=experiment.userConfigurationData.experimentDataDir)
             experiment.userConfigurationData.experimentDataDir = exp_dir
@@ -265,10 +264,10 @@ class ExperimentViewSet(APIBackedViewSet):
         """
         data_product = self.request.airavata_client.getDataProduct(
             self.authz_token, data_product_uri)
-        if data_products_helper.is_input_file_upload(
+        if user_storage.is_input_file(
                 self.request, data_product):
             moved_data_product = \
-                data_products_helper.move_input_file_upload(
+                user_storage.move_input_file(
                     self.request,
                     data_product,
                     experiment_data_dir)
@@ -400,8 +399,8 @@ class ExperimentViewSet(APIBackedViewSet):
             data_product_uri):
         source_data_product = self.request.airavata_client.getDataProduct(
             self.authz_token, data_product_uri)
-        if data_products_helper.exists(self.request, source_data_product):
-            return data_products_helper.copy_input_file_upload(
+        if user_storage.exists(self.request, source_data_product):
+            return user_storage.copy_input_file(
                 self.request, source_data_product)
         else:
             log.warning("Could not find file for source data "
@@ -945,7 +944,7 @@ class DataProductView(APIView):
 def upload_input_file(request):
     try:
         input_file = request.FILES['file']
-        data_product = data_products_helper.save_input_file_upload(
+        data_product = user_storage.save_input_file(
             request, input_file, content_type=input_file.content_type)
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
@@ -963,7 +962,7 @@ def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
     def move_input_file(file_path, file_name, file_type):
-        return data_products_helper.move_input_file_upload_from_filepath(
+        return user_storage.move_input_file_from_filepath(
             request, file_path, name=file_name, content_type=file_type)
     try:
         data_product = tus.move_tus_upload(uploadURL, move_input_file)
@@ -995,7 +994,7 @@ def download_file(request):
                     .format(data_product_uri), exc_info=True)
         raise Http404("data product does not exist") from e
     try:
-        data_file = data_products_helper.open_file(request, data_product)
+        data_file = user_storage.open_file(request, data_product)
         response = FileResponse(data_file, content_type=mime_type)
         file_name = os.path.basename(data_file.name)
         if mime_type == 'application/octet-stream' or force_download:
@@ -1024,7 +1023,7 @@ def delete_file(request):
         if (data_product.gatewayId != settings.GATEWAY_ID or
                 data_product.ownerName != request.user.username):
             raise PermissionDenied()
-        data_products_helper.delete(request, data_product)
+        user_storage.delete(request, data_product)
         return HttpResponse(status=204)
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
@@ -1502,22 +1501,22 @@ class UserStoragePathView(APIView):
     def get(self, request, path="/", format=None):
         return self._create_response(request, path)
 
-    def post(self, request, path="/", format=None, file_name=None):
-        if not data_products_helper.dir_exists(request, path):
-            data_products_helper.create_user_dir(request, path)
+    def post(self, request, path="/", format=None):
+        if not user_storage.dir_exists(request, path):
+            user_storage.create_user_dir(request, path)
 
         data_product = None
         # Handle direct upload
         if 'file' in request.FILES:
             user_file = request.FILES['file']
-            data_product = data_products_helper.save(
-                request, path, user_file, content_type=user_file.content_type, name=file_name)
+            data_product = user_storage.save(
+                request, path, user_file, content_type=user_file.content_type)
         # Handle a tus upload
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
 
             def move_file(file_path, file_name, file_type):
-                return data_products_helper.move_from_filepath(
+                return user_storage.move_from_filepath(
                     request, file_path, path, name=file_name,
                     content_type=file_type)
             data_product = tus.move_tus_upload(uploadURL, move_file)
@@ -1532,8 +1531,10 @@ class UserStoragePathView(APIView):
             self.post(request=request, path=dir_path, format=format, file_name=file_name)
         # Replace only the file content if the request body has the `fileContentText`
         elif request.data and "fileContentText" in request.data:
-            data_products_helper.update_file_content(request=request, path=path,
-                                                     fileContentText=request.data["fileContentText"])
+            user_storage.update_file_content(
+                request=request,
+                path=path,
+                fileContentText=request.data["fileContentText"])
         else:
             return Response(status=HTTP_400_BAD_REQUEST)
 
@@ -1541,16 +1542,16 @@ class UserStoragePathView(APIView):
 
 
     def delete(self, request, path="/", format=None):
-        if data_products_helper.dir_exists(request, path):
-            data_products_helper.delete_dir(request, path)
+        if user_storage.dir_exists(request, path):
+            user_storage.delete_dir(request, path)
         else:
-            data_products_helper.delete_user_file(request, path)
+            user_storage.delete_user_file(request, path)
 
         return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
-        if data_products_helper.dir_exists(request, path):
-            directories, files = data_products_helper.listdir(request, path)
+        if user_storage.dir_exists(request, path):
+            directories, files = user_storage.listdir(request, path)
             data = {
                 'isDir': True,
                 'directories': directories,
@@ -1562,7 +1563,7 @@ class UserStoragePathView(APIView):
             serializer = self.serializer_class(data, context={'request': request})
             return Response(serializer.data)
         else:
-            file = get_file(request, path)
+            file = user_storage.get_file(request, path)
             data = {
                 'isDir': False,
                 'directories': [],
@@ -1573,6 +1574,8 @@ class UserStoragePathView(APIView):
             data['parts'] = self._split_path(path)
             serializer = self.serializer_class(data, context={'request': request})
             return Response(serializer.data)
+        user_storage.delete_dir(request, path)
+        return Response(status=204)
 
     def _split_path(self, path):
         head, tail = os.path.split(path)

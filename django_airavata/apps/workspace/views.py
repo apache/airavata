@@ -8,7 +8,7 @@ from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 
 from airavata.model.application.io.ttypes import DataType
-from django_airavata.apps.api import data_products_helper
+from airavata_django_portal_sdk import user_storage as user_storage_sdk
 from django_airavata.apps.api.views import (
     ApplicationModuleViewSet,
     ExperimentSearchViewSet,
@@ -94,13 +94,14 @@ def create_experiment(request, app_module_id):
                     try:
                         data_product = request.airavata_client.getDataProduct(
                             request.authz_token, dp_uri)
-                        if data_products_helper.exists(request, data_product):
+                        if user_storage_sdk.exists(request, data_product):
                             user_input_values[app_input['name']] = dp_uri
                     except Exception as e:
                         logger.exception(
-                            "Failed checking data product uri: {dp_uri}")
+                            f"Failed checking data product uri: {dp_uri}")
                 else:
-                    data_product_uri = data_products_helper.user_file_exists(
+                    # TODO: remove this functionality, data product URI should be passed instead
+                    data_product_uri = user_storage_sdk.user_file_exists(
                         request, user_file_url.path)
                     if data_product_uri is not None:
                         user_input_values[app_input['name']] = data_product_uri

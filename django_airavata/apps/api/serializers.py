@@ -61,8 +61,9 @@ from airavata.model.workspace.ttypes import (
     NotificationPriority,
     Project
 )
+from airavata_django_portal_sdk import user_storage
 
-from . import data_products_helper, models, thrift_utils
+from . import models, thrift_utils
 
 log = logging.getLogger(__name__)
 
@@ -460,8 +461,8 @@ class ExperimentSerializer(
                 experiment.userConfigurationData.experimentDataDir):
             request = self.context['request']
             data_dir = experiment.userConfigurationData.experimentDataDir
-            if data_products_helper.dir_exists(request, data_dir):
-                return data_products_helper.get_rel_path(request, data_dir)
+            if user_storage.dir_exists(request, data_dir):
+                return user_storage.get_rel_path(request, data_dir)
             else:
                 return None
         else:
@@ -485,7 +486,7 @@ class DataProductSerializer(
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""
         request = self.context['request']
-        if data_products_helper.exists(request, data_product):
+        if user_storage.exists(request, data_product):
             return (request.build_absolute_uri(
                 reverse('django_airavata_api:download_file')) +
                 '?' +
@@ -495,7 +496,7 @@ class DataProductSerializer(
     def get_isInputFileUpload(self, data_product):
         """Return True if this is an uploaded input file."""
         request = self.context['request']
-        return data_products_helper.is_input_file_upload(request, data_product)
+        return user_storage.is_input_file(request, data_product)
 
 
 # TODO move this into airavata_sdk?
