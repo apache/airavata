@@ -159,7 +159,7 @@ class CopyInputFileUploadTests(BaseTestCase):
                     filePath=replica_path,
                     replicaLocationCategory=replica_category)]
 
-            data_product_copy = user_storage.copy_input_file_upload(
+            data_product_copy = user_storage.copy_input_file(
                 self.request, data_product)
 
             self.request.airavata_client.registerDataProduct.\
