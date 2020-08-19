@@ -18,6 +18,7 @@
  */
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.CustosToAiravataDataModelMapper;
 import org.apache.airavata.common.utils.CustosUtils;
@@ -32,11 +33,16 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
+import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.custos.iam.service.FindUsersResponse;
 import org.apache.custos.iam.service.OperationStatus;
 import org.apache.custos.iam.service.RegisterUserResponse;
 import org.apache.custos.iam.service.UserRepresentation;
+import org.apache.custos.resource.secret.management.client.ResourceSecretManagementClient;
+import org.apache.custos.resource.secret.service.AddResourceCredentialResponse;
+import org.apache.custos.tenant.management.service.CreateTenantResponse;
+import org.apache.custos.tenant.manamgement.client.TenantManagementClient;
 import org.apache.custos.user.management.client.UserManagementClient;
 import org.apache.custos.user.profile.service.GetAllUserProfilesResponse;
 import org.apache.thrift.TException;
@@ -52,10 +58,14 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
 
     private UserManagementClient userManagementClient;
+    private TenantManagementClient tenantManagementClient;
+    private ResourceSecretManagementClient resourceSecretManagementClient;
 
     public IamAdminServicesHandler() {
         try {
             userManagementClient = CustosUtils.getCustosClientProvider().getUserManagementClient();
+            tenantManagementClient = CustosUtils.getCustosClientProvider().getTenantManagementClient();
+            resourceSecretManagementClient = CustosUtils.getCustosClientProvider().getResourceSecretManagementClient();
 
         } catch (Exception ex) {
             logger.error("Error while initiating Custos User management client ");
@@ -67,34 +77,47 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         return iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 
-//    @Override
-//    @SecurityCheck
-//    public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
-//        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-//        PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
-//        try {
-//            keycloakclient.addTenant(isSuperAdminCredentials, gateway);
-//
-//            // Load the tenant admin password stored in gateway request
-//            CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
-//            // Admin password token should already be stored under requested gateway's gatewayId
-//            PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
-//
-//            if (!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials, gateway, tenantAdminPasswordCredential.getPassword())) {
-//                logger.error("Admin account creation failed !!, please refer error logs for reason");
-//            }
-//            Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
-//            return gatewayWithIdAndSecret;
-//        } catch (TException | ApplicationSettingsException ex) {
-//            logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
-//            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
-//            throw iamAdminServicesException;
-//        }
-//    }
 
     @Override
+    @SecurityCheck
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException, TException {
-        return null;
+        try {
+            String[] contacts = {gateway.getEmailAddress()};
+            String comment = "Airavata gateway internal id " + gateway.getGatewayId();
+
+            String domain = gateway.getDomain();
+            if (gateway.getDomain() == null || gateway.getDomain().trim().equals("")) {
+                String gatewayURL = gateway.getGatewayURL();
+                domain = gatewayURL.substring(gatewayURL.lastIndexOf("://"), gatewayURL.lastIndexOf("/"));
+            }
+            String adminPassword = getAdminPassword(authzToken, gateway);
+            CreateTenantResponse response = tenantManagementClient.registerTenant(gateway.getGatewayName(),
+                    gateway.getRequesterUsername(),
+                    gateway.getGatewayAdminFirstName(),
+                    gateway.getGatewayAdminLastName(),
+                    gateway.getEmailAddress(),
+                    gateway.getIdentityServerUserName(),
+                    adminPassword,
+                    contacts,
+                    gateway.getRedirectURLs().toArray(new String[gateway.getRedirectURLs().size()]),
+                    gateway.getGatewayURL(),
+                    gateway.getScope(),
+                    domain,
+                    gateway.getGatewayURL(),
+                    comment);
+
+            copyAdminPasswordToGateway(authzToken, gateway, response.getClientId());
+            gateway.setOauthClientId(response.getClientId());
+            gateway.setOauthClientSecret(response.getClientSecret());
+
+            dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.UPDATE, gateway);
+
+            return gateway;
+        } catch (Exception e) {
+            logger.error("Gateway creating error, reason: " + e.getMessage(), e);
+            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(e.getMessage());
+            throw iamAdminServicesException;
+        }
     }
 
     @Override
@@ -103,7 +126,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         try {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
             OperationStatus status =
-                    CustosUtils.getCustosClientProvider().getUserManagementClient().isUsernameAvailable(username, custosId);
+                    userManagementClient.isUsernameAvailable(username, custosId);
             return status.getStatus();
         } catch (Exception e) {
             logger.error("Username checking error, reason: " + e.getMessage(), e);
@@ -376,6 +399,42 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         }
 
 
+    }
+
+    private String getAdminPassword(AuthzToken authzToken, Gateway gateway) throws TException, ApplicationSettingsException {
+        try {
+            String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+
+            org.apache.custos.resource.secret.service.PasswordCredential passwordCredential =
+                    resourceSecretManagementClient.getPasswordCredential(custosId, gateway.getIdentityServerPasswordToken());
+
+            return passwordCredential.getPassword();
+        } catch (Exception ex) {
+            logger.error("Unable to fetch admin password credential, reason: " + ex.getMessage(), ex);
+            TenantProfileServiceException exception = new TenantProfileServiceException();
+            exception.setMessage("Unable to fetch admin password credential, reason: " + ex.getMessage());
+            throw exception;
+        }
+    }
+
+    private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway, String createdGatewayCustosId) throws TException, ApplicationSettingsException {
+        try {
+            String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+
+            org.apache.custos.resource.secret.service.PasswordCredential passwordCredential =
+                    resourceSecretManagementClient.getPasswordCredential(custosId, gateway.getIdentityServerPasswordToken());
+
+            AddResourceCredentialResponse response = resourceSecretManagementClient.addPasswordCredential(createdGatewayCustosId,
+                    passwordCredential.getMetadata().getDescription(),
+                    gateway.getIdentityServerUserName(),
+                    passwordCredential.getPassword());
+            gateway.setIdentityServerPasswordToken(response.getToken());
+        } catch (Exception ex) {
+            logger.error("Unable to save admin password credential, reason: " + ex.getMessage(), ex);
+            TenantProfileServiceException exception = new TenantProfileServiceException();
+            exception.setMessage("Unable to save admin password credential, reason: " + ex.getMessage());
+            throw exception;
+        }
     }
 
 }

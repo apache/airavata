@@ -765,6 +765,8 @@ public class AiravataServerHandler implements Airavata.Iface {
 
         try {
 
+            logger.info("Registering for user "+ loginUserName + "at "+ custosId);
+
             AddResourceCredentialResponse response =
                     resourceSecretClient.addPasswordCredential(custosId, description, loginUserName, password);
 
