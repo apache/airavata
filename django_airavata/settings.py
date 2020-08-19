@@ -252,6 +252,9 @@ WAGTAIL_SITE_NAME = 'Django Airavata Portal'
 
 WAGTAILIMAGES_JPEG_QUALITY = 100
 
+# For some long wagtail pages, the number of POST parameters exceeds 1000,
+# which is the default for DATA_UPLOAD_MAX_NUMBER_FIELDS
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 LOGIN_URL = 'django_airavata_auth:login'
 LOGIN_REDIRECT_URL = 'django_airavata_workspace:dashboard'
