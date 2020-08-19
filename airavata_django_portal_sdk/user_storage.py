@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
+from django.core.files import File
 from django.core.files.move import file_move_safe
 from django.core.files.storage import FileSystemStorage
 
@@ -135,6 +136,45 @@ def delete_dir(request, path):
     """Delete path in user's data store, if it exists."""
     return _Datastore().delete_dir(request.user.username, path)
 
+def delete_user_file(request, path):
+    """Delete file in user's data store, if it exists."""
+    return _Datastore().delete(request.user.username, path)
+
+
+def update_file_content(request, path, fileContentText):
+    full_path = _Datastore().path(request.user.username, path)
+    with open(full_path, 'w') as f:
+        myfile = File(f)
+        myfile.write(fileContentText)
+
+
+def get_file(request, path):
+    datastore = _Datastore()
+    if datastore.exists(request.user.username, path):
+        created_time = datastore.get_created_time(
+            request.user.username, path)
+        size = datastore.size(request.user.username, path)
+        full_path = datastore.path(request.user.username, path)
+        data_product_uri = _get_data_product_uri(request, full_path)
+        dir_path, file_name = os.path.split(path)
+
+        data_product = request.airavata_client.getDataProduct(request.authz_token, data_product_uri)
+        mime_type = None
+        if 'mime-type' in data_product.productMetadata:
+            mime_type = data_product.productMetadata['mime-type']
+
+        return {
+           'name': full_path,
+           'path': dir_path,
+           'data-product-uri': data_product_uri,
+           'created_time': created_time,
+           'mime_type': mime_type,
+           'size': size,
+           'hidden': False
+        }
+    else:
+        raise ObjectDoesNotExist("User storage file path does not exist")
+
 
 def delete(request, data_product):
     "Delete replica for data product in this data store."
@@ -179,12 +219,18 @@ def listdir(request, path):
             size = datastore.size(request.user.username, user_rel_path)
             full_path = datastore.path(request.user.username, user_rel_path)
             data_product_uri = _get_data_product_uri(request, full_path)
+
+            data_product = request.airavata_client.getDataProduct(request.authz_token, data_product_uri)
+            mime_type = None
+            if 'mime-type' in data_product.productMetadata:
+                mime_type = data_product.productMetadata['mime-type']
             files_data.append(
                 {
                     "name": f,
                     "path": user_rel_path,
                     "data-product-uri": data_product_uri,
                     "created_time": created_time,
+                    "mime_type": mime_type,
                     "size": size,
                     "hidden": False,
                 }
