@@ -135,6 +135,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                         ThriftUtils.createThriftFromBytes(publisherContext.getEntityDataModel(), userProfile);
 
                         Gateway gateway = registryClient.getGateway(userProfile.getGatewayId());
+                        logger.info("UserProfile event detected #########" + userProfile.getAiravataInternalUserId());
                         // call service-methods based on CRUD type
                         switch (publisherContext.getCrudType()) {
                             case CREATE: {
@@ -147,6 +148,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                                 if (defaultProject != null) {
 
                                     defaultProject.setGatewayId(gateway.getOauthClientId());
+                                    logger.info("publishing gateway to sharing service "+ defaultProject.getGatewayId());
                                     // Publish new PROJECT event (sharing service will listen for it and register this as a shared Entity)
                                     dbEventPublisherUtils.publish(EntityType.PROJECT, CrudType.CREATE, defaultProject);
                                 }

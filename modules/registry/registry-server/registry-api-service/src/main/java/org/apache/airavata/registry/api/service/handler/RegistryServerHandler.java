@@ -205,6 +205,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Gateway getGateway(String gatewayId) throws RegistryServiceException, TException {
         try {
+            logger.info("Gateway Id "+ gatewayId);
             if (!gatewayRepository.isGatewayExist(gatewayId)){
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 AiravataSystemException exception = new AiravataSystemException();

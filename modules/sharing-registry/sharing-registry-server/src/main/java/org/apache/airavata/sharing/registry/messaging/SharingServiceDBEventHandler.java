@@ -83,6 +83,8 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
                         String custosId = gateway.getOauthClientId();
 
+                        log.info("Custos Id from sharing service "+ custosId);
+
                         switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()) {
 
                             case CREATE:
@@ -170,50 +172,50 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                     //Creating Permission Types for each domain
                                     log.info("Creating Permission Type. Id  READ");
                                     if (!isPermissionTypeExists(custosId, "READ")) {
-                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                        PermissionType applicationEntityType = PermissionType.newBuilder()
                                                 .setName("READ")
                                                 .setDescription("Read permission type")
                                                 .setId("READ")
                                                 .build();
 
-                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                        sharingManagementClient.createPermissionType(custosId, applicationEntityType);
                                     }
 
 
                                     log.info("Creating Permission Type. Id : WRITE");
 
                                     if (!isPermissionTypeExists(custosId, "WRITE")) {
-                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                        PermissionType applicationEntityType = PermissionType.newBuilder()
                                                 .setName("WRITE")
                                                 .setDescription("Write permission type")
                                                 .setId("WRITE")
                                                 .build();
 
-                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                        sharingManagementClient.createPermissionType(custosId, applicationEntityType);
                                     }
 
                                     log.info("Creating Permission Type. Id : OWNER");
 
                                     if (!isPermissionTypeExists(custosId, "OWNER")) {
-                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                        PermissionType applicationEntityType = PermissionType.newBuilder()
                                                 .setName("OWNER")
                                                 .setDescription("Owner permission type")
                                                 .setId("OWNER")
                                                 .build();
 
-                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                        sharingManagementClient.createPermissionType(custosId, applicationEntityType);
                                     }
 
                                     log.info("Creating Permission Type. Id : MANAGE_SHARING");
 
                                     if (!isPermissionTypeExists(custosId, "MANAGE_SHARING")) {
-                                        EntityType applicationEntityType = EntityType.newBuilder()
+                                        PermissionType applicationEntityType = PermissionType.newBuilder()
                                                 .setName("MANAGE_SHARING")
                                                 .setDescription("Manage sharing permission type")
                                                 .setId("MANAGE_SHARING")
                                                 .build();
 
-                                        sharingManagementClient.createEntityType(custosId, applicationEntityType);
+                                        sharingManagementClient.createPermissionType(custosId, applicationEntityType);
                                     }
                                 }
 
@@ -231,8 +233,8 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         final String custos = project.getGatewayId();
                         final String entityId = project.getProjectID();
 
-                        log.info("Custos "+ custos);
-                        log.info("Entity id "+ entityId);
+                        log.info("Custos Id at Project "+ custos);
+                        log.info("Entity id  at Project "+ entityId);
 
                         Entity entity = Entity.newBuilder()
                                 .setId(entityId)
