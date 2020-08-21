@@ -140,6 +140,7 @@ keycloak_db_username: "keycloak"
 keycloak_db_password: "{{ vault_keycloak_db_password }}"
 keycloak_master_account_username: "AiravataAdmin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
+keycloak_vhost_servername: "iam.scigap.org"
 
 # Helix
 helix_version: 0.7.1

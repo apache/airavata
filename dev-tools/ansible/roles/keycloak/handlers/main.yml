@@ -19,12 +19,8 @@
 #
 
 ---
-- hosts: keycloak
-  tags: keycloak
-  roles:
-    - env_setup
-    - java
-    - letsencrypt
-    - keycloak
 
-...
+# Gracefully reload httpd
+- name: restart httpd
+  service: name=httpd state=reloaded enabled=yes
+  become: yes
