@@ -269,6 +269,19 @@ service Airavata extends base_api.BaseAPI {
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
 
+   /**
+   * Validate the storage limit by validating the size against the UserStorageLimit in StoragePreference.
+   *
+   * @param userDirectory
+   *
+   * @param storageResourceId
+   *
+   **/
+   void validateStorageLimit (1: required security_model.AuthzToken authzToken,
+                2: required experiment_model.ExperimentModel experiment, 3: required string storageResourceId)
+          throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase)
  /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
    *

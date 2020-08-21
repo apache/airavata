@@ -198,6 +198,21 @@ class AiravataIf : virtual public  ::apache::airavata::base::api::BaseAPIIf {
   virtual void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& description) = 0;
 
   /**
+   * Validate the storage limit by validating the size against the UserStorageLimit in StoragePreference.
+   * 
+   * @param userDirectory
+   * 
+   * @param storageResourceId
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param experiment
+   * @param storageResourceId
+   */
+  virtual void validateStorageLimit(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::experiment::ExperimentModel& experiment, const std::string& storageResourceId) = 0;
+
+  /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
    * 
    * @param loginUserName
@@ -3036,6 +3051,9 @@ class AiravataNull : virtual public AiravataIf , virtual public  ::apache::airav
   void generateAndRegisterSSHKeys(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* description */) {
     return;
   }
+  void validateStorageLimit(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::experiment::ExperimentModel& /* experiment */, const std::string& /* storageResourceId */) {
+    return;
+  }
   void registerPwdCredential(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* loginUserName */, const std::string& /* password */, const std::string& /* description */) {
     return;
   }
@@ -5546,6 +5564,132 @@ class Airavata_generateAndRegisterSSHKeys_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_generateAndRegisterSSHKeys_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_validateStorageLimit_args {
+ public:
+
+  Airavata_validateStorageLimit_args(const Airavata_validateStorageLimit_args&);
+  Airavata_validateStorageLimit_args& operator=(const Airavata_validateStorageLimit_args&);
+  Airavata_validateStorageLimit_args() : storageResourceId() {
+  }
+
+  virtual ~Airavata_validateStorageLimit_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+   ::apache::airavata::model::experiment::ExperimentModel experiment;
+  std::string storageResourceId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_experiment(const  ::apache::airavata::model::experiment::ExperimentModel& val);
+
+  void __set_storageResourceId(const std::string& val);
+
+  bool operator == (const Airavata_validateStorageLimit_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(experiment == rhs.experiment))
+      return false;
+    if (!(storageResourceId == rhs.storageResourceId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_validateStorageLimit_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_validateStorageLimit_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_validateStorageLimit_pargs {
+ public:
+
+
+  virtual ~Airavata_validateStorageLimit_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::apache::airavata::model::experiment::ExperimentModel* experiment;
+  const std::string* storageResourceId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_validateStorageLimit_result__isset {
+  _Airavata_validateStorageLimit_result__isset() : ire(false), ace(false), ase(false) {}
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_validateStorageLimit_result__isset;
+
+class Airavata_validateStorageLimit_result {
+ public:
+
+  Airavata_validateStorageLimit_result(const Airavata_validateStorageLimit_result&);
+  Airavata_validateStorageLimit_result& operator=(const Airavata_validateStorageLimit_result&);
+  Airavata_validateStorageLimit_result() {
+  }
+
+  virtual ~Airavata_validateStorageLimit_result() throw();
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_validateStorageLimit_result__isset __isset;
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  bool operator == (const Airavata_validateStorageLimit_result & rhs) const
+  {
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_validateStorageLimit_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_validateStorageLimit_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_validateStorageLimit_presult__isset {
+  _Airavata_validateStorageLimit_presult__isset() : ire(false), ace(false), ase(false) {}
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+} _Airavata_validateStorageLimit_presult__isset;
+
+class Airavata_validateStorageLimit_presult {
+ public:
+
+
+  virtual ~Airavata_validateStorageLimit_presult() throw();
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_validateStorageLimit_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -30613,6 +30757,9 @@ class AiravataClient : virtual public AiravataIf, public  ::apache::airavata::ba
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& description);
   void send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& description);
   void recv_generateAndRegisterSSHKeys(std::string& _return);
+  void validateStorageLimit(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::experiment::ExperimentModel& experiment, const std::string& storageResourceId);
+  void send_validateStorageLimit(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::experiment::ExperimentModel& experiment, const std::string& storageResourceId);
+  void recv_validateStorageLimit();
   void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& loginUserName, const std::string& password, const std::string& description);
   void send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& loginUserName, const std::string& password, const std::string& description);
   void recv_registerPwdCredential(std::string& _return);
@@ -31168,6 +31315,7 @@ class AiravataProcessor : public  ::apache::airavata::base::api::BaseAPIProcesso
   void process_getNotification(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllNotifications(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_generateAndRegisterSSHKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_validateStorageLimit(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerPwdCredential(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getCredentialSummary(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllCredentialSummaries(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -31363,6 +31511,7 @@ class AiravataProcessor : public  ::apache::airavata::base::api::BaseAPIProcesso
     processMap_["getNotification"] = &AiravataProcessor::process_getNotification;
     processMap_["getAllNotifications"] = &AiravataProcessor::process_getAllNotifications;
     processMap_["generateAndRegisterSSHKeys"] = &AiravataProcessor::process_generateAndRegisterSSHKeys;
+    processMap_["validateStorageLimit"] = &AiravataProcessor::process_validateStorageLimit;
     processMap_["registerPwdCredential"] = &AiravataProcessor::process_registerPwdCredential;
     processMap_["getCredentialSummary"] = &AiravataProcessor::process_getCredentialSummary;
     processMap_["getAllCredentialSummaries"] = &AiravataProcessor::process_getAllCredentialSummaries;
@@ -31705,6 +31854,15 @@ class AiravataMultiface : virtual public AiravataIf, public  ::apache::airavata:
     }
     ifaces_[i]->generateAndRegisterSSHKeys(_return, authzToken, description);
     return;
+  }
+
+  void validateStorageLimit(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::experiment::ExperimentModel& experiment, const std::string& storageResourceId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->validateStorageLimit(authzToken, experiment, storageResourceId);
+    }
+    ifaces_[i]->validateStorageLimit(authzToken, experiment, storageResourceId);
   }
 
   void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& loginUserName, const std::string& password, const std::string& description) {
@@ -33466,6 +33624,9 @@ class AiravataConcurrentClient : virtual public AiravataIf, public  ::apache::ai
   void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& description);
   int32_t send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& description);
   void recv_generateAndRegisterSSHKeys(std::string& _return, const int32_t seqid);
+  void validateStorageLimit(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::experiment::ExperimentModel& experiment, const std::string& storageResourceId);
+  int32_t send_validateStorageLimit(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::experiment::ExperimentModel& experiment, const std::string& storageResourceId);
+  void recv_validateStorageLimit(const int32_t seqid);
   void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& loginUserName, const std::string& password, const std::string& description);
   int32_t send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& loginUserName, const std::string& password, const std::string& description);
   void recv_registerPwdCredential(std::string& _return, const int32_t seqid);

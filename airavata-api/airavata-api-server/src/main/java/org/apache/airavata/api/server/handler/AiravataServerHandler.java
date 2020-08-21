@@ -23,8 +23,11 @@ import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
+import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
+import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
@@ -690,6 +693,80 @@ public class AiravataServerHandler implements Airavata.Iface {
             registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
+    }
+
+    @Override
+    public void validateStorageLimit(AuthzToken authzToken, ExperimentModel experiment, String storageResourceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            StoragePreference storagePreference = regClient.getGatewayStoragePreference(gatewayId, storageResourceId);
+            if(storagePreference.getUserStorageQuota() == 0)
+                return; //quota isn't configured
+
+            String groupResourceProfileId = experiment.getUserConfigurationData().getGroupResourceProfileId();
+            if (groupResourceProfileId == null) {
+                logger.error("Experiment not configured with a Group Resource Profile: {}", experiment.getExperimentId());
+                AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Experiment not configured with a Group Resource Profile: " + experiment.getExperimentId());
+                throw exception;
+            }
+
+            GatewayResourceProfile gatewayResourceProfile = regClient.getGatewayResourceProfile(gatewayId);
+            String token;
+            if(isValid(storagePreference.getResourceSpecificCredentialStoreToken()))
+                token = storagePreference.getResourceSpecificCredentialStoreToken();
+            else
+                token = gatewayResourceProfile.getCredentialStoreToken();
+
+            StorageResourceAdaptor adaptor = AdaptorSupportImpl.getInstance().fetchStorageAdaptor(
+                    gatewayId,
+                    storageResourceId,
+                    DataMovementProtocol.SCP,
+                    token,
+                    storagePreference.getLoginUserName());
+            String experimentDataDir = experiment.getUserConfigurationData().getExperimentDataDir();
+            String userDirectory = getUserDirectory(experimentDataDir);
+
+            //shouldn't retrieve size in giga bytes since the du -s command rounds off the value to a higher bound.
+            CommandOutput output = adaptor.executeCommand("du -sm", userDirectory);
+            if(!output.getStdError().isEmpty()) {
+                logger.error("The experiment data directory + " + experimentDataDir + " configured on the experiment is wrong.");
+                AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("The experiment data directory + " + experimentDataDir + " configured on the experiment is wrong.");
+                throw exception;
+            }
+
+            double userDirectorySize = Double.parseDouble(output.getStdOut().substring(0, output.getStdOut().length() - 2).trim())/1024.0;
+            if(userDirectorySize >= storagePreference.getUserStorageQuota()) {
+                logger.error(String.format("The user directory %s has exceeded the storage quota: %d GB", userDirectory, storagePreference.getUserStorageQuota()));
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setMessage(String.format("The user directory %s has exceeded the storage quota: %d GB", userDirectory, storagePreference.getUserStorageQuota()));
+                throw exception;
+            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(ex.getMessage());
+            throw exception;
+        }
+    }
+
+    private String getUserDirectory(String experimentDataDirectory) {
+        //experiment directory is inside a project directory which is inside a user directory
+        String[] directories = experimentDataDirectory.split("/");
+        StringBuilder userDirectory = new StringBuilder();
+
+        for(int i = 0; i < directories.length - 2; i++)
+            if(!directories[i].isEmpty())
+                userDirectory.append("/").append(directories[i]);
+
+        return userDirectory.toString();
+    }
+
+    private boolean isValid(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 
     /**

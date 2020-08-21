@@ -224,6 +224,23 @@ class Iface(airavata.base.api.BaseAPI.Iface):
         """
         pass
 
+    def validateStorageLimit(self, authzToken, experiment, storageResourceId):
+        """
+        Validate the storage limit by validating the size against the UserStorageLimit in StoragePreference.
+
+        @param userDirectory
+
+        @param storageResourceId
+
+
+
+        Parameters:
+         - authzToken
+         - experiment
+         - storageResourceId
+        """
+        pass
+
     def registerPwdCredential(self, authzToken, loginUserName, password, description):
         """
         Generate and Register Username PWD Pair with Airavata Credential Store.
@@ -4266,6 +4283,53 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
         if result.ase is not None:
             raise result.ase
         raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result")
+
+    def validateStorageLimit(self, authzToken, experiment, storageResourceId):
+        """
+        Validate the storage limit by validating the size against the UserStorageLimit in StoragePreference.
+
+        @param userDirectory
+
+        @param storageResourceId
+
+
+
+        Parameters:
+         - authzToken
+         - experiment
+         - storageResourceId
+        """
+        self.send_validateStorageLimit(authzToken, experiment, storageResourceId)
+        self.recv_validateStorageLimit()
+
+    def send_validateStorageLimit(self, authzToken, experiment, storageResourceId):
+        self._oprot.writeMessageBegin('validateStorageLimit', TMessageType.CALL, self._seqid)
+        args = validateStorageLimit_args()
+        args.authzToken = authzToken
+        args.experiment = experiment
+        args.storageResourceId = storageResourceId
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_validateStorageLimit(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = validateStorageLimit_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.ire is not None:
+            raise result.ire
+        if result.ace is not None:
+            raise result.ace
+        if result.ase is not None:
+            raise result.ase
+        return
 
     def registerPwdCredential(self, authzToken, loginUserName, password, description):
         """
@@ -13641,6 +13705,7 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
         self._processMap["getNotification"] = Processor.process_getNotification
         self._processMap["getAllNotifications"] = Processor.process_getAllNotifications
         self._processMap["generateAndRegisterSSHKeys"] = Processor.process_generateAndRegisterSSHKeys
+        self._processMap["validateStorageLimit"] = Processor.process_validateStorageLimit
         self._processMap["registerPwdCredential"] = Processor.process_registerPwdCredential
         self._processMap["getCredentialSummary"] = Processor.process_getCredentialSummary
         self._processMap["getAllCredentialSummaries"] = Processor.process_getAllCredentialSummaries
@@ -14261,6 +14326,34 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("generateAndRegisterSSHKeys", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_validateStorageLimit(self, seqid, iprot, oprot):
+        args = validateStorageLimit_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = validateStorageLimit_result()
+        try:
+            self._handler.validateStorageLimit(args.authzToken, args.experiment, args.storageResourceId)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except airavata.api.error.ttypes.InvalidRequestException as ire:
+            msg_type = TMessageType.REPLY
+            result.ire = ire
+        except airavata.api.error.ttypes.AiravataClientException as ace:
+            msg_type = TMessageType.REPLY
+            result.ace = ace
+        except airavata.api.error.ttypes.AiravataSystemException as ase:
+            msg_type = TMessageType.REPLY
+            result.ase = ase
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("validateStorageLimit", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -22454,6 +22547,185 @@ class generateAndRegisterSSHKeys_result(object):
             oprot.writeFieldBegin('success', TType.STRING, 0)
             oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
             oprot.writeFieldEnd()
+        if self.ire is not None:
+            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+            self.ire.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ace is not None:
+            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+            self.ace.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ase is not None:
+            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+            self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class validateStorageLimit_args(object):
+    """
+    Attributes:
+     - authzToken
+     - experiment
+     - storageResourceId
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'authzToken', (airavata.model.security.ttypes.AuthzToken, airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'experiment', (airavata.model.experiment.ttypes.ExperimentModel, airavata.model.experiment.ttypes.ExperimentModel.thrift_spec), None, ),  # 2
+        (3, TType.STRING, 'storageResourceId', 'UTF8', None, ),  # 3
+    )
+
+    def __init__(self, authzToken=None, experiment=None, storageResourceId=None,):
+        self.authzToken = authzToken
+        self.experiment = experiment
+        self.storageResourceId = storageResourceId
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.experiment = airavata.model.experiment.ttypes.ExperimentModel()
+                    self.experiment.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.storageResourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('validateStorageLimit_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.experiment is not None:
+            oprot.writeFieldBegin('experiment', TType.STRUCT, 2)
+            self.experiment.write(oprot)
+            oprot.writeFieldEnd()
+        if self.storageResourceId is not None:
+            oprot.writeFieldBegin('storageResourceId', TType.STRING, 3)
+            oprot.writeString(self.storageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.storageResourceId)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.experiment is None:
+            raise TProtocolException(message='Required field experiment is unset!')
+        if self.storageResourceId is None:
+            raise TProtocolException(message='Required field storageResourceId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class validateStorageLimit_result(object):
+    """
+    Attributes:
+     - ire
+     - ace
+     - ase
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRUCT, 'ire', (airavata.api.error.ttypes.InvalidRequestException, airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ),  # 1
+        (2, TType.STRUCT, 'ace', (airavata.api.error.ttypes.AiravataClientException, airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ),  # 2
+        (3, TType.STRUCT, 'ase', (airavata.api.error.ttypes.AiravataSystemException, airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ),  # 3
+    )
+
+    def __init__(self, ire=None, ace=None, ase=None,):
+        self.ire = ire
+        self.ace = ace
+        self.ase = ase
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.ire = airavata.api.error.ttypes.InvalidRequestException()
+                    self.ire.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ace = airavata.api.error.ttypes.AiravataClientException()
+                    self.ace.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.ase = airavata.api.error.ttypes.AiravataSystemException()
+                    self.ase.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('validateStorageLimit_result')
         if self.ire is not None:
             oprot.writeFieldBegin('ire', TType.STRUCT, 1)
             self.ire.write(oprot)

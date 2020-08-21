@@ -217,10 +217,11 @@ inline std::ostream& operator<<(std::ostream& out, const ComputeResourcePreferen
 }
 
 typedef struct _StoragePreference__isset {
-  _StoragePreference__isset() : loginUserName(false), fileSystemRootLocation(false), resourceSpecificCredentialStoreToken(false) {}
+  _StoragePreference__isset() : loginUserName(false), fileSystemRootLocation(false), resourceSpecificCredentialStoreToken(false), userStorageQuota(false) {}
   bool loginUserName :1;
   bool fileSystemRootLocation :1;
   bool resourceSpecificCredentialStoreToken :1;
+  bool userStorageQuota :1;
 } _StoragePreference__isset;
 
 class StoragePreference : public virtual ::apache::thrift::TBase {
@@ -228,7 +229,7 @@ class StoragePreference : public virtual ::apache::thrift::TBase {
 
   StoragePreference(const StoragePreference&);
   StoragePreference& operator=(const StoragePreference&);
-  StoragePreference() : storageResourceId(), loginUserName(), fileSystemRootLocation(), resourceSpecificCredentialStoreToken() {
+  StoragePreference() : storageResourceId(), loginUserName(), fileSystemRootLocation(), resourceSpecificCredentialStoreToken(), userStorageQuota(0) {
   }
 
   virtual ~StoragePreference() throw();
@@ -236,6 +237,7 @@ class StoragePreference : public virtual ::apache::thrift::TBase {
   std::string loginUserName;
   std::string fileSystemRootLocation;
   std::string resourceSpecificCredentialStoreToken;
+  int64_t userStorageQuota;
 
   _StoragePreference__isset __isset;
 
@@ -246,6 +248,8 @@ class StoragePreference : public virtual ::apache::thrift::TBase {
   void __set_fileSystemRootLocation(const std::string& val);
 
   void __set_resourceSpecificCredentialStoreToken(const std::string& val);
+
+  void __set_userStorageQuota(const int64_t val);
 
   bool operator == (const StoragePreference & rhs) const
   {
@@ -262,6 +266,10 @@ class StoragePreference : public virtual ::apache::thrift::TBase {
     if (__isset.resourceSpecificCredentialStoreToken != rhs.__isset.resourceSpecificCredentialStoreToken)
       return false;
     else if (__isset.resourceSpecificCredentialStoreToken && !(resourceSpecificCredentialStoreToken == rhs.resourceSpecificCredentialStoreToken))
+      return false;
+    if (__isset.userStorageQuota != rhs.__isset.userStorageQuota)
+      return false;
+    else if (__isset.userStorageQuota && !(userStorageQuota == rhs.userStorageQuota))
       return false;
     return true;
   }

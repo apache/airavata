@@ -524,6 +524,11 @@ void StoragePreference::__set_resourceSpecificCredentialStoreToken(const std::st
 __isset.resourceSpecificCredentialStoreToken = true;
 }
 
+void StoragePreference::__set_userStorageQuota(const int64_t val) {
+  this->userStorageQuota = val;
+__isset.userStorageQuota = true;
+}
+
 uint32_t StoragePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -578,6 +583,14 @@ uint32_t StoragePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->userStorageQuota);
+          this->__isset.userStorageQuota = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -616,6 +629,11 @@ uint32_t StoragePreference::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeString(this->resourceSpecificCredentialStoreToken);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.userStorageQuota) {
+    xfer += oprot->writeFieldBegin("userStorageQuota", ::apache::thrift::protocol::T_I64, 5);
+    xfer += oprot->writeI64(this->userStorageQuota);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -627,6 +645,7 @@ void swap(StoragePreference &a, StoragePreference &b) {
   swap(a.loginUserName, b.loginUserName);
   swap(a.fileSystemRootLocation, b.fileSystemRootLocation);
   swap(a.resourceSpecificCredentialStoreToken, b.resourceSpecificCredentialStoreToken);
+  swap(a.userStorageQuota, b.userStorageQuota);
   swap(a.__isset, b.__isset);
 }
 
@@ -635,6 +654,7 @@ StoragePreference::StoragePreference(const StoragePreference& other12) {
   loginUserName = other12.loginUserName;
   fileSystemRootLocation = other12.fileSystemRootLocation;
   resourceSpecificCredentialStoreToken = other12.resourceSpecificCredentialStoreToken;
+  userStorageQuota = other12.userStorageQuota;
   __isset = other12.__isset;
 }
 StoragePreference& StoragePreference::operator=(const StoragePreference& other13) {
@@ -642,6 +662,7 @@ StoragePreference& StoragePreference::operator=(const StoragePreference& other13
   loginUserName = other13.loginUserName;
   fileSystemRootLocation = other13.fileSystemRootLocation;
   resourceSpecificCredentialStoreToken = other13.resourceSpecificCredentialStoreToken;
+  userStorageQuota = other13.userStorageQuota;
   __isset = other13.__isset;
   return *this;
 }
@@ -652,6 +673,7 @@ void StoragePreference::printTo(std::ostream& out) const {
   out << ", " << "loginUserName="; (__isset.loginUserName ? (out << to_string(loginUserName)) : (out << "<null>"));
   out << ", " << "fileSystemRootLocation="; (__isset.fileSystemRootLocation ? (out << to_string(fileSystemRootLocation)) : (out << "<null>"));
   out << ", " << "resourceSpecificCredentialStoreToken="; (__isset.resourceSpecificCredentialStoreToken ? (out << to_string(resourceSpecificCredentialStoreToken)) : (out << "<null>"));
+  out << ", " << "userStorageQuota="; (__isset.userStorageQuota ? (out << to_string(userStorageQuota)) : (out << "<null>"));
   out << ")";
 }
 

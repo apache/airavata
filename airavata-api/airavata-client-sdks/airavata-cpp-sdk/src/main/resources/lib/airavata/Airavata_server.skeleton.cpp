@@ -243,6 +243,24 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Validate the storage limit by validating the size against the UserStorageLimit in StoragePreference.
+   * 
+   * @param userDirectory
+   * 
+   * @param storageResourceId
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param experiment
+   * @param storageResourceId
+   */
+  void validateStorageLimit(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::experiment::ExperimentModel& experiment, const std::string& storageResourceId) {
+    // Your implementation goes here
+    printf("validateStorageLimit\n");
+  }
+
+  /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
    * 
    * @param loginUserName

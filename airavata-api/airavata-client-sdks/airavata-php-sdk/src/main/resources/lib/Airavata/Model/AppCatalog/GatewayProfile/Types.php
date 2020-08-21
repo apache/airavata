@@ -547,6 +547,10 @@ class StoragePreference {
    * @var string
    */
   public $resourceSpecificCredentialStoreToken = null;
+  /**
+   * @var int
+   */
+  public $userStorageQuota = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -567,6 +571,10 @@ class StoragePreference {
           'var' => 'resourceSpecificCredentialStoreToken',
           'type' => TType::STRING,
           ),
+        5 => array(
+          'var' => 'userStorageQuota',
+          'type' => TType::I64,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -581,6 +589,9 @@ class StoragePreference {
       }
       if (isset($vals['resourceSpecificCredentialStoreToken'])) {
         $this->resourceSpecificCredentialStoreToken = $vals['resourceSpecificCredentialStoreToken'];
+      }
+      if (isset($vals['userStorageQuota'])) {
+        $this->userStorageQuota = $vals['userStorageQuota'];
       }
     }
   }
@@ -632,6 +643,13 @@ class StoragePreference {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 5:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->userStorageQuota);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -663,6 +681,11 @@ class StoragePreference {
     if ($this->resourceSpecificCredentialStoreToken !== null) {
       $xfer += $output->writeFieldBegin('resourceSpecificCredentialStoreToken', TType::STRING, 4);
       $xfer += $output->writeString($this->resourceSpecificCredentialStoreToken);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userStorageQuota !== null) {
+      $xfer += $output->writeFieldBegin('userStorageQuota', TType::I64, 5);
+      $xfer += $output->writeI64($this->userStorageQuota);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
