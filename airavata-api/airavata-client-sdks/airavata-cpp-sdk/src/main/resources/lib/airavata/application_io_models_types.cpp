@@ -119,6 +119,11 @@ void InputDataObjectType::__set_isReadOnly(const bool val) {
 __isset.isReadOnly = true;
 }
 
+void InputDataObjectType::__set_overrideFilename(const std::string& val) {
+  this->overrideFilename = val;
+__isset.overrideFilename = true;
+}
+
 uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -247,6 +252,14 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
+      case 14:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->overrideFilename);
+          this->__isset.overrideFilename = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -330,6 +343,11 @@ uint32_t InputDataObjectType::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeBool(this->isReadOnly);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.overrideFilename) {
+    xfer += oprot->writeFieldBegin("overrideFilename", ::apache::thrift::protocol::T_STRING, 14);
+    xfer += oprot->writeString(this->overrideFilename);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -350,6 +368,7 @@ void swap(InputDataObjectType &a, InputDataObjectType &b) {
   swap(a.dataStaged, b.dataStaged);
   swap(a.storageResourceId, b.storageResourceId);
   swap(a.isReadOnly, b.isReadOnly);
+  swap(a.overrideFilename, b.overrideFilename);
   swap(a.__isset, b.__isset);
 }
 
@@ -367,6 +386,7 @@ InputDataObjectType::InputDataObjectType(const InputDataObjectType& other1) {
   dataStaged = other1.dataStaged;
   storageResourceId = other1.storageResourceId;
   isReadOnly = other1.isReadOnly;
+  overrideFilename = other1.overrideFilename;
   __isset = other1.__isset;
 }
 InputDataObjectType& InputDataObjectType::operator=(const InputDataObjectType& other2) {
@@ -383,6 +403,7 @@ InputDataObjectType& InputDataObjectType::operator=(const InputDataObjectType& o
   dataStaged = other2.dataStaged;
   storageResourceId = other2.storageResourceId;
   isReadOnly = other2.isReadOnly;
+  overrideFilename = other2.overrideFilename;
   __isset = other2.__isset;
   return *this;
 }
@@ -402,6 +423,7 @@ void InputDataObjectType::printTo(std::ostream& out) const {
   out << ", " << "dataStaged="; (__isset.dataStaged ? (out << to_string(dataStaged)) : (out << "<null>"));
   out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
   out << ", " << "isReadOnly="; (__isset.isReadOnly ? (out << to_string(isReadOnly)) : (out << "<null>"));
+  out << ", " << "overrideFilename="; (__isset.overrideFilename ? (out << to_string(overrideFilename)) : (out << "<null>"));
   out << ")";
 }
 

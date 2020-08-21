@@ -40,10 +40,12 @@ final class ResourcePermissionType {
   const WRITE = 0;
   const READ = 1;
   const OWNER = 2;
+  const MANAGE_SHARING = 3;
   static public $__names = array(
     0 => 'WRITE',
     1 => 'READ',
     2 => 'OWNER',
+    3 => 'MANAGE_SHARING',
   );
 }
 
