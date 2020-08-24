@@ -732,20 +732,23 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<OutputDataObjectType> getExperimentOutputsForJob(String airavataExperimentId, int jobIndex) throws RegistryServiceException, ExperimentNotFoundException, TException {
         List<OutputDataObjectType> experimentOutputs = getExperimentOutputs(airavataExperimentId);
         for (OutputDataObjectType out: experimentOutputs) {
-            String[] outValues = out.getValue().split(",");
-            List<String> filteredValues = new ArrayList<>();
-            for (String outDP : outValues) {
-                try {
-                    DataProductModel dataProduct = dataProductRepository.getDataProduct(outDP);
-                    Map<String, String> productMetadata = dataProduct.getProductMetadata();
-                    if (productMetadata.containsKey("version") && Integer.parseInt(productMetadata.get("version")) == jobIndex) {
-                        filteredValues.add(outDP);
+
+            if (out.getValue() != null) {
+                String[] outValues = out.getValue().split(",");
+                List<String> filteredValues = new ArrayList<>();
+                for (String outDP : outValues) {
+                    try {
+                        DataProductModel dataProduct = dataProductRepository.getDataProduct(outDP);
+                        Map<String, String> productMetadata = dataProduct.getProductMetadata();
+                        if (productMetadata.containsKey("version") && Integer.parseInt(productMetadata.get("version")) == jobIndex) {
+                            filteredValues.add(outDP);
+                        }
+                    } catch (ReplicaCatalogException e) {
+                        throw new RegistryServiceException("Failed to fetch data product with uri " + outDP);
                     }
-                } catch (ReplicaCatalogException e) {
-                    throw new RegistryServiceException("Failed to fetch data product with uri " + outDP);
                 }
+                out.setValue(String.join(",", filteredValues));
             }
-            out.setValue(String.join(",", filteredValues));
         }
         return experimentOutputs;
     }
