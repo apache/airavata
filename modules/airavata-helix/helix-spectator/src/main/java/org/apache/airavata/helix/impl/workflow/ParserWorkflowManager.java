@@ -239,8 +239,8 @@ public class ParserWorkflowManager extends WorkflowManager {
                         throw new Exception("Could not find an experiment output with name " + applicationOutputName);
                     }
                 } catch (TException e) {
-                    logger.error("Failed while fetching experiment " + completionMessage.getExperimentId());
-                    throw new Exception("Failed while fetching experiment " + completionMessage.getExperimentId());
+                    logger.error("Failed while fetching experiment " + completionMessage.getExperimentId(), e);
+                    throw new Exception("Failed while fetching experiment " + completionMessage.getExperimentId(), e);
                 }
             } else {
                 input.setValue(processExpression(templateInput.getValue(), completionMessage));
