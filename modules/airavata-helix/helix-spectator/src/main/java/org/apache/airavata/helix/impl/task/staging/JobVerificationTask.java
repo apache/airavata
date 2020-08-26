@@ -46,6 +46,8 @@ public class JobVerificationTask extends AiravataTask {
                             getTaskContext().getPreferredJobSubmissionInterface()),
                             "param_sweep".equals(getTaskContext().getExecutionType()));
 
+            logger.info("Job manager fetched successfully for process {}", getProcessId());
+
             AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
                     getTaskContext().getGatewayId(),
                     getTaskContext().getComputeResourceId(),
