@@ -128,6 +128,7 @@ public class WorkflowOperator {
         // if the hfac that monitors a particular workflow, got killed due to some reason, who is taking the responsibility
 
         if (monitor) {
+            logger.info("Waiting for workflow {} to be finished", workflow.getName());
             TaskState taskState = pollForWorkflowCompletion(workflow.getName(), 3600000);
             logger.info("Workflow " + workflowName + " for process " + processId + " finished with state " + taskState.name());
 
