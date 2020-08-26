@@ -31,9 +31,7 @@ import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
 import org.apache.airavata.helix.impl.task.staging.*;
 import org.apache.airavata.model.job.ChildJobModel;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.monitor.JobStateValidator;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -42,8 +40,6 @@ import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
@@ -146,6 +142,8 @@ public class PostWorkflowManager extends WorkflowManager {
 
                 if (!jobStatusResult.isChildJob()) {
                     saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
+                } else {
+                    saveAndPublishChildJobStatus(jobStatusResult.getJobId(), jobStatusResult.getState());
                 }
 
                 // TODO get cluster lock before that
@@ -177,15 +175,15 @@ public class PostWorkflowManager extends WorkflowManager {
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
                         if ("one_pass".equals(experimentModel.getExecutionType())) {
-                            executePostWorkflow(processId, gateway, false, 0, false, false);
+                            executePostWorkflowForProcess(processId, false);
                         } else {
 
                             if (jobStatusResult.isChildJob()) {
                                 logger.info("Running post workflow for child job index {} in job {} and task {}",
                                     jobStatusResult.getJobIndex(), jobStatusResult.getJobId(), task);
-                                executePostWorkflow(processId, gateway, true, jobStatusResult.getJobIndex(), true, false);
-
+                                executePostWorkflowForChildJob(processId, jobStatusResult.getJobIndex(), true);
                             } else {
+                                // Main job was completed. Check for all child job statuses and run missing ones.
                                 List<ChildJobModel> childJobsOfJob = registryClient.getChildJobsOfJob(jobStatusResult.getJobId(), task);
                                 Map<Integer, ChildJobModel> childMap = new HashMap<>();
                                 childJobsOfJob.forEach(child -> childMap.put(child.getJobIndex(), child));
@@ -197,12 +195,13 @@ public class PostWorkflowManager extends WorkflowManager {
                                                     .noneMatch(st -> (st.getJobState() == JobState.COMPLETE) || (st.getJobState() == JobState.FAILED))) {
                                         logger.info("Running post workflow for job {} index {} and task {}",
                                                 jobModel.getJobId(), i, jobModel.getTaskId());
-                                        executePostWorkflow(processId, gateway, false, i, false, true);
+                                        executePostWorkflowForChildJob(processId, i, true);
                                     } else {
                                         logger.info("Ignoring post workflow for job {} index {} in task {}",
                                                 jobModel.getJobId(), i, jobModel.getTaskId());
                                     }
                                 }
+                                executePostWorkflowForProcess(processId, true);
                             }
                         }
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
@@ -227,8 +226,7 @@ public class PostWorkflowManager extends WorkflowManager {
         }
     }
 
-    private void executePostWorkflow(String processId, String gateway, boolean forceRun, int jobIndex, boolean isChildJob, boolean excludeDataStage) throws Exception {
-
+    private void executePostWorkflowForChildJob(String processId, int jobIndex, boolean forceRun) throws Exception {
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
         ProcessModel processModel;
@@ -270,22 +268,16 @@ public class PostWorkflowManager extends WorkflowManager {
                 AiravataTask airavataTask = null;
                 if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
                     jobSubmissionFound = true;
-                } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING && !excludeDataStage) {
+                } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                     if (jobSubmissionFound) {
                         DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskModel);
                         assert subTaskModel != null;
                         switch (subTaskModel.getType()) {
                             case OUPUT:
-                                if ("one_pass".equals(experimentModel.getExecutionType())) {
-                                    airavataTask = new OutputDataStagingTask();
-                                    airavataTask.setForceRunTask(true);
-                                }
-                                if ("param_sweep".equals(experimentModel.getExecutionType())) {
-                                    SweepingOutputDataStagingTask sweepTask = new SweepingOutputDataStagingTask();
-                                    sweepTask.setJobIndex(jobIndex);
-                                    sweepTask.setForceRunTask(true);
-                                    airavataTask = sweepTask;
-                                }
+                                SweepingOutputDataStagingTask sweepTask = new SweepingOutputDataStagingTask();
+                                sweepTask.setJobIndex(jobIndex);
+                                sweepTask.setForceRunTask(true);
+                                airavataTask = sweepTask;
                                 break;
                             case ARCHIVE_OUTPUT:
                                 airavataTask = new ArchiveTask();
@@ -309,27 +301,118 @@ public class PostWorkflowManager extends WorkflowManager {
             }
         }
 
-        if (!isChildJob) {
-            CompletingTask completingTask = new CompletingTask();
-            completingTask.setGatewayId(experimentModel.getGatewayId());
-            completingTask.setExperimentId(experimentModel.getExperimentId());
-            completingTask.setProcessId(processModel.getProcessId());
-            completingTask.setTaskId("Completing-Task-" + UUID.randomUUID().toString() + "-");
-            completingTask.setForceRunTask(forceRun);
-            completingTask.setSkipTaskStatusPublish(true);
-            if (allTasks.size() > 0) {
-                allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
-            }
-            allTasks.add(completingTask);
+        ParsingTriggeringTask parsingTriggeringTask = new ParsingTriggeringTask();
+        parsingTriggeringTask.setGatewayId(experimentModel.getGatewayId());
+        parsingTriggeringTask.setExperimentId(experimentModel.getExperimentId());
+        parsingTriggeringTask.setProcessId(processModel.getProcessId());
+        parsingTriggeringTask.setTaskId("Parsing-Triggering-Task-" + UUID.randomUUID().toString() + "-");
+        parsingTriggeringTask.setSkipTaskStatusPublish(true);
+        parsingTriggeringTask.setOutputVersion(jobIndex);
+
+        if (allTasks.size() > 0) {
+            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(parsingTriggeringTask.getTaskId(), parsingTriggeringTask));
         }
+        allTasks.add(parsingTriggeringTask);
+
+        String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
+                new ArrayList<>(allTasks), true, false);
+
+        registerWorkflowForProcess(processId, workflowName, "POST");
+
+    }
+
+    private void executePostWorkflowForProcess(String processId, boolean forceRun) throws Exception {
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+        ProcessModel processModel;
+        ExperimentModel experimentModel;
+        try {
+            processModel = registryClient.getProcess(processId);
+            experimentModel = registryClient.getExperiment(processModel.getExperimentId());
+            getRegistryClientPool().returnResource(registryClient);
+
+        } catch (Exception e) {
+            logger.error("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+            getRegistryClientPool().returnResource(registryClient);
+            throw new Exception("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+        }
+
+        String taskDag = processModel.getTaskDag();
+        List<TaskModel> taskList = processModel.getTasks();
+
+        String[] taskIds = taskDag.split(",");
+        final List<AiravataTask> allTasks = new ArrayList<>();
+
+        JobVerificationTask jobVerificationTask = new JobVerificationTask();
+        jobVerificationTask.setGatewayId(experimentModel.getGatewayId());
+        jobVerificationTask.setExperimentId(experimentModel.getExperimentId());
+        jobVerificationTask.setProcessId(processModel.getProcessId());
+        jobVerificationTask.setTaskId("Job-Verification-Task-" + UUID.randomUUID().toString() +"-");
+        jobVerificationTask.setForceRunTask(forceRun);
+        jobVerificationTask.setSkipTaskStatusPublish(true);
+
+        allTasks.add(jobVerificationTask);
+
+        boolean jobSubmissionFound = false;
+
+        for (String taskId : taskIds) {
+            Optional<TaskModel> model = taskList.stream().filter(taskModel -> taskModel.getTaskId().equals(taskId)).findFirst();
+
+            if (model.isPresent()) {
+                TaskModel taskModel = model.get();
+                AiravataTask airavataTask = null;
+                if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
+                    jobSubmissionFound = true;
+                } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
+                    if (jobSubmissionFound) {
+                        DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskModel);
+                        assert subTaskModel != null;
+                        switch (subTaskModel.getType()) {
+                            case OUPUT:
+                                airavataTask = new OutputDataStagingTask();
+                                airavataTask.setForceRunTask(true);
+                                break;
+                            case ARCHIVE_OUTPUT:
+                                airavataTask = new ArchiveTask();
+                                airavataTask.setForceRunTask(true);
+                                break;
+                        }
+                    }
+                }
+
+                if (airavataTask != null) {
+                    airavataTask.setGatewayId(experimentModel.getGatewayId());
+                    airavataTask.setExperimentId(experimentModel.getExperimentId());
+                    airavataTask.setProcessId(processModel.getProcessId());
+                    airavataTask.setTaskId(taskModel.getTaskId());
+                    airavataTask.setRetryCount(taskModel.getMaxRetry());
+                    if (allTasks.size() > 0) {
+                        allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
+                    }
+                    allTasks.add(airavataTask);
+                }
+            }
+        }
+
+        CompletingTask completingTask = new CompletingTask();
+        completingTask.setGatewayId(experimentModel.getGatewayId());
+        completingTask.setExperimentId(experimentModel.getExperimentId());
+        completingTask.setProcessId(processModel.getProcessId());
+        completingTask.setTaskId("Completing-Task-" + UUID.randomUUID().toString() + "-");
+        completingTask.setForceRunTask(forceRun);
+        completingTask.setSkipTaskStatusPublish(true);
+        if (allTasks.size() > 0) {
+            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
+        }
+        allTasks.add(completingTask);
 
         ParsingTriggeringTask parsingTriggeringTask = new ParsingTriggeringTask();
         parsingTriggeringTask.setGatewayId(experimentModel.getGatewayId());
         parsingTriggeringTask.setExperimentId(experimentModel.getExperimentId());
         parsingTriggeringTask.setProcessId(processModel.getProcessId());
-        parsingTriggeringTask.setTaskId("Parsing-Triggering-Task");
+        parsingTriggeringTask.setTaskId("Parsing-Triggering-Task-" + UUID.randomUUID().toString() + "-");
         parsingTriggeringTask.setSkipTaskStatusPublish(true);
-        parsingTriggeringTask.setOutputVersion(jobIndex);
+        parsingTriggeringTask.setOutputVersion(-1);
 
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(parsingTriggeringTask.getTaskId(), parsingTriggeringTask));
@@ -386,6 +469,31 @@ public class PostWorkflowManager extends WorkflowManager {
         }).start();
     }
 
+    private void saveAndPublishChildJobStatus(String jobId, JobState jobState) throws Exception {
+
+        try {
+            RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+            ChildJobStatus childJobStatus = new ChildJobStatus();
+            childJobStatus.setJobState(jobState);
+            childJobStatus.setReason(jobState.name());
+            childJobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+
+            try {
+                registryClient.addChildJobStatus(childJobStatus, jobId);
+                getRegistryClientPool().returnResource(registryClient);
+
+            } catch (Exception e) {
+                logger.error("Failed to add child job status " + jobId, e);
+                getRegistryClientPool().returnBrokenResource(registryClient);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error persisting child job status {}", jobId, e);
+            throw e;
+        }
+    }
+
     private void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
                                         JobState jobState) throws Exception {
         try {
@@ -394,12 +502,6 @@ public class PostWorkflowManager extends WorkflowManager {
             jobStatus.setReason(jobState.name());
             jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             jobStatus.setJobState(jobState);
-
-            if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0 ) {
-                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            } else {
-                jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
-            }
 
             RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
