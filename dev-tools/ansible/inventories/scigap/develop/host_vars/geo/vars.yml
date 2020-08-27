@@ -33,6 +33,9 @@ ssl_certificate_file: "/etc/letsencrypt/live/beta.geogateway.scigap.org/cert.pem
 ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.geogateway.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/beta.geogateway.scigap.org/privkey.pem"
 
+django_extra_settings:
+  LOGIN_REDIRECT_URL: "/geogateway_django_app/"
+
 ## Keycloak related variables
 tenant_domain: "beta-geo"
 oauth_client_key: "{{ vault_oauth_client_key }}"
