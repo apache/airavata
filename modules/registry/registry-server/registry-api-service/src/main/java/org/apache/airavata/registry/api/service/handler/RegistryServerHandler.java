@@ -130,6 +130,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private TaskErrorRepository taskErrorRepository = new TaskErrorRepository();
     private JobRepository jobRepository = new JobRepository();
     private ChildJobRepository childJobRepository = new ChildJobRepository();
+    private ChildJobStatusRepository childJobStatusRepository = new ChildJobStatusRepository();
     private JobStatusRepository jobStatusRepository = new JobStatusRepository();
     private QueueStatusRepository queueStatusRepository = new QueueStatusRepository();
     private DataProductRepository dataProductRepository = new DataProductRepository();
@@ -975,7 +976,15 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     @Override
     public void addChildJobStatus(ChildJobStatus jobStatus, String childJobId) throws RegistryServiceException, TException {
-
+        try {
+            childJobStatusRepository.addChildJobStatus(jobStatus, childJobId);
+        } catch (Exception e) {
+            logger.error("Error while adding the child job status for child job {}", childJobId, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding child job status. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
