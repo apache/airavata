@@ -279,10 +279,6 @@ public class PostWorkflowManager extends WorkflowManager {
                                 sweepTask.setForceRunTask(true);
                                 airavataTask = sweepTask;
                                 break;
-                            case ARCHIVE_OUTPUT:
-                                airavataTask = new ArchiveTask();
-                                airavataTask.setForceRunTask(true);
-                                break;
                         }
                     }
                 }
