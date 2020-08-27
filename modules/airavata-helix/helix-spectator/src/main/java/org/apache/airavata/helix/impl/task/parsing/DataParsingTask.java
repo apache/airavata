@@ -151,6 +151,13 @@ public class DataParsingTask extends AbstractTask {
                         }
 
                         logger.info("Using data product uri {} for input name {}", inputDataProductUri, parserInput.getName());
+
+                        String[] dataPordUris = inputDataProductUri.split(",");
+                        if (dataPordUris.length > 1) {
+                            logger.info("Multiple data products found {}. Using last one", inputDataProductUri);
+                            inputDataProductUri = dataPordUris[dataPordUris.length - 1];
+                        }
+
                         DataProductModel inputDataProduct = getRegistryServiceClient().getDataProduct(inputDataProductUri);
                         List<DataReplicaLocationModel> replicaLocations = inputDataProduct.getReplicaLocations();
 
