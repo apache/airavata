@@ -111,6 +111,8 @@ public class DataParsingTask extends AbstractTask {
         try {
 
             Parser parser = getRegistryServiceClient().getParser(parserId, gatewayId);
+            logger.info("Loading parser with id {}", parser.getId());
+
             String containerId = getTaskId() + "_PARSER_"+ parser.getId();
             containerId = containerId.replace(" ", "-");
 
@@ -128,7 +130,12 @@ public class DataParsingTask extends AbstractTask {
 
                     ParsingTaskInput parsingTaskInput = filteredInputOptional.get();
 
-                    String inputVal = parsingTaskInput.getValue() != null ? parsingTaskInput.getValue() : getContextVariable(parsingTaskInput.getContextVariableName());
+                    String inputVal = parsingTaskInput.getValue() != null ?
+                                                parsingTaskInput.getValue() :
+                                                getContextVariable(parsingTaskInput.getContextVariableName());
+
+                    logger.info("Processing parser input {} with type {} and with value {}",
+                                                    parsingTaskInput.getName(), parserInput.getType().name(), inputVal);
 
                     if ("PROPERTY".equals(parsingTaskInput.getType())) {
                         properties.put(parsingTaskInput.getName(), inputVal);
@@ -142,6 +149,8 @@ public class DataParsingTask extends AbstractTask {
                             throw new TaskOnFailException("Data product uri could not be null or empty for input "
                                     + parsingTaskInput.getId() + " with name " + parserInput.getName(), true, null);
                         }
+
+                        logger.info("Using data product uri {} for input name {}", inputDataProductUri, parserInput.getName());
                         DataProductModel inputDataProduct = getRegistryServiceClient().getDataProduct(inputDataProductUri);
                         List<DataReplicaLocationModel> replicaLocations = inputDataProduct.getReplicaLocations();
 
