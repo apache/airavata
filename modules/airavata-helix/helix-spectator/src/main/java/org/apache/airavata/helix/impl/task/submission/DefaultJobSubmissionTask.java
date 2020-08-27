@@ -37,6 +37,7 @@ import org.apache.airavata.model.job.ChildJobModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -291,7 +292,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
         for (int childIndex : childRanges) {
             ChildJobModel childJobModel = new ChildJobModel();
-            childJobModel.setChildJobId(jobModel.getTaskId() + "_" + jobModel.getJobId() + "_" + childIndex);
+            childJobModel.setChildJobId(ExpCatalogUtils.getCompositeId(jobModel.getTaskId(), jobModel.getJobId(), childIndex +""));
             childJobModel.setJobIndex(childIndex);
             childJobModel.setParentJobId(jobModel.getJobId());
             childJobModel.setParentTaskId(jobModel.getTaskId());

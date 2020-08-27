@@ -26,4 +26,12 @@ public class ExpCatalogUtils {
         String pro = name.replaceAll("\\s", "");
         return pro + "_" + UUID.randomUUID();
     }
+
+    public static String getCompositeId(String... fields) {
+        String id = "";
+        if (fields != null) {
+            id = String.join("_", fields);
+        }
+        return id;
+    }
 }

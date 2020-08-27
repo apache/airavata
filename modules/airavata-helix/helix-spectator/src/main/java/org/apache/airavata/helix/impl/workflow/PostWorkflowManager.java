@@ -44,6 +44,7 @@ import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -143,7 +144,8 @@ public class PostWorkflowManager extends WorkflowManager {
                 if (!jobStatusResult.isChildJob()) {
                     saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
                 } else {
-                    saveAndPublishChildJobStatus(jobStatusResult.getJobId(), jobStatusResult.getState());
+                    String childJobId =  ExpCatalogUtils.getCompositeId(task, jobStatusResult.getJobId(), jobStatusResult.getJobIndex() +"");
+                    saveAndPublishChildJobStatus(childJobId, jobStatusResult.getState());
                 }
 
                 // TODO get cluster lock before that
@@ -185,22 +187,33 @@ public class PostWorkflowManager extends WorkflowManager {
                             } else {
                                 // Main job was completed. Check for all child job statuses and run missing ones.
                                 List<ChildJobModel> childJobsOfJob = registryClient.getChildJobsOfJob(jobStatusResult.getJobId(), task);
-                                Map<Integer, ChildJobModel> childMap = new HashMap<>();
-                                childJobsOfJob.forEach(child -> childMap.put(child.getJobIndex(), child));
-                                List<Integer> rangeInts = SpecUtils.decodeRange(experimentModel.getSweepRange(), experimentModel.getExecutionType());
-                                for (int i : rangeInts) {
-                                    ChildJobModel child = childMap.get(i);
-                                    if (child != null &&
-                                            child.getJobStatuses().stream()
-                                                    .noneMatch(st -> (st.getJobState() == JobState.COMPLETE) || (st.getJobState() == JobState.FAILED))) {
-                                        logger.info("Running post workflow for job {} index {} and task {}",
-                                                jobModel.getJobId(), i, jobModel.getTaskId());
-                                        executePostWorkflowForChildJob(processId, i, true);
-                                    } else {
-                                        logger.info("Ignoring post workflow for job {} index {} in task {}",
-                                                jobModel.getJobId(), i, jobModel.getTaskId());
+                                childJobsOfJob.forEach(child -> {
+                                    List<ChildJobStatus> statuses = child.getJobStatuses();
+                                    boolean alreadyProcessed = false;
+                                    if (statuses != null) {
+                                        alreadyProcessed = statuses.stream().anyMatch(
+                                                st -> st.getJobState() == JobState.COMPLETE ||
+                                                st.getJobState() == JobState.FAILED);
                                     }
-                                }
+
+                                    if (!alreadyProcessed) {
+                                        logger.info("Child job index {} of job {} was not completed though main job was " +
+                                                                "completed. Marking to run post workflow",
+                                                                child.getJobIndex(), child.getParentJobId());
+                                        try {
+                                            executePostWorkflowForChildJob(processId, child.getJobIndex(), true);
+                                            saveAndPublishChildJobStatus(child.getChildJobId(), jobStatusResult.getState());
+                                        } catch (Exception e) {
+                                            logger.error("Failed to run post workflow for child index {} in job {}. But continuing",
+                                                                child.getJobIndex(), child.getParentJobId());
+                                        }
+                                    } else {
+                                        logger.info("Child job index {} of job {} was already completed. Moving to next one",
+                                                                child.getJobIndex(), child.getParentJobId());
+                                    }
+                                });
+
+                                logger.info("Running the post workflow for main job in process {}", processId);
                                 executePostWorkflowForProcess(processId, true);
                             }
                         }
