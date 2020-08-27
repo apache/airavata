@@ -105,6 +105,7 @@ public class PoolingSSHJClient extends SSHClient {
         /* if this is the very first connection that is created to the compute host, fetch the MaxSessions
          * value form SSHD config file in order to tune the pool
          */
+        /*
         logger.info("Fetching max sessions for the connection of " + host);
         try (SFTPClient sftpClient = newClient.newSFTPClient()) {
             RemoteFile remoteFile = sftpClient.open("/etc/ssh/sshd_config");
@@ -129,7 +130,7 @@ public class PoolingSSHJClient extends SSHClient {
             }
         } catch (Exception e) {
             logger.warn("Failed to fetch max session count for " + host + ". Continuing with default value 1. " + e.getMessage() );
-        }
+        }*/
         return newClient;
     }
 
