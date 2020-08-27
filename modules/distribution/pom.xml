@@ -447,6 +447,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
+
+        <!-- For local persistent queues -->
+        <dependency>
+            <groupId>com.leansoft</groupId>
+            <artifactId>bigqueue</artifactId>
+            <version>${bigqueue.version}</version>
+        </dependency>
     </dependencies>
 
     <url>http://airavata.apache.org/</url>
