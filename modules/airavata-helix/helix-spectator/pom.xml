@@ -124,5 +124,10 @@
             <artifactId>docker-client</artifactId>
             <version>8.16.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.leansoft</groupId>
+            <artifactId>bigqueue</artifactId>
+            <version>0.7.0</version>
+        </dependency>
     </dependencies>
 </project>

@@ -19,12 +19,12 @@
  */
 package org.apache.airavata.helix.impl.workflow;
 
+import com.leansoft.bigqueue.BigQueueImpl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.impl.SpecUtils;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
@@ -43,6 +43,7 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.monitor.kafka.JobStatusResultSerializer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.kafka.clients.consumer.*;
@@ -60,6 +61,8 @@ public class PostWorkflowManager extends WorkflowManager {
     private final static Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
 
     private ExecutorService processingPool = Executors.newFixedThreadPool(10);
+    private ScheduledExecutorService localQueueScheduler = Executors.newSingleThreadScheduledExecutor();
+    private BigQueueImpl localJobQueue;
 
     public PostWorkflowManager() throws ApplicationSettingsException {
         super(ServerSettings.getSetting("post.workflow.manager.name"),
@@ -68,21 +71,29 @@ public class PostWorkflowManager extends WorkflowManager {
 
     private void init() throws Exception {
         super.initComponents();
+        this.localJobQueue = new BigQueueImpl(
+                            ServerSettings.getSetting("local.job.queue.dir", "/tmp"),
+                            ServerSettings.getSetting("local.job.queue.name", "post_wm_local_queue"));
+        executeLocalQueue();
     }
 
-    private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
-        final Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.broker.consumer.group"));
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 20);
-        // Create the consumer using props.
-        final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
-        // Subscribe to the topic.
-        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("kafka.broker.topic")));
-        return consumer;
+    /**
+     * Local queue keeps track of the already read JobStatusResults through kafka and processes them in a seperate thread
+     */
+    private void executeLocalQueue() {
+        localQueueScheduler.scheduleWithFixedDelay(() -> {
+            while (!localJobQueue.isEmpty()) {
+                try {
+                    byte[] asBytes = localJobQueue.dequeue();
+                    JobStatusResult result = new JobStatusResultDeserializer().deserialize(null, asBytes);
+                    logger.info("Dequeued job {} with index {} form local queue", result.getJobId(), result.getJobIndex());
+                    boolean processResult = process(result);
+                    logger.info("Process result of job {} : {}", result.getJobId(), processResult);
+                } catch (Exception e) {
+                    logger.error("Errored while processing from local queue", e);
+                }
+            }
+        }, 5, 10, TimeUnit.SECONDS);
     }
 
     private boolean process(JobStatusResult jobStatusResult) {
@@ -434,6 +445,21 @@ public class PostWorkflowManager extends WorkflowManager {
         registerWorkflowForProcess(processId, workflowName, "POST");
     }
 
+    private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
+        final Properties props = new Properties();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.broker.consumer.group"));
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 20);
+        // Create the consumer using props.
+        final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
+        // Subscribe to the topic.
+        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("kafka.broker.topic")));
+        return consumer;
+    }
+
     public void startServer() throws Exception {
 
         init();
@@ -457,9 +483,11 @@ public class PostWorkflowManager extends WorkflowManager {
                         // There is a risk of missing 20 messages in case of a restart but this improves the robustness
                         // of the kafka read thread by avoiding wait timeouts
                         processingFutures.add(executorCompletionService.submit(() -> {
-                            boolean success = process(record.value());
-                            logger.info("Status of processing " + record.value().getJobId() + " : " + success);
-                            return success;
+                            // This totally removes the load from kafka thread to process the message. It is now delegated
+                            // through a local persistent queue. It keeps track of the status even in the cases of restarts.
+                            localJobQueue.enqueue(new JobStatusResultSerializer().serialize(null, record.value()));
+                            logger.info("Job {} was pushed to local queue to process", record.value().getJobId());
+                            return true;
                         }));
 
                         consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
