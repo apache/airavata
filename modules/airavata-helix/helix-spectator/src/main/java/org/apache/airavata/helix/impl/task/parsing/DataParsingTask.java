@@ -20,6 +20,7 @@
 package org.apache.airavata.helix.impl.task.parsing;
 
 import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerClient.ExecCreateParam;
 import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
@@ -265,8 +266,8 @@ public class DataParsingTask extends AbstractTask {
 
         String[] command = {"sh", "-c", "l"};
         ExecCreation execCreation = docker.execCreate(
-                id, command, com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
-                com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+                id, command, ExecCreateParam.attachStdout(),
+                ExecCreateParam.attachStderr());
         LogStream output = docker.execStart(execCreation.id());
         String execOutput = output.readFully();
 
@@ -310,22 +311,24 @@ public class DataParsingTask extends AbstractTask {
 
         docker.startContainer(id);
 
-        String command[] = parser.getExecutionCommand().split(" ");
+        String[] command = parser.getExecutionCommand().split(" ");
 
-        logger.info("Starting container with id " + id);
+        logger.info("Starting container with id {} with command {}", id, command);
 
         ExecCreation execCreation = docker.execCreate(
-                id, command, com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
-                com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+                id, command, ExecCreateParam.attachStdout(),
+                ExecCreateParam.attachStderr());
         LogStream output = docker.execStart(execCreation.id());
         String execOutput = output.readFully();
 
         logger.info("Container output " + execOutput);
 
-        String commandVerif[] = {"sh", "-c", "ls /opt/outputs"};
+        String[] commandVerif = {"sh", "-c", "ls /opt/outputs"};
         execCreation = docker.execCreate(
-                id, commandVerif, com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
-                com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+                id, commandVerif,
+                ExecCreateParam.attachStdout(),
+                ExecCreateParam.attachStderr(),
+                ExecCreateParam.attachStdin());
         output = docker.execStart(execCreation.id());
         execOutput = output.readFully();
 
