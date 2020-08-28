@@ -305,40 +305,43 @@ public class DataParsingTask extends AbstractTask {
         ContainerCreation creation = docker.createContainer(containerConfig);
         String id = creation.id();
 
-        logger.info("Created the container with id " + id);
+        try {
+            logger.info("Created the container with id " + id);
 
-        ContainerInfo info = docker.inspectContainer(id);
+            ContainerInfo info = docker.inspectContainer(id);
 
-        docker.startContainer(id);
+            docker.startContainer(id);
 
-        String[] command = parser.getExecutionCommand().split(" ");
+            String[] command = parser.getExecutionCommand().split(" ");
 
-        logger.info("Starting container with id {} with command {}", id, command);
+            logger.info("Starting container with id {} with command {}", id, command);
 
-        ExecCreation execCreation = docker.execCreate(
-                id, command, ExecCreateParam.attachStdout(),
-                ExecCreateParam.attachStderr());
-        LogStream output = docker.execStart(execCreation.id());
-        String execOutput = output.readFully();
+            ExecCreation execCreation = docker.execCreate(
+                    id, command, ExecCreateParam.attachStdout(),
+                    ExecCreateParam.attachStderr());
+            LogStream output = docker.execStart(execCreation.id());
+            String execOutput = output.readFully();
 
-        logger.info("Container output " + execOutput);
+            logger.info("Container output " + execOutput);
 
-        String[] commandVerif = {"sh", "-c", "ls /opt/outputs"};
-        execCreation = docker.execCreate(
-                id, commandVerif,
-                ExecCreateParam.attachStdout(),
-                ExecCreateParam.attachStderr(),
-                ExecCreateParam.attachStdin());
-        output = docker.execStart(execCreation.id());
-        execOutput = output.readFully();
+            String[] commandVerif = {"sh", "-c", "ls /opt/outputs"};
+            execCreation = docker.execCreate(
+                    id, commandVerif,
+                    ExecCreateParam.attachStdout(),
+                    ExecCreateParam.attachStderr(),
+                    ExecCreateParam.attachStdin());
+            output = docker.execStart(execCreation.id());
+            execOutput = output.readFully();
 
-        logger.info("Verification output " + execOutput);
+            logger.info("Verification output " + execOutput);
 
-        logger.info("Waiting for the container to stop");
-        docker.killContainer(id);
-        docker.removeContainer(id);
-        docker.close();
-        logger.info("Container {} successfully removed", id);
+        } finally {
+            logger.info("Waiting for the container to stop");
+            docker.killContainer(id);
+            docker.removeContainer(id);
+            docker.close();
+            logger.info("Container {} successfully removed", id);
+        }
     }
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport) throws TaskOnFailException, TException, AgentException {
