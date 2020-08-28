@@ -317,8 +317,10 @@ public class DataParsingTask extends AbstractTask {
             logger.info("Starting container with id {} with command {}", id, command);
 
             ExecCreation execCreation = docker.execCreate(
-                    id, command, ExecCreateParam.attachStdout(),
-                    ExecCreateParam.attachStderr());
+                    id, command,
+                    ExecCreateParam.attachStdout(),
+                    ExecCreateParam.attachStderr(),
+                    ExecCreateParam.attachStdin());
             LogStream output = docker.execStart(execCreation.id());
             String execOutput = output.readFully();
 
