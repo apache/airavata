@@ -43,7 +43,7 @@ auth_options:
 
 gateway_id: "lrose"
 experiment_data_dir: "{{ user_data_dir }}/lrose"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCn7BBwi2ckgu1fNwi8L+LmckMbeualcOit9aHtGM5EIWXgszLq0QbwOLzRWxWiuC6v3z7KQ2IqUJWgTo3UJzLtkX+hAwQZ2CRlcM8U+OPLKQ3WDixg9VlFHdq87+D1sn7hmMQB/Ihq8ul5iRg3zwQTuF294Iqpq7vFeqwYni2BTRP0jiEPCsYpykKe1kA1wl/zw0fkpOn8fUCn+7gO9pPJvJA08K+LtApcVaPfKR8yNRCGTBd7QGwXNpOuHFRjc30DlVN+x+H9pykpoXqVBLJ18Ncrbty3ZAS28FyweE2YiPgcIM3HcRFR/Ct83FHNwwez5ciekJEhPUPDOSMEojkV"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBRVHtPN6m/9VUXuYK6+92BSWR65D7+8Y+HAwevv1teLTuaZutyvysbQDPeKYMpqj+z3GMPo0E86zIoXXFHKXS6assBsvpQNNXBfIl91J0b3gUD3SukBbShPyhTawIi7za6VPMvUSa3koC/52Ihbz8VQLNc0xCxnSWHhgc1bIBMoA1JsXOnKPAQZvjkBwXAZUeDXLyS3koE9WNnbRoqOUkqs0MO8tKCvfaVTqILHToOSvgaXrXbEEpND9dCvIuer6tREgakoig+1ck9t9VzPLb/1FsaWGA/V/0WKHcsGvfDmIZcjtdL+eUhVJIJif3BCXDeQJJVap7smll3DXmkgKb"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Brenda Javornik', 'brenda@ucar.edu')]"
 portal_title: "LROSE Gateway"
