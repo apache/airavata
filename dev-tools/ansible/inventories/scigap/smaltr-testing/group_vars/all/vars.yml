@@ -147,6 +147,8 @@ helix_post_wm_name: "postwm"
 helix_post_wm_load_balance_clusters: "false"
 helix_post_wm_local_job_queue_dir: "{{ helix_dir }}"
 helix_post_wm_local_job_queue_name: "post-wm-local-queue"
+helix_parser_wm_local_job_queue_dir: "{{ helix_dir }}"
+helix_parser_wm_local_job_queue_name: "parser-wm-local-queue"
 
 # Listening port for kafka installations
 kafka_listener_port: 9092

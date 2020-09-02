@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.helix.impl.workflow;
 
+import com.leansoft.bigqueue.BigQueueImpl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
@@ -26,11 +27,11 @@ import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.parsing.ProcessCompletionMessage;
 import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageDeserializer;
 import org.apache.airavata.helix.impl.task.parsing.*;
+import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageSerializer;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutputs;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.parser.*;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -40,11 +41,14 @@ import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.thrift.TException;
-import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Workflow Manager which will create and launch Data Parsing DAGs
@@ -56,6 +60,8 @@ public class ParserWorkflowManager extends WorkflowManager {
     private final static Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
 
     private String parserStorageResourceId = ServerSettings.getSetting("parser.storage.resource.id");
+    private ScheduledExecutorService localQueueScheduler = Executors.newSingleThreadScheduledExecutor();
+    private BigQueueImpl localJobQueue;
 
     public ParserWorkflowManager() throws ApplicationSettingsException {
         super(ServerSettings.getSetting("parser.workflow.manager.name"),
@@ -80,6 +86,30 @@ public class ParserWorkflowManager extends WorkflowManager {
 
     private void init() throws Exception {
         super.initComponents();
+        this.localJobQueue = new BigQueueImpl(
+                ServerSettings.getSetting("local.job.queue.dir", "/tmp"),
+                ServerSettings.getSetting("local.job.queue.name", "parser_wm_local_queue"));
+        executeLocalQueue();
+    }
+
+    /**
+     * Local queue keeps track of the already read JobStatusResults through kafka and processes them in a seperate thread
+     */
+    private void executeLocalQueue() {
+        localQueueScheduler.scheduleWithFixedDelay(() -> {
+            while (!localJobQueue.isEmpty()) {
+                try {
+                    byte[] asBytes = localJobQueue.dequeue();
+                    ProcessCompletionMessage result = new ProcessCompletionMessageDeserializer().deserialize(null, asBytes);
+                    logger.info("Dequeued completion message with experiment {} and output version {} ",
+                                                            result.getExperimentId(), result.getOutputVersion());
+                    boolean processResult = process(result);
+                    logger.info("Processed completion message for experiment {} and output version {}", result.getExperimentId(), result.getOutputVersion());
+                } catch (Exception e) {
+                    logger.error("Errored while processing from local queue", e);
+                }
+            }
+        }, 5, 10, TimeUnit.SECONDS);
     }
 
     private boolean process(ProcessCompletionMessage completionMessage) {
@@ -403,15 +433,24 @@ public class ParserWorkflowManager extends WorkflowManager {
             for (TopicPartition partition : consumerRecords.partitions()) {
                 List<ConsumerRecord<String, ProcessCompletionMessage>> partitionRecords = consumerRecords.records(partition);
                 for (ConsumerRecord<String, ProcessCompletionMessage> record : partitionRecords) {
-                    boolean success = process(record.value());
-                    logger.info("Status of processing parser for experiment : " + record.value().getExperimentId() + " : " + success);
-                    if (success) {
+                    ProcessCompletionMessage completionMessage = record.value();
+                    try {
+                        logger.info("Pushing message to the local queue. Exp: {}, output version {}",
+                                completionMessage.getExperimentId(), completionMessage.getOutputVersion());
+                        localJobQueue.enqueue(new ProcessCompletionMessageSerializer().serialize(null, completionMessage));
+                        logger.info("Pushed message to the local queue. Exp: {}, output version {}",
+                                completionMessage.getExperimentId(), completionMessage.getOutputVersion());
+
+                    } catch (IOException e) {
+                        logger.error("Errored while pushing message to the local queue. Exp: {}, output version {}",
+                                            completionMessage.getExperimentId(), completionMessage.getOutputVersion());
+                    } finally {
                         consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
                     }
                 }
             }
 
-            consumerRecords.forEach(record -> process(record.value()));
+            //consumerRecords.forEach(record -> process(record.value()));
             consumer.commitAsync();
         }
     }

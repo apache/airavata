@@ -160,6 +160,7 @@
                 <include>com.spotify:docker-client:jar</include>
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
+                <include>com.leansoft:bigqueue:jar</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
