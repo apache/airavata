@@ -216,7 +216,8 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         logger.info("Usage reporting completed");
 
                     } else {
-                        logger.info("No usage reporting found");
+                        logger.info("No usage reporting found for gateway {} and compute resource id {}",
+                                                                    getGatewayId(), taskContext.getComputeResourceId());
                     }
                 } catch (Exception e) {
                     logger.error("Usage reporting failed but continuing. ", e);
