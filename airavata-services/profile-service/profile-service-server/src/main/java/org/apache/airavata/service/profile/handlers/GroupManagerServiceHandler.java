@@ -462,6 +462,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             for (org.apache.custos.user.profile.service.UserProfile profile : response.getProfilesList()) {
                 if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.ADMIN)) {
                     admins.add(profile.getUsername());
+                    member.add(profile.getUsername());
                 } else if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.MEMBER)) {
                     member.add(profile.getUsername());
                 }
