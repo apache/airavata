@@ -135,6 +135,9 @@ keycloak_master_account_username: "AiravataAdmin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
 keycloak_vhost_servername: "iam.scigap.org"
 
+# Letsencrypt
+letsencrypt_email: "circ-iu-group@iu.edu"
+
 # Helix
 helix_version: 0.7.1
 helix_url: http://www-us.apache.org/dist//helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
