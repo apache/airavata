@@ -53,7 +53,7 @@
   become: yes
 
 - name: generate certificate if it doesn't exist
-  command: certbot --apache -d {{ keycloak_vhost_servername }} certonly
+  command: certbot --apache --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ keycloak_vhost_servername }} certonly
   become: yes
   when: not stat_ssl_cert_result.stat.exists
 
