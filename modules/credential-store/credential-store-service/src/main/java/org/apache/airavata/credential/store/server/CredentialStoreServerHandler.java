@@ -40,7 +40,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.X509Factory;
+//import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -122,7 +122,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             String token = TokenGenerator.generateToken(certificateCredential.getCommunityUser().getGatewayName(), null);
             credential.setToken(token);
             Base64 encoder = new Base64(64);
-            byte [] decoded = encoder.decode(certificateCredential.getX509Cert().replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
+            byte [] decoded = encoder.decode(certificateCredential.getX509Cert().replaceAll("-----BEGIN CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", ""));
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             X509Certificate certificate = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(decoded));
             X509Certificate[] certificates = new X509Certificate[1];

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class GatewayProfileRepositoryTest extends TestBase {
@@ -55,7 +56,8 @@ public class GatewayProfileRepositoryTest extends TestBase {
     public void gatewayProfileRepositorytest() throws AppCatalogException, ApplicationSettingsException {
 
         // Verify that the default Gateway Resource Profile exists already
-        List<GatewayResourceProfile> defaultGatewayResourceProfileList = this.gwyResourceProfileRepository.getAllGatewayProfiles();
+        List<GatewayResourceProfile> defaultGatewayResourceProfileList = this.gwyResourceProfileRepository
+                .getAllGatewayProfiles();
         assertEquals(1, defaultGatewayResourceProfileList.size());
         assertEquals(ServerSettings.getDefaultUserGateway(), defaultGatewayResourceProfileList.get(0).getGatewayID());
 
@@ -80,13 +82,13 @@ public class GatewayProfileRepositoryTest extends TestBase {
         preference1.setScratchLocation("/tmp");
         preference1.setAllocationProjectNumber("project1");
 
-        Map<String,String> sshConfig = new HashMap<>();
+        Map<String, String> sshConfig = new HashMap<>();
         sshConfig.put("ANYTEST", "check");
         preference1.setSshAccountProvisionerConfig(sshConfig);
 
         ComputeResourcePreference preference2 = new ComputeResourcePreference();
         preference2.setComputeResourceId(hostId2);
-        preference2.setOverridebyAiravata(true);
+        preference2.setOverridebyAiravata(false);
         preference2.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.LOCAL);
         preference2.setPreferredDataMovementProtocol(DataMovementProtocol.GridFTP);
         preference2.setPreferredBatchQueue("queue2");
@@ -111,7 +113,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
 
         String gwId = gwyResourceProfileRepository.addGatewayResourceProfile(gf);
         GatewayResourceProfile retrievedProfile = null;
-        if (gwyResourceProfileRepository.isExists(gwId)){
+        if (gwyResourceProfileRepository.isExists(gwId)) {
             retrievedProfile = gwyResourceProfileRepository.getGatewayProfile(gwId);
             System.out.println("************ gateway id ************** :" + retrievedProfile.getGatewayID());
             assertTrue("Retrieved gateway id matched", retrievedProfile.getGatewayID().equals("testGateway"));
@@ -124,11 +126,16 @@ public class GatewayProfileRepositoryTest extends TestBase {
         List<GatewayResourceProfile> getGatewayResourceList = gwyResourceProfileRepository.getAllGatewayProfiles();
         assertEquals("should be 3 gateway profiles (1 default and 2 just added)", 3, getGatewayResourceList.size());
 
-        List<ComputeResourcePreference> preferences = gwyResourceProfileRepository.getAllComputeResourcePreferences(gwId);
+        List<ComputeResourcePreference> preferences = gwyResourceProfileRepository
+                .getAllComputeResourcePreferences(gwId);
         System.out.println("compute preferences size : " + preferences.size());
         assertTrue(preferences.size() == 2);
-        if (preferences != null && !preferences.isEmpty()){
-            for (ComputeResourcePreference cm : preferences){
+        if (preferences != null && !preferences.isEmpty()) {
+            ComputeResourcePreference pref1 = preferences.stream().filter(p -> p.getComputeResourceId().equals(hostId1)).findFirst().get();
+            assertTrue(pref1.isOverridebyAiravata());
+            ComputeResourcePreference pref2 = preferences.stream().filter(p -> p.getComputeResourceId().equals(hostId2)).findFirst().get();
+            assertFalse(pref2.isOverridebyAiravata());
+            for (ComputeResourcePreference cm : preferences) {
                 System.out.println("******** host id ********* : " + cm.getComputeResourceId());
                 System.out.println(cm.getPreferredBatchQueue());
                 System.out.println(cm.getPreferredDataMovementProtocol());

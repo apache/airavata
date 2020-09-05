@@ -26,9 +26,9 @@ doc_root_dir: "/var/www/portals/iugateway"
 vhost_servername: "cybergateway.iu.edu"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/cybergateway_iu_edu_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/cybergateway_iu_edu_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/iugateway.key"
+ssl_certificate_file: "/etc/letsencrypt/live/cybergateway.iu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/cybergateway.iu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/cybergateway.iu.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"

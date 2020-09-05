@@ -22,24 +22,25 @@ package org.apache.airavata.helix.impl.task.submission;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.helix.core.util.MonitoringUtil;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
-import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.job.JobModel;
+ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @TaskDef(name = "Default Job Submission")
 public class DefaultJobSubmissionTask extends JobSubmissionTask {
@@ -186,18 +187,41 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 return onFail("Couldn't find job id in both submitted and verified steps. " + msg, false, null);
 
             } else {
-
                 // usage reporting as the last step of job submission task
-                if (getComputeResourceDescription().isGatewayUsageReporting()){
-                    String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
-                    String usageExecutable = getComputeResourceDescription().getGatewayUsageExecutable();
-                    ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
-                    String username = experiment.getUserName() + "@" + getTaskContext().getGroupComputeResourcePreference().getUsageReportingGatewayId();
-                    RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
-                            " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );
-                    adaptor.executeCommand(rawCommandInfo.getRawCommand(), null);
-                }
+                try {
+                    mapData.setJobId(jobId);
+                    boolean reportingAvailable = getRegistryServiceClient()
+                                                .isGatewayUsageReportingAvailable(getGatewayId(), taskContext.getComputeResourceId());
 
+                    if (reportingAvailable) {
+                        GatewayUsageReportingCommand reportingCommand = getRegistryServiceClient()
+                                                .getGatewayReportingCommand(getGatewayId(), taskContext.getComputeResourceId());
+
+                        String parsedCommand = mapData.loadFromString(reportingCommand.getCommand());
+                        logger.debug("Parsed usage reporting command {}", parsedCommand);
+
+                        Process commandSubmit = Runtime.getRuntime().exec(parsedCommand);
+
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(commandSubmit.getInputStream()));
+                        StringBuffer output = new StringBuffer();
+
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            output.append(line);
+                            output.append("\n");
+                        }
+
+                        logger.info("Usage reporting output " + output.toString());
+                        commandSubmit.waitFor();
+                        logger.info("Usage reporting completed");
+
+                    } else {
+                        logger.info("No usage reporting found for gateway {} and compute resource id {}",
+                                                                    getGatewayId(), taskContext.getComputeResourceId());
+                    }
+                } catch (Exception e) {
+                    logger.error("Usage reporting failed but continuing. ", e);
+                }
                 return onSuccess("Submitted job to compute resource");
             }
 

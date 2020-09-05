@@ -26,6 +26,7 @@
 
 namespace java org.apache.airavata.credential.store.exception
 namespace php Airavata.Credential.Store.Error
+namespace py airavata.api.credential.store.error
 
 exception CredentialStoreException {
   1: required string message

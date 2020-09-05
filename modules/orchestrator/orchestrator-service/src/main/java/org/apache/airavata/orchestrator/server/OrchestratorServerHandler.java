@@ -146,16 +146,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
             experiment = registryClient.getExperiment(experimentId);
             if (experiment == null) {
-                log.error("Error retrieving the Experiment by the given experimentID: {} ", experimentId);
-                return false;
+				throw new Exception("Error retrieving the Experiment by the given experimentID: " + experimentId);
             }
 
 			UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
 			String token = null;
 			final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
 			if (groupResourceProfileId == null) {
-				log.error("Experiment not configured with a Group Resource Profile: {}", experimentId);
-				return false;
+				throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
 			}
 			GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
 					userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
@@ -170,9 +168,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
             // still the token is empty, then we fail the experiment
             if (token == null || token.isEmpty()){
-                log.error("You have not configured credential store token at group resource profile or compute resource preference." +
+				throw new Exception("You have not configured credential store token at group resource profile or compute resource preference." +
 						" Please provide the correct token at group resource profile or compute resource preference.");
-                return false;
             }
             ExperimentType executionType = experiment.getExperimentType();
             if (executionType == ExperimentType.SINGLE_APPLICATION) {
@@ -234,8 +231,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				}
 
 				if (!validateProcess(experimentId, processes)) {
-					log.error("Validating process fails for given experiment Id : {}", experimentId);
-					return false;
+					throw new Exception("Validating process fails for given experiment Id : " + experimentId);
 				}
 
 				log.debug(experimentId, "Launching single application experiment {}.", experimentId);
@@ -260,7 +256,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
 			throw new TException("Experiment '" + experimentId + "' launch failed. Experiment failed to validate: " + launchValidationException.getErrorMessage(), launchValidationException);
         } catch (Exception e) {
-            throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId(), e);
+			ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
+			status.setReason("Unexpected error occurred: " + e.getMessage());
+			status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+			OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+            throw new TException("Experiment '" + experimentId + "' launch failed.", e);
 		} finally {
 			if (registryClient != null) {
 				ThriftUtils.close(registryClient);

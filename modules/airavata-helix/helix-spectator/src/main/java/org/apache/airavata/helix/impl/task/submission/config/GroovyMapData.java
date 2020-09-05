@@ -78,6 +78,9 @@ public class GroovyMapData {
     @ScriptTag(name = "jobName")
     private String jobName;
 
+    @ScriptTag(name = "jobId")
+    private String jobId;
+
     @ScriptTag(name = "workingDirectory")
     private String workingDirectory;
 
@@ -87,8 +90,12 @@ public class GroovyMapData {
     @ScriptTag(name = "inputsAll")
     private List<String> inputsAll;
 
+    // This is username of the airavata tries to talk to compute resources
     @ScriptTag(name = "userName")
     private String userName;
+
+    @ScriptTag(name = "currentTime")
+    private String currentTime;
 
     @ScriptTag(name = "shellName")
     private String shellName;
@@ -140,6 +147,10 @@ public class GroovyMapData {
 
     @ScriptTag(name = "experimentDataDir")
     private String experimentDataDir;
+
+    @ScriptTag(name = "computeHostName")
+    private String computeHostName;
+
 
     public Map<String, Object> getMap() {
 
@@ -473,6 +484,30 @@ public class GroovyMapData {
         this.experimentDataDir = experimentDataDir;
     }
 
+    public String getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime(String currentTime) {
+        this.currentTime = currentTime;
+    }
+
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
+    public String getComputeHostName() {
+        return computeHostName;
+    }
+
+    public void setComputeHostName(String computeHostName) {
+        this.computeHostName = computeHostName;
+    }
+
     public Map toImmutableMap() {
 
         Map<String, Object> dataMap = new HashMap<>();
@@ -491,7 +526,23 @@ public class GroovyMapData {
         return dataMap;
     }
 
-    public String getAsString(String templateName) throws Exception {
+    public String loadFromString(String templateStr) throws Exception {
+        TemplateEngine engine = new GStringTemplateEngine();
+        Writable make;
+        try {
+            make = engine.createTemplate(templateStr).make(toImmutableMap());
+        } catch (Exception e) {
+            throw new Exception("Error while generating script using groovy map for string " + templateStr, e);
+        }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Groovy map as string for template string " + templateStr);
+            logger.trace(make.toString());
+        }
+        return make.toString();
+    }
+
+    public String loadFromFile(String templateName) throws Exception {
         URL templateUrl = ApplicationSettings.loadFile(templateName);
         if (templateUrl == null) {
             String error = "Template file '" + templateName + "' not found";

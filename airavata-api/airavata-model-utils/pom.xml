@@ -27,7 +27,7 @@
     <parent>
         <artifactId>airavata-api</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.19</version>
+        <version>0.20-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -49,7 +49,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>${jmockit.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

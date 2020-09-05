@@ -27,7 +27,7 @@
     <parent>
         <artifactId>credential-store</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.19</version>
+        <version>0.20-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

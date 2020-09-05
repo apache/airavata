@@ -461,26 +461,26 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public List<String> getFileNameFromExtension(String fileName, String parentPath) throws AgentException {
-        SFTPClientWrapper sftpClient = null;
-        try  {
-            sftpClient = sshjClient.newSFTPClientWrapper();
+
+        /*try (SFTPClient sftpClient = sshjClient.newSFTPClientWrapper()) {
             List<RemoteResourceInfo> ls = sftpClient.ls(parentPath, resource -> isMatch(resource.getName(), fileName));
             return ls.stream().map(RemoteResourceInfo::getPath).collect(Collectors.toList());
         } catch (Exception e) {
-            if (e instanceof ConnectionException) {
-                Optional.ofNullable(sftpClient).ifPresent(ft -> ft.setErrored(true));
-            }
             throw new AgentException(e);
-
-        } finally {
-            Optional.ofNullable(sftpClient).ifPresent(scpFileTransferWrapper -> {
-                try {
-                    scpFileTransferWrapper.close();
-                } catch (IOException e) {
-                    //Ignore
-                }
-            });
+        }*/
+        if (fileName.endsWith("*")) {
+            throw new AgentException("Wildcards that ends with * does not support for security reasons. Specify an extension");
         }
+
+        CommandOutput commandOutput = executeCommand("ls " + fileName, parentPath); // This has a risk of returning folders also
+        String[] filesTmp = commandOutput.getStdOut().split("\n");
+        List<String> files = new ArrayList<>();
+        for (String f: filesTmp) {
+            if (!f.isEmpty()) {
+                files.add(f);
+            }
+        }
+        return files;
     }
 
     @Override

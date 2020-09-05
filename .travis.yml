@@ -28,7 +28,7 @@ notifications:
     on_failure: always
 
 jdk:
-  - oraclejdk8
+  - oraclejdk11
 
 script: mvn clean install
 

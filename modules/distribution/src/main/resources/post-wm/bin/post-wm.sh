@@ -38,7 +38,7 @@ do
     case ${var} in
         -xdebug)
         	AIRAVATA_COMMAND="${AIRAVATA_COMMAND}"
-            JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+            JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=*:8000"
             shift
 	    ;;
         -log)

@@ -647,11 +647,6 @@ public class TaskContext {
             reservation = userComputeResourcePreference.getReservation();
             start = userComputeResourcePreference.getReservationStartTime();
             end = userComputeResourcePreference.getReservationEndTime();
-        } else {
-            // TODO: remove this once we've migrated to groupComputeResourcePreference.getReservations()
-            reservation = groupComputeResourcePreference.getReservation();
-            start = groupComputeResourcePreference.getReservationStartTime();
-            end = groupComputeResourcePreference.getReservationEndTime();
         }
         if (reservation != null && start > 0 && start < end) {
             long now = Calendar.getInstance().getTimeInMillis();
