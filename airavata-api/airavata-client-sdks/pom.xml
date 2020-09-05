@@ -27,7 +27,7 @@
     <parent>
         <artifactId>airavata-api</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.19</version>
+        <version>0.20-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -46,7 +46,6 @@
                 <module>java-client-samples</module>
                 <module>airavata-php-sdk</module>
                 <module>airavata-cpp-sdk</module>
-                <module>airavata-python-sdk</module>
             </modules>
         </profile>
     </profiles>

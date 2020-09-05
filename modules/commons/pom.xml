@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.19</version>
+        <version>0.20-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -109,7 +109,7 @@
         <dependency>
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
-            <version>5.4.0</version>
+            <version>${dozer.version}</version>
             <exclusions>
                <exclusion>
                    <groupId>org.slf4j</groupId>
@@ -136,7 +136,7 @@
         <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
-            <version>1.39</version>
+            <version>${jmockit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -168,6 +168,11 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-base-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb.version}</version>
         </dependency>
     </dependencies>
     <properties>

@@ -20,12 +20,21 @@
 
 ---
 #airavata_django_git_branch: "simccs"
-vhost_servername: "django.interactwel.scigap.org"
+#vhost_servername: "django.interactwel.scigap.org"
+vhost_servername: "interactwel.org"
+vhost_server_redirect: "www.interactwel.org"
 vhost_ssl: true
 # sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/django.interactwel.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/interactwel.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/interactwel.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/interactwel.org/privkey.pem"
+
+interactwel_django_app_branch: "api-integration"
+airavata_django_extra_dependencies:
+  - git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
+
+django_extra_settings:
+  LOGIN_REDIRECT_URL: "/interactwel/#/dashboard"
 
 ## Keycloak related variables
 tenant_domain: "interactwel"

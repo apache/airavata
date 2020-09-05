@@ -686,13 +686,13 @@ public class ComputeResourceReservation implements org.apache.thrift.TBase<Compu
           case 3: // QUEUE_NAMES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
-                struct.queueNames = new java.util.ArrayList<java.lang.String>(_list16.size);
-                java.lang.String _elem17;
-                for (int _i18 = 0; _i18 < _list16.size; ++_i18)
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.queueNames = new java.util.ArrayList<java.lang.String>(_list0.size);
+                java.lang.String _elem1;
+                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
                 {
-                  _elem17 = iprot.readString();
-                  struct.queueNames.add(_elem17);
+                  _elem1 = iprot.readString();
+                  struct.queueNames.add(_elem1);
                 }
                 iprot.readListEnd();
               }
@@ -744,9 +744,9 @@ public class ComputeResourceReservation implements org.apache.thrift.TBase<Compu
         oprot.writeFieldBegin(QUEUE_NAMES_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.queueNames.size()));
-          for (java.lang.String _iter19 : struct.queueNames)
+          for (java.lang.String _iter3 : struct.queueNames)
           {
-            oprot.writeString(_iter19);
+            oprot.writeString(_iter3);
           }
           oprot.writeListEnd();
         }
@@ -779,9 +779,9 @@ public class ComputeResourceReservation implements org.apache.thrift.TBase<Compu
       oprot.writeString(struct.reservationName);
       {
         oprot.writeI32(struct.queueNames.size());
-        for (java.lang.String _iter20 : struct.queueNames)
+        for (java.lang.String _iter4 : struct.queueNames)
         {
-          oprot.writeString(_iter20);
+          oprot.writeString(_iter4);
         }
       }
       oprot.writeI64(struct.startTime);
@@ -796,13 +796,13 @@ public class ComputeResourceReservation implements org.apache.thrift.TBase<Compu
       struct.reservationName = iprot.readString();
       struct.setReservationNameIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-        struct.queueNames = new java.util.ArrayList<java.lang.String>(_list21.size);
-        java.lang.String _elem22;
-        for (int _i23 = 0; _i23 < _list21.size; ++_i23)
+        org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+        struct.queueNames = new java.util.ArrayList<java.lang.String>(_list5.size);
+        java.lang.String _elem6;
+        for (int _i7 = 0; _i7 < _list5.size; ++_i7)
         {
-          _elem22 = iprot.readString();
-          struct.queueNames.add(_elem22);
+          _elem6 = iprot.readString();
+          struct.queueNames.add(_elem6);
         }
       }
       struct.setQueueNamesIsSet(true);
