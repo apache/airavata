@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>registry</artifactId>
-        <version>0.19-SNAPSHOT</version>
+        <version>0.19</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-commons</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>0.19</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-cpi</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>0.19</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ibatis</groupId>
