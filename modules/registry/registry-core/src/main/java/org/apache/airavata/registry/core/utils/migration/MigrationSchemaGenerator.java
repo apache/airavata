@@ -43,7 +43,7 @@ public class MigrationSchemaGenerator {
         try {
             for (Database database : Database.values()) {
 
-                waitForDatabaseServer(database.dbInitConfig.getJDBCConfig(), 30);
+                waitForDatabaseServer(database.dbInitConfig.getJDBCConfig(), 60);
                 try {
                     logger.info("initializing database " + database.name());
                     DBInitializer.initializeDB(database.dbInitConfig);
