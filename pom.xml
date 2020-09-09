@@ -120,6 +120,7 @@
         <jmockit.version>1.44</jmockit.version>
         <commons.lang.version>2.6</commons.lang.version>
         <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
+        <helix.version>0.9.7</helix.version>
     </properties>
 
     <developers>
