@@ -21,10 +21,10 @@ Learn more about Airavata at
 
 ### Prerequisites
 
-- Sources compilation requires Java SDK 8.
+- Sources compilation requires Java SDK 11.
 - The project is built with Apache Maven 3+.
 - Set or export JAVA_HOME to point to JDK. For example in Ubuntu:
-  `export JAVA_HOME=/usr/lib/jvm/java-6-openjdk`
+`export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-11`
 - Git
 
 ### Build the distribution
