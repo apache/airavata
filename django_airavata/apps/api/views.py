@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
-from rest_framework.decorators import action, detail_route, list_route
+from rest_framework.decorators import action, api_view, detail_route, list_route
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -940,7 +940,7 @@ class DataProductView(APIView):
         return Response(serializer.data)
 
 
-@login_required
+@api_view()
 def upload_input_file(request):
     try:
         input_file = request.FILES['file']
@@ -957,7 +957,7 @@ def upload_input_file(request):
         return resp
 
 
-@login_required
+@api_view()
 def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
@@ -974,7 +974,7 @@ def tus_upload_finish(request):
         return exceptions.generic_json_exception_response(e, status=400)
 
 
-@login_required
+@api_view()
 def download_file(request):
     # TODO check that user has access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -1007,7 +1007,7 @@ def download_file(request):
         raise Http404(str(e)) from e
 
 
-@login_required
+@api_view()
 def delete_file(request):
     # TODO check that user has write access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -1876,7 +1876,7 @@ class APIServerStatusCheckView(APIView):
         return Response(data)
 
 
-@login_required
+@api_view()
 def notebook_output_view(request):
     provider_id = request.GET['provider-id']
     experiment_id = request.GET['experiment-id']
@@ -1888,13 +1888,13 @@ def notebook_output_view(request):
     return HttpResponse(data['output'])
 
 
-@login_required
+@api_view()
 def html_output_view(request):
     data = _generate_output_view_data(request)
     return JsonResponse(data)
 
 
-@login_required
+@api_view()
 def image_output_view(request):
     data = _generate_output_view_data(request)
     # data should contain 'image' as a file-like object or raw bytes with the
@@ -1903,6 +1903,7 @@ def image_output_view(request):
     return JsonResponse(data)
 
 
+@api_view()
 def link_output_view(request):
     data = _generate_output_view_data(request)
     return JsonResponse(data)
