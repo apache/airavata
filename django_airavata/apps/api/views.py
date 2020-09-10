@@ -1001,7 +1001,7 @@ def download_file(request):
             response['Content-Disposition'] = ('attachment; filename="{}"'
                                                .format(file_name))
         else:
-            response['Content-Disposition'] = f'filename="{file_name}"'
+            response['Content-Disposition'] = f'inline; filename="{file_name}"'
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
