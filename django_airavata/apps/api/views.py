@@ -940,7 +940,7 @@ class DataProductView(APIView):
         return Response(serializer.data)
 
 
-@api_view()
+@api_view(http_method_names=['POST'])
 def upload_input_file(request):
     try:
         input_file = request.FILES['file']
@@ -957,7 +957,7 @@ def upload_input_file(request):
         return resp
 
 
-@api_view()
+@api_view(http_method_names=['POST'])
 def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
@@ -1007,7 +1007,7 @@ def download_file(request):
         raise Http404(str(e)) from e
 
 
-@api_view()
+@api_view(http_method_names=['DELETE'])
 def delete_file(request):
     # TODO check that user has write access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
