@@ -1574,8 +1574,6 @@ class UserStoragePathView(APIView):
             data['parts'] = self._split_path(path)
             serializer = self.serializer_class(data, context={'request': request})
             return Response(serializer.data)
-        user_storage.delete_dir(request, path)
-        return Response(status=204)
 
     def _split_path(self, path):
         head, tail = os.path.split(path)
