@@ -48,4 +48,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCCgAWz
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Eric Morgan','emorgan@nd.edu')]"
 portal_title: "Distant Reader Portal"
 
+django_google_analytics_tracking_id: "UA-177994029-1"
 ...
