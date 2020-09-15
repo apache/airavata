@@ -49,4 +49,6 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfQ9gN
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Liu Xiaowen' 'xwliu@iupui.edu'),('In Kwon Choi','inkwchoi@iu.edu'),('Liu Xiaowen','xwliu@iu.edu')]"
 portal_title: "TopPIC Gateway"
 
+django_google_analytics_tracking_id: "UA-178002567-1"
+
 ...
