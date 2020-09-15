@@ -55,4 +55,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCLjM9L
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Aurora Clark','auclark@wsu.edu'),('Sudhakar Pamidighantam','pamidigs@iu.edu')]"
 portal_title: "DELTA Gateway"
 
+django_google_analytics_tracking_id: "UA-178024455-1"
 ...
