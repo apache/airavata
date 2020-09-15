@@ -47,4 +47,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtM2RT
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Aaron Frank', 'afrankz@umich.edu')]"
 portal_title: "SMALTR Gateway"
 
+django_google_analytics_tracking_id: "UA-178055906-1"
 ...
