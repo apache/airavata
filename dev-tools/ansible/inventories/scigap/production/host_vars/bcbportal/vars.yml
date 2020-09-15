@@ -47,4 +47,6 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1WOyu
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "BCB Gateway"
 
+django_google_analytics_tracking_id: "UA-178055397-1"
+
 ...
