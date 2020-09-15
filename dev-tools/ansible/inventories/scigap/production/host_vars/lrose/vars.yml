@@ -48,4 +48,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBRVHt
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Brenda Javornik', 'brenda@ucar.edu'),('Mike Dixon', 'dixon@ucar.edu'),('Ting-Yu Cha', 'tingyu@rams.colostate.edu'),('Jen DeHart', '(jcdehart@colostate.edu')]"
 portal_title: "LROSE Gateway"
 
+django_google_analytics_tracking_id: "UA-178055994-1"
 ...
