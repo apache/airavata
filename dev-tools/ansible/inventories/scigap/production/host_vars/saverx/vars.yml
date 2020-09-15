@@ -47,4 +47,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCN80RH
 admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Bowei Kang','kbw@uchicago.edu'), ('Jingshu Wang','jingshuw@uchicago.edu'), ('Nancy Zhang','nzh@wharton.upenn.edu')]"
 portal_title: "Saver-X Gateway"
 
+django_google_analytics_tracking_id: "UA-178027975-1"
 ...
