@@ -48,4 +48,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCx981D
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Robert Edwards', 'raedwards@gmail.com'),('Robert Edwards', 'redwards@sdsu.edu'), ('Mats Rynge','rynge@isi.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "Search-SRA Portal"
 
+django_google_analytics_tracking_id: "UA-177998970-1"
 ...
