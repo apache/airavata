@@ -1,9 +1,11 @@
+import copy
 import logging
 import mimetypes
 import os
 import shutil
 from urllib.parse import urlparse
 
+import requests
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
@@ -17,7 +19,9 @@ from airavata.model.data.replica.ttypes import (DataProductModel,
                                                 ReplicaLocationCategory,
                                                 ReplicaPersistentType)
 
-import copy
+from .util import convert_iso8601_to_datetime
+import io
+import cgi
 
 logger = logging.getLogger(__name__)
 
@@ -25,20 +29,45 @@ TMP_INPUT_FILE_UPLOAD_DIR = "tmp"
 
 
 def save(request, path, file, name=None, content_type=None):
-    "Save file in path in the user's storage."
-    username = request.user.username
-    full_path = _Datastore().save(username, path, file, name=name)
-    data_product = _save_data_product(
-        request, full_path, name=name, content_type=content_type
-    )
-    return data_product
+    "Save file in path in the user's storage and return DataProduct."
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        files = {
+            # 'file': (name, file, content_type)
+            'file': file
+        }
+        r = requests.post(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
+            headers=headers,
+            files=files
+        )
+        r.raise_for_status()
+        data = r.json()
+        product_uri = data['uploaded']['productUri']
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, product_uri)
+        return data_product
+    else:
+        username = request.user.username
+        full_path = _Datastore().save(username, path, file, name=name)
+        data_product = _save_data_product(
+            request, full_path, name=name, content_type=content_type
+        )
+        return data_product
 
 
-def move_from_filepath(request, source_path, target_path, name=None, content_type=None):
+def move_from_filepath(
+        request,
+        source_path,
+        target_path,
+        name=None,
+        content_type=None):
     "Move a file from filesystem into user's storage."
     username = request.user.username
     file_name = name if name is not None else os.path.basename(source_path)
-    full_path = _Datastore().move_external(source_path, username, target_path, file_name)
+    full_path = _Datastore().move_external(
+        source_path, username, target_path, file_name)
     data_product = _save_data_product(
         request, full_path, name=file_name, content_type=content_type
     )
@@ -83,8 +112,11 @@ def move_input_file(request, data_product, path):
     source_path = _get_replica_filepath(data_product)
     file_name = data_product.productName
     full_path = _Datastore().move(
-        data_product.ownerName, source_path, request.user.username, path, file_name
-    )
+        data_product.ownerName,
+        source_path,
+        request.user.username,
+        path,
+        file_name)
     _delete_data_product(data_product.ownerName, source_path)
     data_product = _save_copy_of_data_product(request, full_path, data_product)
     return data_product
@@ -107,19 +139,57 @@ def move_input_file_from_filepath(
 
 def open_file(request, data_product):
     "Return file object for replica if it exists in user storage."
-    path = _get_replica_filepath(data_product)
-    return _Datastore().open(data_product.ownerName, path)
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.get(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/download',
+            headers=headers,
+            params={'data-product-uri': data_product.productUri})
+        r.raise_for_status()
+        file = io.BytesIO(r.content)
+        disposition = r.headers['Content-Disposition']
+        disp_value, disp_params = cgi.parse_header(disposition)
+        # Give the file object a name just like a real opened file object
+        file.name = disp_params['filename']
+        return file
+    else:
+        path = _get_replica_filepath(data_product)
+        return _Datastore().open(data_product.ownerName, path)
 
 
 def exists(request, data_product):
     "Return True if replica for data_product exists in user storage."
-    path = _get_replica_filepath(data_product)
-    return _Datastore().exists(data_product.ownerName, path)
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.get(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/data-products/',
+            headers=headers,
+            params={'product-uri': data_product.productUri})
+        r.raise_for_status()
+        data = r.json()
+        return data['downloadURL'] is not None
+    else:
+        path = _get_replica_filepath(data_product)
+        return _Datastore().exists(data_product.ownerName, path)
 
 
 def dir_exists(request, path):
     "Return True if path exists in user's data store."
-    return _Datastore().dir_exists(request.user.username, path)
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.get(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
+            headers=headers,
+        )
+        if r.status_code != 200:
+            return False
+        else:
+            return r.json()["isDir"]
+    else:
+        return _Datastore().dir_exists(request.user.username, path)
 
 
 def user_file_exists(request, path):
@@ -134,7 +204,19 @@ def user_file_exists(request, path):
 
 def delete_dir(request, path):
     """Delete path in user's data store, if it exists."""
-    return _Datastore().delete_dir(request.user.username, path)
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.delete(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
+            headers=headers,
+        )
+        if r.status_code == 404:
+            raise ObjectDoesNotExist(f"File path does not exist {path}")
+        r.raise_for_status()
+        return
+    _Datastore().delete_dir(request.user.username, path)
+
 
 def delete_user_file(request, path):
     """Delete file in user's data store, if it exists."""
@@ -149,6 +231,25 @@ def update_file_content(request, path, fileContentText):
 
 
 def get_file(request, path):
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.get(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
+            headers=headers,
+        )
+        if r.status_code == 404:
+            raise ObjectDoesNotExist("User storage file path does not exist")
+        # Raise an exception for all other error statuses
+        r.raise_for_status()
+        data = r.json()
+        if data["isDir"]:
+            raise Exception("User storage path is a directory, not a file")
+        file = data['files'][0]
+        file['created_time'] = convert_iso8601_to_datetime(file['createdTime'])
+        file['mime_type'] = file['mimeType']
+        file['data-product-uri'] = file['dataProductURI']
+        return file
     datastore = _Datastore()
     if datastore.exists(request.user.username, path):
         created_time = datastore.get_created_time(
@@ -158,19 +259,20 @@ def get_file(request, path):
         data_product_uri = _get_data_product_uri(request, full_path)
         dir_path, file_name = os.path.split(path)
 
-        data_product = request.airavata_client.getDataProduct(request.authz_token, data_product_uri)
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, data_product_uri)
         mime_type = None
         if 'mime-type' in data_product.productMetadata:
             mime_type = data_product.productMetadata['mime-type']
 
         return {
-           'name': full_path,
-           'path': dir_path,
-           'data-product-uri': data_product_uri,
-           'created_time': created_time,
-           'mime_type': mime_type,
-           'size': size,
-           'hidden': False
+            'name': full_path,
+            'path': dir_path,
+            'data-product-uri': data_product_uri,
+            'created_time': created_time,
+            'mime_type': mime_type,
+            'size': size,
+            'hidden': False
         }
     else:
         raise ObjectDoesNotExist("User storage file path does not exist")
@@ -178,28 +280,62 @@ def get_file(request, path):
 
 def delete(request, data_product):
     "Delete replica for data product in this data store."
-    path = _get_replica_filepath(data_product)
-    try:
-        _Datastore().delete(data_product.ownerName, path)
-        _delete_data_product(data_product.ownerName, path)
-    except Exception as e:
-        logger.exception(
-            "Unable to delete file {} for data product uri {}".format(
-                path, data_product.productUri
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.delete(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/delete-file',
+            headers=headers,
+            params={'data-product-uri': data_product.productUri})
+        r.raise_for_status()
+        return
+    else:
+        path = _get_replica_filepath(data_product)
+        try:
+            _Datastore().delete(data_product.ownerName, path)
+            _delete_data_product(data_product.ownerName, path)
+        except Exception as e:
+            logger.exception(
+                "Unable to delete file {} for data product uri {}".format(
+                    path, data_product.productUri
+                )
             )
-        )
-        raise
+            raise
 
 
 def listdir(request, path):
     """Return a tuple of two lists, one for directories, the second for files."""
+
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.get(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
+            headers=headers,
+        )
+        r.raise_for_status()
+        data = r.json()
+        for directory in data['directories']:
+            # Convert JSON ISO8601 timestamp to datetime instance
+            directory['created_time'] = convert_iso8601_to_datetime(
+                directory['createdTime'])
+        for file in data['files']:
+            # Convert JSON ISO8601 timestamp to datetime instance
+            file['created_time'] = convert_iso8601_to_datetime(
+                file['createdTime'])
+            file['mime_type'] = file['mimeType']
+            file['data-product-uri'] = file['dataProductURI']
+        return data['directories'], data['files']
+
     datastore = _Datastore()
     if datastore.dir_exists(request.user.username, path):
-        directories, files = datastore.list_user_dir(request.user.username, path)
+        directories, files = datastore.list_user_dir(
+            request.user.username, path)
         directories_data = []
         for d in directories:
             dpath = os.path.join(path, d)
-            created_time = datastore.get_created_time(request.user.username, dpath)
+            created_time = datastore.get_created_time(
+                request.user.username, dpath)
             size = datastore.size(request.user.username, dpath)
             directories_data.append(
                 {
@@ -220,7 +356,8 @@ def listdir(request, path):
             full_path = datastore.path(request.user.username, user_rel_path)
             data_product_uri = _get_data_product_uri(request, full_path)
 
-            data_product = request.airavata_client.getDataProduct(request.authz_token, data_product_uri)
+            data_product = request.airavata_client.getDataProduct(
+                request.authz_token, data_product_uri)
             mime_type = None
             if 'mime-type' in data_product.productMetadata:
                 mime_type = data_product.productMetadata['mime-type']
@@ -240,18 +377,32 @@ def listdir(request, path):
         raise ObjectDoesNotExist("User storage path does not exist")
 
 
-def get_experiment_dir(request, project_name=None, experiment_name=None, path=None):
+def get_experiment_dir(
+        request,
+        project_name=None,
+        experiment_name=None,
+        path=None):
     return _Datastore().get_experiment_dir(
         request.user.username, project_name, experiment_name, path
     )
 
 
 def create_user_dir(request, path):
-    return _Datastore().create_user_dir(request.user.username, path)
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.post(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
+            headers=headers,
+        )
+        r.raise_for_status()
+        return
+    _Datastore().create_user_dir(request.user.username, path)
 
 
 def get_rel_path(request, path):
     return _Datastore().rel_path(request.user.username, path)
+
 
 def _get_data_product_uri(request, full_path):
 
@@ -282,8 +433,9 @@ def _register_data_product(request, full_path, data_product):
     )
     from airavata_django_portal_sdk import models
     user_file_instance = models.UserFiles(
-        username=request.user.username, file_path=full_path, file_dpu=product_uri
-    )
+        username=request.user.username,
+        file_path=full_path,
+        file_dpu=product_uri)
     user_file_instance.save()
     return product_uri
 
@@ -312,7 +464,8 @@ def _delete_data_product(username, full_path):
     # TODO: call API to delete data product from replica catalog when it is
     # available (not currently implemented)
     from airavata_django_portal_sdk import models
-    user_file = models.UserFiles.objects.filter(username=username, file_path=full_path)
+    user_file = models.UserFiles.objects.filter(
+        username=username, file_path=full_path)
     if user_file.exists():
         user_file.delete()
 
@@ -354,7 +507,8 @@ def _determine_content_type(full_path, content_type=None):
 def _create_replica_location(full_path, file_name):
     data_replica_location = DataReplicaLocationModel()
     data_replica_location.storageResourceId = settings.GATEWAY_DATA_STORE_RESOURCE_ID
-    data_replica_location.replicaName = "{} gateway data store copy".format(file_name)
+    data_replica_location.replicaName = "{} gateway data store copy".format(
+        file_name)
     data_replica_location.replicaLocationCategory = (
         ReplicaLocationCategory.GATEWAY_DATA_STORE
     )
@@ -371,7 +525,8 @@ def _get_replica_filepath(data_product):
         for rep in data_product.replicaLocations
         if rep.replicaLocationCategory == ReplicaLocationCategory.GATEWAY_DATA_STORE
     ]
-    replica_filepath = replica_filepaths[0] if len(replica_filepaths) > 0 else None
+    replica_filepath = replica_filepaths[0] if len(
+        replica_filepaths) > 0 else None
     if replica_filepath:
         return urlparse(replica_filepath).path
     return None
@@ -379,7 +534,6 @@ def _get_replica_filepath(data_product):
 
 class _Datastore:
     """Internal datastore abstraction."""
-
 
     def __init__(self, directory=None):
         if directory:
@@ -390,21 +544,23 @@ class _Datastore:
     def exists(self, username, path):
         """Check if file path exists in this data store."""
         try:
-            return self._user_data_storage(username).exists(path) and os.path.isfile(
-                self.path(username, path)
-            )
+            return self._user_data_storage(username).exists(
+                path) and os.path.isfile(self.path(username, path))
         except SuspiciousFileOperation as e:
-            logger.warning("Invalid path for user {}: {}".format(username, str(e)))
+            logger.warning(
+                "Invalid path for user {}: {}".format(
+                    username, str(e)))
             return False
 
     def dir_exists(self, username, path):
         """Check if directory path exists in this data store."""
         try:
-            return self._user_data_storage(username).exists(path) and os.path.isdir(
-                self.path(username, path)
-            )
+            return self._user_data_storage(username).exists(
+                path) and os.path.isdir(self.path(username, path))
         except SuspiciousFileOperation as e:
-            logger.warning("Invalid path for user {}: {}".format(username, str(e)))
+            logger.warning(
+                "Invalid path for user {}: {}".format(
+                    username, str(e)))
             return False
 
     def open(self, username, path):
@@ -412,21 +568,27 @@ class _Datastore:
         if self.exists(username, path):
             return self._user_data_storage(username).open(path)
         else:
-            raise ObjectDoesNotExist("File path does not exist: {}".format(path))
+            raise ObjectDoesNotExist(
+                "File path does not exist: {}".format(path))
 
     def save(self, username, path, file, name=None):
         """Save file to username/path in data store."""
         # file.name may be full path, so get just the name of the file
         file_name = name if name is not None else os.path.basename(file.name)
         user_data_storage = self._user_data_storage(username)
-        file_path = os.path.join(path, user_data_storage.get_valid_name(file_name))
+        file_path = os.path.join(
+            path, user_data_storage.get_valid_name(file_name))
         input_file_name = user_data_storage.save(file_path, file)
         input_file_fullpath = user_data_storage.path(input_file_name)
         return input_file_fullpath
 
     def move(
-        self, source_username, source_path, target_username, target_dir, file_name
-    ):
+            self,
+            source_username,
+            source_path,
+            target_username,
+            target_dir,
+            file_name):
         source_full_path = self.path(source_username, source_path)
         user_data_storage = self._user_data_storage(target_username)
         # Make file_name a valid filename
@@ -440,7 +602,12 @@ class _Datastore:
         file_move_safe(source_full_path, target_full_path)
         return target_full_path
 
-    def move_external(self, external_path, target_username, target_dir, file_name):
+    def move_external(
+            self,
+            external_path,
+            target_username,
+            target_dir,
+            file_name):
         user_data_storage = self._user_data_storage(target_username)
         # Make file_name a valid filename
         target_path = os.path.join(
@@ -463,8 +630,12 @@ class _Datastore:
             raise Exception("Directory {} already exists".format(path))
 
     def copy(
-        self, source_username, source_path, target_username, target_path, name=None
-    ):
+            self,
+            source_username,
+            source_path,
+            target_username,
+            target_path,
+            name=None):
         """Copy a user file into target_path dir."""
         f = self.open(source_username, source_path)
         return self.save(target_username, target_path, f, name=name)
@@ -475,7 +646,8 @@ class _Datastore:
             user_data_storage = self._user_data_storage(username)
             user_data_storage.delete(path)
         else:
-            raise ObjectDoesNotExist("File path does not exist: {}".format(path))
+            raise ObjectDoesNotExist(
+                "File path does not exist: {}".format(path))
 
     def delete_dir(self, username, path):
         """Delete entire directory in this data store."""
@@ -483,7 +655,8 @@ class _Datastore:
             user_path = self.path(username, path)
             shutil.rmtree(user_path)
         else:
-            raise ObjectDoesNotExist("File path does not exist: {}".format(path))
+            raise ObjectDoesNotExist(
+                "File path does not exist: {}".format(path))
 
     def get_experiment_dir(
         self, username, project_name=None, experiment_name=None, path=None
@@ -491,7 +664,8 @@ class _Datastore:
         """Return an experiment directory (full path) for the given experiment."""
         user_experiment_data_storage = self._user_data_storage(username)
         if path is None:
-            proj_dir_name = user_experiment_data_storage.get_valid_name(project_name)
+            proj_dir_name = user_experiment_data_storage.get_valid_name(
+                project_name)
             # AIRAVATA-3245 Make project directory with correct permissions
             if not user_experiment_data_storage.exists(proj_dir_name):
                 self._makedirs(username, proj_dir_name)
@@ -502,13 +676,14 @@ class _Datastore:
             # Since there may already be another experiment with the same name in
             # this project, we need to check for available name
             experiment_dir_name = user_experiment_data_storage.get_available_name(
-                experiment_dir_name
-            )
-            experiment_dir = user_experiment_data_storage.path(experiment_dir_name)
+                experiment_dir_name)
+            experiment_dir = user_experiment_data_storage.path(
+                experiment_dir_name)
         else:
             # path can be relative to the user's storage space or absolute (as long
             # as it is still inside the user's storage space)
-            # if path is passed in, assumption is that it has already been created
+            # if path is passed in, assumption is that it has already been
+            # created
             user_experiment_data_storage = self._user_data_storage(username)
             experiment_dir = user_experiment_data_storage.path(path)
         if not user_experiment_data_storage.exists(experiment_dir):
@@ -519,12 +694,12 @@ class _Datastore:
         user_experiment_data_storage = self._user_data_storage(username)
         full_path = user_experiment_data_storage.path(dir_path)
         os.makedirs(
-            full_path, mode=user_experiment_data_storage.directory_permissions_mode
-        )
+            full_path,
+            mode=user_experiment_data_storage.directory_permissions_mode)
         # os.makedirs mode isn't always respected so need to chmod to be sure
         os.chmod(
-            full_path, mode=user_experiment_data_storage.directory_permissions_mode
-        )
+            full_path,
+            mode=user_experiment_data_storage.directory_permissions_mode)
 
     def list_user_dir(self, username, file_path):
         logger.debug("file_path={}".format(file_path))
@@ -552,7 +727,9 @@ class _Datastore:
         return os.path.relpath(full_path, self.path(username, ""))
 
     def _user_data_storage(self, username):
-        return FileSystemStorage(location=os.path.join(self.directory, username))
+        return FileSystemStorage(
+            location=os.path.join(
+                self.directory, username))
 
     # from https://stackoverflow.com/a/1392549
     def _get_dir_size(self, start_path="."):
