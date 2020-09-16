@@ -1565,7 +1565,7 @@ class UserStoragePathView(APIView):
         # Replace the file if the request has a file upload.
         if 'file' in request.FILES:
             self.delete(request=request, path=path, format=format)
-            dir_path, file_name = split_dir_path_and_file_name(path=path)
+            dir_path, file_name = os.path.split(path)
             self.post(request=request, path=dir_path, format=format, file_name=file_name)
         # Replace only the file content if the request body has the `fileContentText`
         elif request.data and "fileContentText" in request.data:
