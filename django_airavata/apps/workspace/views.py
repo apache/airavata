@@ -99,12 +99,6 @@ def create_experiment(request, app_module_id):
                     except Exception as e:
                         logger.exception(
                             f"Failed checking data product uri: {dp_uri}")
-                else:
-                    # TODO: remove this functionality, data product URI should be passed instead
-                    data_product_uri = user_storage_sdk.user_file_exists(
-                        request, user_file_url.path)
-                    if data_product_uri is not None:
-                        user_input_values[app_input['name']] = data_product_uri
             except ValueError as e:
                 logger.exception(f"Invalid user file value: {user_file_value}")
         elif (app_input['type'] == DataType.STRING and
