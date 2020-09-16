@@ -221,16 +221,6 @@ def dir_exists(request, path):
         return _Datastore().dir_exists(request.user.username, path)
 
 
-def user_file_exists(request, path):
-    """If file exists, return data product URI, else None."""
-    if _Datastore().exists(request.user.username, path):
-        full_path = _Datastore().path(request.user.username, path)
-        data_product_uri = _get_data_product_uri(request, full_path)
-        return data_product_uri
-    else:
-        return None
-
-
 def delete_dir(request, path):
     """Delete path in user's data store, if it exists."""
     if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
@@ -249,6 +239,17 @@ def delete_dir(request, path):
 
 def delete_user_file(request, path):
     """Delete file in user's data store, if it exists."""
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.delete(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
+            headers=headers,
+        )
+        if r.status_code == 404:
+            raise ObjectDoesNotExist(f"File path does not exist {path}")
+        r.raise_for_status()
+        return
     return _Datastore().delete(request.user.username, path)
 
 
