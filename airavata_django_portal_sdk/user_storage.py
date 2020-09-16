@@ -118,6 +118,16 @@ def copy_input_file(request, data_product):
 
 
 def is_input_file(request, data_product):
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.get(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/data-products/',
+            headers=headers,
+            params={'product-uri': data_product.productUri})
+        r.raise_for_status()
+        data = r.json()
+        return data['isInputFileUpload']
     # Check if file is one of user's files and in TMP_INPUT_FILE_UPLOAD_DIR
     path = _get_replica_filepath(data_product)
     if _Datastore().exists(request.user.username, path):
@@ -555,6 +565,15 @@ class _Datastore:
     """Internal datastore abstraction."""
 
     def __init__(self, directory=None):
+        if getattr(
+            settings,
+            'GATEWAY_DATA_STORE_REMOTE_API',
+                None) is not None:
+            raise Exception(
+                f"This Django portal instance is configured to connect to a "
+                f"remote data store via API (settings.GATEWAY_DATA_STORE_REMOTE_API="
+                f"{settings.GATEWAY_DATA_STORE_REMOTE_API}). This local "
+                f"Datastore instance is not available in remote data store mode.")
         if directory:
             self.directory = directory
         else:
