@@ -254,10 +254,21 @@ def delete_user_file(request, path):
 
 
 def update_file_content(request, path, fileContentText):
-    full_path = _Datastore().path(request.user.username, path)
-    with open(full_path, 'w') as f:
-        myfile = File(f)
-        myfile.write(fileContentText)
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        r = requests.put(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
+            headers=headers,
+            data={"fileContentText": fileContentText}
+        )
+        r.raise_for_status()
+        return
+    else:
+        full_path = _Datastore().path(request.user.username, path)
+        with open(full_path, 'w') as f:
+            myfile = File(f)
+            myfile.write(fileContentText)
 
 
 def get_file(request, path):
