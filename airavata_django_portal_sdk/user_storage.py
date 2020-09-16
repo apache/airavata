@@ -35,9 +35,8 @@ def save(request, path, file, name=None, content_type=None):
             'Authorization': f'Bearer {request.authz_token.accessToken}'}
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
-        files = {
-            'file': (name, file, content_type) if content_type is not None else file,
-        }
+        files = {'file': (name, file, content_type)
+                 if content_type is not None else file, }
         r = requests.post(
             f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
             headers=headers,
@@ -77,13 +76,32 @@ def move_from_filepath(
 
 def save_input_file(request, file, name=None, content_type=None):
     """Save input file in staging area for input files."""
-    username = request.user.username
-    file_name = name if name is not None else os.path.basename(file.name)
-    full_path = _Datastore().save(username, TMP_INPUT_FILE_UPLOAD_DIR, file)
-    data_product = _save_data_product(
-        request, full_path, name=file_name, content_type=content_type
-    )
-    return data_product
+    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
+        headers = {
+            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        if name is None and hasattr(file, 'name'):
+            name = os.path.basename(file.name)
+        files = {'file': (name, file, content_type)
+                 if content_type is not None else file, }
+        r = requests.post(
+            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/upload',
+            headers=headers,
+            files=files
+        )
+        r.raise_for_status()
+        data = r.json()
+        product_uri = data['data-product']['productUri']
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, product_uri)
+        return data_product
+    else:
+        username = request.user.username
+        file_name = name if name is not None else os.path.basename(file.name)
+        full_path = _Datastore().save(username, TMP_INPUT_FILE_UPLOAD_DIR, file)
+        data_product = _save_data_product(
+            request, full_path, name=file_name, content_type=content_type
+        )
+        return data_product
 
 
 def copy_input_file(request, data_product):
