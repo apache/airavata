@@ -33,9 +33,10 @@ def save(request, path, file, name=None, content_type=None):
     if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
         headers = {
             'Authorization': f'Bearer {request.authz_token.accessToken}'}
+        if name is None and hasattr(file, 'name'):
+            name = os.path.basename(file.name)
         files = {
-            # 'file': (name, file, content_type)
-            'file': file
+            'file': (name, file, content_type) if content_type is not None else file,
         }
         r = requests.post(
             f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
