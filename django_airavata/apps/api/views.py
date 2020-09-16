@@ -323,31 +323,46 @@ class ExperimentViewSet(APIBackedViewSet):
 
     @detail_route(methods=['post'])
     def clone(self, request, experiment_id=None):
+        if getattr(
+            settings,
+            'GATEWAY_DATA_STORE_REMOTE_API',
+                None) is not None:
+            # Proxy the clone/ request to the remote Django portal instance
+            # since it must locally copy input files, which are only on the
+            # remote Django portal instance
+            headers = {
+                'Authorization': f'Bearer {request.authz_token.accessToken}'}
+            r = requests.post(
+                f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/clone/',
+                headers=headers,
+            )
+            r.raise_for_status()
+            return Response(r.json())
+        else:
+            # figure what project to clone into
+            experiment = self.request.airavata_client.getExperiment(
+                self.authz_token, experiment_id)
+            project_id = self._get_writeable_project(experiment)
 
-        # figure what project to clone into
-        experiment = self.request.airavata_client.getExperiment(
-            self.authz_token, experiment_id)
-        project_id = self._get_writeable_project(experiment)
+            # clone experiment
+            cloned_experiment_id = request.airavata_client.cloneExperiment(
+                self.authz_token, experiment_id,
+                "Clone of {}".format(experiment.experimentName), project_id)
+            cloned_experiment = request.airavata_client.getExperiment(
+                self.authz_token, cloned_experiment_id)
 
-        # clone experiment
-        cloned_experiment_id = request.airavata_client.cloneExperiment(
-            self.authz_token, experiment_id,
-            "Clone of {}".format(experiment.experimentName), project_id)
-        cloned_experiment = request.airavata_client.getExperiment(
-            self.authz_token, cloned_experiment_id)
+            # Create a copy of the experiment input files
+            self._copy_cloned_experiment_input_uris(cloned_experiment)
 
-        # Create a copy of the experiment input files
-        self._copy_cloned_experiment_input_uris(cloned_experiment)
-
-        # Null out experimentDataDir so a new one will get created at launch
-        # time
-        cloned_experiment.userConfigurationData.experimentDataDir = None
-        request.airavata_client.updateExperiment(
-            self.authz_token, cloned_experiment.experimentId, cloned_experiment
-        )
-        serializer = self.serializer_class(
-            cloned_experiment, context={'request': request})
-        return Response(serializer.data)
+            # Null out experimentDataDir so a new one will get created at launch
+            # time
+            cloned_experiment.userConfigurationData.experimentDataDir = None
+            request.airavata_client.updateExperiment(
+                self.authz_token, cloned_experiment.experimentId, cloned_experiment
+            )
+            serializer = self.serializer_class(
+                cloned_experiment, context={'request': request})
+            return Response(serializer.data)
 
     @detail_route(methods=['post'])
     def cancel(self, request, experiment_id=None):
