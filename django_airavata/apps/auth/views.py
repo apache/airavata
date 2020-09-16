@@ -93,6 +93,10 @@ def handle_login(request):
     logger.debug("authenticated user: {}".format(user))
     try:
         if user is not None:
+            # Middleware will add authz_token attr to request, but since user
+            # just authenticated, authz_token won't be added yet. Login signals
+            # need the authz_token so adding it to the request now.
+            request.authz_token = utils.get_authz_token(request, user=user)
             login(request, user)
             if login_desktop:
                 return _create_login_desktop_success_response(request)

@@ -3,18 +3,25 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from urllib.parse import quote
 
+import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
-from rest_framework.decorators import action, api_view, detail_route, list_route
+from rest_framework.decorators import (
+    action,
+    api_view,
+    detail_route,
+    list_route
+)
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from airavata.model.appcatalog.computeresource.ttypes import (
@@ -278,15 +285,31 @@ class ExperimentViewSet(APIBackedViewSet):
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):
         try:
-            experiment = request.airavata_client.getExperiment(
-                self.authz_token, experiment_id)
-            self._set_storage_id_and_data_dir(experiment)
-            self._move_tmp_input_file_uploads_to_data_dir(experiment)
-            request.airavata_client.updateExperiment(
-                self.authz_token, experiment_id, experiment)
-            request.airavata_client.launchExperiment(
-                request.authz_token, experiment_id, self.gateway_id)
-            return Response({'success': True})
+            if getattr(
+                settings,
+                'GATEWAY_DATA_STORE_REMOTE_API',
+                    None) is not None:
+                # Proxy the launch/ request to the remote Django portal
+                # instance since it must setup the experiment data directory
+                # which is only on the remote Django portal instance
+                headers = {
+                    'Authorization': f'Bearer {request.authz_token.accessToken}'}
+                r = requests.post(
+                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/launch/',
+                    headers=headers,
+                )
+                r.raise_for_status()
+                return Response(r.json())
+            else:
+                experiment = request.airavata_client.getExperiment(
+                    self.authz_token, experiment_id)
+                self._set_storage_id_and_data_dir(experiment)
+                self._move_tmp_input_file_uploads_to_data_dir(experiment)
+                request.airavata_client.updateExperiment(
+                    self.authz_token, experiment_id, experiment)
+                request.airavata_client.launchExperiment(
+                    request.authz_token, experiment_id, self.gateway_id)
+                return Response({'success': True})
         except Exception as e:
             return Response({'success': False, 'errorMessage': e.message})
 
