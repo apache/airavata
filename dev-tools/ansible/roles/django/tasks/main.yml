@@ -29,9 +29,11 @@
 
 - name: Run tasks to setup Django database
   include: database.yml
-  delegate_to: "{{ groups['database'][0] }}"
+  delegate_to: "{{ item }}"
   become: yes
-  become_user: "{{ hostvars[groups['database'][0]]['user'] }}"
+  become_user: "{{ hostvars[item]['user'] }}"
+  with_items:
+  - "{{ django_database_hosts }}"
 
 - name: Create root directory
   file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
