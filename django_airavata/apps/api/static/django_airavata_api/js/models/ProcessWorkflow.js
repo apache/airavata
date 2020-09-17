@@ -5,9 +5,9 @@ const FIELDS = [
   "workflowId",
   {
     name: "creationTime",
-    type: Date
+    type: Date,
   },
-  "type"
+  "type",
 ];
 
 export default class ProcessWorkflow extends BaseModel {

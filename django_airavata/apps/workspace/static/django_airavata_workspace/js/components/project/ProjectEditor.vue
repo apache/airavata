@@ -2,18 +2,11 @@
   <div>
     <div class="d-flex">
       <slot name="title">
-        <h1 class="h4 mb-4 mr-auto">
-          Edit Project
-        </h1>
+        <h1 class="h4 mb-4 mr-auto">Edit Project</h1>
       </slot>
-      <slot name="buttons">
-      </slot>
+      <slot name="buttons"> </slot>
     </div>
-    <b-form
-      @submit="onSubmit"
-      @input="onUserInput"
-      novalidate
-    >
+    <b-form @submit="onSubmit" @input="onUserInput" novalidate>
       <b-form-group
         label="Project Name"
         label-for="project-name"
@@ -29,10 +22,7 @@
           :state="nameState"
         ></b-form-input>
       </b-form-group>
-      <b-form-group
-        label="Project Description"
-        label-for="project-description"
-      >
+      <b-form-group label="Project Description" label-for="project-description">
         <b-form-textarea
           id="project-description"
           type="text"
@@ -55,8 +45,8 @@ export default {
   props: {
     value: {
       type: models.Project,
-      required: true
-    }
+      required: true,
+    },
   },
   mounted() {
     this.$on("input", this.validate);
@@ -64,7 +54,7 @@ export default {
   },
   data() {
     return {
-      userBeginsInput: false
+      userBeginsInput: false,
     };
   },
   computed: {
@@ -89,7 +79,7 @@ export default {
     validation() {
       const v = this.data.validate();
       return v ? v : {};
-    }
+    },
   },
   methods: {
     validate() {
@@ -108,13 +98,12 @@ export default {
     },
     reset() {
       this.userBeginsInput = false;
-    }
+    },
   },
   watch: {
     value() {
       this.validate();
-    }
-  }
+    },
+  },
 };
 </script>
-

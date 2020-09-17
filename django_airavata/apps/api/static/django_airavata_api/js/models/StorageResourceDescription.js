@@ -7,7 +7,7 @@ const FIELDS = [
   "enabled",
   "dataMovementInterfaces",
   "creationTime",
-  "updateTime"
+  "updateTime",
 ];
 
 export default class StorageResourceDescription extends BaseModel {

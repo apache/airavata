@@ -1,14 +1,35 @@
 <template>
-    <ul>
-        <li v-for="queuePolicy in queuePolicies" :key="queuePolicy.name">
-            {{ queuePolicy.name }}
-            <template v-if="queuePolicy.policy">
-                (<span title="Max Allowed Nodes">N: {{ queuePolicy.policy.maxAllowedNodes ? queuePolicy.policy.maxAllowedNodes : 'Unlimited' }}</span>,
-                 <span title="Max Allowed Cores">C: {{ queuePolicy.policy.maxAllowedCores ? queuePolicy.policy.maxAllowedCores : 'Unlimited' }}</span>,
-                 <span title="Max Allowed Walltime">W: {{ queuePolicy.policy.maxAllowedWalltime ? queuePolicy.policy.maxAllowedWalltime : 'Unlimited' }}</span>)
-            </template>
-        </li>
-    </ul>
+  <ul>
+    <li v-for="queuePolicy in queuePolicies" :key="queuePolicy.name">
+      {{ queuePolicy.name }}
+      <template v-if="queuePolicy.policy">
+        (<span title="Max Allowed Nodes"
+          >N:
+          {{
+            queuePolicy.policy.maxAllowedNodes
+              ? queuePolicy.policy.maxAllowedNodes
+              : "Unlimited"
+          }}</span
+        >,
+        <span title="Max Allowed Cores"
+          >C:
+          {{
+            queuePolicy.policy.maxAllowedCores
+              ? queuePolicy.policy.maxAllowedCores
+              : "Unlimited"
+          }}</span
+        >,
+        <span title="Max Allowed Walltime"
+          >W:
+          {{
+            queuePolicy.policy.maxAllowedWalltime
+              ? queuePolicy.policy.maxAllowedWalltime
+              : "Unlimited"
+          }}</span
+        >)
+      </template>
+    </li>
+  </ul>
 </template>
 
 <script>
@@ -19,14 +40,14 @@ export default {
   props: {
     computeResourceId: {
       type: String,
-      required: true
+      required: true,
     },
     groupResourceProfile: {
-      type: models.GroupResourceProfile
-    }
+      type: models.GroupResourceProfile,
+    },
   },
   computed: {
-    queues: function() {
+    queues: function () {
       const computeResourcePolicy = this.groupResourceProfile.getComputeResourcePolicy(
         this.computeResourceId
       );
@@ -38,26 +59,28 @@ export default {
         return [];
       }
     },
-    queuePolicies: function() {
-        const result = [];
-        for (const queue of this.queues) {
-            const batchQueueResourcePolicies = this.groupResourceProfile.getBatchQueueResourcePolicies(this.computeResourceId);
-            const batchQueueResourcePolicy = batchQueueResourcePolicies.find(pol => pol.queuename === queue);
-            result.push({
-                name: queue,
-                policy: batchQueueResourcePolicy,
-            });
-        }
-        return result;
-    }
-  }
+    queuePolicies: function () {
+      const result = [];
+      for (const queue of this.queues) {
+        const batchQueueResourcePolicies = this.groupResourceProfile.getBatchQueueResourcePolicies(
+          this.computeResourceId
+        );
+        const batchQueueResourcePolicy = batchQueueResourcePolicies.find(
+          (pol) => pol.queuename === queue
+        );
+        result.push({
+          name: queue,
+          policy: batchQueueResourcePolicy,
+        });
+      }
+      return result;
+    },
+  },
 };
 </script>
 
 <style scoped>
 ul {
-    padding-left: 20px;
+  padding-left: 20px;
 }
 </style>
-
-

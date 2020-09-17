@@ -1,15 +1,11 @@
 <template>
-
   <b-card
     :bg-variant="bgVariant"
     body-bg-variant="white"
     :header-text-variant="headerTextVariant"
     class="statistics-card"
   >
-    <div
-      slot="header"
-      class="text-right"
-    >
+    <div slot="header" class="text-right">
       <div class="statistic-count">{{ count }}</div>
       <div>{{ title }}</div>
     </div>
@@ -18,10 +14,7 @@
       @click="$emit('click')"
     >
       <slot name="link-text">
-        <div
-          v-for="state in states"
-          :key="state.value"
-        >{{ state.name }}</div>
+        <div v-for="state in states" :key="state.value">{{ state.name }}</div>
       </slot>
     </b-link>
   </b-card>
@@ -33,29 +26,29 @@ export default {
   props: {
     bgVariant: {
       type: String,
-      default: "light"
+      default: "light",
     },
     headerTextVariant: {
       type: String,
-      default: "dark"
+      default: "dark",
     },
     linkVariant: {
       type: String,
-      default: "primary"
+      default: "primary",
     },
     count: {
       type: Number,
-      required: true
+      required: true,
     },
     title: {
       type: String,
-      required: true
+      required: true,
     },
     states: {
       type: Array,
-      default: () => []
-    }
-  }
+      default: () => [],
+    },
+  },
 };
 </script>
 

@@ -4,12 +4,24 @@
       <b-input-group-text slot="prepend">
         <i class="fa fa-search"></i>
       </b-input-group-text>
-      <b-form-input type="text" :value="searchValue" :placeholder="placeholder" @input="updateSearchValue" @keydown.native.enter='enter'
-        @keydown.native.down='down' @keydown.native.up='up'></b-form-input>
+      <b-form-input
+        type="text"
+        :value="searchValue"
+        :placeholder="placeholder"
+        @input="updateSearchValue"
+        @keydown.native.enter="enter"
+        @keydown.native.down="down"
+        @keydown.native.up="up"
+      ></b-form-input>
     </b-input-group>
     <b-list-group class="autocomplete-suggestion-list" v-if="open">
-      <b-list-group-item v-for="(suggestion, index) in filtered" v-bind:class="{'active': isActive(index)}" href="#"
-        @click="suggestionClick(index)" v-bind:key="suggestion.id">
+      <b-list-group-item
+        v-for="(suggestion, index) in filtered"
+        v-bind:class="{ active: isActive(index) }"
+        href="#"
+        @click="suggestionClick(index)"
+        v-bind:key="suggestion.id"
+      >
         <slot name="suggestion" :suggestion="suggestion">
           {{ suggestion.name }}
         </slot>
@@ -24,34 +36,36 @@ export default {
   props: {
     suggestions: {
       type: Array,
-      required: true
+      required: true,
     },
     placeholder: {
       type: String,
-      default: "Type to get suggestions..."
+      default: "Type to get suggestions...",
     },
     maxMatches: {
       type: Number,
-      default: 5
-    }
+      default: 5,
+    },
   },
   data() {
     return {
       open: false,
       current: 0,
-      searchValue: ""
+      searchValue: "",
     };
   },
 
   computed: {
     filtered() {
-      return this.suggestions.filter(data => {
-        // Case insensitive search
-        return (
-          data.name.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0
-        );
-      }).slice(0,this.maxMatches);
-    }
+      return this.suggestions
+        .filter((data) => {
+          // Case insensitive search
+          return (
+            data.name.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0
+          );
+        })
+        .slice(0, this.maxMatches);
+    },
   },
   methods: {
     updateSearchValue(value) {
@@ -63,7 +77,7 @@ export default {
         this.open = false;
       }
       this.searchValue = value;
-      this.$emit('search-changed', value);
+      this.$emit("search-changed", value);
     },
     enter() {
       if (this.filtered.length === 0) {
@@ -93,8 +107,8 @@ export default {
     },
     emitSelectedItem(index) {
       this.$emit("selected", this.filtered[index]);
-    }
-  }
+    },
+  },
 };
 </script>
 

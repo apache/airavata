@@ -12,10 +12,9 @@
               />
               <b-input-group-append>
                 <b-button @click="resetSearch">Reset</b-button>
-                <b-button
-                  variant="primary"
-                  @click="searchUsers"
-                >Search</b-button>
+                <b-button variant="primary" @click="searchUsers"
+                  >Search</b-button
+                >
               </b-input-group-append>
             </b-input-group>
           </div>
@@ -26,36 +25,22 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <b-table
-              hover
-              :fields="fields"
-              :items="items"
-              fixed="true"
-            >
-              <template
-                slot="creationTime"
-                slot-scope="data"
-              >
+            <b-table hover :fields="fields" :items="items" fixed="true">
+              <template slot="creationTime" slot-scope="data">
                 <human-date :date="data.value" />
               </template>
-              <template
-                slot="groups"
-                slot-scope="data"
-              >
+              <template slot="groups" slot-scope="data">
                 <group-membership-display :groups="data.item.groups" />
               </template>
-              <template
-                slot="action"
-                slot-scope="data"
-              >
-                <b-button v-if="data.item.userHasWriteAccess" @click="toggleDetails(data)">
+              <template slot="action" slot-scope="data">
+                <b-button
+                  v-if="data.item.userHasWriteAccess"
+                  @click="toggleDetails(data)"
+                >
                   Edit
                 </b-button>
               </template>
-              <template
-                slot="row-details"
-                slot-scope="data"
-              >
+              <template slot="row-details" slot-scope="data">
                 <user-details-container
                   :iam-user-profile="data.item"
                   :editable-groups="editableGroups"
@@ -90,21 +75,21 @@ export default {
       usersPaginator: null,
       allGroups: null,
       showingDetails: {},
-      search: null
+      search: null,
     };
   },
   components: {
     pager: components.Pager,
     "human-date": components.HumanDate,
     UserDetailsContainer,
-    GroupMembershipDisplay
+    GroupMembershipDisplay,
   },
   created() {
     services.IAMUserProfileService.list({ limit: 10 }).then(
-      users => (this.usersPaginator = users)
+      (users) => (this.usersPaginator = users)
     );
     services.GroupService.list({ limit: -1 }).then(
-      groups => (this.allGroups = groups)
+      (groups) => (this.allGroups = groups)
     );
   },
   computed: {
@@ -112,45 +97,45 @@ export default {
       return [
         {
           label: "First Name",
-          key: "firstName"
+          key: "firstName",
         },
         {
           label: "Last Name",
-          key: "lastName"
+          key: "lastName",
         },
         {
           label: "Username",
-          key: "userId"
+          key: "userId",
         },
         {
           label: "Email",
-          key: "email"
+          key: "email",
         },
         {
           label: "Enabled",
-          key: "enabled"
+          key: "enabled",
         },
         {
           label: "Email Verified",
-          key: "emailVerified"
+          key: "emailVerified",
         },
         {
           label: "Groups",
-          key: "groups"
+          key: "groups",
         },
         {
           label: "Created",
-          key: "creationTime"
+          key: "creationTime",
         },
         {
           label: "Action",
-          key: "action"
-        }
+          key: "action",
+        },
       ];
     },
     items() {
       return this.usersPaginator
-        ? this.usersPaginator.results.map(u => {
+        ? this.usersPaginator.results.map((u) => {
             const user = u.clone();
             user._showDetails =
               this.showingDetails[u.airavataInternalUserId] || false;
@@ -160,12 +145,12 @@ export default {
     },
     editableGroups() {
       return this.allGroups
-        ? this.allGroups.filter(g => g.isAdmin || g.isOwner)
+        ? this.allGroups.filter((g) => g.isAdmin || g.isOwner)
         : [];
     },
     currentOffset() {
       return this.usersPaginator ? this.usersPaginator.offset : 0;
-    }
+    },
   },
   methods: {
     next() {
@@ -177,7 +162,7 @@ export default {
     groupsUpdated(user) {
       services.IAMUserProfileService.update({
         lookup: user.userId,
-        data: user
+        data: user,
       }).finally(() => {
         this.reloadUserProfiles();
       });
@@ -185,13 +170,13 @@ export default {
     reloadUserProfiles() {
       const params = {
         limit: 10,
-        offset: this.currentOffset
+        offset: this.currentOffset,
       };
       if (this.search) {
         params["search"] = this.search;
       }
       services.IAMUserProfileService.list(params).then(
-        users => (this.usersPaginator = users)
+        (users) => (this.usersPaginator = users)
       );
     },
     toggleDetails(row) {
@@ -218,8 +203,7 @@ export default {
       services.IAMUserProfileService.delete({ lookup: username }).finally(() =>
         this.reloadUserProfiles()
       );
-    }
-  }
+    },
+  },
 };
 </script>
-

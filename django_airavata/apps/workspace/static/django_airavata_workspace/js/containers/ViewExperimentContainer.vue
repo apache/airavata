@@ -1,49 +1,52 @@
 <template>
-    <experiment-summary v-if="fullExperiment" :fullExperiment="fullExperiment"
-    :launching="launch" @Launched="handleLaunchedExperiment"
-    :key="componentKey">
-    </experiment-summary>
+  <experiment-summary
+    v-if="fullExperiment"
+    :fullExperiment="fullExperiment"
+    :launching="launch"
+    @Launched="handleLaunchedExperiment"
+    :key="componentKey"
+  >
+  </experiment-summary>
 </template>
 
 <script>
-
-import {services} from 'django-airavata-api'
-import ExperimentSummary from '../components/experiment/ExperimentSummary.vue'
+import { services } from "django-airavata-api";
+import ExperimentSummary from "../components/experiment/ExperimentSummary.vue";
 
 export default {
-    name: 'view-experiment-container',
-    props: {
-        initialFullExperimentData: {
-            required: true
-        },
-        launching: {
-            type: Boolean,
-            default: false,
-        }
+  name: "view-experiment-container",
+  props: {
+    initialFullExperimentData: {
+      required: true,
     },
-    data () {
-        return {
-            fullExperiment: null,
-            componentKey: 0,
-            launch: this.launching,
-        }
+    launching: {
+      type: Boolean,
+      default: false,
     },
-    components: {
-        ExperimentSummary,
+  },
+  data() {
+    return {
+      fullExperiment: null,
+      componentKey: 0,
+      launch: this.launching,
+    };
+  },
+  components: {
+    ExperimentSummary,
+  },
+  methods: {
+    handleLaunchedExperiment: function () {
+      this.launch = true;
+      this.componentKey = 1;
     },
-    methods: {
-      handleLaunchedExperiment: function() {
-        this.launch = true;
-        this.componentKey = 1;
-      }
-    },
-    computed: {
-    },
-    beforeMount: function () {
-        services.FullExperimentService.retrieve({lookup: this.initialFullExperimentData.experimentId, initialFullExperimentData: this.initialFullExperimentData})
-            .then(exp => this.fullExperiment = exp);
-    }
-}
+  },
+  computed: {},
+  beforeMount: function () {
+    services.FullExperimentService.retrieve({
+      lookup: this.initialFullExperimentData.experimentId,
+      initialFullExperimentData: this.initialFullExperimentData,
+    }).then((exp) => (this.fullExperiment = exp));
+  },
+};
 </script>
-<style>
-</style>
+<style></style>

@@ -5,24 +5,24 @@ import EditProjectContainer from "./containers/EditProjectContainer.vue";
 //
 //   <div id="edit-project" data-project-id="..projectID.."/>
 
-entry(Vue => {
+entry((Vue) => {
   new Vue({
     render(h) {
       return h(components.MainLayout, [
         h(EditProjectContainer, {
           props: {
-            projectId: this.projectId
-          }
-        })
+            projectId: this.projectId,
+          },
+        }),
       ]);
     },
     data() {
       return {
-        projectId: null
+        projectId: null,
       };
     },
     beforeMount() {
       this.projectId = this.$el.dataset.projectId;
-    }
+    },
   }).$mount("#edit-project");
 });

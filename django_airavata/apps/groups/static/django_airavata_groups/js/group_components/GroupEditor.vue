@@ -1,24 +1,51 @@
 <template>
   <div>
-    <b-alert :variant="showDismissibleAlert.variant" dismissible :show="showDismissibleAlert.dismissable" @dismissed="showDismissibleAlert.dismissable=false">
+    <b-alert
+      :variant="showDismissibleAlert.variant"
+      dismissible
+      :show="showDismissibleAlert.dismissable"
+      @dismissed="showDismissibleAlert.dismissable = false"
+    >
       {{ showDismissibleAlert.message }}
     </b-alert>
 
     <b-form>
-
-      <b-form-group id="group1" label="Group Name:" label-for="group_name" description="Name should only contain Alpha Characters">
-        <b-form-input id="group_name" type="text" v-model="localGroup.name" required placeholder="Enter group name">
+      <b-form-group
+        id="group1"
+        label="Group Name:"
+        label-for="group_name"
+        description="Name should only contain Alpha Characters"
+      >
+        <b-form-input
+          id="group_name"
+          type="text"
+          v-model="localGroup.name"
+          required
+          placeholder="Enter group name"
+        >
         </b-form-input>
       </b-form-group>
 
       <b-form-group id="group2" label="Description:" label-for="description">
-        <b-form-textarea id="description" type="text" :rows="6" v-model="localGroup.description" required placeholder="Enter description of the group">
+        <b-form-textarea
+          id="description"
+          type="text"
+          :rows="6"
+          v-model="localGroup.description"
+          required
+          placeholder="Enter description of the group"
+        >
         </b-form-textarea>
       </b-form-group>
 
       <b-card title="Group Members" title-tag="h5">
-        <group-members-editor :group="localGroup" @add-member="addGroupMember" @remove-member="removeGroupMember"
-          @change-role-to-member="changeRoleToMember" @change-role-to-admin="changeRoleToAdmin" />
+        <group-members-editor
+          :group="localGroup"
+          @add-member="addGroupMember"
+          @remove-member="removeGroupMember"
+          @change-role-to-member="changeRoleToMember"
+          @change-role-to-admin="changeRoleToAdmin"
+        />
       </b-card>
 
       <b-button @click="submitForm" variant="primary">Submit</b-button>
@@ -34,8 +61,8 @@ export default {
   props: {
     group: {
       type: models.Group,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -43,27 +70,27 @@ export default {
       showDismissibleAlert: {
         variant: "success",
         message: "no data",
-        dismissable: false
+        dismissable: false,
       },
-      userProfiles: []
+      userProfiles: [],
     };
   },
   components: {
-    GroupMembersEditor
+    GroupMembersEditor,
   },
   methods: {
     submitForm() {
       let saveOperation = this.localGroup.id
         ? services.GroupService.update({
             lookup: this.localGroup.id,
-            data: this.localGroup
+            data: this.localGroup,
           })
         : services.GroupService.create({ data: this.localGroup });
       saveOperation
-        .then(group => {
+        .then((group) => {
           this.$emit("saved", group);
         })
-        .catch(error => {
+        .catch((error) => {
           this.showDismissibleAlert.dismissable = true;
           this.showDismissibleAlert.message = "Error: " + error.data;
           this.showDismissibleAlert.variant = "danger";
@@ -91,7 +118,7 @@ export default {
       if (adminIndex < 0) {
         this.localGroup.admins.push(airavataInternalUserId);
       }
-    }
-  }
+    },
+  },
 };
 </script>

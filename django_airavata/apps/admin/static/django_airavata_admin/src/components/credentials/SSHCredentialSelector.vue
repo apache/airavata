@@ -21,9 +21,7 @@
                 createCredentialDescription(defaultCredentialSummary)
               }})
             </span>
-            <span v-else>
-              Unset the default SSH credential
-            </span>
+            <span v-else> Unset the default SSH credential </span>
           </slot>
         </option>
       </b-form-select>
@@ -59,38 +57,38 @@ export default {
   props: {
     nullOption: {
       type: Boolean,
-      default: true
+      default: true,
     },
     // This is the default credential token that will be used if the null option is selected
     nullOptionDefaultCredentialToken: {
-      type: String
+      type: String,
     },
     nullOptionDisabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     readonly: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   mixins: [mixins.VModelMixin],
   components: {
     "clipboard-copy-button": components.ClipboardCopyButton,
-    "new-ssh-credential-modal": NewSSHCredentialModal
+    "new-ssh-credential-modal": NewSSHCredentialModal,
   },
   data() {
     return {
-      credentials: null
+      credentials: null,
     };
   },
   computed: {
     credentialStoreTokenOptions() {
       const options = this.credentials
-        ? this.credentials.map(summary => {
+        ? this.credentials.map((summary) => {
             return {
               value: summary.token,
-              text: this.createCredentialDescription(summary)
+              text: this.createCredentialDescription(summary),
             };
           })
         : [];
@@ -101,13 +99,13 @@ export default {
     },
     selectedCredential() {
       return this.credentials
-        ? this.credentials.find(cred => cred.token === this.data)
+        ? this.credentials.find((cred) => cred.token === this.data)
         : null;
     },
     defaultCredentialSummary() {
       return this.nullOptionDefaultCredentialToken && this.credentials
         ? this.credentials.find(
-            cred => cred.token === this.nullOptionDefaultCredentialToken
+            (cred) => cred.token === this.nullOptionDefaultCredentialToken
           )
         : null;
     },
@@ -117,17 +115,19 @@ export default {
         : this.defaultCredentialSummary
         ? this.defaultCredentialSummary.publicKey.trim()
         : null;
-    }
+    },
   },
   methods: {
     showNewSSHCredentialModal() {
       this.$refs.newSSHCredentialModal.show();
     },
     createSSHCredential(data) {
-      services.CredentialSummaryService.createSSH({ data: data }).then(cred => {
-        this.credentials.push(cred);
-        this.data = cred.token;
-      });
+      services.CredentialSummaryService.createSSH({ data: data }).then(
+        (cred) => {
+          this.credentials.push(cred);
+          this.data = cred.token;
+        }
+      );
     },
     createCredentialDescription(summary) {
       return (
@@ -137,14 +137,14 @@ export default {
           ? summary.description
           : `No description (${summary.token})`)
       );
-    }
+    },
   },
   created() {
     if (!this.credentials) {
       services.CredentialSummaryService.allSSHCredentials().then(
-        creds => (this.credentials = creds)
+        (creds) => (this.credentials = creds)
       );
     }
-  }
+  },
 };
 </script>

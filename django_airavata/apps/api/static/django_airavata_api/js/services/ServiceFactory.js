@@ -7,7 +7,7 @@ const getKey = "get";
 const putKey = "put";
 const delKey = "delete";
 
-const parsePathParams = function(url) {
+const parsePathParams = function (url) {
   var pathParamsRegEx = new RegExp("<[a-zA-Z0-9_]+(:[a-zA-Z0-9_]*)?>", "g");
   let pathParamsMatch = url.match(pathParamsRegEx);
   let pathParams = {};
@@ -25,7 +25,7 @@ const parsePathParams = function(url) {
   return pathParams;
 };
 
-const parseServiceMapping = function(serviceConfiguration) {
+const parseServiceMapping = function (serviceConfiguration) {
   const mappedFunctions = {};
   let viewSetFunctions = [];
   if (serviceConfiguration.viewSet === true) {
@@ -61,7 +61,7 @@ const parseServiceMapping = function(serviceConfiguration) {
           modelClass: modelClass,
           queryParams: queryParams,
           initialDataParam: viewSetFunction.initialDataParam,
-          encodePathParams: encodePathParams
+          encodePathParams: encodePathParams,
         };
         break;
       case "create":
@@ -69,11 +69,11 @@ const parseServiceMapping = function(serviceConfiguration) {
           url: url,
           requestType: postKey,
           bodyParams: {
-            name: "data"
+            name: "data",
           },
           modelClass: modelClass,
           queryParams: queryParams,
-          encodePathParams: encodePathParams
+          encodePathParams: encodePathParams,
         };
         break;
       case "update":
@@ -81,11 +81,11 @@ const parseServiceMapping = function(serviceConfiguration) {
           url: url + "<lookup>/",
           requestType: putKey,
           bodyParams: {
-            name: "data"
+            name: "data",
           },
           modelClass: modelClass,
           queryParams: queryParams,
-          encodePathParams: encodePathParams
+          encodePathParams: encodePathParams,
         };
         break;
       case "retrieve":
@@ -95,7 +95,7 @@ const parseServiceMapping = function(serviceConfiguration) {
           modelClass: modelClass,
           queryParams: queryParams,
           initialDataParam: viewSetFunction.initialDataParam,
-          encodePathParams: encodePathParams
+          encodePathParams: encodePathParams,
         };
         break;
       case "delete":
@@ -104,7 +104,7 @@ const parseServiceMapping = function(serviceConfiguration) {
           requestType: delKey,
           modelClass: modelClass,
           queryParams: queryParams,
-          encodePathParams: encodePathParams
+          encodePathParams: encodePathParams,
         };
         break;
       default:
@@ -128,7 +128,7 @@ const parseServiceMapping = function(serviceConfiguration) {
         encodePathParams:
           "encodePathParams" in methodConfig
             ? methodConfig.encodePathParams
-            : true
+            : true,
       };
       if ("modelClass" in methodConfig) {
         mappedFunctions[methodName]["modelClass"] = methodConfig.modelClass;
@@ -144,7 +144,7 @@ const parseServiceMapping = function(serviceConfiguration) {
   return mappedFunctions;
 };
 
-const parseQueryMapping = function(queryParamsMapping) {
+const parseQueryMapping = function (queryParamsMapping) {
   let newQueryParamMapping = {};
   if (!queryParamsMapping) {
     return newQueryParamMapping;
@@ -209,12 +209,12 @@ class ServiceFactory {
       }
       let pathParamsMapping = parsePathParams(config.url);
       let queryParamsMapping = parseQueryMapping(config.queryParams);
-      serviceObj[functionName] = function(
+      serviceObj[functionName] = function (
         params = {},
         { ignoreErrors, showSpinner, cache } = {
           ignoreErrors: false,
           showSpinner: true,
-          cache: false
+          cache: false,
         }
       ) {
         let url = config.url;
@@ -264,23 +264,23 @@ class ServiceFactory {
             initialData = params[paramKey];
           }
         }
-        let paginationHandler = data => {
+        let paginationHandler = (data) => {
           if (config.pagination === true && "next" in data) {
             return new PaginationIterator(data, config.modelClass);
           } else if (data instanceof Array) {
-            return data.map(item => resultHandler(item));
+            return data.map((item) => resultHandler(item));
           } else {
             return resultHandler(data);
           }
         };
-        let resultHandler = data => {
+        let resultHandler = (data) => {
           return config.modelClass ? new config.modelClass(data) : data;
         };
         switch (config.requestType.toLowerCase()) {
           case postKey:
             return FetchUtils.post(url, bodyParams, queryParams, {
               ignoreErrors,
-              showSpinner
+              showSpinner,
             }).then(resultHandler);
           case getKey:
             if (initialData) {
@@ -289,13 +289,13 @@ class ServiceFactory {
               return FetchUtils.get(url, queryParams, {
                 ignoreErrors,
                 showSpinner,
-                cache
+                cache,
               }).then(paginationHandler);
             }
           case putKey:
             return FetchUtils.put(url, bodyParams, {
               ignoreErrors,
-              showSpinner
+              showSpinner,
             }).then(resultHandler);
           case delKey:
             return FetchUtils.delete(url, { ignoreErrors, showSpinner });

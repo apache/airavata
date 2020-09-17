@@ -1,23 +1,23 @@
-import BaseModel from './BaseModel';
+import BaseModel from "./BaseModel";
 
 const FIELDS = [
-    'errorId',
-    {
-        name: 'creationTime',
-        type: 'date',
-    },
-    'actualErrorMessage',
-    'userFriendlyMessage',
-    'transientOrPersistent',
-    {
-        name: 'rootCauseErrorIdList',
-        type: 'string',
-        list: true,
-    }
+  "errorId",
+  {
+    name: "creationTime",
+    type: "date",
+  },
+  "actualErrorMessage",
+  "userFriendlyMessage",
+  "transientOrPersistent",
+  {
+    name: "rootCauseErrorIdList",
+    type: "string",
+    list: true,
+  },
 ];
 
 export default class ErrorModel extends BaseModel {
-    constructor(data = {}) {
-        super(FIELDS, data);
-    }
+  constructor(data = {}) {
+    super(FIELDS, data);
+  }
 }

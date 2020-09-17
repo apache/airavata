@@ -10,14 +10,14 @@ export default {
   props: {
     statusName: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
-    experimentState: function() {
+    experimentState: function () {
       return models.ExperimentState.byName(this.statusName);
     },
-    badgeVariant: function() {
+    badgeVariant: function () {
       if (this.experimentState.isProgressing) {
         return "secondary";
       } else if (this.experimentState === models.ExperimentState.COMPLETED) {
@@ -32,7 +32,7 @@ export default {
       } else {
         return "info";
       }
-    }
-  }
+    },
+  },
 };
 </script>

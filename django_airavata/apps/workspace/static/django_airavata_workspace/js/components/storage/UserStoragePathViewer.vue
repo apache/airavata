@@ -16,7 +16,9 @@
     <user-storage-edit-viewer
       v-if="userStoragePath && isFile"
       :file="file"
-      @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+      @file-content-changed="
+        (fileContent) => $emit('file-content-changed', fileContent)
+      "
     />
 
     <b-table
@@ -25,29 +27,21 @@
       :items="items"
       sort-by="name"
     >
-      <template
-        slot="name"
-        slot-scope="data"
-      >
+      <template slot="name" slot-scope="data">
         <b-link
           v-if="data.item.type === 'dir'"
           @click="directorySelected(data.item)"
-        > <i class="fa fa-folder-open"></i> {{ data.item.name }}</b-link>
-        <b-link
-          v-else
-          :href="storageFileViewRouteUrl(data.item)"
-        > {{ data.item.name }}</b-link>
+        >
+          <i class="fa fa-folder-open"></i> {{ data.item.name }}</b-link
+        >
+        <b-link v-else :href="storageFileViewRouteUrl(data.item)">
+          {{ data.item.name }}</b-link
+        >
       </template>
-      <template
-        slot="createdTimestamp"
-        slot-scope="data"
-      >
+      <template slot="createdTimestamp" slot-scope="data">
         <human-date :date="data.item.createdTime" />
       </template>
-      <template
-        slot="actions"
-        slot-scope="data"
-      >
+      <template slot="actions" slot-scope="data">
         <b-button
           v-if="includeSelectFileAction && data.item.type === 'file'"
           @click="$emit('file-selected', data.item)"
@@ -60,7 +54,8 @@
           v-if="includeDeleteAction"
           @delete="deleteItem(data.item)"
         >
-          Are you sure you want to delete <strong>{{ data.item.name }}</strong>?
+          Are you sure you want to delete <strong>{{ data.item.name }}</strong
+          >?
         </delete-button>
       </template>
     </b-table>
@@ -76,38 +71,38 @@ export default {
   name: "user-storage-path-viewer",
   props: {
     userStoragePath: {
-      required: true
+      required: true,
     },
     storagePath: {
-      required: true
+      required: true,
     },
     includeDeleteAction: {
       type: Boolean,
-      default: true
+      default: true,
     },
     includeSelectFileAction: {
       type: Boolean,
-      default: false
+      default: false,
     },
     includeCreateFileAction: {
       type: Boolean,
-      default: true
+      default: true,
     },
     downloadInNewWindow: {
       type: Boolean,
-      default: false
+      default: false,
     },
     selectedDataProductUris: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   components: {
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
     UserStorageCreateView,
-    UserStorageEditViewer
+    UserStorageEditViewer,
   },
   computed: {
     isDir() {
@@ -119,7 +114,7 @@ export default {
 
     // Return the first file available. This is assuming the path is a file.
     file() {
-      return this.userStoragePath.files[0]
+      return this.userStoragePath.files[0];
     },
 
     fields() {
@@ -127,40 +122,40 @@ export default {
         {
           label: "Name",
           key: "name",
-          sortable: true
+          sortable: true,
         },
         {
           label: "Size",
           key: "size",
           sortable: true,
-          formatter: value => this.getFormattedSize(value)
+          formatter: (value) => this.getFormattedSize(value),
         },
         {
           label: "Created Time",
           key: "createdTimestamp",
-          sortable: true
+          sortable: true,
         },
         {
           label: "Actions",
-          key: "actions"
-        }
+          key: "actions",
+        },
       ];
     },
     items() {
       if (this.userStoragePath) {
         const dirs = this.userStoragePath.directories
-          .filter(d => !d.hidden)
-          .map(d => {
+          .filter((d) => !d.hidden)
+          .map((d) => {
             return {
               name: d.name,
               path: d.path,
               type: "dir",
               createdTime: d.createdTime,
               createdTimestamp: d.createdTime.getTime(), // for sorting
-              size: d.size
+              size: d.size,
             };
           });
-        const files = this.userStoragePath.files.map(f => {
+        const files = this.userStoragePath.files.map((f) => {
           return {
             name: f.name,
             type: "file",
@@ -168,7 +163,7 @@ export default {
             downloadURL: f.downloadURL,
             createdTime: f.createdTime,
             createdTimestamp: f.createdTime.getTime(), // for sorting
-            size: f.size
+            size: f.size,
           };
         });
         return dirs.concat(files);
@@ -178,7 +173,7 @@ export default {
     },
     downloadTarget() {
       return this.downloadInNewWindow ? "_blank" : "_self";
-    }
+    },
   },
   methods: {
     getFormattedSize(size) {
@@ -205,15 +200,14 @@ export default {
     isAlreadySelected(item) {
       return (
         this.selectedDataProductUris.find(
-          uri => item.type === "file" && uri === item.dataProductURI
+          (uri) => item.type === "file" && uri === item.dataProductURI
         ) !== undefined
       );
     },
     storageFileViewRouteUrl(item) {
       // This endpoint can handle XHR upload or a TUS uploadURL
       return `/workspace/storage/${this.storagePath}${item.name}`;
-    }
-  }
+    },
+  },
 };
 </script>
-

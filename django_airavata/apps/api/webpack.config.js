@@ -5,7 +5,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "static/django_airavata_api/dist/"),
     filename: "airavata-api.js",
-    library: "AiravataAPI"
+    library: "AiravataAPI",
   },
-  mode: "production"
+  mode: "production",
 };

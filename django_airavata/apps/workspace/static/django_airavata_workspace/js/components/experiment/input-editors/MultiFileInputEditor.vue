@@ -35,12 +35,12 @@ export default {
   mixins: [InputEditorMixin],
   props: {
     value: {
-      type: String
-    }
+      type: String,
+    },
   },
   components: {
     FileInputEditor,
-    InputFileSelector
+    InputFileSelector,
   },
   data() {
     return {};
@@ -48,7 +48,7 @@ export default {
   computed: {
     selectedDataProductURIs() {
       return this.createValueArray(this.value);
-    }
+    },
   },
   methods: {
     updatedFile(newValue, dataProductURI) {
@@ -59,7 +59,7 @@ export default {
     },
     removeFile(dataProductURI) {
       const index = this.selectedDataProductURIs.findIndex(
-        u => u === dataProductURI
+        (u) => u === dataProductURI
       );
       const copyDataProductURIs = this.selectedDataProductURIs.slice();
       copyDataProductURIs.splice(index, 1);
@@ -78,7 +78,7 @@ export default {
       values.push(dataProductURI);
       this.data = values.join(",");
       this.valueChanged();
-    }
-  }
+    },
+  },
 };
 </script>

@@ -14,64 +14,64 @@ const FIELDS = [
   {
     name: "experimentType",
     type: "number",
-    default: 0
+    default: 0,
   },
   "userName",
   "experimentName",
   {
     name: "creationTime",
-    type: "date"
+    type: "date",
   },
   "description",
   "executionId",
   {
     name: "enableEmailNotification",
     type: "boolean",
-    default: false
+    default: false,
   },
   {
     name: "emailAddresses",
     type: "string",
-    list: true
+    list: true,
   },
   {
     name: "userConfigurationData",
     type: UserConfigurationData,
-    default: BaseModel.defaultNewInstance(UserConfigurationData)
+    default: BaseModel.defaultNewInstance(UserConfigurationData),
   },
   {
     name: "experimentInputs",
     type: InputDataObjectType,
     list: true,
-    default: BaseModel.defaultNewInstance(Array)
+    default: BaseModel.defaultNewInstance(Array),
   },
   {
     name: "experimentOutputs",
     type: OutputDataObjectType,
-    list: true
+    list: true,
   },
   {
     name: "experimentStatus",
     type: ExperimentStatus,
-    list: true
+    list: true,
   },
   {
     name: "errors",
     type: ErrorModel,
-    list: true
+    list: true,
   },
   {
     name: "processes",
     type: ProcessModel,
-    list: true
+    list: true,
   },
   "workflow",
   {
     name: "userHasWriteAccess",
     type: "boolean",
-    default: true
+    default: true,
   },
-  "relativeExperimentDataDir"
+  "relativeExperimentDataDir",
 ];
 
 export default class Experiment extends BaseModel {
@@ -116,7 +116,7 @@ export default class Experiment extends BaseModel {
       ExperimentState.CANCELING,
       ExperimentState.CANCELED,
       ExperimentState.FAILED,
-      ExperimentState.COMPLETED
+      ExperimentState.COMPLETED,
     ];
     return (
       this.latestStatus &&
@@ -133,7 +133,7 @@ export default class Experiment extends BaseModel {
   }
 
   get isCancelable() {
-    switch(this.latestStatus.state){
+    switch (this.latestStatus.state) {
       case ExperimentState.VALIDATED:
       case ExperimentState.SCHEDULED:
       case ExperimentState.LAUNCHED:
@@ -154,8 +154,8 @@ export default class Experiment extends BaseModel {
 
   populateInputsOutputsFromApplicationInterface(applicationInterface) {
     // Copy application inputs and outputs to the experiment
-    this.experimentInputs = applicationInterface.applicationInputs.map(input =>
-      input.clone()
+    this.experimentInputs = applicationInterface.applicationInputs.map(
+      (input) => input.clone()
     );
     this.evaluateInputDependencies();
     this.experimentOutputs = applicationInterface.applicationOutputs.slice();
@@ -170,7 +170,7 @@ export default class Experiment extends BaseModel {
 
   _collectInputValues() {
     const result = {};
-    this.experimentInputs.forEach(inp => {
+    this.experimentInputs.forEach((inp) => {
       result[inp.name] = inp.value;
     });
     return result;

@@ -11,7 +11,7 @@ const FIELDS = [
   {
     name: "applicationModules",
     type: "string",
-    list: true
+    list: true,
   },
   // When saving/updating, the order of the inputs in the applicationInputs
   // array determines the 'inputOrder' that will be applied to each input on the
@@ -20,24 +20,24 @@ const FIELDS = [
     name: "applicationInputs",
     type: InputDataObjectType,
     list: true,
-    default: BaseModel.defaultNewInstance(Array)
+    default: BaseModel.defaultNewInstance(Array),
   },
   {
     name: "applicationOutputs",
     type: OutputDataObjectType,
-    list: true
+    list: true,
   },
   {
     name: "archiveWorkingDirectory",
     type: "boolean",
-    default: false
+    default: false,
   },
   {
     name: "hasOptionalFileInputs",
     type: "boolean",
-    default: false
+    default: false,
   },
-  "userHasWriteAccess"
+  "userHasWriteAccess",
 ];
 
 export default class ApplicationInterfaceDefinition extends BaseModel {
@@ -52,9 +52,9 @@ export default class ApplicationInterfaceDefinition extends BaseModel {
       isRequired: true,
       metaData: {
         "file-metadata": {
-          "mime-type": "text/plain"
-        }
-      }
+          "mime-type": "text/plain",
+        },
+      },
     });
     const stderr = new OutputDataObjectType({
       name: "Standard-Error",
@@ -62,9 +62,9 @@ export default class ApplicationInterfaceDefinition extends BaseModel {
       isRequired: true,
       metaData: {
         "file-metadata": {
-          "mime-type": "text/plain"
-        }
-      }
+          "mime-type": "text/plain",
+        },
+      },
     });
     if (!this.applicationOutputs) {
       this.applicationOutputs = [];

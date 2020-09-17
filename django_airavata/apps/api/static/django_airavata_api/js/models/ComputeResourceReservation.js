@@ -14,18 +14,18 @@ const FIELDS = [
   {
     name: "queueNames",
     type: "string",
-    list: true
+    list: true,
   },
   {
     name: "startTime",
     type: Date,
-    default: () => currentTimeTopOfHour()
+    default: () => currentTimeTopOfHour(),
   },
   {
     name: "endTime",
     type: Date,
-    default: () => currentTimeTopOfHour()
-  }
+    default: () => currentTimeTopOfHour(),
+  },
 ];
 
 export default class ComputeResourceReservation extends BaseModel {

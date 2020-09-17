@@ -7,7 +7,7 @@ const FIELDS = [
   {
     name: "overridebyAiravata",
     type: "boolean",
-    default: true
+    default: true,
   },
   "loginUserName",
   "preferredJobSubmissionProtocol",
@@ -25,8 +25,8 @@ const FIELDS = [
     name: "reservations",
     type: ComputeResourceReservation,
     list: true,
-    default: BaseModel.defaultNewInstance(Array)
-  }
+    default: BaseModel.defaultNewInstance(Array),
+  },
 ];
 
 export default class GroupComputeResourcePreference extends BaseModel {
@@ -37,11 +37,11 @@ export default class GroupComputeResourcePreference extends BaseModel {
   validate() {
     let validationResults = {};
     if (this.isEmpty(this.loginUserName)) {
-      validationResults["loginUserName"] =
-        "Please provide a login username.";
+      validationResults["loginUserName"] = "Please provide a login username.";
     }
     if (this.isEmpty(this.scratchLocation)) {
-      validationResults["scratchLocation"] = "Please provide a scratch location.";
+      validationResults["scratchLocation"] =
+        "Please provide a scratch location.";
     }
     return validationResults;
   }

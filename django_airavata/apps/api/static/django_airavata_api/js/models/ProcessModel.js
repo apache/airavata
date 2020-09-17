@@ -12,16 +12,16 @@ const FIELDS = [
   "experimentId",
   {
     name: "creationTime",
-    type: Date
+    type: Date,
   },
   {
     name: "lastUpdateTime",
-    type: Date
+    type: Date,
   },
   {
     name: "processStatuses",
     type: ProcessStatus,
-    list: true
+    list: true,
   },
   "processDetail",
   "applicationInterfaceId",
@@ -30,27 +30,27 @@ const FIELDS = [
   {
     name: "processInputs",
     type: InputDataObjectType,
-    list: true
+    list: true,
   },
   {
     name: "processOutputs",
     type: OutputDataObjectType,
-    list: true
+    list: true,
   },
   {
     name: "processResourceSchedule",
-    type: ComputationalResourceSchedulingModel
+    type: ComputationalResourceSchedulingModel,
   },
   {
     name: "tasks",
     type: Task,
-    list: true
+    list: true,
   },
   "taskDag",
   {
     name: "processErrors",
     type: ErrorModel,
-    list: true
+    list: true,
   },
   "gatewayExecutionId",
   "enableEmailNotification",
@@ -65,8 +65,8 @@ const FIELDS = [
   {
     name: "processWorkflows",
     type: ProcessWorkflow,
-    list: true
-  }
+    list: true,
+  },
 ];
 
 export default class ProcessModel extends BaseModel {
@@ -80,8 +80,8 @@ export default class ProcessModel extends BaseModel {
   get sortedTasks() {
     const tasksArrCopy = this.tasks.slice();
     tasksArrCopy.sort((a, b) => {
-      const aIndex = this.taskDagArray.findIndex(t => t === a.taskId);
-      const bIndex = this.taskDagArray.findIndex(t => t === b.taskId);
+      const aIndex = this.taskDagArray.findIndex((t) => t === a.taskId);
+      const bIndex = this.taskDagArray.findIndex((t) => t === b.taskId);
       return aIndex - bIndex;
     });
     return tasksArrCopy;

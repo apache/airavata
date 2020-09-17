@@ -6,7 +6,7 @@ export default class ExperimentState extends BaseEnum {
       ExperimentState.SCHEDULED,
       ExperimentState.LAUNCHED,
       ExperimentState.EXECUTING,
-      ExperimentState.CANCELING
+      ExperimentState.CANCELING,
     ];
     return progressingStates.indexOf(this) >= 0;
   }
@@ -14,7 +14,7 @@ export default class ExperimentState extends BaseEnum {
     const finishedStates = [
       ExperimentState.CANCELED,
       ExperimentState.COMPLETED,
-      ExperimentState.FAILED
+      ExperimentState.FAILED,
     ];
     return finishedStates.indexOf(this) >= 0;
   }
@@ -28,5 +28,5 @@ ExperimentState.init([
   "CANCELING",
   "CANCELED",
   "COMPLETED",
-  "FAILED"
+  "FAILED",
 ]);

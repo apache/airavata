@@ -8,8 +8,8 @@ const FIELDS = [
   "parserId",
   {
     name: "type",
-    type: IOType
-  }
+    type: IOType,
+  },
 ];
 
 export default class ParserOutput extends BaseModel {

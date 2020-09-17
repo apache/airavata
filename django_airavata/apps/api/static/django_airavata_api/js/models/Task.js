@@ -8,36 +8,36 @@ const FIELDS = [
   "taskId",
   {
     name: "taskType",
-    type: TaskTypes
+    type: TaskTypes,
   },
   "parentProcessId",
   {
     name: "creationTime",
-    type: Date
+    type: Date,
   },
   {
     name: "lastUpdateTime",
-    type: Date
+    type: Date,
   },
   {
     name: "taskStatuses",
     type: TaskStatus,
-    list: true
+    list: true,
   },
   "taskDetail",
   "subTaskModel",
   {
     name: "taskErrors",
     type: ErrorModel,
-    list: true
+    list: true,
   },
   {
     name: "jobs",
     type: Job,
-    list: true
+    list: true,
   },
   "maxRetry",
-  "currentRetry"
+  "currentRetry",
 ];
 
 export default class Task extends BaseModel {

@@ -1,5 +1,4 @@
 export default class BooleanExpressionEvaluator {
-
   /**
    * Context to use for looking up values of variables in expressions.
    * @param {object} context
@@ -15,15 +14,13 @@ export default class BooleanExpressionEvaluator {
     const keys = Object.keys(expression);
     if (keys.length > 1) {
       // Implicitly AND together several expressions
-      return this.evaluate(
-        {
-          AND: keys.map(k => {
-            const exp = {};
-            exp[k] = expression[k];
-            return exp;
-          })
-        }
-      );
+      return this.evaluate({
+        AND: keys.map((k) => {
+          const exp = {};
+          exp[k] = expression[k];
+          return exp;
+        }),
+      });
     }
     if (keys.length < 1) {
       throw new Error(
@@ -35,7 +32,7 @@ export default class BooleanExpressionEvaluator {
     const value = expression[key];
     if (key === "AND") {
       if (value instanceof Array) {
-        const evaluations = value.map(exp => this.evaluate(exp));
+        const evaluations = value.map((exp) => this.evaluate(exp));
         return evaluations.reduce((acc, curr) => acc && curr);
       } else {
         throw new Error(
@@ -44,7 +41,7 @@ export default class BooleanExpressionEvaluator {
       }
     } else if (key === "OR") {
       if (value instanceof Array) {
-        const evaluations = value.map(exp => this.evaluate(exp));
+        const evaluations = value.map((exp) => this.evaluate(exp));
         return evaluations.reduce((acc, curr) => acc || curr);
       } else {
         throw new Error(

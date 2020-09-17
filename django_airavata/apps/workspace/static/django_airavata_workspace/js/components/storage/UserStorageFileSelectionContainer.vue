@@ -15,10 +15,7 @@
     </user-storage-path-viewer>
     <template slot="footer">
       <div class="d-flex justify-content-end">
-        <b-link
-          class="text-secondary"
-          @click="$emit('cancel')"
-        >Cancel</b-link>
+        <b-link class="text-secondary" @click="$emit('cancel')">Cancel</b-link>
       </div>
     </template>
   </b-card>
@@ -36,22 +33,22 @@ export default {
   name: "user-storage-file-selection-container",
   computed: {
     storagePath() {
-      return ["~"].concat(this.userStoragePath.parts).join("/") + "/"
-    }
+      return ["~"].concat(this.userStoragePath.parts).join("/") + "/";
+    },
   },
   props: {
     selectedDataProductUris: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
-      userStoragePath: null
+      userStoragePath: null,
     };
   },
   components: {
-    UserStoragePathViewer
+    UserStoragePathViewer,
   },
   created() {
     return this.loadUserStoragePath(mostRecentPath);
@@ -59,8 +56,8 @@ export default {
   methods: {
     loadUserStoragePath(path) {
       return services.UserStoragePathService.get({
-        path
-      }).then(result => (this.userStoragePath = result));
+        path,
+      }).then((result) => (this.userStoragePath = result));
     },
     directorySelected(path) {
       mostRecentPath = "~/" + path;
@@ -68,8 +65,7 @@ export default {
     },
     fileSelected(file) {
       this.$emit("file-selected", file.dataProductURI);
-    }
-  }
+    },
+  },
 };
 </script>
-

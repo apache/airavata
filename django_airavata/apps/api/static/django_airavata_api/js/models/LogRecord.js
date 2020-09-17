@@ -7,8 +7,8 @@ const FIELDS = [
   {
     name: "stacktrace",
     type: "string",
-    list: true
-  }
+    list: true,
+  },
 ];
 
 export default class LogRecord extends BaseModel {

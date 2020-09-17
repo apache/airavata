@@ -6,18 +6,18 @@ new Vue({
     return h(GatewayNoticesContainer, {
       props: {
         unreadCount: this.unreadCount,
-        notices: this.notices
-      }
+        notices: this.notices,
+      },
     });
   },
   data() {
     return {
       unreadCount: null,
-      notices: null
+      notices: null,
     };
   },
   beforeMount() {
     this.unreadCount = parseInt(this.$el.dataset.unreadCount);
     this.notices = JSON.parse(this.$el.dataset.notices);
-  }
+  },
 }).$mount("#gateway-notices");

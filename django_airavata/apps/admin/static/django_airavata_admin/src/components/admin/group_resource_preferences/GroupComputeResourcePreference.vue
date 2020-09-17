@@ -74,8 +74,8 @@
                   ),
                   batchQueueResourcePolicies: data.getBatchQueueResourcePolicies(
                     row.item.computeResourceId
-                  )
-                }
+                  ),
+                },
               }"
             >
               Edit
@@ -134,30 +134,30 @@ export default {
   props: {
     value: {
       type: models.GroupResourceProfile,
-      default: function() {
+      default: function () {
         return new models.GroupResourceProfile();
-      }
+      },
     },
     id: {
-      type: String
-    }
+      type: String,
+    },
   },
-  mounted: function() {
+  mounted: function () {
     if (this.id) {
       if (!this.value.groupResourceProfileId) {
         services.GroupResourceProfileService.retrieve({ lookup: this.id }).then(
-          grp => (this.data = grp)
+          (grp) => (this.data = grp)
         );
       }
       // Load information about the owner of this GroupResourceProfile
       services.SharedEntityService.retrieve({
-        lookup: this.id
-      }).then(sharedEntity => {
+        lookup: this.id,
+      }).then((sharedEntity) => {
         this.sharedEntity = sharedEntity;
       });
     }
   },
-  data: function() {
+  data: function () {
     let data = this.value.clone();
     return {
       data: data,
@@ -168,29 +168,29 @@ export default {
           label: "Name",
           key: "computeResourceId",
           sortable: true,
-          formatter: value => this.getComputeResourceName(value)
+          formatter: (value) => this.getComputeResourceName(value),
         },
         {
           label: "Username",
-          key: "loginUserName"
+          key: "loginUserName",
         },
         {
           label: "Allocation",
-          key: "allocationProjectNumber"
+          key: "allocationProjectNumber",
         },
         {
           label: "Policy",
-          key: "policy" // custom rendering
+          key: "policy", // custom rendering
         },
         {
           label: "Reservations",
-          key: "reservations" // custom rendering
+          key: "reservations", // custom rendering
         },
         {
           label: "Action",
-          key: "action"
-        }
-      ]
+          key: "action",
+        },
+      ],
     };
   },
 
@@ -202,18 +202,18 @@ export default {
     ComputeResourcePolicySummary,
     ComputeResourcesModal,
     "ssh-credential-selector": SSHCredentialSelector,
-    ComputeResourceReservationsSummary
+    ComputeResourceReservationsSummary,
   },
   computed: {
     excludedComputeResourceIds() {
       const currentPrefs = this.data.computePreferences
         ? this.data.computePreferences.map(
-            computePreference => computePreference.computeResourceId
+            (computePreference) => computePreference.computeResourceId
           )
         : [];
       return currentPrefs;
     },
-    title: function() {
+    title: function () {
       return this.id
         ? this.data.groupResourceProfileName
         : "New Group Resource Profile";
@@ -235,15 +235,15 @@ export default {
             this.owner.email +
             ")"
         : null;
-    }
+    },
   },
   methods: {
-    saveGroupResourceProfile: function() {
+    saveGroupResourceProfile: function () {
       var persist = null;
       if (this.id) {
         persist = this.service.update({ data: this.data, lookup: this.id });
       } else {
-        persist = this.service.create({ data: this.data }).then(data => {
+        persist = this.service.create({ data: this.data }).then((data) => {
           // Merge sharing settings with default sharing settings created when
           // Group Resource Profile was created
           const groupResourceProfileId = data.groupResourceProfileId;
@@ -254,19 +254,19 @@ export default {
         this.$router.push("/group-resource-profiles");
       });
     },
-    getComputeResourceName: function(computeResourceId) {
+    getComputeResourceName: function (computeResourceId) {
       // TODO: load compute resources to get the real name
       return computeResourceId && computeResourceId.indexOf("_") > 0
         ? computeResourceId.split("_")[0]
         : computeResourceId;
     },
-    cancel: function() {
+    cancel: function () {
       this.$router.push("/group-resource-profiles");
     },
-    createComputePreference: function() {
+    createComputePreference: function () {
       this.$refs.modalSelectComputeResource.show();
     },
-    onSelectComputeResource: function(computeResourceId) {
+    onSelectComputeResource: function (computeResourceId) {
       const computeResourcePreference = new models.GroupComputeResourcePreference();
       computeResourcePreference.computeResourceId = computeResourceId;
       this.$router.push({
@@ -275,18 +275,18 @@ export default {
           value: computeResourcePreference,
           id: this.id,
           host_id: computeResourcePreference.computeResourceId,
-          groupResourceProfile: this.data
-        }
+          groupResourceProfile: this.data,
+        },
       });
     },
-    removeComputePreference: function(computeResourceId) {
+    removeComputePreference: function (computeResourceId) {
       let groupResourceProfile = this.data.clone();
       groupResourceProfile.removeComputeResource(computeResourceId);
       this.service
         .update({ data: groupResourceProfile, lookup: this.id })
-        .then(groupResourceProfile => (this.data = groupResourceProfile));
+        .then((groupResourceProfile) => (this.data = groupResourceProfile));
     },
-    removeGroupResourceProfile: function() {
+    removeGroupResourceProfile: function () {
       if (this.id) {
         this.service.delete({ lookup: this.id }).then(() => {
           this.$router.push("/group-resource-profiles");
@@ -295,7 +295,7 @@ export default {
         // Nothing to delete so just treat like a cancel
         this.cancel();
       }
-    }
-  }
+    },
+  },
 };
 </script>

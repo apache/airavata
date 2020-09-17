@@ -1,12 +1,24 @@
 <template>
-  <list-layout @add-new-item="addNewStoragePreference" :items="decoratedStoragePreferences" title="Storage Preferences"
-    new-item-button-text="New Storage Preference" :new-button-disabled="readonly">
+  <list-layout
+    @add-new-item="addNewStoragePreference"
+    :items="decoratedStoragePreferences"
+    title="Storage Preferences"
+    new-item-button-text="New Storage Preference"
+    :new-button-disabled="readonly"
+  >
     <template slot="new-item-editor">
       <b-card v-if="showNewItemEditor" title="New Storage Preference">
         <b-form-group label="Storage Resource" label-for="storage-resource">
-          <b-form-select id="storage-resource" v-model="newStoragePreference.storageResourceId" :options="storageResourceOptions" />
+          <b-form-select
+            id="storage-resource"
+            v-model="newStoragePreference.storageResourceId"
+            :options="storageResourceOptions"
+          />
         </b-form-group>
-        <storage-preference-editor v-model="newStoragePreference" :default-credential-store-token="defaultCredentialStoreToken" />
+        <storage-preference-editor
+          v-model="newStoragePreference"
+          :default-credential-store-token="defaultCredentialStoreToken"
+        />
         <div class="row">
           <div class="col">
             <b-button variant="primary" @click="saveNewStoragePreference">
@@ -20,27 +32,52 @@
       </b-card>
     </template>
     <template slot="item-list" slot-scope="slotProps">
-
-      <b-table striped hover :fields="fields" :items="slotProps.items" sort-by="storageResourceId">
+      <b-table
+        striped
+        hover
+        :fields="fields"
+        :items="slotProps.items"
+        sort-by="storageResourceId"
+      >
         <template slot="resourceSpecificCredentialStoreToken" slot-scope="data">
           {{ data.value }}
-          <b-badge v-if="defaultCredentialStoreToken && !data.item.resourceSpecificCredentialStoreToken">
+          <b-badge
+            v-if="
+              defaultCredentialStoreToken &&
+              !data.item.resourceSpecificCredentialStoreToken
+            "
+          >
             Default
           </b-badge>
         </template>
         <template slot="action" slot-scope="data">
-          <b-link v-if="!readonly" class="action-link" @click="toggleDetails(data)">
+          <b-link
+            v-if="!readonly"
+            class="action-link"
+            @click="toggleDetails(data)"
+          >
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </b-link>
-          <delete-link v-if="!readonly" class="action-link" @delete="deleteStoragePreference(data.item.storageResourceId)">
-            Are you sure you want to delete the storage preference for <strong>{{ getStorageResourceName(data.item.storageResourceId) }}</strong>?
+          <delete-link
+            v-if="!readonly"
+            class="action-link"
+            @delete="deleteStoragePreference(data.item.storageResourceId)"
+          >
+            Are you sure you want to delete the storage preference for
+            <strong>{{
+              getStorageResourceName(data.item.storageResourceId)
+            }}</strong
+            >?
           </delete-link>
         </template>
         <template slot="row-details" slot-scope="row">
           <b-card>
-            <storage-preference-editor :value="row.item" @input="updatedStoragePreference"
-              :default-credential-store-token="defaultCredentialStoreToken" />
+            <storage-preference-editor
+              :value="row.item"
+              @input="updatedStoragePreference"
+              :default-credential-store-token="defaultCredentialStoreToken"
+            />
             <b-button size="sm" @click="toggleDetails(row)">Close</b-button>
           </b-card>
         </template>
@@ -59,20 +96,20 @@ export default {
   components: {
     "delete-link": components.DeleteLink,
     "list-layout": layouts.ListLayout,
-    StoragePreferenceEditor
+    StoragePreferenceEditor,
   },
   props: {
     storagePreferences: {
       type: Array,
-      required: true
+      required: true,
     },
     defaultCredentialStoreToken: {
-      type: String
+      type: String,
     },
     readonly: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -80,7 +117,7 @@ export default {
       showNewItemEditor: false,
       newStoragePreference: null,
       storageResourceNames: null,
-      credentials: null
+      credentials: null,
     };
   },
   computed: {
@@ -90,36 +127,36 @@ export default {
           label: "Name",
           key: "storageResourceId",
           sortable: true,
-          formatter: value => this.getStorageResourceName(value)
+          formatter: (value) => this.getStorageResourceName(value),
         },
         {
           label: "Username",
-          key: "loginUserName"
+          key: "loginUserName",
         },
         {
           label: "SSH Credential",
           key: "resourceSpecificCredentialStoreToken",
-          formatter: value => this.getCredentialName(value)
+          formatter: (value) => this.getCredentialName(value),
         },
         {
           label: "File System Location",
-          key: "fileSystemRootLocation"
+          key: "fileSystemRootLocation",
         },
         {
           label: "Action",
-          key: "action"
-        }
+          key: "action",
+        },
       ];
     },
     decoratedStoragePreferences() {
-      return this.storagePreferences.map(sp => {
+      return this.storagePreferences.map((sp) => {
         const spClone = sp.clone();
         spClone._showDetails = this.showingDetails[spClone.storageResourceId];
         return spClone;
       });
     },
     currentStoragePreferenceIds() {
-      return this.storagePreferences.map(sp => sp.storageResourceId);
+      return this.storagePreferences.map((sp) => sp.storageResourceId);
     },
     storageResourceOptions() {
       const options = [];
@@ -131,28 +168,28 @@ export default {
           const name = this.storageResourceNames[key];
           options.push({
             value: key,
-            text: name
+            text: name,
           });
         }
       }
-      return utils.StringUtils.sortIgnoreCase(options, a => a.text);
+      return utils.StringUtils.sortIgnoreCase(options, (a) => a.text);
     },
     defaultCredentialSummary() {
       if (this.defaultCredentialStoreToken && this.credentials) {
         return this.credentials.find(
-          cred => cred.token === this.defaultCredentialStoreToken
+          (cred) => cred.token === this.defaultCredentialStoreToken
         );
       } else {
         return null;
       }
-    }
+    },
   },
   created() {
-    services.StorageResourceService.names().then(names => {
+    services.StorageResourceService.names().then((names) => {
       this.storageResourceNames = names;
     });
     services.CredentialSummaryService.allSSHCredentials().then(
-      creds => (this.credentials = creds)
+      (creds) => (this.credentials = creds)
     );
   },
   methods: {
@@ -170,7 +207,7 @@ export default {
       if (token === null && this.defaultCredentialSummary) {
         return this.defaultCredentialSummary.description;
       } else if (this.credentials) {
-        const cred = this.credentials.find(cred => cred.token === token);
+        const cred = this.credentials.find((cred) => cred.token === token);
         if (cred) {
           return cred.description;
         }
@@ -187,7 +224,7 @@ export default {
       ];
     },
     deleteStoragePreference(storageResourceId) {
-      this.$emit('delete', storageResourceId);
+      this.$emit("delete", storageResourceId);
     },
     addNewStoragePreference() {
       this.newStoragePreference = new models.StoragePreference();
@@ -199,7 +236,7 @@ export default {
     },
     cancelNewStoragePreference() {
       this.showNewItemEditor = false;
-    }
-  }
+    },
+  },
 };
 </script>

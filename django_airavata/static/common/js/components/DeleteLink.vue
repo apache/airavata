@@ -18,16 +18,16 @@ export default {
   props: {
     dialogTitle: {
       type: String,
-      default: "Please confirm delete"
+      default: "Please confirm delete",
     },
     disabled: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   components: {
-    ConfirmationDialog
-  }
+    ConfirmationDialog,
+  },
 };
 </script>
 
@@ -36,5 +36,3 @@ export default {
   display: inline-block;
 }
 </style>
-
-

@@ -1,5 +1,5 @@
 module.exports = {
   configureWebpack: {
-    externals: ["django-airavata-api"]
-  }
+    externals: ["django-airavata-api"],
+  },
 };

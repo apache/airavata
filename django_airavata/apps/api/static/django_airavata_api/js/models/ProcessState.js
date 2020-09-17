@@ -15,5 +15,5 @@ ProcessState.init([
   "COMPLETED",
   "FAILED",
   "CANCELLING",
-  "CANCELED"
+  "CANCELED",
 ]);

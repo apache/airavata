@@ -6,7 +6,7 @@ const FIELDS = [
   "dataProductURI",
   { name: "createdTime", type: "date" },
   "size",
-  "mimeType"
+  "mimeType",
 ];
 
 export default class UserStorageFile extends BaseModel {

@@ -7,10 +7,10 @@
           <div
             v-if="appModule"
             class="application-name text-muted text-uppercase"
-          ><i
-              class="fa fa-code"
-              aria-hidden="true"
-            ></i> {{ appModule.appModuleName }}</div>
+          >
+            <i class="fa fa-code" aria-hidden="true"></i>
+            {{ appModule.appModuleName }}
+          </div>
           <slot name="title">Experiment Editor</slot>
         </h1>
       </div>
@@ -43,7 +43,9 @@
               :state="getValidationState('experimentName')"
             ></b-form-input>
           </b-form-group>
-          <experiment-description-editor v-model="localExperiment.description" />
+          <experiment-description-editor
+            v-model="localExperiment.description"
+          />
         </div>
       </div>
       <div class="row">
@@ -61,16 +63,25 @@
               :state="getValidationState('projectId')"
             >
               <template slot="first">
-                <option
-                  :value="null"
-                  disabled
-                >Select a Project</option>
+                <option :value="null" disabled>Select a Project</option>
               </template>
               <optgroup label="My Projects">
-                <option v-for="project in myProjectOptions" :value="project.value" :key="project.value">{{ project.text }}</option>
+                <option
+                  v-for="project in myProjectOptions"
+                  :value="project.value"
+                  :key="project.value"
+                >
+                  {{ project.text }}
+                </option>
               </optgroup>
               <optgroup label="Projects Shared With Me">
-                <option v-for="project in sharedProjectOptions" :value="project.value" :key="project.value">{{ project.text }}</option>
+                <option
+                  v-for="project in sharedProjectOptions"
+                  :value="project.value"
+                  :key="project.value"
+                >
+                  {{ project.text }}
+                </option>
               </optgroup>
             </b-form-select>
           </b-form-group>
@@ -78,18 +89,14 @@
       </div>
       <div class="row">
         <div class="col">
-          <h1 class="h4 mt-5 mb-4">
-            Application Configuration
-          </h1>
+          <h1 class="h4 mt-5 mb-4">Application Configuration</h1>
         </div>
       </div>
       <div class="row">
         <div class="col">
           <div class="card border-default">
             <div class="card-body">
-              <h2 class="h6 mb-3">
-                Application Inputs
-              </h2>
+              <h2 class="h6 mb-3">Application Inputs</h2>
 
               <transition-group name="fade">
                 <input-editor-container
@@ -106,7 +113,6 @@
                   @uploadend="uploadEnd(experimentInput.name)"
                 />
               </transition-group>
-
             </div>
           </div>
         </div>
@@ -118,10 +124,15 @@
       <div class="row">
         <div class="col">
           <computational-resource-scheduling-editor
-            v-model="localExperiment.userConfigurationData.computationalResourceScheduling"
+            v-model="
+              localExperiment.userConfigurationData
+                .computationalResourceScheduling
+            "
             v-if="localExperiment.userConfigurationData.groupResourceProfileId"
             :app-module-id="appModule.appModuleId"
-            :group-resource-profile-id="localExperiment.userConfigurationData.groupResourceProfileId"
+            :group-resource-profile-id="
+              localExperiment.userConfigurationData.groupResourceProfileId
+            "
             @invalid="invalidComputationalResourceSchedulingEditor = true"
             @valid="invalidComputationalResourceSchedulingEditor = false"
           >
@@ -129,10 +140,7 @@
         </div>
       </div>
       <div class="row">
-        <div
-          id="col-exp-buttons"
-          class="col"
-        >
+        <div id="col-exp-buttons" class="col">
           <b-button
             variant="success"
             @click="saveAndLaunchExperiment"
@@ -166,12 +174,12 @@ export default {
   props: {
     experiment: {
       type: models.Experiment,
-      required: true
+      required: true,
     },
     appModule: {
       type: models.ApplicationModule,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -190,14 +198,14 @@ export default {
     GroupResourceProfileSelector,
     InputEditorContainer,
     "share-button": components.ShareButton,
-    "unsaved-changes-guard": components.UnsavedChangesGuard
+    "unsaved-changes-guard": components.UnsavedChangesGuard,
   },
-  mounted: function() {
-    services.ProjectService.listAll().then(projects => {
+  mounted: function () {
+    services.ProjectService.listAll().then((projects) => {
       this.projects = projects;
       if (!this.localExperiment.projectId) {
         services.WorkspacePreferencesService.get().then(
-          workspacePreferences => {
+          (workspacePreferences) => {
             if (!this.localExperiment.projectId) {
               this.localExperiment.projectId =
                 workspacePreferences.most_recent_project_id;
@@ -208,19 +216,25 @@ export default {
     });
   },
   computed: {
-    sharedProjectOptions: function() {
-      return this.projects.filter(p => !p.isOwner).map(project => ({
-        value: project.projectID,
-        text: project.name + (!project.isOwner ? ' (owned by ' + project.owner + ')' : '')
-      }));
+    sharedProjectOptions: function () {
+      return this.projects
+        .filter((p) => !p.isOwner)
+        .map((project) => ({
+          value: project.projectID,
+          text:
+            project.name +
+            (!project.isOwner ? " (owned by " + project.owner + ")" : ""),
+        }));
     },
     myProjectOptions() {
-      return this.projects.filter(p => p.isOwner).map(project => ({
-        value: project.projectID,
-        text: project.name
-      }));
+      return this.projects
+        .filter((p) => p.isOwner)
+        .map((project) => ({
+          value: project.projectID,
+          text: project.name,
+        }));
     },
-    valid: function() {
+    valid: function () {
       const validation = this.localExperiment.validate();
       return (
         Object.keys(validation).length === 0 &&
@@ -228,7 +242,7 @@ export default {
         !this.invalidComputationalResourceSchedulingEditor
       );
     },
-    isSaveDisabled: function() {
+    isSaveDisabled: function () {
       return !this.valid || this.hasUploadingInputs;
     },
     dirty() {
@@ -236,40 +250,38 @@ export default {
     },
     hasUploadingInputs() {
       return this.uploadingInputs.length > 0;
-    }
+    },
   },
   methods: {
-    saveExperiment: function() {
-      return this.saveOrUpdateExperiment()
-        .then(experiment => {
-          this.localExperiment = experiment;
-          this.$emit("saved", experiment);
-        });
+    saveExperiment: function () {
+      return this.saveOrUpdateExperiment().then((experiment) => {
+        this.localExperiment = experiment;
+        this.$emit("saved", experiment);
+      });
     },
-    saveAndLaunchExperiment: function() {
-      return this.saveOrUpdateExperiment()
-        .then(experiment => {
-          this.localExperiment = experiment;
-          return services.ExperimentService.launch({
-            lookup: experiment.experimentId
-          }).then(() => {
-            this.$emit("savedAndLaunched", experiment);
-          });
+    saveAndLaunchExperiment: function () {
+      return this.saveOrUpdateExperiment().then((experiment) => {
+        this.localExperiment = experiment;
+        return services.ExperimentService.launch({
+          lookup: experiment.experimentId,
+        }).then(() => {
+          this.$emit("savedAndLaunched", experiment);
         });
+      });
     },
-    saveOrUpdateExperiment: function() {
+    saveOrUpdateExperiment: function () {
       if (this.localExperiment.experimentId) {
         return services.ExperimentService.update({
           lookup: this.localExperiment.experimentId,
-          data: this.localExperiment
-        }).then(experiment => {
+          data: this.localExperiment,
+        }).then((experiment) => {
           this.saved = true;
           return experiment;
         });
       } else {
         return services.ExperimentService.create({
-          data: this.localExperiment
-        }).then(experiment => {
+          data: this.localExperiment,
+        }).then((experiment) => {
           // Can't save sharing settings for a new experiment until it has been
           // created
           this.saved = true;
@@ -279,21 +291,18 @@ export default {
         });
       }
     },
-    getValidationFeedback: function(properties) {
+    getValidationFeedback: function (properties) {
       return utils.getProperty(this.localExperiment.validate(), properties);
     },
-    getValidationState: function(properties) {
+    getValidationState: function (properties) {
       return this.getValidationFeedback(properties) ? "invalid" : null;
-
-
-
     },
-    recordInvalidInputEditorValue: function(experimentInputName) {
+    recordInvalidInputEditorValue: function (experimentInputName) {
       if (!this.invalidInputs.includes(experimentInputName)) {
         this.invalidInputs.push(experimentInputName);
       }
     },
-    recordValidInputEditorValue: function(experimentInputName) {
+    recordValidInputEditorValue: function (experimentInputName) {
       if (this.invalidInputs.includes(experimentInputName)) {
         const index = this.invalidInputs.indexOf(experimentInputName);
         this.invalidInputs.splice(index, 1);
@@ -310,21 +319,21 @@ export default {
         this.uploadingInputs.splice(index, 1);
       }
     },
-    inputValueChanged: function() {
+    inputValueChanged: function () {
       this.localExperiment.evaluateInputDependencies();
-    }
+    },
   },
   watch: {
-    experiment: function(newValue) {
+    experiment: function (newValue) {
       this.localExperiment = newValue.clone();
     },
     localExperiment: {
       handler() {
         this.edited = true;
       },
-      deep: true
-    }
-  }
+      deep: true,
+    },
+  },
 };
 </script>
 

@@ -1,13 +1,9 @@
 <template>
   <div>
     <div class="d-flex">
-      <slot name="title">
-      </slot>
+      <slot name="title"> </slot>
     </div>
-    <b-form
-      @input="onUserInput"
-      novalidate
-    >
+    <b-form @input="onUserInput" novalidate>
       <b-form-group
         label="Notice Title"
         label-for="notice-title"
@@ -41,17 +37,21 @@
         ></b-form-textarea>
       </b-form-group>
 
-      <b-form-group
-        label="Publish Date"
-        label-for="publish-date"
-      >
+      <b-form-group label="Publish Date" label-for="publish-date">
         <datetime
           type="datetime"
           v-model="inputPublishedTime"
           input-class="my-class"
           value-zone="UTC"
-          :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
-          :phrases="{ok: 'Continue', cancel: 'Exit'}"
+          :format="{
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZoneName: 'short',
+          }"
+          :phrases="{ ok: 'Continue', cancel: 'Exit' }"
           :hour-step="1"
           :minute-step="5"
           :min-datetime="today"
@@ -61,24 +61,27 @@
         ></datetime>
       </b-form-group>
 
-      <b-form-group
-        label="Expiration Date"
-        label-for="expiration-date"
-      >
+      <b-form-group label="Expiration Date" label-for="expiration-date">
         <datetime
           type="datetime"
           v-model="inputExpirationTime"
           input-class="my-class"
           value-zone="UTC"
-          :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
-          :phrases="{ok: 'Continue', cancel: 'Exit'}"
+          :format="{
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZoneName: 'short',
+          }"
+          :phrases="{ ok: 'Continue', cancel: 'Exit' }"
           :hour-step="1"
           :minute-step="5"
           :min-datetime="inputPublishedTime"
           :week-start="7"
           use12-hour
           auto
-
         ></datetime>
       </b-form-group>
 
@@ -89,20 +92,17 @@
         :state="getValidationState('priority')"
       >
         <b-form-select
-        id = "priority"
-        v-model="data.priority"
-        :options="select.options"
-        :state="getValidationState('priority')"
+          id="priority"
+          v-model="data.priority"
+          :options="select.options"
+          :state="getValidationState('priority')"
         >
         </b-form-select>
       </b-form-group>
 
-      <template v-if=!editNotification name="buttons">
+      <template v-if="!editNotification" name="buttons">
         <div class="row">
-          <div
-            id="col-exp-buttons"
-            class="col"
-          >
+          <div id="col-exp-buttons" class="col">
             <b-button
               variant="success"
               @click="saveNewNotice"
@@ -110,10 +110,7 @@
             >
               Save
             </b-button>
-            <b-button
-              variant="primary"
-              @click="cancelNewNotice"
-            >
+            <b-button variant="primary" @click="cancelNewNotice">
               Cancel
             </b-button>
           </div>
@@ -130,28 +127,36 @@
 <script>
 import { models } from "django-airavata-api";
 import { mixins, utils } from "django-airavata-common-ui";
-import { Datetime } from 'vue-datetime';
+import { Datetime } from "vue-datetime";
 import moment from "moment";
-import 'vue-datetime/dist/vue-datetime.css'
+import "vue-datetime/dist/vue-datetime.css";
 
 export default {
   name: "notice-editor",
   components: {
-    datetime: Datetime
+    datetime: Datetime,
   },
   mixins: [mixins.VModelMixin],
   props: {
     value: {
       type: models.Notification,
-      required: true
-    }
+      required: true,
+    },
   },
   created() {
     //checks whether the component is used for editing or updating the notificaion
-    if(this.value.notificationId != null){
+    if (this.value.notificationId != null) {
       this.editNotification = true;
-      this.inputPublishedTime = new moment(this.value.publishedTime.toISOString()).utc().format()
-      this.inputExpirationTime = new moment(this.value.expirationTime.toISOString()).utc().format()
+      this.inputPublishedTime = new moment(
+        this.value.publishedTime.toISOString()
+      )
+        .utc()
+        .format();
+      this.inputExpirationTime = new moment(
+        this.value.expirationTime.toISOString()
+      )
+        .utc()
+        .format();
       this.data.priority = this.value.priority.name;
       this.today = new moment(this.value.expirationTime.toISOString()).format();
     }
@@ -163,26 +168,24 @@ export default {
       inputPublishedTime: null,
       inputExpirationTime: null,
       today: new moment().format(),
-      select : {
-          selected: "LOW",
-          options: [
-              { text: "LOW", value: "LOW" },
-              { text: "NORMAL", value: "NORMAL" },
-              { text: "HIGH", value: "HIGH" }
-            ]
-      }
+      select: {
+        selected: "LOW",
+        options: [
+          { text: "LOW", value: "LOW" },
+          { text: "NORMAL", value: "NORMAL" },
+          { text: "HIGH", value: "HIGH" },
+        ],
+      },
     };
   },
   computed: {
-    valid: function() {
+    valid: function () {
       const validation = this.data.validate();
-      return (
-        Object.keys(validation).length === 0
-      );
+      return Object.keys(validation).length === 0;
     },
-    isSaveDisabled: function() {
+    isSaveDisabled: function () {
       return !this.valid;
-    }
+    },
   },
   methods: {
     onUserInput() {
@@ -192,11 +195,11 @@ export default {
     reset() {
       this.userBeginsInput = false;
     },
-    getValidationFeedback: function(properties) {
+    getValidationFeedback: function (properties) {
       return utils.getProperty(this.data.validate(), properties);
     },
-    getValidationState: function(properties) {
-      if (this.userBeginsInput == false){
+    getValidationState: function (properties) {
+      if (this.userBeginsInput == false) {
         return null;
       }
       return this.getValidationFeedback(properties) ? "invalid" : "valid";
@@ -206,17 +209,15 @@ export default {
     },
     saveNewNotice() {
       return this.$emit("saveNewNotice");
-    }
+    },
   },
   watch: {
     inputExpirationTime() {
       this.data.expirationTime = this.inputExpirationTime;
-
     },
     inputPublishedTime() {
       this.data.publishedTime = this.inputPublishedTime;
-    }
-
-  }
+    },
+  },
 };
 </script>

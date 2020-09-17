@@ -5,10 +5,7 @@
       :view-all-url="viewAllExperiments"
     />
     <sidebar-feed :feed-items="feedItems">
-      <template
-        slot="description"
-        slot-scope="slotProps"
-      >
+      <template slot="description" slot-scope="slotProps">
         <experiment-status-badge :status-name="slotProps.feedItem.statusName" />
         <i
           v-if="slotProps.feedItem.isProgressing"
@@ -27,13 +24,13 @@ export default {
   name: "recent-experiments-container",
   props: {
     viewAllExperiments: String,
-    username: String
+    username: String,
   },
   components: {
     sidebar: components.Sidebar,
     "sidebar-header": components.SidebarHeader,
     "sidebar-feed": components.SidebarFeed,
-    "experiment-status-badge": components.ExperimentStatusBadge
+    "experiment-status-badge": components.ExperimentStatusBadge,
   },
   created() {
     this.pollExperiments();
@@ -43,7 +40,7 @@ export default {
       this.loadExperiments()
         .then(() => {
           setTimeout(
-            function() {
+            function () {
               this.pollExperiments();
             }.bind(this),
             this.refreshDelay
@@ -59,14 +56,14 @@ export default {
         {
           limit: 5,
           offset: 0,
-          [models.ExperimentSearchFields.USER_NAME.name]: this.username
+          [models.ExperimentSearchFields.USER_NAME.name]: this.username,
         },
         {
           showSpinner: false,
-          ignoreErrors: true
+          ignoreErrors: true,
         }
-      ).then(experiments => {
-        this.feedItems = experiments.results.map(e => {
+      ).then((experiments) => {
+        this.feedItems = experiments.results.map((e) => {
           return {
             id: e.experimentId,
             statusName: e.experimentStatus.name,
@@ -75,17 +72,17 @@ export default {
             timestamp: e.statusUpdateTime,
             interfaceId: e.executionId,
             isProgressing: e.convertToExperiment().isProgressing,
-            type: null
+            type: null,
           };
         });
         // Load any application interfaces that haven't been loaded yet, so that
         // we can display the applicationName of each experiment
         const unloadedInterfaceIds = {};
         this.feedItems
-          .filter(i => !(i.interfaceId in this.applicationInterfaces))
-          .forEach(i => (unloadedInterfaceIds[i.interfaceId] = true));
+          .filter((i) => !(i.interfaceId in this.applicationInterfaces))
+          .forEach((i) => (unloadedInterfaceIds[i.interfaceId] = true));
         Promise.all(
-          Object.keys(unloadedInterfaceIds).map(interfaceId => {
+          Object.keys(unloadedInterfaceIds).map((interfaceId) => {
             return this.loadApplicationInterface(interfaceId);
           })
         ).then(() => {
@@ -96,14 +93,14 @@ export default {
     loadApplicationInterface(interfaceId) {
       return services.ApplicationInterfaceService.retrieve(
         {
-          lookup: interfaceId
+          lookup: interfaceId,
         },
         {
           showSpinner: false,
-          ignoreErrors: true
+          ignoreErrors: true,
         }
       )
-        .then(applicationInterface => {
+        .then((applicationInterface) => {
           this.applicationInterfaces[interfaceId] = applicationInterface;
         })
         .catch(() => {
@@ -113,8 +110,8 @@ export default {
     },
     populateApplicationNames() {
       this.feedItems
-        .filter(i => i.type === null)
-        .forEach(feedItem => {
+        .filter((i) => i.type === null)
+        .forEach((feedItem) => {
           if (
             feedItem.interfaceId in this.applicationInterfaces &&
             this.applicationInterfaces[feedItem.interfaceId]
@@ -124,15 +121,14 @@ export default {
             ].applicationName;
           }
         });
-    }
+    },
   },
   data() {
     return {
       feedItems: null,
       applicationInterfaces: {},
-      refreshDelay: 10000
+      refreshDelay: 10000,
     };
-  }
+  },
 };
 </script>
-

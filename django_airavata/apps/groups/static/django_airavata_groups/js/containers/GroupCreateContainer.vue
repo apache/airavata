@@ -1,37 +1,34 @@
 <template>
-    <group-editor :group="newGroup" @saved="handleSaved"></group-editor>
+  <group-editor :group="newGroup" @saved="handleSaved"></group-editor>
 </template>
 
 <script>
+import GroupEditor from "../group_components/GroupEditor.vue";
 
-import GroupEditor from '../group_components/GroupEditor.vue';
-
-import { models, session } from 'django-airavata-api'
+import { models, session } from "django-airavata-api";
 export default {
-    name: 'group-create-container',
-    data () {
-        return {
-            newGroup: this.createNewGroup()
-        }
+  name: "group-create-container",
+  data() {
+    return {
+      newGroup: this.createNewGroup(),
+    };
+  },
+  components: {
+    GroupEditor,
+  },
+  methods: {
+    handleSaved: function () {
+      window.location.assign("/groups/");
     },
-    components: {
-        GroupEditor,
+    createNewGroup() {
+      const group = new models.Group();
+      const ownerId = session.Session.airavataInternalUserId;
+      group.members.push(ownerId);
+      group.ownerId = ownerId;
+      return group;
     },
-    methods: {
-        handleSaved: function() {
-            window.location.assign("/groups/");
-        },
-        createNewGroup() {
-          const group = new models.Group();
-          const ownerId = session.Session.airavataInternalUserId;
-          group.members.push(ownerId);
-          group.ownerId = ownerId;
-          return group;
-        }
-    },
-    computed: {
-    },
-    beforeMount: function () {
-    },
-}
+  },
+  computed: {},
+  beforeMount: function () {},
+};
 </script>

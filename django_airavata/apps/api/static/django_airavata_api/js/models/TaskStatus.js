@@ -1,4 +1,3 @@
-
 import BaseModel from "./BaseModel";
 import TaskState from "./TaskState";
 
@@ -9,10 +8,10 @@ const FIELDS = [
   },
   {
     name: "timeOfStateChange",
-    type: Date
+    type: Date,
   },
   "reason",
-  "statusId"
+  "statusId",
 ];
 
 export default class TaskStatus extends BaseModel {

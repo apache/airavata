@@ -21,6 +21,6 @@ export const dateFormatters = {
     day: "2-digit",
     hour: "numeric",
     minute: "numeric",
-    timeZoneName: "short"
-  })
+    timeZoneName: "short",
+  }),
 };

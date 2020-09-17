@@ -1,10 +1,7 @@
 <template>
   <header class="sidebar-header">
     <h1 class="sidebar-header__title">{{ title }}</h1>
-    <a
-      :href="viewAllUrl"
-      class="sidebar-header__action"
-    >View all</a>
+    <a :href="viewAllUrl" class="sidebar-header__action">View all</a>
   </header>
 </template>
 
@@ -14,12 +11,11 @@ export default {
   props: {
     title: {
       type: String,
-      default: "Recent Activity"
+      default: "Recent Activity",
     },
     viewAllUrl: {
-      type: String
-    }
-  }
+      type: String,
+    },
+  },
 };
 </script>
-

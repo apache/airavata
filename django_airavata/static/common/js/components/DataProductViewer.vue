@@ -1,5 +1,4 @@
 <template>
-
   <span v-if="downloadURL">
     <a :href="downloadURL" class="action-link" :target="linkTarget">
       {{ filename }}
@@ -15,19 +14,19 @@ export default {
   props: {
     dataProduct: {
       type: models.DataProduct,
-      required: true
+      required: true,
     },
     inputFile: {
       type: Boolean,
-      default: false
+      default: false,
     },
     mimeType: {
-      type: String
+      type: String,
     },
     openInNewWindow: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     filename() {
@@ -44,15 +43,16 @@ export default {
       if (!this.dataProduct.downloadURL) {
         return null;
       } else if (this.mimeType) {
-        return `${this.dataProduct.downloadURL}&mime-type=${encodeURIComponent(this.mimeType)}`;
+        return `${this.dataProduct.downloadURL}&mime-type=${encodeURIComponent(
+          this.mimeType
+        )}`;
       } else {
         return this.dataProduct.downloadURL;
       }
     },
     linkTarget() {
-      return this.openInNewWindow ? "_blank": "_self";
-    }
-  }
+      return this.openInNewWindow ? "_blank" : "_self";
+    },
+  },
 };
 </script>
-

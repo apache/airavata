@@ -25,7 +25,7 @@
         :batch-queue="batchQueue"
         :value="
           localBatchQueueResourcePolicies.find(
-            pol => pol.queuename === batchQueue.queueName
+            (pol) => pol.queuename === batchQueue.queueName
           )
         "
         @input="updatedBatchQueueResourcePolicy(batchQueue, $event)"
@@ -46,28 +46,28 @@ export default {
   name: "compute-resource-policy-editor",
   props: {
     batchQueues: {
-      type: Array
+      type: Array,
     },
     computeResourcePolicy: {
-      type: models.ComputeResourcePolicy
+      type: models.ComputeResourcePolicy,
     },
     batchQueueResourcePolicies: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   components: {
-    BatchQueueResourcePolicy
+    BatchQueueResourcePolicy,
   },
-  data: function() {
+  data: function () {
     return {
       localComputeResourcePolicy: this.computeResourcePolicy
         ? this.computeResourcePolicy.clone()
         : null,
       localBatchQueueResourcePolicies: this.batchQueueResourcePolicies
-        ? this.batchQueueResourcePolicies.map(pol => pol.clone())
+        ? this.batchQueueResourcePolicies.map((pol) => pol.clone())
         : [],
       validationErrors: null,
-      invalidBatchQueueResourcePolicies: []
+      invalidBatchQueueResourcePolicies: [],
     };
   },
   computed: {
@@ -87,13 +87,13 @@ export default {
       );
     },
     allowedInvalidBatchQueueResourcePolicies() {
-      return this.invalidBatchQueueResourcePolicies.filter(queueName =>
+      return this.invalidBatchQueueResourcePolicies.filter((queueName) =>
         this.localComputeResourcePolicy.allowedBatchQueues.includes(queueName)
       );
-    }
+    },
   },
   methods: {
-    batchQueueChecked: function(batchQueue, checked) {
+    batchQueueChecked: function (batchQueue, checked) {
       if (checked) {
         this.localComputeResourcePolicy.allowedBatchQueues.push(
           batchQueue.queueName
@@ -108,7 +108,7 @@ export default {
         );
         // Remove batchQueueResourcePolicy if it exists
         const policyIndex = this.localBatchQueueResourcePolicies.findIndex(
-          pol => pol.queuename === batchQueue.queueName
+          (pol) => pol.queuename === batchQueue.queueName
         );
         if (policyIndex >= 0) {
           this.localBatchQueueResourcePolicies.splice(policyIndex, 1);
@@ -124,14 +124,14 @@ export default {
         this.localComputeResourcePolicy
       );
     },
-    updatedBatchQueueResourcePolicy: function(
+    updatedBatchQueueResourcePolicy: function (
       batchQueue,
       batchQueueResourcePolicy
     ) {
       const queueName = batchQueue.queueName;
       if (batchQueueResourcePolicy) {
         const existingPolicy = this.localBatchQueueResourcePolicies.find(
-          pol => pol.queuename === queueName
+          (pol) => pol.queuename === queueName
         );
         if (existingPolicy) {
           Object.assign(existingPolicy, batchQueueResourcePolicy);
@@ -143,7 +143,7 @@ export default {
         }
       } else {
         const existingPolicyIndex = this.localBatchQueueResourcePolicies.findIndex(
-          pol => pol.queuename === queueName
+          (pol) => pol.queuename === queueName
         );
         if (existingPolicyIndex >= 0) {
           this.localBatchQueueResourcePolicies.splice(existingPolicyIndex, 1);
@@ -179,7 +179,7 @@ export default {
       } else {
         this.$emit("invalid");
       }
-    }
+    },
   },
   watch: {
     computeResourcePolicy(value) {
@@ -187,10 +187,10 @@ export default {
     },
     batchQueueResourcePolicies(value) {
       this.localBatchQueueResourcePolicies = value
-        ? value.map(p => p.clone())
+        ? value.map((p) => p.clone())
         : [];
-    }
-  }
+    },
+  },
 };
 </script>
 

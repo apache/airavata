@@ -66,20 +66,20 @@ const components = {
 
 const errors = {
   GlobalErrorHandler,
-  ValidationErrors
+  ValidationErrors,
 };
 
 const layouts = {
-  ListLayout
+  ListLayout,
 };
 
 const mixins = {
-  VModelMixin
+  VModelMixin,
 };
 
 const notifications = {
   Notification,
-  NotificationList
+  NotificationList,
 };
 
 export default {
@@ -89,7 +89,7 @@ export default {
   layouts,
   mixins,
   notifications,
-  utils
+  utils,
 };
 
 export { components, entry, errors, layouts, mixins, notifications, utils };

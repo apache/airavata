@@ -26,28 +26,28 @@ export default {
   name: "autocomplete-input-editor",
   mixins: [InputEditorMixin],
   components: {
-    "autocomplete-text-input": components.AutocompleteTextInput
+    "autocomplete-text-input": components.AutocompleteTextInput,
   },
   props: {
     value: {
-      type: String
-    }
+      type: String,
+    },
   },
   data() {
     return {
       text: null,
       searchString: "",
       searchResults: null,
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
     };
   },
   computed: {
     suggestions() {
       return this.searchResults
-        ? this.searchResults.results.map(r => {
+        ? this.searchResults.results.map((r) => {
             return {
               id: r.value,
-              name: r.text
+              name: r.text,
             };
           })
         : [];
@@ -69,9 +69,9 @@ export default {
                 editor: {
                   "ui-component-id": "autocomplete-input-editor",
                   config: {
-                    url: "/some/custom/search/"
-                  }
-                }
+                    url: "/some/custom/search/",
+                  },
+                },
               },
               null,
               4
@@ -79,7 +79,7 @@ export default {
         );
         return null;
       }
-    }
+    },
   },
   methods: {
     loadTextForValue(value) {
@@ -87,20 +87,20 @@ export default {
         return utils.FetchUtils.get(
           this.autocompleteUrl,
           {
-            exact: value
+            exact: value,
           },
           {
-            ignoreErrors: true // don't automatically report errors to user - code will handle 404s
+            ignoreErrors: true, // don't automatically report errors to user - code will handle 404s
           }
         )
-          .then(resp => {
+          .then((resp) => {
             if (resp.results && resp.results.length > 0) {
               return resp.results[0].text;
             } else {
               return `value: ${value}`;
             }
           })
-          .catch(error => {
+          .catch((error) => {
             if (error.details.status === 404) {
               // if we can't fine an exact match, just return the value as the text
               return `value: ${value}`;
@@ -121,7 +121,7 @@ export default {
       this.text = suggestion.name;
       this.valueChanged();
     },
-    searchChanged: _.debounce(function(newValue) {
+    searchChanged: _.debounce(function (newValue) {
       // TODO: don't query when search value is empty string
       this.searchString = newValue;
       const currentTime = Date.now();
@@ -129,10 +129,10 @@ export default {
         utils.FetchUtils.get(
           this.autocompleteUrl,
           {
-            search: this.searchString
+            search: this.searchString,
           },
           { showSpinner: false }
-        ).then(resp => {
+        ).then((resp) => {
           // Prevent older responses from overwriting newer ones
           if (currentTime > this.lastUpdate) {
             this.searchResults = resp;
@@ -140,12 +140,12 @@ export default {
           }
         });
       }
-    }, 200)
+    }, 200),
   },
   created() {
     if (this.value) {
-      this.loadTextForValue(this.value).then(text => (this.text = text));
+      this.loadTextForValue(this.value).then((text) => (this.text = text));
     }
-  }
+  },
 };
 </script>

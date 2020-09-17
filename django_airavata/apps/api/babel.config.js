@@ -4,9 +4,9 @@ const presets = [
   [
     "@babel/preset-env",
     {
-      useBuiltIns: "usage"
-    }
-  ]
+      useBuiltIns: "usage",
+    },
+  ],
 ];
 
 const plugins = ["@babel/plugin-transform-runtime"];
@@ -15,7 +15,7 @@ module.exports = {
   plugins,
   env: {
     test: {
-      presets: ["@babel/preset-env"]
-    }
-  }
+      presets: ["@babel/preset-env"],
+    },
+  },
 };

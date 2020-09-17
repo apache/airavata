@@ -10,39 +10,39 @@ const FIELDS = [
   "experimentId",
   {
     name: "experiment",
-    type: Experiment
+    type: Experiment,
   },
   {
     name: "project",
-    type: Project
+    type: Project,
   },
   {
     name: "applicationModule",
-    type: ApplicationModule
+    type: ApplicationModule,
   },
   {
     name: "computeResource",
-    type: ComputeResourceDescription
+    type: ComputeResourceDescription,
   },
   {
     name: "outputDataProducts",
     type: DataProduct,
-    list: true
+    list: true,
   },
   {
     name: "inputDataProducts",
     type: DataProduct,
-    list: true
+    list: true,
   },
   {
     name: "jobDetails",
     type: Job,
-    list: true
+    list: true,
   },
   {
     name: "outputViews",
-    type: Object
-  }
+    type: Object,
+  },
 ];
 
 export default class FullExperiment extends BaseModel {
@@ -62,13 +62,13 @@ export default class FullExperiment extends BaseModel {
     return this.computeResource ? this.computeResource.hostName : null;
   }
 
-    get resourceHostId() {
-      return this.experiment.resourceHostId;
-    }
+  get resourceHostId() {
+    return this.experiment.resourceHostId;
+  }
 
-    get experimentStatus() {
-        return this.experiment.latestStatus;
-    }
+  get experimentStatus() {
+    return this.experiment.latestStatus;
+  }
 
   get experimentStatusName() {
     return this.experimentStatus ? this.experimentStatus.state.name : null;

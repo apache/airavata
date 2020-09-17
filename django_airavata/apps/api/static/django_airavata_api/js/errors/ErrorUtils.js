@@ -18,5 +18,5 @@ export default {
   },
   isUnauthorizedError(error) {
     return this.isAPIException(error) && error.details.status === 403;
-  }
+  },
 };

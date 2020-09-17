@@ -5,7 +5,7 @@ import { models } from "django-airavata-api";
 function factory(config = { initA: "1", initB: null, sync: true }) {
   const inputA = new models.InputDataObjectType({
     name: "A",
-    value: config.initA
+    value: config.initA,
   });
   const inputB = new models.InputDataObjectType({
     name: "B",
@@ -18,31 +18,31 @@ function factory(config = { initA: "1", initB: null, sync: true }) {
               {
                 A: {
                   comparison: "equals",
-                  value: "2"
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
+                  value: "2",
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
   });
   // eslint-disable-next-line no-unused-vars
   const experiment = new models.Experiment({
-    experimentInputs: [inputA, inputB]
+    experimentInputs: [inputA, inputB],
   });
   const wrapper = shallowMount(InputEditorContainer, {
     propsData: {
       value: inputB.value,
-      experimentInput: inputB
+      experimentInput: inputB,
     },
-    sync: config.sync
+    sync: config.sync,
   });
   return {
     wrapper,
     inputA,
     inputB,
-    experiment
+    experiment,
   };
 }
 
@@ -64,7 +64,7 @@ describe("InputEditorContainer", () => {
   test("InputEditorContainer saves value when hiding", () => {
     const { inputA, inputB, experiment, wrapper } = factory({
       initA: "2",
-      initB: "3"
+      initB: "3",
     });
     expect(inputB.show).toBeTruthy();
     expect(wrapper.vm.data).toBe("3");
@@ -86,7 +86,7 @@ describe("InputEditorContainer", () => {
   test("InputEditorContainer emits null 'input' event when hiding", () => {
     const { inputA, inputB, experiment, wrapper } = factory({
       initA: "2",
-      initB: "3"
+      initB: "3",
     });
     expect(wrapper.vm.show).toBeTruthy();
 
@@ -130,7 +130,7 @@ describe("InputEditorContainer", () => {
 
   test("if hidden from the start, should restore initial value when showing", () => {
     const { inputA, inputB, experiment, wrapper } = factory({
-      initB: "initialValue"
+      initB: "initialValue",
     });
     expect(wrapper.vm.show).toBeFalsy();
     expect(wrapper.vm.data).toBe(null);
@@ -156,14 +156,14 @@ describe("InputEditorContainer", () => {
       expect(wrapper.emitted().input.length).toBe(1);
       expect(wrapper.emitted().input[0]).toEqual([null]);
       done();
-    })
+    });
   });
 
   test("if hidden from the start, should emit initial value 'input' event when showing", (done) => {
     // Run test asynchronously so we can capture events that are emitted by VModelMixin watcher
     const { inputA, inputB, experiment, wrapper } = factory({
       initB: "initialValue",
-      sync: false
+      sync: false,
     });
     expect(wrapper.vm.show).toBeFalsy();
     expect(wrapper.vm.data).toBe(null);
@@ -175,7 +175,6 @@ describe("InputEditorContainer", () => {
     wrapper.setData({ show: inputB.show });
     expect(wrapper.vm.show).toBeTruthy();
     wrapper.vm.$nextTick(() => {
-
       expect(wrapper.emitted().input.length).toBe(2);
       expect(wrapper.emitted().input[0]).toEqual([null]);
       expect(wrapper.emitted().input[1]).toEqual(["initialValue"]);

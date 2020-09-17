@@ -1,9 +1,6 @@
 <template>
   <div id="notifications-display">
-    <transition-group
-      name="fade"
-      tag="div"
-    >
+    <transition-group name="fade" tag="div">
       <b-alert
         v-for="unhandledError in unhandledErrors"
         variant="danger"
@@ -25,18 +22,11 @@
         {{ notification.message }}
       </b-alert>
     </transition-group>
-    <b-alert
-      variant="danger"
-      :show="apiServerBackUp === false"
-    >
+    <b-alert variant="danger" :show="apiServerBackUp === false">
       <p>API Server is down.</p>
       <i class="fa fa-sync-alt fa-spin"></i> Checking status ...
     </b-alert>
-    <b-alert
-      variant="success"
-      :show="apiServerBackUp"
-      dismissible
-    >
+    <b-alert variant="success" :show="apiServerBackUp" dismissible>
       API Server is back up. Please try again.
     </b-alert>
   </div>
@@ -54,17 +44,17 @@ export default {
       unhandledErrors: errors.UnhandledErrorDisplayList.list,
       apiServerBackUp: null,
       apiServerBackUpTimestamp: null,
-      pollingDelay: 10000
+      pollingDelay: 10000,
     };
   },
   methods: {
-    dismissNotification: function(notification) {
+    dismissNotification: function (notification) {
       NotificationList.remove(notification);
     },
-    dismissUnhandledError: function(unhandledError) {
+    dismissUnhandledError: function (unhandledError) {
       errors.UnhandledErrorDisplayList.remove(unhandledError);
     },
-    variant: function(notification) {
+    variant: function (notification) {
       if (notification.type === "SUCCESS") {
         return "success";
       } else if (notification.type === "ERROR") {
@@ -79,15 +69,15 @@ export default {
       return services.APIServerStatusCheckService.get(
         {},
         { ignoreErrors: true, showSpinner: false }
-      ).then(status => {
+      ).then((status) => {
         if (status.apiServerUp === true) {
           this.apiServerBackUp = true;
           this.apiServerBackUpTimestamp = Date.now();
         }
       });
     },
-    initPollingAPIServerStatus: function() {
-      const pollAPIServerStatus = function() {
+    initPollingAPIServerStatus: function () {
+      const pollAPIServerStatus = function () {
         if (!this.apiServerBackUp) {
           const repoll = () =>
             setTimeout(pollAPIServerStatus.bind(this), this.pollingDelay);
@@ -95,7 +85,7 @@ export default {
         }
       }.bind(this);
       setTimeout(pollAPIServerStatus.bind(this), this.pollingDelay);
-    }
+    },
   },
   computed: {
     apiServerDown() {
@@ -104,7 +94,7 @@ export default {
       // API server status check
       const notificationsApiServerDown = this.notifications
         ? this.notifications
-            .filter(n => {
+            .filter((n) => {
               if (this.apiServerBackUpTimestamp) {
                 return (
                   n.createdDate.getTime() - this.apiServerBackUpTimestamp > 0
@@ -114,7 +104,7 @@ export default {
               }
             })
             .some(
-              n =>
+              (n) =>
                 n.details &&
                 n.details.response &&
                 n.details.response.apiServerDown
@@ -122,7 +112,7 @@ export default {
         : false;
       const unhandledErrorsApiServerDown = this.unhandledErrors
         ? this.unhandledErrors
-            .filter(n => {
+            .filter((n) => {
               if (this.apiServerBackUpTimestamp) {
                 return (
                   n.createdDate.getTime() - this.apiServerBackUpTimestamp > 0
@@ -132,14 +122,14 @@ export default {
               }
             })
             .some(
-              e =>
+              (e) =>
                 e.details &&
                 e.details.response &&
                 e.details.response.apiServerDown
             )
         : false;
       return notificationsApiServerDown || unhandledErrorsApiServerDown;
-    }
+    },
   },
   watch: {
     /*
@@ -152,8 +142,8 @@ export default {
         this.apiServerBackUp = false;
         this.initPollingAPIServerStatus();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -166,5 +156,3 @@ export default {
   z-index: 10000;
 }
 </style>
-
-

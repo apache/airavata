@@ -21,15 +21,15 @@ export default {
   props: {
     parameter: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
     InteractiveParameterCheckboxWidget,
     InteractiveParameterRangeWidget,
     InteractiveParameterSelectWidget,
     InteractiveParameterStepperWidget,
-    InteractiveParameterTextInputWidget
+    InteractiveParameterTextInputWidget,
   },
   computed: {
     widgetComponent() {
@@ -61,7 +61,7 @@ export default {
       } else {
         return null;
       }
-    }
-  }
+    },
+  },
 };
 </script>

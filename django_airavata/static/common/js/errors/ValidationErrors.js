@@ -12,16 +12,16 @@ export default {
         if (errorMessages) {
           validationFeedback[fieldName] = {
             invalidFeedback: errorMessages,
-            state: "invalid"
+            state: "invalid",
           };
         } else {
           validationFeedback[fieldName] = {
             invalidFeedback: null,
-            state: null
+            state: null,
           };
         }
       }
     }
     return validationFeedback;
-  }
+  },
 };

@@ -2,11 +2,11 @@ import UnhandledErrorDispatcher from "../errors/UnhandledErrorDispatcher";
 import Cache from "./Cache";
 
 var count = 0;
-const parseQueryParams = function(url, queryParams = "") {
+const parseQueryParams = function (url, queryParams = "") {
   if (queryParams && typeof queryParams != "string") {
     queryParams = Object.keys(queryParams)
       .map(
-        key =>
+        (key) =>
           encodeURIComponent(key) + "=" + encodeURIComponent(queryParams[key])
       )
       .join("&");
@@ -18,18 +18,18 @@ const parseQueryParams = function(url, queryParams = "") {
   }
 };
 
-const setSpinnerDisplay = function(display) {
+const setSpinnerDisplay = function (display) {
   let spinner = document.getElementById("airavata-spinner");
   spinner.style.display = display;
 };
 
-const incrementCount = function() {
+const incrementCount = function () {
   count++;
   if (count == 1) {
     setSpinnerDisplay("block");
   }
 };
-const decrementCount = function() {
+const decrementCount = function () {
   if (count > 0) {
     count--;
     if (count == 0) {
@@ -41,44 +41,44 @@ const decrementCount = function() {
 const responseCache = new Cache();
 
 export default {
-  showSpinner: function(promise) {
+  showSpinner: function (promise) {
     incrementCount();
     return promise.then(decrementCount, decrementCount);
   },
-  getCSRFToken: function() {
+  getCSRFToken: function () {
     var csrfToken = document.cookie
       .split(";")
-      .map(val => val.trim())
-      .filter(val => val.startsWith("csrftoken" + "="))
-      .map(val => val.split("=")[1]);
+      .map((val) => val.trim())
+      .filter((val) => val.startsWith("csrftoken" + "="))
+      .map((val) => val.split("=")[1]);
     if (csrfToken) {
       return csrfToken[0];
     } else {
       return null;
     }
   },
-  createHeaders: function(
+  createHeaders: function (
     contentType = "application/json",
     accept = "application/json"
   ) {
     var csrfToken = this.getCSRFToken();
     var headers = new Headers({
       "Content-Type": contentType,
-      Accept: accept
+      Accept: accept,
     });
     if (csrfToken != null) {
       headers.set("X-CSRFToken", csrfToken);
     }
     return headers;
   },
-  post: function(
+  post: function (
     url,
     body,
     queryParams = "",
     {
       mediaType = "application/json",
       ignoreErrors = false,
-      showSpinner = true
+      showSpinner = true,
     } = {}
   ) {
     var headers = this.createHeaders(mediaType);
@@ -96,16 +96,16 @@ export default {
       headers: headers,
       credentials: "same-origin",
       ignoreErrors,
-      showSpinner
+      showSpinner,
     });
   },
-  put: function(
+  put: function (
     url,
     body,
     {
       mediaType = "application/json",
       ignoreErrors = false,
-      showSpinner = true
+      showSpinner = true,
     } = {}
   ) {
     var headers = this.createHeaders(mediaType);
@@ -118,24 +118,24 @@ export default {
       headers: headers,
       credentials: "same-origin",
       ignoreErrors,
-      showSpinner
+      showSpinner,
     });
   },
-  get: function(
+  get: function (
     url,
     queryParams = "",
     {
       mediaType = "application/json",
       ignoreErrors = false,
       showSpinner = true,
-      cache = false
+      cache = false,
     } = {},
-    responseType="json"
+    responseType = "json"
   ) {
     if (queryParams && typeof queryParams != "string") {
       queryParams = Object.keys(queryParams)
         .map(
-          key =>
+          (key) =>
             encodeURIComponent(key) + "=" + encodeURIComponent(queryParams[key])
         )
         .join("&");
@@ -149,29 +149,33 @@ export default {
       }
     }
     var headers = this.createHeaders(mediaType);
-    const fetchRequest = this.processFetch(url, {
-      method: "get",
-      headers: headers,
-      credentials: "same-origin",
-      ignoreErrors,
-      showSpinner
-    }, responseType);
+    const fetchRequest = this.processFetch(
+      url,
+      {
+        method: "get",
+        headers: headers,
+        credentials: "same-origin",
+        ignoreErrors,
+        showSpinner,
+      },
+      responseType
+    );
     if (cache) {
       responseCache.put({ key: url, value: fetchRequest });
     }
     return fetchRequest;
   },
-  delete: function(url, { ignoreErrors = false, showSpinner = true } = {}) {
+  delete: function (url, { ignoreErrors = false, showSpinner = true } = {}) {
     var headers = this.createHeaders();
     return this.processFetch(url, {
       method: "delete",
       headers: headers,
       credentials: "same-origin",
       ignoreErrors,
-      showSpinner
+      showSpinner,
     });
   },
-  processFetch: function(
+  processFetch: function (
     url,
     {
       method = "get",
@@ -179,14 +183,14 @@ export default {
       credentials = "same-origin",
       body,
       ignoreErrors = false,
-      showSpinner = true
+      showSpinner = true,
     },
-    responseType="json"
+    responseType = "json"
   ) {
     const fetchConfig = {
       method,
       headers,
-      credentials
+      credentials,
     };
     if (body) {
       fetchConfig.body = body;
@@ -196,7 +200,7 @@ export default {
     }
     return fetch(url, fetchConfig)
       .then(
-        response => {
+        (response) => {
           if (showSpinner) {
             decrementCount();
           }
@@ -206,14 +210,16 @@ export default {
               return Promise.resolve();
             } else {
               incrementCount();
-              return Promise.resolve(response[responseType]().then((responseData) => {
-                decrementCount();
-                return responseData;
-              }));
+              return Promise.resolve(
+                response[responseType]().then((responseData) => {
+                  decrementCount();
+                  return responseData;
+                })
+              );
             }
           } else {
             return response.json().then(
-              json => {
+              (json) => {
                 // if json doesn't have detail key, stringify body
                 let errorMessage = json.detail;
                 if (!("detail" in json)) {
@@ -224,7 +230,7 @@ export default {
                   url,
                   body,
                   status: response.status,
-                  responseBody: json
+                  responseBody: json,
                 });
                 throw error;
               },
@@ -234,14 +240,14 @@ export default {
                 error.details = this.createErrorDetails({
                   url,
                   body,
-                  status: response.status
+                  status: response.status,
                 });
                 throw error;
               }
             );
           }
         },
-        error => {
+        (error) => {
           if (showSpinner) {
             decrementCount();
           }
@@ -249,31 +255,31 @@ export default {
           throw error;
         }
       )
-      .catch(error => {
+      .catch((error) => {
         if (!ignoreErrors) {
           this.reportError(error);
         }
         throw error;
       });
   },
-  createErrorDetails: function({
+  createErrorDetails: function ({
     url,
     body,
     status = null,
-    responseBody = null
+    responseBody = null,
   } = {}) {
     return {
       url,
       body,
       status,
-      response: responseBody
+      response: responseBody,
     };
   },
   reportError(error) {
     UnhandledErrorDispatcher.reportError({
       message: error.message,
       error: error,
-      details: error.details
+      details: error.details,
     });
-  }
+  },
 };

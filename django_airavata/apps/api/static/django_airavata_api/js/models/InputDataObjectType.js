@@ -10,13 +10,13 @@ const FIELDS = [
   {
     name: "type",
     type: DataType,
-    default: DataType.STRING
+    default: DataType.STRING,
   },
   "applicationArgument",
   {
     name: "standardInput",
     type: "boolean",
-    default: false
+    default: false,
   },
   "userFriendlyDescription",
   "metaData",
@@ -24,25 +24,25 @@ const FIELDS = [
   {
     name: "isRequired",
     type: "boolean",
-    default: false
+    default: false,
   },
   {
     name: "requiredToAddedToCommandLine",
     type: "boolean",
-    default: false
+    default: false,
   },
   {
     name: "dataStaged",
     type: "boolean",
-    default: false
+    default: false,
   },
   "storageResourceId",
   {
     name: "isReadOnly",
     type: "boolean",
-    default: false
+    default: false,
   },
-  "overrideFilename"
+  "overrideFilename",
 ];
 
 const IS_REQUIRED_DEFAULT = "This field is required.";
@@ -256,5 +256,5 @@ InputDataObjectType.VALID_DATA_TYPES = [
   DataType.INTEGER,
   DataType.FLOAT,
   DataType.URI,
-  DataType.URI_COLLECTION
+  DataType.URI_COLLECTION,
 ];

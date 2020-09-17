@@ -26,19 +26,24 @@
                   :key="experiment.experimentId"
                 >
                   <td>
-                    <b-link :href="viewLink(experiment)">{{experiment.name}}</b-link>
+                    <b-link :href="viewLink(experiment)">{{
+                      experiment.name
+                    }}</b-link>
                   </td>
-                  <td v-if="applicationName(experiment)">{{applicationName(experiment)}}</td>
-                  <td
-                    v-else
-                    class="font-italic text-muted"
-                  >N/A</td>
-                  <td>{{experiment.userName}}</td>
+                  <td v-if="applicationName(experiment)">
+                    {{ applicationName(experiment) }}
+                  </td>
+                  <td v-else class="font-italic text-muted">N/A</td>
+                  <td>{{ experiment.userName }}</td>
                   <td>
-                    <span :title="experiment.creationTime">{{ fromNow(experiment.creationTime) }}</span>
+                    <span :title="experiment.creationTime">{{
+                      fromNow(experiment.creationTime)
+                    }}</span>
                   </td>
                   <td>
-                    <experiment-status-badge :statusName="experiment.experimentStatus.name" />
+                    <experiment-status-badge
+                      :statusName="experiment.experimentStatus.name"
+                    />
                   </td>
                   <td>
                     <!-- if we can't load the application for the experiment
@@ -46,24 +51,20 @@
                     clone experiment -->
                     <span v-if="applicationName(experiment)">
                       <b-link
-                        v-if="experiment.isEditable && applicationName(experiment)"
+                        v-if="
+                          experiment.isEditable && applicationName(experiment)
+                        "
                         :href="editLink(experiment)"
                         class="action-link"
-                      >Edit
-                        <i
-                          class="fa fa-edit"
-                          aria-hidden="true"
-                        ></i>
+                        >Edit
+                        <i class="fa fa-edit" aria-hidden="true"></i>
                       </b-link>
                       <b-link
                         v-else
                         @click="clone(experiment)"
                         class="action-link"
-                      >Clone
-                        <i
-                          class="fa fa-copy"
-                          aria-hidden="true"
-                        ></i>
+                        >Clone
+                        <i class="fa fa-copy" aria-hidden="true"></i>
                       </b-link>
                     </span>
                   </td>
@@ -95,30 +96,30 @@ export default {
   data() {
     return {
       experimentsPaginator: null,
-      applicationInterfaces: {}
+      applicationInterfaces: {},
     };
   },
   components: {
     pager: comps.Pager,
-    "experiment-status-badge": comps.ExperimentStatusBadge
+    "experiment-status-badge": comps.ExperimentStatusBadge,
   },
   methods: {
-    nextExperiments: function() {
+    nextExperiments: function () {
       this.experimentsPaginator.next();
     },
-    previousExperiments: function() {
+    previousExperiments: function () {
       this.experimentsPaginator.previous();
     },
-    fromNow: function(date) {
+    fromNow: function (date) {
       return moment(date).fromNow();
     },
-    editLink: function(experiment) {
+    editLink: function (experiment) {
       return urls.editExperiment(experiment);
     },
-    viewLink: function(experiment) {
+    viewLink: function (experiment) {
       return urls.viewExperiment(experiment);
     },
-    applicationName: function(experiment) {
+    applicationName: function (experiment) {
       if (experiment.executionId in this.applicationInterfaces) {
         if (
           this.applicationInterfaces[experiment.executionId] instanceof
@@ -134,13 +135,13 @@ export default {
       } else {
         const request = services.ApplicationInterfaceService.retrieve(
           {
-            lookup: experiment.executionId
+            lookup: experiment.executionId,
           },
           {
-            ignoreErrors: true
+            ignoreErrors: true,
           }
         )
-          .then(result =>
+          .then((result) =>
             this.$set(
               this.applicationInterfaces,
               experiment.executionId,
@@ -157,26 +158,25 @@ export default {
     },
     clone(experiment) {
       services.ExperimentService.clone({
-        lookup: experiment.experimentId
-      }).then(clonedExperiment => {
+        lookup: experiment.experimentId,
+      }).then((clonedExperiment) => {
         urls.navigateToEditExperiment(clonedExperiment);
       });
-    }
+    },
   },
   computed: {
-    experiments: function() {
+    experiments: function () {
       return this.experimentsPaginator
         ? this.experimentsPaginator.results
         : null;
-    }
+    },
   },
-  beforeMount: function() {
+  beforeMount: function () {
     services.ExperimentSearchService.list({
-      initialData: this.initialExperimentsData
-    }).then(result => (this.experimentsPaginator = result));
-  }
+      initialData: this.initialExperimentsData,
+    }).then((result) => (this.experimentsPaginator = result));
+  },
 };
 </script>
 
-<style>
-</style>
+<style></style>
