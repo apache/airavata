@@ -8,7 +8,8 @@
     "serve": "vue-cli-service serve ./static/django_airavata_admin/src/main.js",
     "build": "vue-cli-service build ./static/django_airavata_admin/src/main.js",
     "lint": "vue-cli-service lint ./static/django_airavata_admin/src/",
-    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_admin/src/"
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_admin/src/",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
@@ -33,6 +34,7 @@
     "@vue/cli-service": "^3.0.1",
     "@vue/component-compiler-utils": "^2.3.0",
     "autoprefixer": "^9.3.1",
+    "prettier": "^2.1.2",
     "vue-loader": "^15.5.1",
     "vue-template-compiler": "^2.5.22",
     "webpack": "^4.28.4",

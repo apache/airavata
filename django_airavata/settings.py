@@ -100,7 +100,8 @@ CUSTOM_DJANGO_APPS = []
 #
 for entry_point in iter_entry_points(group='airavata.djangoapp'):
     custom_app_class = entry_point.load()
-    custom_app_instance = custom_app_class(entry_point.name, import_module(entry_point.module_name))
+    custom_app_instance = custom_app_class(
+        entry_point.name, import_module(entry_point.module_name))
     CUSTOM_DJANGO_APPS.append(custom_app_instance)
     # Create path to AppConfig class (otherwise the ready() method doesn't get
     # called)

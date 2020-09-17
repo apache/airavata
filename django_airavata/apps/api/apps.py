@@ -6,4 +6,4 @@ class ApiConfig(AppConfig):
     label = 'django_airavata_api'
 
     def ready(self):
-        from . import signals # noqa
+        from . import signals  # noqa
