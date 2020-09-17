@@ -203,8 +203,7 @@
           <a href=# class="dropdown-toggle text-dark" id=dropdownMenuButton data-toggle=dropdown aria-haspopup=true
             aria-expanded=false>
             <i class="fa fa-user mr-2"></i>
-            {{ request.session.USERINFO.given_name }}
-            {{ request.session.USERINFO.family_name }}
+            {{ request.user.first_name }} {{ request.user.last_name }}
           </a>
           <div class=dropdown-menu aria-labelledby=dropdownMenuButton>
             {% comment %} <a class=dropdown-item href=#>User settings</a> {% endcomment %}

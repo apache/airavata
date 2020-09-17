@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 
 VERIFY_EMAIL_TEMPLATE = 1
@@ -43,3 +44,32 @@ class PasswordResetRequest(models.Model):
     reset_code = models.CharField(
         max_length=36, unique=True, default=uuid.uuid4)
     created_date = models.DateTimeField(auto_now_add=True)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, related_name="user_profile")
+    # TODO: maybe this can be derived from whether there exists an Airavata
+    # User Profile for the user's username
+    username_locked = models.BooleanField(default=False)
+
+    @property
+    def is_complete(self):
+        # TODO: implement this to check if there are any missing fields on the
+        # User model (email, first_name, last_name) or if the username was is
+        # invalid (for example if defaulted to the IdP's 'sub' claim) or if
+        # there are any extra profile fields that are not valid
+        return False
+
+
+class UserInfo(models.Model):
+    claim = models.CharField(max_length=64)
+    value = models.CharField(max_length=255)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['user_profile', 'claim']
+
+    def __str__(self):
+        return f"{self.claim}={self.value}"
