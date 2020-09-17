@@ -1,0 +1,4 @@
+dist
+templates
+# This folder has it's own prettier config
+django-airavata-workspace-plugin-api

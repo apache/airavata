@@ -148,6 +148,7 @@ libraries.
 
 Use a code editor that integrates with editorconfig and flake8. I also recommend
 autopep8 for automatically formatting code to follow the PEP8 guidelines.
+Prettier is used for formatting JavaScript and Vue.js code.
 
 See the docs for more information on
 [developing the backend](./docs/dev/developing_backend.md) and

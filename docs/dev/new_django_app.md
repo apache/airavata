@@ -232,7 +232,8 @@ django_airavata/apps/myapp):
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
@@ -248,6 +249,7 @@ django_airavata/apps/myapp):
     "babel-eslint": "^10.0.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0-0",
+    "prettier": "^2.1.2",
     "vue-template-compiler": "^2.5.21",
     "webpack-bundle-tracker": "^0.4.2-beta"
   },
