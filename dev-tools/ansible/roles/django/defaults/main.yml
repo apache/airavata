@@ -46,6 +46,9 @@ django_database_name: "django_{{ gateway_id }}"
 django_hidden_airavata_apps: "[]"
 django_tus_data_dir: "{{user_data_dir}}/tus-temp-dir"
 django_file_upload_max_file_size_mb: 64
+django_database_hosts: "{{ groups['database'] }}"
+django_db_username: "django"
+django_database_host_ip_address: "{{ groups['database'][0] }}"
 
 # Should be a python expression that evaluates to a string representing a file path. For example:
 # django_keycloak_ca_certfile_path: "/etc/ca.pem"
