@@ -5,7 +5,7 @@ from urllib.parse import quote, urlencode
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ValidationError
 from django.http import HttpResponseBadRequest, JsonResponse
@@ -14,6 +14,9 @@ from django.template import Context
 from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from requests_oauthlib import OAuth2Session
+from rest_framework import permissions, viewsets
+
+from django_airavata.apps.auth import serializers
 
 from . import forms, iam_admin_client, models, utils
 
@@ -502,3 +505,27 @@ def _create_login_desktop_failed_response(request, idp_alias=None):
         params['username'] = request.POST['username']
     return redirect(reverse('django_airavata_auth:login_desktop') +
                     "?" + urlencode(params))
+
+
+class IsUserOrReadOnlyForSuperuser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        if (request.method in permissions.SAFE_METHODS and
+                request.user.is_superuser):
+            return True
+        return obj == request.user
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.UserSerializer
+    queryset = get_user_model().objects.all()
+    permission_classes = [IsUserOrReadOnlyForSuperuser]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return get_user_model().objects.all()
+        else:
+            return get_user_model().objects.get(pk=user.pk)

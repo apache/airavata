@@ -1,10 +1,14 @@
 
-from django.conf.urls import url
+from django.conf.urls import include, url
+from rest_framework import routers
 
 from . import views
 
+router = routers.DefaultRouter()
+router.register(r'users', views.UserViewSet, base_name='user')
 app_name = 'django_airavata_auth'
 urlpatterns = [
+    url(r'^', include(router.urls)),
     url(r'^login$', views.start_login, name='login'),
     url(r'^login-password$', views.start_username_password_login,
         name='login_with_password'),
