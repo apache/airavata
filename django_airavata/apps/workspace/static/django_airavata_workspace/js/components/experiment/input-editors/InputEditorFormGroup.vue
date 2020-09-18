@@ -16,30 +16,35 @@
         {{ feedbackMessages[0] }}
       </div>
     </template>
+    <linkify slot="description">{{ description }}</linkify>
   </b-form-group>
 </template>
 
 <script>
+import { components } from "django-airavata-common-ui";
 export default {
   name: "input-editor-form-group",
   props: {
     label: {
       type: String,
-      required: true,
+      required: true
     },
     labelFor: {
       type: String,
-      required: true,
+      required: true
     },
     state: {
-      type: String,
+      type: String
     },
     feedbackMessages: {
-      type: Array,
+      type: Array
     },
     description: {
-      type: String,
-    },
+      type: String
+    }
   },
+  components: {
+    linkify: components.Linkify
+  }
 };
 </script>

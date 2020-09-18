@@ -1,7 +1,8 @@
 import os
 
-# Import the common settings, can override them below as needed
-from django_airavata.settings import *
+from django_airavata.settings import *  # noqa
+
+# Above imports the common settings, can override them below as needed
 
 BASEDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
