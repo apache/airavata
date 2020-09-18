@@ -26,9 +26,10 @@ django_tus_endpoint: "https://tus.simvascular.scigap.org/files/"
 # configure user_data_dir and real_user_data_dir
 user_data_dir: "/var/www/portals/gateway-user-data"
 real_user_data_dir: "/home/www-shared/gateway-user-data"
-# TODO: until we can fix the networking issue between simvascular.stanford.edu
-# and scigap01, we'll just use a sqlite database
-django_database_backend: "sqlite3"
+django_database_host_ip_address: "localhost"
+django_database_hosts:
+  # Database is installed on the same host as the Django server
+  - simvascular
 
 vhost_servername: "new.django.simvascular.scigap.org"
 vhost_ssl: True
@@ -37,7 +38,6 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullch
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 django_file_upload_max_file_size_mb: 2000
-django_pga_url: "https://gateway.simvascular.org"
 
 ## Keycloak related variables
 tenant_domain: "simvascular"
