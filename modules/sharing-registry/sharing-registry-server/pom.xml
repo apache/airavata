@@ -25,7 +25,7 @@
         <artifactId>airavata-sharing-registry</artifactId>
         <groupId>org.apache.airavata</groupId>
         <relativePath>../pom.xml</relativePath>
-        <version>0.20-SNAPSHOT</version>
+        <version>0.21-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
