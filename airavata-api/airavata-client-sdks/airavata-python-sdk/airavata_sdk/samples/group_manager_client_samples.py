@@ -15,9 +15,9 @@
 #
 
 import logging
-from clients.group_manager_client import GroupManagerClient
+from airavata_sdk.clients.group_manager_client import GroupManagerClient
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
 

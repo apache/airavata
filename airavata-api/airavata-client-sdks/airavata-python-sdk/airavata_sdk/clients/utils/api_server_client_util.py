@@ -17,11 +17,11 @@
 import logging
 import time
 import logging
-import samples.file_utils as fb
+import airavata_sdk.samples.file_utils as fb
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
-from clients.api_server_client import APIServerClient
+from airavata_sdk.clients.api_server_client import APIServerClient
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

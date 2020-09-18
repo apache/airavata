@@ -15,9 +15,9 @@
 #
 
 import logging
-from clients.tenant_profile_client import TenantProfileClient
+from airavata_sdk.clients.tenant_profile_client import TenantProfileClient
 
-from clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
 

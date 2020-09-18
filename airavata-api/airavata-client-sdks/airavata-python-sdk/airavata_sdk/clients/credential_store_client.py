@@ -17,8 +17,8 @@
 import logging
 import configparser
 
-from transport.settings import CredentialStoreAPIClientSettings
-from transport import utils
+from airavata_sdk.transport.settings import CredentialStoreAPIClientSettings
+from airavata_sdk.transport import utils
 from airavata.api.credential.store.error.ttypes import CredentialStoreException
 
 logger = logging.getLogger(__name__)
