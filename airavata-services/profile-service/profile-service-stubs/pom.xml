@@ -27,7 +27,7 @@
     <parent>
         <artifactId>profile-service</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.20-SNAPSHOT</version>
+        <version>0.21-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
