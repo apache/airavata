@@ -1,7 +1,7 @@
 import io
 import paramiko
 
-from clients.file_handling_client import FileHandler
+from airavata_sdk.clients.file_handling_client import FileHandler
 
 
 def upload_files(api_server_client, credential_store_client, token, gateway_id, storage_id, storage_host,
