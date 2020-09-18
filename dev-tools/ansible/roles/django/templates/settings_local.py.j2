@@ -42,7 +42,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': '{{ django_database_name }}',
-        'HOST': '{{ db_server }}',
+        'HOST': '{{ django_database_host_ip_address }}',
         'USER': '{{ django_db_username }}',
         'PASSWORD': '{{ django_db_password }}'
     },
