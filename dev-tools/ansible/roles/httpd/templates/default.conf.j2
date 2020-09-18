@@ -1,10 +1,10 @@
 # Setup default virtual host as a catchall to prevent resolving to the first defined virtual host
 # This will show the welcome page when requesting on the ip address or server default hostname
 <VirtualHost *:{{ httpd_default_http_port }}>
-    DocumentRoot "/www/default"
+    DocumentRoot "{{ httpd_default_document_root[ansible_os_family] }}"
 </VirtualHost>
 <VirtualHost *:{{ httpd_default_https_port }}>
-    DocumentRoot "/www/default"
+    DocumentRoot "{{ httpd_default_document_root[ansible_os_family] }}"
     SSLEngine on
     SSLCertificateFile "{{ httpd_default_ssl_vhost_certificate_location[ansible_os_family] }}"
     SSLCertificateKeyFile "{{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family] }}"

@@ -87,13 +87,54 @@
     - http
     - https
   become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: open firewall port {{ httpd_default_http_port }}
   firewalld: port="{{ httpd_default_http_port }}/tcp"
              zone=public permanent=true state=enabled immediate=yes
   become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: open firewall port {{ httpd_default_https_port }}
   firewalld: port="{{ httpd_default_https_port }}/tcp"
              zone=public permanent=true state=enabled immediate=yes
   become: yes
+  when: ansible_os_family == "RedHat"
+
+# Issues with firewalld module oon Ubuntu https://github.com/ansible/ansible/issues/24855
+# So as workaround, just calling firewall-cmd directly for now
+- name: Enable https and http service on public zone (Debian)
+  command: firewall-cmd --zone=public --add-service={{ item }}
+  with_items:
+    - http
+    - https
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Enable https and http service on public zone permanently (Debian)
+  command: firewall-cmd --zone=public --permanent --add-service={{ item }}
+  with_items:
+    - http
+    - https
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: open firewall port {{ httpd_default_http_port }} (Debian)
+  command: firewall-cmd --zone=public --add-port={{ httpd_default_http_port}}/tcp
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: open firewall port {{ httpd_default_http_port }} permanently (Debian)
+  command: firewall-cmd --zone=public --permanent --add-port={{ httpd_default_http_port}}/tcp
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: open firewall port {{ httpd_default_https_port }} (Debian)
+  command: firewall-cmd --zone=public --add-port={{ httpd_default_https_port }}/tcp
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: open firewall port {{ httpd_default_https_port  }} permanently (Debian)
+  command: firewall-cmd --zone=public --permanent --add-port={{ httpd_default_https_port }}/tcp
+  become: yes
+  when: ansible_os_family == "Debian"

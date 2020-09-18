@@ -19,12 +19,22 @@
 #
 
 ---
-- hosts: pga
-  tags: pga
-  roles:
-    - env_setup
-    - httpd
-    - letsencrypt
-    - pga
 
-...
+- name: Install prerequisites
+  apt: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - git
+    - apache2
+    - python-selinux
+    - python-apt
+    - unzip
+    - openssl
+    - curl
+  become: yes
+
+- name: enable apache rewrite
+  command: a2enmod {{ item }}
+  with_items:
+    - rewrite
+    - ssl
+  become: yes

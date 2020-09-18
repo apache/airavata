@@ -19,12 +19,20 @@
 #
 
 ---
-- hosts: pga
-  tags: pga
-  roles:
-    - env_setup
-    - httpd
-    - letsencrypt
-    - pga
 
-...
+- name: Install prerequisites
+  apt: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - python3.6
+    - apache2-dev
+    - python3.6-dev
+    - python3-venv
+    # Needed by https://pypi.org/project/mysqlclient/
+    - default-libmysqlclient-dev
+    # mod_wsgi Apache module
+    - libapache2-mod-wsgi-py3
+  become: yes
+
+- name: enable Apache mod_wsgi module
+  command: a2enmod wsgi
+  become: yes

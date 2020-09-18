@@ -48,4 +48,6 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCAfFAd
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Barry Schneider', '	bis@nist.gov')]"
 portal_title: "Atomic and Molecular Physics and Optics Gateway"
 
+django_google_analytics_tracking_id: "UA-177950242-1"
+
 ...
