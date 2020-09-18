@@ -42,6 +42,9 @@ httpd_default_ssl_vhost_certificate_key_dir:
 httpd_default_ssl_vhost_certificate_key_location:
  RedHat: "/etc/httpd/ssl/private/default_vhost.key"
  Debian: "/etc/apache2/ssl/private/default_vhost.key"
+httpd_default_document_root:
+ RedHat: "/www/default"
+ Debian: "/var/www/html"
 httpd_name:
  Debian: apache2
  RedHat: httpd
