@@ -1,34 +1,34 @@
 <script>
-import * as linkify from "linkifyjs/";
-
-var getChildrenTextContent = function(children) {
-  return children
-    .map(function(node) {
-      return node.children ? getChildrenTextContent(node.children) : node.text;
-    })
-    .join("");
-};
+import * as linkify from "linkifyjs";
 
 export default {
   name: "linkify",
 
-  render: function(createElement) {
-    // Parse the contents of the element for links and turn them into links
-    const tokens = linkify.tokenize(
-      getChildrenTextContent(this.$slots.default)
-    );
-    const children = tokens.map(t => {
-      if (t.isLink) {
-        return createElement(
-          "a",
-          { attrs: { href: t.toHref("https"), target: "_blank" } },
-          t.toString()
-        );
-      } else {
-        return t.toString();
-      }
-    });
+  render: function (createElement) {
+    // Find top level text nodes and run linkify on the text, converting them
+    // into an array of links and text nodes
+    const children = this.$slots.default
+      .map((node) => {
+        if (node.text) {
+          const tokens = linkify.tokenize(node.text);
+          return tokens.map((t) => {
+            if (t.isLink) {
+              return createElement(
+                "a",
+                { attrs: { href: t.toHref("https"), target: "_blank" } },
+                t.toString()
+              );
+            } else {
+              return t.toString();
+            }
+          });
+        } else {
+          return node;
+        }
+      })
+      // Flatten array since text nodes are mapped to arrays
+      .flat();
     return createElement("span", null, children);
-  }
+  },
 };
 </script>
