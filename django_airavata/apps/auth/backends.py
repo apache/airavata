@@ -39,6 +39,7 @@ class KeycloakBackend(object):
                 bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
                 if bearer != "Bearer":
                     raise Exception("Unexpected Authorization header")
+                # implicitly validate token by using it to get userinfo
                 userinfo = self._get_userinfo_from_token(request, token)
                 # Token should be added as a request attribute (request.auth)
                 # self._process_token(request, token)
@@ -154,6 +155,11 @@ class KeycloakBackend(object):
             oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
         userinfo = oauth2_session.get(
             userinfo_url, verify=verify_ssl).json()
+        if 'error' in userinfo:
+            msg = userinfo.get('error_description')
+            if msg is None:
+                msg = f"Error fetching userinfo: {userinfo['error']}"
+            raise Exception(msg)
         return userinfo
 
     def _process_token(self, request, token):

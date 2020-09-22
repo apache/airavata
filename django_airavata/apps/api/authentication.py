@@ -14,6 +14,9 @@ class OAuthAuthentication(authentication.BaseAuthentication):
         if 'HTTP_AUTHORIZATION' in request.META:
             try:
                 user = authenticate(request=request)
+                if user is None:
+                    raise exceptions.AuthenticationFailed(
+                        "Token failed to authenticate")
                 _, token = request.META.get('HTTP_AUTHORIZATION').split()
 
                 # authz_token_middleware has already run, so must manually add
