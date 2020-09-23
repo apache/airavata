@@ -389,7 +389,7 @@ docker run -d --name gateways19-tutorial -p 8000:8000 -v $PWD:/extensions -v $PW
         cd /tmp/
         git clone https://github.com/apache/airavata-django-portal.git
         cd airavata-django-portal
-        docker build -t airavata-django-portal
+        docker build -t airavata-django-portal .
 
     Now you can `airavata-django-portal` instead of
     `machristie/airavata-django-portal` in the `docker run` command above.
