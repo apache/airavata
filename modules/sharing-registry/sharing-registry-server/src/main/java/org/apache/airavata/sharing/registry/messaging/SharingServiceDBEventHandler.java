@@ -244,6 +244,19 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                     log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.getDomainId() + ":WRITE", ex);
                                 }
 
+                                log.info("Creating Permission Type. Id : " + domain.getDomainId()+":MANAGE_SHARING");
+                                permissionType = new PermissionType();
+                                permissionType.setPermissionTypeId(domain.getDomainId()+":MANAGE_SHARING");
+                                permissionType.setDomainId(domain.getDomainId());
+                                permissionType.setName("MANAGE_SHARING");
+                                permissionType.setDescription("Manage sharing permission type");
+                                try {
+                                    sharingRegistryClient.createPermissionType(permissionType);
+                                    log.debug("Permission Type created. Id : " + domain.getDomainId() + ":MANAGE_SHARING");
+                                } catch (DuplicateEntryException ex) {
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.getDomainId() + ":MANAGE_SHARING", ex);
+                                }
+
                                 break;
                         }
 
