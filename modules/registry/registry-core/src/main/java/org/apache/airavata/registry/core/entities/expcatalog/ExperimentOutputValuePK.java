@@ -58,7 +58,7 @@ public class ExperimentOutputValuePK implements Serializable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof ExperimentOutputPK)) {
+        if (!(other instanceof ExperimentOutputValuePK)) {
             return false;
         }
         ExperimentOutputValuePK castOther = (ExperimentOutputValuePK) other;
