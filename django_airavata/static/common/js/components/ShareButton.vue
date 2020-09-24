@@ -230,10 +230,26 @@ export default {
         if (!this.localSharedEntity.entityId && this.autoAddAdminGroups) {
           this.localSharedEntity.addGroup({
             group: this.adminsGroup,
-            permissionType: models.ResourcePermissionType.WRITE
+            permissionType: models.ResourcePermissionType.MANAGE_SHARING
           });
           this.localSharedEntity.addGroup({ group: this.readOnlyAdminsGroup });
           this.emitUnsavedEvent();
+        }
+        if (this.localSharedEntity.entityId && this.autoAddAdminGroups) {
+          // AIRAVATA-3297 Admins group used to get WRITE permission, but the
+          // new default is MANAGE_SHARING so update if necessary
+          // Since autoAddAdminGroups is true, there should already be an adminsGroupPermission
+          const adminsGroupPermission = this.localSharedEntity.groupPermissions.find(
+            gp => gp.group.isGatewayAdminsGroup
+          );
+          if (
+            adminsGroupPermission.permissionType !==
+            models.ResourcePermissionType.MANAGE_SHARING
+          ) {
+            adminsGroupPermission.permissionType =
+              models.ResourcePermissionType.MANAGE_SHARING;
+            this.emitUnsavedEvent();
+          }
         }
       });
     },
