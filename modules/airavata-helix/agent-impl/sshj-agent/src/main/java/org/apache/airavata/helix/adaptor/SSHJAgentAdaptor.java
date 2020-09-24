@@ -67,7 +67,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         sshjClient = new PoolingSSHJClient(defaultConfig, host, port == 0 ? 22 : port);
         sshjClient.addHostKeyVerifier((h, p, key) -> true);
 
-        sshjClient.setMaxSessionsForConnection(10);
+        sshjClient.setMaxSessionsForConnection(1);
 
         PasswordFinder passwordFinder = passphrase != null ? PasswordUtils.createOneOff(passphrase.toCharArray()) : null;
 
