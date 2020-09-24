@@ -114,26 +114,33 @@ public class SweepingInputDataStagingTask extends DataStagingTask {
                         adaptor.executeCommand("unzip " + sourceFileName, tempZipDir);
                         String tempDataPath = Paths.get(tempZipDir, sourceFileName.substring(0, sourceFileName.length() - ".zip".length())).toString();
 
-                        List<String> cpCmds = new ArrayList<>();
 
-                        for (int i : rangeInts) {
-                            String sweepSourceDir = Paths.get(tempDataPath, i +"").toString();
-                            List<String> sweepFiles = adaptor.listDirectory(sweepSourceDir);
-                            for (String sweepFile: sweepFiles) {
-                                String localSourceFile = Paths.get(sweepSourceDir, sweepFile).toString();
+                        if (rangeInts.size() > 0) {
+                            List<String> cpCmds = new ArrayList<>();
 
-                                String overrideFileName = dataStagingTaskModel.getProcessInput().getOverrideFilename();
-                                String destFileName = (overrideFileName != null && !"".equals(overrideFileName)) ? overrideFileName : sweepFile;
-                                String destPath = Paths.get(workingDir, i + "", destFileName).toString();
+                            // Looking for the fist directory and assuming other directories have the same format
+                            String firstInputDir = Paths.get(tempDataPath, rangeInts.get(0) + "").toString();
+                            List<String> sweepFiles = adaptor.listDirectory(firstInputDir);
+                            logger.info("Found files in the first input directory {}, {}", firstInputDir, String.join(", ", sweepFiles));
 
-                                logger.info("Preparing the transfer input file {} to destination path {} locally", localSourceFile, destPath);
-                                cpCmds.add("cd " + sweepSourceDir + "; cp " + localSourceFile + " " + destPath);
+                            for (int i : rangeInts) {
+                                String sweepSourceDir = Paths.get(tempDataPath, i + "").toString();
+                                for (String sweepFile : sweepFiles) {
+                                    String localSourceFile = Paths.get(sweepSourceDir, sweepFile).toString();
+
+                                    String overrideFileName = dataStagingTaskModel.getProcessInput().getOverrideFilename();
+                                    String destFileName = (overrideFileName != null && !"".equals(overrideFileName)) ? overrideFileName : sweepFile;
+                                    String destPath = Paths.get(workingDir, i + "", destFileName).toString();
+
+                                    logger.info("Preparing the transfer input file {} to destination path {} locally", localSourceFile, destPath);
+                                    cpCmds.add("cd " + sweepSourceDir + "; cp " + localSourceFile + " " + destPath);
+                                }
                             }
-                        }
 
-                        String copyCommands = String.join("; ", cpCmds);
-                        logger.info("Running input placement commands : {}", copyCommands);
-                        adaptor.executeCommand(copyCommands, null);
+                            String copyCommands = String.join("; ", cpCmds);
+                            logger.info("Running input placement commands : {}", copyCommands);
+                            adaptor.executeCommand(copyCommands, null);
+                        }
 
                     } else {
                         // TODO: Optimize here to copy locally
