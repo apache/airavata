@@ -1,6 +1,8 @@
 language: python
 python:
   - "3.6"
+  - "3.7"
+  - "3.8"
 install:
   - pip install -r requirements-dev.txt
 script:
@@ -8,10 +10,9 @@ script:
   - python manage.py migrate
   - python manage.py check
   - flake8 .
-  - python manage.py test
   - ./lint_js.sh
   - ./build_js.sh
   - ./test_js.sh
   # Need to build the frontend client before running some of the Django tests
   # that use the Django test Client
-  - python manage.py test
+  - ./runtests.py
