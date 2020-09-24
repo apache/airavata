@@ -126,7 +126,7 @@ public class SweepingInputDataStagingTask extends DataStagingTask {
                                 String destFileName = (overrideFileName != null && !"".equals(overrideFileName)) ? overrideFileName : sweepFile;
                                 String destPath = Paths.get(workingDir, i + "", destFileName).toString();
 
-                                logger.info("Transferring zipped sweeping input file {} to destination path {} locally", localSourceFile, destPath);
+                                logger.info("Preparing the transfer input file {} to destination path {} locally", localSourceFile, destPath);
                                 cpCmds.add("cd " + sweepSourceDir + "; cp " + localSourceFile + " " + destPath);
                             }
                         }
