@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @TaskDef(name = "Environment Setup Task")
@@ -60,12 +61,15 @@ public class EnvSetupTask extends AiravataTask {
             if ("param_sweep".equals(taskContext.getExecutionType())) {
 
                 List<Integer> rangeInts = taskContext.getSweepRange();
-
+                List<String> sweepDirs = new ArrayList<>();
                 for (int i : rangeInts) {
                     String sweepDir = Paths.get(getTaskContext().getWorkingDir(), i + "").toString();
-                    logger.info("Creating sweep directory {}", sweepDir);
-                    adaptor.createDirectory(sweepDir, true);
+                    logger.info("Marking the create of sweep directory {}", sweepDir);
+                    sweepDirs.add("mkdir -p " + sweepDir);
                 }
+                String sweepDirCommands = String.join("; ", sweepDirs);
+                logger.info("Running sweep dir creation command {}", sweepDirCommands);
+                adaptor.executeCommand(sweepDirCommands, null);
             }
 
             return onSuccess("Envi setup task successfully completed " + getTaskId());
