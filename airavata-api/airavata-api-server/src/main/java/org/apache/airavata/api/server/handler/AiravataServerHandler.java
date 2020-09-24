@@ -6153,7 +6153,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         if (!sharingClient.isPermissionExists(domainId, permissionTypeId)) {
             PermissionType permissionType = new PermissionType();
             permissionType.setPermissionTypeId(permissionTypeId);
-            permissionType.setDomainId(permissionTypeId);
+            permissionType.setDomainId(domainId);
             permissionType.setName("MANAGE_SHARING");
             permissionType.setDescription("Manage sharing permission type");
             sharingClient.createPermissionType(permissionType);
