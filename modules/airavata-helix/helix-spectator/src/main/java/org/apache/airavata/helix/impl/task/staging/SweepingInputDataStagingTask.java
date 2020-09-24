@@ -38,6 +38,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,6 +114,8 @@ public class SweepingInputDataStagingTask extends DataStagingTask {
                         adaptor.executeCommand("unzip " + sourceFileName, tempZipDir);
                         String tempDataPath = Paths.get(tempZipDir, sourceFileName.substring(0, sourceFileName.length() - ".zip".length())).toString();
 
+                        List<String> cpCmds = new ArrayList<>();
+
                         for (int i : rangeInts) {
                             String sweepSourceDir = Paths.get(tempDataPath, i +"").toString();
                             List<String> sweepFiles = adaptor.listDirectory(sweepSourceDir);
@@ -124,9 +127,13 @@ public class SweepingInputDataStagingTask extends DataStagingTask {
                                 String destPath = Paths.get(workingDir, i + "", destFileName).toString();
 
                                 logger.info("Transferring zipped sweeping input file {} to destination path {} locally", localSourceFile, destPath);
-                                adaptor.executeCommand("cp " + localSourceFile + " " + destPath, sweepSourceDir);
+                                cpCmds.add("cd " + sweepSourceDir + "; cp " + localSourceFile + " " + destPath);
                             }
                         }
+
+                        String copyCommands = String.join("; ", cpCmds);
+                        logger.info("Running input placement commands : {}", copyCommands);
+                        adaptor.executeCommand(copyCommands, null);
 
                     } else {
                         // TODO: Optimize here to copy locally
