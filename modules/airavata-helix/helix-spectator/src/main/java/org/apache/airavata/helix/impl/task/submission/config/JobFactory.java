@@ -45,6 +45,8 @@ public class JobFactory {
                 return "LSF_Groovy.template";
             case CLOUD:
                 return "CLOUD_Groovy.template";
+            case HTCONDOR:
+                return "HTCONDOR_Groovy.template";
             default:
                 return null;
         }
