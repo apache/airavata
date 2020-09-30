@@ -1,5 +1,6 @@
 import logging
 
+from airavata.api.error.ttypes import AuthorizationException
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from rest_framework import status
@@ -7,8 +8,6 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 from thrift.Thrift import TException
 from thrift.transport import TTransport
-
-from airavata.api.error.ttypes import AuthorizationException
 
 log = logging.getLogger(__name__)
 

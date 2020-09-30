@@ -9,32 +9,32 @@ const FIELDS = [
     name: "members",
     type: "string",
     list: true,
-    default: BaseModel.defaultNewInstance(Array)
+    default: BaseModel.defaultNewInstance(Array),
   },
   {
     name: "admins",
     type: "string",
     list: true,
-    default: BaseModel.defaultNewInstance(Array)
+    default: BaseModel.defaultNewInstance(Array),
   },
   {
     name: "isOwner",
     type: "boolean",
-    default: true
+    default: true,
   },
   {
     name: "isAdmin",
     type: "boolean",
-    default: false
+    default: false,
   },
   {
     name: "isMember",
     type: "boolean",
-    default: true
+    default: true,
   },
   "isGatewayAdminsGroup",
   "isReadOnlyGatewayAdminsGroup",
-  "isDefaultGatewayUsersGroup"
+  "isDefaultGatewayUsersGroup",
 ];
 
 export default class Group extends BaseModel {
@@ -45,7 +45,7 @@ export default class Group extends BaseModel {
   validate() {
     if (this.isEmpty(this.name.trim())) {
       return {
-        name: ["Please provide a name."]
+        name: ["Please provide a name."],
       };
     }
     return null;

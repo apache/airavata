@@ -21,20 +21,20 @@ export default {
   mixins: [InputEditorMixin],
   props: {
     value: {
-      type: String
-    }
+      type: String,
+    },
   },
   computed: {
-    options: function() {
+    options: function () {
       return "options" in this.editorConfig
-        ? this.editorConfig["options"].map(option => {
+        ? this.editorConfig["options"].map((option) => {
             return {
               text: option[CONFIG_OPTION_TEXT_KEY],
-              value: option[CONFIG_OPTION_VALUE_KEY]
+              value: option[CONFIG_OPTION_VALUE_KEY],
             };
           })
         : [];
-    }
-  }
+    },
+  },
 };
 </script>

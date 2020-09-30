@@ -1,5 +1,12 @@
 <template>
-  <b-form-textarea :id="id" v-model="jsonString" @input="valueChanged" :rows="rows" :disabled="disabled" :state="state" />
+  <b-form-textarea
+    :id="id"
+    v-model="jsonString"
+    @input="valueChanged"
+    :rows="rows"
+    :disabled="disabled"
+    :state="state"
+  />
 </template>
 
 <script>
@@ -11,12 +18,12 @@ export default {
     },
     id: String,
     rows: Number,
-    disabled: Boolean
+    disabled: Boolean,
   },
   data() {
     return {
       jsonString: this.value ? this.formatJSON(this.value) : null,
-      state: null
+      state: null,
     };
   },
   methods: {
@@ -35,12 +42,12 @@ export default {
       } catch (e) {
         this.state = false;
       }
-    }
+    },
   },
   watch: {
     value(newValue) {
       this.jsonString = newValue ? this.formatJSON(newValue) : null;
-    }
-  }
+    },
+  },
 };
 </script>

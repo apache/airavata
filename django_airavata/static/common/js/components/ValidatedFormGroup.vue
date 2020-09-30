@@ -20,24 +20,24 @@ export default {
   props: {
     label: {
       type: String,
-      required: true
+      required: true,
     },
     description: {
-      type: String
+      type: String,
     },
     valid: {
       type: Boolean,
-      required: true
+      required: true,
     },
     feedbackMessages: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     state() {
       return this.valid ? null : "invalid";
-    }
-  }
+    },
+  },
 };
 </script>

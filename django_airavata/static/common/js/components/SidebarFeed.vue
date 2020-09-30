@@ -1,18 +1,12 @@
 <template>
-  <ol
-    v-if="feedItems && feedItems.length > 0"
-    class="feed"
-  >
+  <ol v-if="feedItems && feedItems.length > 0" class="feed">
     <sidebar-feed-item
       v-for="feedItem in feedItems"
       :feed-item="feedItem"
       :key="feedItem.id"
     >
       <div slot-scope="slotProps">
-        <slot
-          name="description"
-          :feedItem="slotProps.feedItem"
-        />
+        <slot name="description" :feedItem="slotProps.feedItem" />
       </div>
     </sidebar-feed-item>
   </ol>
@@ -26,14 +20,13 @@ export default {
   props: {
     feedItems: {
       type: Array,
-      default: function() {
+      default: function () {
         return [];
-      }
-    }
+      },
+    },
   },
   components: {
-    SidebarFeedItem
-  }
+    SidebarFeedItem,
+  },
 };
 </script>
-

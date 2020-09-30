@@ -17,8 +17,8 @@ export default class OutputViewDataLoader {
       "experiment-id": this.experimentId,
       "experiment-output-name": this.experimentOutputName,
       "provider-id": this.providerId,
-      ...this.createInteractiveParams()
-    }).then(resp => {
+      ...this.createInteractiveParams(),
+    }).then((resp) => {
       this.data = resp;
       return resp;
     });
@@ -28,10 +28,10 @@ export default class OutputViewDataLoader {
     const params = {};
     const meta = {};
     if (this.data && this.data.interactive) {
-      this.data.interactive.forEach(p => {
+      this.data.interactive.forEach((p) => {
         params[p.name] = p.value;
         meta[p.name] = {
-          type: p.type
+          type: p.type,
         };
       });
     }

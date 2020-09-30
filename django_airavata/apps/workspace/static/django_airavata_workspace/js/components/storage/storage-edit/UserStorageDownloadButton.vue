@@ -3,12 +3,12 @@
 </template>
 
 <script>
-  export default {
-    name: "user-storage-download-button",
-    props: {
-      file: {
-        required: true
-      }
-    }
-  };
+export default {
+  name: "user-storage-download-button",
+  props: {
+    file: {
+      required: true,
+    },
+  },
+};
 </script>

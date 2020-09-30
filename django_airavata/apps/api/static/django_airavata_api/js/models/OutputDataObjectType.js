@@ -8,33 +8,33 @@ const FIELDS = [
   {
     name: "type",
     type: DataType,
-    default: DataType.URI
+    default: DataType.URI,
   },
   "applicationArgument",
   {
     name: "isRequired",
     type: "boolean",
-    default: false
+    default: false,
   },
   {
     name: "requiredToAddedToCommandLine",
     type: "boolean",
-    default: false
+    default: false,
   },
   {
     name: "dataMovement",
     type: "boolean",
-    default: false
+    default: false,
   },
   "location",
   "searchQuery",
   {
     name: "outputStreaming",
     type: "boolean",
-    default: false
+    default: false,
   },
   "storageResourceId",
-  "metaData"
+  "metaData",
 ];
 
 export default class OutputDataObjectType extends BaseModel {

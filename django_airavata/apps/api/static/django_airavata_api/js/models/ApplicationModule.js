@@ -1,11 +1,11 @@
-import BaseModel from './BaseModel';
+import BaseModel from "./BaseModel";
 
 const FIELDS = [
-  'appModuleId',
-  'appModuleName',
-  'appModuleVersion',
-  'appModuleDescription',
-  'userHasWriteAccess',
+  "appModuleId",
+  "appModuleName",
+  "appModuleVersion",
+  "appModuleDescription",
+  "userHasWriteAccess",
 ];
 
 export default class ApplicationModule extends BaseModel {

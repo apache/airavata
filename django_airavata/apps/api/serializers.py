@@ -5,10 +5,6 @@ import json
 import logging
 from urllib.parse import quote, urlencode
 
-from django.conf import settings
-from django.urls import reverse
-from rest_framework import serializers
-
 from airavata.model.appcatalog.appdeployment.ttypes import (
     ApplicationDeploymentDescription,
     ApplicationModule,
@@ -62,6 +58,9 @@ from airavata.model.workspace.ttypes import (
     Project
 )
 from airavata_django_portal_sdk import user_storage
+from django.conf import settings
+from django.urls import reverse
+from rest_framework import serializers
 
 from . import models, thrift_utils
 import requests

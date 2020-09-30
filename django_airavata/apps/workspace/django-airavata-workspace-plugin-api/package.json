@@ -12,7 +12,8 @@
     "watch": "vue-cli-service build --watch --target lib --name index js/index.js",
     "build": "vue-cli-service build --target lib --name index js/index.js",
     "lint": "vue-cli-service lint ./js/",
-    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./js/"
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./js/",
+    "format": "prettier --write ."
   },
   "peerDependencies": {
     "django-airavata-api": "^1.0.0-beta"
@@ -24,6 +25,7 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0-0",
+    "prettier": "^2.1.2",
     "terser": "^4.1.2",
     "vue-loader": "^15.5.1",
     "vue-template-compiler": "^2.5.17",

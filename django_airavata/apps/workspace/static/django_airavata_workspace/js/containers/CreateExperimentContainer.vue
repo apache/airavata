@@ -24,24 +24,24 @@ export default {
   data() {
     return {
       experiment: null,
-      appModule: null
+      appModule: null,
     };
   },
   components: {
-    "experiment-editor": ExperimentEditor
+    "experiment-editor": ExperimentEditor,
   },
   methods: {
-    handleSavedExperiment: function() {
+    handleSavedExperiment: function () {
       // Redirect to experiment view
       urls.navigateToExperimentsList();
     },
-    handleSavedAndLaunchedExperiment: function(experiment) {
+    handleSavedAndLaunchedExperiment: function (experiment) {
       // Redirect to experiment view
       urls.navigateToViewExperiment(experiment, { launching: true });
-    }
+    },
   },
   computed: {},
-  mounted: function() {
+  mounted: function () {
     const loadAppModule = services.ApplicationModuleService.retrieve(
       { lookup: this.appModuleId },
       { ignoreErrors: true }
@@ -57,9 +57,9 @@ export default {
           appModule.appModuleName + " on " + moment().format("lll");
         this.appModule = appModule;
         if (this.userInputValues) {
-          Object.keys(this.userInputValues).forEach(k => {
+          Object.keys(this.userInputValues).forEach((k) => {
             const experimentInput = experiment.experimentInputs.find(
-              inp => inp.name === k
+              (inp) => inp.name === k
             );
             if (experimentInput) {
               experimentInput.value = this.userInputValues[k];
@@ -71,10 +71,10 @@ export default {
         }
         this.experiment = experiment;
       })
-      .catch(error => {
+      .catch((error) => {
         notifications.NotificationList.addError(error);
       });
-  }
+  },
 };
 </script>
 <style>

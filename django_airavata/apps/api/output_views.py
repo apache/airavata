@@ -6,11 +6,10 @@ import os
 
 import nbformat
 import papermill as pm
-from django.conf import settings
-from nbconvert import HTMLExporter
-
 from airavata.model.application.io.ttypes import DataType
 from airavata_django_portal_sdk import user_storage
+from django.conf import settings
+from nbconvert import HTMLExporter
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,12 @@ class DefaultViewProvider:
     immediate = True
     name = "Default"
 
-    def generate_data(self, request, experiment_output, experiment, output_file=None):
+    def generate_data(
+            self,
+            request,
+            experiment_output,
+            experiment,
+            output_file=None):
         return {
         }
 

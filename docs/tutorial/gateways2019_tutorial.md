@@ -7,7 +7,25 @@ Prerequisites: tutorial attendees should have:
 
 -   a laptop on which to write Python code
 -   Git client
--   Docker desktop
+-   [Docker desktop for Windows and macOS](https://www.docker.com/products/docker-desktop)
+    or
+    [Docker Engine for Linux](https://hub.docker.com/search?q=&type=edition&offering=community)
+
+!!! note "Special note for Windows Home users"
+
+    If you have Windows Home installed, you'll need to either take some
+    extra steps to setup WSL2 (Windows Subsystem for Linux 2) or use a
+    **remote Docker host**. The following are some special instructions to
+    help you with these options:
+
+    1. [Install Docker Desktop on Windows Home with WSL2
+    enabled](https://docs.docker.com/docker-for-windows/install-windows-home/).
+    See the link for more information.
+    2. For the in person session of the tutorial, you will have the option of
+    using a **remote Docker host** provided to you. See [Appendix: Setting up
+    Windows Home for a remote Docker
+    host](#appendix-setting-up-windows-for-a-remote-docker-host) for more
+    details.
 
 ## Outline
 
@@ -350,6 +368,19 @@ cd gateways19-tutorial
 docker run -d --name gateways19-tutorial -p 8000:8000 -v $PWD:/extensions -v $PWD/settings_local.py:/code/django_airavata/settings_local.py machristie/airavata-django-portal
 ```
 
+!!! note "For remote Docker host users"
+
+    If you are using a remote Docker host (for example, you have Windows Home
+    and can't install Docker Desktop), make sure you run the above commands
+    on the remote Docker host. That means you need to
+    `ssh USERNAME@IP_ADDRESS` to the remote host first. See [Appendix on
+    running on a remote Docker
+    host](#appendix-setting-up-windows-for-a-remote-docker-host) for more
+    information on setting up the SSH connection. You can run the remaining
+    `docker` commands on your own computer, but this `docker run` command
+    must be run on the remote Docker host so that the tutorial files can be
+    mounted into it.
+
 !!! note
 
     You can also build the Docker image from scratch, which you might want to
@@ -358,7 +389,7 @@ docker run -d --name gateways19-tutorial -p 8000:8000 -v $PWD:/extensions -v $PW
         cd /tmp/
         git clone https://github.com/apache/airavata-django-portal.git
         cd airavata-django-portal
-        docker build -t airavata-django-portal
+        docker build -t airavata-django-portal .
 
     Now you can `airavata-django-portal` instead of
     `machristie/airavata-django-portal` in the `docker run` command above.
@@ -1264,3 +1295,117 @@ file in the
 
 SciGaP provides free Airavata Gateways hosting services. Log in or create an
 account at [scigap.org](https://scigap.org/) to request gateway hosting.
+
+## Appendix: Setting up Windows for a **remote Docker host**
+
+### SSH configuration
+
+To connect via SSH to the remote Docker host, you'll need an SSH key pair. If
+you are setting up the remote Docker host, you can create the key pair yourself
+and copy the public portion to the `~/.ssh/authorized_keys` file under the user
+account on the remote Docker host. For the in person tutorial session this will
+have already been setup and you will be provided with the private key.
+
+1. Create a directory in your home directory (i.e. `C:\Users\<username>\`)
+   called `.ssh`.
+2. Copy the private key file into the `.ssh` directory.
+3. Create (or if provided, copy) a `config` file in the `.ssh` directory. The
+   contents of the file should be:
+
+```
+Host IP_ADDRESS
+    IdentityFile ~\.ssh\PRIVATE_KEY
+```
+
+Where IP_ADDRESS should be replaced with the IP address or hostname of the
+remote Docker host (for example: `149.165.168.201`). And PRIVATE_KEY should be
+replaced with the name of your private key file that you copied in step 2.
+
+Test that SSH is working by opening a command prompt and running the following:
+
+```
+ssh username@IP_ADDRESS
+```
+
+You should see something like the following:
+
+```text
+C:\Users\testuser> ssh user1@149.165.157.132
+The authenticity of host '149.165.157.132 (149.165.157.132)' can't be established.
+ECDSA key fingerprint is SHA256:RG86D7KwCZNQtFOAfEc4TZ4V0stn1RyGrj5I+v7SHxU.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '149.165.157.132' (ECDSA) to the list of known hosts.
+Last login: Thu Aug 20 14:31:41 2020 from 156-56-142-122.dhcp-bl.indiana.edu
+[user1@django-tutorial ~]$
+```
+
+If you get the "authenticity of host ... can't be established", as shown above,
+enter `yes` at the prompt to proceed. You shouldn't be prompted for a password
+since the private key will be used for authentication. If you are prompted for a
+password, double check that the `config` file is correct.
+
+### Connecting to Docker
+
+To connect to Docker you'll need the Docker client. Download
+<https://github.com/StefanScherer/docker-cli-builder/releases/download/19.03.12/docker.exe>
+and copy it to `C:\Windows` (or anywhere else that is on your PATH).
+
+Next, at a command prompt set the environment variable `DOCKER_HOST` to the SSH
+username and IP address of the remote Docker host.
+
+```
+set DOCKER_HOST=ssh://USERNAME@IP_ADDRESS
+```
+
+But replace USERNAME with your username on the remote Docker host and the
+IP_ADDRESS with the IP address or domain name of the remote Docker host. For
+example:
+
+```
+set DOCKER_HOST=ssh://centos@149.165.157.132
+```
+
+Now run the following to test that the connection is working:
+
+```
+docker ps
+```
+
+You'll use this command prompt window during the tutorial to run docker
+commands.
+
+### SSH Tunnel
+
+For some of the tutorial instructions you'll be asked to load the Django portal
+in your browser at <http://localhost:8000>. However, your Django portal
+container is running on a remote Docker host, not your local computer. To make
+it appear that the Django portal is running locally, create an SSH tunnel to
+forward port 8000 to the remote Docker host. In a separate command prompt, run
+the following:
+
+```
+ssh -L 8000:localhost:8000 USERNAME@IP_ADDRESS
+```
+
+### Modifying tutorial files on the remote Docker host
+
+The tutorial code needs to be on the remote Docker host so that it can be
+mounted into the Django portal container. To modify the files as required by the
+tutorial you'll need to either SSH into the remote Docker host and edit the
+files there with a terminal editor, like Vim, or you can use
+[Visual Studio Code](https://code.visualstudio.com/) to edit the files remotely
+with the SSH extension.
+
+To use Visual Studio Code, install it from https://code.visualstudio.com/. Once
+you have it installed, start it. In the menu, go to **View > Extensions**. In
+the Extensions search, type `ssh` and click on **Install** for the _Remote -
+SSH_ extension. Once it is installed, click on the green box in the lower left
+hand corner and select **Remote-SSH: Connect to Host...**, or, type
+`Ctrl-Shift-P` and type `Remote-SSH` and select **Remote-SSH: Connect to
+Host...**. Select **linux** as the remote platform type.
+
+Once you are connected, go to **View > Explorer**. Click on the **Open Folder**
+button. Select the folder that contains the tutorial code and click **OK**. You
+should now see the tutorial files in the Explorer on the left hand side. Now you
+can edit the tutorial files from your local computer and they will be
+immediately reflected in the Django portal container.

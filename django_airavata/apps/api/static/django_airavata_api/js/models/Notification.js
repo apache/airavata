@@ -7,22 +7,22 @@ const FIELDS = [
   "title",
   "notificationMessage",
   {
-    name:"creationTime",
-    type: Date
+    name: "creationTime",
+    type: Date,
   },
   {
-    name:"publishedTime",
-    type: Date
+    name: "publishedTime",
+    type: Date,
   },
   {
-    name:"expirationTime",
-    type: Date
+    name: "expirationTime",
+    type: Date,
   },
   {
-      name: "priority",
-      type: NotificationPriority
+    name: "priority",
+    type: NotificationPriority,
   },
-  "userHasWriteAccess"
+  "userHasWriteAccess",
 ];
 
 export default class Notification extends BaseModel {
@@ -33,11 +33,14 @@ export default class Notification extends BaseModel {
   validate() {
     let validationResults = {};
     if (this.isEmpty(this.title)) {
-      validationResults["title"] =
-        "Please provide a Title for this notice.";
+      validationResults["title"] = "Please provide a Title for this notice.";
     }
-    if (this.isEmpty(this.notificationMessage) || this.notificationMessage.length < 10) {
-      validationResults["notificationMessage"] = "Please provide the message with minimum 10 characters.";
+    if (
+      this.isEmpty(this.notificationMessage) ||
+      this.notificationMessage.length < 10
+    ) {
+      validationResults["notificationMessage"] =
+        "Please provide the message with minimum 10 characters.";
     }
     if (this.isEmpty(this.publishedTime)) {
       validationResults["publishedTime"] = "Please select the publish time";
@@ -50,5 +53,4 @@ export default class Notification extends BaseModel {
     }
     return validationResults;
   }
-
 }

@@ -1,64 +1,62 @@
-import BaseModel from './BaseModel'
-import ParallelismType from './ParallelismType';
-import CommandObject from './CommandObject';
-import SetEnvPaths from './SetEnvPaths';
-
+import BaseModel from "./BaseModel";
+import ParallelismType from "./ParallelismType";
+import CommandObject from "./CommandObject";
+import SetEnvPaths from "./SetEnvPaths";
 
 const FIELDS = [
-  'appDeploymentId',
-  'appModuleId',
-  'computeHostId',
-  'executablePath',
+  "appDeploymentId",
+  "appModuleId",
+  "computeHostId",
+  "executablePath",
   {
-    name: 'parallelism',
+    name: "parallelism",
     type: ParallelismType,
     default: ParallelismType.SERIAL,
   },
-  'appDeploymentDescription',
+  "appDeploymentDescription",
   {
-    name: 'moduleLoadCmds',
+    name: "moduleLoadCmds",
     type: CommandObject,
     list: true,
   },
   {
-    name: 'libPrependPaths',
+    name: "libPrependPaths",
     type: SetEnvPaths,
     list: true,
   },
   {
-    name: 'libAppendPaths',
+    name: "libAppendPaths",
     type: SetEnvPaths,
     list: true,
   },
   {
-    name: 'setEnvironment',
+    name: "setEnvironment",
     type: SetEnvPaths,
     list: true,
   },
   {
-    name: 'preJobCommands',
+    name: "preJobCommands",
     type: CommandObject,
     list: true,
   },
   {
-    name: 'postJobCommands',
+    name: "postJobCommands",
     type: CommandObject,
     list: true,
   },
-  'defaultQueueName',
-  'defaultNodeCount',
-  'defaultCPUCount',
-  'defaultWalltime',
+  "defaultQueueName",
+  "defaultNodeCount",
+  "defaultCPUCount",
+  "defaultWalltime",
   {
-    name: 'editableByUser',
-    type: 'boolean',
+    name: "editableByUser",
+    type: "boolean",
     default: false,
   },
-  'userHasWriteAccess'
+  "userHasWriteAccess",
 ];
 
 export default class ApplicationDeploymentDescription extends BaseModel {
-
   constructor(data = {}) {
     super(FIELDS, data);
   }

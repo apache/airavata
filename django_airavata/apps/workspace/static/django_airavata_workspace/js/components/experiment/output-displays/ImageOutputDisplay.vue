@@ -8,8 +8,8 @@ export default {
   props: {
     viewData: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     dataUrl() {
@@ -18,7 +18,7 @@ export default {
       } else {
         return null;
       }
-    }
-  }
+    },
+  },
 };
 </script>

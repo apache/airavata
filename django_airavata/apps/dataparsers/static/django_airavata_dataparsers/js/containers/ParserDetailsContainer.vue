@@ -10,7 +10,11 @@
     <div class="row" v-if="parser">
       <div class="col">
         <b-form-group label="Image Name" label-for="image-name">
-          <b-form-input id="image-name" type="text" v-model="parser.imageName" />
+          <b-form-input
+            id="image-name"
+            type="text"
+            v-model="parser.imageName"
+          />
         </b-form-group>
       </div>
     </div>
@@ -25,19 +29,18 @@ export default {
   props: {
     parserId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      parser: null
+      parser: null,
     };
   },
   created() {
     services.ParserService.retrieve({
-      lookup: this.parserId
-    }).then(parser => (this.parser = parser));
-  }
+      lookup: this.parserId,
+    }).then((parser) => (this.parser = parser));
+  },
 };
 </script>
-

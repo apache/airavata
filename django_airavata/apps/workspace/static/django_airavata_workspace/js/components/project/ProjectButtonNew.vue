@@ -1,16 +1,7 @@
-
 <template>
   <div>
-    <b-btn
-      v-b-modal.modal-new-project
-      variant="primary"
-    >
-      <slot>
-        New Project <i
-          class="fa fa-plus"
-          aria-hidden="true"
-        ></i>
-      </slot>
+    <b-btn v-b-modal.modal-new-project variant="primary">
+      <slot> New Project <i class="fa fa-plus" aria-hidden="true"></i> </slot>
     </b-btn>
     <b-modal
       id="modal-new-project"
@@ -42,33 +33,35 @@ export default {
   data() {
     return {
       valid: false,
-      newProject: new models.Project()
+      newProject: new models.Project(),
     };
   },
   components: {
-    ProjectEditor
+    ProjectEditor,
   },
   methods: {
-    onCreateProject: function(event) {
+    onCreateProject: function (event) {
       // Prevent hiding modal, hide it programmatically when project gets created
       event.preventDefault();
-      services.ProjectService.create({ data: this.newProject }).then(result => {
-        this.$refs.modalNewProject.hide();
-        this.$emit("new-project", result);
-        // Reset state
-        this.newProject = new models.Project();
-        this.$refs.projectEditor.reset();
-      });
+      services.ProjectService.create({ data: this.newProject }).then(
+        (result) => {
+          this.$refs.modalNewProject.hide();
+          this.$emit("new-project", result);
+          // Reset state
+          this.newProject = new models.Project();
+          this.$refs.projectEditor.reset();
+        }
+      );
     },
     onCancelNewProject() {
       this.newProject = new models.Project();
       this.$refs.projectEditor.reset();
-    }
+    },
   },
   computed: {
-    okDisabled: function() {
+    okDisabled: function () {
       return !this.valid;
-    }
-  }
+    },
+  },
 };
 </script>

@@ -8,7 +8,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint ./static/django_airavata_groups/js",
-    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_groups/js"
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_groups/js",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
@@ -26,6 +27,7 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0-0",
+    "prettier": "^2.1.2",
     "vue-loader": "^15.5.1",
     "vue-template-compiler": "^2.5.22",
     "webpack": "^4.28.4",

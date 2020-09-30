@@ -4,7 +4,8 @@
       This will remove {{ username }} from the identity service.
     </p>
     <delete-button @delete="deleteUser">
-      Are you sure you want to delete <strong>{{ username }}</strong>?
+      Are you sure you want to delete <strong>{{ username }}</strong
+      >?
     </delete-button>
   </b-card>
 </template>
@@ -17,17 +18,16 @@ export default {
   props: {
     username: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
-    "delete-button": components.DeleteButton
+    "delete-button": components.DeleteButton,
   },
   methods: {
     deleteUser() {
       this.$emit("delete-user", this.username);
-    }
-  }
+    },
+  },
 };
 </script>
-

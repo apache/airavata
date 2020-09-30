@@ -2,11 +2,11 @@
   <div>
     <div class="row">
       <div class="col">
-        <h1 class="h4">
-          Storage
-        </h1>
+        <h1 class="h4">Storage</h1>
         <p>
-          <small class="text-muted"><i class="fa fa-folder-open"></i> {{ username }}</small>
+          <small class="text-muted"
+            ><i class="fa fa-folder-open"></i> {{ username }}</small
+          >
         </p>
       </div>
     </div>
@@ -29,10 +29,8 @@
             @keydown.native.enter="addDirectory"
           ></b-form-input>
           <b-input-group-append>
-            <b-button
-              @click="addDirectory"
-              :disabled="!this.dirName"
-            >Add directory
+            <b-button @click="addDirectory" :disabled="!this.dirName"
+              >Add directory
             </b-button>
           </b-input-group-append>
         </b-input-group>
@@ -42,45 +40,45 @@
 </template>
 
 <script>
-  import {components} from "django-airavata-common-ui";
-  import {session} from "django-airavata-api";
+import { components } from "django-airavata-common-ui";
+import { session } from "django-airavata-api";
 
-  export default {
-    name: "user-storage-create-view",
-    components: {
-      uppy: components.Uppy
+export default {
+  name: "user-storage-create-view",
+  components: {
+    uppy: components.Uppy,
+  },
+  computed: {
+    uploadEndpoint() {
+      // This endpoint can handle XHR upload or a TUS uploadURL
+      return "/api/user-storage/" + this.storagePath;
     },
-    computed: {
-      uploadEndpoint() {
-        // This endpoint can handle XHR upload or a TUS uploadURL
-        return "/api/user-storage/" + this.storagePath;
-      },
-      username() {
-        return session.Session.username;
-      }
+    username() {
+      return session.Session.username;
     },
-    data() {
-      return {
-        dirName: null
-      };
+  },
+  data() {
+    return {
+      dirName: null,
+    };
+  },
+  props: {
+    userStoragePath: {
+      required: true,
     },
-    props: {
-      userStoragePath: {
-        required: true
-      },
-      storagePath: {
-        required: true
-      }
+    storagePath: {
+      required: true,
     },
-    methods: {
-      uploadSuccess() {
-        this.$refs["file-upload"].reset();
-        this.$emit("upload-success");
-      },
-      addDirectory() {
-        this.$emit('add-directory', this.dirName);
-        this.dirName = null;
-      }
-    }
-  };
+  },
+  methods: {
+    uploadSuccess() {
+      this.$refs["file-upload"].reset();
+      this.$emit("upload-success");
+    },
+    addDirectory() {
+      this.$emit("add-directory", this.dirName);
+      this.dirName = null;
+    },
+  },
+};
 </script>

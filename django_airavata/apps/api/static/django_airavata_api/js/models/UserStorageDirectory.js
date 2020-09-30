@@ -5,7 +5,7 @@ const FIELDS = [
   "path",
   { name: "createdTime", type: "date" },
   "size",
-  "hidden"
+  "hidden",
 ];
 
 export default class UserStorageDirectory extends BaseModel {

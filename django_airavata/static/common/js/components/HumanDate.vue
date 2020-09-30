@@ -6,13 +6,12 @@ import moment from "moment";
 export default {
   name: "human-date",
   props: {
-    date: Date
+    date: Date,
   },
   computed: {
     fromNow() {
       return moment(this.date).fromNow();
-    }
-  }
+    },
+  },
 };
 </script>
-

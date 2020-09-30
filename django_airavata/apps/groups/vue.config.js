@@ -8,25 +8,28 @@ module.exports = {
       : "/static/django_airavata_groups/dist/",
   outputDir: "./static/django_airavata_groups/dist",
   pages: {
-    'group-list': './static/django_airavata_groups/js/group-listing-entry-point.js',
-    'group-create': './static/django_airavata_groups/js/group-create-entry-point.js',
-    'group-edit': './static/django_airavata_groups/js/group-edit-entry-point.js',
+    "group-list":
+      "./static/django_airavata_groups/js/group-listing-entry-point.js",
+    "group-create":
+      "./static/django_airavata_groups/js/group-create-entry-point.js",
+    "group-edit":
+      "./static/django_airavata_groups/js/group-edit-entry-point.js",
   },
   css: {
     loaderOptions: {
       postcss: {
         config: {
-          path: __dirname
-        }
-      }
-    }
+          path: __dirname,
+        },
+      },
+    },
   },
   configureWebpack: {
     plugins: [
       new BundleTracker({
         filename: "webpack-stats.json",
-        path: "./static/django_airavata_groups/dist/"
-      })
+        path: "./static/django_airavata_groups/dist/",
+      }),
     ],
     optimization: {
       /*
@@ -39,23 +42,23 @@ module.exports = {
       splitChunks: {
         cacheGroups: {
           vendors: {
-            name: 'chunk-vendors',
+            name: "chunk-vendors",
             test: /[\\/]node_modules[\\/]/,
             priority: -10,
-            chunks: 'initial'
+            chunks: "initial",
           },
           common: {
-            name: 'chunk-common',
+            name: "chunk-common",
             minChunks: 2,
             priority: -20,
-            chunks: 'initial',
-            reuseExistingChunk: true
-          }
-        }
-      }
-    }
+            chunks: "initial",
+            reuseExistingChunk: true,
+          },
+        },
+      },
+    },
   },
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     /*
      * Specify the eslint config file otherwise it complains of a missing
      * config file for the ../api and ../../static/common packages
@@ -65,7 +68,7 @@ module.exports = {
     config.module
       .rule("eslint")
       .use("eslint-loader")
-      .tap(options => {
+      .tap((options) => {
         options.configFile = path.resolve(__dirname, "package.json");
         return options;
       });
@@ -73,9 +76,9 @@ module.exports = {
   devServer: {
     port: 9000,
     headers: {
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Origin": "*",
     },
     hot: true,
-    hotOnly: true
-  }
+    hotOnly: true,
+  },
 };

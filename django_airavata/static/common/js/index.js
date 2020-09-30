@@ -12,6 +12,7 @@ import ExperimentStatusBadge from "./components/ExperimentStatusBadge";
 import FavoriteToggle from "./components/FavoriteToggle";
 import GatewayGroupsBadge from "./components/GatewayGroupsBadge";
 import HumanDate from "./components/HumanDate.vue";
+import Linkify from "./components/Linkify.vue";
 import MainLayout from "./components/MainLayout.vue";
 import Pager from "./components/Pager.vue";
 import ShareButton from "./components/ShareButton.vue";
@@ -53,6 +54,7 @@ const components = {
   FavoriteToggle,
   GatewayGroupsBadge,
   HumanDate,
+  Linkify,
   MainLayout,
   ShareButton,
   Sidebar,
@@ -61,25 +63,25 @@ const components = {
   UnsavedChangesGuard,
   Uppy,
   ValidatedForm,
-  ValidatedFormGroup,
+  ValidatedFormGroup
 };
 
 const errors = {
   GlobalErrorHandler,
-  ValidationErrors
+  ValidationErrors,
 };
 
 const layouts = {
-  ListLayout
+  ListLayout,
 };
 
 const mixins = {
-  VModelMixin
+  VModelMixin,
 };
 
 const notifications = {
   Notification,
-  NotificationList
+  NotificationList,
 };
 
 export default {
@@ -89,7 +91,7 @@ export default {
   layouts,
   mixins,
   notifications,
-  utils
+  utils,
 };
 
 export { components, entry, errors, layouts, mixins, notifications, utils };

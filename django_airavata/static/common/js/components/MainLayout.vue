@@ -1,11 +1,10 @@
 <template>
-
   <div class="main-content-wrapper">
     <main
       class="main-content"
-      :class="{'main-content--with-sidebar': hasSidebar}"
+      :class="{ 'main-content--with-sidebar': hasSidebar }"
     >
-      <notifications-display/>
+      <notifications-display />
       <div class="container-fluid">
         <slot />
       </div>
@@ -22,10 +21,10 @@ export default {
   computed: {
     hasSidebar() {
       return this.$slots.sidebar;
-    }
+    },
   },
   components: {
-    NotificationsDisplay
-  }
+    NotificationsDisplay,
+  },
 };
 </script>

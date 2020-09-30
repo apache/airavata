@@ -9,7 +9,7 @@ const FIELDS = [
   "gatewayId",
   {
     name: "creationTime",
-    type: "date"
+    type: "date",
   },
   "userName",
   "name",
@@ -18,17 +18,17 @@ const FIELDS = [
   "resourceHostId",
   {
     name: "experimentStatus",
-    type: ExperimentState
+    type: ExperimentState,
   },
   {
     name: "statusUpdateTime",
-    type: "date"
+    type: "date",
   },
   {
     name: "userHasWriteAccess",
     type: "boolean",
-    default: false
-  }
+    default: false,
+  },
 ];
 
 export default class ExperimentSummary extends BaseModel {
@@ -51,9 +51,9 @@ export default class ExperimentSummary extends BaseModel {
         experimentStatus: [
           new ExperimentStatus({
             state: this.experimentStatus,
-            timeOfStateChange: this.statusUpdateTime
-          })
-        ]
+            timeOfStateChange: this.statusUpdateTime,
+          }),
+        ],
       })
     );
   }

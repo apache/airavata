@@ -1,9 +1,7 @@
-import InputEditorMixin from './input-editors/InputEditorMixin'
+import InputEditorMixin from "./input-editors/InputEditorMixin";
 
 export default {
-  InputEditorMixin
+  InputEditorMixin,
 };
 
-export {
-  InputEditorMixin
-};
+export { InputEditorMixin };

@@ -1,5 +1,5 @@
 <template>
-  <span :class="{'font-italic': notAvailable}">{{ name }}</span>
+  <span :class="{ 'font-italic': notAvailable }">{{ name }}</span>
 </template>
 <script>
 import { services } from "django-airavata-api";
@@ -8,13 +8,13 @@ export default {
   props: {
     computeResourceId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       computeResource: null,
-      notAvailable: false
+      notAvailable: false,
     };
   },
   created() {
@@ -26,9 +26,9 @@ export default {
         { lookup: this.computeResourceId },
         { ignoreErrors: true, cache: true }
       )
-        .then(computeResource => (this.computeResource = computeResource))
+        .then((computeResource) => (this.computeResource = computeResource))
         .catch(() => (this.notAvailable = true));
-    }
+    },
   },
   computed: {
     name() {
@@ -37,12 +37,12 @@ export default {
       } else {
         return this.computeResource ? this.computeResource.hostName : "";
       }
-    }
+    },
   },
   watch: {
     computeResourceId() {
       this.loadComputeResource();
-    }
-  }
+    },
+  },
 };
 </script>

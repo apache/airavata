@@ -6,23 +6,23 @@ const FIELDS = [
   {
     name: "files",
     type: UserStorageFile,
-    list: true
+    list: true,
   },
   {
     name: "directories",
     type: UserStorageDirectory,
-    list: true
+    list: true,
   },
   {
     name: "parts",
     type: "string",
-    list: true
+    list: true,
   },
   {
     name: "isDir",
     type: "boolean",
-    list: false
-  }
+    list: false,
+  },
 ];
 
 export default class UserStoragePath extends BaseModel {

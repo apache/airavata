@@ -1,9 +1,9 @@
+from airavata.model.group.ttypes import GroupModel
+from airavata.model.user.ttypes import UserProfile
 from django.core import mail
 from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase, override_settings
 
-from airavata.model.group.ttypes import GroupModel
-from airavata.model.user.ttypes import UserProfile
 from django_airavata.apps.api.signals import user_added_to_group
 from django_airavata.apps.auth import signals  # noqa
 

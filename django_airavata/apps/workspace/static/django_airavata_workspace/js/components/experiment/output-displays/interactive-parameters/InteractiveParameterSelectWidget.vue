@@ -12,17 +12,17 @@ export default {
   props: {
     value: {
       type: String,
-      required: true
+      required: true,
     },
     parameter: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     options() {
       return this.parameter.options;
-    }
-  }
+    },
+  },
 };
 </script>

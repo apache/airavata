@@ -11,29 +11,29 @@ const FIELDS = [
   {
     name: "allExperiments",
     type: ExperimentSummary,
-    list: true
+    list: true,
   },
   {
     name: "completedExperiments",
     type: ExperimentSummary,
-    list: true
+    list: true,
   },
   {
     name: "failedExperiments",
     type: ExperimentSummary,
-    list: true
+    list: true,
   },
   {
     name: "cancelledExperiments",
     type: ExperimentSummary,
-    list: true
+    list: true,
   },
   {
     name: "createdExperiments",
     type: ExperimentSummary,
-    list: true
+    list: true,
   },
-  { name: "runningExperiments", type: ExperimentSummary, list: true }
+  { name: "runningExperiments", type: ExperimentSummary, list: true },
 ];
 
 export default class ExperimentStatistics extends BaseModel {

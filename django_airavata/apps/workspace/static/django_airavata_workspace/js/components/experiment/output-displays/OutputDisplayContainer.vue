@@ -43,21 +43,21 @@ export default {
   props: {
     experimentOutput: {
       type: models.OutputDataObjectType,
-      required: true
+      required: true,
     },
     outputViews: {
       type: Array,
-      required: true
+      required: true,
     },
     dataProducts: {
       type: Array,
       required: false,
-      default: null
+      default: null,
     },
     experimentId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
     "data-product-viewer": components.DataProductViewer,
@@ -66,7 +66,7 @@ export default {
     ImageOutputDisplay,
     LinkOutputDisplay,
     NotebookOutputDisplay,
-    InteractiveParametersPanel
+    InteractiveParametersPanel,
   },
   created() {
     if (this.providerId !== "default") {
@@ -77,7 +77,7 @@ export default {
   data() {
     return {
       currentView: this.outputViews[0],
-      loader: null
+      loader: null,
     };
   },
   computed: {
@@ -93,24 +93,24 @@ export default {
       return {
         default: {
           component: "default-output-display",
-          url: null
+          url: null,
         },
         link: {
           component: "link-output-display",
-          url: "/api/link-output/"
+          url: "/api/link-output/",
         },
         notebook: {
           component: "notebook-output-display",
-          url: "/api/notebook-output/"
+          url: "/api/notebook-output/",
         },
         html: {
           component: "html-output-display",
-          url: "/api/html-output/"
+          url: "/api/html-output/",
         },
         image: {
           component: "image-output-display",
-          url: "/api/image-output/"
-        }
+          url: "/api/image-output/",
+        },
       };
     },
     displayType() {
@@ -138,7 +138,7 @@ export default {
     },
     hasInteractiveParameters() {
       return this.viewData && this.viewData.interactive;
-    }
+    },
   },
   methods: {
     selectView(outputView) {
@@ -165,9 +165,9 @@ export default {
         url: this.outputDataURL,
         experimentId: this.experimentId,
         experimentOutputName: this.experimentOutput.name,
-        providerId: this.providerId
+        providerId: this.providerId,
       });
-    }
-  }
+    },
+  },
 };
 </script>

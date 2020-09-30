@@ -7,13 +7,15 @@
       <div class="col-auto">
         <b-dropdown :text="menuText">
           <b-dropdown-item
-            :to="{ name: 'identity-service-users'}"
+            :to="{ name: 'identity-service-users' }"
             :exact="true"
-          >Identity Service</b-dropdown-item>
+            >Identity Service</b-dropdown-item
+          >
           <b-dropdown-item
-            :to="{ name: 'unverified-email-users'}"
+            :to="{ name: 'unverified-email-users' }"
             :exact="true"
-          >Unverified Emails</b-dropdown-item>
+            >Unverified Emails</b-dropdown-item
+          >
         </b-dropdown>
       </div>
     </div>
@@ -33,8 +35,7 @@ export default {
       } else {
         return "Menu";
       }
-    }
-  }
+    },
+  },
 };
 </script>
-

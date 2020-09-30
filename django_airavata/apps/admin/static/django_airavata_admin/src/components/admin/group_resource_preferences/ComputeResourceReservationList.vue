@@ -113,21 +113,21 @@ export default {
     "human-date": components.HumanDate,
     "list-layout": layouts.ListLayout,
     ComputeResourceReservationEditor,
-    "delete-button": components.DeleteButton
+    "delete-button": components.DeleteButton,
   },
   props: {
     reservations: {
       type: Array,
-      required: true
+      required: true,
     },
     queues: {
       type: Array,
-      required: true
+      required: true,
     },
     readonly: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -135,7 +135,7 @@ export default {
       showNewItemEditor: false,
       newReservation: null,
       newReservationValid: false,
-      invalidReservations: [] // list of ComputeResourceReservation.key
+      invalidReservations: [], // list of ComputeResourceReservation.key
     };
   },
   computed: {
@@ -143,33 +143,33 @@ export default {
       return [
         {
           label: "Name",
-          key: "reservationName"
+          key: "reservationName",
         },
         {
           label: "Queues",
-          key: "queueNames"
+          key: "queueNames",
         },
         {
           label: "Start Time",
           key: "startTime",
-          formatter: value =>
-            utils.dateFormatters.dateTimeInMinutesWithTimeZone.format(value)
+          formatter: (value) =>
+            utils.dateFormatters.dateTimeInMinutesWithTimeZone.format(value),
         },
         {
           label: "End Time",
           key: "endTime",
-          formatter: value =>
-            utils.dateFormatters.dateTimeInMinutesWithTimeZone.format(value)
+          formatter: (value) =>
+            utils.dateFormatters.dateTimeInMinutesWithTimeZone.format(value),
         },
         {
           label: "Action",
-          key: "action"
-        }
+          key: "action",
+        },
       ];
     },
     decoratedReservations() {
       return this.reservations
-        ? this.reservations.map(res => {
+        ? this.reservations.map((res) => {
             const resClone = res.clone();
             resClone._showDetails = this.showingDetails[resClone.key];
             return resClone;
@@ -187,9 +187,9 @@ export default {
     },
     expiredReservations() {
       return this.reservations
-        ? this.reservations.filter(r => r.isExpired)
+        ? this.reservations.filter((r) => r.isExpired)
         : [];
-    }
+    },
   },
   created() {},
   methods: {
@@ -242,7 +242,7 @@ export default {
     },
     deleteAllExpiredReservations() {
       this.expiredReservations.forEach(this.deleteReservation);
-    }
-  }
+    },
+  },
 };
 </script>

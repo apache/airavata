@@ -10,17 +10,16 @@
         :suggestions="usersAndGroupsSuggestions"
         @selected="suggestionSelected"
       >
-        <template
-          slot="suggestion"
-          slot-scope="slotProps"
-        >
+        <template slot="suggestion" slot-scope="slotProps">
           <span v-if="slotProps.suggestion.type == 'group'">
             <i class="fa fa-users"></i> {{ slotProps.suggestion.name }}
           </span>
           <span v-if="slotProps.suggestion.type == 'user'">
             <i class="fa fa-user"></i>
-            {{ slotProps.suggestion.user.firstName }} {{ slotProps.suggestion.user.lastName }}
-            ({{ slotProps.suggestion.user.userId }}) - {{ slotProps.suggestion.user.email }}
+            {{ slotProps.suggestion.user.firstName }}
+            {{ slotProps.suggestion.user.lastName }} ({{
+              slotProps.suggestion.user.userId
+            }}) - {{ slotProps.suggestion.user.email }}
           </span>
         </template>
       </autocomplete-text-input>
@@ -35,30 +34,28 @@
       :items="sortedUserPermissions"
       :fields="userFields"
     >
-      <template
-        slot="name"
-        slot-scope="data"
-      >
-        <span :title="data.item.user.userId" :class="userDataClasses" v-if="!isPermissionReadOnly(data.item.permissionType)">{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
+      <template slot="name" slot-scope="data">
         <span
-          v-else
-          class="text-muted font-italic"
-        >{{data.item.user.firstName}} {{data.item.user.lastName}}</span>
+          :title="data.item.user.userId"
+          :class="userDataClasses"
+          v-if="!isPermissionReadOnly(data.item.permissionType)"
+          >{{ data.item.user.firstName }} {{ data.item.user.lastName }}</span
+        >
+        <span v-else class="text-muted font-italic"
+          >{{ data.item.user.firstName }} {{ data.item.user.lastName }}</span
+        >
       </template>
-      <template
-        slot="email"
-        slot-scope="data"
-      >
-        <span :class="userDataClasses" v-if="!isPermissionReadOnly(data.item.permissionType)">{{data.item.user.email}}</span>
+      <template slot="email" slot-scope="data">
         <span
-          v-else
-          class="text-muted font-italic"
-        >{{data.item.user.email}}</span>
+          :class="userDataClasses"
+          v-if="!isPermissionReadOnly(data.item.permissionType)"
+          >{{ data.item.user.email }}</span
+        >
+        <span v-else class="text-muted font-italic">{{
+          data.item.user.email
+        }}</span>
       </template>
-      <template
-        slot="permission"
-        slot-scope="data"
-      >
+      <template slot="permission" slot-scope="data">
         <b-form-select
           v-if="!isPermissionReadOnly(data.item.permissionType)"
           v-model="data.item.permissionType"
@@ -68,13 +65,14 @@
           v-else
           class="text-uppercase text-muted font-italic"
           :class="userDataClasses"
-        >{{ data.item.permissionType.name }}</span>
+          >{{ data.item.permissionType.name }}</span
+        >
       </template>
-      <template
-        slot="remove"
-        slot-scope="data"
-      >
-        <b-link v-if="!isPermissionReadOnly(data.item.permissionType)" @click="removeUser(data.item.user)">
+      <template slot="remove" slot-scope="data">
+        <b-link
+          v-if="!isPermissionReadOnly(data.item.permissionType)"
+          @click="removeUser(data.item.user)"
+        >
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -86,34 +84,26 @@
       :items="sortedGroupPermissions"
       :fields="groupFields"
     >
-      <template
-        slot="name"
-        slot-scope="data"
-      >
-        <span v-if="editingAllowed(data.item.group, data.item.permissionType)">{{data.item.group.name}}</span>
+      <template slot="name" slot-scope="data">
         <span
-          v-else
-          class="text-muted font-italic"
-        >{{data.item.group.name}}</span>
+          v-if="editingAllowed(data.item.group, data.item.permissionType)"
+          >{{ data.item.group.name }}</span
+        >
+        <span v-else class="text-muted font-italic">{{
+          data.item.group.name
+        }}</span>
       </template>
-      <template
-        slot="permission"
-        slot-scope="data"
-      >
+      <template slot="permission" slot-scope="data">
         <b-form-select
           v-if="editingAllowed(data.item.group, data.item.permissionType)"
           v-model="data.item.permissionType"
           :options="permissionOptions"
         />
-        <span
-          v-else
-          class="text-muted font-italic"
-        >{{ data.item.permissionType.name }}</span>
+        <span v-else class="text-muted font-italic">{{
+          data.item.permissionType.name
+        }}</span>
       </template>
-      <template
-        slot="remove"
-        slot-scope="data"
-      >
+      <template slot="remove" slot-scope="data">
         <b-link
           v-if="editingAllowed(data.item.group, data.item.permissionType)"
           @click="removeGroup(data.item.group)"
@@ -135,82 +125,84 @@ export default {
   mixins: [VModelMixin],
   props: {
     value: {
-      type: models.SharedEntity
+      type: models.SharedEntity,
     },
     users: {
       type: Array,
-      required: true
+      required: true,
     },
     groups: {
       type: Array,
-      required: true
+      required: true,
     },
     disallowEditingAdminGroups: {
       type: Boolean,
-      default: true
+      default: true,
     },
     readonly: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   components: {
-    AutocompleteTextInput
+    AutocompleteTextInput,
   },
   computed: {
-    userFields: function() {
+    userFields: function () {
       return [
         { key: "name", label: "User Name", class: "text-truncate" },
         { key: "email", label: "Email", class: "text-truncate" },
         { key: "permission", label: "Permission" },
-        { key: "remove", label: "Remove" }
+        { key: "remove", label: "Remove" },
       ];
     },
-    groupFields: function() {
+    groupFields: function () {
       return [
         { key: "name", label: "Group Name" },
         { key: "permission", label: "Permission" },
-        { key: "remove", label: "Remove" }
+        { key: "remove", label: "Remove" },
       ];
     },
-    usersCount: function() {
+    usersCount: function () {
       return this.data && this.data.userPermissions
         ? this.data.userPermissions.length
         : 0;
     },
-    sortedUserPermissions: function() {
+    sortedUserPermissions: function () {
       const userPermsCopy = this.data.userPermissions
         ? this.data.userPermissions.slice()
         : [];
       const sortedUserPerms = utils.StringUtils.sortIgnoreCase(
         userPermsCopy,
-        userPerm => userPerm.user.lastName + ", " + userPerm.user.firstName
+        (userPerm) => userPerm.user.lastName + ", " + userPerm.user.firstName
       );
       // When in readonly mode, if the current owner isn't the owner, display
       // the user with the OWNER permission
       if (this.readonly && !this.data.isOwner) {
-        sortedUserPerms.push(new models.UserPermission({
-          user: this.data.owner,
-          permissionType: models.ResourcePermissionType.OWNER
-        }));
+        sortedUserPerms.push(
+          new models.UserPermission({
+            user: this.data.owner,
+            permissionType: models.ResourcePermissionType.OWNER,
+          })
+        );
       }
       return sortedUserPerms;
     },
     userDataClasses() {
       return {
-        'text-muted': this.readonly,
-        'font-italic': this.readonly
-      }
+        "text-muted": this.readonly,
+        "font-italic": this.readonly,
+      };
     },
-    filteredGroupPermissions: function() {
+    filteredGroupPermissions: function () {
       return this.data && this.data.groupPermissions
         ? this.data.groupPermissions
         : [];
     },
-    sortedGroupPermissions: function() {
+    sortedGroupPermissions: function () {
       const groupPermsCopy = this.filteredGroupPermissions.slice();
       // Sort by name, then admin groups should come last if editing is disallowed
-      utils.StringUtils.sortIgnoreCase(groupPermsCopy, g => g.group.name);
+      utils.StringUtils.sortIgnoreCase(groupPermsCopy, (g) => g.group.name);
       if (this.disallowEditingAdminGroups) {
         groupPermsCopy.sort((a, b) => {
           if (a.group.isAdminGroup && !b.group.isAdminGroup) {
@@ -220,33 +212,36 @@ export default {
       }
       return groupPermsCopy;
     },
-    groupsCount: function() {
+    groupsCount: function () {
       return this.filteredGroupPermissions.length;
     },
-    totalCount: function() {
+    totalCount: function () {
       return this.usersCount + this.groupsCount;
     },
-    permissionOptions: function() {
-      var options = [models.ResourcePermissionType.READ, models.ResourcePermissionType.WRITE]
+    permissionOptions: function () {
+      var options = [
+        models.ResourcePermissionType.READ,
+        models.ResourcePermissionType.WRITE,
+      ];
       // manage_sharing permission is visible only if the user is the owner or it is a new entity and owner is not defined
-      if(this.data.isOwner || this.data.isOwner === null){
-        options.push(models.ResourcePermissionType.MANAGE_SHARING)
+      if (this.data.isOwner || this.data.isOwner === null) {
+        options.push(models.ResourcePermissionType.MANAGE_SHARING);
       }
-      return options.map(perm => {
+      return options.map((perm) => {
         return {
           value: perm,
-          text: perm.name
+          text: perm.name,
         };
       });
     },
-    groupSuggestions: function() {
+    groupSuggestions: function () {
       // filter out already selected groups
       const currentGroupIds = this.filteredGroupPermissions.map(
-        groupPerm => groupPerm.group.id
+        (groupPerm) => groupPerm.group.id
       );
       return this.groups
-        .filter(group => currentGroupIds.indexOf(group.id) < 0)
-        .filter(group => {
+        .filter((group) => currentGroupIds.indexOf(group.id) < 0)
+        .filter((group) => {
           // Filter out admin groups from options
           if (this.disallowEditingAdminGroups) {
             return !group.isAdminGroup;
@@ -254,25 +249,31 @@ export default {
             return true;
           }
         })
-        .map(group => {
+        .map((group) => {
           return {
             id: group.id,
             name: group.name,
-            type: "group"
+            type: "group",
           };
         });
     },
-    userSuggestions: function() {
+    userSuggestions: function () {
       // filter out already selected users
       const currentUserIds = this.data.userPermissions
         ? this.data.userPermissions.map(
-            userPerm => userPerm.user.airavataInternalUserId
+            (userPerm) => userPerm.user.airavataInternalUserId
           )
         : [];
       return this.users
-        .filter(user => currentUserIds.indexOf(user.airavataInternalUserId) < 0)
-        .filter(user => user.airavataInternalUserId !== session.Session.airavataInternalUserId)
-        .map(user => {
+        .filter(
+          (user) => currentUserIds.indexOf(user.airavataInternalUserId) < 0
+        )
+        .filter(
+          (user) =>
+            user.airavataInternalUserId !==
+            session.Session.airavataInternalUserId
+        )
+        .map((user) => {
           return {
             id: user.airavataInternalUserId,
             name:
@@ -284,28 +285,28 @@ export default {
               ") " +
               user.email,
             user: user,
-            type: "user"
+            type: "user",
           };
         });
     },
-    usersAndGroupsSuggestions: function() {
+    usersAndGroupsSuggestions: function () {
       return this.userSuggestions.concat(this.groupSuggestions);
-    }
+    },
   },
   methods: {
-    removeUser: function(user) {
+    removeUser: function (user) {
       this.data.removeUser(user);
     },
-    removeGroup: function(group) {
+    removeGroup: function (group) {
       this.data.removeGroup(group);
     },
-    suggestionSelected: function(suggestion) {
+    suggestionSelected: function (suggestion) {
       if (suggestion.type === "group") {
-        const group = this.groups.find(group => group.id === suggestion.id);
+        const group = this.groups.find((group) => group.id === suggestion.id);
         this.data.addGroup({ group });
       } else if (suggestion.type === "user") {
         const user = this.users.find(
-          user => user.airavataInternalUserId === suggestion.id
+          (user) => user.airavataInternalUserId === suggestion.id
         );
         this.data.addUser(user);
       }
@@ -318,16 +319,26 @@ export default {
      * should not be allowed.
      */
     editingAllowed(group, permission) {
-      return !this.readonly && (!this.disallowEditingAdminGroups || !group.isAdminGroup) && !(!this.data.isOwner && permission === models.ResourcePermissionType.MANAGE_SHARING);
+      return (
+        !this.readonly &&
+        (!this.disallowEditingAdminGroups || !group.isAdminGroup) &&
+        !(
+          !this.data.isOwner &&
+          permission === models.ResourcePermissionType.MANAGE_SHARING
+        )
+      );
     },
-    isPermissionReadOnly: function(permission) {
+    isPermissionReadOnly: function (permission) {
       // if it is a new entity, it will not be readonly
-      if(this.data.isOwner == null) {
+      if (this.data.isOwner == null) {
         return false;
       }
-      return !this.data.isOwner && permission === models.ResourcePermissionType.MANAGE_SHARING;
-    }
-  }
+      return (
+        !this.data.isOwner &&
+        permission === models.ResourcePermissionType.MANAGE_SHARING
+      );
+    },
+  },
 };
 </script>
 

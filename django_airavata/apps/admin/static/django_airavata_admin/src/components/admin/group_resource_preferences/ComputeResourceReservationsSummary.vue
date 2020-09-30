@@ -20,26 +20,28 @@ export default {
   props: {
     reservations: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     expiredReservations() {
       return this.reservations
-        ? this.reservations.filter(r => r.isExpired)
+        ? this.reservations.filter((r) => r.isExpired)
         : [];
     },
     activeReservations() {
-      return this.reservations ? this.reservations.filter(r => r.isActive) : [];
+      return this.reservations
+        ? this.reservations.filter((r) => r.isActive)
+        : [];
     },
     activeReservationNames() {
-      return this.activeReservations.map(r => r.reservationName);
+      return this.activeReservations.map((r) => r.reservationName);
     },
     upcomingReservations() {
       return this.reservations
-        ? this.reservations.filter(r => r.isUpcoming)
+        ? this.reservations.filter((r) => r.isUpcoming)
         : [];
-    }
-  }
+    },
+  },
 };
 </script>

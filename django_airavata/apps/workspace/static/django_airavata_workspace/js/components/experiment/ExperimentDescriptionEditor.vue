@@ -1,5 +1,4 @@
 <template>
-
   <b-form-group
     v-if="isEditing"
     label="Experiment Description"
@@ -13,11 +12,9 @@
       maxlength="255"
     ></b-form-textarea>
     <div class="mt-1">
-      <b-button
-        variant="success"
-        size="sm"
-        @click="toggleEditing"
-      >Save description</b-button>
+      <b-button variant="success" size="sm" @click="toggleEditing"
+        >Save description</b-button
+      >
       <b-link
         @click="cancelEditing"
         title="Cancel editing"
@@ -28,22 +25,13 @@
       </b-link>
     </div>
   </b-form-group>
-  <div
-    v-else
-    class="mb-3"
-  >
-    <b-link
-      @click="startEditing"
-      class="d-inline-block text-body mb-1"
-    >
+  <div v-else class="mb-3">
+    <b-link @click="startEditing" class="d-inline-block text-body mb-1">
       <i class="fas fa-align-left"></i>
       <span v-if="data"> Edit the description</span>
       <span v-else> Add a description</span>
     </b-link>
-    <div
-      v-if="data"
-      class="ml-3"
-    >
+    <div v-if="data" class="ml-3">
       {{ data }}
     </div>
   </div>
@@ -58,7 +46,7 @@ export default {
   data() {
     return {
       isEditing: false,
-      originalValue: this.value
+      originalValue: this.value,
     };
   },
   methods: {
@@ -73,8 +61,7 @@ export default {
     cancelEditing() {
       this.data = this.originalValue;
       this.isEditing = false;
-    }
-  }
+    },
+  },
 };
 </script>
-

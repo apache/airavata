@@ -7,10 +7,13 @@
         </slot>
       </div>
       <div class="col-auto">
-        <slot name="additional-buttons">
-        </slot>
+        <slot name="additional-buttons"> </slot>
         <slot name="new-item-button">
-          <b-btn variant="primary" @click="addNewItem" :disabled="newButtonDisabled">
+          <b-btn
+            variant="primary"
+            @click="addNewItem"
+            :disabled="newButtonDisabled"
+          >
             {{ newItemButtonText }}
             <i class="fa fa-plus" aria-hidden="true"></i>
           </b-btn>
@@ -30,7 +33,12 @@
     <div class="row">
       <div class="col">
         <slot name="item-list" :items="itemsList">Item List goes here</slot>
-        <pager v-if="itemsPaginator" :paginator="itemsPaginator" next="nextItems" v-on:previous="previousItems"></pager>
+        <pager
+          v-if="itemsPaginator"
+          :paginator="itemsPaginator"
+          next="nextItems"
+          v-on:previous="previousItems"
+        ></pager>
       </div>
     </div>
   </div>
@@ -46,43 +54,43 @@ export default {
     itemsPaginator: utils.PaginationIterator,
     title: {
       type: String,
-      default: "Items"
+      default: "Items",
     },
     subtitle: {
-      type: String
+      type: String,
     },
     newItemButtonText: {
       type: String,
-      default: "New Item"
+      default: "New Item",
     },
     newButtonDisabled: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   name: "list-layout",
   data() {
     return {};
   },
   components: {
-    pager: Pager
+    pager: Pager,
   },
   methods: {
-    nextItems: function() {
+    nextItems: function () {
       this.itemsPaginator.next();
     },
-    previousItems: function() {
+    previousItems: function () {
       this.itemsPaginator.previous();
     },
-    addNewItem: function() {
+    addNewItem: function () {
       this.$emit("add-new-item");
-    }
+    },
   },
   computed: {
-    itemsList: function() {
+    itemsList: function () {
       return this.itemsPaginator ? this.itemsPaginator.results : this.items;
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -5,14 +5,14 @@ module.exports = {
   pages: {
     app: "./js/main.js",
     cms: "./js/cms.js",
-    notices: "./js/notices.js"
+    notices: "./js/notices.js",
   },
   configureWebpack: {
     plugins: [
       new BundleTracker({
         filename: "webpack-stats.json",
-        path: "./dist/"
-      })
-    ]
-  }
+        path: "./dist/",
+      }),
+    ],
+  },
 };

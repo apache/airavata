@@ -1,15 +1,14 @@
 <template>
-
   <div class="btn-group ml-3">
-    <div class=dropdown>
+    <div class="dropdown">
       <a
-        href=#
+        href="#"
         class="dropdown-toggle text-dark"
-        id=dropdownNoticeButton
-        data-toggle=dropdown
+        id="dropdownNoticeButton"
+        data-toggle="dropdown"
         title="Notifications"
-        aria-haspopup=true
-        aria-expanded=false
+        aria-haspopup="true"
+        aria-expanded="false"
       >
         <span
           class="fa-stack fa-1x has-badge"
@@ -22,26 +21,22 @@
       </a>
       <div
         class="dropdown-menu widget-notifications no-padding"
-        style="width: 300px"
+        style="width: 300px;"
       >
         <div class="notifications-list">
-          <div class="text-center text-primary ">Notifications</div>
+          <div class="text-center text-primary">Notifications</div>
 
           <template v-for="notice in unreadNotices">
-            <div
-              class="dropdown-divider"
-              :key="notice.notificationId"
-            ></div>
-            <div
-              class="dropdown-item"
-              :key="notice.notificationId"
-            >
+            <div class="dropdown-divider" :key="notice.notificationId"></div>
+            <div class="dropdown-item" :key="notice.notificationId">
               <div>
                 <span
                   class="notification-title text-wrap"
                   :class="textColor(notice)"
-                >{{ notice.title }}</span>
-                <a v-if="!notice.is_read"
+                  >{{ notice.title }}</span
+                >
+                <a
+                  v-if="!notice.is_read"
                   class="fas fa-dot-circle"
                   data-toggle="tooltip"
                   data-placement="left"
@@ -54,8 +49,12 @@
               <div
                 class="notification-description text-wrap"
                 id="notification_description"
-              ><strong>{{ notice.notificationMessage }}</strong></div>
-              <div class="notification-ago time"> {{ fromNow(notice.publishedTime) }} </div>
+              >
+                <strong>{{ notice.notificationMessage }}</strong>
+              </div>
+              <div class="notification-ago time">
+                {{ fromNow(notice.publishedTime) }}
+              </div>
             </div>
           </template>
         </div>
@@ -89,12 +88,12 @@ export default {
       } else if (notice.priority === 2) {
         return "text-danger";
       }
-    }
+    },
   },
   computed: {
     unreadNotices() {
       return this.notices;
-    }
-  }
+    },
+  },
 };
 </script>

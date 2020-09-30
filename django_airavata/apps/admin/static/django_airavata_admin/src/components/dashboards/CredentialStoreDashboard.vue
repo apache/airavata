@@ -1,18 +1,32 @@
 <template>
   <div>
-    <list-layout @add-new-item="showNewSSHCredentialModal" :items="sshKeys" title="SSH Credentials" new-item-button-text="New SSH Credential">
+    <list-layout
+      @add-new-item="showNewSSHCredentialModal"
+      :items="sshKeys"
+      title="SSH Credentials"
+      new-item-button-text="New SSH Credential"
+    >
       <template slot="item-list" slot-scope="slotProps">
-
         <b-table striped hover :fields="fields" :items="slotProps.items">
           <template slot="sharing" slot-scope="data">
-            <share-button :entity-id="data.item.token" :disallow-editing-admin-groups="false" :auto-add-admin-groups="false"/>
+            <share-button
+              :entity-id="data.item.token"
+              :disallow-editing-admin-groups="false"
+              :auto-add-admin-groups="false"
+            />
           </template>
           <template slot="persistedTime" slot-scope="data">
-            <human-date :date="data.value"/>
+            <human-date :date="data.value" />
           </template>
           <template slot="action" slot-scope="data">
-            <clipboard-copy-link :text="data.item.publicKey.trim()" class="mr-1" />
-            <delete-link v-if="data.item.userHasWriteAccess" @delete="deleteSSHCredential(data.item)">
+            <clipboard-copy-link
+              :text="data.item.publicKey.trim()"
+              class="mr-1"
+            />
+            <delete-link
+              v-if="data.item.userHasWriteAccess"
+              @delete="deleteSSHCredential(data.item)"
+            >
               Are you sure you want to delete the
               <strong>{{ data.item.description }}</strong> SSH credential?
             </delete-link>
@@ -20,7 +34,10 @@
         </b-table>
       </template>
     </list-layout>
-    <new-ssh-credential-modal ref="newSSHCredentialModal" @new="createNewSSHCredential" />
+    <new-ssh-credential-modal
+      ref="newSSHCredentialModal"
+      @new="createNewSSHCredential"
+    />
     <!--
     <list-layout class="mt-4" @add-new-item="showNewPasswordCredentialModal" :items="passwordCredentials" title="Password Credentials"
       new-item-button-text="New Password Credential">
@@ -58,16 +75,16 @@ export default {
     "clipboard-copy-link": components.ClipboardCopyLink,
     // "new-password-credential-modal": NewPasswordCredentialModal,
     "new-ssh-credential-modal": NewSSHCredentialModal,
-    "share-button": components.ShareButton
+    "share-button": components.ShareButton,
   },
-  created: function() {
+  created: function () {
     this.fetchSSHKeys();
     this.fetchPasswordCredentials();
   },
-  data: function() {
+  data: function () {
     return {
       sshKeys: [],
-      passwordCredentials: []
+      passwordCredentials: [],
     };
   },
   computed: {
@@ -75,11 +92,11 @@ export default {
       return [
         {
           label: "Description",
-          key: "description"
+          key: "description",
         },
         {
           label: "User",
-          key: "username"
+          key: "username",
         },
         {
           label: "Created",
@@ -87,24 +104,24 @@ export default {
         },
         {
           label: "Sharing",
-          key: "sharing"
+          key: "sharing",
         },
         {
           label: "Action",
-          key: "action"
-        }
+          key: "action",
+        },
       ];
-    }
+    },
   },
   methods: {
     fetchSSHKeys() {
-      services.CredentialSummaryService.allSSHCredentials().then(sshCreds => {
+      services.CredentialSummaryService.allSSHCredentials().then((sshCreds) => {
         this.sshKeys = sshCreds;
       });
     },
     fetchPasswordCredentials() {
       services.CredentialSummaryService.allPasswordCredentials().then(
-        passwordCreds => (this.passwordCredentials = passwordCreds)
+        (passwordCreds) => (this.passwordCredentials = passwordCreds)
       );
     },
     showNewSSHCredentialModal() {
@@ -116,23 +133,23 @@ export default {
       );
     },
     deleteSSHCredential(cred) {
-      services.CredentialSummaryService.delete({ lookup: cred.token }).then(
-        () => this.fetchSSHKeys()
-      );
+      services.CredentialSummaryService.delete({
+        lookup: cred.token,
+      }).then(() => this.fetchSSHKeys());
     },
     showNewPasswordCredentialModal() {
       this.$refs.newPasswordCredentialModal.show();
     },
     createNewPasswordCredential(data) {
-      services.CredentialSummaryService.createPassword({ data: data }).then(
-        () => this.fetchPasswordCredentials()
-      );
+      services.CredentialSummaryService.createPassword({
+        data: data,
+      }).then(() => this.fetchPasswordCredentials());
     },
     deletePasswordCredential(cred) {
-      services.CredentialSummaryService.delete({ lookup: cred.token }).then(
-        () => this.fetchPasswordCredentials()
-      );
-    }
-  }
+      services.CredentialSummaryService.delete({
+        lookup: cred.token,
+      }).then(() => this.fetchPasswordCredentials());
+    },
+  },
 };
 </script>

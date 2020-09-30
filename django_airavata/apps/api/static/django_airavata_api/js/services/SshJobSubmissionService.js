@@ -1,11 +1,10 @@
-import JobSubmissionService from './JobSubmissionService'
+import JobSubmissionService from "./JobSubmissionService";
 
 class SshJobSubmissionService extends JobSubmissionService {
-    constructor() {
-        super();
-        this.retrieveUrl = "/api/job/submission/ssh";
-    }
-
+  constructor() {
+    super();
+    this.retrieveUrl = "/api/job/submission/ssh";
+  }
 }
 
-export default new SshJobSubmissionService()
+export default new SshJobSubmissionService();

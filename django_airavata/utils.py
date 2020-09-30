@@ -2,11 +2,6 @@ import logging
 from contextlib import contextmanager
 
 import thrift_connector.connection_pool as connection_pool
-from django.conf import settings
-from thrift.protocol import TBinaryProtocol
-from thrift.protocol.TMultiplexedProtocol import TMultiplexedProtocol
-from thrift.transport import TSocket, TSSLSocket, TTransport
-
 from airavata.api import Airavata
 from airavata.api.sharing import SharingRegistryService
 from airavata.service.profile.groupmanager.cpi import GroupManagerService
@@ -23,6 +18,10 @@ from airavata.service.profile.tenant.cpi.constants import (
 )
 from airavata.service.profile.user.cpi import UserProfileService
 from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
+from django.conf import settings
+from thrift.protocol import TBinaryProtocol
+from thrift.protocol.TMultiplexedProtocol import TMultiplexedProtocol
+from thrift.transport import TSocket, TSSLSocket, TTransport
 
 log = logging.getLogger(__name__)
 

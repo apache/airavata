@@ -11,7 +11,8 @@
     "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_workspace/js",
     "test": "npm run test:unit",
     "test:unit": "vue-cli-service test:unit",
-    "test:unit:watch": "vue-cli-service test:unit --watch"
+    "test:unit:watch": "vue-cli-service test:unit --watch",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
@@ -38,6 +39,7 @@
     "babel-loader": "^8.0.5",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0-0",
+    "prettier": "^2.1.2",
     "vue-loader": "^15.5.1",
     "vue-template-compiler": "^2.5.22",
     "webpack": "^4.28.4",

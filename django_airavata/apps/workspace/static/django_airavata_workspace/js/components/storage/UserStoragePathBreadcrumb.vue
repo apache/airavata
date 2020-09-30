@@ -16,8 +16,8 @@ export default {
   props: {
     parts: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     items() {
@@ -27,19 +27,18 @@ export default {
         return {
           text: part,
           path: subparts.join("/"),
-          active: index === this.parts.length - 1
+          active: index === this.parts.length - 1,
         };
       });
       return [
-        { text: "Home", path: "", active: this.parts.length === 0 }
+        { text: "Home", path: "", active: this.parts.length === 0 },
       ].concat(partsItems);
-    }
+    },
   },
   methods: {
     directorySelected(path) {
       this.$emit("directory-selected", path);
-    }
-  }
+    },
+  },
 };
 </script>
-

@@ -5,24 +5,24 @@ import EditExperimentContainer from "./containers/EditExperimentContainer.vue";
 //
 //   <div id="edit-experiment" data-experiment-id="..expid.."/>
 
-entry(Vue => {
+entry((Vue) => {
   new Vue({
     render(h) {
       return h(components.MainLayout, [
         h(EditExperimentContainer, {
           props: {
-            experimentId: this.experimentId
-          }
-        })
+            experimentId: this.experimentId,
+          },
+        }),
       ]);
     },
     data() {
       return {
-        experimentId: null
+        experimentId: null,
       };
     },
     beforeMount() {
       this.experimentId = this.$el.dataset.experimentId;
-    }
+    },
   }).$mount("#edit-experiment");
 });

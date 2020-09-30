@@ -35,11 +35,11 @@ export default {
       }
 
       return _storagePath;
-    }
+    },
   },
   data() {
     return {
-      userStoragePath: null
+      userStoragePath: null,
     };
   },
   methods: {
@@ -48,10 +48,10 @@ export default {
         { path },
         { ignoreErrors: true }
       )
-        .then(result => {
+        .then((result) => {
           this.userStoragePath = result;
         })
-        .catch(err => {
+        .catch((err) => {
           if (err.details.status === 404) {
             this.handleMissingPath(path);
           } else {
@@ -66,7 +66,7 @@ export default {
         new notifications.Notification({
           type: "WARNING",
           message: "Path does not exist: " + path,
-          duration: 2
+          duration: 2,
         })
       );
     },
@@ -86,10 +86,9 @@ export default {
     },
     fileContentChanged(fileContent) {
       if (fileContent) {
-        utils.FetchUtils.put(
-          "/api/user-storage/" + this.storagePath,
-          {fileContentText: fileContent}
-        ).then(() => {
+        utils.FetchUtils.put("/api/user-storage/" + this.storagePath, {
+          fileContentText: fileContent,
+        }).then(() => {
           this.loadUserStoragePath(this.storagePath);
         });
       }
@@ -124,7 +123,7 @@ export default {
     },
     directorySelected(path) {
       this.$router.push("/~/" + path);
-    }
+    },
   },
   created() {
     if (this.$route.path === "/") {
@@ -136,7 +135,7 @@ export default {
   watch: {
     $route() {
       this.loadUserStoragePath(this.storagePath);
-    }
-  }
+    },
+  },
 };
 </script>

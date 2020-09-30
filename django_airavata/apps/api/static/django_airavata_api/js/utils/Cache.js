@@ -32,7 +32,7 @@ export default class Cache {
   put({
     key,
     value,
-    expireDate = new Date(Date.now() + DEFAULT_EXPIRATION_TIME_MS)
+    expireDate = new Date(Date.now() + DEFAULT_EXPIRATION_TIME_MS),
   }) {
     this._cache[key] = new CacheEntry(value, expireDate);
   }

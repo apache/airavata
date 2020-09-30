@@ -4,14 +4,14 @@ import ProcessState from "./ProcessState";
 const FIELDS = [
   {
     name: "state",
-    type: ProcessState
+    type: ProcessState,
   },
   {
     name: "timeOfStateChange",
-    type: Date
+    type: Date,
   },
   "reason",
-  "statusId"
+  "statusId",
 ];
 
 export default class ProcessStatus extends BaseModel {

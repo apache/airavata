@@ -4,7 +4,10 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <gateway-resource-profile-editor v-if="gatewayResourceProfile" v-model="gatewayResourceProfile" />
+            <gateway-resource-profile-editor
+              v-if="gatewayResourceProfile"
+              v-model="gatewayResourceProfile"
+            />
           </div>
         </div>
       </div>
@@ -13,21 +16,28 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <storage-preference-list v-if="gatewayResourceProfile" :storagePreferences="gatewayResourceProfile.storagePreferences"
-              :default-credential-store-token="gatewayResourceProfile.credentialStoreToken" @updated="updatedStoragePreference"
-              @added="addedStoragePreference" @delete="deleteStoragePreference" :readonly="!gatewayResourceProfile.userHasWriteAccess"/>
+            <storage-preference-list
+              v-if="gatewayResourceProfile"
+              :storagePreferences="gatewayResourceProfile.storagePreferences"
+              :default-credential-store-token="
+                gatewayResourceProfile.credentialStoreToken
+              "
+              @updated="updatedStoragePreference"
+              @added="addedStoragePreference"
+              @delete="deleteStoragePreference"
+              :readonly="!gatewayResourceProfile.userHasWriteAccess"
+            />
           </div>
         </div>
       </div>
     </div>
-    <div class="row" v-if="gatewayResourceProfile && gatewayResourceProfile.userHasWriteAccess">
+    <div
+      class="row"
+      v-if="gatewayResourceProfile && gatewayResourceProfile.userHasWriteAccess"
+    >
       <div class="col">
-        <b-button variant="primary" @click="save">
-          Save
-        </b-button>
-        <b-button variant="secondary" @click="cancel">
-          Cancel
-        </b-button>
+        <b-button variant="primary" @click="save"> Save </b-button>
+        <b-button variant="secondary" @click="cancel"> Cancel </b-button>
       </div>
     </div>
   </div>
@@ -42,16 +52,16 @@ export default {
   name: "gateway-resource-profile-editor-container",
   components: {
     GatewayResourceProfileEditor,
-    StoragePreferenceList
+    StoragePreferenceList,
   },
   data() {
     return {
       gatewayResourceProfile: null,
-      gatewayResourceProfileClone: null
+      gatewayResourceProfileClone: null,
     };
   },
   created() {
-    services.GatewayResourceProfileService.current().then(gwp => {
+    services.GatewayResourceProfileService.current().then((gwp) => {
       this.gatewayResourceProfile = gwp;
       this.gatewayResourceProfileClone = gwp.clone();
     });
@@ -60,8 +70,8 @@ export default {
     save() {
       services.GatewayResourceProfileService.update({
         lookup: this.gatewayResourceProfile.gatewayID,
-        data: this.gatewayResourceProfile
-      }).then(gwp => {
+        data: this.gatewayResourceProfile,
+      }).then((gwp) => {
         this.gatewayResourceProfile = gwp;
         this.gatewayResourceProfileClone = gwp.clone();
       });
@@ -71,7 +81,7 @@ export default {
     },
     updatedStoragePreference(updatedStoragePreference) {
       const index = this.gatewayResourceProfile.storagePreferences.findIndex(
-        sp =>
+        (sp) =>
           sp.storageResourceId === updatedStoragePreference.storageResourceId
       );
       this.gatewayResourceProfile.storagePreferences.splice(
@@ -82,22 +92,21 @@ export default {
     },
     addedStoragePreference(newStoragePreference) {
       services.StoragePreferenceService.create({
-        data: newStoragePreference
-      }).then(sp => {
+        data: newStoragePreference,
+      }).then((sp) => {
         this.gatewayResourceProfile.storagePreferences.push(sp);
       });
     },
     deleteStoragePreference(storageResourceId) {
       services.StoragePreferenceService.delete({
-        lookup: storageResourceId
+        lookup: storageResourceId,
       }).then(() => {
         const index = this.gatewayResourceProfile.storagePreferences.findIndex(
-          sp => sp.storageResourceId === storageResourceId
+          (sp) => sp.storageResourceId === storageResourceId
         );
         this.gatewayResourceProfile.storagePreferences.splice(index, 1);
       });
-    }
-  }
+    },
+  },
 };
 </script>
-

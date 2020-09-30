@@ -1,6 +1,12 @@
 <template>
-  <div style="display: inline-block">
-    <a href="#" ref="copyLink" :data-clipboard-text="text" class="action-link" :class="linkClasses">
+  <div style="display: inline-block;">
+    <a
+      href="#"
+      ref="copyLink"
+      :data-clipboard-text="text"
+      class="action-link"
+      :class="linkClasses"
+    >
       <slot>
         Copy Key
       </slot>
@@ -22,15 +28,15 @@ export default {
   props: {
     text: {
       type: String,
-      required: true
+      required: true,
     },
     linkClasses: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   data() {
     return {
-      show: false
+      show: false,
     };
   },
   mounted() {
@@ -45,8 +51,7 @@ export default {
     onCopySuccess() {
       this.show = true;
       setTimeout(() => (this.show = false), 2000);
-    }
-  }
+    },
+  },
 };
 </script>
-

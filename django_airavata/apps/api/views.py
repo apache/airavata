@@ -6,24 +6,6 @@ from datetime import datetime, timedelta
 from urllib.parse import quote
 
 import requests
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.http import FileResponse, Http404, HttpResponse, JsonResponse
-from django.urls import reverse
-from rest_framework import mixins
-from rest_framework.decorators import (
-    action,
-    api_view,
-    detail_route,
-    list_route
-)
-from rest_framework.exceptions import ParseError
-from rest_framework.renderers import JSONRenderer
-from rest_framework.response import Response
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
-from rest_framework.views import APIView
-
 from airavata.model.appcatalog.computeresource.ttypes import (
     CloudJobSubmission,
     GlobusJobSubmission,
@@ -43,6 +25,23 @@ from airavata.model.experiment.ttypes import ExperimentSearchFields
 from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
 from airavata_django_portal_sdk import user_storage
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
+from django.urls import reverse
+from rest_framework import mixins
+from rest_framework.decorators import (
+    action,
+    api_view,
+    detail_route,
+    list_route
+)
+from rest_framework.exceptions import ParseError
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
+from rest_framework.views import APIView
+
 from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
@@ -1578,7 +1577,6 @@ class UserStoragePathView(APIView):
 
         return self._create_response(request=request, path=path)
 
-
     def delete(self, request, path="/", format=None):
         if user_storage.dir_exists(request, path):
             user_storage.delete_dir(request, path)
@@ -1598,7 +1596,8 @@ class UserStoragePathView(APIView):
             if uploaded is not None:
                 data['uploaded'] = uploaded
             data['parts'] = self._split_path(path)
-            serializer = self.serializer_class(data, context={'request': request})
+            serializer = self.serializer_class(
+                data, context={'request': request})
             return Response(serializer.data)
         else:
             file = user_storage.get_file(request, path)
@@ -1610,7 +1609,8 @@ class UserStoragePathView(APIView):
             if uploaded is not None:
                 data['uploaded'] = uploaded
             data['parts'] = self._split_path(path)
-            serializer = self.serializer_class(data, context={'request': request})
+            serializer = self.serializer_class(
+                data, context={'request': request})
             return Response(serializer.data)
 
     def _split_path(self, path):

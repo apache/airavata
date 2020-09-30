@@ -1,11 +1,10 @@
-import JobSubmissionService from './JobSubmissionService'
+import JobSubmissionService from "./JobSubmissionService";
 
-class LocaJobSubmissionService extends JobSubmissionService{
-    constructor() {
-        super();
-        this.retrieveUrl="/api/job/submission/local";
-    }
-
+class LocaJobSubmissionService extends JobSubmissionService {
+  constructor() {
+    super();
+    this.retrieveUrl = "/api/job/submission/local";
+  }
 }
 
-export default new LocaJobSubmissionService()
+export default new LocaJobSubmissionService();

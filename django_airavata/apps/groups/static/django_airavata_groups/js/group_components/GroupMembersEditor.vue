@@ -37,10 +37,7 @@
           </div>
         </div>
       </template>
-      <template
-        slot="role"
-        slot-scope="data"
-      >
+      <template slot="role" slot-scope="data">
         <!-- Can only change role if the user is the group owner but the role of the owner can't be changed -->
         <b-form-select
           v-if="group.isOwner && data.item.role !== 'OWNER'"
@@ -51,14 +48,8 @@
         </b-form-select>
         <span v-else>{{ data.value }}</span>
       </template>
-      <template
-        slot="remove"
-        slot-scope="data"
-      >
-        <b-link
-          v-if="data.item.editable"
-          @click="removeMember(data.item)"
-        >
+      <template slot="remove" slot-scope="data">
+        <b-link v-if="data.item.editable" @click="removeMember(data.item)">
           <span class="fa fa-trash"></span>
         </b-link>
       </template>
@@ -73,19 +64,19 @@ import { components } from "django-airavata-common-ui";
 export default {
   name: "group-members-editor",
   components: {
-    "autocomplete-text-input": components.AutocompleteTextInput
+    "autocomplete-text-input": components.AutocompleteTextInput,
   },
   props: {
     group: {
       type: models.Group,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       userProfiles: null,
       newMembers: [],
-      filter: null
+      filter: null,
     };
   },
   computed: {
@@ -103,10 +94,10 @@ export default {
         this.userProfiles
           // Filter out current members
           .filter(
-            userProfile =>
+            (userProfile) =>
               this.group.members.indexOf(userProfile.airavataInternalUserId) < 0
           )
-          .map(userProfile => {
+          .map((userProfile) => {
             return {
               id: userProfile.airavataInternalUserId,
               name:
@@ -115,7 +106,7 @@ export default {
                 userProfile.lastName +
                 " (" +
                 userProfile.userId +
-                ")"
+                ")",
             };
           })
       );
@@ -126,7 +117,7 @@ export default {
         { key: "username", label: "Username", sortable: true },
         { key: "email", label: "Email", sortable: true },
         { key: "role", label: "Role", sortable: true },
-        { key: "remove", label: "Remove" }
+        { key: "remove", label: "Remove" },
       ];
     },
     userProfilesMap() {
@@ -134,7 +125,7 @@ export default {
         return null;
       }
       const result = {};
-      this.userProfiles.forEach(up => {
+      this.userProfiles.forEach((up) => {
         result[up.airavataInternalUserId] = up;
       });
       return result;
@@ -146,8 +137,8 @@ export default {
       return (
         this.members
           // Filter out users that are missing profiles
-          .filter(m => m in this.userProfilesMap)
-          .map(m => {
+          .filter((m) => m in this.userProfilesMap)
+          .map((m) => {
             const userProfile = this.userProfilesMap[m];
             const isAdmin = this.admins.indexOf(m) >= 0;
             const isOwner = this.group.ownerId === m;
@@ -163,7 +154,7 @@ export default {
               email: userProfile.email,
               role: isOwner ? "OWNER" : isAdmin ? "ADMIN" : "MEMBER",
               editable: editable,
-              _rowVariant: this.newMembers.indexOf(m) >= 0 ? "success" : null
+              _rowVariant: this.newMembers.indexOf(m) >= 0 ? "success" : null,
             };
           })
       );
@@ -175,17 +166,17 @@ export default {
       return [
         {
           value: "MEMBER",
-          text: "MEMBER"
+          text: "MEMBER",
         },
         {
           value: "ADMIN",
-          text: "ADMIN"
-        }
+          text: "ADMIN",
+        },
       ];
-    }
+    },
   },
   created() {
-    services.UserProfileService.list().then(userProfiles => {
+    services.UserProfileService.list().then((userProfiles) => {
       this.userProfiles = userProfiles;
     });
   },
@@ -227,8 +218,7 @@ export default {
         // Otherwise stringify the field data and use String.prototype.localeCompare
         return new String(a).localeCompare(new String(b));
       }
-    }
-  }
+    },
+  },
 };
 </script>
-

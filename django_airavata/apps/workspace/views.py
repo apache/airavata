@@ -3,12 +3,12 @@ import json
 import logging
 from urllib.parse import urlparse
 
+from airavata.model.application.io.ttypes import DataType
+from airavata_django_portal_sdk import user_storage as user_storage_sdk
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 
-from airavata.model.application.io.ttypes import DataType
-from airavata_django_portal_sdk import user_storage as user_storage_sdk
 from django_airavata.apps.api.views import (
     ApplicationModuleViewSet,
     ExperimentSearchViewSet,

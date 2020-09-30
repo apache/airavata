@@ -8,8 +8,8 @@ export default {
   props: {
     viewData: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     rawOutput() {
@@ -19,13 +19,13 @@ export default {
     },
     rawJSFile() {
       return this.viewData && this.viewData.js ? this.viewData.js : null;
-    }
+    },
   },
   methods: {
     //Attaches the script to the head, the name of the script can be passed from
     //output view provider
     loadScripts() {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         let scriptEl = document.createElement("script");
         scriptEl.src = this.rawJSFile;
         scriptEl.type = "text/javascript";
@@ -37,7 +37,7 @@ export default {
           resolve();
         });
       });
-    }
+    },
   },
   watch: {
     rawJSFile() {
@@ -45,7 +45,7 @@ export default {
       if (this.rawJSFile) {
         this.loadScripts();
       }
-    }
-  }
+    },
+  },
 };
 </script>

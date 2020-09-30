@@ -29,7 +29,11 @@ export default {
     );
   },
   createExperiment(appModule) {
-    return "/workspace/applications/" + encodeURIComponent(appModule.appModuleId) + "/create_experiment";
+    return (
+      "/workspace/applications/" +
+      encodeURIComponent(appModule.appModuleId) +
+      "/create_experiment"
+    );
   },
   navigateToCreateExperiment(appModule) {
     window.location.assign(this.createExperiment(appModule));
@@ -48,5 +52,5 @@ export default {
       relativePath = relativePath.substring(1);
     }
     return "/workspace/storage/~/" + relativePath;
-  }
+  },
 };

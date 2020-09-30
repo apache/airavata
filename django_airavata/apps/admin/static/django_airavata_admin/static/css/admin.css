@@ -42,7 +42,7 @@ button, input[type="button"] {
 .vbtn {
   margin-left: 20px;
   text-align: center;
-  border-color: #007BFF;
+  border-color: #007bff;
   border-style: solid;
   border-radius: 3px;
   padding-top: 5px;
@@ -58,18 +58,19 @@ button, input[type="button"] {
 }
 
 .vbtn-default {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
 }
 
-.vbtn.vbtn-default:active, .vbtn.vbtn-cancel:active {
+.vbtn.vbtn-default:active,
+.vbtn.vbtn-cancel:active {
   background-color: #f1fff3;
   color: #3ca41a;
   border-color: #3ca41a;
 }
 
 .vbtn-cancel {
-  color: #007BFF;
+  color: #007bff;
   background-color: white;
 }
 
@@ -79,7 +80,7 @@ button, input[type="button"] {
 }
 
 .input-field-header {
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
   width: 100%;
   padding: 15px;
   border-bottom: solid 1px #dddddd;
@@ -91,17 +92,19 @@ button, input[type="button"] {
   width: 100%;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition-property: opacity;
-  transition-duration: .25s;
+  transition-duration: 0.25s;
 }
 
 .fade-enter-active {
-  transition-delay: .25s;
+  transition-delay: 0.25s;
 }
 
-.fade-enter, .fade-leave-active {
-  opacity: 0
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
 }
 
 .new_app {
@@ -119,7 +122,7 @@ button, input[type="button"] {
   width: 120px;
   margin-bottom: 15px;
   border-bottom: solid #999999 1px;
-  color: #007BFF;
+  color: #007bff;
 }
 
 .tab .lbl:hover {
@@ -157,14 +160,14 @@ button, input[type="button"] {
 .deployment.btn {
   float: right;
   text-align: center;
-  border-color: #007BFF;
+  border-color: #007bff;
   border-style: solid;
   border-radius: 3px;
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 15px;
   padding-right: 15px;
-  color: #007BFF;
+  color: #007bff;
   background-color: white;
   width: auto;
   float: left;
@@ -198,35 +201,32 @@ button, input[type="button"] {
   display: inline-flex;
   margin-right: 5px;
 }
-.tab-view{
-  padding:15px;
-  width:100%;
+.tab-view {
+  padding: 15px;
+  width: 100%;
 }
 
-
 .interface-btn {
-    color: #868E96;
-    border: solid 1px #868E96;
-    background-color: transparent;
-    text-align: center;
-    border-radius: 3px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-  }
+  color: #868e96;
+  border: solid 1px #868e96;
+  background-color: transparent;
+  text-align: center;
+  border-radius: 3px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
 
-  .interface-btn span {
-    font-weight: bold;
-  }
+.interface-btn span {
+  font-weight: bold;
+}
 
-  .interface-btn:hover {
-    background-color: rgba(0, 105, 217, 1);
-    color: white;
-  }
+.interface-btn:hover {
+  background-color: rgba(0, 105, 217, 1);
+  color: white;
+}
 
-  .sub-section-1{
-    padding-top: 40px;
-  }
-
-
+.sub-section-1 {
+  padding-top: 40px;
+}

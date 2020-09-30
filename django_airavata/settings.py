@@ -100,7 +100,8 @@ CUSTOM_DJANGO_APPS = []
 #
 for entry_point in iter_entry_points(group='airavata.djangoapp'):
     custom_app_class = entry_point.load()
-    custom_app_instance = custom_app_class(entry_point.name, import_module(entry_point.module_name))
+    custom_app_instance = custom_app_class(
+        entry_point.name, import_module(entry_point.module_name))
     CUSTOM_DJANGO_APPS.append(custom_app_instance)
     # Create path to AppConfig class (otherwise the ready() method doesn't get
     # called)
@@ -256,6 +257,9 @@ WAGTAIL_SITE_NAME = 'Django Airavata Portal'
 
 WAGTAILIMAGES_JPEG_QUALITY = 100
 
+# For some long wagtail pages, the number of POST parameters exceeds 1000,
+# which is the default for DATA_UPLOAD_MAX_NUMBER_FIELDS
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 LOGIN_URL = 'django_airavata_auth:login'
 LOGIN_REDIRECT_URL = 'django_airavata_workspace:dashboard'

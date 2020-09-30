@@ -38,7 +38,8 @@
           :readonly="true"
           class="mt-4"
         >
-          <span slot="permissions-header">Inherited {{ parentEntityLabel }} Permissions
+          <span slot="permissions-header"
+            >Inherited {{ parentEntityLabel }} Permissions
             <!-- <small class="text-muted" v-if="parentEntityOwner">Owned by {{parentEntityOwner.firstName}} {{parentEntityOwner.lastName}} ({{parentEntityOwner.email}})</small> -->
           </span>
         </shared-entity-editor>
@@ -58,26 +59,26 @@ export default {
     parentEntityId: String,
     parentEntityLabel: {
       type: String,
-      default: "Parent"
+      default: "Parent",
     },
     sharedEntity: models.SharedEntity,
     autoAddDefaultGatewayUsersGroup: {
       type: Boolean,
-      default: true
+      default: true,
     },
     autoAddAdminGroups: {
       type: Boolean,
-      default: true
+      default: true,
     },
     disallowEditingAdminGroups: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   components: {
-    SharedEntityEditor
+    SharedEntityEditor,
   },
-  data: function() {
+  data: function () {
     return {
       localSharedEntity: null,
       parentSharedEntity: null,
@@ -86,11 +87,11 @@ export default {
       adminsGroup: null,
       readOnlyAdminsGroup: null,
       users: null,
-      groups: null
+      groups: null,
     };
   },
   computed: {
-    title: function() {
+    title: function () {
       return (
         "Shared with " +
         this.groupsCount +
@@ -102,22 +103,22 @@ export default {
         (this.usersCount > 0 ? " (" + this.userNames.join(", ") + ")" : "")
       );
     },
-    usersCount: function() {
+    usersCount: function () {
       return this.combinedUsers.length;
     },
-    userNames: function() {
-      return this.combinedUsers.map(u => u.firstName + " " + u.lastName);
+    userNames: function () {
+      return this.combinedUsers.map((u) => u.firstName + " " + u.lastName);
     },
     combinedUsers() {
       const users = [];
       if (this.localSharedEntity && this.localSharedEntity.userPermissions) {
         users.push(
-          ...this.localSharedEntity.userPermissions.map(up => up.user)
+          ...this.localSharedEntity.userPermissions.map((up) => up.user)
         );
       }
       if (this.parentSharedEntity && this.parentSharedEntity.userPermissions) {
         users.push(
-          ...this.parentSharedEntity.userPermissions.map(up => up.user)
+          ...this.parentSharedEntity.userPermissions.map((up) => up.user)
         );
         if (this.parentEntityOwner) {
           users.push(this.parentEntityOwner);
@@ -125,7 +126,7 @@ export default {
       }
       return users;
     },
-    filteredGroupPermissions: function() {
+    filteredGroupPermissions: function () {
       if (this.localSharedEntity && this.localSharedEntity.groupPermissions) {
         return this.localSharedEntity.groupPermissions;
       } else {
@@ -134,28 +135,30 @@ export default {
     },
     combinedGroups() {
       const groups = [];
-      groups.push(...this.filteredGroupPermissions.map(gp => gp.group));
+      groups.push(...this.filteredGroupPermissions.map((gp) => gp.group));
       if (this.parentSharedEntity && this.parentSharedEntity.groupPermissions) {
         groups.push(
-          ...this.parentSharedEntity.groupPermissions.map(gp => gp.group)
+          ...this.parentSharedEntity.groupPermissions.map((gp) => gp.group)
         );
       }
       return groups;
     },
-    groupNames: function() {
-      return this.combinedGroups.map(g => g.name);
+    groupNames: function () {
+      return this.combinedGroups.map((g) => g.name);
     },
-    groupsCount: function() {
+    groupsCount: function () {
       return this.combinedGroups.length;
     },
-    totalCount: function() {
+    totalCount: function () {
       return this.usersCount + this.groupsCount;
     },
-    shareButtonEnabled: function() {
+    shareButtonEnabled: function () {
       // Enable share button if new entity or user is the entity's owner
       return (
         this.localSharedEntity &&
-        (!this.localSharedEntity.entityId || this.localSharedEntity.isOwner || this.localSharedEntity.hasSharingPermission)
+        (!this.localSharedEntity.entityId ||
+          this.localSharedEntity.isOwner ||
+          this.localSharedEntity.hasSharingPermission)
       );
     },
     hasParentSharedEntityPermissions() {
@@ -172,10 +175,10 @@ export default {
       } else {
         return null;
       }
-    }
+    },
   },
   methods: {
-    initialize: function() {
+    initialize: function () {
       // First loaded needed data and then process it. This is to prevent one
       // call to initialize clobbering a later call to initialize. That is, do
       // all of the async stuff first and then make decisions based on the
@@ -185,28 +188,34 @@ export default {
       if (this.entityId) {
         promises.push(
           this.loadSharedEntity(this.entityId).then(
-            sharedEntity => (loadedSharedEntity = sharedEntity)
+            (sharedEntity) => (loadedSharedEntity = sharedEntity)
           )
         );
       }
       if (
         !this.entityId &&
         (!this.sharedEntity || !this.sharedEntity.entityId) &&
-        (!this.defaultGatewayUsersGroup || !this.adminsGroup || !this.readOnlyAdminsGroup)
+        (!this.defaultGatewayUsersGroup ||
+          !this.adminsGroup ||
+          !this.readOnlyAdminsGroup)
       ) {
         promises.push(
-          services.GroupService.list({ limit: -1 }).then(groups => {
+          services.GroupService.list({ limit: -1 }).then((groups) => {
             this.groups = groups;
-            this.defaultGatewayUsersGroup = groups.find(g => g.isDefaultGatewayUsersGroup);
-            this.adminsGroup = groups.find(g => g.isGatewayAdminsGroup);
-            this.readOnlyAdminsGroup = groups.find(g => g.isReadOnlyGatewayAdminsGroup);
+            this.defaultGatewayUsersGroup = groups.find(
+              (g) => g.isDefaultGatewayUsersGroup
+            );
+            this.adminsGroup = groups.find((g) => g.isGatewayAdminsGroup);
+            this.readOnlyAdminsGroup = groups.find(
+              (g) => g.isReadOnlyGatewayAdminsGroup
+            );
           })
         );
       }
       if (this.parentEntityId) {
         promises.push(
           this.loadSharedEntity(this.parentEntityId).then(
-            sharedEntity => (this.parentSharedEntity = sharedEntity)
+            (sharedEntity) => (this.parentSharedEntity = sharedEntity)
           )
         );
       }
@@ -223,17 +232,33 @@ export default {
           this.autoAddDefaultGatewayUsersGroup
         ) {
           this.localSharedEntity.addGroup({
-            group: this.defaultGatewayUsersGroup
+            group: this.defaultGatewayUsersGroup,
           });
           this.emitUnsavedEvent();
         }
         if (!this.localSharedEntity.entityId && this.autoAddAdminGroups) {
           this.localSharedEntity.addGroup({
             group: this.adminsGroup,
-            permissionType: models.ResourcePermissionType.WRITE
+            permissionType: models.ResourcePermissionType.MANAGE_SHARING,
           });
           this.localSharedEntity.addGroup({ group: this.readOnlyAdminsGroup });
           this.emitUnsavedEvent();
+        }
+        if (this.localSharedEntity.entityId && this.autoAddAdminGroups) {
+          // AIRAVATA-3297 Admins group used to get WRITE permission, but the
+          // new default is MANAGE_SHARING so update if necessary
+          // Since autoAddAdminGroups is true, there should already be an adminsGroupPermission
+          const adminsGroupPermission = this.localSharedEntity.groupPermissions.find(
+            (gp) => gp.group.isGatewayAdminsGroup
+          );
+          if (
+            adminsGroupPermission.permissionType !==
+            models.ResourcePermissionType.MANAGE_SHARING
+          ) {
+            adminsGroupPermission.permissionType =
+              models.ResourcePermissionType.MANAGE_SHARING;
+            this.emitUnsavedEvent();
+          }
         }
       });
     },
@@ -244,16 +269,16 @@ export default {
      * Merge the persisted SharedEntity with the local SharedEntity
      * instance and save it, returning a Promise.
      */
-    mergeAndSave: function(entityId) {
+    mergeAndSave: function (entityId) {
       return services.SharedEntityService.merge({
         lookup: entityId,
-        data: this.localSharedEntity
-      }).then(sharedEntity => {
+        data: this.localSharedEntity,
+      }).then((sharedEntity) => {
         this.localSharedEntity = sharedEntity;
         this.emitSavedEvent();
       });
     },
-    saveSharedEntity: function() {
+    saveSharedEntity: function () {
       // If we don't have an entityId we can't create a SharedEntity. Instead,
       // we'll just emit 'unsaved' to let parent know that sharing has changed.
       // It will be up to parent to call `mergeAndSave(entityId)` once there is
@@ -261,8 +286,8 @@ export default {
       if (this.localSharedEntity.entityId) {
         services.SharedEntityService.update({
           data: this.localSharedEntity,
-          lookup: this.localSharedEntity.entityId
-        }).then(sharedEntity => {
+          lookup: this.localSharedEntity.entityId,
+        }).then((sharedEntity) => {
           this.localSharedEntity = sharedEntity;
           this.emitSavedEvent();
         });
@@ -276,27 +301,27 @@ export default {
     emitUnsavedEvent() {
       this.$emit("unsaved", this.localSharedEntity);
     },
-    cancelEditSharedEntity: function() {
+    cancelEditSharedEntity: function () {
       this.localSharedEntity = this.sharedEntityCopy;
     },
-    openSharingSettingsModal: function() {
+    openSharingSettingsModal: function () {
       this.$refs.sharingSettingsModal.show();
     },
-    showSharingSettingsModal: function() {
+    showSharingSettingsModal: function () {
       this.sharedEntityCopy = this.localSharedEntity.clone();
       if (!this.users) {
         services.ServiceFactory.service("UserProfiles")
           .list()
-          .then(users => (this.users = users));
+          .then((users) => (this.users = users));
       }
       if (!this.groups) {
-        services.GroupService.list({ limit: -1 }).then(groups => {
+        services.GroupService.list({ limit: -1 }).then((groups) => {
           this.groups = groups;
         });
       }
-    }
+    },
   },
-  mounted: function() {
+  mounted: function () {
     // Only run initialize when mounted since it may add the default gateways
     // group automatically (autoAddDefaultGatewayUsersGroup)
     this.initialize();
@@ -310,16 +335,16 @@ export default {
     entityId(newEntityId, oldEntityId) {
       if (newEntityId && newEntityId !== oldEntityId) {
         this.loadSharedEntity(newEntityId).then(
-          sharedEntity => (this.localSharedEntity = sharedEntity)
+          (sharedEntity) => (this.localSharedEntity = sharedEntity)
         );
       }
     },
     parentEntityId(newParentEntityId) {
-      this.loadSharedEntity(newParentEntityId).then(sharedEntity => {
+      this.loadSharedEntity(newParentEntityId).then((sharedEntity) => {
         this.parentSharedEntity = sharedEntity;
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
