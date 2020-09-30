@@ -3,7 +3,7 @@ import logging
 import mimetypes
 import os
 import shutil
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import requests
 from django.apps import apps
@@ -30,20 +30,17 @@ TMP_INPUT_FILE_UPLOAD_DIR = "tmp"
 
 def save(request, path, file, name=None, content_type=None):
     "Save file in path in the user's storage and return DataProduct."
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+    if _is_remote_api():
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
         files = {'file': (name, file, content_type)
                  if content_type is not None else file, }
-        r = requests.post(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
-            headers=headers,
-            files=files
-        )
-        r.raise_for_status()
-        data = r.json()
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                method="post",
+                                files=files)
+        data = resp.json()
         product_uri = data['uploaded']['productUri']
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, product_uri)
@@ -76,20 +73,16 @@ def move_from_filepath(
 
 def save_input_file(request, file, name=None, content_type=None):
     """Save input file in staging area for input files."""
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
+    if _is_remote_api():
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
         files = {'file': (name, file, content_type)
                  if content_type is not None else file, }
-        r = requests.post(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/upload',
-            headers=headers,
-            files=files
-        )
-        r.raise_for_status()
-        data = r.json()
+        resp = _call_remote_api(request,
+                                "/upload",
+                                method="post",
+                                files=files)
+        data = resp.json()
         product_uri = data['data-product']['productUri']
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, product_uri)
@@ -118,15 +111,12 @@ def copy_input_file(request, data_product):
 
 
 def is_input_file(request, data_product):
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.get(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/data-products/',
-            headers=headers,
+    if _is_remote_api():
+        resp = _call_remote_api(
+            request,
+            "/data-products/",
             params={'product-uri': data_product.productUri})
-        r.raise_for_status()
-        data = r.json()
+        data = resp.json()
         return data['isInputFileUpload']
     # Check if file is one of user's files and in TMP_INPUT_FILE_UPLOAD_DIR
     path = _get_replica_filepath(data_product)
@@ -168,16 +158,13 @@ def move_input_file_from_filepath(
 
 def open_file(request, data_product):
     "Return file object for replica if it exists in user storage."
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.get(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/download',
-            headers=headers,
+    if _is_remote_api():
+        resp = _call_remote_api(
+            request,
+            "/download",
             params={'data-product-uri': data_product.productUri})
-        r.raise_for_status()
-        file = io.BytesIO(r.content)
-        disposition = r.headers['Content-Disposition']
+        file = io.BytesIO(resp.content)
+        disposition = resp.headers['Content-Disposition']
         disp_value, disp_params = cgi.parse_header(disposition)
         # Give the file object a name just like a real opened file object
         file.name = disp_params['filename']
@@ -189,15 +176,12 @@ def open_file(request, data_product):
 
 def exists(request, data_product):
     "Return True if replica for data_product exists in user storage."
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.get(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/data-products/',
-            headers=headers,
+    if _is_remote_api():
+        resp = _call_remote_api(
+            request,
+            "/data-products/",
             params={'product-uri': data_product.productUri})
-        r.raise_for_status()
-        data = r.json()
+        data = resp.json()
         return data['downloadURL'] is not None
     else:
         path = _get_replica_filepath(data_product)
@@ -206,63 +190,55 @@ def exists(request, data_product):
 
 def dir_exists(request, path):
     "Return True if path exists in user's data store."
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.get(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
-            headers=headers,
-        )
-        if r.status_code != 200:
+    if _is_remote_api():
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                raise_for_status=False)
+        if resp.status_code != 200:
             return False
         else:
-            return r.json()["isDir"]
+            return resp.json()['isDir']
     else:
         return _Datastore().dir_exists(request.user.username, path)
 
 
 def delete_dir(request, path):
     """Delete path in user's data store, if it exists."""
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.delete(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
-            headers=headers,
-        )
-        if r.status_code == 404:
-            raise ObjectDoesNotExist(f"File path does not exist {path}")
-        r.raise_for_status()
+    if _is_remote_api():
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                method="delete",
+                                raise_for_status=False)
+        _raise_404(resp, f"File path does not exist {path}")
+        resp.raise_for_status()
         return
     _Datastore().delete_dir(request.user.username, path)
 
 
 def delete_user_file(request, path):
     """Delete file in user's data store, if it exists."""
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.delete(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
-            headers=headers,
-        )
-        if r.status_code == 404:
-            raise ObjectDoesNotExist(f"File path does not exist {path}")
-        r.raise_for_status()
+    if _is_remote_api():
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                method="delete",
+                                raise_for_status=False)
+        _raise_404(resp, f"File path does not exist {path}")
+        resp.raise_for_status()
         return
     return _Datastore().delete(request.user.username, path)
 
 
 def update_file_content(request, path, fileContentText):
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.put(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
-            headers=headers,
-            data={"fileContentText": fileContentText}
-        )
-        r.raise_for_status()
+    if _is_remote_api():
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                method="put",
+                                data={"fileContentText": fileContentText}
+                                )
         return
     else:
         full_path = _Datastore().path(request.user.username, path)
@@ -272,18 +248,14 @@ def update_file_content(request, path, fileContentText):
 
 
 def get_file(request, path):
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.get(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
-            headers=headers,
-        )
-        if r.status_code == 404:
-            raise ObjectDoesNotExist("User storage file path does not exist")
-        # Raise an exception for all other error statuses
-        r.raise_for_status()
-        data = r.json()
+    if _is_remote_api():
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                raise_for_status=False
+                                )
+        _raise_404(resp, "User storage file path does not exist")
+        data = resp.json()
         if data["isDir"]:
             raise Exception("User storage path is a directory, not a file")
         file = data['files'][0]
@@ -321,14 +293,12 @@ def get_file(request, path):
 
 def delete(request, data_product):
     "Delete replica for data product in this data store."
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.delete(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/delete-file',
-            headers=headers,
-            params={'data-product-uri': data_product.productUri})
-        r.raise_for_status()
+    if _is_remote_api():
+        _call_remote_api(
+            request,
+            "/delete-file",
+            params={'data-product-uri': data_product.productUri},
+            method="delete")
         return
     else:
         path = _get_replica_filepath(data_product)
@@ -347,15 +317,12 @@ def delete(request, data_product):
 def listdir(request, path):
     """Return a tuple of two lists, one for directories, the second for files."""
 
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.get(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
-            headers=headers,
-        )
-        r.raise_for_status()
-        data = r.json()
+    if _is_remote_api():
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                )
+        data = resp.json()
         for directory in data['directories']:
             # Convert JSON ISO8601 timestamp to datetime instance
             directory['created_time'] = convert_iso8601_to_datetime(
@@ -429,14 +396,12 @@ def get_experiment_dir(
 
 
 def create_user_dir(request, path):
-    if getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None:
-        headers = {
-            'Authorization': f'Bearer {request.authz_token.accessToken}'}
-        r = requests.post(
-            f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/user-storage/~/{path}',
-            headers=headers,
-        )
-        r.raise_for_status()
+    if _is_remote_api():
+        logger.debug(f"path={path}")
+        _call_remote_api(request,
+                         "/user-storage/~/{path}",
+                         path_params={"path": path},
+                         method="post")
         return
     _Datastore().create_user_dir(request.user.username, path)
 
@@ -571,6 +536,41 @@ def _get_replica_filepath(data_product):
     if replica_filepath:
         return urlparse(replica_filepath).path
     return None
+
+
+def _is_remote_api():
+    return getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None
+
+
+def _call_remote_api(
+        request,
+        path,
+        path_params=dict,
+        method="get",
+        raise_for_status=True,
+        **kwargs):
+
+    headers = {
+        'Authorization': f'Bearer {request.authz_token.accessToken}'}
+    encoded_path_params = {}
+    for pk, pv in path_params.items():
+        encoded_path_params[pk] = quote(pv)
+    encoded_path = path.format(**encoded_path_params)
+    logger.debug(f"encoded_path={encoded_path}")
+    r = requests.request(
+        method,
+        f'{settings.GATEWAY_DATA_STORE_REMOTE_API}{encoded_path}',
+        headers=headers,
+        **kwargs,
+    )
+    if raise_for_status:
+        r.raise_for_status()
+    return r
+
+
+def _raise_404(response, msg, exception_class=ObjectDoesNotExist):
+    if response.status_code == 404:
+        raise exception_class(msg)
 
 
 class _Datastore:
