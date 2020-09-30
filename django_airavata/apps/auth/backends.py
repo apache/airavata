@@ -35,6 +35,15 @@ class KeycloakBackend(object):
                     return None
                 self._process_token(request, token)
                 return self._process_userinfo(request, userinfo)
+            elif 'HTTP_AUTHORIZATION' in request.META:
+                bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
+                if bearer != "Bearer":
+                    raise Exception("Unexpected Authorization header")
+                # implicitly validate token by using it to get userinfo
+                userinfo = self._get_userinfo_from_token(request, token)
+                # Token should be added as a request attribute (request.auth)
+                # self._process_token(request, token)
+                return self._process_userinfo(request, userinfo)
             # user is already logged in and can use refresh token
             elif request.user and not utils.is_refresh_token_expired(request):
                 logger.debug("Refreshing token...")
@@ -135,6 +144,23 @@ class KeycloakBackend(object):
                                              verify=verify_ssl)
         userinfo = oauth2_session.get(userinfo_url).json()
         return token, userinfo
+
+    def _get_userinfo_from_token(self, request, token):
+        client_id = settings.KEYCLOAK_CLIENT_ID
+        userinfo_url = settings.KEYCLOAK_USERINFO_URL
+        verify_ssl = settings.KEYCLOAK_VERIFY_SSL
+        oauth2_session = OAuth2Session(
+            client_id, token={'access_token': token})
+        if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
+            oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
+        userinfo = oauth2_session.get(
+            userinfo_url, verify=verify_ssl).json()
+        if 'error' in userinfo:
+            msg = userinfo.get('error_description')
+            if msg is None:
+                msg = f"Error fetching userinfo: {userinfo['error']}"
+            raise Exception(msg)
+        return userinfo
 
     def _process_token(self, request, token):
         # TODO validate the JWS signature
