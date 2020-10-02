@@ -12,7 +12,7 @@ nav:
     - Developing the Backend: dev/developing_backend.md
     - Developing a Wagtail Export (theme): dev/wagtail_export.md
   - Customization Guide:
-    - Gateways 2019 Tutorial: tutorial/gateways2019_tutorial.md
+    - Gateways Tutorial: tutorial/gateways2019_tutorial.md
     - Adding a Custom Django App: dev/custom_django_app.md
     - Adding a Custom Output View Provider: dev/custom_output_view_provider.md
   - Administrator Guide:

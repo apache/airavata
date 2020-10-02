@@ -1,4 +1,4 @@
-# Gateways 2019 Tutorial
+# Gateways Tutorial
 
 Objective: learn the basics of the Apache Airavata Django Portal and how to make
 both simple and complex customizations to the user interface.

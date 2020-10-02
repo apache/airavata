@@ -15,7 +15,7 @@ output view provider will be invoked and it should return image data.
 ## Getting started
 
 See the
-[Gateways 2019 tutorial](../tutorial/gateways2019_tutorial.md#tutorial-exercise-create-a-custom-output-viewer-for-an-output-file)
+[Gateways tutorial](../tutorial/gateways2019_tutorial.md#tutorial-exercise-create-a-custom-output-viewer-for-an-output-file)
 for help on setting up a development environment and implementing a simple
 output view provider.
 
