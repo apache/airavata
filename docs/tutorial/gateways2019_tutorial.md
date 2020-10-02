@@ -645,7 +645,8 @@ declare interactive parameters that can be manipulated by the user. We can add a
 simple boolean interactive parameter to toggle the display of the matplotlib
 grid as an example.
 
-1. Change the `generate_data` function so that it has an additional `show_grid`
+1. Open `$HOME/gateways19-tutorial/gateways19_tutorial/output_views.py`. Change
+   the `generate_data` function so that it has an additional `show_grid`
    parameter with a default value of `False`:
 
 ```python
@@ -876,9 +877,7 @@ urlpatterns = [
 <h1>Hello World</h1>
 
 <div class="card">
-    <div class="card-header">
-        Run "echo" for different languages
-    </div>
+    <div class="card-header">Run "echo" for different languages</div>
     <div class="card-body">
         <select id="greeting-select"></select>
         <button id="run-button" class="btn btn-primary">Run</button>
@@ -1298,6 +1297,29 @@ account at [scigap.org](https://scigap.org/) to request gateway hosting.
 
 ## Appendix: Setting up Windows for a **remote Docker host**
 
+### Installing Visual Studio Code
+
+The tutorial code needs to be on the remote Docker host so that it can be
+mounted into the Django portal container. To modify the files as required by the
+tutorial you'll need to either SSH into the remote Docker host and edit the
+files there with a terminal editor, like Vim, or you can use
+[Visual Studio Code](https://code.visualstudio.com/) to edit the files remotely
+with the SSH extension.
+
+To use Visual Studio Code, install it from <https://code.visualstudio.com/>.
+Once you have it installed, start it. In the menu, go to **View > Extensions**.
+In the Extensions search, type `ssh` and click on **Install** for the _Remote -
+SSH_ extension. Once it is installed, click on the green box in the lower left
+hand corner and select **Remote-SSH: Connect to Host...**, or, type
+`Ctrl-Shift-P` and type `Remote-SSH` and select **Remote-SSH: Connect to
+Host...**. Select **linux** as the remote platform type.
+
+Once you are connected, go to **View > Explorer**. Click on the **Open Folder**
+button. Select the folder that contains the tutorial code and click **OK**. You
+should now see the tutorial files in the Explorer on the left hand side. Now you
+can edit the tutorial files from your local computer and they will be
+immediately reflected in the Django portal container.
+
 ### SSH configuration
 
 To connect via SSH to the remote Docker host, you'll need an SSH key pair. If
@@ -1321,7 +1343,8 @@ Where IP_ADDRESS should be replaced with the IP address or hostname of the
 remote Docker host (for example: `149.165.168.201`). And PRIVATE_KEY should be
 replaced with the name of your private key file that you copied in step 2.
 
-Test that SSH is working by opening a command prompt and running the following:
+Test that SSH is working by opening a command prompt (in Visual Studio Code open
+a new terminal with **Ctrl+Shift+`**) and running the following:
 
 ```
 ssh username@IP_ADDRESS
@@ -1380,32 +1403,10 @@ For some of the tutorial instructions you'll be asked to load the Django portal
 in your browser at <http://localhost:8000>. However, your Django portal
 container is running on a remote Docker host, not your local computer. To make
 it appear that the Django portal is running locally, create an SSH tunnel to
-forward port 8000 to the remote Docker host. In a separate command prompt, run
-the following:
+forward port 8000 to the remote Docker host. In a separate command prompt (in
+Visual Studio Code open a new terminal with **Ctrl+Shift+`**), run the
+following:
 
 ```
 ssh -L 8000:localhost:8000 USERNAME@IP_ADDRESS
 ```
-
-### Modifying tutorial files on the remote Docker host
-
-The tutorial code needs to be on the remote Docker host so that it can be
-mounted into the Django portal container. To modify the files as required by the
-tutorial you'll need to either SSH into the remote Docker host and edit the
-files there with a terminal editor, like Vim, or you can use
-[Visual Studio Code](https://code.visualstudio.com/) to edit the files remotely
-with the SSH extension.
-
-To use Visual Studio Code, install it from https://code.visualstudio.com/. Once
-you have it installed, start it. In the menu, go to **View > Extensions**. In
-the Extensions search, type `ssh` and click on **Install** for the _Remote -
-SSH_ extension. Once it is installed, click on the green box in the lower left
-hand corner and select **Remote-SSH: Connect to Host...**, or, type
-`Ctrl-Shift-P` and type `Remote-SSH` and select **Remote-SSH: Connect to
-Host...**. Select **linux** as the remote platform type.
-
-Once you are connected, go to **View > Explorer**. Click on the **Open Folder**
-button. Select the folder that contains the tutorial code and click **OK**. You
-should now see the tutorial files in the Explorer on the left hand side. Now you
-can edit the tutorial files from your local computer and they will be
-immediately reflected in the Django portal container.
