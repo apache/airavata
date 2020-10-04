@@ -545,7 +545,7 @@ def _is_remote_api():
 def _call_remote_api(
         request,
         path,
-        path_params=dict,
+        path_params=None,
         method="get",
         raise_for_status=True,
         **kwargs):
@@ -553,8 +553,9 @@ def _call_remote_api(
     headers = {
         'Authorization': f'Bearer {request.authz_token.accessToken}'}
     encoded_path_params = {}
-    for pk, pv in path_params.items():
-        encoded_path_params[pk] = quote(pv)
+    if path_params is not None:
+        for pk, pv in path_params.items():
+            encoded_path_params[pk] = quote(pv)
     encoded_path = path.format(**encoded_path_params)
     logger.debug(f"encoded_path={encoded_path}")
     r = requests.request(
