@@ -9,17 +9,15 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 
+# TODO: use the pooled clients in the airavata-python-sdk directly instead of
+# these request attributes
 class AiravataClientMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        # If user is logged in create an airavata api client for the request
-        if request.user.is_authenticated:
-            request.airavata_client = utils.airavata_api_client_pool
-            response = self.get_response(request)
-        else:
-            response = self.get_response(request)
+        request.airavata_client = utils.airavata_api_client_pool
+        response = self.get_response(request)
 
         return response
 
@@ -63,17 +61,13 @@ def profile_service_client(get_response):
     """
     def middleware(request):
 
-        # If user is logged in create an profile service client for the request
-        if request.user.is_authenticated:
-            request.profile_service = {
-                'group_manager': utils.group_manager_client_pool,
-                'iam_admin': utils.iamadmin_client_pool,
-                'tenant_profile': utils.tenant_profile_client_pool,
-                'user_profile': utils.user_profile_client_pool,
-            }
-            response = get_response(request)
-        else:
-            response = get_response(request)
+        request.profile_service = {
+            'group_manager': utils.group_manager_client_pool,
+            'iam_admin': utils.iamadmin_client_pool,
+            'tenant_profile': utils.tenant_profile_client_pool,
+            'user_profile': utils.user_profile_client_pool,
+        }
+        response = get_response(request)
 
         return response
 

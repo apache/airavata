@@ -10,8 +10,7 @@ from django.conf import settings
 from nbconvert import HTMLExporter
 
 from airavata.model.application.io.ttypes import DataType
-
-from . import data_products_helper
+from airavata_django_portal_sdk import user_storage
 
 logger = logging.getLogger(__name__)
 
@@ -199,8 +198,8 @@ def _generate_data(request,
             experiment_output.value.startswith("airavata-dp")):
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, experiment_output.value)
-        if data_products_helper.exists(request, data_product):
-            output_file = data_products_helper.open_file(request, data_product)
+        if user_storage.exists(request, data_product):
+            output_file = user_storage.open_file(request, data_product)
         elif settings.DEBUG and test_output_file is not None:
             output_file = open(test_output_file, 'rb')
     # TODO: change interface to provide output_file as a path

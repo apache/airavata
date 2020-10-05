@@ -74,6 +74,9 @@ INSTALLED_APPS = [
 
     # django-webpack-loader
     'webpack_loader',
+
+    # Airavata Django Portal SDK
+    'airavata_django_portal_sdk',
 ]
 
 # List of app labels for Airavata apps that should be hidden from menus
@@ -231,6 +234,7 @@ PGA_URL = None
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
+        'django_airavata.apps.api.authentication.OAuthAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',

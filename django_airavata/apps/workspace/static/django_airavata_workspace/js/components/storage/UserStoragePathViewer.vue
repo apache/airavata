@@ -1,11 +1,26 @@
 <template>
   <div>
+    <user-storage-create-view
+      v-if="includeCreateFileAction && userStoragePath && isDir"
+      :user-storage-path="userStoragePath"
+      :storage-path="storagePath"
+      @upload-success="$emit('upload-success')"
+      @add-directory="(dirName) => $emit('add-directory', dirName)"
+    />
     <user-storage-path-breadcrumb
       v-if="userStoragePath"
       :parts="userStoragePath.parts"
       @directory-selected="$emit('directory-selected', $event)"
     />
+
+    <user-storage-edit-viewer
+      v-if="userStoragePath && isFile"
+      :file="file"
+      @file-content-changed="(fileContent) => $emit('file-content-changed', fileContent)"
+    />
+
     <b-table
+      v-if="userStoragePath && isDir"
       :fields="fields"
       :items="items"
       sort-by="name"
@@ -20,8 +35,7 @@
         > <i class="fa fa-folder-open"></i> {{ data.item.name }}</b-link>
         <b-link
           v-else
-          :href="data.item.downloadURL"
-          :target="downloadTarget"
+          :href="storageFileViewRouteUrl(data.item)"
         > {{ data.item.name }}</b-link>
       </template>
       <template
@@ -55,11 +69,16 @@
 <script>
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
+import UserStorageCreateView from "./UserStorageCreateView";
+import UserStorageEditViewer from "./storage-edit/UserStorageEditViewer";
 
 export default {
   name: "user-storage-path-viewer",
   props: {
     userStoragePath: {
+      required: true
+    },
+    storagePath: {
       required: true
     },
     includeDeleteAction: {
@@ -69,6 +88,10 @@ export default {
     includeSelectFileAction: {
       type: Boolean,
       default: false
+    },
+    includeCreateFileAction: {
+      type: Boolean,
+      default: true
     },
     downloadInNewWindow: {
       type: Boolean,
@@ -82,9 +105,23 @@ export default {
   components: {
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
-    UserStoragePathBreadcrumb
+    UserStoragePathBreadcrumb,
+    UserStorageCreateView,
+    UserStorageEditViewer
   },
   computed: {
+    isDir() {
+      return this.userStoragePath.isDir;
+    },
+    isFile() {
+      return !this.userStoragePath.isDir;
+    },
+
+    // Return the first file available. This is assuming the path is a file.
+    file() {
+      return this.userStoragePath.files[0]
+    },
+
     fields() {
       return [
         {
@@ -171,6 +208,10 @@ export default {
           uri => item.type === "file" && uri === item.dataProductURI
         ) !== undefined
       );
+    },
+    storageFileViewRouteUrl(item) {
+      // This endpoint can handle XHR upload or a TUS uploadURL
+      return `/workspace/storage/${this.storagePath}${item.name}`;
     }
   }
 };

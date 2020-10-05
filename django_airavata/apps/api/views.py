@@ -3,17 +3,25 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from urllib.parse import quote
 
+import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
-from rest_framework.decorators import action, detail_route, list_route
+from rest_framework.decorators import (
+    action,
+    api_view,
+    detail_route,
+    list_route
+)
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from airavata.model.appcatalog.computeresource.ttypes import (
@@ -34,6 +42,7 @@ from airavata.model.data.movement.ttypes import (
 from airavata.model.experiment.ttypes import ExperimentSearchFields
 from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
+from airavata_django_portal_sdk import user_storage
 from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
@@ -45,7 +54,6 @@ from django_airavata.apps.auth import iam_admin_client
 from django_airavata.apps.auth.models import EmailVerification
 
 from . import (
-    data_products_helper,
     exceptions,
     helpers,
     models,
@@ -227,13 +235,13 @@ class ExperimentViewSet(APIBackedViewSet):
         if not experiment.userConfigurationData.experimentDataDir:
             project = self.request.airavata_client.getProject(
                 self.authz_token, experiment.projectId)
-            exp_dir = data_products_helper.get_experiment_dir(
+            exp_dir = user_storage.get_experiment_dir(
                 self.request, project.name, experiment.experimentName)
             experiment.userConfigurationData.experimentDataDir = exp_dir
         else:
             # get_experiment_dir will also validate that absolute paths are
             # inside the user's storage directory
-            exp_dir = data_products_helper.get_experiment_dir(
+            exp_dir = user_storage.get_experiment_dir(
                 self.request,
                 path=experiment.userConfigurationData.experimentDataDir)
             experiment.userConfigurationData.experimentDataDir = exp_dir
@@ -263,10 +271,10 @@ class ExperimentViewSet(APIBackedViewSet):
         """
         data_product = self.request.airavata_client.getDataProduct(
             self.authz_token, data_product_uri)
-        if data_products_helper.is_input_file_upload(
+        if user_storage.is_input_file(
                 self.request, data_product):
             moved_data_product = \
-                data_products_helper.move_input_file_upload(
+                user_storage.move_input_file(
                     self.request,
                     data_product,
                     experiment_data_dir)
@@ -277,15 +285,31 @@ class ExperimentViewSet(APIBackedViewSet):
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):
         try:
-            experiment = request.airavata_client.getExperiment(
-                self.authz_token, experiment_id)
-            self._set_storage_id_and_data_dir(experiment)
-            self._move_tmp_input_file_uploads_to_data_dir(experiment)
-            request.airavata_client.updateExperiment(
-                self.authz_token, experiment_id, experiment)
-            request.airavata_client.launchExperiment(
-                request.authz_token, experiment_id, self.gateway_id)
-            return Response({'success': True})
+            if getattr(
+                settings,
+                'GATEWAY_DATA_STORE_REMOTE_API',
+                    None) is not None:
+                # Proxy the launch/ request to the remote Django portal
+                # instance since it must setup the experiment data directory
+                # which is only on the remote Django portal instance
+                headers = {
+                    'Authorization': f'Bearer {request.authz_token.accessToken}'}
+                r = requests.post(
+                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/launch/',
+                    headers=headers,
+                )
+                r.raise_for_status()
+                return Response(r.json())
+            else:
+                experiment = request.airavata_client.getExperiment(
+                    self.authz_token, experiment_id)
+                self._set_storage_id_and_data_dir(experiment)
+                self._move_tmp_input_file_uploads_to_data_dir(experiment)
+                request.airavata_client.updateExperiment(
+                    self.authz_token, experiment_id, experiment)
+                request.airavata_client.launchExperiment(
+                    request.authz_token, experiment_id, self.gateway_id)
+                return Response({'success': True})
         except Exception as e:
             return Response({'success': False, 'errorMessage': e.message})
 
@@ -299,31 +323,46 @@ class ExperimentViewSet(APIBackedViewSet):
 
     @detail_route(methods=['post'])
     def clone(self, request, experiment_id=None):
+        if getattr(
+            settings,
+            'GATEWAY_DATA_STORE_REMOTE_API',
+                None) is not None:
+            # Proxy the clone/ request to the remote Django portal instance
+            # since it must locally copy input files, which are only on the
+            # remote Django portal instance
+            headers = {
+                'Authorization': f'Bearer {request.authz_token.accessToken}'}
+            r = requests.post(
+                f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/clone/',
+                headers=headers,
+            )
+            r.raise_for_status()
+            return Response(r.json())
+        else:
+            # figure what project to clone into
+            experiment = self.request.airavata_client.getExperiment(
+                self.authz_token, experiment_id)
+            project_id = self._get_writeable_project(experiment)
 
-        # figure what project to clone into
-        experiment = self.request.airavata_client.getExperiment(
-            self.authz_token, experiment_id)
-        project_id = self._get_writeable_project(experiment)
+            # clone experiment
+            cloned_experiment_id = request.airavata_client.cloneExperiment(
+                self.authz_token, experiment_id,
+                "Clone of {}".format(experiment.experimentName), project_id)
+            cloned_experiment = request.airavata_client.getExperiment(
+                self.authz_token, cloned_experiment_id)
 
-        # clone experiment
-        cloned_experiment_id = request.airavata_client.cloneExperiment(
-            self.authz_token, experiment_id,
-            "Clone of {}".format(experiment.experimentName), project_id)
-        cloned_experiment = request.airavata_client.getExperiment(
-            self.authz_token, cloned_experiment_id)
+            # Create a copy of the experiment input files
+            self._copy_cloned_experiment_input_uris(cloned_experiment)
 
-        # Create a copy of the experiment input files
-        self._copy_cloned_experiment_input_uris(cloned_experiment)
-
-        # Null out experimentDataDir so a new one will get created at launch
-        # time
-        cloned_experiment.userConfigurationData.experimentDataDir = None
-        request.airavata_client.updateExperiment(
-            self.authz_token, cloned_experiment.experimentId, cloned_experiment
-        )
-        serializer = self.serializer_class(
-            cloned_experiment, context={'request': request})
-        return Response(serializer.data)
+            # Null out experimentDataDir so a new one will get created at launch
+            # time
+            cloned_experiment.userConfigurationData.experimentDataDir = None
+            request.airavata_client.updateExperiment(
+                self.authz_token, cloned_experiment.experimentId, cloned_experiment
+            )
+            serializer = self.serializer_class(
+                cloned_experiment, context={'request': request})
+            return Response(serializer.data)
 
     @detail_route(methods=['post'])
     def cancel(self, request, experiment_id=None):
@@ -398,8 +437,8 @@ class ExperimentViewSet(APIBackedViewSet):
             data_product_uri):
         source_data_product = self.request.airavata_client.getDataProduct(
             self.authz_token, data_product_uri)
-        if data_products_helper.exists(self.request, source_data_product):
-            return data_products_helper.copy_input_file_upload(
+        if user_storage.exists(self.request, source_data_product):
+            return user_storage.copy_input_file(
                 self.request, source_data_product)
         else:
             log.warning("Could not find file for source data "
@@ -939,11 +978,11 @@ class DataProductView(APIView):
         return Response(serializer.data)
 
 
-@login_required
+@api_view(http_method_names=['POST'])
 def upload_input_file(request):
     try:
         input_file = request.FILES['file']
-        data_product = data_products_helper.save_input_file_upload(
+        data_product = user_storage.save_input_file(
             request, input_file, content_type=input_file.content_type)
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
@@ -956,12 +995,12 @@ def upload_input_file(request):
         return resp
 
 
-@login_required
+@api_view(http_method_names=['POST'])
 def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
     def move_input_file(file_path, file_name, file_type):
-        return data_products_helper.move_input_file_upload_from_filepath(
+        return user_storage.move_input_file_from_filepath(
             request, file_path, name=file_name, content_type=file_type)
     try:
         data_product = tus.move_tus_upload(uploadURL, move_input_file)
@@ -973,7 +1012,7 @@ def tus_upload_finish(request):
         return exceptions.generic_json_exception_response(e, status=400)
 
 
-@login_required
+@api_view()
 def download_file(request):
     # TODO check that user has access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -993,20 +1032,20 @@ def download_file(request):
                     .format(data_product_uri), exc_info=True)
         raise Http404("data product does not exist") from e
     try:
-        data_file = data_products_helper.open_file(request, data_product)
+        data_file = user_storage.open_file(request, data_product)
         response = FileResponse(data_file, content_type=mime_type)
         file_name = os.path.basename(data_file.name)
         if mime_type == 'application/octet-stream' or force_download:
             response['Content-Disposition'] = ('attachment; filename="{}"'
                                                .format(file_name))
         else:
-            response['Content-Disposition'] = f'filename="{file_name}"'
+            response['Content-Disposition'] = f'inline; filename="{file_name}"'
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
 
 
-@login_required
+@api_view(http_method_names=['DELETE'])
 def delete_file(request):
     # TODO check that user has write access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -1022,7 +1061,7 @@ def delete_file(request):
         if (data_product.gatewayId != settings.GATEWAY_ID or
                 data_product.ownerName != request.user.username):
             raise PermissionDenied()
-        data_products_helper.delete(request, data_product)
+        user_storage.delete(request, data_product)
         return HttpResponse(status=204)
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
@@ -1501,41 +1540,78 @@ class UserStoragePathView(APIView):
         return self._create_response(request, path)
 
     def post(self, request, path="/", format=None):
-        if not data_products_helper.dir_exists(request, path):
-            data_products_helper.create_user_dir(request, path)
+        if not user_storage.dir_exists(request, path):
+            user_storage.create_user_dir(request, path)
 
         data_product = None
         # Handle direct upload
         if 'file' in request.FILES:
             user_file = request.FILES['file']
-            data_product = data_products_helper.save(
+            data_product = user_storage.save(
                 request, path, user_file, content_type=user_file.content_type)
         # Handle a tus upload
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
 
             def move_file(file_path, file_name, file_type):
-                return data_products_helper.move_from_filepath(
+                return user_storage.move_from_filepath(
                     request, file_path, path, name=file_name,
                     content_type=file_type)
             data_product = tus.move_tus_upload(uploadURL, move_file)
         return self._create_response(request, path, uploaded=data_product)
 
+    # Accept wither to replace file or to replace file content text.
+    def put(self, request, path="/", format=None):
+        # Replace the file if the request has a file upload.
+        if 'file' in request.FILES:
+            self.delete(request=request, path=path, format=format)
+            dir_path, file_name = os.path.split(path)
+            self.post(request=request, path=dir_path, format=format, file_name=file_name)
+        # Replace only the file content if the request body has the `fileContentText`
+        elif request.data and "fileContentText" in request.data:
+            user_storage.update_file_content(
+                request=request,
+                path=path,
+                fileContentText=request.data["fileContentText"])
+        else:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+        return self._create_response(request=request, path=path)
+
+
     def delete(self, request, path="/", format=None):
-        data_products_helper.delete_dir(request, path)
+        if user_storage.dir_exists(request, path):
+            user_storage.delete_dir(request, path)
+        else:
+            user_storage.delete_user_file(request, path)
+
         return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
-        directories, files = data_products_helper.listdir(request, path)
-        data = {
-            'directories': directories,
-            'files': files
-        }
-        if uploaded is not None:
-            data['uploaded'] = uploaded
-        data['parts'] = self._split_path(path)
-        serializer = self.serializer_class(data, context={'request': request})
-        return Response(serializer.data)
+        if user_storage.dir_exists(request, path):
+            directories, files = user_storage.listdir(request, path)
+            data = {
+                'isDir': True,
+                'directories': directories,
+                'files': files
+            }
+            if uploaded is not None:
+                data['uploaded'] = uploaded
+            data['parts'] = self._split_path(path)
+            serializer = self.serializer_class(data, context={'request': request})
+            return Response(serializer.data)
+        else:
+            file = user_storage.get_file(request, path)
+            data = {
+                'isDir': False,
+                'directories': [],
+                'files': [file]
+            }
+            if uploaded is not None:
+                data['uploaded'] = uploaded
+            data['parts'] = self._split_path(path)
+            serializer = self.serializer_class(data, context={'request': request})
+            return Response(serializer.data)
 
     def _split_path(self, path):
         head, tail = os.path.split(path)
@@ -1836,7 +1912,7 @@ class APIServerStatusCheckView(APIView):
         return Response(data)
 
 
-@login_required
+@api_view()
 def notebook_output_view(request):
     provider_id = request.GET['provider-id']
     experiment_id = request.GET['experiment-id']
@@ -1848,13 +1924,13 @@ def notebook_output_view(request):
     return HttpResponse(data['output'])
 
 
-@login_required
+@api_view()
 def html_output_view(request):
     data = _generate_output_view_data(request)
     return JsonResponse(data)
 
 
-@login_required
+@api_view()
 def image_output_view(request):
     data = _generate_output_view_data(request)
     # data should contain 'image' as a file-like object or raw bytes with the
@@ -1863,6 +1939,7 @@ def image_output_view(request):
     return JsonResponse(data)
 
 
+@api_view()
 def link_output_view(request):
     data = _generate_output_view_data(request)
     return JsonResponse(data)
