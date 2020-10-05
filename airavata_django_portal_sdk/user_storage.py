@@ -1,11 +1,18 @@
+import cgi
 import copy
+import io
 import logging
 import mimetypes
 import os
 import shutil
-from urllib.parse import quote, urlparse
+from urllib.parse import quote, unquote, urlparse
 
 import requests
+from airavata.model.data.replica.ttypes import (DataProductModel,
+                                                DataProductType,
+                                                DataReplicaLocationModel,
+                                                ReplicaLocationCategory,
+                                                ReplicaPersistentType)
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
@@ -13,15 +20,7 @@ from django.core.files import File
 from django.core.files.move import file_move_safe
 from django.core.files.storage import FileSystemStorage
 
-from airavata.model.data.replica.ttypes import (DataProductModel,
-                                                DataProductType,
-                                                DataReplicaLocationModel,
-                                                ReplicaLocationCategory,
-                                                ReplicaPersistentType)
-
 from .util import convert_iso8601_to_datetime
-import io
-import cgi
 
 logger = logging.getLogger(__name__)
 
@@ -520,7 +519,7 @@ def _create_replica_location(full_path, file_name):
     )
     data_replica_location.replicaPersistentType = ReplicaPersistentType.TRANSIENT
     data_replica_location.filePath = "file://{}:{}".format(
-        settings.GATEWAY_DATA_STORE_HOSTNAME, full_path
+        settings.GATEWAY_DATA_STORE_HOSTNAME, quote(full_path)
     )
     return data_replica_location
 
@@ -534,7 +533,7 @@ def _get_replica_filepath(data_product):
     replica_filepath = replica_filepaths[0] if len(
         replica_filepaths) > 0 else None
     if replica_filepath:
-        return urlparse(replica_filepath).path
+        return unquote(urlparse(replica_filepath).path)
     return None
 
 
