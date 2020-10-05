@@ -24,3 +24,5 @@ custom Django app extensions to the
     :docstring:
 ::: airavata_django_portal_sdk.user_storage.listdir
     :docstring:
+::: airavata_django_portal_sdk.user_storage.list_experiment_dir
+    :docstring:
