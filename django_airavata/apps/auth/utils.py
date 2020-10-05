@@ -17,7 +17,9 @@ from . import models
 
 def get_authz_token(request, user=None, access_token=None):
     """Construct AuthzToken instance from session; refresh token if needed."""
-    if not is_access_token_expired(request):
+    if access_token is not None:
+        return _create_authz_token(request, user=user, access_token=access_token)
+    elif not is_access_token_expired(request):
         return _create_authz_token(request, user=user, access_token=access_token)
     elif not is_refresh_token_expired(request):
         # Have backend reauthenticate the user with the refresh token
