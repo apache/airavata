@@ -384,6 +384,69 @@ def listdir(request, path):
         raise ObjectDoesNotExist("User storage path does not exist")
 
 
+def list_experiment_dir(request, experiment_id, path=None):
+    """
+    List files, directories in experiment data directory. Returns a tuple,
+    see `listdir`.
+    """
+    if _is_remote_api():
+        raise NotImplementedError()
+
+    experiment = request.airavata_client.getExperiment(
+            request.authz_token, experiment_id)
+    datastore = _Datastore()
+    exp_data_path = experiment.userConfigurationData.experimentDataDir
+    if path is not None:
+        exp_data_path = os.path.join(exp_data_path, path)
+    exp_owner = experiment.userName
+    if datastore.dir_exists(exp_owner, exp_data_path):
+        directories, files = datastore.list_user_dir(
+            exp_owner, exp_data_path)
+        directories_data = []
+        for d in directories:
+            dpath = os.path.join(path, d)
+            created_time = datastore.get_created_time(
+                exp_owner, dpath)
+            size = datastore.size(exp_owner, dpath)
+            directories_data.append(
+                {
+                    "name": d,
+                    "path": dpath,
+                    "created_time": created_time,
+                    "size": size,
+                    "hidden": dpath == TMP_INPUT_FILE_UPLOAD_DIR,
+                }
+            )
+        files_data = []
+        for f in files:
+            user_rel_path = os.path.join(path, f)
+            created_time = datastore.get_created_time(
+                exp_owner, user_rel_path
+            )
+            size = datastore.size(exp_owner, user_rel_path)
+            full_path = datastore.path(exp_owner, user_rel_path)
+            data_product_uri = _get_data_product_uri(request, full_path, owner=exp_owner)
+
+            data_product = request.airavata_client.getDataProduct(
+                request.authz_token, data_product_uri)
+            mime_type = None
+            if 'mime-type' in data_product.productMetadata:
+                mime_type = data_product.productMetadata['mime-type']
+            files_data.append(
+                {
+                    "name": f,
+                    "path": user_rel_path,
+                    "data-product-uri": data_product_uri,
+                    "created_time": created_time,
+                    "mime_type": mime_type,
+                    "size": size,
+                    "hidden": False,
+                }
+            )
+        return directories_data, files_data
+    else:
+        raise ObjectDoesNotExist("Experiment data directory does not exist")
+
 def get_experiment_dir(
         request,
         project_name=None,
@@ -409,36 +472,42 @@ def get_rel_path(request, path):
     return _Datastore().rel_path(request.user.username, path)
 
 
-def _get_data_product_uri(request, full_path):
+def _get_data_product_uri(request, full_path, owner=None):
 
     from airavata_django_portal_sdk import models
+    if owner is None:
+        owner = request.user.username
     user_file = models.UserFiles.objects.filter(
-        username=request.user.username, file_path=full_path)
+        username=owner, file_path=full_path)
     if user_file.exists():
         product_uri = user_file[0].file_dpu
     else:
-        data_product = _save_data_product(request, full_path)
+        data_product = _save_data_product(request, full_path, owner=owner)
         product_uri = data_product.productUri
     return product_uri
 
 
-def _save_data_product(request, full_path, name=None, content_type=None):
+def _save_data_product(request, full_path, name=None, content_type=None, owner=None):
     "Create, register and record in DB a data product for full_path."
+    if owner is None:
+        owner = request.user.username
     data_product = _create_data_product(
-        request.user.username, full_path, name=name, content_type=content_type
+        owner, full_path, name=name, content_type=content_type
     )
-    product_uri = _register_data_product(request, full_path, data_product)
+    product_uri = _register_data_product(request, full_path, data_product, owner=owner)
     data_product.productUri = product_uri
     return data_product
 
 
-def _register_data_product(request, full_path, data_product):
+def _register_data_product(request, full_path, data_product, owner=None):
+    if owner is None:
+        owner = request.user.username
     product_uri = request.airavata_client.registerDataProduct(
         request.authz_token, data_product
     )
     from airavata_django_portal_sdk import models
     user_file_instance = models.UserFiles(
-        username=request.user.username,
+        username=owner,
         file_path=full_path,
         file_dpu=product_uri)
     user_file_instance.save()
