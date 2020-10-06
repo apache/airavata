@@ -23,8 +23,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "django",
-        # https://stackoverflow.com/a/61931498
-        "airavata-python-sdk @ git+https://github.com/apache/airavata.git@develop#egg=airavata-python-sdk&subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk",
+        # Installed from git repo; see requirements.txt for details
+        "airavata-python-sdk"
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
