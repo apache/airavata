@@ -637,7 +637,7 @@ grid as an example.
     def generate_data(self, request, experiment_output, experiment, output_file=None, show_grid=False):
 ```
 
-2. Add the following `.show_grid()` lines to the matplotlib code:
+2. Add the following `.grid()` lines to the matplotlib code:
 
 ```python
 ...
@@ -646,11 +646,11 @@ grid as an example.
             ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
             ax[0].set_ylabel('eV')
             ax[0].legend()
-            ax[0].show_grid(show_grid)
+            ax[0].grid(show_grid)
             ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
             ax[1].set_ylabel('eV')
             ax[1].legend()
-            ax[1].show_grid(show_grid)
+            ax[1].grid(show_grid)
 ...
 ```
 
@@ -1112,6 +1112,9 @@ $("#run-button").click((e) => {
 ```
 
 Now that we can launch the experiment we can go ahead and give it a try.
+
+You can also try this out in the production deployment at
+<https://testdrive.airavata.org/gateways19_tutorial/hello/>.
 
 ### Displaying the experiment output
 
