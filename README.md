@@ -12,15 +12,23 @@ more details.
 To integrate the SDK with an Airavata Django Portal custom app, add
 
 ```
-"airavata-django-portal-sdk @ git+https://github.com/apache/airavata-django-portal-sdk.git@master#egg=airavata-django-portal-sdk",
+"airavata-django-portal-sdk",
 ```
 
 to the `install_requires` list in your setup.py file. Then with your virtual
-environment activated, reinstall your Django app with
+environment activated, either install the SDK directly:
 
 ```
-pip install -e .
+pip install -e "git+https://github.com/apache/airavata-django-portal-sdk.git@master#egg=airavata-django-portal-sdk"
 ```
+
+Or add the dependency to your requirements.txt file:
+
+```
+-e "git+https://github.com/apache/airavata-django-portal-sdk.git@master#egg=airavata-django-portal-sdk"
+```
+
+then run `pip install -r requirements.txt`
 
 ## Migrations
 
