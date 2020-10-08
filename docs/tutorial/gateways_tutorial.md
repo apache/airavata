@@ -3,7 +3,9 @@
 Objective: learn the basics of the Apache Airavata Django Portal and how to make
 both simple and complex customizations to the user interface.
 
-Prerequisites: tutorial attendees should have:
+## Prerequisites
+
+Tutorial attendees should have:
 
 -   a laptop on which to write Python code
 -   Git client
