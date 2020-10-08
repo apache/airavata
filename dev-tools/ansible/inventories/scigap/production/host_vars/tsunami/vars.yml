@@ -37,13 +37,13 @@ auth_options:
   password:
     name: "TSUNAMI Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "tsunami"
 experiment_data_dir: "{{ user_data_dir }}/tsunami"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBRVHtPN6m/9VUXuYK6+92BSWR65D7+8Y+HAwevv1teLTuaZutyvysbQDPeKYMpqj+z3GMPo0E86zIoXXFHKXS6assBsvpQNNXBfIl91J0b3gUD3SukBbShPyhTawIi7za6VPMvUSa3koC/52Ihbz8VQLNc0xCxnSWHhgc1bIBMoA1JsXOnKPAQZvjkBwXAZUeDXLyS3koE9WNnbRoqOUkqs0MO8tKCvfaVTqILHToOSvgaXrXbEEpND9dCvIuer6tREgakoig+1ck9t9VzPLb/1FsaWGA/V/0WKHcsGvfDmIZcjtdL+eUhVJIJif3BCXDeQJJVap7smll3DXmkgKb"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4/mMdvcRHp7ThTToIRpmO+O46pme1Oo649yFLNoFlnIYHxT3cUnxYbxrxgcw83PwwFTK4FV04ITUEyOmD9Qoa1liwdrCvEqR31eTD+GkUVVGUgCp+GvqCWnZkEJ8+z/VBLuJjK0HxpT+9kSh0DChoZ6k64/dsNrA4l1YE0EBrOfLKSGJ0Ik2tlKxbIrwTe8ZDWu2iVKFMnFaLbsWoraQ+sYWTbW+1BCYAxsT9ykH4KOYE/YPBUECr8zVzBSXSxyNPtuySvy0PzNjLrm8nN4uIr5wgrFqi2iL2i2vQyFMTJJToyvcBVLK3eCw+AmYrlHZq49E8+uAhfDhDahy4WraJ"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "TSUNAMI Gateway"
