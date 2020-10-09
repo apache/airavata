@@ -15,19 +15,19 @@ Tutorial attendees should have:
 
 !!! note "Special note for Windows Home users"
 
-    If you have Windows Home installed, you'll need to either take some
-    extra steps to setup WSL2 (Windows Subsystem for Linux 2) or use a
-    **remote Docker host**. The following are some special instructions to
-    help you with these options:
+    If you have Windows Home installed, you'll need to either use a **remote
+    Docker host** (recommended) or take some extra steps to setup WSL2
+    (Windows Subsystem for Linux 2). The following are some special
+    instructions to help you with these options:
 
-    1. [Install Docker Desktop on Windows Home with WSL2
-    enabled](https://docs.docker.com/docker-for-windows/install-windows-home/).
-    See the link for more information.
-    2. For the in person session of the tutorial, you will have the option of
-    using a **remote Docker host** provided to you. See [Appendix: Setting up
-    Windows Home for a remote Docker
+    1. (**Recommended**) For the in person session of the tutorial, you will
+    have the option of using a **remote Docker host** provided to you. See
+    [Appendix: Setting up Windows Home for a remote Docker
     host](#appendix-setting-up-windows-for-a-remote-docker-host) for more
     details.
+    2. (**Advanced**) [Install Docker Desktop on Windows Home with WSL2
+    enabled](https://docs.docker.com/docker-for-windows/install-windows-home/).
+    See the link for more information.
 
 ## Outline
 
