@@ -1047,22 +1047,31 @@ const loadAppInterface = services.ApplicationInterfaceService.retrieve({
 
 ```javascript
 const appDeploymentId =
-    "js-156-93.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
+    "example-vc.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
 const loadQueues = services.ApplicationDeploymentService.getQueues({
     lookup: appDeploymentId,
 });
 ```
 
 4. We also need to know a few other pieces of information, like the id of the
-   compute resource, the queue and the groupResourceProfileId which identifies
-   the allocation used to submit the job. Experiments are organized by projects
-   so we'll also load the user's most recently used project:
+   compute resource which
+   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_deployments/>
+   also provides with the value `computeHostId`. The queue name we can get from
+   following the link from the deployment to the queues:
+   <https://testdrive.airavata.org/api/application-deployments/example-vc.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/queues/>.
+   Here we see that the `queueName` is `cloud`. We also need the account to use
+   to submit the job and that is specified via a "Group Resource Profile".
+   <https://testdrive.airavata.org/api/group-resource-profiles/> lists profiles
+   you have access to and the compute resources each profile can use for job
+   submission. We'll use the tutorial reservation one. Finally, experiments are
+   organized by projects so we'll also load the user's most recently used
+   project which is stored in the user's WorkspacePreferences:
 
 ```javascript
 const resourceHostId =
-    "js-156-93.jetstream-cloud.org_33019860-54c2-449b-96d3-988d4f5a501e";
+    "example-vc.jetstream-cloud.org_794fd026-101a-46af-8868-5d7a86f813a1";
 const queueName = "cloud";
-const groupResourceProfileId = "5d4ef270-057c-410b-a2bb-36b5262ce265";
+const groupResourceProfileId = "fc245311-a7d1-41af-b8ae-a4142989c9a1";
 const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
 ```
 
@@ -1076,14 +1085,14 @@ $("#run-button").click((e) => {
         lookup: appInterfaceId,
     });
     const appDeploymentId =
-        "js-156-93.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
+        "example-vc.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
     const loadQueues = services.ApplicationDeploymentService.getQueues({
         lookup: appDeploymentId,
     });
     const resourceHostId =
-        "js-156-93.jetstream-cloud.org_33019860-54c2-449b-96d3-988d4f5a501e";
+        "example-vc.jetstream-cloud.org_794fd026-101a-46af-8868-5d7a86f813a1";
     const queueName = "cloud";
-    const groupResourceProfileId = "5d4ef270-057c-410b-a2bb-36b5262ce265";
+    const groupResourceProfileId = "fc245311-a7d1-41af-b8ae-a4142989c9a1";
     const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
     Promise.all([loadAppInterface, loadWorkspacePrefs, loadQueues])
         .then(([appInterface, workspacePrefs, queues]) => {
