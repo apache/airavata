@@ -121,6 +121,9 @@ public class JobFactory {
             case FORK:
                 return new ForkJobConfiguration(templateFileName, ".sh", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), new ForkOutputParser());
+            case HTCONDOR:
+                return new SlurmJobConfiguration(templateFileName, ".submit", resourceJobManager
+                        .getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), new HTCondorOutputParser());
             // We don't have a job configuration manager for CLOUD type
             default:
                 throw new Exception("Could not find a job manager configuration for job manager type "
