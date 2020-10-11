@@ -1318,8 +1318,9 @@ Where IP_ADDRESS should be replaced with the IP address or hostname of the
 remote Docker host (for example: `149.165.168.201`). And PRIVATE_KEY should be
 replaced with the name of your private key file that you copied in step 2.
 
-Test that SSH is working by opening a command prompt (in Visual Studio Code open
-a new terminal with **Ctrl+Shift+`**) and running the following:
+Test that SSH is working by opening a Powershell command prompt (in Visual
+Studio Code open a new terminal with **Ctrl+Shift+`**) and running the
+following:
 
 ```
 ssh username@IP_ADDRESS
@@ -1328,7 +1329,7 @@ ssh username@IP_ADDRESS
 You should see something like the following:
 
 ```text
-C:\Users\testuser> ssh user1@149.165.157.132
+PS C:\Users\testuser> ssh user1@149.165.157.132
 The authenticity of host '149.165.157.132 (149.165.157.132)' can't be established.
 ECDSA key fingerprint is SHA256:RG86D7KwCZNQtFOAfEc4TZ4V0stn1RyGrj5I+v7SHxU.
 Are you sure you want to continue connecting (yes/no)? yes
@@ -1346,13 +1347,14 @@ password, double check that the `config` file is correct.
 
 To connect to Docker you'll need the Docker client. Download
 <https://github.com/StefanScherer/docker-cli-builder/releases/download/19.03.12/docker.exe>
-and copy it to `C:\Windows` (or anywhere else that is on your PATH).
+and copy it to `C:\Windows` (or anywhere else that is on your PATH, or in the
+current directory).
 
-Next, at a command prompt set the environment variable `DOCKER_HOST` to the SSH
-username and IP address of the remote Docker host.
+Next, at a Powershell command prompt set the environment variable `DOCKER_HOST`
+to the SSH username and IP address of the remote Docker host.
 
 ```
-set DOCKER_HOST=ssh://USERNAME@IP_ADDRESS
+$env:DOCKER_HOST = "ssh://USERNAME@IP_ADDRESS"
 ```
 
 But replace USERNAME with your username on the remote Docker host and the
@@ -1360,7 +1362,7 @@ IP_ADDRESS with the IP address or domain name of the remote Docker host. For
 example:
 
 ```
-set DOCKER_HOST=ssh://centos@149.165.157.132
+$env:DOCKER_HOST = "ssh://train01@149.165.170.99"
 ```
 
 Now run the following to test that the connection is working:
@@ -1371,6 +1373,16 @@ docker ps
 
 You'll use this command prompt window during the tutorial to run docker
 commands.
+
+!!! note "Note for legacy Command Prompt users"
+
+    If you are using `CMD`, the legacy command prompt program then you need a
+    slightly different way of specifying the DOCKER_HOST environment
+    variable. The form is
+
+    ```
+    set DOCKER_HOST=ssh://USERNAME@IP_ADDRESS
+    ```
 
 ### SSH Tunnel
 
