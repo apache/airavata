@@ -740,7 +740,7 @@ from django.apps import AppConfig
 class Gateways19TutorialAppConfig(AppConfig):
     name = 'gateways19_tutorial'
     label = name
-    verbose_name = "Gateways 19 Tutorial"
+    verbose_name = "Gateways Tutorial"
     fa_icon_class = "fa-comment"
 ```
 
@@ -798,7 +798,7 @@ gateways19_tutorial = gateways19_tutorial.apps:Gateways19TutorialAppConfig
 ---
 
 Now you should be able to [log into the portal locally](http://localhost:8000)
-and see **Gateways 19 Tutorial** in the drop down menu in the header (click on
+and see **Gateways Tutorial** in the drop down menu in the header (click on
 **Workspace** then you should see it in that menu).
 
 ![Screenshot of custom app in menu](./screenshots/gateways19/custom-app-menu.png)
