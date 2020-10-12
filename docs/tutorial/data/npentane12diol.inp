@@ -1,4 +1,4 @@
-%nproc=24
+%nproc=8
 %mem=3000MB
 %Chk=npentane12diol
 #P RB3LYP/cc-pVDZ GFInput GFPrint Iop(6/7=3) Opt Freq
