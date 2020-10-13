@@ -40,7 +40,7 @@ public class SlurmOutputParser implements OutputParser {
 
 
     /**
-     * This can be used to parseSingleJob the outpu of sbatch and extrac the jobID from the content
+     * This can be used to parseSingleJob the output of sbatch and extract the jobID from the content
      *
      * @param rawOutput
      * @return
