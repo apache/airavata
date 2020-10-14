@@ -149,10 +149,16 @@ https://support.google.com/accounts/answer/6010255?hl=en
 
 * Run following command to get the ip address of host machine
 
-  This command is for docker containers deployed on Mac OSX  
+  For Mac OSX  
 
   ```
   docker-compose exec pga getent hosts docker.for.mac.host.internal | awk '{ print $1 }'
+  ```
+  
+  For Windows
+  
+  ```
+  docker-compose exec pga getent hosts host.docker.internal
   ```
 
 * Update the host entries of pga container with above ip address
