@@ -6,6 +6,7 @@ nav:
   - Home: index.md
   - User Guide:
     - Using the integrated CMS: cms.md
+    - Using the default CMS theme [PDF]: assets/cms_default_theme.pdf
   - Developer Guide:
     - Adding a Django App: dev/new_django_app.md
     - Developing the Frontend: dev/developing_frontend.md

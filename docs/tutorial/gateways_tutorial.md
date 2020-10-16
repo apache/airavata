@@ -399,7 +399,7 @@ docker run -d --name gateways19-tutorial -p 8000:8000 -v $PWD:/extensions -v $PW
 3. Run the following to load the default set of CMS pages:
 
 ```
-docker exec gateways19-tutorial python manage.py load_cms_data default
+docker exec gateways19-tutorial python manage.py load_cms_data new_default_theme
 ```
 
 ---
