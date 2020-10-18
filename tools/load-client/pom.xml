@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata-tools-parent</artifactId>
-        <version>0.20-SNAPSHOT</version>
+        <version>0.21-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -55,7 +55,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.5</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>load-client-distribution-package</id>

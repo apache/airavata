@@ -139,4 +139,8 @@ public class TaskUtil {
             }
         }
     }
+
+    public static String replaceSpecialCharacters(String originalTxt, String replaceTxt) {
+        return originalTxt.replaceAll("[^a-zA-Z0-9_-]", replaceTxt);
+    }
 }
