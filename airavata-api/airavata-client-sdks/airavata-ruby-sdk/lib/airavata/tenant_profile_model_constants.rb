@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'tenant_profile_model_types'
+require_relative 'tenant_profile_model_types'
 

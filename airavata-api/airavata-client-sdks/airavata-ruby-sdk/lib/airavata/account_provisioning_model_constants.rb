@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'account_provisioning_model_types'
+require_relative 'account_provisioning_model_types'
 

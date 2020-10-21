@@ -5,8 +5,8 @@
 #
 
 require 'thrift'
-require 'base_a_p_i'
-require 'airavata_api_types'
+require_relative 'base_a_p_i'
+require_relative 'airavata_api_types'
 
 module Airavata
   class Client < ::BaseAPI::Client 

@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'airavata_workflow_model_types'
+require_relative 'airavata_workflow_model_types'
 

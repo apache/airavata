@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'scheduling_model_types'
+require_relative 'scheduling_model_types'
 

@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'parser_model_types'
+require_relative 'parser_model_types'
 

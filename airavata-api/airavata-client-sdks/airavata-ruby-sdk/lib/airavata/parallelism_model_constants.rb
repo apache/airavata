@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'parallelism_model_types'
+require_relative 'parallelism_model_types'
 

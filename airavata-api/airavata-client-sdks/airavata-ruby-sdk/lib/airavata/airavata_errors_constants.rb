@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'airavata_errors_types'
+require_relative 'airavata_errors_types'
 

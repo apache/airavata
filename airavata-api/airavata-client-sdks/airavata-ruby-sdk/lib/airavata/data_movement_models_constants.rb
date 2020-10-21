@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'data_movement_models_types'
+require_relative 'data_movement_models_types'
 

@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'job_model_types'
+require_relative 'job_model_types'
 

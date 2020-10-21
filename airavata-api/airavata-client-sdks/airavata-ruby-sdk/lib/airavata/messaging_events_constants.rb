@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'messaging_events_types'
+require_relative 'messaging_events_types'
 

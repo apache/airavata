@@ -5,8 +5,8 @@
 #
 
 require 'thrift'
-require 'airavata_commons_types'
-require 'parallelism_model_types'
+require_relative 'airavata_commons_types'
+require_relative 'parallelism_model_types'
 
 
 # Key Value pairs to be used to set environments

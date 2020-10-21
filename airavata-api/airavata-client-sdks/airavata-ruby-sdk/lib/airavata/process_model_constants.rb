@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'process_model_types'
+require_relative 'process_model_types'
 

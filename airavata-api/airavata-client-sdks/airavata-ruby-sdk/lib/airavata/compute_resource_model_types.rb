@@ -5,9 +5,9 @@
 #
 
 require 'thrift'
-require 'airavata_commons_types'
-require 'parallelism_model_types'
-require 'data_movement_models_types'
+require_relative 'airavata_commons_types'
+require_relative 'parallelism_model_types'
+require_relative 'data_movement_models_types'
 
 
 module ResourceJobManagerType

@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'storage_resource_model_types'
+require_relative 'storage_resource_model_types'
 

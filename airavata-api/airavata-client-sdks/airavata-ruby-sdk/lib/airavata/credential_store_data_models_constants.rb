@@ -5,7 +5,7 @@
 #
 
 require 'thrift'
-require 'credential_store_data_models_types'
+require_relative 'credential_store_data_models_types'
 
 DEFAULT_ID = %q"DO_NOT_SET_AT_CLIENTS"
 

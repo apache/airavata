@@ -5,7 +5,7 @@
 #
 
 require 'thrift'
-require 'airavata_commons_types'
+require_relative 'airavata_commons_types'
 
 
 module TenantApprovalStatus

@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'workspace_model_types'
+require_relative 'workspace_model_types'
 

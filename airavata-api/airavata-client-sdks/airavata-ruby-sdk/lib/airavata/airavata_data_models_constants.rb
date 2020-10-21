@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'airavata_data_models_types'
+require_relative 'airavata_data_models_types'
 

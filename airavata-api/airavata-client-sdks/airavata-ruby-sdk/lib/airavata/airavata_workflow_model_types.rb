@@ -5,8 +5,8 @@
 #
 
 require 'thrift'
-require 'airavata_commons_types'
-require 'application_io_models_types'
+require_relative 'airavata_commons_types'
+require_relative 'application_io_models_types'
 
 
 module ApplicationState

@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'user_resource_profile_model_types'
+require_relative 'user_resource_profile_model_types'
 

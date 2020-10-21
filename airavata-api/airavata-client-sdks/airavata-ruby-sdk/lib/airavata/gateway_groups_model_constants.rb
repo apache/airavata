@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'gateway_groups_model_types'
+require_relative 'gateway_groups_model_types'
 

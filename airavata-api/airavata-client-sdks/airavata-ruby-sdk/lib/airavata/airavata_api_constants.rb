@@ -5,7 +5,7 @@
 #
 
 require 'thrift'
-require 'airavata_api_types'
+require_relative 'airavata_api_types'
 
 AIRAVATA_API_VERSION = %q"0.18.0"
 

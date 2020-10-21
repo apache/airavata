@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'base_api_types'
+require_relative 'base_api_types'
 

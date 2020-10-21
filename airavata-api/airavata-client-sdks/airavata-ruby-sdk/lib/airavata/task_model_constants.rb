@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'task_model_types'
+require_relative 'task_model_types'
 

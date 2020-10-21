@@ -5,7 +5,7 @@
 #
 
 require 'thrift'
-require 'airavata_commons_types'
+require_relative 'airavata_commons_types'
 
 DEFAULT_ID = %q"DO_NOT_SET_AT_CLIENTS"
 

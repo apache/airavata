@@ -5,12 +5,12 @@
 #
 
 require 'thrift'
-require 'airavata_commons_types'
-require 'application_io_models_types'
-require 'scheduling_model_types'
-require 'status_models_types'
-require 'process_model_types'
-require 'airavata_workflow_model_types'
+require_relative 'airavata_commons_types'
+require_relative 'application_io_models_types'
+require_relative 'scheduling_model_types'
+require_relative 'status_models_types'
+require_relative 'process_model_types'
+require_relative 'airavata_workflow_model_types'
 
 
 module ExperimentType

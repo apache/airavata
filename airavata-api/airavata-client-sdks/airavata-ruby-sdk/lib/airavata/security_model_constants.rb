@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'security_model_types'
+require_relative 'security_model_types'
 

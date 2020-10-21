@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'application_deployment_model_types'
+require_relative 'application_deployment_model_types'
 

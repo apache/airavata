@@ -5,8 +5,8 @@
 #
 
 require 'thrift'
-require 'airavata_commons_types'
-require 'data_movement_models_types'
+require_relative 'airavata_commons_types'
+require_relative 'data_movement_models_types'
 
 
 # Storage Resource Description

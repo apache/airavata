@@ -5,7 +5,7 @@
 #
 
 require 'thrift'
-require 'experiment_model_types'
+require_relative 'experiment_model_types'
 
 
 module AiravataErrorType

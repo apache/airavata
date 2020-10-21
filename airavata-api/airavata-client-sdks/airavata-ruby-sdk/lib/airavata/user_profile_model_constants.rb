@@ -5,7 +5,7 @@
 #
 
 require 'thrift'
-require 'user_profile_model_types'
+require_relative 'user_profile_model_types'
 
 USER_PROFILE_VERSION = %q"1.0"
 

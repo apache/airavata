@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'compute_resource_model_types'
+require_relative 'compute_resource_model_types'
 

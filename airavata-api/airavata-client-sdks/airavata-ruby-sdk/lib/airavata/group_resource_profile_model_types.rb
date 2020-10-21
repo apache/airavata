@@ -5,9 +5,9 @@
 #
 
 require 'thrift'
-require 'airavata_commons_types'
-require 'compute_resource_model_types'
-require 'data_movement_models_types'
+require_relative 'airavata_commons_types'
+require_relative 'compute_resource_model_types'
+require_relative 'data_movement_models_types'
 
 
 class GroupAccountSSHProvisionerConfig

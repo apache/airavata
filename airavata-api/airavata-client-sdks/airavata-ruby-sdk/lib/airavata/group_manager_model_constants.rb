@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'group_manager_model_types'
+require_relative 'group_manager_model_types'
 

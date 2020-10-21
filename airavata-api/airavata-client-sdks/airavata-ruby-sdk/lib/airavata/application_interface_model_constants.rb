@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'application_interface_model_types'
+require_relative 'application_interface_model_types'
 

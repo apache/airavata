@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'status_models_types'
+require_relative 'status_models_types'
 

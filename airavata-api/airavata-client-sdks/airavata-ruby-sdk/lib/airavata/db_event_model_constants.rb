@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'db_event_model_types'
+require_relative 'db_event_model_types'
 

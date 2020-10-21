@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'gateway_resource_profile_model_types'
+require_relative 'gateway_resource_profile_model_types'
 

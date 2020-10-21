@@ -5,9 +5,9 @@
 #
 
 require 'thrift'
-require 'compute_resource_model_types'
-require 'data_movement_models_types'
-require 'account_provisioning_model_types'
+require_relative 'compute_resource_model_types'
+require_relative 'data_movement_models_types'
+require_relative 'account_provisioning_model_types'
 
 
 # Gateway specific preferences for a Computer Resource

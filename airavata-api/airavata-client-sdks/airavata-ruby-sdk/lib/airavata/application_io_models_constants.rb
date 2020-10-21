@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'application_io_models_types'
+require_relative 'application_io_models_types'
 

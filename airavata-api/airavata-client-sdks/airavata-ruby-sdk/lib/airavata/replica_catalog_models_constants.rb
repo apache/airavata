@@ -5,5 +5,5 @@
 #
 
 require 'thrift'
-require 'replica_catalog_models_types'
+require_relative 'replica_catalog_models_types'
 
