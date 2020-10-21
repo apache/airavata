@@ -20,7 +20,7 @@
 #
 
 # This script will generate/regenerate the thrift code for Airavata Server Skeletons, Client Stubs
-#    and Data Model java beans in java, C++, PHP and Python.
+#    and Data Model java beans in java, C++, PHP, Python and Ruby.
 
 show_usage() {
 	echo -e "Usage: $0 [docker-machine start--native-thrift] [Language to generate stubs]"
@@ -30,7 +30,8 @@ show_usage() {
 	echo -e "\tphp Generate/Update PHP Stubs"
 	echo -e "\tcpp Generate/Update C++ Stubs"
 	echo -e "\tpython Generate/Update Python Stubs."
-	echo -e "\tall Generate/Update all stubs (Java, PHP, C++, Python)."
+	echo -e "\truby Generate/Update Ruby Stubs."
+	echo -e "\tall Generate/Update all stubs (Java, PHP, C++, Python, Ruby)."
 	echo -e "\t-h[elp] Print the usage options of this script"
 	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
 }
@@ -95,6 +96,7 @@ setup() {
     PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
     CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
     PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/airavata/'
+    RUBY_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-ruby-sdk/lib/airavata/'
 
     BASE_API_SRC_DIR='../airavata-api/airavata-base-api/src/main/java'
 
@@ -324,15 +326,30 @@ generate_python_stubs() {
 
 }
 
+generate_ruby_stubs() {
+
+    # Ruby generation directory
+    RUBY_GEN_DIR=${BASE_TARGET_DIR}/gen-rb
+
+    # As a precaution remove and previously generated files if exists
+    rm -rf ${RUBY_GEN_DIR}
+
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen rb ${AIRAVATA_API_THRIFT_FILE}  || fail unable to generate Ruby thrift classes
+
+    copy_changed_files ${RUBY_GEN_DIR} ${RUBY_SDK_DIR}
+
+}
+
 for arg in "$@"
 do
     case "$arg" in
-    all)    echo "Generate all stubs (Java, PHP, C++, Python) Stubs"
+    all)    echo "Generate all stubs (Java, PHP, C++, Python, Ruby) Stubs"
             setup
             generate_java_stubs
             generate_php_stubs
             generate_cpp_stubs
             generate_python_stubs
+            generate_ruby_stubs
             ;;
     java)   echo "Generating Java Stubs"
             setup
@@ -349,6 +366,10 @@ do
     python)    echo "Generate Python Stubs"
             setup
             generate_python_stubs
+            ;;
+    ruby)    echo "Generate Ruby Stubs"
+            setup
+            generate_ruby_stubs
             ;;
     --native-thrift)
             THRIFT_NATIVE="true"
