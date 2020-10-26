@@ -9,7 +9,7 @@ TODO: Delete this and the text above, and describe your gem
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'airavata-ruby-sdk'
+gem 'airavata'
 ```
 
 And then execute:
@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install airavata-ruby-sdk
+    $ gem install airavata
 
 ## Usage
 
@@ -37,4 +37,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 
 ## Code of Conduct
 
-Everyone interacting in the Airavata::Ruby::Sdk project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/airavata-ruby-sdk/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Airavata project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/airavata-ruby-sdk/blob/master/CODE_OF_CONDUCT.md).

@@ -1,5 +1,5 @@
 Gem::Specification.new do |spec|
-  spec.name = "airavata-ruby-sdk"
+  spec.name = "airavata"
   spec.version = "0.0.1"
   spec.authors = ["Dinuka De Silva"]
   spec.email = ["L.dinukadesilva@gmail.com"]
