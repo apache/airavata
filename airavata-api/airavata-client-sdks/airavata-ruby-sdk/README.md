@@ -42,20 +42,16 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/airavata-ruby-sdk. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/airavata-ruby-sdk/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/apache/airavata/tree/master/airavata-api/airavata-client-sdks/airavata-ruby-sdk. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/apache/airavata/tree/master/airavata-api/airavata-client-sdks/airavata-ruby-sdk/CODE_OF_CONDUCT.md).
 
 
 ## Code of Conduct
 
-Everyone interacting in the Airavata project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/airavata-ruby-sdk/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Airavata project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/apache/airavata/tree/master/airavata-api/airavata-client-sdks/airavata-ruby-sdk/CODE_OF_CONDUCT.md).
 
 ## Release
 
-```
-gem build hola.gemspec
-```
-
-
-
-
-
+1. Setup credentials https://guides.rubygems.org/make-your-own-gem/
+2. Bump the version in `airavata.gemspec`
+3. Build the artifact `$ gem build airavata.gemspec`
+5. Publish `$ gem push airavata-0.0.1.gem`
