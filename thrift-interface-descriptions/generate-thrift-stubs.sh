@@ -96,7 +96,7 @@ setup() {
     PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
     CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
     PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/airavata/'
-    RUBY_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-ruby-sdk/lib/airavata/'
+    RUBY_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-ruby-sdk/lib/'
 
     BASE_API_SRC_DIR='../airavata-api/airavata-base-api/src/main/java'
 
