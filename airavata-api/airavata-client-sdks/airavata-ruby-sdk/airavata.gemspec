@@ -4,12 +4,12 @@ Gem::Specification.new do |spec|
   spec.authors = ["Dinuka De Silva"]
   spec.email = ["L.dinukadesilva@gmail.com"]
 
-  spec.summary = ""
-  spec.description = ""
+  spec.summary = "Airavata Ruby SDK"
+  spec.description = "The Apache Airavata Ruby SDK for third party clients to integrate with Airavata middleware"
   spec.homepage = "https://github.com/apache/airavata"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
-  spec.metadata["allowed_push_host"] = ": Set to 'http://mygemserver.com'"
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
