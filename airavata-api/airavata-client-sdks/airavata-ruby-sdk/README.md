@@ -22,7 +22,17 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "thrift"
+require "airavata"
+
+transport = Thrift::BufferedTransport.new(Thrift::Socket.new('localhost', 9930))
+protocol = Thrift::BinaryProtocol.new(transport)
+airavataApiClient = Airavata::Client.new(protocol)
+transport.open()
+
+airavataApiClient.isUserExists(authzToken, gatewayId, userName)
+```
 
 ## Development
 
@@ -38,3 +48,14 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 ## Code of Conduct
 
 Everyone interacting in the Airavata project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/airavata-ruby-sdk/blob/master/CODE_OF_CONDUCT.md).
+
+## Release
+
+```
+gem build hola.gemspec
+```
+
+
+
+
+
