@@ -191,13 +191,12 @@ class ProjectViewSet(APIBackedViewSet):
         prefs.save()
 
 
-class ExperimentViewSet(APIBackedViewSet):
+class ExperimentViewSet(mixins.CreateModelMixin,
+                        mixins.RetrieveModelMixin,
+                        mixins.UpdateModelMixin,
+                        GenericAPIBackedViewSet):
     serializer_class = serializers.ExperimentSerializer
     lookup_field = 'experiment_id'
-
-    def get_list(self):
-        return self.request.airavata_client.getUserExperiments(
-            self.authz_token, self.gateway_id, self.username, -1, 0)
 
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getExperiment(
