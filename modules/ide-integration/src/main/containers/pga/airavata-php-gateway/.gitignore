@@ -10,6 +10,7 @@ Thumbs.db
 /app/storage/logs
 /app/storage/sessions
 /app/storage/views
+/app/storage/meta
 /themes
 
 .idea
