@@ -10,7 +10,7 @@ services:
       - "8443:8443"
     volumes:
       - ./keycloak/Default-export.json:/opt/keycloak/Default-export.json
-      - ./keystores/airavata.jks:/opt/jboss/keycloak/standalone/configuration/keystores/airavata.jks
+      - ../resources/keystores/airavata.jks:/opt/jboss/keycloak/standalone/configuration/keystores/airavata.jks
       - ./keycloak/standalone.xml:/opt/jboss/keycloak/standalone/configuration/standalone.xml
     command: ["-b", "0.0.0.0", "-Dkeycloak.migration.action=import", "-Dkeycloak.migration.provider=singleFile", "-Dkeycloak.migration.file=/opt/keycloak/Default-export.json", "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"]
   db:
