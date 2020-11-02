@@ -9,6 +9,8 @@ from django.views.decorators.debug import sensitive_variables
 from oauthlib.oauth2 import InvalidGrantError, LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
+from django_airavata.apps.auth.utils import get_authz_token
+
 from . import utils
 
 logger = logging.getLogger(__name__)
@@ -28,22 +30,24 @@ class KeycloakBackend(object):
                      password=None,
                      refresh_token=None):
         try:
+            user = None
+            access_token = None
             if username and password:
                 token, userinfo = self._get_token_and_userinfo_password_flow(
                     username, password)
                 if token is None:  # login failed
                     return None
                 self._process_token(request, token)
-                return self._process_userinfo(request, userinfo)
+                user = self._process_userinfo(request, userinfo)
+                access_token = token['access_token']
             elif 'HTTP_AUTHORIZATION' in request.META:
                 bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
                 if bearer != "Bearer":
                     raise Exception("Unexpected Authorization header")
                 # implicitly validate token by using it to get userinfo
                 userinfo = self._get_userinfo_from_token(request, token)
-                # Token should be added as a request attribute (request.auth)
-                # self._process_token(request, token)
-                return self._process_userinfo(request, userinfo)
+                user = self._process_userinfo(request, userinfo)
+                access_token = token
             # user is already logged in and can use refresh token
             elif request.user and not utils.is_refresh_token_expired(request):
                 logger.debug("Refreshing token...")
@@ -51,19 +55,28 @@ class KeycloakBackend(object):
                     self._get_token_and_userinfo_from_refresh_token(request)
                 self._process_token(request, token)
                 # user is already logged in
-                return request.user
+                user = request.user
+                access_token = token['access_token']
             elif refresh_token:
                 logger.debug("Refreshing supplied token...")
                 token, userinfo = \
                     self._get_token_and_userinfo_from_refresh_token(
                         request, refresh_token=refresh_token)
                 self._process_token(request, token)
-                return self._process_userinfo(request, userinfo)
+                user = self._process_userinfo(request, userinfo)
+                access_token = token['access_token']
             else:
                 token, userinfo = self._get_token_and_userinfo_redirect_flow(
                     request)
                 self._process_token(request, token)
-                return self._process_userinfo(request, userinfo)
+                user = self._process_userinfo(request, userinfo)
+                access_token = token['access_token']
+            # authz_token_middleware has already run, so must manually add
+            # the `request.authz_token` attribute
+            if user is not None:
+                request.authz_token = get_authz_token(
+                    request, user=user, access_token=access_token)
+            return user
         except Exception as e:
             logger.exception("login failed")
             return None

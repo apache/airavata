@@ -67,7 +67,7 @@ install
 5.  Load the default Wagtail CMS pages.
 
     ```
-    python manage.py load_default_gateway
+    python manage.py load_cms_data new_default_theme
     ```
 
 6.  Run the server
@@ -110,7 +110,7 @@ following:
    starting the container for the first time.
 
    ```
-   docker exec CONTAINER_ID python manage.py load_cms_data default
+   docker exec CONTAINER_ID python manage.py load_cms_data new_default_theme
    ```
 
 4. Point your browser to http://localhost:8000.
