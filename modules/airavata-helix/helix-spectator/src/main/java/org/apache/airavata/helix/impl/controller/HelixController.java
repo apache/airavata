@@ -22,6 +22,9 @@ package org.apache.airavata.helix.impl.controller;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.helix.controller.HelixControllerMain;
+import org.apache.helix.manager.zk.ZKHelixAdmin;
+import org.apache.helix.manager.zk.ZNRecordSerializer;
+import org.apache.helix.manager.zk.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +60,18 @@ public class HelixController implements Runnable {
 
     public void run() {
         try {
+            ZkClient zkClient = new ZkClient(ServerSettings.getZookeeperConnection(), ZkClient.DEFAULT_SESSION_TIMEOUT,
+                    ZkClient.DEFAULT_CONNECTION_TIMEOUT, new ZNRecordSerializer());
+            ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin(zkClient);
+
+            // Creates the zk cluster if not available
+            if (! zkHelixAdmin.getClusters().contains(clusterName)) {
+                zkHelixAdmin.addCluster(clusterName, true);
+            }
+
+            zkHelixAdmin.close();
+            zkClient.close();
+
             logger.info("Connection to helix cluster : " + clusterName + " with name : " + controllerName);
             logger.info("Zookeeper connection string " + zkAddress);
 
