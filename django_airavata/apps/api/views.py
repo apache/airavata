@@ -30,10 +30,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
-from rest_framework.decorators import (
-    action,
-    api_view,
-)
+from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response

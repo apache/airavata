@@ -3,6 +3,8 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+node_js:
+  - lts/*
 install:
   - pip install -r requirements-dev.txt
 script:
