@@ -33,8 +33,6 @@ from rest_framework import mixins
 from rest_framework.decorators import (
     action,
     api_view,
-    detail_route,
-    list_route
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
@@ -169,7 +167,7 @@ class ProjectViewSet(APIBackedViewSet):
             self.authz_token, project.projectID, project)
         self._update_most_recent_project(project.projectID)
 
-    @list_route()
+    @action(detail=False)
     def list_all(self, request):
         projects = self.request.airavata_client.getUserProjects(
             self.authz_token, self.gateway_id, self.username, -1, 0)
@@ -177,7 +175,7 @@ class ProjectViewSet(APIBackedViewSet):
             projects, many=True, context={'request': request})
         return Response(serializer.data)
 
-    @detail_route()
+    @action(detail=True)
     def experiments(self, request, project_id=None):
         experiments = request.airavata_client.getExperimentsInProject(
             self.authz_token, project_id, -1, 0)
@@ -280,7 +278,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
         else:
             return data_product_uri
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def launch(self, request, experiment_id=None):
         try:
             if getattr(
@@ -311,7 +309,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
         except Exception as e:
             return Response({'success': False, 'errorMessage': e.message})
 
-    @detail_route(methods=['get'])
+    @action(methods=['get'], detail=True)
     def jobs(self, request, experiment_id=None):
         jobs = request.airavata_client.getJobDetails(
             self.authz_token, experiment_id)
@@ -319,7 +317,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
             jobs, many=True, context={'request': request})
         return Response(serializer.data)
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def clone(self, request, experiment_id=None):
         if getattr(
             settings,
@@ -362,7 +360,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 cloned_experiment, context={'request': request})
             return Response(serializer.data)
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def cancel(self, request, experiment_id=None):
         try:
             request.airavata_client.terminateExperiment(
@@ -607,7 +605,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
         self.request.airavata_client.deleteApplicationModule(
             self.authz_token, instance.appModuleId)
 
-    @detail_route()
+    @action(detail=True)
     def application_interface(self, request, app_module_id):
         all_app_interfaces = request.airavata_client.getAllApplicationInterfaces(
             self.authz_token, self.gateway_id)
@@ -633,7 +631,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
             raise Http404("No application interface found for module id {}"
                           .format(app_module_id))
 
-    @detail_route()
+    @action(detail=True)
     def application_deployments(self, request, app_module_id):
         all_deployments = self.request.airavata_client.getAllApplicationDeployments(
             self.authz_token, self.gateway_id)
@@ -643,7 +641,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
             app_deployments, many=True, context={'request': request})
         return Response(serializer.data)
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def favorite(self, request, app_module_id):
         helper = helpers.WorkspacePreferencesHelper()
         workspace_preferences = helper.get(request)
@@ -661,7 +659,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
 
         return HttpResponse(status=204)
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def unfavorite(self, request, app_module_id):
         helper = helpers.WorkspacePreferencesHelper()
         workspace_preferences = helper.get(request)
@@ -679,7 +677,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
 
         return HttpResponse(status=204)
 
-    @list_route()
+    @action(detail=False)
     def list_all(self, request, format=None):
         all_modules = self.request.airavata_client.getAllAppModules(
             self.authz_token, self.gateway_id)
@@ -735,7 +733,7 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
                     o["isRequired"] = app_input.isRequired
                     app_input.metaData = json.dumps(metadata)
 
-    @detail_route()
+    @action(detail=True)
     def compute_resources(self, request, app_interface_id):
         compute_resources = request.airavata_client.getAvailableAppInterfaceComputeResources(
             self.authz_token, app_interface_id)
@@ -780,7 +778,7 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
         self.request.airavata_client.deleteApplicationDeployment(
             self.authz_token, instance.appDeploymentId)
 
-    @detail_route()
+    @action(detail=True)
     def queues(self, request, app_deployment_id):
         """Return queues for this deployment with defaults overridden by deployment defaults if they exist"""
         app_deployment = self.request.airavata_client.getApplicationDeployment(
@@ -814,14 +812,14 @@ class ComputeResourceViewSet(mixins.RetrieveModelMixin,
         return self.request.airavata_client.getComputeResource(
             self.authz_token, lookup_value)
 
-    @list_route()
+    @action(detail=False)
     def all_names(self, request, format=None):
         """Return a map of compute resource names keyed by resource id."""
         return Response(
             request.airavata_client.getAllComputeResourceNames(
                 request.authz_token))
 
-    @list_route()
+    @action(detail=False)
     def all_names_list(self, request, format=None):
         """Return a list of compute resource names keyed by resource id."""
         all_names = request.airavata_client.getAllComputeResourceNames(
@@ -836,7 +834,7 @@ class ComputeResourceViewSet(mixins.RetrieveModelMixin,
             } for host_id, host in all_names.items()
         ])
 
-    @detail_route()
+    @action(detail=True)
     def queues(self, request, compute_resource_id, format=None):
         details = request.airavata_client.getComputeResource(
             request.authz_token, compute_resource_id)
@@ -1280,7 +1278,7 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
             self.authz_token, entity_id,
             {group_id: permission_type for group_id in group_ids})
 
-    @detail_route(methods=['put'])
+    @action(methods=['put'], detail=True)
     def merge(self, request, entity_id=None):
         # Validate updated sharing settings
         updated = self.get_serializer(data=request.data)
@@ -1303,7 +1301,7 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
         self.perform_update(merged_serializer)
         return Response(merged_serializer.data)
 
-    @detail_route(methods=['get'])
+    @action(methods=['get'], detail=True)
     def all(self, request, entity_id=None):
         """Load direct plus indirectly (inherited) shared permissions."""
         users = {}
@@ -1465,7 +1463,7 @@ class StorageResourceViewSet(mixins.RetrieveModelMixin,
         return self.request.airavata_client.getStorageResource(
             self.authz_token, lookup_value)
 
-    @list_route()
+    @action(detail=False)
     def all_names(self, request, format=None):
         """Return a map of compute resource names keyed by resource id."""
         return Response(
@@ -1732,7 +1730,7 @@ class IAMUserViewSet(mixins.RetrieveModelMixin,
     def perform_destroy(self, instance):
         iam_admin_client.delete_user(instance['userId'])
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def enable(self, request, user_id=None):
         iam_admin_client.enable_user(user_id)
         instance = self.get_instance(user_id)

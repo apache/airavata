@@ -1,4 +1,5 @@
 import logging
+import ssl
 from contextlib import contextmanager
 
 import thrift_connector.connection_pool as connection_pool
@@ -196,7 +197,10 @@ class CustomThriftClient(connection_pool.ThriftClient):
             return super().get_socket_factory()
         else:
             def factory(host, port):
-                return TSSLSocket.TSSLSocket(host, port, validate=cls.validate)
+                return TSSLSocket.TSSLSocket(host, port,
+                                             cert_reqs=(ssl.CERT_REQUIRED
+                                                        if cls.validate
+                                                        else ssl.CERT_NONE))
             return factory
 
     def ping(self):
