@@ -96,7 +96,7 @@ public class IdentityManagementClient extends Connector {
         return userInfo.getString("preferred_username");
     }
 
-    public String getAccessToken(String code, String redirectURI) throws Exception {
+    public JSONObject getAccessToken(String code, String redirectURI) throws Exception {
 
         String openIdConnectUrl = getOpenIDConfigurationUrl(getProperties().getProperty(Constants.IAM_REALM_ID));
         JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
@@ -119,7 +119,7 @@ public class IdentityManagementClient extends Connector {
             try {
                 String responseBody = EntityUtils.toString(response.getEntity());
                 JSONObject tokenInfo = new JSONObject(responseBody);
-                return tokenInfo.get("access_token").toString();
+                return tokenInfo;
             } finally {
                 response.close();
             }
@@ -133,6 +133,76 @@ public class IdentityManagementClient extends Connector {
             }
         }
     }
+
+    public JSONObject getTokenFromRefreshToken(String refreshToken) throws Exception {
+
+        String openIdConnectUrl = getOpenIDConfigurationUrl(getProperties().getProperty(Constants.IAM_REALM_ID));
+        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
+        String urlString = openIdConnectConfig.getString("token_endpoint");
+        CloseableHttpClient httpClient = HttpClients.createSystem();
+
+        HttpPost httpPost = new HttpPost(urlString);
+        String encoded = Base64.getEncoder().encodeToString((this.iamClientId + ":" + this.iamClientSec).getBytes(StandardCharsets.UTF_8));
+        httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded);
+        List<NameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair("grant_type", "refresh_token"));
+        formParams.add(new BasicNameValuePair("refresh_token", refreshToken));
+        formParams.add(new BasicNameValuePair("client_id", this.iamClientId));
+        formParams.add(new BasicNameValuePair("client_secret", this.iamClientSec));
+        formParams.add(new BasicNameValuePair("scope", "openid"));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
+        httpPost.setEntity(entity);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            try {
+                String responseBody = EntityUtils.toString(response.getEntity());
+                JSONObject tokenInfo = new JSONObject(responseBody);
+                return tokenInfo;
+            } finally {
+                response.close();
+            }
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
+    public void logout(String refreshToken) throws Exception {
+        String openIdConnectUrl = getOpenIDConfigurationUrl(getProperties().getProperty(Constants.IAM_REALM_ID));
+        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
+        String urlString = openIdConnectConfig.getString("end_session_endpoint");
+
+        CloseableHttpClient httpClient = HttpClients.createSystem();
+
+        HttpPost httpPost = new HttpPost(urlString);
+        String encoded = Base64.getEncoder().encodeToString((this.iamClientId + ":" + this.iamClientSec).getBytes(StandardCharsets.UTF_8));
+        httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded);
+        List<NameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair("refresh_token", refreshToken));
+        formParams.add(new BasicNameValuePair("client_id", this.iamClientId));
+        formParams.add(new BasicNameValuePair("client_secret", this.iamClientSec));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
+        httpPost.setEntity(entity);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            response.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 
     public AuthzToken getAuthToken(String accessToken) throws Exception {
         String gatewayId = getProperties().getProperty(Constants.GATEWAY_ID);
