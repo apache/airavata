@@ -27,7 +27,7 @@ def experiments_list(request):
     if response.status_code != 200:
         raise Exception("Failed to load experiments list: {}".format(
             response.data['detail']))
-    experiments_json = JSONRenderer().render(response.data)
+    experiments_json = JSONRenderer().render(response.data).decode('utf-8')
     return render(request, 'django_airavata_workspace/experiments_list.html', {
         'bundle_name': 'experiment-list',
         'experiments_data': experiments_json
@@ -51,7 +51,7 @@ def projects_list(request):
     if response.status_code != 200:
         raise Exception("Failed to load projects list: {}".format(
             response.data['detail']))
-    projects_json = JSONRenderer().render(response.data)
+    projects_json = JSONRenderer().render(response.data).decode('utf-8')
 
     return render(request, 'django_airavata_workspace/projects_list.html', {
         'bundle_name': 'project-list',
@@ -138,7 +138,7 @@ def view_experiment(request, experiment_id):
     if response.status_code != 200:
         raise Exception("Failed to load experiment data: {}".format(
             response.data['detail']))
-    full_experiment_json = JSONRenderer().render(response.data)
+    full_experiment_json = JSONRenderer().render(response.data).decode('utf-8')
 
     return render(request, 'django_airavata_workspace/view_experiment.html', {
         'bundle_name': 'view-experiment',
